@@ -1,10 +1,15 @@
 ﻿using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using UnityEngine.Events;
+using UnityEngine;
+using static TOHE.Main;
+using UnityEngine.UI;
 
 namespace TOHE;
 
@@ -29,8 +34,10 @@ public static class ServerAddManager
         regionInfos.Add(CreateHttp("www.aumods.us", "Modded NA (MNA)", 443, true));
         regionInfos.Add(CreateHttp("au-eu.duikbo.at", "Modded EU (MEU)", 443, true));
         regionInfos.Add(CreateHttp("35.247.251.253", "Modded SA (MSA)", 22023, false));
+        regionInfos.Add(new StaticHttpRegionInfo("Custom", StringNames.NoTranslation, CustomIp.Value, new Il2CppReferenceArray<ServerInfo>([new ServerInfo("Custom", CustomIp.Value, CustomPort.Value, false)])).CastFast<IRegionInfo>());
 
         regionInfos.Where(x => !serverManager.AvailableRegions.Contains(x)).Do(serverManager.AddOrUpdateRegion);
+        UpdateRegions();
     }
 
     public static IRegionInfo CreateHttp(string ip, string name, ushort port, bool ishttps)
@@ -41,6 +48,33 @@ public static class ServerAddManager
         return new StaticHttpRegionInfo(name, (StringNames)1003, ip, ServerInfo).CastFast<IRegionInfo>();
     }
 
+    public static void UpdateRegions()
+    {
+        var regions = new IRegionInfo[] {
+                new StaticHttpRegionInfo("Custom", StringNames.NoTranslation, CustomIp.Value, new Il2CppReferenceArray<ServerInfo>([new ServerInfo("Custom", CustomIp.Value, CustomPort.Value, false)])).CastFast<IRegionInfo>()
+            };
+
+        IRegionInfo currentRegion = serverManager.CurrentRegion;
+
+        foreach (IRegionInfo region in regions)
+        {
+            if (region == null)
+                Logger.Error("Could not add region", "ServerAddManager");
+            else
+            {
+                if (currentRegion != null && region.Name.Equals(currentRegion.Name, StringComparison.OrdinalIgnoreCase))
+                    currentRegion = region;
+                serverManager.AddOrUpdateRegion(region);
+            }
+        }
+
+        // AU remembers the previous region that was set, so we need to restore it
+        if (currentRegion != null)
+        {
+            Logger.Info("Resetting previous region", "ServerAddManager");
+            serverManager.SetRegion(currentRegion);
+        }
+    }
     private static class CastHelper<T> where T : Il2CppObjectBase
     {
         public static Func<IntPtr, T> Cast;
@@ -60,4 +94,152 @@ public static class ServerAddManager
         return CastHelper<T>.Cast(obj.Pointer);
     }
 
+}
+
+[HarmonyPatch(typeof(RegionMenu))]
+internal class RegionMenuPatch
+{
+    private static TextBoxTMP ipField;
+    private static TextBoxTMP portField;
+    private static readonly ServerManager serverManager = DestroyableSingleton<ServerManager>.Instance;
+    [HarmonyPatch(nameof(RegionMenu.Open))]
+    [HarmonyPostfix]
+    public static void RegionMenuOpen_Postfix(RegionMenu __instance)
+    {
+        if (!__instance.TryCast<RegionMenu>()) return;
+        bool isCustomRegion = serverManager.CurrentRegion.Name == "Custom";
+        if (!isCustomRegion)
+        {
+            if (ipField != null && ipField.gameObject != null)
+            {
+                ipField.gameObject.SetActive(false);
+
+            }
+            if (portField != null && portField.gameObject != null)
+            {
+                portField.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            if (ipField != null && ipField.gameObject != null)
+            {
+                ipField.gameObject.SetActive(true);
+
+            }
+            if (portField != null && portField.gameObject != null)
+            {
+                portField.gameObject.SetActive(true);
+            }
+        }
+        var template = DestroyableSingleton<JoinGameButton>.Instance;
+        var joinGameButtons = GameObject.FindObjectsOfType<JoinGameButton>();
+        foreach (var t in joinGameButtons)
+        {  // The correct button has a background, the other 2 dont
+            if (t.GameIdText != null && t.GameIdText.Background != null)
+            {
+                template = t;
+                break;
+            }
+        }
+        if (template == null || template.GameIdText == null) return;
+
+        if (ipField == null || ipField.gameObject == null)
+        {
+            ipField = UnityEngine.Object.Instantiate(template.GameIdText, __instance.transform);
+            ipField.gameObject.name = "IpTextBox";
+            var arrow = ipField.transform.FindChild("arrowEnter");
+            if (arrow == null || arrow.gameObject == null) return;
+            UnityEngine.Object.DestroyImmediate(arrow.gameObject);
+
+            ipField.transform.localPosition = new Vector3(3.225f, -0.8f, -100f);
+            ipField.characterLimit = 30;
+            ipField.AllowSymbols = true;
+            ipField.ForceUppercase = false;
+            ipField.SetText(Main.CustomIp.Value);
+            __instance.StartCoroutine(Effects.Lerp(0.1f, new Action<float>((p) =>
+            {
+                ipField.outputText.SetText(Main.CustomIp.Value);
+                ipField.SetText(Main.CustomIp.Value);
+            })));
+
+            ipField.ClearOnFocus = false;
+            ipField.OnEnter = ipField.OnChange = new Button.ButtonClickedEvent();
+            ipField.OnFocusLost = new Button.ButtonClickedEvent();
+            ipField.OnChange.AddListener((UnityAction)onEnterOrIpChange);
+            ipField.OnFocusLost.AddListener((UnityAction)onFocusLost);
+            ipField.gameObject.SetActive(isCustomRegion);
+
+            void onEnterOrIpChange()
+            {
+                Main.CustomIp.Value = ipField.text;
+            }
+
+            void onFocusLost()
+            {
+                ServerAddManager.UpdateRegions();
+            }
+        }
+
+        if (portField == null || portField.gameObject == null)
+        {
+            portField = UnityEngine.Object.Instantiate(template.GameIdText, __instance.transform);
+            portField.gameObject.name = "PortTextBox";
+            var arrow = portField.transform.FindChild("arrowEnter");
+            if (arrow == null || arrow.gameObject == null) return;
+            UnityEngine.Object.DestroyImmediate(arrow.gameObject);
+
+            portField.transform.localPosition = new Vector3(3.225f, -1.55f, -100f);
+            portField.characterLimit = 5;
+            portField.SetText(CustomPort.Value.ToString());
+            __instance.StartCoroutine(Effects.Lerp(0.1f, new Action<float>((p) =>
+            {
+                portField.outputText.SetText(CustomPort.Value.ToString());
+                portField.SetText(CustomPort.Value.ToString());
+            })));
+
+
+            portField.ClearOnFocus = false;
+            portField.OnEnter = portField.OnChange = new Button.ButtonClickedEvent();
+            portField.OnFocusLost = new Button.ButtonClickedEvent();
+            portField.OnChange.AddListener((UnityAction)onEnterOrPortFieldChange);
+            portField.OnFocusLost.AddListener((UnityAction)onFocusLost);
+            portField.gameObject.SetActive(isCustomRegion);
+
+            void onEnterOrPortFieldChange()
+            {
+                ushort port = 0;
+                if (ushort.TryParse(portField.text, out port))
+                {
+                    CustomPort.Value = port;
+                    portField.outputText.color = Color.white;
+                }
+                else
+                {
+                    portField.outputText.color = Color.red;
+                }
+            }
+
+            void onFocusLost()
+            {
+                ServerAddManager.UpdateRegions();
+            }
+        }
+    }
+
+    [HarmonyPatch(nameof(RegionMenu.ChooseOption))]
+    [HarmonyPrefix]
+    public static bool RegionMenuChooseOption_Prefix(RegionMenu __instance, IRegionInfo region)
+    {
+        if (region.Name != "Custom" || serverManager.CurrentRegion.Name == "Custom") return true;
+        DestroyableSingleton<ServerManager>.Instance.SetRegion(region);
+        __instance.RegionText.text = "Custom";
+        foreach (var Button in __instance.ButtonPool.activeChildren)
+        {
+            ServerListButton serverListButton = Button.TryCast<ServerListButton>();
+            serverListButton?.SetSelected(serverListButton.Text.text == "Custom");
+        }
+        __instance.Open();
+        return false;
+    }
 }
