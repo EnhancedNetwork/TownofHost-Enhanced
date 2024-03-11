@@ -668,7 +668,6 @@ class CheckMurderPatch
             case CustomRoles.Shroud when target.Is(CustomRoles.Shroud):
             case CustomRoles.Jinx when target.Is(CustomRoles.Jinx):
             case CustomRoles.Wraith when target.Is(CustomRoles.Wraith):
-            case CustomRoles.HexMaster when target.Is(CustomRoles.HexMaster):
             //case CustomRoles.Occultist when target.Is(CustomRoles.Occultist):
             case CustomRoles.BloodKnight when target.Is(CustomRoles.BloodKnight):
             case CustomRoles.Jackal when target.Is(CustomRoles.Jackal):

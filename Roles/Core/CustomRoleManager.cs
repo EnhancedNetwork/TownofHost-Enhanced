@@ -210,7 +210,7 @@ public static class CustomRoleManager
         //CustomRoles.God => new God(),
         //CustomRoles.FFF => new FFF(),
         //CustomRoles.HeadHunter => new HeadHunter(),
-        //CustomRoles.HexMaster => new HexMaster(),
+        CustomRoles.HexMaster => new HexMaster(),
         //CustomRoles.Hookshot => new Hookshot(),
         //CustomRoles.Imitator => new Imitator(),
         //CustomRoles.Innocent => new Innocent(),

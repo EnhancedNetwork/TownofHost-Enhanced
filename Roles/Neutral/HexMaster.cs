@@ -3,7 +3,6 @@ using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
@@ -34,6 +33,14 @@ internal class HexMaster : RoleBase
     public override bool IsEnable => On;
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+    {
+        string color = string.Empty;
+        if (seer.Is(CustomRoles.HexMaster) && (target.Is(CustomRoles.HexMaster))) color = Main.roleColors[CustomRoles.HexMaster];
+        return color;
+    }
 
     private static Dictionary<byte, bool> HexMode = [];
     private static Dictionary<byte, List<byte>> HexedPlayer = [];
@@ -192,6 +199,11 @@ internal class HexMaster : RoleBase
         SwitchHexMode(killer.PlayerId, true);
         //キル処理終了させる
         return false;
+    }
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (killer.Is(CustomRoles.HexMaster) && target.Is(CustomRoles.HexMaster)) return false;
+        return true;
     }
     public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
