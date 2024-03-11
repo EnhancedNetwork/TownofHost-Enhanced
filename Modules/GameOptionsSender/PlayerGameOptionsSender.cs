@@ -220,7 +220,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         if (Grenadier.On) Grenadier.ApplyGameOptionsForOthers(opt, player);
         if (Dazzler.On) Dazzler.SetDazzled(player, opt);
         if (Deathpact.On) Deathpact.SetDeathpactVision(player, opt);
-        if (Spiritcaller.IsEnable) Spiritcaller.ReduceVision(opt, player);
+        if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (Pitfall.On) Pitfall.SetPitfallTrapVision(opt, player);
 
         // Add-ons

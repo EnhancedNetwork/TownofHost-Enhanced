@@ -567,48 +567,15 @@ class CheckMurderPatch
                     else if (target.GetRealKiller() != null && target.GetRealKiller() != target && killer != null)
                         { Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; ExtendedPlayerControl.RpcMurderPlayerV3(target.GetRealKiller(), target);  }
                 return false;
-            //case CustomRoles.Luckey:
-            //    var rd = IRandom.Instance;
-            //    if (rd.Next(0, 100) < Options.LuckeyProbability.GetInt())
-            //    {
-            //        killer.RpcGuardAndKill(target);
-            //        return false;
-            //    }
-            //    break;
-            case CustomRoles.Jinx:
-            //击杀老兵
-            case CustomRoles.Masochist:
 
-                killer.SetKillCooldown(target: target, forceAnime: true);
-                Main.MasochistKillMax[target.PlayerId]++;
-                //    killer.RPCPlayCustomSound("DM");
-                target.Notify(string.Format(GetString("MasochistKill"), Main.MasochistKillMax[target.PlayerId]));
-                if (Main.MasochistKillMax[target.PlayerId] >= Options.MasochistKillMax.GetInt())
-                {
-                    if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
-                    {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Masochist);
-                        CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
-                    }
-                }
-                return false;
-            //return true;
-            //玩家被击杀事件
-            //嗜血骑士技能生效中
+
+
             case CustomRoles.Wildling:
                 if (Wildling.InProtect(target.PlayerId))
                 {
                     killer.RpcGuardAndKill(target);
                     if (!Options.DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
                     target.Notify(GetString("BKOffsetKill"));
-                    return false;
-                }
-                break;
-            case CustomRoles.Spiritcaller:
-                if (Spiritcaller.InProtect(target))
-                {
-                    killer.RpcGuardAndKill(target);
-                    target.RpcGuardAndKill();
                     return false;
                 }
                 break;
@@ -632,7 +599,6 @@ class CheckMurderPatch
 
 
         if (!check) killer.RpcMurderPlayerV3(target);
-        if (killer.Is(CustomRoles.Doppelganger)) Doppelganger.OnCheckMurder(killer, target);
         return true;
     }
 }
@@ -1984,9 +1950,6 @@ class FixedUpdateInNormalGamePatch
                     playerRole = player.GetCustomRole();
 
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
-
-                    if (Spiritcaller.IsEnable)
-                        Spiritcaller.OnFixedUpdate(player);
 
                     if (Rainbow.isEnabled)
                         Rainbow.OnFixedUpdate();

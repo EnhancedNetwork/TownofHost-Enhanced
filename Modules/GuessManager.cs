@@ -258,12 +258,6 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessKnighted"));
                     return true;
                 }
-                if (pc.Is(CustomRoles.Masochist))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessMasochistBlocked"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessMasochistBlocked"));
-                    return true;
-                }
                 if (pc.Is(CustomRoles.Terrorist) && !Options.TerroristCanGuess.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
@@ -323,29 +317,6 @@ public static class GuessManager
                     if (!isUI) Utils.SendMessage(GetString("GuessPhantom"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessPhantom"));
                     return true;
-                }
-                if (target.Is(CustomRoles.Masochist))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessMasochist"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessMasochist"));
-                    Main.MasochistKillMax[target.PlayerId]++;
-
-                    if (Main.MasochistKillMax[target.PlayerId] >= Options.MasochistKillMax.GetInt())
-                    {
-                        if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
-                        {
-                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Masochist);
-                            CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
-                        }
-                    }
-                    return true;
-                }
-                if (pc.Is(CustomRoles.Masochist) && target.PlayerId == pc.PlayerId)
-                {
-                    if (!isUI) Utils.SendMessage(GetString("SelfGuessMasochist"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("SelfGuessMasochist"));
-                    guesserSuicide = true;
-                    Logger.Msg($" {guesserSuicide}", "guesserSuicide - Is Active 2");
                 }
 
                 if (role == CustomRoles.GM || target.Is(CustomRoles.GM))

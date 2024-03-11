@@ -185,7 +185,6 @@ public abstract class RoleBase
     /// When guesser trying guess target a role
     /// </summary>
     public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role) => target == null;
-
     /// <summary>
     /// Check exile role
     /// </summary>

@@ -193,7 +193,6 @@ internal class ChangeRoleSettings
             Undertaker.Init();
             TimeThief.Init();
             Lawyer.Init();
-            Doppelganger.Init();
             Solsticer.Init();
             Vampire.Init();
             Vampiress.Init();
@@ -230,7 +229,6 @@ internal class ChangeRoleSettings
             Warden.Init();
             Vulture.Init();
             Wildling.Init();
-            Spiritcaller.Init();
             Lucky.Init();
             Pirate.Init();
             Pixie.Init();
@@ -493,12 +491,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Lawyer:
                         Lawyer.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Doppelganger:
-                        Doppelganger.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Masochist:
-                        Main.MasochistKillMax[pc.PlayerId] = 0;
-                        break;
                     case CustomRoles.Paranoia:
                         Main.ParaUsedButtonCount[pc.PlayerId] = 0;
                         break;
@@ -555,9 +547,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Vulture:
                         Vulture.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Spiritcaller:
-                        Spiritcaller.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Pirate:
                         Pirate.Add(pc.PlayerId);

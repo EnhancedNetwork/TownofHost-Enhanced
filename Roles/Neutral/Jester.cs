@@ -23,7 +23,6 @@ namespace TOHE.Roles.Neutral
         public static OptionItem JesterCanUseButton;
         public static OptionItem JesterHasImpostorVision;
         public static OptionItem JesterCanVent;
-        public static OptionItem JesterVision;
         public static OptionItem MeetingsNeededForJesterWin;
         public static OptionItem HideJesterVote;
         public static OptionItem SunnyboyChance;

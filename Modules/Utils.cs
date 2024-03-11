@@ -733,9 +733,6 @@ public static class Utils
                 case CustomRoles.Vulture:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Vulture).ShadeColor(0.25f), $"({(Vulture.BodyReportCount.TryGetValue(playerId, out var count1) ? count1 : 0)}/{Vulture.NumberOfReportsToWin.GetInt()})"));
                     break;
-                case CustomRoles.Masochist:
-                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Masochist).ShadeColor(0.25f), $"({(Main.MasochistKillMax.TryGetValue(playerId, out var count3) ? count3 : 0)}/{Options.MasochistKillMax.GetInt()})"));
-                    break;
                 case CustomRoles.Pursuer:
                     ProgressText.Append(Pursuer.GetSeelLimit(playerId));
                     break;
@@ -775,12 +772,6 @@ public static class Utils
                     break;
                 case CustomRoles.Warden:
                     ProgressText.Append(Warden.GetNotifyLimit(playerId));
-                    break;
-                case CustomRoles.Doppelganger:
-                    ProgressText.Append(Doppelganger.GetStealLimit(playerId));
-                    break;
-                case CustomRoles.Spiritcaller:
-                    ProgressText.Append(Spiritcaller.GetSpiritLimit());
                     break;
                 case CustomRoles.ChiefOfPolice:
                     ProgressText.Append(ChiefOfPolice.GetSkillLimit(playerId));

@@ -1,17 +1,23 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral
 {
-    public static class Spiritcaller
+    internal class Spiritcaller : RoleBase
     {
-        private static readonly int Id = 25200;
-        private static List<byte> playerIdList = new();
-        public static bool IsEnable = false;
+        //===========================SETUP================================\\
+        private const int Id = 25200;
+        private static HashSet<byte> playerIdList = [];
+        public static bool HasEnabled = playerIdList.Count > 0;
+        public override bool IsEnable => HasEnabled;
+        public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+        //==================================================================\\
         private static int SpiritLimit = new();
 
         private static Dictionary<byte, long> PlayersHaunted = new();
@@ -49,27 +55,26 @@ namespace TOHE.Roles.Neutral
                 .SetValueFormat(OptionFormat.Seconds);
         }
 
-        public static void Init()
+        public override void Init()
         {
             playerIdList = new();
             SpiritLimit = new();
             ProtectTimeStamp = new();
             PlayersHaunted = new();
-            IsEnable = false;
         }
-        public static void Add(byte playerId)
+        public override void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             SpiritLimit = SpiritMax.GetInt();
             ProtectTimeStamp = 0;
-            IsEnable = true;
+            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
 
             if (!AmongUsClient.Instance.AmHost) return;
             if (!Main.ResetCamPlayerList.Contains(playerId))
                 Main.ResetCamPlayerList.Add(playerId);
         }
-        public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-        public static bool InProtect(PlayerControl player) => player.Is(CustomRoles.Spiritcaller) && ProtectTimeStamp > Utils.GetTimeStamp();
+        public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+        private static bool InProtect(PlayerControl player) => player.Is(CustomRoles.Spiritcaller) && ProtectTimeStamp > Utils.GetTimeStamp();
 
         private static void SendRPC()
         {
@@ -83,11 +88,11 @@ namespace TOHE.Roles.Neutral
             SpiritLimit = reader.ReadInt32();
         }
 
-        public static void OnCheckMurder(PlayerControl target)
+        public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
         {
             if (!target.GetCustomRole().IsAbleToBeSidekicked() && !target.GetCustomRole().IsImpostor())
             {
-                if (SpiritLimit < 1) return;
+                if (SpiritLimit < 1) return true;
 
                 SpiritLimit--;
                 SendRPC();
@@ -108,9 +113,10 @@ namespace TOHE.Roles.Neutral
                 writer.EndMessage();
                 writer.SendMessage();
             }
+            return true;
         }
 
-        public static void OnFixedUpdate(PlayerControl pc)
+        private static void OnFixedUpdateOthers(PlayerControl pc)
         {
             if (pc.Is(CustomRoles.Spiritcaller))
             {
@@ -126,7 +132,7 @@ namespace TOHE.Roles.Neutral
             }
         }
 
-        public static string GetSpiritLimit() => Utils.ColorString(SpiritLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Spiritcaller) : Color.gray, $"({SpiritLimit})");
+        public override string GetProgressText(byte PlayerId, bool cooooms) => Utils.ColorString(SpiritLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Spiritcaller) : Color.gray, $"({SpiritLimit})");
 
         public static void HauntPlayer(PlayerControl target)
         {
@@ -156,6 +162,18 @@ namespace TOHE.Roles.Neutral
                 }, SpiritFreezeTime.GetFloat(), "Spirit UnFreeze");
             }
         }
+        public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+        public override bool CanUseImpostorVentButton(PlayerControl pc) => Spiritcaller.CanVent.GetBool();
+        public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+        {
+            if (Spiritcaller.InProtect(target))
+            {
+                killer.RpcGuardAndKill(target);
+                target.RpcGuardAndKill();
+                return false;
+            }
+            return true;
+        }
 
         public static void ReduceVision(IGameOptions opt, PlayerControl target)
         {
@@ -171,5 +189,8 @@ namespace TOHE.Roles.Neutral
         {
             ProtectTimeStamp = Utils.GetTimeStamp() + (long)SpiritProtectTime.GetFloat();
         }
+        public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+            => seer.Is(CustomRoles.Spiritcaller) && target.Is(CustomRoles.EvilSpirit) ? Main.roleColors[CustomRoles.EvilSpirit] : "";
+        
     }
 }

@@ -521,9 +521,6 @@ public static class Options
 
     public static OptionItem VoodooCooldown;
 
-
-    public static OptionItem MasochistKillMax;
-
     public static OptionItem PhantomCanVent;
     public static OptionItem PhantomSnatchesWin;
     public static OptionItem PhantomCanGuess;
@@ -1588,14 +1585,10 @@ public static class Options
         Innocent.SetupCustomOptions();
 
         Jester.SetupCustomOptions();
-
-        SetupRoleOptions(14500, TabGroup.NeutralRoles, CustomRoles.Masochist);
-        MasochistKillMax = IntegerOptionItem.Create(14502, "MasochistKillMax", new(1, 30, 1), 5, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Masochist])
-            .SetValueFormat(OptionFormat.Times);
         
         Seeker.SetupCustomOption();
 
+        Masochist.SetupCustomOptions();
 
         TextOptionItem.Create(10000013, "RoleType.NeutralChaos", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -1708,7 +1701,7 @@ public static class Options
 
         Necromancer.SetupCustomOption();
 
-        //Occultist.SetupCustomOption();
+        Spiritcaller.SetupCustomOption();
 
         Pelican.SetupCustomOption();
 
@@ -1953,7 +1946,6 @@ public static class Options
         if (Quizmaster.InExperimental)
             Quizmaster.SetupCustomOption();
 
-        Spiritcaller.SetupCustomOption();
 
         // 副职
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)

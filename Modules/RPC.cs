@@ -992,9 +992,6 @@ internal static class RPC
             case CustomRoles.Lawyer:
                 Lawyer.Add(targetId);
                 break;
-            case CustomRoles.Doppelganger:
-                Doppelganger.Add(targetId);
-                break;
             case CustomRoles.SoulCollector:
                 SoulCollector.Add(targetId);
                 break;

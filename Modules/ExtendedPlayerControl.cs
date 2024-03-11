@@ -481,11 +481,8 @@ static class ExtendedPlayerControl
             CustomRoles.VengefulRomantic => VengefulRomantic.CanUseKillButton(pc),
             CustomRoles.Succubus => Succubus.CanUseKillButton(pc),
             CustomRoles.Imitator => Imitator.CanUseKillButton(pc),
-            CustomRoles.Spiritcaller => pc.IsAlive(),
             CustomRoles.Pirate => pc.IsAlive(),
             CustomRoles.Pixie => pc.IsAlive(),
-            CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
-            CustomRoles.Doppelganger => pc.IsAlive(),
 
             _ => false,
         };
@@ -526,9 +523,7 @@ static class ExtendedPlayerControl
             CustomRoles.Vampiress => Vampire.CanVent.GetBool(),
             CustomRoles.Vampire => Vampire.CanVent.GetBool(),
             CustomRoles.Maverick => Maverick.CanVent.GetBool(),
-            CustomRoles.Doppelganger => Doppelganger.CanVent.GetBool(),
             CustomRoles.Amnesiac => true,
-            CustomRoles.Spiritcaller => Spiritcaller.CanVent.GetBool(),
             CustomRoles.Revolutionist => pc.IsDrawDone(),
 
             //FFA
@@ -597,9 +592,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Undertaker:
                 Undertaker.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Doppelganger:
-                Doppelganger.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Shaman:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.VoodooCooldown.GetFloat();
                 break;
@@ -646,9 +638,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Pixie:
                 Pixie.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Spiritcaller:
-                Spiritcaller.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);
