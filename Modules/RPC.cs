@@ -1058,9 +1058,6 @@ internal static class RPC
             case CustomRoles.Wildling:
                 Wildling.Add(targetId);
                 break;
-            case CustomRoles.Spiritcaller:
-                Spiritcaller.Add(targetId);
-                break;
             case CustomRoles.Pirate:
                 Pirate.Add(targetId);
                 break;

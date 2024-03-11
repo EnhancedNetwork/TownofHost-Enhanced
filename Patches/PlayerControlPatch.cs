@@ -441,15 +441,6 @@ class CheckMurderPatch
         if (!killer.RpcCheckAndMurder(target, true))
             return false;
 
-        switch (killerRole)
-        {
-
-            case CustomRoles.Spiritcaller:
-                Spiritcaller.OnCheckMurder(target);
-                break;
-              
-        }
-
         foreach (var killerSubRole in killer.GetCustomSubRoles().ToArray())
         {
             switch (killerSubRole)
