@@ -1,15 +1,23 @@
 using AmongUs.GameOptions;
 using System.Collections.Generic;
+using TOHE.Roles.Double;
 using static TOHE.Options;
+using UnityEngine;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Werewolf
+internal class Werewolf : RoleBase
 {
-    private static readonly int Id = 18400;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
-    
+    //===========================SETUP================================\\
+    private const int Id = 18400;
+    private static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+
+    //==================================================================\\
+
     public static OptionItem KillCooldown;
     public static OptionItem MaulRadius;
     public static OptionItem CanVent;
@@ -27,26 +35,47 @@ public static class Werewolf
         CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Werewolf]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Werewolf]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
-
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
-    public static void CanUseVent(PlayerControl player)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseImpostorVentButton(PlayerControl pc)
     {
         bool Werewolf_canUse = CanVent.GetBool();
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Werewolf_canUse && !player.Data.IsDead);
-        player.Data.Role.CanVent = Werewolf_canUse;
+        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Werewolf_canUse && !pc.Data.IsDead);
+        return Werewolf_canUse;
+    }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        Logger.Info("Werewolf Kill", "Mauled");
+        _ = new LateTask(() =>
+        {
+            foreach (var player in Main.AllAlivePlayerControls)
+            {
+                if (player == killer) continue;
+                if (player == target) continue;
+
+                if (player.Is(CustomRoles.Pestilence)) continue;
+                else if ((player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini)) && Mini.Age < 18) continue;
+
+                if (Vector2.Distance(killer.transform.position, player.transform.position) <= Werewolf.MaulRadius.GetFloat())
+                {
+                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Mauled;
+                    player.SetRealKiller(killer);
+                    player.RpcMurderPlayerV3(player);
+                }
+            }
+        }, 0.1f, "Werewolf Maul Bug Fix");
+        return true;
     }
 }

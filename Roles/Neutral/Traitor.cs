@@ -57,6 +57,10 @@ internal class Traitor : RoleBase
         return Traitor_canUse;
     }
     public override bool CanUseSabotage(PlayerControl pc) => Traitor.CanUsesSabotage.GetBool();
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        return !(target == killer || target.Is(CustomRoleTypes.Impostor));
+    }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
         => seer.Is(CustomRoles.Traitor) && target.Is(CustomRoleTypes.Impostor);
 }

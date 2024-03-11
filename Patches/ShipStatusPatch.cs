@@ -97,7 +97,7 @@ class RepairSystemPatch
 
         player.GetRoleClass()?.UpdateSystem(__instance, systemType, amount, player);
 
-        if (Quizmaster.IsEnable)
+        if (Quizmaster.HasEnabled)
             Quizmaster.OnSabotageCall(systemType);
 
         return true;

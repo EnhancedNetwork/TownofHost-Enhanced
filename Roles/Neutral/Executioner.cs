@@ -2,16 +2,23 @@ using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using static TOHE.Options;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Executioner
+internal class Executioner : RoleBase
 {
-    private static readonly int Id = 14200;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
-    public static byte WinnerID;
+    //===========================SETUP================================\\
+    private const int Id = 14200;
+    public static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
+    //==================================================================\\
+
 
     private static OptionItem CanTargetImpostor;
     private static OptionItem CanTargetNeutralKiller;
@@ -50,16 +57,14 @@ public static class Executioner
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", ChangeRoles, 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         Target = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
 
         //ターゲット割り当て
         if (AmongUsClient.Instance.AmHost)
@@ -145,12 +150,23 @@ public static class Executioner
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         executioner.Notify(text);
     }
-    public static bool KnowRole(PlayerControl player, PlayerControl target)
+    public static void OnOthersOrSelfDead(PlayerControl target)
+    {
+        if (Target.ContainsValue(target.PlayerId))
+            ChangeRoleByTarget(target);
+
+        if (target.Is(CustomRoles.Executioner) && Target.ContainsKey(target.PlayerId))
+        {
+            Target.Remove(target.PlayerId);
+            SendRPC(target.PlayerId);
+        }
+    }
+    public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;
         return player.Is(CustomRoles.Executioner) && Target.TryGetValue(player.PlayerId, out var tar) && tar == target.PlayerId;
     }
-    public static string TargetMark(PlayerControl seer, PlayerControl target)
+    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (!seer.Is(CustomRoles.Executioner) || seer.Data.IsDead) return "";
 
@@ -168,7 +184,7 @@ public static class Executioner
         }
         return false;
     }
-    public static void ExeWin(byte playerId, bool DecidedWinner)
+    private static void ExeWin(byte playerId, bool DecidedWinner)
     {
         if (!DecidedWinner)
         {

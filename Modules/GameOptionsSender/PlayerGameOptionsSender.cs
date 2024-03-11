@@ -167,23 +167,12 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
-            case CustomRoles.PlagueDoctor:
-                PlagueDoctor.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Hater:
             case CustomRoles.Pursuer:
                 opt.SetVision(true);
                 break;
-            case CustomRoles.Werewolf:
-                Werewolf.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Maverick:
                 Maverick.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Jester:
-                AURoleOptions.EngineerCooldown = 0f;
-                AURoleOptions.EngineerInVentMaxTime = 0f;
-                opt.SetVision(Options.JesterHasImpostorVision.GetBool());
                 break;
             case CustomRoles.Parasite:
                 opt.SetVision(true);
@@ -194,19 +183,12 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             //case CustomRoles.Occultist:
             //    Occultist.ApplyGameOptions(opt);
             //    break;
-            case CustomRoles.Wraith:
-                Wraith.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Workaholic:
                 AURoleOptions.EngineerCooldown = Options.WorkaholicVentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
             case CustomRoles.Solsticer:
                 Solsticer.ApplyGameOptions();
-                break;
-            case CustomRoles.Sunnyboy:
-                AURoleOptions.ScientistCooldown = 0f;
-                AURoleOptions.ScientistBatteryCharge = 60f;
                 break;
             case CustomRoles.Mario:
                 AURoleOptions.EngineerCooldown = Options.MarioVentCD.GetFloat();

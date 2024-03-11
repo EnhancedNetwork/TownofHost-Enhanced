@@ -989,17 +989,11 @@ internal static class RPC
             case CustomRoles.Vampiress:
                 Vampiress.Add(targetId);
                 break;
-            case CustomRoles.Executioner:
-                Executioner.Add(targetId);
-                break;
             case CustomRoles.Lawyer:
                 Lawyer.Add(targetId);
                 break;
             case CustomRoles.Doppelganger:
                 Doppelganger.Add(targetId);
-                break;
-            case CustomRoles.PlagueDoctor:
-                PlagueDoctor.Add(targetId);
                 break;
             case CustomRoles.SoulCollector:
                 SoulCollector.Add(targetId);
@@ -1037,9 +1031,6 @@ internal static class RPC
             case CustomRoles.Swooper:
                 Swooper.Add(targetId);
                 break;
-            case CustomRoles.Wraith:
-                Wraith.Add(targetId);
-                break;
             case CustomRoles.Totocalcio:
                 Totocalcio.Add(targetId);
                 break;
@@ -1055,9 +1046,6 @@ internal static class RPC
             case CustomRoles.Succubus:
                 Succubus.Add(targetId);
                 break;
-            case CustomRoles.CursedSoul:
-                CursedSoul.Add(targetId);
-                break;
             case CustomRoles.Amnesiac:
                 Amnesiac.Add(targetId);
                 break;
@@ -1067,9 +1055,6 @@ internal static class RPC
             case CustomRoles.Vulture:
                 Vulture.Add(targetId); 
                 break;
-            case CustomRoles.Werewolf:
-                Werewolf.Add(targetId);
-                break;
             case CustomRoles.Maverick:
                 Maverick.Add(targetId);
                 break;
@@ -1078,9 +1063,6 @@ internal static class RPC
                 break;
             case CustomRoles.Spiritcaller:
                 Spiritcaller.Add(targetId);
-                break;
-            case CustomRoles.Doomsayer:
-                Doomsayer.Add(targetId);
                 break;
             case CustomRoles.Pirate:
                 Pirate.Add(targetId);
@@ -1105,9 +1087,6 @@ internal static class RPC
                 break;
             case CustomRoles.Ghoul:
                 Ghoul.Add();
-                break;
-            case CustomRoles.Quizmaster:
-                Quizmaster.Add(targetId);
                 break;
             case CustomRoles.Rainbow:
                 Rainbow.Add();

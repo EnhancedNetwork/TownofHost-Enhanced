@@ -714,9 +714,6 @@ public static class Utils
                 case CustomRoles.Pixie:
                     ProgressText.Append(Pixie.GetProgressText(playerId));
                     break;
-                case CustomRoles.PlagueDoctor:
-                    ProgressText.Append(PlagueDoctor.GetProgressText());
-                    break;
                     
                 case CustomRoles.Pirate:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Pirate).ShadeColor(0.25f), $"({Pirate.NumWin}/{Pirate.SuccessfulDuelsToWin.GetInt()})"));
@@ -724,10 +721,6 @@ public static class Utils
                 /*     case CustomRoles.CopyCat:
                          ProgressText.Append(ColorString(GetRoleColor(CustomRoles.CopyCat).ShadeColor(0.25f), $"({(CopyCat.MiscopyLimit.TryGetValue(playerId, out var count2) ? count2 : 0)})"));
                          break; */
-                case CustomRoles.Doomsayer:
-                    var doomsayerguess = Doomsayer.GuessedPlayerCount(playerId);
-                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Doomsayer).ShadeColor(0.25f), $"({doomsayerguess.Item1}/{doomsayerguess.Item2})"));
-                    break;
                 case CustomRoles.SchrodingersCat:
                     ProgressText.Append(SchrodingersCat.GetProgressText(playerId));
                     break;
@@ -773,9 +766,6 @@ public static class Utils
                     break;
                 case CustomRoles.Succubus:
                     ProgressText.Append(Succubus.GetCharmLimit());
-                    break;
-                case CustomRoles.CursedSoul:
-                    ProgressText.Append(CursedSoul.GetCurseLimit());
                     break;
                 case CustomRoles.Hawk:
                     ProgressText.Append(Hawk.GetSnatchLimit(playerId));
@@ -1789,10 +1779,6 @@ public static class Utils
                             if (Vulture.ArrowsPointingToDeadBody.GetBool())
                                 SelfSuffix.Append(Vulture.GetTargetArrow(seer));
                             break;
-
-                        case CustomRoles.PlagueDoctor:
-                            SelfSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer));
-                            break;
                     }
                 }
                 else // Only during meeting
@@ -1946,9 +1932,6 @@ public static class Utils
                             TargetMark.Append(Solsticer.GetWarningArrow(seer, target));
                         }
 
-                        if (Executioner.IsEnable)
-                            TargetMark.Append(Executioner.TargetMark(seer, target));
-
 
                         if (Totocalcio.IsEnable)
                             TargetMark.Append(Totocalcio.TargetMark(seer, target));
@@ -1971,12 +1954,6 @@ public static class Utils
                         else if (target.Is(CustomRoles.Ntr) || seer.Is(CustomRoles.Ntr))
                         {
                             TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                        }
-
-
-                        if (PlagueDoctor.IsEnable)
-                        {
-                            TargetMark.Append(PlagueDoctor.GetMarkOthers(seer, target));
                         }
 
                         switch (seerRole)
@@ -2021,9 +1998,6 @@ public static class Utils
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
                                 break;
 
-                            case CustomRoles.Quizmaster:
-                                TargetMark.Append(Quizmaster.TargetMark(seer, target));
-                                break;
 
                         }
 
@@ -2168,10 +2142,8 @@ public static class Utils
 
         if (Collector.IsEnable) Collector.AfterMeetingTasks();
         if (Swooper.IsEnable) Swooper.AfterMeetingTasks();
-        if (Wraith.IsEnable) Wraith.AfterMeetingTasks();
         if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
         if (Hawk.IsEnable) Hawk.AfterMeetingTasks();
-        if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
         if (Pirate.IsEnable) Pirate.AfterMeetingTask();
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();

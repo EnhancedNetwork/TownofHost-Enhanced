@@ -469,11 +469,8 @@ static class ExtendedPlayerControl
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
-            CustomRoles.PlagueDoctor => pc.IsAlive() && PlagueDoctor.CanUseKillButton(),
             CustomRoles.Sidekick => pc.IsAlive(),
-            CustomRoles.Werewolf => pc.IsAlive(),
             CustomRoles.Maverick => pc.IsAlive(),
-            CustomRoles.Wraith => pc.IsAlive(),
             CustomRoles.Innocent => pc.IsAlive(),
             CustomRoles.Pursuer => Pursuer.CanUseKillButton(pc.PlayerId),
             CustomRoles.Hater => pc.IsAlive(),
@@ -483,14 +480,12 @@ static class ExtendedPlayerControl
             CustomRoles.RuthlessRomantic => pc.IsAlive(),
             CustomRoles.VengefulRomantic => VengefulRomantic.CanUseKillButton(pc),
             CustomRoles.Succubus => Succubus.CanUseKillButton(pc),
-            CustomRoles.CursedSoul => CursedSoul.CanUseKillButton(pc),
             CustomRoles.Imitator => Imitator.CanUseKillButton(pc),
             CustomRoles.Spiritcaller => pc.IsAlive(),
             CustomRoles.Pirate => pc.IsAlive(),
             CustomRoles.Pixie => pc.IsAlive(),
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
             CustomRoles.Doppelganger => pc.IsAlive(),
-            CustomRoles.Quizmaster => Quizmaster.CanUseKillButton(pc),
 
             _ => false,
         };
@@ -530,13 +525,10 @@ static class ExtendedPlayerControl
             CustomRoles.RuthlessRomantic => Romantic.RuthlessCanVent.GetBool(),
             CustomRoles.Vampiress => Vampire.CanVent.GetBool(),
             CustomRoles.Vampire => Vampire.CanVent.GetBool(),
-            CustomRoles.Werewolf => Werewolf.CanVent.GetBool(),
             CustomRoles.Maverick => Maverick.CanVent.GetBool(),
             CustomRoles.Doppelganger => Doppelganger.CanVent.GetBool(),
-            CustomRoles.Wraith => true,
             CustomRoles.Amnesiac => true,
             CustomRoles.Spiritcaller => Spiritcaller.CanVent.GetBool(),
-            CustomRoles.Quizmaster => Quizmaster.CanUseVentButton(pc),
             CustomRoles.Revolutionist => pc.IsDrawDone(),
 
             //FFA
@@ -596,9 +588,6 @@ static class ExtendedPlayerControl
             case CustomRoles.TimeThief:
                 TimeThief.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.PlagueDoctor:
-                PlagueDoctor.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Revolutionist:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.RevolutionistCooldown.GetFloat();
                 break;
@@ -613,9 +602,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Shaman:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.VoodooCooldown.GetFloat();
-                break;
-            case CustomRoles.Werewolf:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Werewolf.KillCooldown.GetFloat();
                 break;
             case CustomRoles.Maverick:
                 Maverick.SetKillCooldown(player.PlayerId);
@@ -655,9 +641,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Succubus:
                 Succubus.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.CursedSoul:
-                CursedSoul.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Pirate:
                 Pirate.SetKillCooldown(player.PlayerId);
                 break;
@@ -669,9 +652,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Quizmaster:
-                Quizmaster.SetKillCooldown(player.PlayerId);
                 break;
 
         }
@@ -958,9 +938,7 @@ static class ExtendedPlayerControl
         else if (Totocalcio.KnowRole(seer, target)) return true;
         else if (Romantic.KnowRole(seer, target)) return true;
         else if (Lawyer.KnowRole(seer, target)) return true;
-        else if (Executioner.KnowRole(seer, target)) return true;
         else if (Succubus.KnowRole(seer, target)) return true;
-        else if (CursedSoul.KnowRole(seer, target)) return true;
         else if (Amnesiac.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;

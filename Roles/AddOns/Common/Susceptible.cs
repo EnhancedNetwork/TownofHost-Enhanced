@@ -318,7 +318,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Mauled:
-                    if (!Werewolf.IsEnable)
+                    if (!Werewolf.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

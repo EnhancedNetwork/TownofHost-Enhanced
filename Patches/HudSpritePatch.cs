@@ -76,17 +76,11 @@ public static class HudSpritePatch
             case CustomRoles.Succubus:
                 newKillButton = CustomButton.Get("Subbus");
                 break;
-            case CustomRoles.Innocent:
-                newKillButton = CustomButton.Get("Suidce");
-                break;
             case CustomRoles.Vampire:
                 newKillButton = CustomButton.Get("Bite");
                 break;
             case CustomRoles.Witness:
                 newKillButton = CustomButton.Get("Examine");
-                break;
-            case CustomRoles.CursedSoul:
-                newKillButton = CustomButton.Get("Soul");
                 break;
             case CustomRoles.Amnesiac:
                 newReportButton = CustomButton.Get("Amnesiac");
@@ -104,9 +98,6 @@ public static class HudSpritePatch
                 newAbilityButton = CustomButton.Get("invisible");
                 break;
             case CustomRoles.Chameleon:
-                newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Wraith:
                 newAbilityButton = CustomButton.Get("invisible");
                 break;
             case CustomRoles.Vulture:

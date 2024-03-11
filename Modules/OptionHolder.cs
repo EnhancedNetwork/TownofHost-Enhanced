@@ -521,15 +521,6 @@ public static class Options
 
     public static OptionItem VoodooCooldown;
 
-    public static OptionItem InnocentCanWinByImp;
-
-    public static OptionItem JesterCanUseButton;
-    public static OptionItem JesterHasImpostorVision;
-    public static OptionItem JesterCanVent;
-    public static OptionItem JesterVision;
-    public static OptionItem MeetingsNeededForJesterWin;
-    public static OptionItem HideJesterVote;
-    public static OptionItem SunnyboyChance;
 
     public static OptionItem MasochistKillMax;
 
@@ -1594,25 +1585,9 @@ public static class Options
 
         Executioner.SetupCustomOption();
 
-        SetupRoleOptions(14300, TabGroup.NeutralRoles, CustomRoles.Innocent);
-        InnocentCanWinByImp = BooleanOptionItem.Create(14302, "InnocentCanWinByImp", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Innocent]);
+        Innocent.SetupCustomOptions();
 
-        SetupRoleOptions(14400, TabGroup.NeutralRoles, CustomRoles.Jester);
-        JesterCanUseButton = BooleanOptionItem.Create(14402, "JesterCanUseButton", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        JesterCanVent = BooleanOptionItem.Create(14403, "CanVent", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        JesterHasImpostorVision = BooleanOptionItem.Create(14404, "ImpostorVision", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        HideJesterVote = BooleanOptionItem.Create(14405, "HideJesterVote", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        MeetingsNeededForJesterWin = IntegerOptionItem.Create(14406, "MeetingsNeededForWin", new(0, 10, 1), 0, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester])
-            .SetValueFormat(OptionFormat.Times);
-        SunnyboyChance = IntegerOptionItem.Create(14407, "SunnyboyChance", new(0, 100, 5), 0, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester])
-            .SetValueFormat(OptionFormat.Percent);
+        Jester.SetupCustomOptions();
 
         SetupRoleOptions(14500, TabGroup.NeutralRoles, CustomRoles.Masochist);
         MasochistKillMax = IntegerOptionItem.Create(14502, "MasochistKillMax", new(1, 30, 1), 5, TabGroup.NeutralRoles, false)

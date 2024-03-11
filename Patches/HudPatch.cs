@@ -106,9 +106,6 @@ class HudManagerPatch
                     case CustomRoles.Shaman:
                         __instance.KillButton.OverrideText(GetString("ShamanButtonText"));
                         break;
-                    case CustomRoles.PlagueDoctor:
-                        __instance.KillButton.OverrideText(GetString("InfectiousKillButtonText"));
-                        break;
                     case CustomRoles.Pirate:
                         __instance.KillButton.OverrideText(GetString("PirateDuelButtonText"));
                         break;
@@ -126,9 +123,6 @@ class HudManagerPatch
                     case CustomRoles.Shroud:
                         __instance.KillButton.OverrideText($"{GetString("ShroudButtonText")}");
                        break;
-                    case CustomRoles.Innocent:
-                        __instance.KillButton.OverrideText(GetString("InnocentButtonText"));
-                        break;
                     case CustomRoles.Pursuer:
                         __instance.KillButton.OverrideText(GetString("PursuerButtonText"));
                         break;
@@ -147,10 +141,6 @@ class HudManagerPatch
                     case CustomRoles.Swooper:
                         __instance.ImpostorVentButton.OverrideText(GetString(Swooper.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "SwooperRevertVentButtonText" : "SwooperVentButtonText"));
                         break;
-                    case CustomRoles.Wraith:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        __instance.ImpostorVentButton.OverrideText(GetString(Wraith.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "WraithRevertVentButtonText" : "WraithVentButtonText"));
-                        break;
                     case CustomRoles.Mario:
                         __instance.AbilityButton.buttonLabelText.text = GetString("VectorVentButtonText");
                         __instance.AbilityButton.SetUsesRemaining(Options.MarioVentNumWin.GetInt() - (Main.MarioVentCount.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var mx) ? mx : 0));
@@ -168,9 +158,6 @@ class HudManagerPatch
                     case CustomRoles.Succubus:
                         __instance.KillButton.OverrideText(GetString("SuccubusKillButtonText"));
                         break;
-                    case CustomRoles.CursedSoul:
-                        __instance.KillButton.OverrideText(GetString("CursedSoulKillButtonText"));
-                        break;
                     case CustomRoles.Admirer:
                         __instance.KillButton.OverrideText(GetString("AdmireButtonText"));
                         break;
@@ -183,10 +170,6 @@ class HudManagerPatch
                     case CustomRoles.Sidekick:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.SabotageButton.OverrideText(GetString("SabotageButtonText"));
-                        break;
-                    case CustomRoles.Quizmaster:
-                        __instance.KillButton.OverrideText(GetString("QuizmasterKillButtonText"));
-                        Quizmaster.SetKillButtonText(__instance);
                         break;
 
                     default:
@@ -219,10 +202,8 @@ class HudManagerPatch
                             LowerInfoText.text = player.GetCustomRole() switch
                             {
                                 CustomRoles.Swooper => Swooper.GetHudText(player),
-                                CustomRoles.Wraith => Wraith.GetHudText(player),
                                 CustomRoles.Alchemist => Alchemist.GetHudText(player),
                                 CustomRoles.Wildling => Wildling.GetHudText(player),
-                                CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player),
                                 _ => roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "",
                             };
                         break;
@@ -355,7 +336,6 @@ class SetHudActivePatch
             case CustomRoles.Investigator:
             case CustomRoles.Monarch:
             case CustomRoles.Shroud:
-            case CustomRoles.Innocent:
             case CustomRoles.Revolutionist:
             case CustomRoles.Hater:
             case CustomRoles.Provocateur:

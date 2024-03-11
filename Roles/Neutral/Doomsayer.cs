@@ -1,14 +1,24 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using System.Runtime.Intrinsics.Arm;
 using UnityEngine;
+using static TOHE.Utils;
+using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Doomsayer
+internal class Doomsayer : RoleBase
 {
-    private static readonly int Id = 14100;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 14100;
+    public static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
+    //==================================================================\\
 
     public static List<CustomRoles> GuessedRoles = [];
     public static Dictionary<byte, int> GuessingToWin = [];
@@ -62,7 +72,7 @@ public static class Doomsayer
             .SetColor(Color.green)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Doomsayer]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         GuessedRoles = [];
@@ -70,13 +80,11 @@ public static class Doomsayer
         GuessesCount = 0;
         GuessesCountPerMeeting = 0;
         CantGuess = false;
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         GuessingToWin.TryAdd(playerId, GuessesCount);
-        IsEnable = true;
     }
     public static void SendRPC(PlayerControl player)
     {
@@ -90,11 +98,17 @@ public static class Doomsayer
         byte DoomsayerId = reader.ReadByte();
         GuessingToWin[DoomsayerId]++;
     }
-    public static (int, int) GuessedPlayerCount(byte doomsayerId)
+    private static (int, int) GuessedPlayerCount(byte doomsayerId)
     {
         int doomsayerguess = GuessingToWin[doomsayerId], GuessesToWin = DoomsayerAmountOfGuessesToWin.GetInt();
 
         return (doomsayerguess, GuessesToWin);
+    }
+    public override string GetProgressText(byte playerId, bool comms)
+    {
+        var doomsayerguess = Doomsayer.GuessedPlayerCount(playerId);
+        return ColorString(GetRoleColor(CustomRoles.Doomsayer).ShadeColor(0.25f), $"({doomsayerguess.Item1}/{doomsayerguess.Item2})");
+        
     }
     public static void CheckCountGuess(PlayerControl doomsayer)
     {
@@ -108,11 +122,13 @@ public static class Doomsayer
             CustomWinnerHolder.WinnerIds.Add(doomsayer.PlayerId);
         }
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl goku, PlayerControl solos)
     {
         if (!AdvancedSettings.GetBool()) return;
 
         CantGuess = false;
         GuessesCountPerMeeting = 0;
     }
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl target)
+    => (!Utils.GetPlayerById(pva.TargetPlayerId).Data.IsDead && !target.Data.IsDead) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
 }

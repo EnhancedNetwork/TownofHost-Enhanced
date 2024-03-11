@@ -69,13 +69,13 @@ class ExileControllerWrapUpPatch
 
             var role = exiled.GetCustomRole();
 
-            if (Quizmaster.IsEnable)
+            if (Quizmaster.HasEnabled)
                 Quizmaster.OnPlayerExile(exiled);
 
             var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
             if (pcArray.Length > 0)
             {
-                if (!Options.InnocentCanWinByImp.GetBool() && role.IsImpostor())
+                if (!Innocent.InnocentCanWinByImp.GetBool() && role.IsImpostor())
                 {
                     Logger.Info("Exeiled Winner Check for impostor", "Innocent");
                 }
@@ -107,7 +107,7 @@ class ExileControllerWrapUpPatch
                 }
             }
             //Jester win
-            if (Options.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
+            if (Jester.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
             {           
                 if (role.Is(CustomRoles.Jester) && AmongUsClient.Instance.AmHost)
                 {
@@ -195,10 +195,6 @@ class ExileControllerWrapUpPatch
                 case CustomRoles.Warlock:
                     Main.CursedPlayers[player.PlayerId] = null;
                     Main.isCurseAndKill[player.PlayerId] = false;
-                    break;
-
-                case CustomRoles.Quizmaster:
-                    Quizmaster.OnVotedOut();
                     break;
             }
 

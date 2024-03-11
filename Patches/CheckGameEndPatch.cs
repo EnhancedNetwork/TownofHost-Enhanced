@@ -463,7 +463,7 @@ class GameEndCheckerForNormal
     }
     private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
     {
-        if (Quizmaster.IsEnable) Quizmaster.ResetMarkedPlayer();
+        if (Quizmaster.HasEnabled) Quizmaster.ResetMarkedPlayer();
 
         foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.RoleClass.IsEnable).ToArray())
         {

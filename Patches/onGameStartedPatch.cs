@@ -192,7 +192,6 @@ internal class ChangeRoleSettings
 
             Undertaker.Init();
             TimeThief.Init();
-            Executioner.Init();
             Lawyer.Init();
             Doppelganger.Init();
             Solsticer.Init();
@@ -214,7 +213,6 @@ internal class ChangeRoleSettings
             Swooper.Init();
             Hawk.Init();
             Bloodmoon.Init();
-            Wraith.Init();
             SoulCollector.Init();
             SchrodingersCat.Init();
             Totocalcio.Init();
@@ -222,7 +220,6 @@ internal class ChangeRoleSettings
             VengefulRomantic.Init();
             RuthlessRomantic.Init();
             Succubus.Init();
-            CursedSoul.Init();
             Antidote.Init();
             Imitator.Init();
             Amnesiac.Init();
@@ -232,20 +229,16 @@ internal class ChangeRoleSettings
             DoubleShot.Init();
             Warden.Init();
             Vulture.Init();
-            PlagueDoctor.Init();
             Wildling.Init();
             Spiritcaller.Init();
-            Doomsayer.Init();
             Lucky.Init();
             Pirate.Init();
             Pixie.Init();
-            Werewolf.Init();
             Bewilder.Init();
             ChiefOfPolice.Init();
             Cyber.Init();
             Oiiai.Init();
             Hater.Init();
-            Quizmaster.Init();
             Tired.Init();
             Statue.Init();
             Ghoul.Init();
@@ -497,17 +490,11 @@ internal class SelectRolesPatch
                         foreach (var ar in Main.AllPlayerControls)
                             Main.isDraw.Add((pc.PlayerId, ar.PlayerId), false);
                         break;
-                    case CustomRoles.Executioner:
-                        Executioner.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Lawyer:
                         Lawyer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Doppelganger:
                         Doppelganger.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.PlagueDoctor:
-                        PlagueDoctor.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Masochist:
                         Main.MasochistKillMax[pc.PlayerId] = 0;
@@ -533,9 +520,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Swooper:
                         Swooper.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Wraith:
-                        Wraith.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.SoulCollector:
                         SoulCollector.Add(pc.PlayerId);
                         break;
@@ -557,9 +541,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Succubus:
                         Succubus.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.CursedSoul:
-                        CursedSoul.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Amnesiac:
                         Amnesiac.Add(pc.PlayerId);
                         break;
@@ -569,9 +550,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Wildling:
                         Wildling.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Werewolf:
-                        Werewolf.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Maverick:
                         Maverick.Add(pc.PlayerId);
                         break;
@@ -580,9 +558,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Spiritcaller:
                         Spiritcaller.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Doomsayer:
-                        Doomsayer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Pirate:
                         Pirate.Add(pc.PlayerId);
@@ -595,9 +570,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Hater:
                         Hater.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Quizmaster:
-                        Quizmaster.Add(pc.PlayerId);
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())
