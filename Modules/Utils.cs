@@ -2683,6 +2683,7 @@ public static class Utils
         if (Councillor.IsEnable) Councillor.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();
+        if (Lawyer.IsEnable) Lawyer.AfterMeetingTasks();
 
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;

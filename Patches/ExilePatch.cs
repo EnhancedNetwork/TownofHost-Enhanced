@@ -157,22 +157,10 @@ class ExileControllerWrapUpPatch
                 Devourer.OnDevourerDied(exiled.PlayerId);
             }
 
-            //Lawyer check win
-            if (Lawyer.CheckExileTarget(exiled, DecidedWinner))
-            {
-                DecidedWinner = false;
-            }
-
             if (role.Is(CustomRoles.Devourer))
             {
                 Devourer.OnDevourerDied(exiled.PlayerId);
             }
-
-            if (Lawyer.CheckExileTarget(exiled, DecidedWinner))
-            {
-                DecidedWinner = false;
-            }
-
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
 

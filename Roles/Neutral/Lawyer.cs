@@ -1,8 +1,8 @@
 using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
@@ -17,6 +17,7 @@ public static class Lawyer
     private static OptionItem CanTargetNeutralKiller;
     private static OptionItem CanTargetCrewmate;
     private static OptionItem CanTargetJester;
+    public static OptionItem ShouldChangeRoleAfterTargetDeath;
     public static OptionItem ChangeRolesAfterTargetKilled;
     public static OptionItem LawyerVision;
     public static OptionItem KnowTargetRole;
@@ -53,7 +54,8 @@ public static class Lawyer
         CanTargetJester = BooleanOptionItem.Create(Id + 13, "LawyerCanTargetJester", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 14, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         TargetKnowsLawyer = BooleanOptionItem.Create(Id + 15, "TargetKnowsLawyer", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
-        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 16, "LawyerChangeRolesAfterTargetKilled", ChangeRoles, 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
+        ShouldChangeRoleAfterTargetDeath = BooleanOptionItem.Create(Id + 17, "LaywerShouldChangeRoleAfterTargetKilled", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
+        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 16, "LawyerChangeRolesAfterTargetKilled", ChangeRoles, 1, TabGroup.NeutralRoles, false).SetParent(ShouldChangeRoleAfterTargetDeath);
     }
     public static void Init()
     {
@@ -63,9 +65,6 @@ public static class Lawyer
     }
     public static void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        IsEnable = true;
-
         //ターゲット割り当て
         if (AmongUsClient.Instance.AmHost)
         {
@@ -84,6 +83,22 @@ public static class Lawyer
 
                 targetList.Add(target);
             }
+
+            if (targetList.Count < 1)
+            {
+                Logger.Info($"Wow, not target for lawyer to select! Changing lawyer role to other", "Lawyer");
+                if (ShouldChangeRoleAfterTargetDeath.GetBool())
+                {
+                    Utils.GetPlayerById(playerId).RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
+                }
+                else Utils.GetPlayerById(playerId).RpcSetCustomRole(CustomRoles.Opportunist);
+                return;
+            }
+            // Unable to find a target? Try to turn to changerole or opportunist
+
+            playerIdList.Add(playerId);
+            IsEnable = true;
+
             var SelectedTarget = targetList[rand.Next(targetList.Count)];
             Target.Add(playerId, SelectedTarget.PlayerId);
             SendRPC(playerId, SelectedTarget.PlayerId, "SetTarget");
@@ -124,6 +139,11 @@ public static class Lawyer
     public static void ChangeRoleByTarget(PlayerControl target)
     {
         byte Lawyer = 0x73;
+        if (!ShouldChangeRoleAfterTargetDeath.GetBool())
+        {
+            Logger.Info($"Laywer target  dead {target.GetRealName()}, but change role setting is off", "Lawyer");
+            return;
+        }
         Target.Do(x =>
         {
             if (x.Value == target.PlayerId)
@@ -132,6 +152,11 @@ public static class Lawyer
         Utils.GetPlayerById(Lawyer).RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         Target.Remove(Lawyer);
         SendRPC(Lawyer);
+
+        if (GameStates.IsMeeting)
+        {
+            Utils.SendMessage(GetString("LawyerTargetDeadInMeeting"), sendTo: Lawyer, replay: true);
+        }
         Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(Lawyer));
     }
     public static bool KnowRole(PlayerControl player, PlayerControl target)
@@ -151,32 +176,62 @@ public static class Lawyer
         return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : "";
     }
 
+    public static void AfterMeetingTasks()
+    {
+        if (!CustomRoles.Lawyer.RoleExist()) return;
+
+        Target.Do(x =>
+        {
+            if (Main.PlayerStates[x.Value].IsDead)
+            {
+                var lawyer = Utils.GetPlayerById(x.Key);
+
+                if (lawyer != null && lawyer.IsAlive())
+                {
+                    ChangeRole(lawyer);
+                }
+            }
+        });
+    }
     public static void ChangeRole(PlayerControl lawyer)
     {
+        // Called only in after meeting tasks when target death is impossible to check.
+        if (!ShouldChangeRoleAfterTargetDeath.GetBool())
+        {
+            Logger.Info($"Laywer target dead, but change role setting is off", "Lawyer");
+            return;
+        }
         lawyer.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         Target.Remove(lawyer.PlayerId);
         SendRPC(lawyer.PlayerId);
         var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), Translator.GetString(""));
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         lawyer.Notify(text);
-    }
-    public static string TargetMark(PlayerControl seer, PlayerControl target)
-    {
-        if (!seer.Is(CustomRoles.Lawyer) || seer.Data.IsDead) return ""; //エクスキューショナー以外処理しない
 
-        var GetValue = Target.TryGetValue(seer.PlayerId, out var targetId);
-        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : "";
-    }
-    public static bool CheckExileTarget(GameData.PlayerInfo exiled, bool DecidedWinner, bool Check = false)
-    {
-        if (!IsEnable) return false;
-
-        foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId).ToArray())
+        if (GameStates.IsMeeting)
         {
-            var lawyer = Utils.GetPlayerById(kvp.Key);
-            if (lawyer == null || lawyer.Data.Disconnected) continue;
-            return true;
+            Utils.SendMessage(GetString("LawyerTargetDeadInMeeting"), sendTo: lawyer.PlayerId, replay: true);
         }
-        return false;
     }
+    //public static string TargetMark(PlayerControl seer, PlayerControl target)
+    //{
+    //    if (!seer.Is(CustomRoles.Lawyer) || seer.Data.IsDead) return ""; //エクスキューショナー以外処理しない
+
+    //    var GetValue = Target.TryGetValue(seer.PlayerId, out var targetId);
+    //    return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : "";
+    //}
+
+    //public static bool CheckExileTarget(GameData.PlayerInfo exiled, bool DecidedWinner, bool Check = false)
+    //{
+    //    if (!IsEnable) return false;
+
+    //    foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId).ToArray())
+    //    {
+    //        var lawyer = Utils.GetPlayerById(kvp.Key);
+    //        if (lawyer == null || lawyer.Data.Disconnected) continue;
+    //        return true;
+    //    }
+    //    return false;
+    //}
+    // Whats the use of the above code?
 }
