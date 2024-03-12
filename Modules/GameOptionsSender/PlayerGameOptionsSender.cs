@@ -177,12 +177,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Parasite:
                 opt.SetVision(true);
                 break;
-        /*    case CustomRoles.Chameleon:
-                opt.SetVision(false);
-                break; */
-            //case CustomRoles.Occultist:
-            //    Occultist.ApplyGameOptions(opt);
-            //    break;
             case CustomRoles.Workaholic:
                 AURoleOptions.EngineerCooldown = Options.WorkaholicVentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 0f;
