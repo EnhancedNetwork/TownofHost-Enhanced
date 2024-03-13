@@ -500,7 +500,6 @@ public class Main : BasePlugin
         LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
 
         CustomWinnerHolder.Reset();
-        ServerAddManager.Init();
         Translator.Init();
         BanManager.Init();
         TemplateManager.Init();
