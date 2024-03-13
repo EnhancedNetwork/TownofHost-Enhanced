@@ -42,7 +42,8 @@ public static class Wildling
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBKTimer, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Wildling);
         writer.Write(playerId);
         writer.Write(TimeStamp[playerId].ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -84,13 +85,6 @@ public static class Wildling
             str.Append(Translator.GetString("BKSkillNotice"));
         }
         return str.ToString();
-    }
-
-    public static void CanUseVent(PlayerControl player)
-    {
-        bool canUse = false;
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(canUse && !player.Data.IsDead);
-        player.Data.Role.CanVent = canUse;
     }
 
 }

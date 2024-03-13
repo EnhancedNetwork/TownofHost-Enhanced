@@ -50,6 +50,7 @@ public static class Fireworker
         FireworkerPosition = [];
         state = [];
         FireworkerBombKill = [];
+
         fireworkerCount = FireworkerCount.GetInt();
         fireworkerRadius = FireworkerRadius.GetFloat();
     }
@@ -58,7 +59,7 @@ public static class Fireworker
     {
         nowFireworkerCount[playerId] = fireworkerCount;
         FireworkerPosition[playerId] = [];
-        state[playerId] = FireworkerState.Initial;
+        state.TryAdd(playerId, FireworkerState.Initial);
         FireworkerBombKill[playerId] = 0;
         IsEnable = true;
     }
@@ -83,8 +84,8 @@ public static class Fireworker
 
     public static bool CanUseKillButton(PlayerControl pc)
     {
-        //            Logger.Info($"Fireworker CanUseKillButton", "Fireworker");
-        if (pc.Data.IsDead) return false;
+        if (!state.ContainsKey(pc.PlayerId) || !pc.IsAlive()) return false;
+
         var canUse = false;
         if ((state[pc.PlayerId] & FireworkerState.CanUseKill) != 0)
         {
@@ -94,11 +95,10 @@ public static class Fireworker
         {
             canUse = true;
         }
-        //            Logger.Info($"CanUseKillButton:{canUse}", "Fireworker");
         return canUse;
     }
 
-    public static void ShapeShiftState(PlayerControl pc, bool shapeshifting)
+    public static void ShapeShiftState(PlayerControl pc, bool shapeshifting, bool shapeshiftIsHidden = false)
     {
         Logger.Info($"Fireworker ShapeShift", "Fireworker");
         if (pc == null || pc.Data.IsDead || !shapeshifting || Pelican.IsEaten(pc.PlayerId) || Medic.ProtectList.Contains(pc.PlayerId)) return;
@@ -106,7 +106,11 @@ public static class Fireworker
         {
             case FireworkerState.Initial:
             case FireworkerState.SettingFireworker:
-                Logger.Info("花火を一個設置", "Fireworker");
+                Logger.Info("One firework set up", "Fireworker");
+
+                if (shapeshiftIsHidden)
+                    pc.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+
                 FireworkerPosition[pc.PlayerId].Add(pc.transform.position);
                 nowFireworkerCount[pc.PlayerId]--;
                 state[pc.PlayerId] = nowFireworkerCount[pc.PlayerId] == 0
@@ -114,7 +118,7 @@ public static class Fireworker
                     : FireworkerState.SettingFireworker;
                 break;
             case FireworkerState.ReadyFire:
-                Logger.Info("花火を爆破", "Fireworker");
+                Logger.Info("Blowing up fireworks", "Fireworker");
                 bool suicide = false;
                 foreach (var target in Main.AllAlivePlayerControls)
                 {
@@ -159,7 +163,8 @@ public static class Fireworker
     public static string GetStateText(PlayerControl pc)
     {
         string retText = "";
-        if (pc == null || pc.Data.IsDead) return retText;
+        if (pc == null || !pc.IsAlive()) return retText;
+        if (!state.ContainsKey(pc.PlayerId)) return retText;
 
         if (state[pc.PlayerId] == FireworkerState.WaitTime && Main.AliveImpostorCount <= 1)
         {

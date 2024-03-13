@@ -15,7 +15,7 @@ public static class Penguin
     private static OptionItem OptionAbductTimerLimit;
     private static OptionItem OptionMeetingKill;
 
-    private static PlayerControl AbductVictim;
+    public static PlayerControl AbductVictim;
     private static float AbductTimer;
     private static float AbductTimerLimit;
     private static bool stopCount;
@@ -58,7 +58,8 @@ public static class Penguin
     }
     private static void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PenguinSync, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Penguin);
         writer.Write(AbductVictim?.PlayerId ?? 255);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -86,7 +87,7 @@ public static class Penguin
         Utils.GetPlayerById(playerIdList[0])?.RpcResetAbilityCooldown();
         SendRPC();
     }
-    private static void RemoveVictim()
+    public static void RemoveVictim()
     {
         if (AbductVictim != null)
         {
@@ -227,6 +228,7 @@ public static class Penguin
                             sender.EndRpc();
                         }
                         sender.SendMessage();
+
                     }, 0.3f, "PenguinMurder");
                     RemoveVictim();
                 }

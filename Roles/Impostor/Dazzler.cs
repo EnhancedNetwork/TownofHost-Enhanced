@@ -68,7 +68,7 @@ public static class Dazzler
 
         if (!PlayersDazzled[pc.PlayerId].Contains(target.PlayerId) && PlayersDazzled[pc.PlayerId].Count < DazzleLimit.GetInt())
         {
-            Tired.playerIdList.Remove(pc.PlayerId);
+            Tired.Remove(pc.PlayerId);
             target.Notify(ColorString(GetRoleColor(CustomRoles.Dazzler), GetString("DazzlerDazzled")));
             PlayersDazzled[pc.PlayerId].Add(target.PlayerId);
             MarkEveryoneDirtySettings();

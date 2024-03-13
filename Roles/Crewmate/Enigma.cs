@@ -445,7 +445,7 @@ namespace TOHE.Roles.Crewmate
                         if (role.IsNeutral()) return GetString("EnigmaClueRole2");
                         return GetString("EnigmaClueRole3");
                     case 2:
-                        if (showStageClue) return string.Format(GetString("EnigmaClueRole4"), killer.GetDisplayRoleName());
+                        if (showStageClue) return string.Format(GetString("EnigmaClueRole4"), killer.GetDisplayRoleAndSubName(killer, false));
                         if (role.IsImpostor()) return GetString("EnigmaClueRole1");
                         if (role.IsNeutral()) return GetString("EnigmaClueRole2");
                         return GetString("EnigmaClueRole3");

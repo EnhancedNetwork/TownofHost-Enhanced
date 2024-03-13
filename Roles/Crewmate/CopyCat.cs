@@ -167,7 +167,7 @@ public static class CopyCat
                     break;
             }
 
-            if (pc.GetCustomRole() != CustomRoles.Sidekick)
+            if (pc.GetCustomRole() != CustomRoles.Sidekick || pc.GetCustomRole() != CustomRoles.Retributionist)
                 pc.RpcSetCustomRole(CustomRoles.CopyCat);
 
             SetKillCooldown(player);
@@ -207,9 +207,6 @@ public static class CopyCat
             {
                 case CustomRoles.Eraser:
                     role = CustomRoles.Cleanser;
-                    break;
-                case CustomRoles.Mafia:
-                    role = CustomRoles.Retributionist;
                     break;
                 case CustomRoles.Visionary:
                     role = CustomRoles.Oracle;

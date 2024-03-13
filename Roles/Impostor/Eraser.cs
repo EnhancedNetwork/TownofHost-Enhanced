@@ -46,15 +46,22 @@ internal static class Eraser
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetEraseLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Eraser);
         writer.Write(playerId);
+        writer.Write(EraseLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
-
-        EraseLimit[playerId]--;
+        int limit = reader.ReadInt32();
+        if (!EraseLimit.ContainsKey(playerId))
+        {
+            EraseLimit.Add(playerId , limit);
+        }
+        else
+            EraseLimit[playerId] = limit;
     }
     public static string GetProgressText(byte playerId) => Utils.ColorString(EraseLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, EraseLimit.TryGetValue(playerId, out var x) ? $"({x})" : "Invalid");
 

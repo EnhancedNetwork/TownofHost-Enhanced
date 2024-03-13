@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -85,15 +86,7 @@ class RepairSystemPatch
             Quizmaster.OnSabotageCall(systemType);
 
 
-        if (player.Is(CustomRoles.Fool) && !Main.MeetingIsStarted && 
-            systemType != SystemTypes.Sabotage &&
-            (systemType is
-                SystemTypes.Reactor or
-                SystemTypes.Laboratory or
-                SystemTypes.HeliSabotage or
-                SystemTypes.LifeSupp or
-                SystemTypes.Comms or
-                SystemTypes.Electrical))
+        if (Fool.IsEnable && Fool.BlockFixSabotage(player, systemType))
         {
             return false;
         }
@@ -114,13 +107,8 @@ class RepairSystemPatch
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
             && (systemType is SystemTypes.Doors))
         {
-            var Ue = IRandom.Instance;
-            if (Ue.Next(1, 100) <= Options.UnluckySabotageSuicideChance.GetInt())
-            {
-                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                player.RpcMurderPlayerV3(player);
-                return false;
-            }
+            Unlucky.SuicideRand(player);
+            if (Unlucky.UnluckCheck[player.PlayerId]) return false;
         }
 
         return true;

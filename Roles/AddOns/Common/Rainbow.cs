@@ -10,8 +10,8 @@ public static class Rainbow
     public static OptionItem CrewCanBeRainbow;
     public static OptionItem ImpCanBeRainbow;
     public static OptionItem NeutralCanBeRainbow;
-    public static OptionItem RainbowColorChangeCoolDown;
-    public static OptionItem ChangeInCamouflage;
+    private static OptionItem RainbowColorChangeCoolDown;
+    private static OptionItem ChangeInCamouflage;
 
     public static bool isEnabled = false;
     public static long LastColorChange;

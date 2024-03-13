@@ -14,6 +14,11 @@ internal class VoteBanSystemPatch
         var VoterPc = VoterClient.Character;
         var ClientPc = ClientData.Character;
 
+        if (Options.DisableVoteBan.GetBool())
+        {
+            return false;
+        }
+
         if (VoterPc == null || ClientPc == null)
         {
             Logger.Info($"Client {srcClient} add kick vote for Target {clientId}, but one of them has null PlayerControl", "VoteBanSystem");

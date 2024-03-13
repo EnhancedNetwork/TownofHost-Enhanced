@@ -13,6 +13,7 @@ public static class Collector
     public static Dictionary<byte, byte> CollectorVoteFor = [];
     public static Dictionary<byte, int> CollectVote = [];
     public static Dictionary<byte, int> NewVote = [];
+    public static bool calculated = false;
 
     public static OptionItem CollectorCollectAmount;
 
@@ -27,6 +28,7 @@ public static class Collector
         playerIdList = [];
         CollectorVoteFor = [];
         CollectVote = [];
+        calculated = false;
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -97,8 +99,10 @@ public static class Collector
         if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Collector))
             CollectorVoteFor.TryAdd(target.PlayerId, ps.TargetPlayerId);
     }
+    public static void AfterMeetingTasks() => calculated = false;
     public static void CollectAmount(Dictionary<byte, int> VotingData, MeetingHud __instance)//得到集票者收集到的票
     {
+        if (calculated) return;
         int VoteAmount;
         foreach (var pva in __instance.playerStates)
         {
@@ -106,13 +110,18 @@ public static class Collector
             PlayerControl pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null) continue;
             foreach (var data in VotingData)
+            {
                 if (CollectorVoteFor.ContainsKey(data.Key) && pc.PlayerId == CollectorVoteFor[data.Key] && pc.Is(CustomRoles.Collector))
                 {
                     VoteAmount = data.Value;
                     CollectVote.TryAdd(pc.PlayerId, 0);
                     CollectVote[pc.PlayerId] = CollectVote[pc.PlayerId] + VoteAmount;
                     SendRPC(pc.PlayerId);
+                    Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()}, collected {VoteAmount} votes from {Utils.GetPlayerById(data.Key).GetNameWithRole().RemoveHtmlTags()}", "Collected votes");
                 }
+            }
+            if (CollectVote.ContainsKey(pc.PlayerId)) Logger.Info($"Total amount of votes collected {CollectVote[pc.PlayerId]}", "Collector total amount");
         }
+        calculated = true;
     }
 }
