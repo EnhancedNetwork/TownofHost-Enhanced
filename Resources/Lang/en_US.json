@@ -1049,7 +1049,7 @@
   "ArrowDelayMax": "Maximum Arrow show-up delay",
   "SMUsesUsedWhenFixingReactorOrO2": "Uses it takes to fix Reactor/O2",
   "SMUsesUsedWhenFixingLightsOrComms": "Uses it takes to fix Lights/Comms",
-  "SheriffShowShotLimit": "Display Shot Limit next to Role Name",
+
   "AbilityCD": "Ability Cooldown",
   "GrenadierSkillMaxOfUseage": "(Initial) Max number of Grenades",
   "ShowSpecificRole": "Know specific roles on Task Completion",
@@ -1439,14 +1439,19 @@
   "VitalsCooldown": "Vitals Cooldown",
   "DeadImpCantSabotage": "<color=#ff1919>Impostors</color> can't sabotage after they've died",
   "VampireKillDelay": "Bite Kill Delay",
+
   "MareAddSpeedInLightsOut": "Additional Speed During Lights Out",
   "MareKillCooldownInLightsOut": "Kill Cooldown During Lights Out",
+
   "SabotageMasterSkillLimit": "Initial repair use limit",
   "SabotageMasterFixesDoors": "Can open all doors in the same building",
   "SabotageMasterFixesReactors": "Can Fix Both Reactors Alone",
   "SabotageMasterFixesOxygens": "Can Fix Both O2 Alone",
   "SabotageMasterFixesCommunications": "Can Fix Both Comms Alone In MIRA HQ",
   "SabotageMasterFixesElectrical": "Can Fix Lights With One Switch",
+
+  "SheriffShowShotLimit": "Display Shot Limit next to Role Name",
+  "SheriffCanKill%role%": "Can Kill %role%",
   "SheriffCanKillNeutrals": "Can Kill <color=#7f8c8d>Neutrals</color>",
   "SheriffCanKillNeutralsMode": "<color=#7f8c8d>Neutral</color> Configuration",
   "SheriffCanKillAll": "<color=#008000>All ON</color>",
@@ -1919,7 +1924,16 @@
   "OnlyEnabledDeathReasons": "Only Enabled Death Reasons",
   "Alive": "Alive",
   "Win": " Wins!",
+
   "Last-": "Last ",
+  "Madmate-": "Madmate ",
+  "Recruit-": "Recruit ",
+  "Charmed-": "Charmed ",
+  "Soulless-": "Soulless ",
+  "Infected-": "Infected ",
+  "Contagious-": "Contagious ",
+  "Admired-": "Admired ",
+
   "DeputyHandcuffCooldown": "Handcuff Cooldown",
   "DeputyHandcuffMax": "Maximum Handcuffs",
   "DeputyHandcuffedPlayer": "Handcuffed target",
