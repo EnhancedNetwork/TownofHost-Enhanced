@@ -496,6 +496,7 @@ public static class GuessManager
 
                 Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()} guessed => {target.GetNameWithRole().RemoveHtmlTags()}", "Guesser");
 
+                if (GuesserSuicides) guesserSuicide = GuesserSuicides;
                 var dp = guesserSuicide ? pc : target;
                 target = dp;
 
