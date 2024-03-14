@@ -467,7 +467,6 @@ static class ExtendedPlayerControl
             //Standard
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
-            CustomRoles.Sidekick => pc.IsAlive(),
             CustomRoles.Maverick => pc.IsAlive(),
             CustomRoles.Innocent => pc.IsAlive(),
             CustomRoles.Pursuer => Pursuer.CanUseKillButton(pc.PlayerId),

@@ -23,16 +23,9 @@ internal class Sidekick : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Jackal.KillCooldownSK.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte ico) => opt.SetVision(Jackal.HasImpostorVision.GetBool());
-    public override void SetHudActive(HudManager __instance, bool isActive)
-    {
-        __instance.SabotageButton.ToggleVisible(isActive && Jackal.CanUseSabotageSK.GetBool());
-    }
 
-    public override bool CanUseImpostorVentButton(PlayerControl player)
-    {
-        bool Sidekick_canUse = Jackal.CanVentSK.GetBool();
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Sidekick_canUse && !player.Data.IsDead);
-        return Sidekick_canUse;
-    }
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl player) => Jackal.CanVentSK.GetBool();
     public override bool CanUseSabotage(PlayerControl pc) => Jackal.CanUseSabotageSK.GetBool();
+
 }

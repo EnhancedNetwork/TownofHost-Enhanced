@@ -28,6 +28,7 @@ public static class CustomRolesHelper
             return role switch
             {
                 CustomRoles.Sniper => CustomRoles.Shapeshifter,
+                CustomRoles.Jester => Jester.JesterCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Telecommunication => Telecommunication.CanUseVent() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Mayor => Mayor.MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Captain => CustomRoles.Crewmate,

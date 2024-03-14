@@ -151,13 +151,11 @@ internal class Jackal : RoleBase
         DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(jackal_canUse && !player.Data.IsDead);
         player.Data.Role.CanVent = jackal_canUse;
     }
-    public override void SetHudActive(HudManager hud, bool isActive)
-    {
-        hud.SabotageButton.ToggleVisible(isActive && CanUsesSabotage.GetBool());
-    }
+
     public override bool CanUseSabotage(PlayerControl pc) => CanUsesSabotage.GetBool();
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => Jackal.CanVent.GetBool();
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+
     public static void AfterPlayerDiedTask(PlayerControl target)
     {
         Main.AllAlivePlayerControls

@@ -43,24 +43,19 @@ internal class Traitor : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public override void SetHudActive(HudManager __instance, bool isActive)
-    {
-        __instance.SabotageButton.ToggleVisible(isActive && CanUsesSabotage.GetBool());
-    }
+
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
-    public override bool CanUseImpostorVentButton(PlayerControl pc)
-    {
-        bool Traitor_canUse = CanVent.GetBool();
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Traitor_canUse && !pc.Data.IsDead);
-        return Traitor_canUse;
-    }
-    public override bool CanUseSabotage(PlayerControl pc) => Traitor.CanUsesSabotage.GetBool();
+    
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override bool CanUseSabotage(PlayerControl pc) => CanUsesSabotage.GetBool();
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         return !(target == killer || target.Is(CustomRoleTypes.Impostor));
     }
+    
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
         => seer.Is(CustomRoles.Traitor) && target.Is(CustomRoleTypes.Impostor);
 }

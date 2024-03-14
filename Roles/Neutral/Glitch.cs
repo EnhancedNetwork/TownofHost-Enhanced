@@ -89,10 +89,6 @@ internal class Glitch : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
     }
-    public override void SetHudActive(HudManager hud, bool isActive)
-    {
-        hud.SabotageButton.ToggleVisible(isActive);
-    }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 1f;
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
@@ -119,8 +115,10 @@ internal class Glitch : RoleBase
             Logger.Error(ex.ToString(), "Glitch.Mimic.RpcShapeshift");
         }
     }
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => Glitch.CanVent.GetBool();
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseSabotage(PlayerControl pc) => true;
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null) return false;

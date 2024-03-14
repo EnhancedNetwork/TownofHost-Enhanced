@@ -317,43 +317,26 @@ class SetHudActivePatch
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
 
-        player.GetRoleClass()?.SetHudActive(__instance, isActive);
 
+        // Remove this after Revolutionist and Provocateur will be done
         switch (player.GetCustomRole())
         {
-            case CustomRoles.Deputy:
-            case CustomRoles.Investigator:
-            case CustomRoles.Monarch:
-            case CustomRoles.Shroud:
             case CustomRoles.Revolutionist:
-            case CustomRoles.Hater:
             case CustomRoles.Provocateur:
-            case CustomRoles.Overseer:
-            case CustomRoles.KillingMachine:
                 __instance.SabotageButton.ToggleVisible(false);
                 __instance.AbilityButton.ToggleVisible(false);
                 __instance.ReportButton.ToggleVisible(false);
                 break;
-            case CustomRoles.Parasite:
-            case CustomRoles.Refugee:
-                __instance.SabotageButton.ToggleVisible(true);
-                break;
             
         }
 
-        foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
-        {
-            switch (subRole)
-            {
-                case CustomRoles.Oblivious:
-                    __instance.ReportButton.ToggleVisible(false);
-                    break;
-                case CustomRoles.Mare:
-                    if (!Utils.IsActive(SystemTypes.Electrical))
-                    __instance.KillButton.ToggleVisible(false);
-                    break;
-            }
-        }
+        if (player.Is(CustomRoles.Oblivious))
+            __instance.ReportButton.ToggleVisible(false);
+        
+        if (player.Is(CustomRoles.Mare) && !Utils.IsActive(SystemTypes.Electrical))
+            __instance.KillButton.ToggleVisible(false);
+
+        // Check Toggle visible
         __instance.KillButton.ToggleVisible(player.CanUseKillButton());
         __instance.ImpostorVentButton.ToggleVisible(player.CanUseImpostorVentButton());
         __instance.SabotageButton.ToggleVisible(player.CanUseSabotage());
