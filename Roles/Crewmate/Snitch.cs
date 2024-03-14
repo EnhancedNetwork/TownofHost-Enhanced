@@ -187,7 +187,7 @@ internal class Snitch : RoleBase
         return Utils.ColorString(RoleColor, warning);
     }
 
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
         if (target.Is(CustomRoles.Snitch) && target.GetPlayerTaskState().IsTaskFinished)
         {

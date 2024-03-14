@@ -100,7 +100,7 @@ internal partial class Mayor : RoleBase
         => MayorUsedButtonCount.TryGetValue(physics.myPlayer.PlayerId, out var count)
         && count >= MayorNumOfUseButton.GetInt();
 
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
         if (MayorRevealWhenDoneTasks.GetBool())
         {

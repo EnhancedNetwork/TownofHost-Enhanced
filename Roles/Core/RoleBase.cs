@@ -180,11 +180,11 @@ public abstract class RoleBase
     /// <summary>
     /// When guesser need check guess (Check limit or Cannot guess а role/add-on)
     /// </summary>
-    public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role) => target == null;
+    public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
     /// <summary>
     /// When guesser trying guess target a role
     /// </summary>
-    public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role) => target == null;
+    public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide) => target == null;
     /// <summary>
     /// Check exile role
     /// </summary>

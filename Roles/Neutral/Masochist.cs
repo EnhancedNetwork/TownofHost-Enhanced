@@ -55,16 +55,16 @@ namespace TOHE.Roles.Neutral
             }
             return false;
         }
-        public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role)
+        public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
         {
 
             if (target.Is(CustomRoles.Masochist))
             {
-                if (!isUI) Utils.SendMessage(GetString("GuessMasochist"), pc.PlayerId);
+                if (!isUI) SendMessage(GetString("GuessMasochist"), pc.PlayerId);
                 else pc.ShowPopUp(GetString("GuessMasochist"));
-                Masochist.MasochistMax[target.PlayerId]++;
+                MasochistMax[target.PlayerId]++;
 
-                if (Masochist.MasochistMax[target.PlayerId] >= Masochist.MasochistKillMax.GetInt())
+                if (MasochistMax[target.PlayerId] >= MasochistKillMax.GetInt())
                 {
                     if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
                     {
@@ -76,19 +76,19 @@ namespace TOHE.Roles.Neutral
             }
             if (pc.Is(CustomRoles.Masochist) && target.PlayerId == pc.PlayerId)
             {
-                if (!isUI) Utils.SendMessage(GetString("SelfGuessMasochist"), pc.PlayerId);
+                if (!isUI) SendMessage(GetString("SelfGuessMasochist"), pc.PlayerId);
                 else pc.ShowPopUp(GetString("SelfGuessMasochist"));
-                GuessManager.GuesserSuicides = true;
-                Logger.Msg($" {GuessManager.GuesserSuicides}", "guesserSuicide - Is Active 2");
+                guesserSuicide = true;
+                Logger.Msg($"Is Active: {guesserSuicide}", "guesserSuicide - Masochist");
             }
 
             return false;
         }
-        public override bool GuessCheck(bool isUI, PlayerControl pc, PlayerControl target, CustomRoles role)
+        public override bool GuessCheck(bool isUI, PlayerControl pc, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
         {
             if (pc.Is(CustomRoles.Masochist))
             {
-                if (!isUI) Utils.SendMessage(GetString("GuessMasochistBlocked"), pc.PlayerId);
+                if (!isUI) SendMessage(GetString("GuessMasochistBlocked"), pc.PlayerId);
                 else pc.ShowPopUp(GetString("GuessMasochistBlocked"));
                 return true;
             }

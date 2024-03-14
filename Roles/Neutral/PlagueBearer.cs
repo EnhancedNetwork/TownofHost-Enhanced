@@ -1,8 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
-using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using static TOHE.Options;
@@ -89,16 +87,16 @@ internal class PlagueBearer : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         if(PestilenceList.Contains(playerId))
-            opt.SetVision(PlagueBearer.PestilenceHasImpostorVision.GetBool());
+            opt.SetVision(PestilenceHasImpostorVision.GetBool());
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
         if (target.Is(CustomRoles.Pestilence))
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessPestilence"), pc.PlayerId);
+            if (!isUI) SendMessage(GetString("GuessPestilence"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessPestilence"));
-            GuessManager.GuesserSuicides = true;
-            Logger.Msg($" {GuessManager.GuesserSuicides}", "guesserSuicide - Is Active 1");
+            guesserSuicide = true;
+            Logger.Msg($"Is Active: {guesserSuicide}", "guesserSuicide - Pestilence");
         }
         return false;
     }

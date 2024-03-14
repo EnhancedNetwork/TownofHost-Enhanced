@@ -147,7 +147,7 @@ internal class Mini : RoleBase
         return MinorCD.GetFloat() + (MajorCD.GetFloat() - MinorCD.GetFloat()) / 18 * Age;
     }
     public override string GetProgressText(byte playerId, bool comms) => ColorString(GetRoleColor(CustomRoles.Mini), Age != 18 ? $"({Age})" : "");
-    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role)
+    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
         if (guesser.Is(CustomRoles.NiceMini) && Age < 18 && misguessed)
         {
@@ -157,7 +157,7 @@ internal class Mini : RoleBase
         }
         return false;
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
         if (target.Is(CustomRoles.NiceMini) && Age < 18)
         {

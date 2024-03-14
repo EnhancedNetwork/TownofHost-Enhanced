@@ -85,7 +85,7 @@ public static class GuessManager
         }
         return false;
     }
-    public static bool GuesserSuicides { get; set; }
+
     public static bool GuesserMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;
@@ -187,13 +187,12 @@ public static class GuessManager
             {
                 GuessMaster.OnGuess(role);
                 bool guesserSuicide = false;
-                GuesserSuicides = guesserSuicide;
 
                 if (!Main.GuesserGuessed.ContainsKey(pc.PlayerId)) Main.GuesserGuessed.Add(pc.PlayerId, 0);
 
-                if (pc.GetRoleClass().GuessCheck(isUI, pc, target, role)) return true;
+                if (pc.GetRoleClass().GuessCheck(isUI, pc, target, role, ref guesserSuicide)) return true;
 
-                if (target.GetRoleClass().OnRoleGuess(isUI, target, pc, role)) return true;
+                if (target.GetRoleClass().OnRoleGuess(isUI, target, pc, role, ref guesserSuicide)) return true;
 
 
                 if (CopyCat.playerIdList.Contains(pc.PlayerId))
@@ -496,7 +495,6 @@ public static class GuessManager
 
                 Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()} guessed => {target.GetNameWithRole().RemoveHtmlTags()}", "Guesser");
 
-                if (GuesserSuicides) guesserSuicide = GuesserSuicides;
                 var dp = guesserSuicide ? pc : target;
                 target = dp;
 
