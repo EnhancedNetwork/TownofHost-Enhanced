@@ -12,7 +12,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using static Il2CppSystem.Diagnostics.Tracing.TraceLoggingMetadataCollector;
 
 namespace TOHE;
 
