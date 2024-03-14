@@ -33,7 +33,7 @@ public static class GhostRoleAssign
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
 
         var IsCrewmate = getplrRole.IsCrewmate() && !player.IsAnySubRole(x => x.IsConverted());
-        var IsImpostor = getplrRole.IsImpostor();
+        var IsImpostor = getplrRole.IsImpostor() && !player.IsAnySubRole(x => x.IsConverted());
         var IsNeutral = getplrRole.IsNeutral();
 
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys.Where(x => x.GetMode() > 0))
