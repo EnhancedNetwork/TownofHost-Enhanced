@@ -2,6 +2,7 @@
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 
@@ -22,7 +23,7 @@ public static class GhostRoleAssign
         var getplrRole = player.GetCustomRole();
         if (getplrRole is CustomRoles.GM) return;
 
-        if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()) || Options.CustomGhostRoleCounts.Count <= 0) return;
+        if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole() || x == CustomRoles.Gravestone) || Options.CustomGhostRoleCounts.Count <= 0) return;
         
         GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
 
@@ -31,7 +32,7 @@ public static class GhostRoleAssign
 
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
 
-        var IsCrewmate = getplrRole.IsCrewmate();
+        var IsCrewmate = getplrRole.IsCrewmate() && !player.IsAnySubRole(x => x.IsConverted());
         var IsImpostor = getplrRole.IsImpostor();
         var IsNeutral = getplrRole.IsNeutral();
 
