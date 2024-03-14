@@ -20,6 +20,7 @@ public static class CustomRolesHelper
 
         if (role.IsVanilla())
             return role;
+        
         /*else if (role.GetRoleClass().ThisRoleBase < (CustomRoles)500)
         {
             return role.GetRoleClass().ThisRoleBase;
@@ -473,7 +474,7 @@ public static class CustomRolesHelper
 
     public static bool IsNK(this CustomRoles role)
     {
-        if (role == CustomRoles.Arsonist && Arsonist.ArsonistCanIgniteAnytime.GetBool()) return true;
+        if (role == CustomRoles.Arsonist && Arsonist.CanIgniteAnytime()) return true;
         else if (role == CustomRoles.Quizmaster && Quizmaster.CanKillAfterMark.GetBool()) return true;
 
         return role is
@@ -483,7 +484,6 @@ public static class CustomRolesHelper
             CustomRoles.Glitch or
             CustomRoles.Sidekick or
             CustomRoles.Huntsman or
-            //CustomRoles.Occultist or
             CustomRoles.Infectious or
             CustomRoles.Medusa or
             CustomRoles.Pelican or
@@ -515,7 +515,7 @@ public static class CustomRolesHelper
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
-        if (role == CustomRoles.Arsonist && !Arsonist.ArsonistCanIgniteAnytime.GetBool()) return true;
+        if (role == CustomRoles.Arsonist && !Arsonist.CanIgniteAnytime()) return true;
         else if (role == CustomRoles.Quizmaster && !Quizmaster.CanKillAfterMark.GetBool()) return true; 
 
         return role is
@@ -604,7 +604,7 @@ public static class CustomRolesHelper
     }
     public static bool IsSnitchTarget(this CustomRoles role)
     {
-        if (role is CustomRoles.Arsonist && Arsonist.ArsonistCanIgniteAnytime.GetBool()) return true;
+        if (role is CustomRoles.Arsonist && Arsonist.CanIgniteAnytime()) return true;
         return role is
             CustomRoles.Jackal or
             CustomRoles.Doppelganger or
@@ -1892,7 +1892,7 @@ public static class CustomRolesHelper
            //CustomRoles.Occultist => CountTypes.Occultist,
            CustomRoles.Necromancer => CountTypes.Necromancer,
            CustomRoles.Stalker => !Stalker.SnatchesWin.GetBool() ? CountTypes.Stalker : CountTypes.Crew,
-           CustomRoles.Arsonist => Arsonist.ArsonistCanIgniteAnytime.GetBool() ? CountTypes.Arsonist : CountTypes.Crew,
+           CustomRoles.Arsonist => Arsonist.CanIgniteAnytime() ? CountTypes.Arsonist : CountTypes.Crew,
            CustomRoles.Shroud => CountTypes.Shroud,
            CustomRoles.Werewolf => CountTypes.Werewolf,
            CustomRoles.Wraith => CountTypes.Wraith,

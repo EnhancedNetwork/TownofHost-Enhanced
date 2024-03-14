@@ -194,7 +194,7 @@ internal class Admirer : RoleBase
 
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => CheckKnowRoleTarget(seer, target);
 
-    public static bool CheckKnowRoleTarget(PlayerControl seer, PlayerControl target)
+    private static bool CheckKnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;
         if (AdmiredList.ContainsKey(seer.PlayerId))

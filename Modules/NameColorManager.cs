@@ -122,9 +122,6 @@ public static class NameColorManager
             }
         }
 
-        // Jackal recruit
-        if (Jackal.JackalKnowRoleTarget(seer, target)) color = Main.roleColors[CustomRoles.Jackal];
-
         if (target.Is(CustomRoles.Mare) && Utils.IsActive(SystemTypes.Electrical) && !isMeeting) color = Main.roleColors[CustomRoles.Mare];
 
         // if ((target.PlayerId == Pirate.PirateTarget) && isMeeting) color = Main.roleColors[CustomRoles.Pirate]; */

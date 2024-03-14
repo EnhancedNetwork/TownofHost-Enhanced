@@ -24,8 +24,15 @@ internal class Sidekick : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Jackal.KillCooldownSK.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte ico) => opt.SetVision(Jackal.HasImpostorVision.GetBool());
 
-    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseKillButton(PlayerControl player) => true;
     public override bool CanUseImpostorVentButton(PlayerControl player) => Jackal.CanVentSK.GetBool();
-    public override bool CanUseSabotage(PlayerControl pc) => Jackal.CanUseSabotageSK.GetBool();
+    public override bool CanUseSabotage(PlayerControl player) => Jackal.CanUseSabotageSK.GetBool();
 
+    //public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => SidekickKnowRole(target);
+    //public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => SidekickKnowRole(target) ? Main.roleColors[CustomRoles.Jackal] : string.Empty;
+
+    //private static bool SidekickKnowRole(PlayerControl target)
+    //{
+    //    return target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick);
+    //}
 }

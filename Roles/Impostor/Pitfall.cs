@@ -25,7 +25,7 @@ internal class Pitfall : RoleBase
     private static OptionItem TrapCauseVision;
     private static OptionItem TrapCauseVisionTime;
 
-    private static List<byte> playerIdList = [];
+    private static HashSet<byte> playerIdList = [];
     private static List<PitfallTrap> Traps = [];
     private static List<byte> ReducedVisionPlayers = [];
 
@@ -42,7 +42,7 @@ internal class Pitfall : RoleBase
             .SetValueFormat(OptionFormat.Times);
         TrapMaxPlayerCountOpt = FloatOptionItem.Create(Id + 12, "PitfallTrapMaxPlayerCount", new(1f, 15f, 1f), 3f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Times);
-        TrapDurationOpt = FloatOptionItem.Create(Id + 13, "PitfallTrapDuration", new(5f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pitfall])
+        TrapDurationOpt = FloatOptionItem.Create(Id + 13, "PitfallTrapDuration", new(5f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Seconds);
         TrapRadius = FloatOptionItem.Create(Id + 14, "PitfallTrapRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Multiplier);

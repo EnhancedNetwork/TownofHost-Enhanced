@@ -126,7 +126,16 @@ internal class Jackal : RoleBase
         else
             RecruitLimit.Add(PlayerId, SidekickRecruitLimitOpt.GetInt());
     }
-    public static bool JackalKnowRoleTarget(PlayerControl seer, PlayerControl target)
+
+    //public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => JackalKnowRole(seer, target);
+    //public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => JackalKnowRole(seer, target) ? Main.roleColors[CustomRoles.Jackal] : string.Empty;
+
+    //public static bool JackalKnowRole(PlayerControl seer, PlayerControl target)
+    //{
+    //    return target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit);
+    //}
+
+    public static bool JackalKnowRole(PlayerControl seer, PlayerControl target)
     {
         if (seer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit))) return true;
         else if (seer.Is(CustomRoles.Sidekick) && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return true;

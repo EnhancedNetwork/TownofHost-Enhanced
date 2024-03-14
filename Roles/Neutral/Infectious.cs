@@ -57,7 +57,7 @@ internal class Infectious : RoleBase
         BiteLimit = BiteMax.GetInt();
         PlayerIds.Add(playerId);
         var pc = Utils.GetPlayerById(playerId);
-        if (pc != null) pc.AddDoubleTrigger();
+        pc?.AddDoubleTrigger();
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))

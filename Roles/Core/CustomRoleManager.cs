@@ -216,6 +216,7 @@ public static class CustomRoleManager
         CustomRoles.Infectious => new Infectious(),
         CustomRoles.Jackal => new Jackal(),
         CustomRoles.Sidekick => new Sidekick(),
+        //CustomRoles.Recruit => new Recruit(), //i hate this
         CustomRoles.Sunnyboy or CustomRoles.Jester => new Jester(),
         CustomRoles.Jinx => new Jinx(),
         CustomRoles.Juggernaut => new Juggernaut(),
@@ -256,7 +257,6 @@ public static class CustomRoleManager
         //CustomRoles.Vulture => new Vulture(),
         CustomRoles.Wraith => new Wraith(),
         CustomRoles.Werewolf => new Werewolf(),
-        //CustomRoles.WeaponMaster => new WeaponMaster(),
         //CustomRoles.Workaholic => new Workaholic(),
         //CustomRoles.KB_Normal => new KB_Normal(),
         //CustomRoles.Killer => new Killer(),

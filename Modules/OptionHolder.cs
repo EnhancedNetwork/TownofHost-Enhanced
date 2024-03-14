@@ -33,14 +33,14 @@ public static class Options
     {
         Logger.Msg("Mod option loading start", "Load Options");
         taskOptionsLoad = Task.Run(Load);
-        taskOptionsLoad.ContinueWith(t => { Logger.Msg("Mod option loading end", "Load Options"); });
+        //taskOptionsLoad.ContinueWith(t => { Logger.Msg("Mod option loading end", "Load Options"); });
     }
-    //[HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
-    //public static void WaitOptionsLoad_Postfix()
-    //{
-    //    taskOptionsLoad.Wait();
-    //    Logger.Info("Mod option loading eng", "Load Options");
-    //}
+    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
+    public static void WaitOptionsLoad_Postfix()
+    {
+        taskOptionsLoad.Wait();
+        Logger.Info("Mod option loading eng", "Load Options");
+    }
 
     // Presets
     private static readonly string[] presets =
@@ -1575,11 +1575,17 @@ public static class Options
 
         Innocent.SetupCustomOptions();
 
+        Logger.Info($"Innocent", "CheckLoad");
+
         Jester.SetupCustomOptions();
-        
+
+        Logger.Info($"Jester", "CheckLoad");
+
         Seeker.SetupCustomOption();
 
         Masochist.SetupCustomOptions();
+
+        Logger.Info($"Masochist", "CheckLoad");
 
         TextOptionItem.Create(10000013, "RoleType.NeutralChaos", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -1666,13 +1672,17 @@ public static class Options
         
         Agitater.SetupCustomOption();
 
-        Arsonist.SetupCustomOptions()
-;        
+        Arsonist.SetupCustomOptions();
+
+        Logger.Info($"Arsonist", "CheckLoad");
+
         Bandit.SetupCustomOption();
 
         BloodKnight.SetupCustomOption();
 
         Demon.SetupCustomOption();
+
+        Logger.Info($"Demon", "CheckLoad");
 
         Glitch.SetupCustomOption();
 
@@ -1693,6 +1703,8 @@ public static class Options
         Necromancer.SetupCustomOption();
 
         Spiritcaller.SetupCustomOption();
+
+        Logger.Info($"Spiritcaller", "CheckLoad");
 
         Pelican.SetupCustomOption();
 
@@ -1716,6 +1728,7 @@ public static class Options
         Shroud.SetupCustomOption();
 
         Stalker.SetupCustomOption(); // Stalker (TOHY)
+        Logger.Info($"Stalker", "CheckLoad");
 
         Traitor.SetupCustomOption();
 
