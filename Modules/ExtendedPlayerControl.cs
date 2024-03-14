@@ -667,9 +667,6 @@ static class ExtendedPlayerControl
 
         switch (player.GetCustomRole())
         {
-            case CustomRoles.Agitater:
-                Agitater.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.SetKillCooldown(player.PlayerId);
                 break;

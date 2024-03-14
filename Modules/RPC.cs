@@ -1027,9 +1027,6 @@ internal static class RPC
             case CustomRoles.SchrodingersCat:
                 SchrodingersCat.Add(targetId);
                 break;
-            case CustomRoles.Agitater:
-                Agitater.Add(targetId);
-                break;
             case CustomRoles.Medusa:
                 Medusa.Add(targetId);
                 break;

@@ -515,10 +515,6 @@ class CheckMurderPatch
                     }
                     else killer.Notify(GetString("ShamanTargetAlreadySelected"));
                     return false;
-                case CustomRoles.Agitater:
-                    if (!Agitater.OnCheckMurder(killer, target))
-                        return false;
-                    break;
                 case CustomRoles.Pursuer:
                     if (target.Is(CustomRoles.Pestilence)) break;
                     if (target.Is(CustomRoles.SerialKiller)) return true;
@@ -1827,7 +1823,6 @@ class ReportDeadBodyPatch
         if (Vulture.IsEnable) Vulture.Clear();
         if (Pelican.IsEnable) Pelican.OnReportDeadBody();
         if (Bandit.IsEnable) Bandit.OnReportDeadBody();
-        if (Agitater.IsEnable) Agitater.OnReportDeadBody();
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
@@ -2056,10 +2051,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (DoubleTrigger.FirstTriggerTimer.Count > 0)
                     DoubleTrigger.OnFixedUpdate(player);
-
-                // Agitater
-                if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
-                    Agitater.OnFixedUpdate(player);
 
                 if (PlagueDoctor.IsEnable)
                     PlagueDoctor.OnCheckPlayerPosition(player);

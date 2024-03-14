@@ -3318,6 +3318,7 @@
   "AgitaterPassCooldown": "Bomb pass cooldown",
   "BombExplodeCooldown": "Bomb explode cooldown",
   "AgitaterPassNotify": "Bomb successfully passed",
+  "AgitaterResetBomb": "You can now bomb others.",
   "AgitaterTargetNotify": "YOU HAVE THE BOMB!! Pass it to someone else",
   "AgitaterCanGetBombed": "<color=#F4A460>Agitator</color> can get bomb",
   "AgitaterAutoReportBait": "<color=#F4A460>Agitator</color> Auto Report Bait",

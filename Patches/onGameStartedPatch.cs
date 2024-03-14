@@ -264,7 +264,6 @@ internal class ChangeRoleSettings
             Werewolf.Init();
             Bewilder.Init();
             Necromancer.Init();
-            Agitater.Init();
             ChiefOfPolice.Init();
             Cyber.Init();
             Oiiai.Init();
@@ -560,9 +559,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Huntsman:
                         Huntsman.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Agitater:
-                        Agitater.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Masochist:
                         Main.MasochistKillMax[pc.PlayerId] = 0;

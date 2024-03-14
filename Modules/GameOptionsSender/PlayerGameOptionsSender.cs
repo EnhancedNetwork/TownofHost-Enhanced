@@ -263,9 +263,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Wraith:
                 Wraith.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Agitater:
-                Agitater.ApplyGameOptions(opt);
-                break;
             case CustomRoles.DarkHide:
                 DarkHide.ApplyGameOptions(opt);
                 break;
