@@ -1200,6 +1200,8 @@
   "PlayerCanSetColor": "プレイヤーは/colorコマンドを使用できます",
   "PlayerCanSetName": "プレイヤーは /rn コマンドを使用できます。",
   "PlayerCanUseQuitCommand": "プレイヤーは /quit コマンドを使用して、ロビーから永久に退出することができます。",
+  "PlayerCanUseTP": "Players can use the /tpin and /tpout command",
+  "CanPlayMiniGames": "Players can play mini games",
   "KPDCamouflageMode": "カムフラージュの外見",
   "RoleOptions": "役割オプション",
   "ModeOptions": "モードオプション",

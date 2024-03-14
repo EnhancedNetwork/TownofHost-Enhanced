@@ -1200,6 +1200,8 @@
   "PlayerCanSetColor": "允许玩家使用/color指令",
   "PlayerCanSetName": "允许玩家使用/rn指令改名",
   "PlayerCanUseQuitCommand": "允许玩家使用/qt永远离开房间",
+  "PlayerCanUseTP": "玩家可以使用 /tpin 和 /tpout 指令",
+  "CanPlayMiniGames": "玩家可以玩小游戏",
   "KPDCamouflageMode": "伪装效果为",
   "RoleOptions": "职业设置",
   "ModeOptions": "模组设置",

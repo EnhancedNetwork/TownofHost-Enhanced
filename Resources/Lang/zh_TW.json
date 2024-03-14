@@ -1200,6 +1200,8 @@
   "PlayerCanSetColor": "允許玩家使用/color指令",
   "PlayerCanSetName": "允許玩家使用 /rn 指令",
   "PlayerCanUseQuitCommand": "玩家可以使用/quit指令來永遠離開大廳",
+  "PlayerCanUseTP": "玩家可以使用 /tpin 和 /tpout 指令",
+  "CanPlayMiniGames": "玩家可以玩小遊戲",
   "KPDCamouflageMode": "咔皮呆偽裝效果(包括通訊破壞及隱蔽者)",
   "RoleOptions": "職業設定",
   "ModeOptions": "模組設定",

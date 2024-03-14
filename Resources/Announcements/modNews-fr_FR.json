@@ -2,10 +2,10 @@
   "News": [
     {
       "Number": "100002",
-      "Title": "Placeholder title",
-      "Subtitle": "Placeholder Subtitle",
-      "Short": "Placeholder short title",
-      "Body": "Placeholder body",
+      "Title": "Titre de Substitution",
+      "Subtitle": "Sous-Titre de Substitution",
+      "Short": "Titre abrégé de Substitution",
+      "Body": "Corps de Substitution",
       "Date": "2024-02-01T02:18:00Z"
     }
   ]
