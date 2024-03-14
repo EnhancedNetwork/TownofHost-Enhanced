@@ -191,9 +191,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Bandit:
-                Bandit.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Hater:
             case CustomRoles.Pursuer:
                 opt.SetVision(true);

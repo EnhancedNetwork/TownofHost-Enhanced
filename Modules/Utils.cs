@@ -815,9 +815,6 @@ public static class Utils
                     if (Jackal.CanRecruitSidekick.GetBool())
                         ProgressText.Append(Jackal.GetRecruitLimit(playerId));
                     break;
-                case CustomRoles.Bandit:
-                    ProgressText.Append(Bandit.GetStealLimit(playerId));
-                    break;
                 case CustomRoles.Doppelganger:
                     ProgressText.Append(Doppelganger.GetStealLimit(playerId));
                     break;

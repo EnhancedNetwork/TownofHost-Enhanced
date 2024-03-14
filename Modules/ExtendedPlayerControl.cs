@@ -605,7 +605,6 @@ static class ExtendedPlayerControl
 
         return pc.GetCustomRole() switch
         {
-            CustomRoles.Bandit => Bandit.CanUseSabotage.GetBool(),
             CustomRoles.Jackal => Jackal.CanUseSabotage.GetBool(),
             CustomRoles.Sidekick => Jackal.CanUseSabotageSK.GetBool(),
             CustomRoles.Traitor => Traitor.CanUseSabotage.GetBool(),
@@ -693,9 +692,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Sidekick:
                 Sidekick.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Bandit:
-                Bandit.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Doppelganger:
                 Doppelganger.SetKillCooldown(player.PlayerId);
