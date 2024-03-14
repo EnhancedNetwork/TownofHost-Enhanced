@@ -8,11 +8,16 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Huntsman
+internal class Huntsman : RoleBase
 {
-    private static readonly int Id = 16500;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 16500;
+    public static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     public static OptionItem CanVent;
@@ -45,16 +50,14 @@ public static class Huntsman
         MinKCD = FloatOptionItem.Create(Id + 17, "HHMinKCD", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Huntsman])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         Targets = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
 
         _ = new LateTask(() =>
         {
@@ -67,12 +70,12 @@ public static class Huntsman
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
-    public static void OnReportDeadBody()
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    public override void OnReportDeadBody(PlayerControl Ronaldo, PlayerControl IsTheGoat)
     {
         ResetTargets(isStartedGame: false);
     }
-    public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         float tempkcd = KCD;
         if (Targets.Contains(target.PlayerId)) Math.Clamp(KCD -= SuccessKillCooldown.GetFloat(), MinKCD.GetFloat(), MaxKCD.GetFloat());
@@ -82,8 +85,12 @@ public static class Huntsman
             killer.ResetKillCooldown();
             killer.SyncSettings();
         }
+        return true;
     }
-    public static string GetHudText(PlayerControl player)
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => Huntsman.CanVent.GetBool();
+    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KCD;
+    public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         var targetId = player.PlayerId;
         string output = string.Empty;
@@ -111,7 +118,7 @@ public static class Huntsman
         byte targetId = reader.ReadByte();
         Targets.Add(targetId);
     }
-    public static void ResetTargets(bool isStartedGame = false)
+    private static void ResetTargets(bool isStartedGame = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
@@ -143,4 +150,6 @@ public static class Huntsman
         if (isStartedGame)
             Utils.NotifyRoles(ForceLoop: true);
     }
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+        => seer.Is(CustomRoles.Huntsman) && Targets.Contains(target.PlayerId) ? "6e5524" : "";
 }

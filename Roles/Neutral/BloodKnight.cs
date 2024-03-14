@@ -3,14 +3,21 @@ using Hazel;
 using System.Collections.Generic;
 using System.Text;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-public static class BloodKnight
+internal class BloodKnight : RoleBase
 {
+
+    //===========================SETUP================================\\
     private static readonly int Id = 16100;
     public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     public static OptionItem CanVent;
@@ -29,17 +36,15 @@ public static class BloodKnight
         ProtectDuration = FloatOptionItem.Create(Id + 14, "BKProtectDuration", new(1f, 180f, 1f), 15f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.BloodKnight])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         TimeStamp = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         TimeStamp.TryAdd(playerId, 0);
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -60,38 +65,51 @@ public static class BloodKnight
         TimeStamp[PlayerId] = long.Parse(Time);
     }
     public static bool InProtect(byte playerId) => TimeStamp.TryGetValue(playerId, out var time) && time > Utils.GetTimeStamp();
-    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (InProtect(target.PlayerId))
+        {
+            killer.RpcGuardAndKill(target);
+            if (!Options.DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
+            target.Notify(GetString("BKOffsetKill"));
+            return false;
+        }
+        return true;
+    }
+    public override void OnMurder(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return;
         TimeStamp[killer.PlayerId] = Utils.GetTimeStamp() + (long)ProtectDuration.GetFloat();
         SendRPC(killer.PlayerId);
-        killer.Notify(Translator.GetString("BKInProtect"));
-    }
-    public static void OnFixedUpdate(PlayerControl pc)
+        killer.Notify(GetString("BKInProtect"));
+    } // idk what this
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override void OnFixedUpdate(PlayerControl pc)
     {
         if (TimeStamp[pc.PlayerId] < Utils.GetTimeStamp() && TimeStamp[pc.PlayerId] != 0)
         {
             TimeStamp[pc.PlayerId] = 0;
-            pc.Notify(Translator.GetString("BKProtectOut"));
+            pc.Notify(GetString("BKProtectOut"));
         }
     }
-    public static string GetHudText(PlayerControl pc)
+    public override string GetLowerText(PlayerControl pc, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         if (pc == null || !GameStates.IsInTask || !PlayerControl.LocalPlayer.IsAlive()) return "";
         var str = new StringBuilder();
         if (InProtect(pc.PlayerId))
         {
             var remainTime = TimeStamp[pc.PlayerId] - Utils.GetTimeStamp();
-            str.Append(string.Format(Translator.GetString("BKSkillTimeRemain"), remainTime));
+            str.Append(string.Format(GetString("BKSkillTimeRemain"), remainTime));
         }
         else
         {
-            str.Append(Translator.GetString("BKSkillNotice"));
+            str.Append(GetString("BKSkillNotice"));
         }
         return str.ToString();
     }
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 
 }

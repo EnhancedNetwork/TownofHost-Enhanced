@@ -139,11 +139,9 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> AllPlayerKillCooldown = [];
     public static Dictionary<byte, Vent> LastEnteredVent = [];
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = [];
-    public static Dictionary<byte, int> MasochistKillMax = [];
     //public static Dictionary<byte, long> FlashbangInProtect = [];
     public static List<byte> WorkaholicAlive = [];
     public static List<byte> TasklessCrewmate = [];
-    public static Dictionary<byte, string> VirusNotify = [];
     public static List<byte> OverDeadPlayerList = [];
     public static bool DoBlockNameChange = false;
     public static int updateTime;
@@ -152,7 +150,7 @@ public class Main : BasePlugin
     public static Dictionary<int, int> SayBanwordsTimes = [];
     public static Dictionary<byte, float> AllPlayerSpeed = [];
     public const float MinSpeed = 0.0001f;
-    public static List<byte> MedusaBodies = [];
+    public static HashSet<byte> UnreportableBodies = [];
     public static List<byte> InfectedBodies = [];
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
     public static Dictionary<byte, float> WarlockTimer = [];
@@ -163,7 +161,6 @@ public class Main : BasePlugin
     public static Dictionary<(byte, byte), bool> isDoused = [];
     public static Dictionary<(byte, byte), bool> isDraw = [];
     public static Dictionary<(byte, byte), bool> isRevealed = [];
-    public static Dictionary<byte, (PlayerControl, float)> ArsonistTimer = [];
     public static Dictionary<byte, (PlayerControl, float)> RevolutionistTimer = [];
     public static Dictionary<byte, long> RevolutionistStart = [];
     public static Dictionary<byte, long> RevolutionistLastTime = [];
@@ -172,7 +169,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, int> ParaUsedButtonCount = [];
     public static Dictionary<byte, int> MarioVentCount = [];
     public static Dictionary<byte, long> AllKillers = [];
-    public static Dictionary<byte, int> JinxSpellCount = [];
     public static int AliveImpostorCount;
     public static bool isCursed;
     public static Dictionary<byte, bool> CheckShapeshift = [];
@@ -203,15 +199,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
     public static Dictionary<string, int> PlayerQuitTimes = [];
 
-    
-
-    //public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
-    //public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
-
-    //public static List<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToList();
-    //public static List<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToList();
-
-    // Seems this better (if use foreach)
     public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToArray();
     public static PlayerControl[] AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToArray();
 
@@ -687,7 +674,7 @@ public enum CustomRoles
     Collector,
     Succubus, //cultist
     CursedSoul,
-    Gamer, //demon
+    Demon, 
     Doomsayer,
     Doppelganger,
     Executioner,
@@ -737,7 +724,7 @@ public enum CustomRoles
     Solsticer,
     SoulCollector,
     Spiritcaller,
-    DarkHide, //stalker
+    Stalker, //stalker
     Sunnyboy,
     Taskinator,
     Terrorist,
@@ -862,8 +849,8 @@ public enum CustomWinner
     Pelican = CustomRoles.Pelican,
     Youtuber = CustomRoles.Youtuber,
     Egoist = CustomRoles.Egoist,
-    Gamer = CustomRoles.Gamer,
-    DarkHide = CustomRoles.DarkHide,
+    Demon = CustomRoles.Demon,
+    Stalker = CustomRoles.Stalker,
     Workaholic = CustomRoles.Workaholic,
     Collector = CustomRoles.Collector,
     BloodKnight = CustomRoles.BloodKnight,

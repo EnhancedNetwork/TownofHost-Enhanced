@@ -28,7 +28,6 @@ public static class CustomRolesHelper
             return role switch
             {
                 CustomRoles.Sniper => CustomRoles.Shapeshifter,
-                CustomRoles.Jester => Options.JesterCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Telecommunication => Telecommunication.CanUseVent() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Mayor => Mayor.MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Captain => CustomRoles.Crewmate,
@@ -223,14 +222,14 @@ public static class CustomRolesHelper
             CustomRoles.Revolutionist => RoleTypes.Impostor,
             CustomRoles.Hater => RoleTypes.Impostor,
             CustomRoles.Medic => RoleTypes.Impostor,
-            CustomRoles.Gamer => RoleTypes.Impostor,
+            CustomRoles.Demon => RoleTypes.Impostor,
             CustomRoles.HexMaster => RoleTypes.Impostor,
             //CustomRoles.Occultist => RoleTypes.Impostor,
             CustomRoles.Wraith => RoleTypes.Impostor,
             CustomRoles.Glitch => RoleTypes.Impostor,
             CustomRoles.Juggernaut => RoleTypes.Impostor,
             CustomRoles.Jinx => RoleTypes.Impostor,
-            CustomRoles.DarkHide => RoleTypes.Impostor,
+            CustomRoles.Stalker => RoleTypes.Impostor,
             CustomRoles.Provocateur => RoleTypes.Impostor,
             CustomRoles.BloodKnight => RoleTypes.Impostor,
             CustomRoles.Poisoner => RoleTypes.Impostor,
@@ -421,19 +420,17 @@ public static class CustomRolesHelper
             CustomRoles.Pursuer or
             CustomRoles.Revolutionist or
             CustomRoles.Provocateur or
-            CustomRoles.Gamer or
+            CustomRoles.Demon or
             CustomRoles.Hater or
             CustomRoles.Workaholic or
             CustomRoles.Solsticer or
-        //    CustomRoles.Pelican or
             CustomRoles.Collector or
             CustomRoles.Sunnyboy or
             CustomRoles.Arsonist or
             CustomRoles.Maverick or
             CustomRoles.CursedSoul or
             CustomRoles.Phantom or
-            CustomRoles.DarkHide or
-       //     CustomRoles.PotionMaster or
+            CustomRoles.Stalker or
             CustomRoles.Doomsayer or
             CustomRoles.SoulCollector or
             CustomRoles.Pirate or
@@ -445,7 +442,6 @@ public static class CustomRolesHelper
             CustomRoles.Doppelganger or
             CustomRoles.SchrodingersCat or
             //     CustomRoles.Juggernaut or
-            //      CustomRoles.Jinx or
             //     CustomRoles.Poisoner or
             //     CustomRoles.HexMaster or
             CustomRoles.Totocalcio;
@@ -476,7 +472,7 @@ public static class CustomRolesHelper
 
     public static bool IsNK(this CustomRoles role)
     {
-        if (role == CustomRoles.Arsonist && Options.ArsonistCanIgniteAnytime.GetBool()) return true;
+        if (role == CustomRoles.Arsonist && Arsonist.ArsonistCanIgniteAnytime.GetBool()) return true;
         else if (role == CustomRoles.Quizmaster && Quizmaster.CanKillAfterMark.GetBool()) return true;
 
         return role is
@@ -490,7 +486,7 @@ public static class CustomRolesHelper
             CustomRoles.Infectious or
             CustomRoles.Medusa or
             CustomRoles.Pelican or
-            CustomRoles.DarkHide or
+            CustomRoles.Stalker or
             CustomRoles.Juggernaut or
             CustomRoles.Jinx or
             CustomRoles.Poisoner or
@@ -503,7 +499,7 @@ public static class CustomRolesHelper
             CustomRoles.Pyromaniac or
             CustomRoles.Werewolf or
             CustomRoles.PotionMaster or
-            CustomRoles.Gamer or
+            CustomRoles.Demon or
             CustomRoles.Pickpocket or
             CustomRoles.Necromancer or
             CustomRoles.Traitor or
@@ -518,7 +514,7 @@ public static class CustomRolesHelper
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
-        if (role == CustomRoles.Arsonist && !Options.ArsonistCanIgniteAnytime.GetBool()) return true;
+        if (role == CustomRoles.Arsonist && !Arsonist.ArsonistCanIgniteAnytime.GetBool()) return true;
         else if (role == CustomRoles.Quizmaster && !Quizmaster.CanKillAfterMark.GetBool()) return true; 
 
         return role is
@@ -607,7 +603,7 @@ public static class CustomRolesHelper
     }
     public static bool IsSnitchTarget(this CustomRoles role)
     {
-        if (role is CustomRoles.Arsonist && Options.ArsonistCanIgniteAnytime.GetBool()) return true;
+        if (role is CustomRoles.Arsonist && Arsonist.ArsonistCanIgniteAnytime.GetBool()) return true;
         return role is
             CustomRoles.Jackal or
             CustomRoles.Doppelganger or
@@ -623,7 +619,7 @@ public static class CustomRolesHelper
             CustomRoles.Crewpostor or
             CustomRoles.Juggernaut or
             CustomRoles.Jinx or
-            CustomRoles.DarkHide or
+            CustomRoles.Stalker or
             CustomRoles.Poisoner or
         //    CustomRoles.Sorcerer or
             CustomRoles.Parasite or
@@ -634,7 +630,7 @@ public static class CustomRolesHelper
             CustomRoles.Pickpocket or
             CustomRoles.Traitor or
             CustomRoles.Medusa or
-            CustomRoles.Gamer or
+            CustomRoles.Demon or
             CustomRoles.Pelican or
             CustomRoles.Virus or
             CustomRoles.Succubus or
@@ -808,10 +804,10 @@ public static class CustomRolesHelper
             CustomRoles.Revolutionist or
             CustomRoles.Hater or
             CustomRoles.Konan or
-            CustomRoles.Gamer or
+            CustomRoles.Demon or
             CustomRoles.Maverick or
             CustomRoles.CursedSoul or
-            CustomRoles.DarkHide or
+            CustomRoles.Stalker or
             CustomRoles.Infectious or
             CustomRoles.Workaholic or
             CustomRoles.Solsticer or
@@ -876,8 +872,8 @@ public static class CustomRolesHelper
             CustomRoles.Pyromaniac or
             CustomRoles.Shroud or
             CustomRoles.Succubus or
-            CustomRoles.Gamer or
-            CustomRoles.DarkHide or
+            CustomRoles.Demon or
+            CustomRoles.Stalker or
             CustomRoles.Necromancer or
             CustomRoles.Pirate or
             CustomRoles.Provocateur or
@@ -944,8 +940,8 @@ public static class CustomRolesHelper
             CustomRoles.Hater or
             CustomRoles.Traitor or
             CustomRoles.Konan or
-            CustomRoles.Gamer or
-            CustomRoles.DarkHide or
+            CustomRoles.Demon or
+            CustomRoles.Stalker or
             CustomRoles.Infectious or
             CustomRoles.Workaholic or
             CustomRoles.Solsticer or
@@ -994,7 +990,7 @@ public static class CustomRolesHelper
             CustomRoles.Hater or
             CustomRoles.Totocalcio or
             CustomRoles.Provocateur or
-            CustomRoles.DarkHide or
+            CustomRoles.Stalker or
             CustomRoles.Pixie or
             CustomRoles.Seeker;
     }
@@ -1888,14 +1884,14 @@ public static class CustomRolesHelper
            CustomRoles.Pelican => CountTypes.Pelican,
            CustomRoles.Minion => CountTypes.Impostor,
            CustomRoles.Bloodmoon => CountTypes.Impostor,
-           CustomRoles.Gamer => CountTypes.Gamer,
+           CustomRoles.Demon => CountTypes.Demon,
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
            CustomRoles.Succubus => CountTypes.Succubus,
            CustomRoles.HexMaster => CountTypes.HexMaster,
            //CustomRoles.Occultist => CountTypes.Occultist,
            CustomRoles.Necromancer => CountTypes.Necromancer,
-           CustomRoles.DarkHide => !DarkHide.SnatchesWin.GetBool() ? CountTypes.DarkHide : CountTypes.Crew,
-           CustomRoles.Arsonist => Options.ArsonistCanIgniteAnytime.GetBool() ? CountTypes.Arsonist : CountTypes.Crew,
+           CustomRoles.Stalker => !Stalker.SnatchesWin.GetBool() ? CountTypes.Stalker : CountTypes.Crew,
+           CustomRoles.Arsonist => Arsonist.ArsonistCanIgniteAnytime.GetBool() ? CountTypes.Arsonist : CountTypes.Crew,
            CustomRoles.Shroud => CountTypes.Shroud,
            CustomRoles.Werewolf => CountTypes.Werewolf,
            CustomRoles.Wraith => CountTypes.Wraith,
@@ -1948,8 +1944,8 @@ public static class CustomRolesHelper
             CustomRoles.Pelican => CustomWinner.Pelican,
             CustomRoles.Youtuber => CustomWinner.Youtuber,
             CustomRoles.Egoist => CustomWinner.Egoist,
-            CustomRoles.Gamer => CustomWinner.Gamer,
-            CustomRoles.DarkHide => CustomWinner.DarkHide,
+            CustomRoles.Demon => CustomWinner.Demon,
+            CustomRoles.Stalker => CustomWinner.Stalker,
             CustomRoles.Workaholic => CustomWinner.Workaholic,
             CustomRoles.Solsticer => CustomWinner.Solsticer,
             CustomRoles.Collector => CustomWinner.Collector,
@@ -2002,7 +1998,7 @@ public static class CustomRolesHelper
             CountTypes.Bandit => CustomRoles.Bandit,
             CountTypes.Poisoner => CustomRoles.Poisoner,
             CountTypes.Pelican => CustomRoles.Pelican,
-            CountTypes.Gamer => CustomRoles.Gamer,
+            CountTypes.Demon => CustomRoles.Demon,
             CountTypes.BloodKnight => CustomRoles.BloodKnight,
             CountTypes.Succubus => CustomRoles.Succubus,
             CountTypes.HexMaster => CustomRoles.HexMaster,
@@ -2030,7 +2026,7 @@ public static class CustomRolesHelper
             //           CustomRoles.Refugee => CountTypes.Impostor,
             CountTypes.Huntsman => CustomRoles.Huntsman,
             CountTypes.Glitch => CustomRoles.Glitch,
-            CountTypes.DarkHide => CustomRoles.DarkHide,
+            CountTypes.Stalker => CustomRoles.Stalker,
             CountTypes.Spiritcaller => CustomRoles.Spiritcaller,
             CountTypes.Arsonist => CustomRoles.Arsonist,
             CountTypes.RuthlessRomantic => CustomRoles.RuthlessRomantic,
@@ -2061,7 +2057,7 @@ public enum CountTypes
     Bandit,
     Pelican,
     PlagueDoctor,
-    Gamer,
+    Demon,
     BloodKnight,
     Poisoner,
     Charmed,
@@ -2073,7 +2069,7 @@ public enum CountTypes
     Infectious,
     Virus,
     Rogue,
-    DarkHide,
+    Stalker,
     Jinx,
     PotionMaster,
     Pickpocket,

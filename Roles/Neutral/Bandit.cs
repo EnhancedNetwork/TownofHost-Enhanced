@@ -7,11 +7,17 @@ using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
-public static class Bandit
+internal class Bandit : RoleBase
 {
-    private static readonly int Id = 16000;
+
+    //===========================SETUP================================\\
+    private const int Id = 16000;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+    //==================================================================\\
     public static Dictionary<byte, float> killCooldown = [];
 
     public static OptionItem KillCooldownOpt;
@@ -20,7 +26,7 @@ public static class Bandit
     public static OptionItem StealMode;
     public static OptionItem CanStealBetrayalAddon;
     public static OptionItem CanStealImpOnlyAddon;
-    public static OptionItem CanUseSabotage;
+    public static OptionItem CanUsesSabotage;
     public static OptionItem CanVent;
 
     public static Dictionary<byte, int> TotalSteals = [];
@@ -43,23 +49,21 @@ public static class Bandit
         StealMode = StringOptionItem.Create(Id + 12, "BanditStealMode", BanditStealModeOpt, 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanStealBetrayalAddon = BooleanOptionItem.Create(Id + 13, "BanditCanStealBetrayalAddon", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanStealImpOnlyAddon = BooleanOptionItem.Create(Id + 14, "BanditCanStealImpOnlyAddon", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
-        CanUseSabotage = BooleanOptionItem.Create(Id + 15, "CanUseSabotage", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
+        CanUsesSabotage = BooleanOptionItem.Create(Id + 15, "CanUseSabotage", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanVent = BooleanOptionItem.Create(Id + 16, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
     }
 
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         Targets = [];
         TotalSteals = [];
         killCooldown = [];
-        IsEnable = false;
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
         TotalSteals.Add(playerId, 0);
         Targets[playerId] = [];
 
@@ -89,12 +93,15 @@ public static class Bandit
             TotalSteals.Add(PlayerId, 0);
     }
 
-    public static void SetKillCooldown(byte id)
+    public override void SetKillCooldown(byte id)
     {
         if (!killCooldown.ContainsKey(id)) killCooldown[id] = KillCooldownOpt.GetFloat();
         Main.AllPlayerKillCooldown[id] = killCooldown[id];
     }
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(false);
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override bool CanUseSabotage(PlayerControl pc) => CanUsesSabotage.GetBool();
+    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
 
     private static CustomRoles? SelectRandomAddon(PlayerControl Target)
     {
@@ -162,9 +169,9 @@ public static class Bandit
         return;
     }
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (!IsEnable) return true;
+        if (!HasEnabled) return true;
         bool flag = false;
         if (!target.HasSubRole() || target.Is(CustomRoles.Stubborn)) flag = true;
         var SelectedAddOn = SelectRandomAddon(target);
@@ -180,10 +187,23 @@ public static class Bandit
             return true;
         }
 
-        return killer.CheckDoubleTrigger(target, () => { StealAddon(killer, target, SelectedAddOn); });
+        if (!killer.CheckDoubleTrigger(target, () => { StealAddon(killer, target, SelectedAddOn); }))
+        {
+            killCooldown[killer.PlayerId] = StealCooldown.GetFloat();
+            killer.ResetKillCooldown();
+            killer.SyncSettings();
+            return false;
+        }
+        else
+        {
+            killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
+            killer.ResetKillCooldown();
+            killer.SyncSettings();
+            return true;
+        }
     }
 
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl reportash, PlayerControl panagustava)
     {
         if (StealMode.GetValue() == 1) return;
         foreach (var kvp1 in Targets)
@@ -209,6 +229,5 @@ public static class Bandit
             Targets[banditId].Clear();
         }
     }
-
-    public static string GetStealLimit(byte playerId) => Utils.ColorString(TotalSteals[playerId] < MaxSteals.GetInt() ? Utils.GetRoleColor(CustomRoles.Bandit).ShadeColor(0.25f) : Color.gray, TotalSteals.TryGetValue(playerId, out var stealLimit) ? $"({MaxSteals.GetInt() - stealLimit})" : "Invalid");
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(TotalSteals[playerId] < MaxSteals.GetInt() ? Utils.GetRoleColor(CustomRoles.Bandit).ShadeColor(0.25f) : Color.gray, TotalSteals.TryGetValue(playerId, out var stealLimit) ? $"({MaxSteals.GetInt() - stealLimit})" : "Invalid");
 }

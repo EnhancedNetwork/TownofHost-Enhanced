@@ -69,13 +69,13 @@ class ExileControllerWrapUpPatch
 
             var role = exiled.GetCustomRole();
 
-            if (Quizmaster.IsEnable)
+            if (Quizmaster.HasEnabled)
                 Quizmaster.OnPlayerExile(exiled);
 
             var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
             if (pcArray.Length > 0)
             {
-                if (!Options.InnocentCanWinByImp.GetBool() && role.IsImpostor())
+                if (!Innocent.InnocentCanWinByImp.GetBool() && role.IsImpostor())
                 {
                     Logger.Info("Exeiled Winner Check for impostor", "Innocent");
                 }
@@ -107,7 +107,7 @@ class ExileControllerWrapUpPatch
                 }
             }
             //Jester win
-            if (Options.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
+            if (Jester.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
             {           
                 if (role.Is(CustomRoles.Jester) && AmongUsClient.Instance.AmHost)
                 {
@@ -182,8 +182,6 @@ class ExileControllerWrapUpPatch
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
         }
 
-        if (HexMaster.IsEnable)
-            HexMaster.RemoveHexedPlayer();
         
         foreach (var player in Main.AllPlayerControls)
         {
@@ -198,13 +196,9 @@ class ExileControllerWrapUpPatch
                     Main.CursedPlayers[player.PlayerId] = null;
                     Main.isCurseAndKill[player.PlayerId] = false;
                     break;
-
-                case CustomRoles.Quizmaster:
-                    Quizmaster.OnVotedOut();
-                    break;
             }
 
-            if (Infectious.IsEnable)
+            if (Infectious.HasEnabled)
             {
                 if (playerRole.Is(CustomRoles.Infectious) && !player.IsAlive())
                 {
@@ -212,7 +206,7 @@ class ExileControllerWrapUpPatch
                 }
             }
 
-            if (Shroud.IsEnable)
+            if (Shroud.HasEnabled)
             {
                 Shroud.MurderShroudedPlayers(player);
             }

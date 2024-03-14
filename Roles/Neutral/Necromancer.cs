@@ -5,10 +5,16 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Necromancer
+internal class Necromancer : RoleBase
 {
-    private static readonly int Id = 17100;
-    public static List<byte> playerIdList = [];
+    //===========================SETUP================================\\
+    private const int Id = 17100;
+    public static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     public static OptionItem CanVent;
@@ -31,7 +37,7 @@ public static class Necromancer
         CanVent = BooleanOptionItem.Create(Id + 12, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         IsRevenge = false;
@@ -39,7 +45,7 @@ public static class Necromancer
         Killer = null;
         tempKillTimer = 0;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         Timer = RevengeTime.GetInt();
@@ -48,10 +54,11 @@ public static class Necromancer
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
-    public static bool OnKillAttempt(PlayerControl killer, PlayerControl target)
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => Necromancer.CanVent.GetBool();
+    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return true;
         if (killer == null) return false;
@@ -71,7 +78,7 @@ public static class Necromancer
 
         return false;
     }
-    public static void Countdown(int seconds, PlayerControl player)
+    private static void Countdown(int seconds, PlayerControl player)
     {
         var killer = Killer;
         if (Success)
@@ -93,7 +100,7 @@ public static class Necromancer
 
         _ = new LateTask(() => { Countdown(seconds - 1, player); }, 1.01f, "Necromancer Countdown");
     }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null) return false;
         if (target == null) return false;

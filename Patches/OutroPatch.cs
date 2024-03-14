@@ -59,7 +59,7 @@ class EndGamePatch
 
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
-            if (Doppelganger.IsEnable && Doppelganger.DoppelVictim.ContainsKey(id))
+            if (Doppelganger.HasEnabled && Doppelganger.DoppelVictim.ContainsKey(id))
             {
                 var dpc = Utils.GetPlayerById(id);
                 if (dpc != null)

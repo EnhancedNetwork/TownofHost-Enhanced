@@ -5,14 +5,22 @@ using System.Linq;
 using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
-public class Quizmaster
+internal class Quizmaster : RoleBase
 {
+
+    //===========================SETUP================================\\
     private static readonly int Id = 27000;
-    //public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+    //==================================================================\\
+
     public static PlayerControl Player;
     public static OptionItem QuestionDifficulty;
     public static OptionItem CanKillAfterMark;
@@ -55,9 +63,9 @@ public class Quizmaster
         CanGiveQuestionsAboutPastGames = BooleanOptionItem.Create(Id + 14, "QuizmasterSettings.CanGiveQuestionsAboutPastGames", false, tab, false)
            .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
     }
-    public static void Init()
+    public override void Init()
     {
-        //playerIdList = new();
+        playerIdList = [];
         Player = null;
         firstSabotageOfRound = Sabotages.None;
         killsForRound = 0;
@@ -79,13 +87,11 @@ public class Quizmaster
         diedThisRound = 0;
         meetingNum = 0;
         buttonMeeting = 0;
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
-        //playerIdList.Add(playerId);
+        playerIdList.Add(playerId);
         MarkedPlayer = byte.MaxValue;
-        IsEnable = true;
     }
     private static void SendRPC(byte targetId)
     {
@@ -106,15 +112,15 @@ public class Quizmaster
             allowedKilling = CanKillAfterMark.GetBool();
         }
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
-    public static bool CanUseKillButton(PlayerControl pc)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
+    public override bool CanUseKillButton(PlayerControl pc)
     {
         if (pc == null || !pc.IsAlive()) return false;
 
         return true;
     }
 
-    public static bool CanUseVentButton(PlayerControl pc)
+    public override bool CanUseImpostorVentButton(PlayerControl pc)
     {
         if (pc == null || !pc.IsAlive()) return false;
        
@@ -127,7 +133,7 @@ public class Quizmaster
         return canVent;
     }
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (AlreadyMarked == false)
         {
@@ -150,7 +156,7 @@ public class Quizmaster
         return allowedKilling && AlreadyMarked;
     }
 
-    static QuizQuestionBase GetRandomQuestion(List<QuizQuestionBase> qt)
+    private static QuizQuestionBase GetRandomQuestion(List<QuizQuestionBase> qt)
     {
         List<QuizQuestionBase> questions = qt.Where(a => a.Stage <= QuestionDifficulty.GetInt()).ToList();
         var rnd = IRandom.Instance;
@@ -167,7 +173,7 @@ public class Quizmaster
         return question;
     }
 
-    static CustomRoles GetRandomRole(List<CustomRoles> roles, bool AllowAddons)
+    private static CustomRoles GetRandomRole(List<CustomRoles> roles, bool AllowAddons)
     {
         var rnd = IRandom.Instance;
         CustomRoles chosenRole = roles[rnd.Next(0, roles.Count)];
@@ -200,8 +206,9 @@ public class Quizmaster
         DoQuestion();
     }
 
-    public static void OnReportDeadBody(GameData.PlayerInfo targetInfo)
+    public override void OnReportDeadBody(PlayerControl wuj, PlayerControl target)
     {
+        var targetInfo = target.Data;
         if (targetInfo == null) return;
 
         lastReportedColor = thisReportedColor;
@@ -210,7 +217,7 @@ public class Quizmaster
         DoQuestion();
     }
 
-    public static void DoQuestion()
+    private static void DoQuestion()
     {
         Player = Utils.GetPlayerByRole(CustomRoles.Quizmaster);
         if (MarkedPlayer != byte.MaxValue)
@@ -288,17 +295,11 @@ public class Quizmaster
         if (target.PlayerId == MarkedPlayer) ResetMarkedPlayer(false);
     }
 
-    public static void SetKillButtonText(HudManager instance)
-    {
-        if (allowedKilling)
-            instance.KillButton.OverrideText(GetString("KillButtonText"));
-        else
-            instance.KillButton.OverrideText(GetString("QuizmasterKillButtonText"));
-    }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+            => hud.KillButton.OverrideText(GetString(allowedKilling ? "KillButtonText" : "QuizmasterKillButtonText"));
 
-    public static string TargetMark(PlayerControl seer, PlayerControl target)
-        => (seer != null && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : "";
-
+    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+            => (seer != null && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : "";
     public static void OnSabotageCall(SystemTypes systemType)
     {
         if (!Main.MeetingIsStarted
@@ -337,7 +338,7 @@ public class Quizmaster
         }
     }
 
-    public static void KillPlayer(PlayerControl plrToKill)
+    private static void KillPlayer(PlayerControl plrToKill)
     {
         plrToKill.Data.IsDead = true;
         Main.PlayerStates[plrToKill.PlayerId].deathReason = PlayerState.DeathReason.WrongAnswer;
@@ -346,7 +347,7 @@ public class Quizmaster
         ResetMarkedPlayer(true);
     }
 
-    public static void RightAnswer(PlayerControl target)
+    private static void RightAnswer(PlayerControl target)
     {
         lastReportedColor = thisReportedColor;
         foreach (var plr in Main.AllPlayerControls)
@@ -361,7 +362,7 @@ public class Quizmaster
         ResetMarkedPlayer(true);
     }
 
-    public static void WrongAnswer(PlayerControl target, string wrongAnswer, string rightAnswer)
+    private static void WrongAnswer(PlayerControl target, string wrongAnswer, string rightAnswer)
     {
         lastReportedColor = thisReportedColor;
         KillPlayer(target);
@@ -418,7 +419,7 @@ public class Quizmaster
         }
     }
 
-    public static void OnVotedOut()
+    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
     {
         ResetMarkedPlayer(false);
     }

@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -9,10 +10,18 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Shroud
+internal class Shroud : RoleBase
 {
-    private static readonly int Id = 18000;
-    public static bool IsEnable = false;
+
+    //===========================SETUP================================\\
+    private const int Id = 18000;
+    private static HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+    //==================================================================\\
+
 
     public static Dictionary<byte, byte> ShroudList = [];
 
@@ -28,14 +37,16 @@ public static class Shroud
         CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Shroud]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Shroud]);
     }
-    public static void Init()
+    public override void Init()
     {
+        PlayerIds = [];
         ShroudList = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
-        IsEnable = true;
+        PlayerIds.Add(playerId);
+        CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
+        CustomRoleManager.MarkOthers.Add(GetShroudMark);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -68,7 +79,7 @@ public static class Shroud
                 break;
         }
     }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
@@ -85,7 +96,7 @@ public static class Shroud
         return false;
     }
 
-    public static void OnFixedUpdate(PlayerControl shroud)
+    private static void OnFixedUpdateOthers(PlayerControl shroud)
     {
         if (!ShroudList.ContainsKey(shroud.PlayerId)) return;
 
@@ -146,24 +157,19 @@ public static class Shroud
         SendRPC(byte.MaxValue, shrouded.PlayerId, 2);
     }
 
-    public static string TargetMark(PlayerControl seer, PlayerControl target)
+    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
         => (ShroudList.ContainsValue(seer.PlayerId) && ShroudList.ContainsKey(target.PlayerId)) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : "";
     
-    public static string GetShroudMark(byte target, bool isMeeting)
-    {
-        if (isMeeting && ShroudList.ContainsKey(target))
-        {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈");
-        }
-        return "";
-    }
+    private static string GetShroudMark(PlayerControl seer, PlayerControl target, bool isMeeting)
+        => isMeeting && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : "";
+    
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ShroudCooldown.GetFloat();
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
-    public static void CanUseVent(PlayerControl player)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ShroudCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    public override bool CanUseImpostorVentButton(PlayerControl pc)
     {
         bool Shroud_canUse = CanVent.GetBool();
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Shroud_canUse && !player.Data.IsDead);
-        player.Data.Role.CanVent = Shroud_canUse;
+        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Shroud_canUse && !pc.Data.IsDead);
+        return Shroud_canUse;
     }
 }

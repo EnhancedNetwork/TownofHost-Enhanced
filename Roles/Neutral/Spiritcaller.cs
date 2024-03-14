@@ -1,17 +1,23 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral
 {
-    public static class Spiritcaller
+    internal class Spiritcaller : RoleBase
     {
-        private static readonly int Id = 25200;
-        private static List<byte> playerIdList = new();
-        public static bool IsEnable = false;
+        //===========================SETUP================================\\
+        private const int Id = 25200;
+        private static HashSet<byte> playerIdList = [];
+        public static bool HasEnabled = playerIdList.Count > 0;
+        public override bool IsEnable => HasEnabled;
+        public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+        //==================================================================\\
         private static int SpiritLimit = new();
 
         private static Dictionary<byte, long> PlayersHaunted = new();
@@ -30,46 +36,45 @@ namespace TOHE.Roles.Neutral
 
         public static void SetupCustomOption()
         {
-            SetupSingleRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.Spiritcaller, 1);
-            KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 60f, 1f), 30f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
+            SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Spiritcaller, 1);
+            KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 60f, 1f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
                 .SetValueFormat(OptionFormat.Seconds);
-            CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller]);
-            ImpostorVision = BooleanOptionItem.Create(Id + 12, "ImpostorVision", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller]);
-            SpiritMax = IntegerOptionItem.Create(Id + 13, "SpiritcallerSpiritMax", new(1, 15, 1), 3, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
+            CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller]);
+            ImpostorVision = BooleanOptionItem.Create(Id + 12, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller]);
+            SpiritMax = IntegerOptionItem.Create(Id + 13, "SpiritcallerSpiritMax", new(1, 15, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
                 .SetValueFormat(OptionFormat.Times);
-            SpiritAbilityCooldown = FloatOptionItem.Create(Id + 14, "SpiritcallerSpiritAbilityCooldown", new(5f, 90f, 1f), 35f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
+            SpiritAbilityCooldown = FloatOptionItem.Create(Id + 14, "SpiritcallerSpiritAbilityCooldown", new(5f, 90f, 1f), 35f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
                 .SetValueFormat(OptionFormat.Seconds);
-            SpiritFreezeTime = FloatOptionItem.Create(Id + 15, "SpiritcallerFreezeTime", new(0f, 30f, 1f), 5f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
+            SpiritFreezeTime = FloatOptionItem.Create(Id + 15, "SpiritcallerFreezeTime", new(0f, 30f, 1f), 5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
                 .SetValueFormat(OptionFormat.Seconds);
-            SpiritProtectTime = FloatOptionItem.Create(Id + 16, "SpiritcallerProtectTime", new(0f, 30f, 1f), 5f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
+            SpiritProtectTime = FloatOptionItem.Create(Id + 16, "SpiritcallerProtectTime", new(0f, 30f, 1f), 5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
                 .SetValueFormat(OptionFormat.Seconds);
-            SpiritCauseVision = FloatOptionItem.Create(Id + 17, "SpiritcallerCauseVision", new(0f, 5f, 0.05f), 0.2f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
+            SpiritCauseVision = FloatOptionItem.Create(Id + 17, "SpiritcallerCauseVision", new(0f, 5f, 0.05f), 0.2f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
                 .SetValueFormat(OptionFormat.Multiplier);
-            SpiritCauseVisionTime = FloatOptionItem.Create(Id + 18, "SpiritcallerCauseVisionTime", new(0f, 45f, 1f), 10f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
+            SpiritCauseVisionTime = FloatOptionItem.Create(Id + 18, "SpiritcallerCauseVisionTime", new(0f, 45f, 1f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
                 .SetValueFormat(OptionFormat.Seconds);
         }
 
-        public static void Init()
+        public override void Init()
         {
             playerIdList = new();
             SpiritLimit = new();
             ProtectTimeStamp = new();
             PlayersHaunted = new();
-            IsEnable = false;
         }
-        public static void Add(byte playerId)
+        public override void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             SpiritLimit = SpiritMax.GetInt();
             ProtectTimeStamp = 0;
-            IsEnable = true;
+            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
 
             if (!AmongUsClient.Instance.AmHost) return;
             if (!Main.ResetCamPlayerList.Contains(playerId))
                 Main.ResetCamPlayerList.Add(playerId);
         }
-        public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-        public static bool InProtect(PlayerControl player) => player.Is(CustomRoles.Spiritcaller) && ProtectTimeStamp > Utils.GetTimeStamp();
+        public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+        private static bool InProtect(PlayerControl player) => player.Is(CustomRoles.Spiritcaller) && ProtectTimeStamp > Utils.GetTimeStamp();
 
         private static void SendRPC()
         {
@@ -83,11 +88,11 @@ namespace TOHE.Roles.Neutral
             SpiritLimit = reader.ReadInt32();
         }
 
-        public static void OnCheckMurder(PlayerControl target)
+        public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
         {
             if (!target.GetCustomRole().IsAbleToBeSidekicked() && !target.GetCustomRole().IsImpostor())
             {
-                if (SpiritLimit < 1) return;
+                if (SpiritLimit < 1) return true;
 
                 SpiritLimit--;
                 SendRPC();
@@ -108,9 +113,10 @@ namespace TOHE.Roles.Neutral
                 writer.EndMessage();
                 writer.SendMessage();
             }
+            return true;
         }
 
-        public static void OnFixedUpdate(PlayerControl pc)
+        private static void OnFixedUpdateOthers(PlayerControl pc)
         {
             if (pc.Is(CustomRoles.Spiritcaller))
             {
@@ -126,7 +132,7 @@ namespace TOHE.Roles.Neutral
             }
         }
 
-        public static string GetSpiritLimit() => Utils.ColorString(SpiritLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Spiritcaller) : Color.gray, $"({SpiritLimit})");
+        public override string GetProgressText(byte PlayerId, bool cooooms) => Utils.ColorString(SpiritLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Spiritcaller) : Color.gray, $"({SpiritLimit})");
 
         public static void HauntPlayer(PlayerControl target)
         {
@@ -156,6 +162,18 @@ namespace TOHE.Roles.Neutral
                 }, SpiritFreezeTime.GetFloat(), "Spirit UnFreeze");
             }
         }
+        public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+        public override bool CanUseImpostorVentButton(PlayerControl pc) => Spiritcaller.CanVent.GetBool();
+        public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+        {
+            if (Spiritcaller.InProtect(target))
+            {
+                killer.RpcGuardAndKill(target);
+                target.RpcGuardAndKill();
+                return false;
+            }
+            return true;
+        }
 
         public static void ReduceVision(IGameOptions opt, PlayerControl target)
         {
@@ -171,5 +189,8 @@ namespace TOHE.Roles.Neutral
         {
             ProtectTimeStamp = Utils.GetTimeStamp() + (long)SpiritProtectTime.GetFloat();
         }
+        public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+            => seer.Is(CustomRoles.Spiritcaller) && target.Is(CustomRoles.EvilSpirit) ? Main.roleColors[CustomRoles.EvilSpirit] : "";
+        
     }
 }

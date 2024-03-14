@@ -185,7 +185,6 @@ public abstract class RoleBase
     /// When guesser trying guess target a role
     /// </summary>
     public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role) => target == null;
-
     /// <summary>
     /// Check exile role
     /// </summary>
@@ -254,13 +253,16 @@ public abstract class RoleBase
     /// </summary>
     public virtual int AddRealVotesNum(PlayerVoteArea PVA) => 0;
 
+    public virtual void SetHudActive(HudManager hud, bool IsActive)
+    { }
+
     // Set text for Kill/Shapeshift/Report/Vent/Protect button
     public virtual void SetAbilityButtonText(HudManager hud, byte playerId)
     { }
 
     public virtual Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => null;
     public virtual Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => null;
-    public virtual Sprite ImpostorVentButtonSprite { get; }
+    public virtual Sprite ImpostorVentButtonSprite(PlayerControl player) => null;
     public virtual Sprite ReportButtonSprite { get; }
 
     /// <summary>

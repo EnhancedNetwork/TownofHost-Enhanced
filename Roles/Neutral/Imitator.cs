@@ -90,26 +90,7 @@ public static class Imitator
             RememberLimit[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
             killer.RpcSetCustomRole(role);
-
-            //Do those trash add check here
-            switch (role)
-            {
-                case CustomRoles.Jackal:
-                    Jackal.Add(killer.PlayerId);
-                    break;
-                case CustomRoles.HexMaster:
-                    HexMaster.Add(killer.PlayerId);
-                    break;
-                case CustomRoles.Poisoner:
-                    Poisoner.Add(killer.PlayerId);
-                    break;
-                case CustomRoles.Juggernaut:
-                    Juggernaut.Add(killer.PlayerId);
-                    break;
-                case CustomRoles.BloodKnight:
-                    BloodKnight.Add(killer.PlayerId);
-                    break;
-            }
+            killer.GetRoleClass().Add(killer.PlayerId);
 
             if (role.IsCrewmate())
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
