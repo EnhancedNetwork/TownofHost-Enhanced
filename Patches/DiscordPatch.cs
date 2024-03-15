@@ -24,7 +24,7 @@ namespace TOHE.Patches
                 {
                     if (!DataManager.Settings.Gameplay.StreamerMode)
                     {
-                        int maxSize = GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers;
+                        int maxSize = GameOptionsManager.Instance.CurrentGameOptions.MaxPlayers;
                         if (GameStates.IsLobby)
                         {
                             lobbycode = GameStartManager.Instance.GameRoomNameCode.text;
