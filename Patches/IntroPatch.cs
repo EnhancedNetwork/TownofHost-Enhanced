@@ -285,7 +285,7 @@ class BeginCrewmatePatch
        
         return true;
     }
-    public static void Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToDisplay)
+    public static void Postfix(IntroCutscene __instance)
     {
         //チーム表示変更
         CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
@@ -515,9 +515,9 @@ class BeginImpostorPatch
         BeginCrewmatePatch.Prefix(__instance, ref yourTeam);
         return true;
     }
-    public static void Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+    public static void Postfix(IntroCutscene __instance)
     {
-        BeginCrewmatePatch.Postfix(__instance, ref yourTeam);
+        BeginCrewmatePatch.Postfix(__instance);
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]

@@ -2372,24 +2372,17 @@ class CoExitVentPatch
         if (GameStates.IsHideNSeek) return;
 
         var player = __instance.myPlayer;
-        var playerRoleClass = player.GetRoleClass();
-
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
         {
             FFAManager.CoExitVent(player);
         }
 
-        playerRoleClass?.OnExitVent(player, id);
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        player.GetRoleClass()?.OnExitVent(player, id);
     }
 }
 
-/*[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetName))]
-class SetNamePatch
-{
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] string name)
-    {
-    }
-}*/
 [HarmonyPatch(typeof(GameData), nameof(GameData.CompleteTask))]
 class GameDataCompleteTaskPatch
 {

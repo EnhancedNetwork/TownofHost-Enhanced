@@ -204,11 +204,18 @@ internal class Witch : RoleBase
     {
         RemoveSpelledPlayer();
     }
+    public override void OnEnterVent(PlayerControl pc, Vent vent)
+    {
+        if (NowSwitchTrigger is SwitchTrigger.TriggerVent)
+        {
+            SwitchSpellMode(pc.PlayerId, false);
+        }
+    }
     private string GetSpelledMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
 
-        if (IsSpelled(seen.PlayerId) && isForMeeting)
+        if (isForMeeting && IsSpelled(seen.PlayerId))
         {
             return Utils.ColorString(Palette.ImpostorRed, "†");
         }
@@ -246,14 +253,6 @@ internal class Witch : RoleBase
         else
         {
             hud.KillButton.OverrideText(GetString("KillButtonText"));
-        }
-    }
-
-    public override void OnEnterVent(PlayerControl pc, Vent vent)
-    {
-        if (NowSwitchTrigger is SwitchTrigger.TriggerVent)
-        {
-            SwitchSpellMode(pc.PlayerId, false);
         }
     }
 }
