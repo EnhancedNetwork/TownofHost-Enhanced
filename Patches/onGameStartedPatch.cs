@@ -569,7 +569,6 @@ internal class SelectRolesPatch
             foreach (var kv in RoleAssign.RoleResult)
             {
                 if (kv.Value.IsDesyncRole()) continue;
-                if (kv.Value.IsGhostRole()) Logger.Warn("Warning! Someone has unintentionally been assigned ghost role, debug or up?", "RoleGhost");
                 AssignCustomRole(kv.Value, kv.Key);
             }
 

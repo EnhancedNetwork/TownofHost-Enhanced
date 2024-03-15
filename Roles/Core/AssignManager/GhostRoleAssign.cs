@@ -27,7 +27,7 @@ public static class GhostRoleAssign
         
         GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
         if (GhostGetPreviousRole.ContainsKey(player.PlayerId)) Logger.Info($"Succesfully added {player.GetRealName()}/{player.GetCustomRole()}", "GhostAssignPatch.GhostPreviousRole");
-        else Logger.Info($"Adding {player.GetRealName()} was unsuccessful", "GhostAssignPatch.GhostPreviousRole");
+        else Logger.Warn($"Adding {player.GetRealName()} was unsuccessful", "GhostAssignPatch.GhostPreviousRole");
 
         List<CustomRoles> HauntedList = [];
         List<CustomRoles> ImpHauntedList = [];
