@@ -1,7 +1,5 @@
 using Hazel;
 using System.Collections.Generic;
-using System.Runtime.Intrinsics.Arm;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.Utils;

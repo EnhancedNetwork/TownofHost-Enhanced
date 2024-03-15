@@ -4,7 +4,6 @@ using InnerNet;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Core;
-using static Il2CppSystem.Globalization.CultureInfo;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
