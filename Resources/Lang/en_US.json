@@ -2043,6 +2043,8 @@
   "MorticianGetNoInfo": "According to your inspection, <b>{0}</b> did not seem to have contact with anyone during their lifetime.",
   "MorticianGetInfo": "According to your inspection, the last person <b>{0}</b> came into contact with during their lifetime was <b>{1}</b>.",
   "MediumshipHelp": "<b>/ms yes</b> to agree\n<b>/ms no</b> to disagree",
+  "MediumshipYes": "You thought you heard a quiet voice from another world affirming the answer to your question.",
+  "MediumshipNo": "You thought you heard a quiet voice from another world denying the answer to your question.",
   "MediumshipDone": "You successfully responded to the Medium.",
   "MediumshipNotifyTarget": "<b>{0}</b>, the Medium, has established contact with you. Before the end of this meeting, you have a chance to respond to their question. Type one of the following commands to answer:\nConfirm: /ms yes\nDeny: /ms no",
   "MediumshipNotifySelf": "You established contact with <b>{0}</b>, please ask questions to them and wait for them to respond.\n\nRemaining ability uses: {1}",
