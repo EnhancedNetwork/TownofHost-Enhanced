@@ -4442,6 +4442,7 @@ public static class PlayerControlDiePatch
         
         try
         {
+            if (!__instance.GetCustomRole().IsGhostRole()) Logger.Info("GhostRoleAssign ran by DiePlayerPatch", "DiePlayerPatch");
             GhostRoleAssign.GhostAssignPatch(__instance);
         }
         catch (Exception error)
