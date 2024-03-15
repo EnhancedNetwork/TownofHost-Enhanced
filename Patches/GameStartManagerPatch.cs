@@ -2,13 +2,11 @@ using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using InnerNet;
-using Rewired.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using TOHE.Modules;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
@@ -266,6 +264,15 @@ public class GameStartRandomMap
             return false;
         }
 
+        if (Options.RandomMapsMode.GetBool())
+        {
+            if (GameStates.IsNormalGame)
+                Main.NormalOptions.MapId = SelectRandomMap();
+
+            else if (GameStates.IsHideNSeek)
+                Main.HideNSeekOptions.MapId = SelectRandomMap();
+        }
+
         //if (GameStates.IsNormalGame && Options.IsActiveDleks)
         //{
         //    Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
@@ -293,19 +300,6 @@ public class GameStartRandomMap
 
         __instance.ReallyBegin(false);
         return false;
-    }
-    public static bool Prefix()
-    {
-        bool continueStart = true;
-        if (Options.RandomMapsMode.GetBool())
-        {
-            if (GameStates.IsNormalGame)
-                Main.NormalOptions.MapId = SelectRandomMap();
-
-            else if (GameStates.IsHideNSeek)
-                Main.HideNSeekOptions.MapId = SelectRandomMap();
-        }
-        return continueStart;
     }
     public static byte SelectRandomMap()
     {

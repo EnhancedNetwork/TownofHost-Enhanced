@@ -91,7 +91,7 @@ class OnGameJoinedPatch
                     break;
 
                 default:
-                    Logger.Info(" No find", "Game Mode");
+                    Logger.Info(" No found", "Game Mode");
                     break;
             }
         }
