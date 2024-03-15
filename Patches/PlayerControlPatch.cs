@@ -1595,7 +1595,7 @@ public static class CheckShapeShiftPatch
         var role = shapeshifter.GetCustomRole();
 
         // Always show
-        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman or CustomRoles.Morphling) return true;
+        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman or CustomRoles.Morphling or CustomRoles.Glitch) return true;
 
         // Check Sniper settings conditions
         if (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations) return true;
@@ -1907,7 +1907,7 @@ class ShapeshiftPatch
 
             // Check shapeshift
             if (!(
-                (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman or CustomRoles.Morphling)
+                (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman or CustomRoles.Morphling or CustomRoles.Glitch)
                 ||
                 (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations)
                 ))
