@@ -132,7 +132,8 @@ public static class NameColorManager
         //Virus
         if (Virus.KnowRoleColor(seer, target) != "") color = Virus.KnowRoleColor(seer, target);
 
-        if (color != "") return true;
+        if (color != "" && color != string.Empty) return true;
+
         else return seer == target
             || (Main.GodMode.Value && seer.AmOwner)
             || (Options.CurrentGameMode == CustomGameMode.FFA)

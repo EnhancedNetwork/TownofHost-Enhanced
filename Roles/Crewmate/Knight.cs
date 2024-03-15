@@ -46,14 +46,17 @@ internal class Knight : RoleBase
     {
         playerIdList.Remove(playerId);
     }
-    
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public static bool CheckCanUseVent(PlayerControl player) => player.Is(CustomRoles.Knight) && CanVent.GetBool();
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CheckCanUseVent(pc);
+
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsKilled(id) ? 300f : KillCooldown.GetFloat();
-    public override string GetProgressText(byte id, bool comms) => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, !IsKilled(id) ? "(1)" : "(0)");
-    
     public override bool CanUseKillButton(PlayerControl pc)
         => !IsKilled(pc.PlayerId);
+
+    public override string GetProgressText(byte id, bool comms)
+        => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, !IsKilled(id) ? "(1)" : "(0)");
     
     private static bool IsKilled(byte playerId) => killed.Contains(playerId);
 
@@ -78,12 +81,5 @@ internal class Knight : RoleBase
         killer.ResetKillCooldown();
         Utils.NotifyRoles(SpecifySeer: killer);
         return true;
-    }
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
-    public override void SetAbilityButtonText(HudManager hud, byte id)
-    {
-        hud.SabotageButton.ToggleVisible(false);
-        hud.AbilityButton.ToggleVisible(false);
-        hud.ImpostorVentButton.ToggleVisible(false);
     }
 }

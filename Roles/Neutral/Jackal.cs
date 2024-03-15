@@ -154,16 +154,9 @@ internal class Jackal : RoleBase
             HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
     }
     public override void ApplyGameOptions(IGameOptions opt, byte babuyaga) => opt.SetVision(HasImpostorVision.GetBool());
-    public static void CanUseVent(PlayerControl player)
-    {
-        bool jackal_canUse = CanVent.GetBool();
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(jackal_canUse && !player.Data.IsDead);
-        player.Data.Role.CanVent = jackal_canUse;
-    }
-
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseSabotage(PlayerControl pc) => CanUsesSabotage.GetBool();
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-    public override bool CanUseKillButton(PlayerControl pc) => true;
 
     public static void AfterPlayerDiedTask(PlayerControl target)
     {
@@ -279,7 +272,7 @@ internal class Jackal : RoleBase
     public static bool RpcCheckAndMurder(PlayerControl killer, PlayerControl target)
     {
 
-        if (!Jackal.JackalCanKillSidekick.GetBool())
+        if (!JackalCanKillSidekick.GetBool())
         {
             // Jackal can kill Sidekick/Recruit
             if (killer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)))
@@ -290,7 +283,7 @@ internal class Jackal : RoleBase
                 return false;
         }
 
-        if (!Jackal.SidekickCanKillSidekick.GetBool())
+        if (!SidekickCanKillSidekick.GetBool())
         {
             // Sidekick can kill Sidekick/Recruit
             if (killer.Is(CustomRoles.Sidekick) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)))

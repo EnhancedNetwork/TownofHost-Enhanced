@@ -271,12 +271,8 @@ internal class Medic : RoleBase
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
-        hud.ReportButton.OverrideText(GetString("ReportButtonText"));
-        hud.KillButton.OverrideText(GetString("MedicalerButtonText"));
-
-        hud.SabotageButton.ToggleVisible(false);
-        hud.AbilityButton.ToggleVisible(false);
-        hud.ImpostorVentButton.ToggleVisible(false);
+        hud.ReportButton?.OverrideText(GetString("ReportButtonText"));
+        hud.KillButton?.OverrideText(GetString("MedicalerButtonText"));
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Shield");
 }

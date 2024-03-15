@@ -57,46 +57,44 @@ internal class Jinx : RoleBase
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetJinxSpellCount, SendOption.Reliable, -1);
         writer.Write(playerId);
-        writer.WritePacked(Jinx.JinxSpellCount[playerId]);
+        writer.WritePacked(JinxSpellCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
         byte JinxId = reader.ReadByte();
         int JinxGuardNum = reader.ReadInt32();
-        if (Jinx.JinxSpellCount.ContainsKey(JinxId))
-            Jinx.JinxSpellCount[JinxId] = JinxGuardNum;
+        if (JinxSpellCount.ContainsKey(JinxId))
+            JinxSpellCount[JinxId] = JinxGuardNum;
         else
-            Jinx.JinxSpellCount.Add(JinxId, Jinx.JinxSpellTimes.GetInt());
+            JinxSpellCount.Add(JinxId, JinxSpellTimes.GetInt());
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (Jinx.JinxSpellCount[target.PlayerId] <= 0) return true;
+        if (JinxSpellCount[target.PlayerId] <= 0) return true;
         if (killer.Is(CustomRoles.Pestilence)) return true;
         if (killer == target) return true;
         killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(target);
-        Jinx.JinxSpellCount[target.PlayerId] -= 1;
+        JinxSpellCount[target.PlayerId] -= 1;
         SendRPCJinxSpellCount(target.PlayerId);
-        if (Jinx.killAttacker.GetBool())
+        if (killAttacker.GetBool())
         {
             killer.SetRealKiller(target);
-            Logger.Info($"{target.GetNameWithRole()} : {Jinx.JinxSpellCount[target.PlayerId]}回目", "Jinx");
+            Logger.Info($"{target.GetNameWithRole()} : {JinxSpellCount[target.PlayerId]}回目", "Jinx");
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
             killer.RpcMurderPlayerV3(killer);
         }
         return false;
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte babushka) => opt.SetVision(HasImpostorVision.GetBool());
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
-    public override bool CanUseImpostorVentButton(PlayerControl player)
-    {
-        bool Jinx_canUse = CanVent.GetBool();
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Jinx_canUse && !player.Data.IsDead);
-        return Jinx_canUse;
-    }
+
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl player) => CanVent.GetBool();
+
     public override string GetProgressText(byte playerId, bool comms) 
         => Utils.ColorString(CanJinx(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, JinxSpellCount.TryGetValue(playerId, out var recruitLimit) ? $"({recruitLimit})" : "Invalid");
+    
     private static bool CanJinx(byte id) => JinxSpellCount.TryGetValue(id, out var x) && x > 0;
 }

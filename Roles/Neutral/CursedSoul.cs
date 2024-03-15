@@ -18,11 +18,12 @@ internal class CursedSoul : RoleBase
 
     //==================================================================\\
 
-    public static OptionItem CurseCooldown;
-    public static OptionItem CurseCooldownIncrese;
-    public static OptionItem CurseMax;
-    public static OptionItem KnowTargetRole;
-    public static OptionItem CanCurseNeutral;
+    private static OptionItem CurseCooldown;
+    private static OptionItem CurseCooldownIncrese;
+    private static OptionItem CurseMax;
+    private static OptionItem KnowTargetRole;
+    private static OptionItem CanCurseNeutral;
+    
     private static int CurseLimit = new();
 
     public static void SetupCustomOption()
@@ -62,8 +63,10 @@ internal class CursedSoul : RoleBase
     {
         CurseLimit = reader.ReadInt32();
     }
+
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CurseLimit >= 1 ? CurseCooldown.GetFloat() + (CurseMax.GetInt() - CurseLimit) * CurseCooldownIncrese.GetFloat() : 300f;
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && CurseLimit >= 1;
+    public override bool CanUseKillButton(PlayerControl player) => CurseLimit >= 1;
+    
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (CurseLimit < 1) return true;
@@ -102,7 +105,7 @@ internal class CursedSoul : RoleBase
         => player.Is(CustomRoles.CursedSoul) && target.Is(CustomRoles.Soulless);
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-        => KnowRoleTarget(seer, target) ? Main.roleColors[CustomRoles.Soulless] : "";
+        => KnowRoleTarget(seer, target) ? Main.roleColors[CustomRoles.Soulless] : string.Empty;
     
     public override string GetProgressText(byte id, bool cooms) => Utils.ColorString(CurseLimit >= 1 ? Utils.GetRoleColor(CustomRoles.CursedSoul) : Color.gray, $"({CurseLimit})");
     private static bool CanBeSoulless(PlayerControl pc)

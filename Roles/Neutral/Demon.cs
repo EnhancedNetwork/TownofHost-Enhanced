@@ -9,10 +9,9 @@ namespace TOHE.Roles.Neutral;
 
 internal class Demon : RoleBase
 {
-
     //===========================SETUP================================\\
-    private static readonly int Id = 16200;
-    public static List<byte> playerIdList = [];
+    private const int Id = 16200;
+    private static List<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -23,7 +22,7 @@ internal class Demon : RoleBase
     private static Dictionary<byte, int> DemonHealth = [];
 
     private static OptionItem KillCooldown;
-    public static OptionItem CanVent;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
     private static OptionItem HealthMax;
     private static OptionItem Damage;
@@ -32,7 +31,6 @@ internal class Demon : RoleBase
 
     public static void SetupCustomOption()
     {
-        //玩家只能有一人
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Demon, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, "DemonKillCooldown", new(1f, 180f, 1f), 2f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon])
             .SetValueFormat(OptionFormat.Seconds);
@@ -67,13 +65,10 @@ internal class Demon : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
-    public override bool CanUseImpostorVentButton(PlayerControl player)
-    {
-        bool Demon_canUse = CanVent.GetBool();
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Demon_canUse && !player.Data.IsDead);
-        return Demon_canUse;
-    }
+    
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl player) => CanVent.GetBool();
+
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDemonHealth, SendOption.Reliable, -1);
@@ -139,16 +134,17 @@ internal class Demon : RoleBase
     }
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Demon) || !seer.IsAlive()) return "";
+        if (!seer.Is(CustomRoles.Demon) || !seer.IsAlive()) return string.Empty;
+        
         if (seer.PlayerId == target.PlayerId)
         {
             var GetValue = DemonHealth.TryGetValue(target.PlayerId, out var value);
-            return GetValue && value > 0 ? Utils.ColorString(GetColor(value, true), $"【{value}/{SelfHealthMax.GetInt()}】") : "";
+            return GetValue && value > 0 ? Utils.ColorString(GetColor(value, true), $"【{value}/{SelfHealthMax.GetInt()}】") : string.Empty;
         }
         else
         {
             var GetValue = PlayerHealth.TryGetValue(target.PlayerId, out var value);
-            return GetValue && value > 0 ? Utils.ColorString(GetColor(value), $"【{value}/{HealthMax.GetInt()}】") : "";
+            return GetValue && value > 0 ? Utils.ColorString(GetColor(value), $"【{value}/{HealthMax.GetInt()}】") : string.Empty;
         }
     }
     private static Color32 GetColor(float Health, bool self = false)
@@ -161,9 +157,5 @@ internal class Demon : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.KillButton.OverrideText(GetString("GamerButtonText"));
-
-        hud.SabotageButton.ToggleVisible(false);
-        hud.AbilityButton.ToggleVisible(false);
-        hud.ReportButton.ToggleVisible(false);
     }
 }

@@ -32,13 +32,10 @@ internal class Innocent : RoleBase
     {
         PlayerIds.Add(playerId);
     }
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.KillButton.OverrideText(GetString("InnocentButtonText"));
-
-        hud.SabotageButton.ToggleVisible(false);
-        hud.AbilityButton.ToggleVisible(false);
-        hud.ReportButton.ToggleVisible(false);
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Suidce");
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

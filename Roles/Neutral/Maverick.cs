@@ -39,10 +39,5 @@ public static class Maverick
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
-    public static void CanUseVent(PlayerControl player)
-    {
-        bool Maverick_canUse = CanVent.GetBool();
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Maverick_canUse && !player.Data.IsDead);
-        player.Data.Role.CanVent = Maverick_canUse;
-    }
+    public static void CanUseVent(PlayerControl player) => CanVent.GetBool();
 }

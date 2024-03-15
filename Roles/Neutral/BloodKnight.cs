@@ -9,10 +9,9 @@ namespace TOHE.Roles.Neutral;
 
 internal class BloodKnight : RoleBase
 {
-
     //===========================SETUP================================\\
-    private static readonly int Id = 16100;
-    public static List<byte> playerIdList = [];
+    private const int Id = 16100;
+    private static List<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -20,7 +19,7 @@ internal class BloodKnight : RoleBase
     //==================================================================\\
 
     private static OptionItem KillCooldown;
-    public static OptionItem CanVent;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
     private static OptionItem ProtectDuration;
 
@@ -64,16 +63,22 @@ internal class BloodKnight : RoleBase
         TimeStamp.TryAdd(PlayerId, long.Parse(Time));
         TimeStamp[PlayerId] = long.Parse(Time);
     }
-    public static bool InProtect(byte playerId) => TimeStamp.TryGetValue(playerId, out var time) && time > Utils.GetTimeStamp();
+
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+
+    private static bool InProtect(byte playerId) => TimeStamp.TryGetValue(playerId, out var time) && time > Utils.GetTimeStamp();
+    
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (InProtect(target.PlayerId))
         {
             killer.RpcGuardAndKill(target);
-            if (!Options.DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
+            if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
             target.Notify(GetString("BKOffsetKill"));
             return false;
         }
+        else if (killer.GetCustomRole() == target.GetCustomRole()) return false;
         return true;
     }
     public override void OnMurder(PlayerControl killer, PlayerControl target)
@@ -82,20 +87,23 @@ internal class BloodKnight : RoleBase
         TimeStamp[killer.PlayerId] = Utils.GetTimeStamp() + (long)ProtectDuration.GetFloat();
         SendRPC(killer.PlayerId);
         killer.Notify(GetString("BKInProtect"));
-    } // idk what this
+    }
+
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+
+    public override void OnFixedUpdateLowLoad(PlayerControl pc)
     {
         if (TimeStamp[pc.PlayerId] < Utils.GetTimeStamp() && TimeStamp[pc.PlayerId] != 0)
         {
             TimeStamp[pc.PlayerId] = 0;
-            pc.Notify(GetString("BKProtectOut"));
+            pc.Notify(GetString("BKProtectOut"), sendInLog: false);
         }
     }
     public override string GetLowerText(PlayerControl pc, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (pc == null || !GameStates.IsInTask || !PlayerControl.LocalPlayer.IsAlive()) return "";
+        if (pc == null || isForMeeting || !isForHud || !pc.IsAlive()) return string.Empty;
+
         var str = new StringBuilder();
         if (InProtect(pc.PlayerId))
         {
@@ -108,8 +116,4 @@ internal class BloodKnight : RoleBase
         }
         return str.ToString();
     }
-
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-
 }

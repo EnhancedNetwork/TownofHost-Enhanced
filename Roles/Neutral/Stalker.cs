@@ -77,15 +77,9 @@ internal class Stalker : RoleBase
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CurrentKillCooldown[id];
-    public override bool CanUseKillButton(PlayerControl player) => player != null && player.IsAlive();
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => Stalker.CanVent.GetBool();
+    public override bool CanUseKillButton(PlayerControl player) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
-    {
-        hud.SabotageButton.ToggleVisible(false);
-        hud.AbilityButton.ToggleVisible(false);
-        hud.ReportButton.ToggleVisible(false);
-    }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl Ktarget)
     {
         var targetRole = Ktarget.GetCustomRole();

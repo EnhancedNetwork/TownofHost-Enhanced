@@ -12,22 +12,19 @@ namespace TOHE.Roles.Neutral;
 
 internal class Shroud : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 18000;
     private static HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
-
-
-    public static Dictionary<byte, byte> ShroudList = [];
 
     private static OptionItem ShroudCooldown;
     public static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
+
+    public static Dictionary<byte, byte> ShroudList = [];
 
     public static void SetupCustomOption()
     {
@@ -166,10 +163,7 @@ internal class Shroud : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ShroudCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-    public override bool CanUseImpostorVentButton(PlayerControl pc)
-    {
-        bool Shroud_canUse = CanVent.GetBool();
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Shroud_canUse && !pc.Data.IsDead);
-        return Shroud_canUse;
-    }
+
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 }

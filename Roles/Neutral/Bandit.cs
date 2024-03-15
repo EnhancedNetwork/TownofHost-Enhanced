@@ -7,36 +7,35 @@ using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
+
 internal class Bandit : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 16000;
     private static List<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
-    public static Dictionary<byte, float> killCooldown = [];
 
-    public static OptionItem KillCooldownOpt;
-    public static OptionItem StealCooldown;
-    public static OptionItem MaxSteals;
-    public static OptionItem StealMode;
-    public static OptionItem CanStealBetrayalAddon;
-    public static OptionItem CanStealImpOnlyAddon;
-    public static OptionItem CanUsesSabotage;
-    public static OptionItem CanVent;
+    private static OptionItem KillCooldownOpt;
+    private static OptionItem StealCooldown;
+    private static OptionItem MaxSteals;
+    private static OptionItem StealMode;
+    private static OptionItem CanStealBetrayalAddon;
+    private static OptionItem CanStealImpOnlyAddon;
+    private static OptionItem CanUsesSabotage;
+    private static OptionItem CanVent;
 
-    public static Dictionary<byte, int> TotalSteals = [];
-    public static Dictionary<byte, Dictionary<byte, CustomRoles>> Targets = [];
+    private static Dictionary<byte, float> killCooldown = [];
+    private static Dictionary<byte, int> TotalSteals = [];
+    private static Dictionary<byte, Dictionary<byte, CustomRoles>> Targets = [];
 
-    public static readonly string[] BanditStealModeOpt =
-    [
-        "BanditStealMode.OnMeeting",
-        "BanditStealMode.Instantly"
-    ];
+    private enum BanditStealModeOpt
+    {
+        BanditStealMode_OnMeeting,
+        BanditStealMode_Instantly
+    }
 
     public static void SetupCustomOption()
     {
@@ -46,7 +45,7 @@ internal class Bandit : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         StealCooldown = FloatOptionItem.Create(Id + 17, "StealCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
             .SetValueFormat(OptionFormat.Seconds);
-        StealMode = StringOptionItem.Create(Id + 12, "BanditStealMode", BanditStealModeOpt, 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
+        StealMode = StringOptionItem.Create(Id + 12, "BanditStealMode", EnumHelper.GetAllNames<BanditStealModeOpt>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanStealBetrayalAddon = BooleanOptionItem.Create(Id + 13, "BanditCanStealBetrayalAddon", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanStealImpOnlyAddon = BooleanOptionItem.Create(Id + 14, "BanditCanStealImpOnlyAddon", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanUsesSabotage = BooleanOptionItem.Create(Id + 15, "CanUseSabotage", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
@@ -101,7 +100,7 @@ internal class Bandit : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(false);
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
     public override bool CanUseSabotage(PlayerControl pc) => CanUsesSabotage.GetBool();
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
 
     private static CustomRoles? SelectRandomAddon(PlayerControl Target)
     {

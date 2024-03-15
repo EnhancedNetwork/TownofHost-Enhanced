@@ -8,7 +8,7 @@ public static class NameNotifyManager
     public static Dictionary<byte, (string, long)> Notice = [];
     public static void Reset() => Notice = [];
     public static bool Notifying(this PlayerControl pc) => Notice.ContainsKey(pc.PlayerId);
-    public static void Notify(this PlayerControl pc, string text, float time = 4f)
+    public static void Notify(this PlayerControl pc, string text, float time = 4f, bool sendInLog = true)
     {
         if (!AmongUsClient.Instance.AmHost || pc == null) return;
         if (!GameStates.IsInTask) return;
