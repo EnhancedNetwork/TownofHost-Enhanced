@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using static TOHE.Translator;
 using static TOHE.Options;
-using UnityEngine;
-using MS.Internal.Xml.XPath;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Glitch : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 16300;
     public static List<byte> playerIdList = [];
@@ -40,7 +38,7 @@ internal class Glitch : RoleBase
     public static long LastMimic;
 
     private static bool isShifted = false;
-    //    public static OptionItem CanUseSabotage;
+    //  public static OptionItem CanUseSabotage;
 
     public static void SetupCustomOption()
     {
@@ -81,13 +79,15 @@ internal class Glitch : RoleBase
         LastHack = ts;
         LastMimic = ts;
 
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
+        if (AmongUsClient.Instance.AmHost)
+        {
+            if (!Main.ResetCamPlayerList.Contains(playerId))
+                Main.ResetCamPlayerList.Add(playerId);
 
-        // Double Trigger
-        var pc = Utils.GetPlayerById(playerId);
-        pc.AddDoubleTrigger();
+            // Double Trigger
+            var pc = Utils.GetPlayerById(playerId);
+            pc.AddDoubleTrigger();
+        }
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 1f;
@@ -216,10 +216,10 @@ internal class Glitch : RoleBase
         {
             var sb = new StringBuilder();
 
-            if (MimicDurTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("MimicDur"), MimicDurTimer)}");
-            if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"\n{string.Format(Translator.GetString("MimicCD"), MimicCDTimer)}");
-            if (HackCDTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("HackCD"), HackCDTimer)}");
-            if (KCDTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("KCD"), KCDTimer)}");
+            if (MimicDurTimer > 0) sb.Append($"\n{string.Format(GetString("MimicDur"), MimicDurTimer)}");
+            if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"\n{string.Format(GetString("MimicCD"), MimicCDTimer)}");
+            if (HackCDTimer > 0) sb.Append($"\n{string.Format(GetString("HackCD"), HackCDTimer)}");
+            if (KCDTimer > 0) sb.Append($"\n{string.Format(GetString("KCD"), KCDTimer)}");
 
             string ns = sb.ToString();
 
@@ -234,10 +234,10 @@ internal class Glitch : RoleBase
 
         var sb = new StringBuilder();
 
-        if (MimicDurTimer > 0) sb.Append($"{string.Format(Translator.GetString("MimicDur"), MimicDurTimer)}\n");
-        if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"{string.Format(Translator.GetString("MimicCD"), MimicCDTimer)}\n");
-        if (HackCDTimer > 0) sb.Append($"{string.Format(Translator.GetString("HackCD"), HackCDTimer)}\n");
-        if (KCDTimer > 0) sb.Append($"{string.Format(Translator.GetString("KCD"), KCDTimer)}\n");
+        if (MimicDurTimer > 0) sb.Append($"{string.Format(GetString("MimicDur"), MimicDurTimer)}\n");
+        if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"{string.Format(GetString("MimicCD"), MimicCDTimer)}\n");
+        if (HackCDTimer > 0) sb.Append($"{string.Format(GetString("HackCD"), HackCDTimer)}\n");
+        if (KCDTimer > 0) sb.Append($"{string.Format(GetString("KCD"), KCDTimer)}\n");
 
         return sb.ToString();
     }
@@ -251,14 +251,14 @@ internal class Glitch : RoleBase
         HackCDTimer = 10;
         MimicCDTimer = 10;
     }
-    public static bool OnCoEnterVentOthers(PlayerPhysics __instance, int id)
+    public override bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId)
     {
-        if (hackedIdList.ContainsKey(__instance.myPlayer.PlayerId))
+        if (hackedIdList.ContainsKey(physics.myPlayer.PlayerId))
         {
             _ = new LateTask(() =>
             {
-                __instance.myPlayer?.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchVent")));
-                __instance.myPlayer?.MyPhysics?.RpcBootFromVent(id);
+                physics.myPlayer?.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchVent")));
+                physics.myPlayer?.MyPhysics?.RpcBootFromVent(ventId);
             }, 0.5f, "Player Boot From Vent By Glith");
             return true;
         }

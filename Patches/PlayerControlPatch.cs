@@ -2280,20 +2280,7 @@ class CoExitVentPatch
 
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
         {
-            if (player != null)
-            {
-                var now = Utils.GetTimeStamp();
-                byte playerId = player.PlayerId;
-
-                if (FFAManager.FFAEnterVentTime.ContainsKey(playerId))
-                {
-                    if (!FFAManager.FFAVentDuration.ContainsKey(playerId)) FFAManager.FFAVentDuration[playerId] = 0f;
-                    FFAManager.FFAVentDuration[playerId] = FFAManager.FFAVentDuration[playerId] + (now - FFAManager.FFAEnterVentTime[playerId]);
-
-                    Logger.Warn($"Vent Duration = {FFAManager.FFAVentDuration[playerId]}, vent enter time = {FFAManager.FFAEnterVentTime[playerId]}, vent exit time = {now}, vent time = {now - FFAManager.FFAEnterVentTime[playerId]}", "FFA VENT DURATION");
-                    FFAManager.FFAEnterVentTime.Remove(playerId);
-                }
-            }
+            FFAManager.CoExitVent(player);
         }
 
         playerRoleClass?.OnExitVent(player, id);
@@ -2345,60 +2332,15 @@ class CoEnterVentPatch
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return true;
         Logger.Info($" {__instance.myPlayer.GetNameWithRole().RemoveHtmlTags()}, Vent ID: {id}", "CoEnterVent");
 
-
-
         //FFA
-        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenTwoPlayersAlive.GetBool() && Main.AllAlivePlayerControls.Length <= 2)
-        {
-            var pc = __instance?.myPlayer;
-            _ = new LateTask(() =>
-            {
-                pc?.Notify(GetString("FFA-NoVentingBecauseTwoPlayers"), 7f);
-                pc?.MyPhysics?.RpcBootFromVent(id);
-            }, 0.5f, "Player No Venting Because Two Players");
-            return true;
-        }
-        //FFA
-        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
-        {
-            var pc = __instance?.myPlayer;
-            var now = Utils.GetTimeStamp();
-            FFAManager.FFAEnterVentTime[pc.PlayerId] = now;
-            if (!FFAManager.FFAVentDuration.ContainsKey(pc.PlayerId)) FFAManager.FFAVentDuration[pc.PlayerId] = 0;
-            var canVent = (now - FFAManager.FFALastKill[pc.PlayerId]) <= (Main.AllPlayerKillCooldown[pc.PlayerId] + FFAManager.FFAVentDuration[pc.PlayerId]);
-            Logger.Warn($"Enter Time = {now}, last kill time = {FFAManager.FFALastKill[pc.PlayerId]}, {FFAManager.FFAVentDuration[pc.PlayerId]}", "VENT DURATION TESTING");
-            Logger.Warn($"can vent {canVent}", "FFA MODE VENTING");
-            if (!canVent)
-            {
-                _ = new LateTask(() =>
-                {
-                    pc?.Notify(GetString("FFA-NoVentingBecauseKCDIsUP"), 7f);
-                    pc?.MyPhysics?.RpcBootFromVent(id);
-                }, 0.5f, "Player No Venting Because KCD Is UP");
-                return true;
-            }
-
-        }
-
-        
-        if (Glitch.OnCoEnterVentOthers(__instance, id)) 
-            return true;
-
-        if (Bastion.OnOthersEnterVent(__instance, id))
+        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.CheckCoEnterVent(__instance, id))
         {
             return true;
         }
 
-
-        if (AmongUsClient.Instance.IsGameStarted && __instance.myPlayer.IsDrawDone())//完成拉拢任务的玩家跳管后
+        // Check others enter to vent
+        if (CustomRoleManager.OthersCoEnterVent(__instance, id))
         {
-            if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Revolutionist);//革命者胜利
-                Utils.GetDrawPlayerCount(__instance.myPlayer.PlayerId, out var x);
-                CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
-                foreach (var apc in x.ToArray()) CustomWinnerHolder.WinnerIds.Add(apc.PlayerId);//胜利玩家
-            }
             return true;
         }
 
@@ -2423,8 +2365,20 @@ class CoEnterVentPatch
             return false;
         }
 
-        __instance.myPlayer?.GetRoleClass()?.OnCoEnterVent(__instance, id);
-       
+        if (AmongUsClient.Instance.IsGameStarted && __instance.myPlayer.IsDrawDone())
+        {
+            if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Revolutionist);
+                Utils.GetDrawPlayerCount(__instance.myPlayer.PlayerId, out var x);
+                CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
+                foreach (var apc in x.ToArray())
+                    CustomWinnerHolder.WinnerIds.Add(apc.PlayerId);
+            }
+            return true;
+        }
+
+        playerRoleClass?.OnCoEnterVent(__instance, id);
 
         return true;
     }

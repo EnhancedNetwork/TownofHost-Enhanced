@@ -100,6 +100,10 @@ public abstract class RoleBase
     /// <summary>
     /// A method for activating actions when role is already in vent
     /// </summary>
+    public virtual bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId) => physics == null;
+    /// <summary>
+    /// A method for activating actions when role is already in vent
+    /// </summary>
     public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
     { }
     /// <summary>

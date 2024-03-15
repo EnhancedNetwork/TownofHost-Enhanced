@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MS.Internal.Xml.XPath;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Core;
 
@@ -327,6 +329,24 @@ public static class CustomRoleManager
         {
             onFixedUpdateLowLoad(player);
         }
+    }
+
+    /// <summary>
+    /// When others players on entered to vent
+    /// </summary>
+    public static bool OthersCoEnterVent(PlayerPhysics physics, int ventId)
+    {
+        foreach (var player in Main.PlayerStates.Values.ToArray())
+        {
+            var playerRoleClass = player.RoleClass;
+            if (player == null || playerRoleClass == null) continue;
+
+            if (playerRoleClass.OnCoEnterVentOthers(physics, ventId))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = [];
