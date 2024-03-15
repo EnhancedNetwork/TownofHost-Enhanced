@@ -143,8 +143,6 @@ internal class ChangeRoleSettings
 
             Main.introDestroyed = false;
 
-            RandomSpawn.CustomNetworkTransformPatch.NumOfTP = [];
-
             Main.LastNotifyNames = [];
 
             Main.currentDousingTarget = byte.MaxValue;
@@ -197,7 +195,6 @@ internal class ChangeRoleSettings
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
                 pc.cosmetics.nameText.text = pc.name;
 
-                RandomSpawn.CustomNetworkTransformPatch.NumOfTP.Add(pc.PlayerId, 0);
                 var outfit = pc.Data.DefaultOutfit;
                 Camouflage.PlayerSkins[pc.PlayerId] = new GameData.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
                 Main.clientIdList.Add(pc.GetClientId());

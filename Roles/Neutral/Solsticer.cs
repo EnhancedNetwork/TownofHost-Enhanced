@@ -125,7 +125,7 @@ namespace TOHE.Roles.Neutral
                 {
                     return false;
                 }
-                Utils.RpcTeleport(target, ExtendedPlayerControl.GetBlackRoomPosition());
+                target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
                 ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
                 NameNotifyManager.Notify(target, string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
                 target.RpcGuardAndKill();

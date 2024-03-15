@@ -1,4 +1,5 @@
-using HarmonyLib;
+﻿using HarmonyLib;
+using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,92 +8,229 @@ using UnityEngine;
 
 namespace TOHE;
 
+// Thanks: https://github.com/tukasa0001/TownOfHost/blob/main/Patches/RandomSpawnPatch.cs
 class RandomSpawn
 {
-    [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.SnapTo), typeof(Vector2), typeof(ushort))]
-    public class CustomNetworkTransformPatch
+    [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.HandleRpc))]
+    public class CustomNetworkTransformHandleRpcPatch
     {
-        public static Dictionary<byte, int> NumOfTP = [];
-        public static void Postfix(CustomNetworkTransform __instance, [HarmonyArgument(0)] Vector2 position)
+        public static bool Prefix(CustomNetworkTransform __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
         {
-            if (!AmongUsClient.Instance.AmHost) return;
-            if (position == new Vector2(-25f, 40f)) return; //If it's the first spring, return
-            if (GameStates.IsInTask)
+            if (!__instance.isActiveAndEnabled)
             {
-                var player = Main.AllPlayerControls.FirstOrDefault(p => p.NetTransform == __instance);
-                if (player == null)
+                return false;
+            }
+            if ((RpcCalls)callId == RpcCalls.SnapTo && GameStates.AirshipIsActive)
+            {
+                var player = __instance.myPlayer;
+
+                // Players haven't spawned yet
+                if (!Main.PlayerStates[player.PlayerId].HasSpawned)
                 {
-                    Logger.Warn("Player is null", "RandomSpawn");
-                    return;
+                    // Read the coordinates of the SnapTo destination
+                    Vector2 position;
+                    {
+                        var newReader = MessageReader.Get(reader);
+                        position = NetHelpers.ReadVector2(newReader);
+                        newReader.Recycle();
+                    }
+                    Logger.Info($"SnapTo: {player.GetRealName()}, ({position.x}, {position.y})", "RandomSpawn");
+
+                    // if the SnapTo destination is a spring location, proceed to the spring process
+                    if (IsAirshipVanillaSpawnPosition(position))
+                    {
+                        AirshipSpawn(player);
+                        return false;
+                    }
+                    else
+                    {
+                        Logger.Info("Position is not a spring position", "RandomSpawn");
+                    }
                 }
+            }
+            return true;
+        }
 
-                //return if player GM
-                if (player.Is(CustomRoles.GM))
-                {
-                    return;
-                }
+        private static bool IsAirshipVanillaSpawnPosition(Vector2 position)
+        {
+            // Using the fact that the coordinates of the spring position are in increments of 0.1
+            //The comparison is made with an int type in which the coordinates are multiplied by 10
+            //As a countermeasure against errors of the float type and the expansion of errors due to the implementation of ReadVector2
+            var decupleXFloat = position.x * 10f;
+            var decupleYFloat = position.y * 10f;
+            var decupleXInt = Mathf.RoundToInt(decupleXFloat);
 
-                NumOfTP[player.PlayerId]++;
+            // if the difference between the values multiplied by 10 is closer than 0.1,
+            //The original coordinates are not in increments of 0.1, so it is not a spring position.
+            if (Mathf.Abs(((float)decupleXInt) - decupleXFloat) >= 0.09f)
+            {
+                return false;
+            }
+            var decupleYInt = Mathf.RoundToInt(decupleYFloat);
+            if (Mathf.Abs(((float)decupleYInt) - decupleYFloat) >= 0.09f)
+            {
+                return false;
+            }
+            var decuplePosition = (decupleXInt, decupleYInt);
+            return decupleVanillaSpawnPositions.Contains(decuplePosition);
+        }
+        /// <summary>For comparison Ten times the vanilla spring position of the airship</summary>
+        private static readonly HashSet<(int x, int y)> decupleVanillaSpawnPositions =
+            [
+                (-7, 85),  // Walkway in front of the dormitory
+                (-7, -10),  // Engine
+                (-70, -115),  // Kitchen
+                (335, -15),  // Cargo
+                (200, 105),  // Archive
+                (155, 0),  // Main Hall
+            ];
+    }
+    [HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.SpawnAt))]
+    public static class SpawnInMinigameSpawnAtPatch
+    {
+        public static bool Prefix(SpawnInMinigame __instance, [HarmonyArgument(0)] SpawnInMinigame.SpawnLocation spawnPoint)
+        {
+            if (!AmongUsClient.Instance.AmHost)
+            {
+                return true;
+            }
 
-                if (NumOfTP[player.PlayerId] == 1)
-                {
-                    //return if the map is not airship
-                    if (!GameStates.AirshipIsActive)
-                    {
-                        return;
-                    }
-
-                    if (player.Is(CustomRoles.Penguin))
-                    {
-                        Penguin.OnSpawnAirship();
-                    }
-
-                    if (GameStates.IsNormalGame)
-                    {
-                        // Reset cooldown player
-                        player.RpcResetAbilityCooldown();
-                    }
-
-                    //return if random spawn is off
-                    if (!Options.RandomSpawn.GetBool())
-                    {
-                        return;
-                    }
-
-                    new AirshipSpawnMap().RandomTeleport(player);
-                }
+            if (__instance.amClosing != Minigame.CloseState.None)
+            {
+                return false;
+            }
+            // Cancel vanilla upwelling if random spawn is enabled
+            if (IsRandomSpawn())
+            {
+                // Vanilla process RpcSnapTo replaced with AirshipSpawn
+                __instance.gotButton = true;
+                PlayerControl.LocalPlayer.SetKinematic(true);
+                PlayerControl.LocalPlayer.NetTransform.SetPaused(true);
+                AirshipSpawn(PlayerControl.LocalPlayer);
+                DestroyableSingleton<HudManager>.Instance.PlayerCam.SnapToTarget();
+                __instance.StopAllCoroutines();
+                __instance.StartCoroutine(__instance.CoSpawnAt(PlayerControl.LocalPlayer, spawnPoint));
+                return false;
+            }
+            else
+            {
+                AirshipSpawn(PlayerControl.LocalPlayer);
+                return true;
             }
         }
     }
+    public static void AirshipSpawn(PlayerControl player)
+    {
+        Logger.Info($"Spawn: {player.GetRealName()}", "RandomSpawn");
+        if (AmongUsClient.Instance.AmHost)
+        {
+            if (player.Is(CustomRoles.Penguin))
+            {
+                Penguin.OnSpawnAirship();
+            }
+            if (GameStates.IsNormalGame)
+            {
+                // Reset cooldown player
+                player.RpcResetAbilityCooldown();
+            }
+
+            if (IsRandomSpawn())
+            {
+                new AirshipSpawnMap().RandomTeleport(player);
+            }
+            else if (player.Is(CustomRoles.GM))
+            {
+                new AirshipSpawnMap().FirstTeleport(player);
+            }
+        }
+        Main.PlayerStates[player.PlayerId].HasSpawned = true;
+    }
+    public static bool IsRandomSpawn() => RandomSpawnMode.GetBool();
+
+    private enum RandomSpawnOpt
+    {
+        RandomSpawnMode,
+        RandomSpawn_SpawnRandomLocation,
+        RandomSpawn_AirshipAdditionalSpawn,
+        RandomSpawn_SpawnRandomVents
+    }
+
+    private static OptionItem RandomSpawnMode;
+    private static OptionItem SpawnRandomLocation;
+    private static OptionItem AirshipAdditionalSpawn;
+    private static OptionItem SpawnRandomVents;
+
+    public static void SetupCustomOption()
+    {
+        RandomSpawnMode = BooleanOptionItem.Create(60470, RandomSpawnOpt.RandomSpawnMode, false, TabGroup.GameSettings, false)
+            .HideInFFA()
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        SpawnRandomLocation = BooleanOptionItem.Create(60471, RandomSpawnOpt.RandomSpawn_SpawnRandomLocation, true, TabGroup.GameSettings, false)
+            .SetParent(RandomSpawnMode);
+        AirshipAdditionalSpawn = BooleanOptionItem.Create(60472, RandomSpawnOpt.RandomSpawn_AirshipAdditionalSpawn, true, TabGroup.GameSettings, false)
+            .SetParent(SpawnRandomLocation);
+        SpawnRandomVents = BooleanOptionItem.Create(60475, RandomSpawnOpt.RandomSpawn_SpawnRandomVents, false, TabGroup.GameSettings, false)
+            .SetParent(RandomSpawnMode);
+    }
+
     public abstract class SpawnMap
     {
+        public abstract Dictionary<string, Vector2> Positions { get; }
         public virtual void RandomTeleport(PlayerControl player)
         {
-            var selectRand = (Options.SpawnRandomLocation.GetBool() && Options.SpawnRandomVents.GetBool()) ? IRandom.Instance.Next(0, 101) 
-                : Options.SpawnRandomLocation.GetBool() ? 50
-                : Options.SpawnRandomVents.GetBool() ? 51 : -1; // -1: Not Random Spawn
+            Teleport(player, true);
+        }
+        public virtual void FirstTeleport(PlayerControl player)
+        {
+            Teleport(player, false);
+        }
 
-            if (Options.CurrentGameMode == CustomGameMode.FFA) selectRand = 50;
-            if (selectRand == -1) return;
+        private void Teleport(PlayerControl player, bool isRadndom)
+        {
+            int selectRandomSpawn = SpawnRandomLocation.GetBool() ? 1 : 2;
 
-            if (selectRand >= 0 && selectRand <= 50)
+            if (SpawnRandomLocation.GetBool() && SpawnRandomVents.GetBool())
             {
-                var location = GetLocation();
-                Logger.Info($"{player.Data.PlayerName}:{location}", "Spawn Random Location");
+                var rand = IRandom.Instance;
+                selectRandomSpawn = rand.Next(1, 3); // 1 or 2
+            }
+            else if (!SpawnRandomLocation.GetBool() && !SpawnRandomVents.GetBool())
+            {
+                selectRandomSpawn = 0;
+            }
+            
+            if (Options.CurrentGameMode == CustomGameMode.FFA) selectRandomSpawn = 1;
+            if (selectRandomSpawn == 0) return; 
+
+            if (selectRandomSpawn == 1)
+            {
+                var location = GetLocation(!isRadndom);
+                Logger.Info($"{player.Data.PlayerName}:{location}", "RandomSpawnInLocation");
                 player.RpcTeleport(location, isRandomSpawn: true);
             }
-            if (selectRand >= 51 && selectRand <= 101)
+            else
             {
-                Logger.Info($"{player.Data.PlayerName}", "Spawn Random Vent");
+                Logger.Info($"{player.Data.PlayerName}", "RandomSpawnInVent");
                 player.RpcRandomVentTeleport();
             }
         }
-        public abstract Vector2 GetLocation();
+        public Vector2 GetLocation(bool first = false)
+        {
+            var locations = Positions.ToArray();
+            if (first) return locations[0].Value;
+
+            var location = locations.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault();
+            
+            if (GameStates.AirshipIsActive && !AirshipAdditionalSpawn.GetBool())
+                location = locations.ToArray()[0..6].OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault();
+
+            return location.Value;
+        }
     }
 
     public class SkeldSpawnMap : SpawnMap
     {
-        public Dictionary<string, Vector2> positions = new()
+        public override Dictionary<string, Vector2> Positions { get; } = new()
         {
             ["Cafeteria"] = new Vector2 (-1.0f, 3.0f),
             ["Weapons"] = new Vector2 (9.3f, 1.0f),
@@ -109,14 +247,10 @@ class RandomSpawn
             ["Reactor"] = new Vector2 (-20.5f, -5.5f),
             ["MedBay"] = new Vector2 (-9.0f, -4.0f)
         };
-        public override Vector2 GetLocation()
-        {
-            return positions.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault().Value;
-        }
     }
     public class MiraHQSpawnMap : SpawnMap
     {
-        public Dictionary<string, Vector2> positions = new()
+        public override Dictionary<string, Vector2> Positions { get; } = new()
         {
             ["Cafeteria"] = new Vector2 (25.5f, 2.0f),
             ["Balcony"] = new Vector2 (24.0f, -2.0f),
@@ -133,17 +267,13 @@ class RandomSpawn
             ["Office"] = new Vector2 (15.0f, 19.0f),
             ["Greenhouse"] = new Vector2 (17.8f, 23.0f)
         };
-        public override Vector2 GetLocation()
-        {
-            return positions.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault().Value;
-        }
     }
     public class PolusSpawnMap : SpawnMap
     {
-        public Dictionary<string, Vector2> positions = new()
+        public override Dictionary<string, Vector2> Positions { get; } = new()
         {
-            ["Office1"] = new Vector2 (19.5f, -18.0f),
-            ["Office2"] = new Vector2 (26.0f, -17.0f),
+            ["OfficeLeft"] = new Vector2 (19.5f, -18.0f),
+            ["OfficeRight"] = new Vector2 (26.0f, -17.0f),
             ["Admin"] = new Vector2 (24.0f, -22.5f),
             ["Communications"] = new Vector2 (12.5f, -16.0f),
             ["Weapons"] = new Vector2 (12.0f, -23.5f),
@@ -158,24 +288,18 @@ class RandomSpawn
             ["Toilet"] = new Vector2 (34.0f, -10.0f),
             ["SpecimenRoom"] = new Vector2 (36.5f, -22.0f)
         };
-        public override Vector2 GetLocation()
-        {
-            return positions.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault().Value;
-        }
     }
 
     public class DleksSpawnMap : SpawnMap
     {
-        public Dictionary<string, Vector2> positions = new SkeldSpawnMap().positions
+        public static Dictionary<string, Vector2> TempPositions = new SkeldSpawnMap().Positions
             .ToDictionary(e => e.Key, e => new Vector2(-e.Value.x, e.Value.y));
-        public override Vector2 GetLocation()
-        {
-            return positions.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault().Value;
-        }
+
+        public override Dictionary<string, Vector2> Positions { get; } = TempPositions;
     }
     public class AirshipSpawnMap : SpawnMap
     {
-        public Dictionary<string, Vector2> positions = new()
+        public override Dictionary<string, Vector2> Positions { get; } = new()
         {
             ["Brig"] = new Vector2 (-0.7f, 8.5f),
             ["Engine"] = new Vector2 (-0.7f, -1.0f),
@@ -197,16 +321,10 @@ class RandomSpawn
             ["Toilet"] = new Vector2 (30.9f, 6.8f),
             ["Showers"] = new Vector2 (21.2f, -0.8f)
         };
-        public override Vector2 GetLocation()
-        {
-            return Options.AirshipAdditionalSpawn.GetBool()
-                ? positions.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault().Value
-                : positions.ToArray()[0..6].OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault().Value;
-        }
     }
     public class FungleSpawnMap : SpawnMap
     {
-        public Dictionary<string, Vector2> positions = new()
+        public override Dictionary<string, Vector2> Positions { get; } = new()
         {
             ["FirstSpawn"] = new Vector2(-9.8f, 3.4f),
             ["Dropship"] = new Vector2(-7.8f, 10.6f),
@@ -227,9 +345,5 @@ class RandomSpawn
             ["UpperEngine"] = new Vector2(22.4f, 3.4f),
             ["Communications"] = new Vector2(22.2f, 13.7f)
         };
-        public override Vector2 GetLocation()
-        {
-            return positions.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault().Value;
-        }
     }
 }
