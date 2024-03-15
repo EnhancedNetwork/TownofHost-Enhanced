@@ -298,7 +298,11 @@ internal class ChatCommands
                     subArgs = args.Length < 2 ? "" : args[1];
                     Utils.SendMessage(GetString("Message.MaxPlayers") + subArgs);
                     var numbereer = Convert.ToByte(subArgs);
-                    GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers = numbereer;
+                    if (GameStates.IsNormalGame)
+                        GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers = numbereer;
+                    
+                    else if (GameStates.IsHideNSeek)
+                        GameOptionsManager.Instance.currentHideNSeekGameOptions.MaxPlayers = numbereer;
                     break;
 
                 case "/h":

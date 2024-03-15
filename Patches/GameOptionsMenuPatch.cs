@@ -504,6 +504,12 @@ public class StringOptionIncreasePatch
         }
 
         option.SetValue(option.CurrentValue + (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
+
+        if (option.Name == "Preset" && GameStates.IsHideNSeek)
+        {
+            // Set Hide & Seek 
+            Options.GameMode.SetValue(2);
+        }
         return false;
     }
 }
@@ -531,6 +537,12 @@ public class StringOptionDecreasePatch
         }
 
         option.SetValue(option.CurrentValue - (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
+
+        if (option.Name == "Preset" && GameStates.IsHideNSeek)
+        {
+            // Set Hide & Seek 
+            Options.GameMode.SetValue(2);
+        }
         return false;
     }
 }
