@@ -1,5 +1,7 @@
 using Hazel;
 using System.Collections.Generic;
+using System.Runtime.Intrinsics.Arm;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -167,6 +169,18 @@ internal class Mini : RoleBase
         }
         return false;
     }
+    public override bool CheckMisGuessed(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (Age < 18 && guesser.PlayerId == target.PlayerId)
+        {
+            misguessed = true;
+            _ = new LateTask(() => { SendMessage(GetString("MiniMisGuessed"), target.PlayerId, ColorString(GetRoleColor(CustomRoles.NiceMini), GetString("GuessKillTitle")), true); }, 0.6f, "Mini MisGuess Msg");
+            return true;
+        }
+
+        return false;
+    }
+
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
         => (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && EveryoneCanKnowMini.GetBool();
 

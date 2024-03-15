@@ -260,6 +260,12 @@ public static class OnPlayerJoinedPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
 class OnPlayerLeftPatch
 {
+    static void Prefix([HarmonyArgument(0)] ClientData data)
+    {
+        //if (!AmongUsClient.Instance.AmHost) return;
+
+        data.Character.GetRoleClass()?.OnPlayerLeft(data);
+    }
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
         try
@@ -274,15 +280,6 @@ class OnPlayerLeftPatch
                         Main.LoversPlayers.Remove(lovers);
                         Main.PlayerStates[lovers.PlayerId].RemoveSubRole(CustomRoles.Lovers);
                     }
-                }
-
-                if (data.Character.Is(CustomRoles.Executioner) && Executioner.Target.ContainsKey(data.Character.PlayerId))
-                {
-                    Executioner.ChangeRole(data.Character);
-                }
-                else if (Executioner.Target.ContainsValue(data.Character.PlayerId))
-                {
-                    Executioner.ChangeRoleByTarget(data.Character);
                 }
                 
                 if (data.Character.Is(CustomRoles.Lawyer) && Lawyer.Target.ContainsKey(data.Character.PlayerId))
@@ -410,6 +407,7 @@ class OnPlayerLeftPatch
 
             if (data != null)
                 Main.playerVersion.Remove(data.Id);
+
             if (AmongUsClient.Instance.AmHost)
             {
                 Main.SayStartTimes.Remove(__instance.ClientId);

@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using InnerNet;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -194,7 +195,7 @@ public abstract class RoleBase
     /// <summary>
     /// Check exile role
     /// </summary>
-    public virtual void CheckExileTarget(PlayerControl player, bool DecidedWinner)
+    public virtual void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     { }
     /// <summary>
     /// When player was exiled
@@ -226,6 +227,12 @@ public abstract class RoleBase
     /// A generic method to activate actions after a meeting has ended.
     /// </summary>
     public virtual void AfterMeetingTasks()
+    { }
+
+    /// <summary>
+    /// When player left the game
+    /// </summary>
+    public virtual void OnPlayerLeft(ClientData clientData)
     { }
 
     /// <summary>

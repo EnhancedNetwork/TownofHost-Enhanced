@@ -662,7 +662,7 @@ class MurderPlayerPatch
                 }
             }
 
-            if (!target.IsProtected() && !Doppelganger.DoppelVictim.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+            if (!target.IsProtected() && !Doppelganger.CheckDoppelVictim(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
             {
                 Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
                 Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
@@ -771,8 +771,6 @@ class MurderPlayerPatch
         {
             Oiiai.OnMurderPlayer(killer, target);
         }
-
-        Executioner.OnOthersOrSelfDead(target);
 
         if (Lawyer.Target.ContainsValue(target.PlayerId))
             Lawyer.ChangeRoleByTarget(target);
@@ -1563,17 +1561,20 @@ class ReportDeadBodyPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            // Update skins again, since players have different skins
-            // And can be easily distinguished from each other
-            if (Camouflage.IsCamouflage && Options.KPDCamouflageMode.GetValue() is 2 or 3)
+            if (!Doppelganger.CheckDoppelVictim(pc.PlayerId))
             {
-                Camouflage.RpcSetSkin(pc);
-            }
+                // Update skins again, since players have different skins
+                // And can be easily distinguished from each other
+                if (Camouflage.IsCamouflage && Options.KPDCamouflageMode.GetValue() is 2 or 3)
+                {
+                    Camouflage.RpcSetSkin(pc);
+                }
 
-            // Check shapeshift and revert skin to default
-            if (Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId))
-            {
-                Camouflage.RpcSetSkin(pc, RevertToDefault: true);
+                // Check shapeshift and revert skin to default
+                if (Main.CheckShapeshift.ContainsKey(pc.PlayerId))
+                {
+                    Camouflage.RpcSetSkin(pc, RevertToDefault: true);
+                }
             }
         }
 

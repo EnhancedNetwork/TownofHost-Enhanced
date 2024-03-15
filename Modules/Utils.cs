@@ -2072,11 +2072,7 @@ public static class Utils
                 CheckTerroristWin(target.Data);
                 break;
             case CustomRoles.Executioner:
-                if (Executioner.Target.ContainsKey(target.PlayerId))
-                {
-                    Executioner.Target.Remove(target.PlayerId);
-                    Executioner.SendRPC(target.PlayerId);
-                }
+                Executioner.ExecutionerWasDead(target.PlayerId);
                 break;
             case CustomRoles.Lawyer:
                 if (Lawyer.Target.ContainsKey(target.PlayerId))

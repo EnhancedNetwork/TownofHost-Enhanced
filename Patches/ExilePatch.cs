@@ -77,9 +77,14 @@ class ExileControllerWrapUpPatch
             Main.PlayerStates[exiled.PlayerId].deathReason = PlayerState.DeathReason.Vote;
 
             var role = exiled.GetCustomRole();
-
+            var player = Utils.GetPlayerById(exiled.PlayerId);
+            var exiledRoleClass = player.GetRoleClass();
+            
             if (Quizmaster.HasEnabled)
                 Quizmaster.OnPlayerExile(exiled);
+
+            var emptyString = string.Empty;
+            exiledRoleClass?.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
 
             var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
             if (pcArray.Length > 0)
@@ -118,7 +123,7 @@ class ExileControllerWrapUpPatch
             //Jester win
             if (Jester.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
             {           
-                if (role.Is(CustomRoles.Jester) && AmongUsClient.Instance.AmHost)
+                if (role.Is(CustomRoles.Jester))
                 {
                     if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
                     {
@@ -128,8 +133,7 @@ class ExileControllerWrapUpPatch
 
                     foreach (var executioner in Executioner.playerIdList)
                     {
-                        //var GetValue = Executioner.Target.TryGetValue(executioner, out var targetId);
-                        if (Executioner.Target.TryGetValue(executioner, out var targetId) && exiled.PlayerId == targetId)
+                        if (Executioner.IsTarget(executioner, exiled.PlayerId))
                         {
                             CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Executioner);
                             CustomWinnerHolder.WinnerIds.Add(executioner);
@@ -147,12 +151,6 @@ class ExileControllerWrapUpPatch
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
                     CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
                 }
-            }
-
-            //Executioner check win
-            if (Executioner.CheckExileTarget(exiled, DecidedWinner))
-            {
-                DecidedWinner = true;
             }
 
             //Terrorist check win

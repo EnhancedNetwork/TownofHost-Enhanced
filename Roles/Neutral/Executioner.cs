@@ -1,10 +1,11 @@
 using HarmonyLib;
 using Hazel;
+using InnerNet;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Core;
+using static Il2CppSystem.Globalization.CultureInfo;
 using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -19,17 +20,17 @@ internal class Executioner : RoleBase
 
     //==================================================================\\
 
-
     private static OptionItem CanTargetImpostor;
     private static OptionItem CanTargetNeutralKiller;
     private static OptionItem CanTargetNeutralBenign;
     private static OptionItem CanTargetNeutralEvil;
     private static OptionItem CanTargetNeutralChaos;
-    public static OptionItem KnowTargetRole;
-    public static OptionItem ChangeRolesAfterTargetKilled;
+    private static OptionItem KnowTargetRole;
+    private static OptionItem ChangeRolesAfterTargetKilled;
 
     public static Dictionary<byte, byte> Target = [];
-    public static readonly string[] ChangeRoles =
+    
+    private static readonly string[] ChangeRoles =
     [
         "Role.Crewmate",
         "Role.Celebrity",
@@ -66,9 +67,10 @@ internal class Executioner : RoleBase
     {
         playerIdList.Add(playerId);
 
-        //ターゲット割り当て
         if (AmongUsClient.Instance.AmHost)
         {
+            CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
+
             List<PlayerControl> targetList = [];
             var rand = IRandom.Instance;
             foreach (var target in Main.AllPlayerControls)
@@ -150,39 +152,68 @@ internal class Executioner : RoleBase
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         executioner.Notify(text);
     }
-    public static void OnOthersOrSelfDead(PlayerControl target)
-    {
-        if (Target.ContainsValue(target.PlayerId))
-            ChangeRoleByTarget(target);
 
-        if (target.Is(CustomRoles.Executioner) && Target.ContainsKey(target.PlayerId))
+    public static bool CheckTarget(byte targetId) => Target.ContainsValue(targetId);
+    public static bool IsTarget(byte executionerId, byte targetId) => Target.TryGetValue(executionerId, out var exeTargetId) && exeTargetId == targetId;
+
+    public override void OnTargetDead(PlayerControl killer, PlayerControl target)
+    {
+        ExecutionerWasDead(target.PlayerId);
+    }
+    private void OnOthersDead(PlayerControl killer, PlayerControl target)
+    {
+        if (CheckTarget(target.PlayerId))
+            ChangeRoleByTarget(target);
+    }
+
+    public override void OnPlayerLeft(ClientData clientData)
+    {
+        if (Target.ContainsKey(clientData.Character.PlayerId))
         {
-            Target.Remove(target.PlayerId);
-            SendRPC(target.PlayerId);
+            ChangeRole(clientData.Character);
+        }
+
+        else if (CheckTarget(clientData.Character.PlayerId))
+            ChangeRoleByTarget(clientData.Character);
+    }
+
+    public static void ExecutionerWasDead(byte targetId)
+    {
+        if (Target.ContainsKey(targetId))
+        {
+            Target.Remove(targetId);
+            SendRPC(targetId);
         }
     }
+
     public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;
         return player.Is(CustomRoles.Executioner) && Target.TryGetValue(player.PlayerId, out var tar) && tar == target.PlayerId;
     }
+
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Executioner) || seer.Data.IsDead) return "";
+        if (target == null || !seer.IsAlive()) return string.Empty;
 
         var GetValue = Target.TryGetValue(seer.PlayerId, out var targetId);
-        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "♦") : "";
+        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "♦") : string.Empty;
     }
-    public static bool CheckExileTarget(GameData.PlayerInfo exiled, bool DecidedWinner, bool Check = false)
+
+    public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
         foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId).ToArray())
         {
             var executioner = Utils.GetPlayerById(kvp.Key);
             if (executioner == null || !executioner.IsAlive() || executioner.Data.Disconnected) continue;
-            if (!Check) ExeWin(kvp.Key, DecidedWinner);
-            return true;
+            if (!isMeetingHud) ExeWin(kvp.Key, DecidedWinner);
+
+            if (isMeetingHud)
+            {
+                name = string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                DecidedWinner = true;
+            }
         }
-        return false;
     }
     private static void ExeWin(byte playerId, bool DecidedWinner)
     {

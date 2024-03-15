@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -474,12 +475,6 @@ public static class GuessManager
                 {
                     Solsticer.CanGuess = false;
                     _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
-                    return true;
-                }
-                if (pc.Is(CustomRoles.NiceMini) && Mini.Age < 18 && pc.PlayerId == target.PlayerId)
-                {
-                    Mini.misguessed = true;
-                    _ = new LateTask(() => { Utils.SendMessage(GetString("MiniMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("GuessKillTitle")), true); }, 0.6f, "Mini MisGuess Msg");
                     return true;
                 }
 

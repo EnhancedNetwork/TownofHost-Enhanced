@@ -465,14 +465,14 @@ class CheckForEndVotingPatch
         }
         var DecidedWinner = false;
 
+        player.GetRoleClass()?.CheckExileTarget(exiledPlayer, ref DecidedWinner, isMeetingHud: true, name: ref name);
+
         //迷你船员长大前被驱逐抢夺胜利
         if (crole.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
             name = string.Format(GetString("ExiledNiceMini"), realName, coloredRole);
             DecidedWinner = true;
         }
-        //if (crole.Is(CustomRoles.Captain))
-        //    Captain.OnExile(exileId); /*Runs multiple times here*/
 
         //小丑胜利
         if (crole.Is(CustomRoles.Jester))
@@ -483,13 +483,6 @@ class CheckForEndVotingPatch
                 DecidedWinner = true;
             }
             else if (Options.CEMode.GetInt() == 2) name += string.Format(GetString("JesterMeetingLoose"), Jester.MeetingsNeededForJesterWin.GetInt() + 1);
-        }
-
-        //处刑人胜利
-        if (Executioner.CheckExileTarget(exiledPlayer, DecidedWinner, true))
-        {
-            name = string.Format(GetString("ExiledExeTarget"), realName, coloredRole);
-            DecidedWinner = true;
         }
 
         //冤罪师胜利
