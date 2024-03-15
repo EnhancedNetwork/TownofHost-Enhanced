@@ -1045,9 +1045,6 @@ internal static class RPC
             case CustomRoles.Pirate:
                 Pirate.Add(targetId);
                 break;
-            case CustomRoles.Pixie:
-                Pixie.Add(targetId);
-                break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.Add(targetId);
                 break;

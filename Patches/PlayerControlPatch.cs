@@ -371,9 +371,6 @@ class CheckMurderPatch
                     if (!Pirate.OnCheckMurder(killer, target))
                         return false;
                     break;
-                case CustomRoles.Pixie:
-                    Pixie.OnCheckMurder(killer, target);
-                    return false;
                 
                 case CustomRoles.Revolutionist:
                     killer.SetKillCooldown(Options.RevolutionistDrawTime.GetFloat());

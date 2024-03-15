@@ -192,6 +192,7 @@ public static class CustomRoleManager
 
         // ==== Neutrals ====
         CustomRoles.Seeker => new Seeker(),
+        CustomRoles.Pixie => new Pixie(),
         //CustomRoles.Amnesiac => new Amnesiac(),
         CustomRoles.Arsonist => new Arsonist(),
         CustomRoles.Bandit => new Bandit(),

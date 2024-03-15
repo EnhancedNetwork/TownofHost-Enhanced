@@ -60,8 +60,6 @@ class ExileControllerWrapUpPatch
         if (!AmongUsClient.Instance.AmHost) return;
         AntiBlackout.RestoreIsDead(doSend: false);
         
-        Pixie.CheckExileTarget(exiled);
-
         Logger.Info($"{!Collector.CollectorWin(false)}", "!Collector.CollectorWin(false)");
         Logger.Info($"{exiled != null}", "exiled != null");
 

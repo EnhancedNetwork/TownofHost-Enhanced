@@ -478,8 +478,6 @@ static class ExtendedPlayerControl
             CustomRoles.Succubus => Succubus.CanUseKillButton(pc),
             CustomRoles.Imitator => Imitator.CanUseKillButton(pc),
             CustomRoles.Pirate => pc.IsAlive(),
-            CustomRoles.Pixie => pc.IsAlive(),
-
             _ => false,
         };
     }
@@ -625,9 +623,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Pirate:
                 Pirate.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Pixie:
-                Pixie.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);

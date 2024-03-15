@@ -3209,6 +3209,7 @@
   "PixieSuicide": "Pixie suicides if target is not voted out",
   "PixieMaxTargetReached": "You have already selected all the targets this round",
   "PixieTargetAlreadySelected": "Target is already selected",
+  "PixieButtonText": "Mark",
 
   "PlagueBearerCD": "Plague cooldown",
   "PestilenceCD": "<color=#343136>Pestilence</color> Kill cooldown",
