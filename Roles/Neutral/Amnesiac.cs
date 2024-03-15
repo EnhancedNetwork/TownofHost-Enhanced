@@ -22,8 +22,6 @@ public static class Amnesiac
         "Role.Imitator",
     ];
 
-    private static Dictionary<byte, int> RememberLimit = [];
-
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Amnesiac);
@@ -36,40 +34,16 @@ public static class Amnesiac
     public static void Init()
     {
         playerIdList = [];
-        RememberLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        RememberLimit.Add(playerId, 1);
         IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
-    }
-
-    private static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRememberLimit, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(RememberLimit[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte playerId = reader.ReadByte();
-        int Limit = reader.ReadInt32();
-
-        if (!RememberLimit.ContainsKey(playerId))
-        {
-            RememberLimit.Add(playerId, Limit);
-        }
-        else
-        {
-            RememberLimit[playerId] = Limit;
-        }
     }
     //public static string GetRememberLimit() => Utils.ColorString(RememberLimit[] >= 1 ? Utils.GetRoleColor(CustomRoles.Amnesiac) : Color.gray, $"({RememberLimit})");
     public static bool KnowRole(PlayerControl player, PlayerControl target)

@@ -78,7 +78,6 @@ enum CustomRPC
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
     SetGamerHealth,
-    RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
     SetJailerTarget,
@@ -99,7 +98,6 @@ enum CustomRPC
     SetGreedy,
     SetCursedWolfSpellCount,
     SetJinxSpellCount,
-    SetCollectorVotes,
     TaskinatorMarkedTask,
     BenefactorRPC,
     SetSwapperVotes,
@@ -128,14 +126,11 @@ enum CustomRPC
     SetRevealedPlayer,
     SetCurrentRevealTarget,
     SetJackalRecruitLimit,
-    SetBanditStealLimit,
-    SetDoppelgangerStealLimit,
     SetCoronerArrow,
     SetCoronerkKillerArrow,
     SetVultureArrow,
     SyncVultureBodyAmount,
     SetSpiritcallerSpiritLimit,
-    SetDoomsayerProgress,
     SetTrackerTarget,
     SetSeekerTarget,
     SetSeekerPoints,
@@ -147,7 +142,6 @@ enum CustomRPC
     SetRememberLimit,
     SetImitateLimit,
     SyncShroud,
-    SyncMiniCrewAge,
     QuizmasterMarkPlayer,
     PirateSyncData,
     //FFA
@@ -494,9 +488,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetPelicanEatenNum:
                 Pelican.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetDoomsayerProgress:
-                Doomsayer.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetTrackerTarget:
                 Tracker.ReceiveRPC(reader);
                 break;
@@ -515,17 +506,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SetCrewpostorTasksDone:
                 Crewpostor.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetBanditStealLimit:
-                Bandit.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetDoppelgangerStealLimit:
-                Doppelganger.ReceiveRPC(reader);
-                break;
             case CustomRPC.SyncAdmiredList:
                 Admirer.ReceiveRPC(reader, true);
-                break;
-            case CustomRPC.SetRememberLimit:
-                Amnesiac.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetImitateLimit:
                 Imitator.ReceiveRPC(reader);
@@ -552,9 +534,6 @@ internal class RPCHandlerPatch
                     Main.JinxSpellCount[JinxId] = JinxGuardNum;
                 else
                     Main.JinxSpellCount.Add(JinxId, Jinx.JinxSpellTimes.GetInt());
-                break;
-            case CustomRPC.SetCollectorVotes:
-                Collector.ReceiveRPC(reader);
                 break;
             case CustomRPC.TaskinatorMarkedTask:
                 Taskinator.ReceiveRPC(reader);
@@ -639,9 +618,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetBKTimer:
-                BloodKnight.ReceiveRPC(reader);
-                break;
             case CustomRPC.SyncTotocalcioTargetAndTimes:
                 Totocalcio.ReceiveRPC(reader);
                 break;
@@ -707,9 +683,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SpyRedNameRemove:
                 Spy.ReceiveRPC(reader, isRemove: true);
                 break;
-            case CustomRPC.RpcPassBomb:
-                Agitater.ReceiveRPC(reader);
-                break;
             //case CustomRPC.SetCleanserCleanLimit:
             //    Cleanser.ReceiveRPC(reader);
             //    break;
@@ -733,9 +706,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveSwapRPC(reader, __instance);
-                break;
-            case CustomRPC.SyncMiniCrewAge:
-                Mini.ReceiveRPC(reader);
                 break;
             case CustomRPC.QuizmasterMarkPlayer:
                 Quizmaster.ReceiveRPC(reader);
@@ -1296,6 +1266,35 @@ internal static class RPC
             //case CustomRoles.Witch:
             //    break;
             //Merge the two rpc into one
+
+            //Double
+            case CustomRoles.Mini:
+                Mini.ReceiveRPC(reader);
+                break;
+            // Nice mini and evil mini is handled together.
+
+            //Neutrals
+            case CustomRoles.Agitater:
+                Agitater.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Bandit:
+                Bandit.ReceiveRPC(reader);
+                break;
+            case CustomRoles.BloodKnight:
+                BloodKnight.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Collector:
+                Collector.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Doomsayer:
+                Doomsayer.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Doppelganger:
+                Doppelganger.ReceiveRPC(reader);
+                break;
+
+
+
              case CustomRoles.Hawk:
                 Hawk.ReceiveRPC(reader);
                 break;
@@ -1305,6 +1304,8 @@ internal static class RPC
             case CustomRoles.Warden:
                 Warden.ReceiveRPC(reader);
                 break;
+
+
             default:
                 Logger.Error($"Role {role} can not be handled!", "SyncRoleSkillReader");
                 break;
