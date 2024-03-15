@@ -187,20 +187,23 @@ class RandomSpawn
 
         private void Teleport(PlayerControl player, bool isRadndom)
         {
-            int selectRandomSpawn = SpawnRandomLocation.GetBool() ? 1 : 2;
+            int selectRandomSpawn;
 
-            if (SpawnRandomLocation.GetBool() && SpawnRandomVents.GetBool())
+            if (isRadndom && Options.CurrentGameMode != CustomGameMode.FFA)
             {
-                var rand = IRandom.Instance;
-                selectRandomSpawn = rand.Next(1, 3); // 1 or 2
+                selectRandomSpawn = SpawnRandomLocation.GetBool() ? 1 : 2;
+
+                if (SpawnRandomLocation.GetBool() && SpawnRandomVents.GetBool())
+                {
+                    var rand = IRandom.Instance;
+                    selectRandomSpawn = rand.Next(1, 3); // 1 or 2
+                }
+                else if (!SpawnRandomLocation.GetBool() && !SpawnRandomVents.GetBool())
+                {
+                    selectRandomSpawn = 0;
+                }
             }
-            else if (!SpawnRandomLocation.GetBool() && !SpawnRandomVents.GetBool())
-            {
-                selectRandomSpawn = 0;
-            }
-            
-            if (Options.CurrentGameMode == CustomGameMode.FFA) selectRandomSpawn = 1;
-            if (selectRandomSpawn == 0) return; 
+            else selectRandomSpawn = 1;
 
             if (selectRandomSpawn == 1)
             {
