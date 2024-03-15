@@ -1273,21 +1273,21 @@ class CheckMurderPatch
         return true;
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
-class ExilePlayerPatch
-{    
-    public static void Postfix(PlayerControl __instance)
-    {
-        try
-        {
-            GhostRoleAssign.GhostAssignPatch(__instance);
-        }
-        catch (Exception error)
-        {
-            Logger.Error($"Error after Ghost assign: {error}", "ExilePlayerPatch.GhostAssign");
-        }
-    }
-}
+//[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
+//class ExilePlayerPatch
+//{    
+//public static void Postfix(PlayerControl __instance)
+//    {
+//        try 
+//       { 
+//GhostRoleAssign.GhostAssignPatch(__instance);
+//        }
+//        catch (Exception error)
+//        {
+//Logger.Error($"Error after Ghost assign: {error}", "ExilePlayerPatch.GhostAssign");
+//      }
+//   }
+//}
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
@@ -4439,6 +4439,15 @@ public static class PlayerControlDiePatch
     public static void Postfix(PlayerControl __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+        
+        try
+        {
+            GhostRoleAssign.GhostAssignPatch(__instance);
+        }
+        catch (Exception error)
+        {
+            Logger.Error($"Error after Ghost assign: {error}", "DiePlayerPatch.GhostAssign");
+        }
 
         __instance.RpcRemovePet();
     }

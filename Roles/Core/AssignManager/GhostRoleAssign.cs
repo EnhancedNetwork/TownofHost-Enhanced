@@ -26,6 +26,8 @@ public static class GhostRoleAssign
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole() || x == CustomRoles.Gravestone) || Options.CustomGhostRoleCounts.Count <= 0) return;
         
         GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
+        if (GhostGetPreviousRole.ContainsKey(player.PlayerId)) Logger.Info($"Succesfully added {player.GetRealName()}/{player.GetCustomRole()}", "GhostAssignPatch.GhostPreviousRole");
+        else Logger.Info($"Adding {player.GetRealName()} was unsuccessful", "GhostAssignPatch.GhostPreviousRole");
 
         List<CustomRoles> HauntedList = [];
         List<CustomRoles> ImpHauntedList = [];
