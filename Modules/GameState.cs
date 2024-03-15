@@ -30,6 +30,7 @@ public class PlayerState(byte playerId)
     public bool IsBlackOut { get; set; } = false;
     public (DateTime, byte) RealKiller = (DateTime.MinValue, byte.MaxValue);
     public PlainShipRoom LastRoom = null;
+    public bool HasSpawned { get; set; } = false;
     public Dictionary<byte, string> TargetColorData = [];
 
     public CustomRoles GetCustomRoleFromRoleType()

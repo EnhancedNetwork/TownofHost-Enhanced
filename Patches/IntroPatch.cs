@@ -168,32 +168,18 @@ class CoBeginPatch
         // Do not move this code, it should be executed at the very end to prevent a visual bug
         Utils.DoNotifyRoles(ForceLoop: true);
 
-        if (GameStates.IsHideNSeek && Options.RandomSpawn.GetBool())
+        if (GameStates.IsHideNSeek && RandomSpawn.IsRandomSpawn())
         {
-            RandomSpawn.SpawnMap map;
-            switch (Utils.GetActiveMapId())
+            RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
             {
-                case 0:
-                    map = new RandomSpawn.SkeldSpawnMap();
-                    Main.AllPlayerControls.Do(map.RandomTeleport);
-                    break;
-                case 1:
-                    map = new RandomSpawn.MiraHQSpawnMap();
-                    Main.AllPlayerControls.Do(map.RandomTeleport);
-                    break;
-                case 2:
-                    map = new RandomSpawn.PolusSpawnMap();
-                    Main.AllPlayerControls.Do(map.RandomTeleport);
-                    break;
-                case 3:
-                    map = new RandomSpawn.DleksSpawnMap();
-                    Main.AllPlayerControls.Do(map.RandomTeleport);
-                    break;
-                case 5:
-                    map = new RandomSpawn.FungleSpawnMap();
-                    Main.AllPlayerControls.Do(map.RandomTeleport);
-                    break;
-            }
+                0 => new RandomSpawn.SkeldSpawnMap(),
+                1 => new RandomSpawn.MiraHQSpawnMap(),
+                2 => new RandomSpawn.PolusSpawnMap(),
+                3 => new RandomSpawn.DleksSpawnMap(),
+                5 => new RandomSpawn.FungleSpawnMap(),
+                _ => null,
+            };
+            if (map != null) Main.AllAlivePlayerControls.Do(map.RandomTeleport);
         }
     }
     public static byte[] EncryptDES(byte[] data, string key)
@@ -540,7 +526,17 @@ class IntroCutsceneDestroyPatch
     public static void Postfix()
     {
         if (!GameStates.IsInGame) return;
+
         Main.introDestroyed = true;
+
+        if (!GameStates.AirshipIsActive)
+        {
+            foreach (var state in Main.PlayerStates.Values)
+            {
+                state.HasSpawned = true;
+            }
+        }
+
         if (AmongUsClient.Instance.AmHost)
         {
             if (GameStates.IsNormalGame)
@@ -569,32 +565,18 @@ class IntroCutsceneDestroyPatch
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
 
-            if (GameStates.IsNormalGame && (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA))
+            if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
             {
-                RandomSpawn.SpawnMap map;
-                switch (Utils.GetActiveMapId())
+                RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
                 {
-                    case 0:
-                        map = new RandomSpawn.SkeldSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                    case 1:
-                        map = new RandomSpawn.MiraHQSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                    case 2:
-                        map = new RandomSpawn.PolusSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                    case 3:
-                        map = new RandomSpawn.DleksSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                    case 5:
-                        map = new RandomSpawn.FungleSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                }
+                    0 => new RandomSpawn.SkeldSpawnMap(),
+                    1 => new RandomSpawn.MiraHQSpawnMap(),
+                    2 => new RandomSpawn.PolusSpawnMap(),
+                    3 => new RandomSpawn.DleksSpawnMap(),
+                    5 => new RandomSpawn.FungleSpawnMap(),
+                    _ => null,
+                };
+                if (map != null) Main.AllAlivePlayerControls.Do(map.RandomTeleport);
             }
 
             var amDesyncImpostor = Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId);

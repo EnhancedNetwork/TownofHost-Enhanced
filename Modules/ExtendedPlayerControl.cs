@@ -997,6 +997,9 @@ static class ExtendedPlayerControl
         }
         return true;
     }
+
+    public static Vector2 GetCustomPosition(this PlayerControl player) => new(player.transform.position.x, player.transform.position.y);
+
     public static Vector2 GetBlackRoomPosition()
     {
         return Utils.GetActiveMapId() switch
@@ -1010,7 +1013,89 @@ static class ExtendedPlayerControl
             _ => throw new NotImplementedException(),
         };
     }
-    public static Vector2 GetCustomPosition(this PlayerControl player) => new (player.transform.position.x, player.transform.position.y);
+    
+    public static void RpcTeleportAllPlayers(Vector2 location)
+    {
+        foreach (var pc in Main.AllAlivePlayerControls)
+        {
+            pc.RpcTeleport(location);
+        }
+    }
+
+    public static void RpcTeleport(this PlayerControl player, Vector2 position, bool isRandomSpawn = false, bool sendInfoInLogs = true)
+    {
+        if (sendInfoInLogs)
+        {
+            Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {position}", "RpcTeleport");
+            Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
+        }
+
+        // Don't check player status during random spawn
+        if (!isRandomSpawn)
+        {
+            var cancelTeleport = false;
+
+            if (player.inVent || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+            {
+                Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
+                cancelTeleport = true;
+            }
+            else if (player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+            {
+                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
+                cancelTeleport = true;
+            }
+            else if (player.inMovingPlat)
+            {
+                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
+                cancelTeleport = true;
+            }
+
+            if (cancelTeleport)
+            {
+                player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("ErrorTeleport")));
+                return;
+            }
+        }
+
+        var playerNetTransform = player.NetTransform;
+        var newSidForHost = (ushort)(playerNetTransform.lastSequenceId + 12); //132
+        var newSidForLocal = (ushort)(playerNetTransform.lastSequenceId * 1.2);
+        var newSidForGlobal = (ushort)(playerNetTransform.lastSequenceId * 1.8);
+
+        Logger.Info($"before teleport lastSequenceId: {player.NetTransform.lastSequenceId}", "RpcTeleport");
+
+        if (AmongUsClient.Instance.AmClient)
+        {
+            playerNetTransform.SnapTo(position, newSidForHost);
+        }
+
+        // Local Teleport For Client
+        if (PlayerControl.LocalPlayer.PlayerId != player.PlayerId)
+        {
+            MessageWriter localMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, player.GetClientId());
+            NetHelpers.WriteVector2(position, localMessageWriter);
+            localMessageWriter.Write(newSidForLocal);
+            AmongUsClient.Instance.FinishRpcImmediately(localMessageWriter);
+        }
+
+        // Global Teleport
+        MessageWriter globalMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
+        NetHelpers.WriteVector2(position, globalMessageWriter);
+        globalMessageWriter.Write(newSidForGlobal);
+        AmongUsClient.Instance.FinishRpcImmediately(globalMessageWriter);
+
+        Logger.Info($"after teleport lastSequenceId: {player.NetTransform.lastSequenceId}", "RpcTeleport");
+    }
+    public static void RpcRandomVentTeleport(this PlayerControl player)
+    {
+        var vents = UnityEngine.Object.FindObjectsOfType<Vent>();
+        var rand = IRandom.Instance;
+        var vent = vents[rand.Next(0, vents.Count)];
+
+        Logger.Info($" {vent.transform.position}", "RpcVentTeleportPosition");
+        player.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));
+    }
     public static string GetRoleInfo(this PlayerControl player, bool InfoLong = false)
     {
         var role = player.GetCustomRole();

@@ -56,7 +56,7 @@ public static class Solsticer
         MurderMessage = "";
         IsEnable = false;
     }
-    
+
     public static void Add(byte playerId)
     {
         playerid = playerId;
@@ -124,7 +124,7 @@ public static class Solsticer
             {
                 return false;
             }
-            Utils.RpcTeleport(target, ExtendedPlayerControl.GetBlackRoomPosition());
+            target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
             ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
             NameNotifyManager.Notify(target, string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
             target.RpcGuardAndKill();
@@ -210,7 +210,7 @@ public static class Solsticer
         warningActived = reader.ReadBoolean();
         playerid = reader.ReadByte();
 
-        if (AllCount != byte.MaxValue && CompletedCount != byte.MaxValue) 
+        if (AllCount != byte.MaxValue && CompletedCount != byte.MaxValue)
         {
             var taskState = Utils.GetPlayerById(playerid).GetPlayerTaskState();
             taskState.AllTasksCount = AllCount;
