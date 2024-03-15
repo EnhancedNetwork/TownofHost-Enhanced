@@ -1,11 +1,8 @@
 ﻿using Hazel;
 using System.Collections.Generic;
-using System.Runtime.Intrinsics.Arm;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
-using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Neutral;
 
@@ -20,29 +17,29 @@ internal class Doomsayer : RoleBase
 
     //==================================================================\\
 
-    public static List<CustomRoles> GuessedRoles = [];
-    public static Dictionary<byte, int> GuessingToWin = [];
+    private static List<CustomRoles> GuessedRoles = [];
+    private static Dictionary<byte, int> GuessingToWin = [];
 
-    public static int GuessesCount = 0;
-    public static int GuessesCountPerMeeting = 0;
-    public static bool CantGuess = false;
+    private static int GuessesCount = 0;
+    private static int GuessesCountPerMeeting = 0;
+    private static bool CantGuess = false;
 
-    public static OptionItem DoomsayerAmountOfGuessesToWin;
-    public static OptionItem DCanGuessImpostors;
-    public static OptionItem DCanGuessCrewmates;
-    public static OptionItem DCanGuessNeutrals;
-    public static OptionItem DCanGuessAdt;
-    public static OptionItem AdvancedSettings;
-    public static OptionItem MaxNumberOfGuessesPerMeeting;
-    public static OptionItem KillCorrectlyGuessedPlayers;
-    public static OptionItem DoesNotSuicideWhenMisguessing;
-    public static OptionItem MisguessRolePrevGuessRoleUntilNextMeeting;
-    public static OptionItem DoomsayerTryHideMsg;
-    public static OptionItem ImpostorVision;
+    private static OptionItem DoomsayerAmountOfGuessesToWin;
+    private static OptionItem DCanGuessImpostors;
+    private static OptionItem DCanGuessCrewmates;
+    private static OptionItem DCanGuessNeutrals;
+    private static OptionItem DCanGuessAdt;
+    private static OptionItem AdvancedSettings;
+    private static OptionItem MaxNumberOfGuessesPerMeeting;
+    private static OptionItem KillCorrectlyGuessedPlayers;
+    private static OptionItem DoesNotSuicideWhenMisguessing;
+    private static OptionItem MisguessRolePrevGuessRoleUntilNextMeeting;
+    private static OptionItem DoomsayerTryHideMsg;
+    private static OptionItem ImpostorVision;
 
     public static void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Doomsayer);
+        Options.SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Doomsayer);
         DoomsayerAmountOfGuessesToWin = IntegerOptionItem.Create(Id + 10, "DoomsayerAmountOfGuessesToWin", new(1, 10, 1), 3, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Doomsayer])
             .SetValueFormat(OptionFormat.Times);
@@ -100,17 +97,21 @@ internal class Doomsayer : RoleBase
     }
     private static (int, int) GuessedPlayerCount(byte doomsayerId)
     {
-        int doomsayerguess = GuessingToWin[doomsayerId], GuessesToWin = DoomsayerAmountOfGuessesToWin.GetInt();
+        int GuessesToWin = GuessingToWin[doomsayerId], AmountOfGuessesToWin = DoomsayerAmountOfGuessesToWin.GetInt();
 
-        return (doomsayerguess, GuessesToWin);
+        return (GuessesToWin, AmountOfGuessesToWin);
     }
     public override string GetProgressText(byte playerId, bool comms)
     {
-        var doomsayerguess = Doomsayer.GuessedPlayerCount(playerId);
-        return ColorString(GetRoleColor(CustomRoles.Doomsayer).ShadeColor(0.25f), $"({doomsayerguess.Item1}/{doomsayerguess.Item2})");
+        var (GuessingToWin, AmountOfGuessesToWin) = GuessedPlayerCount(playerId);
+        return ColorString(GetRoleColor(CustomRoles.Doomsayer).ShadeColor(0.25f), $"({GuessingToWin}/{AmountOfGuessesToWin})");
         
     }
-    public static void CheckCountGuess(PlayerControl doomsayer)
+
+    public static bool CheckCantGuess = CantGuess;
+    public static bool NeedHideMsg(PlayerControl pc) => pc.Is(CustomRoles.Doomsayer) && DoomsayerTryHideMsg.GetBool();
+    
+    private static void CheckCountGuess(PlayerControl doomsayer)
     {
         if (!(GuessingToWin[doomsayer.PlayerId] >= DoomsayerAmountOfGuessesToWin.GetInt())) return;
 
@@ -122,6 +123,7 @@ internal class Doomsayer : RoleBase
             CustomWinnerHolder.WinnerIds.Add(doomsayer.PlayerId);
         }
     }
+    
     public override void OnReportDeadBody(PlayerControl goku, PlayerControl solos)
     {
         if (!AdvancedSettings.GetBool()) return;
@@ -130,5 +132,140 @@ internal class Doomsayer : RoleBase
         GuessesCountPerMeeting = 0;
     }
     public override string PVANameText(PlayerVoteArea pva, PlayerControl target)
-    => (!Utils.GetPlayerById(pva.TargetPlayerId).Data.IsDead && !target.Data.IsDead) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
+        => (!GetPlayerById(pva.TargetPlayerId).Data.IsDead && !target.Data.IsDead) ? ColorString(GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
+
+
+    public static bool HideTabInGuesserUI(int TabId)
+    {
+        if (!DCanGuessCrewmates.GetBool() && TabId == 0) return true;
+        if (!DCanGuessImpostors.GetBool() && TabId == 1) return true;
+        if (!DCanGuessNeutrals.GetBool() && TabId == 2) return true;
+        if (!DCanGuessAdt.GetBool() && TabId == 3) return true;
+
+        return false;
+    }
+
+    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (CheckCantGuess)
+        {
+            if (!isUI) SendMessage(GetString("DoomsayerCantGuess"), guesser.PlayerId);
+            else guesser.ShowPopUp(GetString("DoomsayerCantGuess"));
+            return true;
+        }
+
+        if (role.IsImpostor() && !DCanGuessImpostors.GetBool())
+        {
+            if (!isUI) SendMessage(GetString("GuessNotAllowed"), guesser.PlayerId);
+            else guesser.ShowPopUp(GetString("GuessNotAllowed"));
+            return true;
+        }
+        if (role.IsCrewmate() && !DCanGuessCrewmates.GetBool())
+        {
+            if (!isUI) SendMessage(GetString("GuessNotAllowed"), guesser.PlayerId);
+            else guesser.ShowPopUp(GetString("GuessNotAllowed"));
+            return true;
+        }
+        if (role.IsNeutral() && !DCanGuessNeutrals.GetBool())
+        {
+            if (!isUI) SendMessage(GetString("GuessNotAllowed"), guesser.PlayerId);
+            else guesser.ShowPopUp(GetString("GuessNotAllowed"));
+            return true;
+        }
+        if (role.IsAdditionRole() && !DCanGuessAdt.GetBool())
+        {
+            if (!isUI) SendMessage(GetString("GuessAdtRole"), guesser.PlayerId);
+            else guesser.ShowPopUp(GetString("GuessAdtRole"));
+            return true;
+        }
+
+        return false;
+    }
+
+    public override bool MisGuessedCheck(bool isUI, PlayerControl guesser, PlayerControl target, PlayerControl playerMisGuessed, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (target.Is(CustomRoles.Rebound) && guesser.Is(CustomRoles.Doomsayer) && !DoesNotSuicideWhenMisguessing.GetBool() && !GuessedRoles.Contains(role))
+        {
+            guesserSuicide = true;
+            Logger.Info($"{guesser.GetNameWithRole().RemoveHtmlTags()} guessed {target.GetNameWithRole().RemoveHtmlTags()}, doomsayer suicide because rebound", "GuessManager");
+        }
+        else if (AdvancedSettings.GetBool())
+        {
+            if (GuessesCountPerMeeting >= MaxNumberOfGuessesPerMeeting.GetInt() && guesser.PlayerId != playerMisGuessed.PlayerId)
+            {
+                if (!isUI) SendMessage(GetString("DoomsayerCantGuess"), guesser.PlayerId);
+                else guesser.ShowPopUp(GetString("DoomsayerCantGuess"));
+                return true;
+            }
+            else
+            {
+                GuessesCountPerMeeting++;
+
+                if (GuessesCountPerMeeting >= MaxNumberOfGuessesPerMeeting.GetInt())
+                    CantGuess = true;
+            }
+
+            if (!KillCorrectlyGuessedPlayers.GetBool() && guesser.PlayerId != playerMisGuessed.PlayerId)
+            {
+                if (!isUI) SendMessage(GetString("DoomsayerCorrectlyGuessRole"), guesser.PlayerId);
+                else guesser.ShowPopUp(GetString("DoomsayerCorrectlyGuessRole"));
+
+                if (GuessedRoles.Contains(role))
+                {
+                    _ = new LateTask(() =>
+                    {
+                        SendMessage(GetString("DoomsayerGuessSameRoleAgainMsg"), guesser.PlayerId, ColorString(GetRoleColor(CustomRoles.Doomsayer), GetString("DoomsayerGuessCountTitle")));
+                    }, 0.7f, "Doomsayer Guess Same Role Again Msg");
+                }
+                else
+                {
+                    GuessingToWin[guesser.PlayerId]++;
+                    SendRPC(guesser);
+                    GuessedRoles.Add(role);
+
+                    _ = new LateTask(() =>
+                    {
+                        SendMessage(string.Format(GetString("DoomsayerGuessCountMsg"), GuessingToWin[guesser.PlayerId]), guesser.PlayerId, ColorString(GetRoleColor(CustomRoles.Doomsayer), GetString("DoomsayerGuessCountTitle")));
+                    }, 0.7f, "Doomsayer Guess Msg 1");
+                }
+
+                CheckCountGuess(guesser);
+
+                return true;
+            }
+            else if (DoesNotSuicideWhenMisguessing.GetBool() && guesser.PlayerId == playerMisGuessed.PlayerId)
+            {
+                if (!isUI) SendMessage(GetString("DoomsayerNotCorrectlyGuessRole"), guesser.PlayerId);
+                else guesser.ShowPopUp(GetString("DoomsayerNotCorrectlyGuessRole"));
+
+                if (MisguessRolePrevGuessRoleUntilNextMeeting.GetBool())
+                {
+                    CantGuess = true;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static void SendMessageAboutGuess(PlayerControl guesser, PlayerControl playerMisGuessed, CustomRoles role)
+    {
+        if (guesser.Is(CustomRoles.Doomsayer) && guesser.PlayerId != playerMisGuessed.PlayerId)
+        {
+            GuessingToWin[guesser.PlayerId]++;
+            SendRPC(guesser);
+
+            if (!GuessedRoles.Contains(role))
+                GuessedRoles.Add(role);
+
+            CheckCountGuess(guesser);
+
+            _ = new LateTask(() =>
+            {
+                SendMessage(string.Format(GetString("DoomsayerGuessCountMsg"), GuessingToWin[guesser.PlayerId]), guesser.PlayerId, ColorString(GetRoleColor(CustomRoles.Doomsayer), GetString("DoomsayerGuessCountTitle")));
+            }, 0.7f, "Doomsayer Guess Msg 2");
+        }
+    }
 }

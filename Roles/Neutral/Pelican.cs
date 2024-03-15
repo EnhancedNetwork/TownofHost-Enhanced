@@ -50,7 +50,7 @@ internal class Pelican : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    private static void SyncEatenList(byte playerId)
+    private static void SyncEatenList()
     {
         SendRPC(byte.MaxValue);
         foreach (var el in eatenList)
@@ -145,7 +145,7 @@ internal class Pelican : RoleBase
         if (!eatenList.ContainsKey(pc.PlayerId)) eatenList.Add(pc.PlayerId, []);
         eatenList[pc.PlayerId].Add(target.PlayerId);
 
-        SyncEatenList(pc.PlayerId);
+        SyncEatenList();
 
         originalSpeed.Remove(target.PlayerId);
         originalSpeed.Add(target.PlayerId, Main.AllPlayerSpeed[target.PlayerId]);
@@ -181,7 +181,7 @@ internal class Pelican : RoleBase
             }
         }
         eatenList.Clear();
-        SyncEatenList(byte.MaxValue);
+        SyncEatenList();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -224,7 +224,7 @@ internal class Pelican : RoleBase
             Logger.Info($"{Utils.GetPlayerById(pc).GetRealName()} dead, player return back: {target.GetRealName()}", "Pelican");
         }
         eatenList.Remove(pc);
-        SyncEatenList(pc);
+        SyncEatenList();
         Utils.NotifyRoles();
     }
 
@@ -235,7 +235,7 @@ internal class Pelican : RoleBase
             if (eatenList.Count > 0)
             {
                 eatenList.Clear();
-                SyncEatenList(byte.MaxValue);
+                SyncEatenList();
             }
             return;
         }
