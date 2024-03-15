@@ -2268,25 +2268,6 @@ class SetColorPatch
     }
 }
 
-[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoExitVent))]
-class CoExitVentPatch
-{
-    public static void Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
-    {
-        if (GameStates.IsHideNSeek) return;
-
-        var player = __instance.myPlayer;
-        var playerRoleClass = player.GetRoleClass();
-
-        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
-        {
-            FFAManager.CoExitVent(player);
-        }
-
-        playerRoleClass?.OnExitVent(player, id);
-    }
-}
-
 [HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
 class EnterVentPatch
 {
@@ -2381,6 +2362,24 @@ class CoEnterVentPatch
         playerRoleClass?.OnCoEnterVent(__instance, id);
 
         return true;
+    }
+}
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoExitVent))]
+class CoExitVentPatch
+{
+    public static void Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
+    {
+        if (GameStates.IsHideNSeek) return;
+
+        var player = __instance.myPlayer;
+        var playerRoleClass = player.GetRoleClass();
+
+        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
+        {
+            FFAManager.CoExitVent(player);
+        }
+
+        playerRoleClass?.OnExitVent(player, id);
     }
 }
 
