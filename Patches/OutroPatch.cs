@@ -45,6 +45,8 @@ class EndGamePatch
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                 }
             }
+            if (GhostRoleAssign.GhostGetPreviousRole.Count > 0) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
+            // Seems to be a problem with Exiled() Patch. I plan to diligently attempt fixes in RoleBase PR.
         }
         catch(Exception e)
         {

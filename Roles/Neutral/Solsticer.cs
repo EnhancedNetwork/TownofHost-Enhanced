@@ -100,68 +100,68 @@ public static class Solsticer
         if (seer.IsSolsticerTarget(onlyKiller: true) && !target.Is(CustomRoles.Solsticer))
             warning += TargetArrow.GetArrows(seer, playerid);
 
-        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), warning);
-    }
-    public static void ActiveWarning(PlayerControl pc)
-    {
-        foreach (var target in Main.AllAlivePlayerControls.Where(x => x.IsSolsticerTarget(onlyKiller: true)).ToArray())
-        {
-            TargetArrow.Add(target.PlayerId, pc.PlayerId);
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), warning);
         }
-        if (AmongUsClient.Instance.AmHost)
+        public static void ActiveWarning(PlayerControl pc)
         {
-            warningActived = true;
-            SendRPC();
-            Utils.NotifyRoles(ForceLoop: true);
-        }
-    }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
-    {
-        if (killer == null || target == null) return false;
-        if (!GameStates.IsMeeting)
-        {
-            if (killer.Is(CustomRoles.Quizmaster))
+            foreach (var target in Main.AllAlivePlayerControls.Where(x => x.IsSolsticerTarget(onlyKiller: true)).ToArray())
             {
-                return false;
+                TargetArrow.Add(target.PlayerId, pc.PlayerId);
             }
-            Utils.RpcTeleport(target, ExtendedPlayerControl.GetBlackRoomPosition());
-            ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
-            NameNotifyManager.Notify(target, string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
-            target.RpcGuardAndKill();
-            patched = true;
-            target.MarkDirtySettings();
-            ResetTasks(target);
-            if (EveryOneKnowSolsticer.GetBool())
+            if (AmongUsClient.Instance.AmHost)
             {
-                NameNotifyManager.Notify(killer, GetString("MurderSolsticer"));
-                RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
+                warningActived = true;
+                SendRPC();
+                Utils.NotifyRoles(ForceLoop: true);
             }
-            killer.SetKillCooldown(time: 10f, forceAnime: EveryOneKnowSolsticer.GetBool());
-            killer.MarkDirtySettings();
-            if (SolsticerKnowKiller.GetBool())
-                MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
-            else MurderMessage = "";
         }
-        return true; //should be patched before every others
-    } //My idea is to encourage everyone to kill Solsticer and won't waste shoots on it, only resets cd.
-    public static void AfterMeetingTasks()
-    {
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Solsticer)).ToArray())
+        public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
         {
-            Main.AllPlayerSpeed[pc.PlayerId] = SolsticerSpeed.GetFloat();
-            ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
-            pc.MarkDirtySettings();
-            ResetTasks(pc);
+            if (killer == null || target == null) return false;
+            if (!GameStates.IsMeeting)
+            {
+                if (killer.Is(CustomRoles.Quizmaster))
+                {
+                    return false;
+                }
+                Utils.RpcTeleport(target, ExtendedPlayerControl.GetBlackRoomPosition());
+                ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
+                NameNotifyManager.Notify(target, string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
+                target.RpcGuardAndKill();
+                patched = true;
+                target.MarkDirtySettings();
+                ResetTasks(target);
+                if (EveryOneKnowSolsticer.GetBool())
+                {
+                    NameNotifyManager.Notify(killer, GetString("MurderSolsticer"));
+                    RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
+                }
+                killer.SetKillCooldown(time: 10f, forceAnime: EveryOneKnowSolsticer.GetBool());
+                killer.MarkDirtySettings();
+                if (SolsticerKnowKiller.GetBool())
+                    MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
+                else MurderMessage = "";
+            }
+            return true; //should be patched before every others
+        } //My idea is to encourage everyone to kill Solsticer and won't waste shoots on it, only resets cd.
+        public static void AfterMeetingTasks()
+        {
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Solsticer)).ToArray())
+            {
+                Main.AllPlayerSpeed[pc.PlayerId] = SolsticerSpeed.GetFloat();
+                ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
+                pc.MarkDirtySettings();
+                ResetTasks(pc);
+            }
+            MurderMessage = "";
+            patched = false;
         }
-        MurderMessage = "";
-        patched = false;
-    }
-    private static int Count;
-    public static void OnFixedUpdate(PlayerControl pc)
-    {
-        if (patched && GameStates.IsInTask)
+        private static int Count;
+        public static void OnFixedUpdate(PlayerControl pc)
         {
-            Count--;
+            if (patched && GameStates.IsInTask)
+            {
+                Count--;
 
             if (Count > 0) return;
 

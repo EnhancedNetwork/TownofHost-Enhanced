@@ -1320,7 +1320,6 @@ class MeetingHudOnDestroyPatch
                 Quizmaster.OnMeetingEnd();
 
             AntiBlackout.SetIsDead();
-            Main.AllPlayerControls.Do(pc => RandomSpawn.CustomNetworkTransformPatch.NumOfTP[pc.PlayerId] = 0);
 
             Main.LastVotedPlayerInfo = null;
             EAC.ReportTimes = [];
