@@ -2001,14 +2001,14 @@
   "Remaining.NeutralCount": "<color=#7f8c8d>Neutral Killers</color> left: ",
   "EnableKillerLeftCommand": "Enable use of /kcount command",
   "SeeEjectedRolesInMeeting": "See ejected roles in meetings",
-  
+
   "SkillUsedLeft": "You have activated your skill to call a meeting. \nRemaining amount of uses left:",
   "NemesisDeadMsg": "The death of the Nemesis means the beginning of the revenge. \nPlease use /rv + [player ID] to kill the specified player \nYou can see player IDs in front of their names. \nOr type /rv to get a list of player IDs",
   "NemesisAliveKill": "Revenge for the Nemesis can only begin after their death.",
   "NemesisKillDead": "Choose a living player to take revenge",
   "NemesisKillSucceed": "[{0}] was killed by the Nemesis!",
   "NemesisKillDisable": "Sorry, but according to Host's settings, Nemesis revenge is prohibited in this game",
-  
+
   "CelebrityDead": "Shock! Celebrity[{0}]has unfortunately been mercilessly killed in the recent period of time!",
   "CyberDead": "Oh no! It appears the Cyber, <b>{0}</b>, has died recently.",
   "DetectiveNoticeVictim": "According to your investigation,\nthe victim ([{0}]) had the role [{1}]",
