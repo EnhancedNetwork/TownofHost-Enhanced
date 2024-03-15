@@ -468,17 +468,15 @@ public static class GuessManager
 
                 Main.GuesserGuessed[pc.PlayerId]++;
 
-                if (pc.GetRoleClass().MisGuessedCheck(isUI, pc, target, dp, role, ref guesserSuicide)) return true;
-                if (target.GetRoleClass().MisGuessedCheck(isUI, pc, target, dp, role, ref guesserSuicide)) return true;
-                if (dp.GetRoleClass().MisGuessedCheck(isUI, pc, target, dp, role, ref guesserSuicide)) return true;
+                if (pc.GetRoleClass().CheckMisGuessed(isUI, pc, target, role, ref guesserSuicide)) return true;
 
-                if (dp.Is(CustomRoles.Solsticer))
+                if (pc.Is(CustomRoles.Solsticer) && pc.PlayerId == target.PlayerId)
                 {
                     Solsticer.CanGuess = false;
                     _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
                     return true;
                 }
-                if (dp.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+                if (pc.Is(CustomRoles.NiceMini) && Mini.Age < 18 && pc.PlayerId == target.PlayerId)
                 {
                     Mini.misguessed = true;
                     _ = new LateTask(() => { Utils.SendMessage(GetString("MiniMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("GuessKillTitle")), true); }, 0.6f, "Mini MisGuess Msg");

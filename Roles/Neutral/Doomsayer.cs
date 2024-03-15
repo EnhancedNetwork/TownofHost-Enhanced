@@ -182,7 +182,7 @@ internal class Doomsayer : RoleBase
         return false;
     }
 
-    public override bool MisGuessedCheck(bool isUI, PlayerControl guesser, PlayerControl target, PlayerControl playerMisGuessed, CustomRoles role, ref bool guesserSuicide)
+    public override bool CheckMisGuessed(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
         if (target.Is(CustomRoles.Rebound) && guesser.Is(CustomRoles.Doomsayer) && !DoesNotSuicideWhenMisguessing.GetBool() && !GuessedRoles.Contains(role))
         {
@@ -191,7 +191,7 @@ internal class Doomsayer : RoleBase
         }
         else if (AdvancedSettings.GetBool())
         {
-            if (GuessesCountPerMeeting >= MaxNumberOfGuessesPerMeeting.GetInt() && guesser.PlayerId != playerMisGuessed.PlayerId)
+            if (GuessesCountPerMeeting >= MaxNumberOfGuessesPerMeeting.GetInt() && guesser.PlayerId != target.PlayerId)
             {
                 if (!isUI) SendMessage(GetString("DoomsayerCantGuess"), guesser.PlayerId);
                 else guesser.ShowPopUp(GetString("DoomsayerCantGuess"));
@@ -205,7 +205,7 @@ internal class Doomsayer : RoleBase
                     CantGuess = true;
             }
 
-            if (!KillCorrectlyGuessedPlayers.GetBool() && guesser.PlayerId != playerMisGuessed.PlayerId)
+            if (!KillCorrectlyGuessedPlayers.GetBool() && guesser.PlayerId != target.PlayerId)
             {
                 if (!isUI) SendMessage(GetString("DoomsayerCorrectlyGuessRole"), guesser.PlayerId);
                 else guesser.ShowPopUp(GetString("DoomsayerCorrectlyGuessRole"));
@@ -233,7 +233,7 @@ internal class Doomsayer : RoleBase
 
                 return true;
             }
-            else if (DoesNotSuicideWhenMisguessing.GetBool() && guesser.PlayerId == playerMisGuessed.PlayerId)
+            else if (DoesNotSuicideWhenMisguessing.GetBool() && guesser.PlayerId == target.PlayerId)
             {
                 if (!isUI) SendMessage(GetString("DoomsayerNotCorrectlyGuessRole"), guesser.PlayerId);
                 else guesser.ShowPopUp(GetString("DoomsayerNotCorrectlyGuessRole"));
