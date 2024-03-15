@@ -328,7 +328,7 @@ class CheckMurderPatch
         }
 
         killerRole = killer.GetCustomRole();
-        targetRole = target.GetCustomRole();
+        //targetRole = target.GetCustomRole();
 
         // if not suicide
         if (killer.PlayerId != target.PlayerId)
@@ -2055,11 +2055,6 @@ class FixedUpdateInNormalGamePatch
                 {
                     switch (target.GetCustomRole())
                     {
-                        case CustomRoles.Arsonist:
-                            if (target.IsDouseDone())
-                                RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Arsonist), GetString("EnterVentToWin"));
-                            break;
-
                         case CustomRoles.Revolutionist:
                             if (target.IsDrawDone())
                                 RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Revolutionist), string.Format(GetString("EnterVentWinCountDown"), Main.RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10));

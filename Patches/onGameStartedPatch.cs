@@ -53,7 +53,6 @@ internal class ChangeRoleSettings
             Main.AllPlayerSpeed = [];
             Main.AllPlayerCustomRoles = [];
             Main.WarlockTimer = [];
-            Main.isDoused = [];
             Main.isDraw = [];
             Main.isRevealed = [];
             Main.RevolutionistTimer = [];
@@ -117,7 +116,6 @@ internal class ChangeRoleSettings
 
             Main.LastNotifyNames = [];
 
-            Main.currentDousingTarget = byte.MaxValue;
             Main.currentDrawTarget = byte.MaxValue;
             Main.PlayerColors = [];
 
@@ -470,10 +468,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Vampiress:
                         Vampiress.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Arsonist:
-                        foreach (var ar in Main.AllPlayerControls)
-                            Main.isDoused.Add((pc.PlayerId, ar.PlayerId), false);
                         break;
                     case CustomRoles.Revolutionist:
                         foreach (var ar in Main.AllPlayerControls)

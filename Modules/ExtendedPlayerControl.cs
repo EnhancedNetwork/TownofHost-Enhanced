@@ -539,19 +539,19 @@ static class ExtendedPlayerControl
 
         return false;
     }
+
+    public static bool IsDrawPlayer(this PlayerControl arsonist, PlayerControl target)
+    {
+        if (arsonist == null && target == null && Main.isDraw == null) return false;
+        Main.isDraw.TryGetValue((arsonist.PlayerId, target.PlayerId), out bool isDraw);
+        return isDraw;
+    }
+
     public static bool IsRevealedPlayer(this PlayerControl player, PlayerControl target)
     {
         if (player == null || target == null || Main.isRevealed == null) return false;
         Main.isRevealed.TryGetValue((player.PlayerId, target.PlayerId), out bool isDoused);
         return isDoused;
-    }
-    public static void RpcSetDousedPlayer(this PlayerControl player, PlayerControl target, bool isDoused)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDousedPlayer, SendOption.Reliable, -1);//RPCによる同期
-        writer.Write(player.PlayerId);
-        writer.Write(target.PlayerId);
-        writer.Write(isDoused);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcSetDrawPlayer(this PlayerControl player, PlayerControl target, bool isDoused)
     {

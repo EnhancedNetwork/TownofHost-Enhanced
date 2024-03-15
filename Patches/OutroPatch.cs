@@ -119,7 +119,6 @@ class EndGamePatch
         }
 
         BountyHunter.ChangeTimer = [];
-        Main.isDoused = [];
         Main.isDraw = [];
         Main.isRevealed = [];
         Main.PlayerQuitTimes = [];

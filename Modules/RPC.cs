@@ -398,16 +398,6 @@ internal class RPCHandlerPatch
             case CustomRPC.RevertCaptainVoteRemove:
                 Captain.ReceiveRPCVoteRemove(reader);
                 break;
-
-        /*    case CustomRPC.SetCopyCatMiscopyLimit:
-                CopyCat.ReceiveRPC(reader);
-                break; */
-            case CustomRPC.SetDousedPlayer:
-                byte ArsonistId = reader.ReadByte();
-                byte DousedId = reader.ReadByte();
-                bool doused = reader.ReadBoolean();
-                Main.isDoused[(ArsonistId, DousedId)] = doused;
-                break;
             case CustomRPC.setPlaguedPlayer:
                 PlagueBearer.ReceiveRPC(reader);
                 break;
@@ -466,10 +456,10 @@ internal class RPCHandlerPatch
                 Fireworker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCurrentDousingTarget:
-                byte arsonistId = reader.ReadByte();
-                byte dousingTargetId = reader.ReadByte();
-                if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
-                    Main.currentDousingTarget = dousingTargetId;
+                Arsonist.ReceiveCurrentDousingTargetRPC(reader);
+                break;
+            case CustomRPC.SetDousedPlayer:
+                Arsonist.ReceiveSetDousedPlayerRPC(reader);
                 break;
             case CustomRPC.SetCurrentDrawTarget:
                 byte arsonistId1 = reader.ReadByte();
@@ -1242,20 +1232,6 @@ internal static class RPC
         else rpcName = callId.ToString();
         return rpcName;
     }
-    public static void SetCurrentDousingTarget(byte arsonistId, byte targetId)
-    {
-        if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
-        {
-            Main.currentDousingTarget = targetId;
-        }
-        else
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDousingTarget, SendOption.Reliable, -1);
-            writer.Write(arsonistId);
-            writer.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-    }
     public static void SetCurrentDrawTarget(byte arsonistId, byte targetId)
     {
         if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
@@ -1284,7 +1260,6 @@ internal static class RPC
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public static void ResetCurrentDousingTarget(byte arsonistId) => SetCurrentDousingTarget(arsonistId, 255);
     public static void ResetCurrentDrawTarget(byte arsonistId) => SetCurrentDrawTarget(arsonistId, 255);
     public static void ResetCurrentRevealTarget(byte arsonistId) => SetCurrentRevealTarget(arsonistId, 255);
     public static void SetRealKiller(byte targetId, byte killerId)

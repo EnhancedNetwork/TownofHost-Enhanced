@@ -158,7 +158,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, bool> isCurseAndKill = [];
     public static Dictionary<byte, int> NemesisRevenged = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
-    public static Dictionary<(byte, byte), bool> isDoused = [];
     public static Dictionary<(byte, byte), bool> isDraw = [];
     public static Dictionary<(byte, byte), bool> isRevealed = [];
     public static Dictionary<byte, (PlayerControl, float)> RevolutionistTimer = [];
@@ -179,7 +178,6 @@ public class Main : BasePlugin
     public static bool introDestroyed = false;
     public static int DiscussionTime;
     public static int VotingTime;
-    public static byte currentDousingTarget = byte.MaxValue;
     public static byte currentDrawTarget = byte.MaxValue;
     public static float DefaultCrewmateVision;
     public static float DefaultImpostorVision;

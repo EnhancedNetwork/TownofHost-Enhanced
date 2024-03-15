@@ -1732,11 +1732,6 @@ public static class Utils
                         PlagueBearer.PlaguerNotify(seer);
                         break;
 
-                    case CustomRoles.Arsonist:
-                        if (seer.IsDouseDone())
-                            SelfName = $"{ColorString(seer.GetRoleColor(), GetString("EnterVentToWin"))}";
-                        break;
-
                     case CustomRoles.Revolutionist:
                         if (seer.IsDrawDone())
                             SelfName = $">{ColorString(seer.GetRoleColor(), string.Format(GetString("EnterVentWinCountDown"), Main.RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10))}";
@@ -2199,22 +2194,6 @@ public static class Utils
 
         ProcessStartInfo psi = new("Explorer.exe") { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
         Process.Start(psi);
-    }
-    public static (int, int) GetDousedPlayerCount(byte playerId)
-    {
-        int doused = 0, all = 0; //学校で習った書き方
-                                 //多分この方がMain.isDousedでforeachするより他のアーソニストの分ループ数少なくて済む
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            if (pc.PlayerId == playerId) continue; //塗れない人は除外 (死んでたり切断済みだったり あとアーソニスト自身も)
-
-            all++;
-            if (Main.isDoused.TryGetValue((playerId, pc.PlayerId), out var isDoused) && isDoused)
-                //塗れている場合
-                doused++;
-        }
-
-        return (doused, all);
     }
     public static (int, int) GetDrawPlayerCount(byte playerId, out List<PlayerControl> winnerList)
     {
