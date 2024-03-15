@@ -620,10 +620,6 @@ public static class Utils
                 case CustomRoles.SoulCollector:
                     ProgressText.Append(SoulCollector.GetProgressText(playerId));
                     break;
-                case CustomRoles.Pixie:
-                    ProgressText.Append(Pixie.GetProgressText(playerId));
-                    break;
-                    
                 case CustomRoles.Pirate:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Pirate).ShadeColor(0.25f), $"({Pirate.NumWin}/{Pirate.SuccessfulDuelsToWin.GetInt()})"));
                     break;
