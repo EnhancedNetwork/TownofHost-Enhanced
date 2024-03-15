@@ -505,10 +505,18 @@ public class StringOptionIncreasePatch
 
         option.SetValue(option.CurrentValue + (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
 
-        if (option.Name == "Preset" && GameStates.IsHideNSeek)
+        if (option.Name == "Preset")
         {
-            // Set Hide & Seek 
-            Options.GameMode.SetValue(2);
+            if (GameStates.IsHideNSeek)
+            {
+                // Set Hide & Seek game mode
+                Options.GameMode.SetValue(2);
+            }
+            else if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+            {
+                // Set standart game mode
+                Options.GameMode.SetValue(0);
+            }
         }
         return false;
     }
@@ -538,10 +546,18 @@ public class StringOptionDecreasePatch
 
         option.SetValue(option.CurrentValue - (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
 
-        if (option.Name == "Preset" && GameStates.IsHideNSeek)
+        if (option.Name == "Preset")
         {
-            // Set Hide & Seek 
-            Options.GameMode.SetValue(2);
+            if (GameStates.IsHideNSeek)
+            {
+                // Set Hide & Seek game mode
+                Options.GameMode.SetValue(2);
+            }
+            else if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+            {
+                // Set standart game mode
+                Options.GameMode.SetValue(0);
+            }
         }
         return false;
     }
