@@ -23,24 +23,24 @@ internal class Jackal : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
 
-    public static OptionItem KillCooldown;
-    public static OptionItem CanVent;
-    public static OptionItem CanUsesSabotage;
+    private static OptionItem KillCooldown;
+    private static OptionItem CanVent;
+    private static OptionItem CanUsesSabotage;
     public static OptionItem CanWinBySabotageWhenNoImpAlive;
     public static OptionItem HasImpostorVision;
-    public static OptionItem OptionResetKillCooldownWhenSbGetKilled;
-    public static OptionItem ResetKillCooldownWhenSbGetKilled;
-    public static OptionItem ResetKillCooldownOn;
-    public static OptionItem JackalCanKillSidekick;
-    public static OptionItem CanRecruitSidekick;
-    public static OptionItem SidekickRecruitLimitOpt;
+    private static OptionItem OptionResetKillCooldownWhenSbGetKilled;
+    private static OptionItem ResetKillCooldownWhenSbGetKilled;
+    private static OptionItem ResetKillCooldownOn;
+    private static OptionItem JackalCanKillSidekick;
+    private static OptionItem CanRecruitSidekick;
+    private static OptionItem SidekickRecruitLimitOpt;
     public static OptionItem SidekickCountMode;
-    public static OptionItem SidekickAssignMode;
+    private static OptionItem SidekickAssignMode;
     public static OptionItem KillCooldownSK;
     public static OptionItem CanVentSK;
     public static OptionItem CanUseSabotageSK;
-    public static OptionItem SidekickCanKillJackal;
-    public static OptionItem SidekickCanKillSidekick;
+    private static OptionItem SidekickCanKillJackal;
+    private static OptionItem SidekickCanKillSidekick;
     
     public static Dictionary<byte, int> RecruitLimit = [];
 
@@ -66,13 +66,13 @@ internal class Jackal : RoleBase
         CanUsesSabotage = BooleanOptionItem.Create(Id + 12, "CanUseSabotage", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         CanWinBySabotageWhenNoImpAlive = BooleanOptionItem.Create(Id + 14, "JackalCanWinBySabotageWhenNoImpAlive", true, TabGroup.NeutralRoles, false).SetParent(CanUsesSabotage);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
-        OptionResetKillCooldownWhenSbGetKilled = BooleanOptionItem.Create(Id + 16, "ResetKillCooldownWhenPlayerGetKilled", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
+        OptionResetKillCooldownWhenSbGetKilled = BooleanOptionItem.Create(Id + 16, "JackalResetKillCooldownWhenPlayerGetKilled", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         ResetKillCooldownOn = FloatOptionItem.Create(Id + 28, "JackalResetKillCooldownOn", new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(OptionResetKillCooldownWhenSbGetKilled)
             .SetValueFormat(OptionFormat.Seconds);
         JackalCanKillSidekick = BooleanOptionItem.Create(Id + 15, "JackalCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         CanRecruitSidekick = BooleanOptionItem.Create(Id + 30, "JackalCanRecruitSidekick", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
-        SidekickAssignMode = StringOptionItem.Create(Id + 34, "SidekickAssignMode", EnumHelper.GetAllNames<SidekickAssignModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
+        SidekickAssignMode = StringOptionItem.Create(Id + 34, "Jackal_SidekickAssignMode", EnumHelper.GetAllNames<SidekickAssignModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
                 .SetHidden(false);
         SidekickRecruitLimitOpt = IntegerOptionItem.Create(Id + 33, "JackalSidekickRecruitLimit", new(0, 15, 1), 2, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
                 .SetValueFormat(OptionFormat.Times);
