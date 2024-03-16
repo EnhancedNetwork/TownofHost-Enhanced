@@ -2049,6 +2049,8 @@ class FixedUpdateInNormalGamePatch
             {
                 var playerRole = player.GetCustomRole();
 
+                CustomRoleManager.OnFixedUpdate(player);
+
                 // Agitater
                 if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
                     Agitater.OnFixedUpdate(player);
