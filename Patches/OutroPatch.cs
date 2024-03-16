@@ -338,6 +338,8 @@ class SetEverythingUpPatch
         RoleSummaryRectTransform.anchoredPosition = new Vector2(Pos.x + 3.5f, Pos.y - 0.1f);
         RoleSummary.text = sb.ToString();
 
+        Logger.Info($"{RoleSummary.text.RemoveHtmlTags()}", "Role Summary");
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //Utils.ApplySuffix();
