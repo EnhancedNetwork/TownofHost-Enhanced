@@ -4421,7 +4421,7 @@ public static class PlayerControlCheckUseZiplinePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class PlayerControlDiePatch
 {
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref DeathReason Reason, [HarmonyArgument(1)] ref bool assignGhostRole)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref DeathReason reason, [HarmonyArgument(1)] ref bool assignGhostRole)
     {
         try
         {
