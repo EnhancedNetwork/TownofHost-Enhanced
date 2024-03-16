@@ -18,6 +18,10 @@
   "SubText.Neutral": "Work alone to achieve your victory",
   "SubText.Madmate": "Help the <color=#ff1919>Impostors</color>",
 
+  "TypeImpostor": "Impostors",
+  "TypeCrewmate": "Crewmates",
+  "TypeNeutral": "Neutrals",
+  "TypeAddon": "Add-ons",
   "GuesserMode": "Guesser Mode",
 
   "TeamImpostor": "Impostor",
