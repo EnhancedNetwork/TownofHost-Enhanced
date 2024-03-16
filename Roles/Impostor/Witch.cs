@@ -121,14 +121,9 @@ internal class Witch : RoleBase
             Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
         }
     }
-    private static bool IsSpelled(byte target)
-    {
-        foreach (var witch in playerIdList)
-        {
-            if (SpelledPlayer[witch].Contains(target)) return true;
-        }
-        return false;
-    }
+
+    private static bool IsSpelled(byte target) => SpelledPlayer.Any(x => x.Value.Contains(target));
+
     private static void SetSpelled(PlayerControl killer, PlayerControl target)
     {
         if (!IsSpelled(target.PlayerId))
@@ -148,6 +143,7 @@ internal class Witch : RoleBase
             SendRPC(true, witch);
         }
     }
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (NowSwitchTrigger == SwitchTrigger.TriggerDouble)
