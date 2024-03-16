@@ -1273,21 +1273,6 @@ class CheckMurderPatch
         return true;
     }
 }
-//[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
-//class ExilePlayerPatch
-//{    
-//public static void Postfix(PlayerControl __instance)
-//    {
-//        try 
-//       { 
-//GhostRoleAssign.GhostAssignPatch(__instance);
-//        }
-//        catch (Exception error)
-//        {
-//Logger.Error($"Error after Ghost assign: {error}", "ExilePlayerPatch.GhostAssign");
-//      }
-//   }
-//}
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
@@ -1503,20 +1488,20 @@ class MurderPlayerPatch
 
         //================GHOST ASSIGN PATCH============
         //if (target.Is(CustomRoles.EvilSpirit))
-        // {
+        //{
         // target.RpcSetRole(RoleTypes.GuardianAngel);
         //}
-        // else
-        // {
+        //
+        //{
         // try
-        // {
+        //{
         //GhostRoleAssign.GhostAssignPatch(target);
         //}
-        //      catch (Exception error)
-        //{
-        //Logger.Error($"Error after Ghost assign: {error}", "MurderPlayerPatch.GhostAssign");
+        //    catch (Exception error)
+        // {
+        // Logger.Error($"Error after Ghost assign: {error}", "MurderPlayerPatch.GhostAssign");
         //}
-        //}
+        // }
 
         Utils.AfterPlayerDeathTasks(target);
 
@@ -4436,33 +4421,31 @@ public static class PlayerControlCheckUseZiplinePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class PlayerControlDiePatch
 {
-    public static void Postfix(PlayerControl __instance)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref DeathReason Reason, [HarmonyArgument(1)] ref bool assignGhostRole)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        
         try
         {
-            if (__instance.Is(CustomRoles.EvilSpirit))
-            {
-                __instance.RpcSetRole(RoleTypes.GuardianAngel);
-            }
-            else
-            {
-                GhostRoleAssign.GhostAssignPatch(__instance);
-            }
+            var DeathPlayer = __instance;
+
+            GhostRoleAssign.GhostAssignPatch(DeathPlayer);
+            
+            if (DeathPlayer.IsAnySubRole(AddON => AddON.IsGhostRole()) || DeathPlayer.GetCustomRole().IsGhostRole()) assignGhostRole = true;
+            //else assignGhostRole = false;
         }
         catch (Exception error)
         {
             Logger.Error($"Error after Ghost assign: {error}", "DiePlayerPatch.GhostAssign");
         }
 
+        if (!AmongUsClient.Instance.AmHost) return;
+        
         __instance.RpcRemovePet();
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
 class PlayerControlSetRolePatch
 {
-    public static bool Prefix(PlayerControl __instance, ref RoleTypes roleType)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType)
     {
         if (GameStates.IsHideNSeek) return true;
         try

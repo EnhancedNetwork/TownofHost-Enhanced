@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using HarmonyLib;
+using MonoMod.Cil;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.AddOns.Common;
