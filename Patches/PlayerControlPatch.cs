@@ -483,11 +483,8 @@ class CheckMurderPatch
 
         var targetRoleClass = target.GetRoleClass();
 
-        if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
-            return false;
-
-        if (Jackal.ResetKillCooldownWhenSbGetKilled.GetBool() && !killerRole.Is(CustomRoles.Sidekick) && !killerRole.Is(CustomRoles.Jackal) && !target.Is(CustomRoles.Sidekick) && !target.Is(CustomRoles.Jackal) && !GameStates.IsMeeting)
-            Jackal.AfterPlayerDiedTask(killer);
+        // Jackal
+        if (!Jackal.RpcCheckAndMurder(killer, target)) return false;
 
         // Romantic partner is protected
         if (Romantic.isPartnerProtected && Romantic.BetPlayer.ContainsValue(target.PlayerId))
@@ -496,9 +493,6 @@ class CheckMurderPatch
         // Impostors can kill Madmate
         if (killer.Is(CustomRoleTypes.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
-
-        // Jackal
-        if (!Jackal.RpcCheckAndMurder(killer, target)) return false;
 
         foreach (var killerSubRole in killer.GetCustomSubRoles().ToArray())
         {
@@ -553,8 +547,6 @@ class CheckMurderPatch
                         { Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; ExtendedPlayerControl.RpcMurderPlayerV3(target.GetRealKiller(), target);  }
                 return false;
 
-
-
             case CustomRoles.Wildling:
                 if (Wildling.InProtect(target.PlayerId))
                 {
@@ -564,7 +556,6 @@ class CheckMurderPatch
                     return false;
                 }
                 break;
-            //击杀萧暮
         }
 
         if (killer.PlayerId != target.PlayerId)
@@ -582,6 +573,8 @@ class CheckMurderPatch
             }
         }
 
+        if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
+            return false;
 
         if (!check) killer.RpcMurderPlayerV3(target);
         return true;

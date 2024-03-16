@@ -153,7 +153,7 @@ internal class PlagueBearer : RoleBase
         }
         PlaguedList[killer.PlayerId].Add(target.PlayerId);
         SendRPC(killer, target);
-        Utils.NotifyRoles(SpecifySeer: killer);
+        NotifyRoles(SpecifySeer: killer);
 
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
@@ -175,15 +175,14 @@ internal class PlagueBearer : RoleBase
             Sniper.SnipeIsActive(killer.PlayerId);
     }
     public override bool CanUseImpostorVentButton(PlayerControl pc)
-     => pc.Is(CustomRoles.Pestilence) && PlagueBearer.PestilenceCanVent.GetBool();
+        => pc.Is(CustomRoles.Pestilence) && PestilenceCanVent.GetBool();
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
         if (!PestilenceList.Contains(target.PlayerId)) return false;
-        if (Guardian.CannotBeKilled(target)) return true;
-        if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted()) return true;
-        if (IsIndirectKill(killer)) return false;
+
         killer.SetRealKiller(target);
         target.RpcMurderPlayerV3(killer);
         return true;
