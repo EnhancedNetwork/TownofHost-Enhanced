@@ -1487,10 +1487,10 @@ class MurderPlayerPatch
         if (Medic.IsEnable) Medic.IsDead(target);
 
         //================GHOST ASSIGN PATCH============
-        //if (target.Is(CustomRoles.EvilSpirit))
-        //{
-        // target.RpcSetRole(RoleTypes.GuardianAngel);
-        //}
+        if (target.Is(CustomRoles.EvilSpirit))
+        {
+         target.RpcSetRole(RoleTypes.GuardianAngel);
+        }
         //
         //{
         // try
