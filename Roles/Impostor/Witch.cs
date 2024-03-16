@@ -100,8 +100,6 @@ internal class Witch : RoleBase
         }
     }
 
-    private static bool IsSpellMode(byte playerId) => SpellMode.ContainsKey(playerId) && SpellMode[playerId];
-
     private static void SwitchSpellMode(byte playerId, bool kill)
     {
         bool needSwitch = false;
@@ -121,6 +119,8 @@ internal class Witch : RoleBase
             Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
         }
     }
+
+    private static bool IsSpellMode(byte playerId) => SpellMode.TryGetValue(playerId, out var isSpellMode) && isSpellMode;
 
     private static bool IsSpelled(byte target) => SpelledPlayer.Any(x => x.Value.Contains(target));
 
@@ -150,17 +150,15 @@ internal class Witch : RoleBase
         {
             return killer.CheckDoubleTrigger(target, () => { SetSpelled(killer, target); });
         }
+
         if (!IsSpellMode(killer.PlayerId))
         {
             SwitchSpellMode(killer.PlayerId, true);
-            //キルモードなら通常処理に戻る
             return true;
         }
         SetSpelled(killer, target);
-
-        //スペルに失敗してもスイッチ判定
         SwitchSpellMode(killer.PlayerId, true);
-        //キル処理終了させる
+
         return false;
     }
     public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)

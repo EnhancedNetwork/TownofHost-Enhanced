@@ -84,40 +84,6 @@ class ExileControllerWrapUpPatch
             var emptyString = string.Empty;
             exiledRoleClass?.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
 
-            var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
-            if (pcArray.Length > 0)
-            {
-                if (!Innocent.InnocentCanWinByImp.GetBool() && role.IsImpostor())
-                {
-                    Logger.Info("Exeiled Winner Check for impostor", "Innocent");
-                }
-                else
-                {
-                    bool isInnocentWinConverted = false;
-                    foreach (var Innocent in pcArray)
-                    {
-                        if (CustomWinnerHolder.CheckForConvertedWinner(Innocent.PlayerId))
-                        {
-                            isInnocentWinConverted = true;
-                            break;
-                        }
-                    }
-                    if (!isInnocentWinConverted)
-                    {
-                        if (DecidedWinner)
-                        {
-                            CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Innocent);
-                        }
-                        else
-                        {
-                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Innocent);
-                        }
-
-                        pcArray.Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
-                    }
-                    DecidedWinner = true;
-                }
-            }
             //Jester win
             if (Jester.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
             {           
