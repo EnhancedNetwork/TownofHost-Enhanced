@@ -15,7 +15,6 @@ public static class GhostRoleAssign
 
     private static readonly IRandom Rnd = IRandom.Instance;
     private static bool GetChance(this CustomRoles role) => role.GetMode() == 100 || Rnd.Next(1, 100) <= role.GetMode();
-      
 
     public static void GhostAssignPatch(PlayerControl player)
     {
