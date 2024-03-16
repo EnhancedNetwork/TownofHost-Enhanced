@@ -48,7 +48,6 @@ static class DoubleTrigger
         FirstTriggerTimer.Add(killer.PlayerId, 1f);
         FirstTriggerTarget.Add(killer.PlayerId, target.PlayerId);
         FirstTriggerAction.Add(killer.PlayerId, firstAction);
-
         return false;
     }
     public static void OnFixedUpdate(PlayerControl player)
