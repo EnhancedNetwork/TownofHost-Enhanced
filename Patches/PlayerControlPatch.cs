@@ -18,6 +18,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -1502,21 +1503,21 @@ class MurderPlayerPatch
         if (Medic.IsEnable) Medic.IsDead(target);
 
         //================GHOST ASSIGN PATCH============
-        if (target.Is(CustomRoles.EvilSpirit))
-        {
-            target.RpcSetRole(RoleTypes.GuardianAngel);
-        }
-        else
-        {
-            try
-            {
-                GhostRoleAssign.GhostAssignPatch(target);
-            }
-            catch (Exception error)
-            {
-                Logger.Error($"Error after Ghost assign: {error}", "MurderPlayerPatch.GhostAssign");
-            }
-        }
+        //if (target.Is(CustomRoles.EvilSpirit))
+        // {
+        // target.RpcSetRole(RoleTypes.GuardianAngel);
+        //}
+        // else
+        // {
+        // try
+        // {
+        //GhostRoleAssign.GhostAssignPatch(target);
+        //}
+        //      catch (Exception error)
+        //{
+        //Logger.Error($"Error after Ghost assign: {error}", "MurderPlayerPatch.GhostAssign");
+        //}
+        //}
 
         Utils.AfterPlayerDeathTasks(target);
 
@@ -4442,7 +4443,14 @@ public static class PlayerControlDiePatch
         
         try
         {
-            GhostRoleAssign.GhostAssignPatch(__instance);
+            if (__instance.Is(CustomRoles.EvilSpirit))
+            {
+                __instance.RpcSetRole(RoleTypes.GuardianAngel);
+            }
+            else
+            {
+                GhostRoleAssign.GhostAssignPatch(__instance);
+            }
         }
         catch (Exception error)
         {
