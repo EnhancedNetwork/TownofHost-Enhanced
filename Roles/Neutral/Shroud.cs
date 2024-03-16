@@ -76,6 +76,13 @@ internal class Shroud : RoleBase
                 break;
         }
     }
+
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ShroudCooldown.GetFloat();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
@@ -139,31 +146,31 @@ internal class Shroud : RoleBase
         }
     }
 
-    public static void MurderShroudedPlayers(PlayerControl shrouded)
+    public override void OnPlayerExiled(PlayerControl shroud, GameData.PlayerInfo exiled)
     {
-        if (!ShroudList.ContainsKey(shrouded.PlayerId)) return;
-        byte shroudId = ShroudList[shrouded.PlayerId];
-        PlayerControl shroudPC = Utils.GetPlayerById(shroudId);
-        if (shroudPC == null) return;
-        if (shroudPC.IsAlive())
+        if (!shroud.IsAlive())
         {
+            ShroudList.Remove(shroud.PlayerId);
+            SendRPC(byte.MaxValue, shroud.PlayerId, 2);
+            return;
+        }
+
+        foreach (var shroudedId in ShroudList.Keys)
+        {
+            PlayerControl shrouded = Utils.GetPlayerById(shroudedId);
+            if (shrouded == null) continue;
+
             Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
             shrouded.RpcMurderPlayerV3(shrouded);
+
+            ShroudList.Remove(shrouded.PlayerId);
+            SendRPC(byte.MaxValue, shrouded.PlayerId, 2);
         }
-        ShroudList.Remove(shrouded.PlayerId);
-        SendRPC(byte.MaxValue, shrouded.PlayerId, 2);
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-        => (ShroudList.ContainsValue(seer.PlayerId) && ShroudList.ContainsKey(target.PlayerId)) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : "";
+        => (ShroudList.ContainsValue(seer.PlayerId) && ShroudList.ContainsKey(target.PlayerId)) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
     
     private static string GetShroudMark(PlayerControl seer, PlayerControl target, bool isMeeting)
-        => isMeeting && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : "";
-    
-
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ShroudCooldown.GetFloat();
-    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-
-    public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+        => isMeeting && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
 }

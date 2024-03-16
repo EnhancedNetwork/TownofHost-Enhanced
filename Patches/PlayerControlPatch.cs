@@ -505,7 +505,7 @@ class CheckMurderPatch
             switch (killerSubRole)
             {
                 case CustomRoles.Madmate when target.Is(CustomRoleTypes.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
-                case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTarget.GetBool():
+                case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTargets:
                 case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
                     return false;
             }

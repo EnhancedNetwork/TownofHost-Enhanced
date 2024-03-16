@@ -170,7 +170,7 @@ internal class BountyHunter : RoleBase
             && (target.Is(CustomRoles.Succubus) || (target.Is(CustomRoles.Charmed) && Succubus.TargetKnowOtherTarget.GetBool()))) return false;
 
         if (player.Is(CustomRoles.Infected)
-            && (target.Is(CustomRoles.Infectious) || (target.Is(CustomRoles.Infected) && Infectious.TargetKnowOtherTarget.GetBool()))) return false;
+            && (target.Is(CustomRoles.Infectious) || (target.Is(CustomRoles.Infected) && Infectious.TargetKnowOtherTargets))) return false;
 
         if (player.Is(CustomRoles.Recruit)
             && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return false;

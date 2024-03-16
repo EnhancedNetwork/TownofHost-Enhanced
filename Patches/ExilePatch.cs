@@ -197,24 +197,10 @@ class ExileControllerWrapUpPatch
 
             switch (playerRole)
             {
-
                 case CustomRoles.Warlock:
                     Main.CursedPlayers[player.PlayerId] = null;
                     Main.isCurseAndKill[player.PlayerId] = false;
                     break;
-            }
-
-            if (Infectious.HasEnabled)
-            {
-                if (playerRole.Is(CustomRoles.Infectious) && !player.IsAlive())
-                {
-                    Infectious.MurderInfectedPlayers();
-                }
-            }
-
-            if (Shroud.HasEnabled)
-            {
-                Shroud.MurderShroudedPlayers(player);
             }
 
             // Check Anti BlackOut
