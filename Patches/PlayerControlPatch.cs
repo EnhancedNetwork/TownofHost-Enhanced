@@ -4423,6 +4423,8 @@ public static class PlayerControlDiePatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref DeathReason reason, [HarmonyArgument(1)] ref bool assignGhostRole)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
+
         try
         {
             var DeathPlayer = __instance;
@@ -4437,7 +4439,6 @@ public static class PlayerControlDiePatch
             Logger.Error($"Error after Ghost assign: {error}", "DiePlayerPatch.GhostAssign");
         }
 
-        if (!AmongUsClient.Instance.AmHost) return;
         
         __instance.RpcRemovePet();
     }
