@@ -179,7 +179,7 @@ class CoBeginPatch
                 5 => new RandomSpawn.FungleSpawnMap(),
                 _ => null,
             };
-            if (map != null) Main.AllAlivePlayerControls.Do(map.RandomTeleport);
+            if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
         }
     }
     public static byte[] EncryptDES(byte[] data, string key)
@@ -576,7 +576,7 @@ class IntroCutsceneDestroyPatch
                     5 => new RandomSpawn.FungleSpawnMap(),
                     _ => null,
                 };
-                if (map != null) Main.AllAlivePlayerControls.Do(map.RandomTeleport);
+                if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
             }
 
             var amDesyncImpostor = Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId);
