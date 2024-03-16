@@ -15,8 +15,7 @@ public static class GhostRoleAssign
 
     private static readonly IRandom Rnd = IRandom.Instance;
     private static bool GetChance(this CustomRoles role) => role.GetMode() == 100 || Rnd.Next(1, 100) <= role.GetMode();
-    private static List<CustomRoles> HauntedList = [];
-    private static List<CustomRoles> ImpHauntedList = [];
+      
 
     public static void GhostAssignPatch(PlayerControl player)
     {
@@ -35,13 +34,14 @@ public static class GhostRoleAssign
         if (GhostGetPreviousRole.ContainsKey(player.PlayerId)) Logger.Info($"Succesfully added {player.GetRealName()}/{player.GetCustomRole()}", "GhostAssignPatch.GhostPreviousRole");
         else Logger.Warn($"Adding {player.GetRealName()} was unsuccessful", "GhostAssignPatch.GhostPreviousRole");
 
+        List<CustomRoles> HauntedList = [];
+        List<CustomRoles> ImpHauntedList = [];
+
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
 
 
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys.Where(x => x.GetMode() > 0))
         { 
-            // For each time a player dies, a ghostrole will have another shot at getting in.
-            // Imagine 3 groups: "I want first!" 100-75% // "I want mid-game" 75-45% // "Final Savior" 45%-0%. 
             if (ghostRole.IsCrewmate())
             {
                 if (HauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
@@ -112,9 +112,6 @@ public static class GhostRoleAssign
     }
     public static void Init() 
     {
-        HauntedList.Clear();
-        ImpHauntedList.Clear();
-
         getCount = []; // Remove oldcount
         GhostGetPreviousRole = [];
     }
