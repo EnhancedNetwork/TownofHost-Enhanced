@@ -274,7 +274,7 @@ class ExileControllerWrapUpPatch
                     5 => new RandomSpawn.FungleSpawnMap(),
                     _ => null,
                 };
-                if (map != null) Main.AllAlivePlayerControls.Do(map.RandomTeleport);
+                if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
 
             }, 0.8f, "Random Spawn After Meeting");
         }
