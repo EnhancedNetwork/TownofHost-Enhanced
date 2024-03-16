@@ -29,31 +29,26 @@ static class DoubleTrigger
 
     ///     一回目アクション時 false、2回目アクション時true
     public static bool CheckDoubleTrigger(this PlayerControl killer, PlayerControl target, Action firstAction)
-    { try
+    {
+        if (FirstTriggerTimer.ContainsKey(killer.PlayerId))
         {
-            if (FirstTriggerTimer.ContainsKey(killer.PlayerId))
+            if (FirstTriggerTarget[killer.PlayerId] != target.PlayerId)
             {
-                if (FirstTriggerTarget[killer.PlayerId] != target.PlayerId)
-                {
-                    //2回目がターゲットずれてたら最初の相手にシングルアクション
-                    return false;
-                }
-                Logger.Info($"{killer.name} DoDoubleAction", "DoubleTrigger");
-                FirstTriggerTimer.Remove(killer.PlayerId);
-                FirstTriggerTarget.Remove(killer.PlayerId);
-                FirstTriggerAction.Remove(killer.PlayerId);
-                return true;
+                //2回目がターゲットずれてたら最初の相手にシングルアクション
+                return false;
             }
-            //シングルアクション時はキル間隔を無視
-            CheckMurderPatch.TimeSinceLastKill.Remove(killer.PlayerId);
-            FirstTriggerTimer.Add(killer.PlayerId, 1f);
-            FirstTriggerTarget.Add(killer.PlayerId, target.PlayerId);
-            FirstTriggerAction.Add(killer.PlayerId, firstAction);
+            Logger.Info($"{killer.name} DoDoubleAction", "DoubleTrigger");
+            FirstTriggerTimer.Remove(killer.PlayerId);
+            FirstTriggerTarget.Remove(killer.PlayerId);
+            FirstTriggerAction.Remove(killer.PlayerId);
+            return true;
         }
-        catch (Exception error) 
-        { 
-            Logger.Info($"Error after CheckDouble Trigger: {error}", "CheckDoubleTrigger"); 
-        }
+        //シングルアクション時はキル間隔を無視
+        CheckMurderPatch.TimeSinceLastKill.Remove(killer.PlayerId);
+        FirstTriggerTimer.Add(killer.PlayerId, 1f);
+        FirstTriggerTarget.Add(killer.PlayerId, target.PlayerId);
+        FirstTriggerAction.Add(killer.PlayerId, firstAction);
+
         return false;
     }
     public static void OnFixedUpdate(PlayerControl player)
