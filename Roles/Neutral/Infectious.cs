@@ -17,7 +17,6 @@ internal class Infectious : RoleBase
     public static bool HasEnabled => PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem BiteCooldown;
@@ -41,8 +40,7 @@ internal class Infectious : RoleBase
         TargetKnowOtherTarget = BooleanOptionItem.Create(Id + 14, "InfectiousTargetKnowOtherTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 15, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         CanVent = BooleanOptionItem.Create(Id + 17, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);        
-        DoubleClickKill = BooleanOptionItem.Create(Id + 18, "DoubleClickKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);        
-    
+        DoubleClickKill = BooleanOptionItem.Create(Id + 18, "DoubleClickKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
     }
     public override void Init()
     {
@@ -155,7 +153,8 @@ internal class Infectious : RoleBase
         }
     }
 
-    public static bool TargetKnowOtherTargets = TargetKnowOtherTarget.GetBool();
+    public static bool TargetKnowOtherTargets => TargetKnowOtherTarget.GetBool();
+
     public static bool KnowRole(PlayerControl player, PlayerControl target) // Addons know each-other
     {
         if (player.Is(CustomRoles.Infected) && target.Is(CustomRoles.Infectious)) return true;
