@@ -2036,6 +2036,8 @@ class FixedUpdateInNormalGamePatch
                 }
             }
 
+            DoubleTrigger.OnFixedUpdate(player);
+
             //Mini's count down needs to be done outside if intask if we are counting meeting time
             if (GameStates.IsInGame && player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini))
             {
@@ -2046,11 +2048,6 @@ class FixedUpdateInNormalGamePatch
             if (GameStates.IsInTask)
             {
                 var playerRole = player.GetCustomRole();
-
-                CustomRoleManager.OnFixedUpdate(player);
-
-                if (DoubleTrigger.FirstTriggerTimer.Count > 0)
-                    DoubleTrigger.OnFixedUpdate(player);
 
                 // Agitater
                 if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
