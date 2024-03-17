@@ -153,9 +153,6 @@ class HudManagerPatch
                     case CustomRoles.Admirer:
                         __instance.KillButton.OverrideText(GetString("AdmireButtonText"));
                         break;
-                    case CustomRoles.Amnesiac:
-                        __instance.ReportButton.OverrideText(GetString("RememberButtonText"));
-                        break;
                     case CustomRoles.Imitator:
                         __instance.KillButton.OverrideText(GetString("ImitatorKillButtonText"));
                         break;

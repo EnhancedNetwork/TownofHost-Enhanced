@@ -110,6 +110,8 @@ internal class Mortician : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
+        if (isForMeeting) return string.Empty;
+
         if (ShowArrows.GetBool())
         {
             if (!seer.Is(CustomRoles.Mortician)) return "";

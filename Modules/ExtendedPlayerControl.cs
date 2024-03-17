@@ -515,7 +515,6 @@ static class ExtendedPlayerControl
             CustomRoles.VengefulRomantic => Romantic.VengefulCanVent.GetBool(),
             CustomRoles.RuthlessRomantic => Romantic.RuthlessCanVent.GetBool(),
             CustomRoles.Maverick => Maverick.CanVent.GetBool(),
-            CustomRoles.Amnesiac => true,
             CustomRoles.Revolutionist => pc.IsDrawDone(),
 
             //FFA
@@ -695,19 +694,35 @@ static class ExtendedPlayerControl
     }
     public static bool IsAmneCrew(this PlayerControl target)
     {
-        return //target.Is(CustomRoles.Luckey)
-            target.Is(CustomRoles.LazyGuy)
-            || target.Is(CustomRoles.SuperStar)
-            || target.Is(CustomRoles.Celebrity)
-            || target.Is(CustomRoles.Mayor)
-            || target.Is(CustomRoles.Paranoia)
-            || target.Is(CustomRoles.Dictator)
-            || target.Is(CustomRoles.NiceGuesser)
-            || target.Is(CustomRoles.Bodyguard)
-            || target.Is(CustomRoles.Observer)
-            || target.Is(CustomRoles.Retributionist)
-            || target.Is(CustomRoles.Lookout)
-            || target.Is(CustomRoles.Bodyguard);
+        return target.IsCrewVenter()
+                || target.GetCustomRole() is
+                CustomRoles.Sheriff or
+                CustomRoles.LazyGuy or
+                CustomRoles.SuperStar or
+                CustomRoles.Celebrity or
+                CustomRoles.Mayor or
+                CustomRoles.Paranoia or
+                CustomRoles.Paranoia or
+                CustomRoles.Dictator or
+                CustomRoles.NiceGuesser or
+                CustomRoles.Bodyguard or
+                CustomRoles.Observer or
+                CustomRoles.Retributionist or
+                CustomRoles.Lookout or
+                CustomRoles.Admirer or
+                CustomRoles.Cleanser or
+                CustomRoles.CopyCat or
+                CustomRoles.Deceiver or
+                CustomRoles.Crusader or
+                CustomRoles.Overseer or
+                CustomRoles.Jailer or
+                CustomRoles.Judge or
+                CustomRoles.Medic or
+                CustomRoles.Medium or
+                CustomRoles.Monarch or
+                CustomRoles.Telecommunication or
+                CustomRoles.Swapper or
+                CustomRoles.Mechanic;
     }
     public static bool IsCrewVenter(this PlayerControl target)
     {
@@ -905,7 +920,7 @@ static class ExtendedPlayerControl
         else if (Romantic.KnowRole(seer, target)) return true;
         else if (Lawyer.KnowRole(seer, target)) return true;
         else if (Succubus.KnowRole(seer, target)) return true;
-        else if (Amnesiac.KnowRole(seer, target)) return true;
+        else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
 

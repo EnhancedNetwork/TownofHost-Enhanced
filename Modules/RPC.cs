@@ -515,7 +515,7 @@ internal class RPCHandlerPatch
                 Admirer.ReceiveRPC(reader, true);
                 break;
             case CustomRPC.SetRememberLimit:
-                Amnesiac.ReceiveRPC(reader);
+                Imitator.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetImitateLimit:
                 Imitator.ReceiveRPC(reader);
@@ -1017,9 +1017,6 @@ internal static class RPC
                 break;
             case CustomRoles.Succubus:
                 Succubus.Add(targetId);
-                break;
-            case CustomRoles.Amnesiac:
-                Amnesiac.Add(targetId);
                 break;
             case CustomRoles.Imitator:
                 Imitator.Add(targetId);

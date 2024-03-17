@@ -209,7 +209,6 @@ internal class ChangeRoleSettings
             Succubus.Init();
             Antidote.Init();
             Imitator.Init();
-            Amnesiac.Init();
             Fool.Init();
             Burst.Init();
             Maverick.Init();
@@ -500,9 +499,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Succubus:
                         Succubus.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Amnesiac:
-                        Amnesiac.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Imitator:
                         Imitator.Add(pc.PlayerId);

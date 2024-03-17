@@ -460,7 +460,6 @@ public static class CustomRolesHelper
             CustomRoles.Shroud or
             CustomRoles.Pelican or
             CustomRoles.Refugee or
-    //        CustomRoles.Minion or
             CustomRoles.Parasite or
             CustomRoles.PlagueDoctor or
             CustomRoles.SerialKiller or
@@ -469,6 +468,9 @@ public static class CustomRolesHelper
             CustomRoles.Traitor or
             CustomRoles.Virus or
             CustomRoles.Spiritcaller or
+            CustomRoles.Jackal or
+            CustomRoles.Juggernaut or
+            CustomRoles.BloodKnight or
             CustomRoles.Succubus;
     }
 

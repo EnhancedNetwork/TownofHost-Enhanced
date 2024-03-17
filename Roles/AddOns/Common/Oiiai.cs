@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
@@ -92,7 +93,10 @@ public static class Oiiai
                 if (changeValue != 0)
                 {
                     killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
-                    if (changeValue == 1) Amnesiac.Add(killer.PlayerId);
+                    if (changeValue == 1) {
+                        var Amne = new Amnesiac();
+                        Amne.Add(killer.PlayerId);
+                    }
                     else if (changeValue == 2) Imitator.Add(killer.PlayerId);
 
                     Logger.Info($"Oiiai {killer.GetNameWithRole()} with Neutrals with kill button assign.", "Oiiai");

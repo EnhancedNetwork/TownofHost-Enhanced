@@ -126,7 +126,7 @@ public static class Imitator
                 case 4:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedAmnesiac")));
                     killer.RpcSetCustomRole(CustomRoles.Amnesiac);
-                    Amnesiac.Add(killer.PlayerId);
+                    killer.GetRoleClass().Add(killer.PlayerId);
                     break;
             }
 
