@@ -842,21 +842,6 @@ class CheckMurderPatch
         return true;
     }
 }
-//[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
-//class ExilePlayerPatch
-//{    
-//public static void Postfix(PlayerControl __instance)
-//    {
-//        try 
-//       { 
-//GhostRoleAssign.GhostAssignPatch(__instance);
-//        }
-//        catch (Exception error)
-//        {
-//Logger.Error($"Error after Ghost assign: {error}", "ExilePlayerPatch.GhostAssign");
-//      }
-//   }
-//}
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
@@ -1055,19 +1040,19 @@ class MurderPlayerPatch
         //================GHOST ASSIGN PATCH============
         if (target.Is(CustomRoles.EvilSpirit))
         {
-            target.RpcSetRole(RoleTypes.GuardianAngel);
+         target.RpcSetRole(RoleTypes.GuardianAngel);
         }
-        else
-        {
-            try
-            {
-                GhostRoleAssign.GhostAssignPatch(target);
-            }
-            catch (Exception error)
-            {
-                Logger.Error($"Error after Ghost assign: {error}", "MurderPlayerPatch.GhostAssign");
-            }
-        }
+        //
+        //{
+        // try
+        //{
+        //GhostRoleAssign.GhostAssignPatch(target);
+        //}
+        //    catch (Exception error)
+        // {
+        // Logger.Error($"Error after Ghost assign: {error}", "MurderPlayerPatch.GhostAssign");
+        //}
+        // }
 
         Utils.AfterPlayerDeathTasks(target);
 
@@ -3045,78 +3030,91 @@ public static class PlayerControlCheckUseZiplinePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class PlayerControlDiePatch
 {
-    public static void Postfix(PlayerControl __instance)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref DeathReason reason, [HarmonyArgument(1)] ref bool assignGhostRole)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        
+
         try
         {
-            GhostRoleAssign.GhostAssignPatch(__instance);
+            var DeathPlayer = __instance;
+
+            GhostRoleAssign.GhostAssignPatch(DeathPlayer);
+            
+            if (DeathPlayer.IsAnySubRole(AddON => AddON.IsGhostRole()) || DeathPlayer.GetCustomRole().IsGhostRole()) assignGhostRole = true;
+            //else assignGhostRole = false;
         }
         catch (Exception error)
         {
             Logger.Error($"Error after Ghost assign: {error}", "DiePlayerPatch.GhostAssign");
         }
 
+        
         __instance.RpcRemovePet();
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
 class PlayerControlSetRolePatch
 {
-    public static bool Prefix(PlayerControl __instance, ref RoleTypes roleType)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType)
     {
         if (GameStates.IsHideNSeek) return true;
-
-        var target = __instance;
-        var targetName = __instance.GetNameWithRole().RemoveHtmlTags();
-        Logger.Info($" {targetName} => {roleType}", "PlayerControl.RpcSetRole");
-        if (!ShipStatus.Instance.enabled) return true;
-        if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
+        try
         {
-            var targetIsKiller = target.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
-            var ghostRoles = new Dictionary<PlayerControl, RoleTypes>();
-
-            foreach (var seer in Main.AllPlayerControls)
+            var target = __instance;
+            var targetName = __instance.GetNameWithRole().RemoveHtmlTags();
+            Logger.Info($" {targetName} => {roleType}", "PlayerControl.RpcSetRole");
+            if (!ShipStatus.Instance.enabled) return true;
+            if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
             {
-                var self = seer.PlayerId == target.PlayerId;
-                var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
+                var targetIsKiller = target.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
+                var ghostRoles = new Dictionary<PlayerControl, RoleTypes>();
 
+                foreach (var seer in Main.AllPlayerControls)
+                {
+                    var self = seer.PlayerId == target.PlayerId;
+                    var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
+
+                    if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
+                    {
+                        ghostRoles[seer] = RoleTypes.GuardianAngel;
+                    }
+                    else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(CustomRoleTypes.Impostor)))
+                    {
+                        ghostRoles[seer] = RoleTypes.ImpostorGhost;
+                    }
+                    else
+                    {
+                        ghostRoles[seer] = RoleTypes.CrewmateGhost;
+                    }
+                }
                 if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
                 {
-                    ghostRoles[seer] = RoleTypes.GuardianAngel;
+                    roleType = RoleTypes.GuardianAngel;
                 }
-                else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(CustomRoleTypes.Impostor)))
+                else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
                 {
-                    ghostRoles[seer] = RoleTypes.ImpostorGhost;
+                    roleType = RoleTypes.CrewmateGhost;
+                }
+                else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
+                {
+                    roleType = RoleTypes.ImpostorGhost;
                 }
                 else
                 {
-                    ghostRoles[seer] = RoleTypes.CrewmateGhost;
+                    foreach ((var seer, var role) in ghostRoles)
+                    {
+                        Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
+                        target.RpcSetRoleDesync(role, seer.GetClientId());
+                    }
+                    return false;
                 }
-            }
-            if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
-            {
-                roleType = RoleTypes.GuardianAngel;
-            }
-            else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
-            {
-                roleType = RoleTypes.CrewmateGhost;
-            }
-            else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
-            {
-                roleType = RoleTypes.ImpostorGhost;
-            }
-            else
-            {
-                foreach ((var seer, var role) in ghostRoles)
-                {
-                    Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
-                    target.RpcSetRoleDesync(role, seer.GetClientId());
-                }
-                return false;
             }
         }
+        catch (Exception error) 
+        { 
+            Logger.Warn($"Error After RpcSetRole: {error}", "RpcSetRole Prefix"); 
+        }
+
         return true;
     }
 }
