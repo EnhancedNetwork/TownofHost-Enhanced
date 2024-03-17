@@ -2205,7 +2205,7 @@ public static class Utils
                 if (Lawyer.Target.ContainsKey(target.PlayerId))
                 {
                     Lawyer.Target.Remove(target.PlayerId);
-                    Lawyer.SendRPC(target.PlayerId);
+                    Lawyer.SendRPC(target.PlayerId, SetTarget: false);
                 }
                 break;
             case CustomRoles.Romantic:

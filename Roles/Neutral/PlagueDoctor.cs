@@ -107,7 +107,8 @@ public static class PlagueDoctor
     }
     public static void SendRPC(byte targetId, float rate, bool firstInfect)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlagueDoctor, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.PlagueDoctor);
         writer.Write(firstInfect);
         writer.Write(targetId);
         writer.Write(rate);

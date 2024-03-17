@@ -61,21 +61,26 @@ internal class Seeker : RoleBase
     private static void SendRPC(byte seekerId, byte targetId = 0xff, bool setTarget = true)
     {
         MessageWriter writer;
-        if (!setTarget)
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Seeker); // SetSeekerTarget
+        writer.Write(setTarget);
+
+
+        if (!setTarget) // Sync seeker points
         {
-            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSeekerPoints, SendOption.Reliable, -1);
             writer.Write(seekerId);
             writer.Write(TotalPoints[seekerId]);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-            return;
         }
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSeekerTarget, SendOption.Reliable, -1);
-        writer.Write(seekerId);
-        writer.Write(targetId);
+        else // Set target
+        {
+            writer.Write(seekerId);
+            writer.Write(targetId);
+        }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, bool setTarget = true)
+    public static void ReceiveRPC(MessageReader reader)
     {
+        bool setTarget = reader.ReadBoolean();
         byte seekerId = reader.ReadByte();
         if (!setTarget)
         {

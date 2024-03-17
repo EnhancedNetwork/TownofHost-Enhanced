@@ -55,7 +55,8 @@ public static class Pixie
 
     public static void SendRPC(byte pixieId, bool operate, byte targetId = 0xff)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPixieTargets, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Pixie); //SetPixieTargets
         writer.Write(pixieId);
         writer.Write(operate);
         if (!operate) // false = 0

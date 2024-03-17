@@ -86,32 +86,31 @@ public static class Lawyer
             }
             var SelectedTarget = targetList[rand.Next(targetList.Count)];
             Target.Add(playerId, SelectedTarget.PlayerId);
-            SendRPC(playerId, SelectedTarget.PlayerId, "SetTarget");
+            SendRPC(playerId, SelectedTarget.PlayerId, true);
             Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()}:{SelectedTarget.GetNameWithRole()}", "Lawyer");
         }
     }
-    public static void SendRPC(byte lawyerId, byte targetId = 0x73, string Progress = "")
+    public static void SendRPC(byte lawyerId, byte targetId = 0x73, bool SetTarget = false)
     {
-        MessageWriter writer;
-        switch (Progress)
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+        writer.WritePacked((int)CustomRoles.Lawyer);
+        writer.Write(SetTarget);
+
+        if (SetTarget)
         {
-            case "SetTarget":
-                writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetLawyerTarget, SendOption.Reliable);
-                writer.Write(lawyerId);
-                writer.Write(targetId);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
-                break;
-            case "":
-                if (!AmongUsClient.Instance.AmHost) return;
-                writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveLawyerTarget, SendOption.Reliable);
-                writer.Write(lawyerId);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
-                break;
-            
+            writer.Write(lawyerId);
+            writer.Write(targetId);
         }
+        else
+        {
+            writer.Write(lawyerId);
+        }
+
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, bool SetTarget)
+    public static void ReceiveRPC(MessageReader reader)
     {
+        bool SetTarget = reader.ReadBoolean();
         if (SetTarget)
         {
             byte LawyerId = reader.ReadByte();
@@ -131,7 +130,7 @@ public static class Lawyer
         });
         Utils.GetPlayerById(Lawyer).RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         Target.Remove(Lawyer);
-        SendRPC(Lawyer);
+        SendRPC(Lawyer, SetTarget: false);
         Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(Lawyer));
     }
     public static bool KnowRole(PlayerControl player, PlayerControl target)
@@ -155,7 +154,7 @@ public static class Lawyer
     {
         lawyer.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         Target.Remove(lawyer.PlayerId);
-        SendRPC(lawyer.PlayerId);
+        SendRPC(lawyer.PlayerId, SetTarget: false);
         var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), Translator.GetString(""));
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         lawyer.Notify(text);
