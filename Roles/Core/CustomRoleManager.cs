@@ -202,7 +202,6 @@ public static class CustomRoleManager
         CustomRoles.Demon => new Demon(),
         CustomRoles.Doppelganger => new Doppelganger(),
         CustomRoles.Doomsayer => new Doomsayer(),
-        //CustomRoles.Eclipse => new Eclipse(),
         //CustomRoles.Enderman => new Enderman(),
         CustomRoles.Executioner => new Executioner(),
         //CustomRoles.Totocalcio => new Totocalcio(),
@@ -260,8 +259,6 @@ public static class CustomRoleManager
         //CustomRoles.Workaholic => new Workaholic(),
         //CustomRoles.KB_Normal => new KB_Normal(),
         //CustomRoles.Killer => new Killer(),
-        //CustomRoles.GM => new GM(),
-        //CustomRoles.Convict => new Convict(),
         _ => new VanillaRole(),
     };
 
