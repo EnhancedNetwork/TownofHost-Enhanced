@@ -636,8 +636,7 @@ class SetAnswersQuestion : QuizQuestionBase
         {
             var prefix = QuizmasterQuestionType switch
             {
-                QuizmasterQuestionType.FactionQuestion or QuizmasterQuestionType.NameOriginQuestion or QuizmasterQuestionType.RemovedFactionQuestion or QuizmasterQuestionType.RoleAddedQuestion => "QuizmasterAnswers.",
-                QuizmasterQuestionType.RoleFactionQuestion or QuizmasterQuestionType.RoleBasisQuestion => "Type.",
+                QuizmasterQuestionType.RoleBasisQuestion or QuizmasterQuestionType.RoleFactionQuestion or QuizmasterQuestionType.FactionQuestion or QuizmasterQuestionType.NameOriginQuestion or QuizmasterQuestionType.RemovedFactionQuestion or QuizmasterQuestionType.RoleAddedQuestion => "QuizmasterAnswers.",
                 _ => ""
             };
 
@@ -646,6 +645,8 @@ class SetAnswersQuestion : QuizQuestionBase
                 AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
                 if (Answer == "None") prefix = "Quizmaster.";
                 Answers.Add(prefix + Answer);
+
+                ShowInvalid = false;
             }
             else
             {
