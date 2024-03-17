@@ -8,7 +8,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Imitator
 {
-    private static readonly int Id = 13000;
+    private const int Id = 13000;
     private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 

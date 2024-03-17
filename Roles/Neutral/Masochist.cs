@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
@@ -10,19 +8,20 @@ namespace TOHE.Roles.Neutral;
 internal class Masochist : RoleBase// bad roll, plz don't use this hosts
 {
     //===========================SETUP================================\\
+    private const int Id = 14500;
     private static HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-
     //==================================================================\\
 
-    public static OptionItem MasochistKillMax;
-    public static Dictionary<byte, int> MasochistMax = [];
+    private static OptionItem MasochistKillMax;
+    private static Dictionary<byte, int> MasochistMax = [];
+
     public static void SetupCustomOptions()
     {
-        SetupRoleOptions(14500, TabGroup.NeutralRoles, CustomRoles.Masochist);
-        MasochistKillMax = IntegerOptionItem.Create(14502, "MasochistKillMax", new(1, 30, 1), 5, TabGroup.NeutralRoles, false)
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Masochist);
+        MasochistKillMax = IntegerOptionItem.Create(Id + 2, "MasochistKillMax", new(1, 30, 1), 5, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Masochist])
             .SetValueFormat(OptionFormat.Times);
     }
@@ -38,6 +37,7 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
     }
     public override string GetProgressText(byte playerId, bool comms)
         => ColorString(GetRoleColor(CustomRoles.Masochist).ShadeColor(0.25f), $"({(MasochistMax.TryGetValue(playerId, out var count3) ? count3 : 0)}/{MasochistKillMax.GetInt()})");
+    
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown(target: target, forceAnime: true);

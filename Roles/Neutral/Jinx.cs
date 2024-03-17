@@ -10,20 +10,20 @@ internal class Jinx : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16800;
-    public static HashSet<byte> playerIdList = [];
+    private static HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem KillCooldown;
-    public static OptionItem CanVent;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
-    public static OptionItem JinxSpellTimes;
-    public static OptionItem killAttacker;
+    private static OptionItem JinxSpellTimes;
+    private static OptionItem killAttacker;
 
-    public static Dictionary<byte, int> JinxSpellCount = [];
+    private static Dictionary<byte, int> JinxSpellCount = [];
+
     public static void SetupCustomOption()
     
     {
@@ -74,10 +74,13 @@ internal class Jinx : RoleBase
         if (JinxSpellCount[target.PlayerId] <= 0) return true;
         if (killer.Is(CustomRoles.Pestilence)) return true;
         if (killer == target) return true;
+        
         killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(target);
+       
         JinxSpellCount[target.PlayerId] -= 1;
         SendRPCJinxSpellCount(target.PlayerId);
+        
         if (killAttacker.GetBool())
         {
             killer.SetRealKiller(target);

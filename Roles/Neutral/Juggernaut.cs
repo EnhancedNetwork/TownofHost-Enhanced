@@ -7,21 +7,19 @@ namespace TOHE;
 
 internal class Juggernaut : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 16900;
     public static HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ReduceKillCooldown;
     private static OptionItem MinKillCooldown;
-    public static OptionItem HasImpostorVision;
-    public static OptionItem CanVent;
+    private static OptionItem HasImpostorVision;
+    private static OptionItem CanVent;
 
     private static Dictionary<byte, float> NowCooldown = [];
 
@@ -59,7 +57,7 @@ internal class Juggernaut : RoleBase
         killer.SyncSettings();
         return true;
     }
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => Juggernaut.CanVent.GetBool();
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(Juggernaut.HasImpostorVision.GetBool());
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(HasImpostorVision.GetBool());
 }

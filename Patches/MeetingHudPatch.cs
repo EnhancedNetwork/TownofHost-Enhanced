@@ -206,8 +206,6 @@ class CheckForEndVotingPatch
                 // Hide roles vote
                 if (playerRoleClass.HideVote(ps)) continue;
                 
-                // Hide Jester Vote
-                if (CheckRole(ps.TargetPlayerId, CustomRoles.Jester) && Jester.HideJesterVote.GetBool()) continue;
                 // Assing Madmate Slef Vote
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) continue;
 
@@ -466,24 +464,6 @@ class CheckForEndVotingPatch
         var DecidedWinner = false;
 
         player.GetRoleClass()?.CheckExileTarget(exiledPlayer, ref DecidedWinner, isMeetingHud: true, name: ref name);
-
-        //迷你船员长大前被驱逐抢夺胜利
-        if (crole.Is(CustomRoles.NiceMini) && Mini.Age < 18)
-        {
-            name = string.Format(GetString("ExiledNiceMini"), realName, coloredRole);
-            DecidedWinner = true;
-        }
-
-        //小丑胜利
-        if (crole.Is(CustomRoles.Jester))
-        {
-            if (Jester.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
-            {
-                name = string.Format(GetString("ExiledJester"), realName, coloredRole);
-                DecidedWinner = true;
-            }
-            else if (Options.CEMode.GetInt() == 2) name += string.Format(GetString("JesterMeetingLoose"), Jester.MeetingsNeededForJesterWin.GetInt() + 1);
-        }
 
         if (DecidedWinner) name += "<size=0>";
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)

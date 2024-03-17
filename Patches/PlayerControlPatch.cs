@@ -1111,8 +1111,6 @@ class ReportDeadBodyPatch
                     Logger.Info($"Player has role class: {playerRoleClass} - the start of the meeting has been cancelled", "ReportDeadBody");
                     return false;
                 }
-
-                if (__instance.Is(CustomRoles.Jester) && !Jester.JesterCanUseButton.GetBool()) return false;
             }
             if (target != null) // Report dead body
             {

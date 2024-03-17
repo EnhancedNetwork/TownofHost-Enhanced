@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral;
 internal class Innocent : RoleBase
 {
     //===========================SETUP================================\\
+    private const int Id = 14300;
     private static HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
@@ -20,8 +21,8 @@ internal class Innocent : RoleBase
 
     public static void SetupCustomOptions()
     {
-        SetupRoleOptions(14300, TabGroup.NeutralRoles, CustomRoles.Innocent);
-        InnocentCanWinByImp = BooleanOptionItem.Create(14302, "InnocentCanWinByImp", false, TabGroup.NeutralRoles, false)
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Innocent);
+        InnocentCanWinByImp = BooleanOptionItem.Create(Id + 2, "InnocentCanWinByImp", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Innocent]);
     }
     public override void Init()

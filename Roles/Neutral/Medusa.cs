@@ -2,33 +2,26 @@ using AmongUs.GameOptions;
 using System.Collections.Generic;
 using static TOHE.Translator;
 using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Medusa : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 17000;
     public static HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem KillCooldown;
-    public static OptionItem KillCooldownAfterStoneGazing;
-    public static OptionItem CanVent;
+    private static OptionItem KillCooldownAfterStoneGazing;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
-
-    public static List<byte> MedusaBodies = [];
 
     public static void SetupCustomOption()
     {
-        //Medusaは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Medusa, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 12, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Medusa])
             .SetValueFormat(OptionFormat.Seconds);
@@ -59,7 +52,7 @@ internal class Medusa : RoleBase
         Main.UnreportableBodies.Add(target.PlayerId);
         __instance.Notify(GetString("MedusaStoneBody"));
 
-        __instance.SetKillCooldownV3(Medusa.KillCooldownAfterStoneGazing.GetFloat(), forceAnime: true);
+        __instance.SetKillCooldownV3(KillCooldownAfterStoneGazing.GetFloat(), forceAnime: true);
         Logger.Info($"{__instance.GetRealName()} stoned {target.PlayerName} body", "Medusa");
         return false;
     }

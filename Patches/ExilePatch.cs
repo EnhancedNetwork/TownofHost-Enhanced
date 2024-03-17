@@ -84,39 +84,6 @@ class ExileControllerWrapUpPatch
             var emptyString = string.Empty;
             exiledRoleClass?.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
 
-            //Jester win
-            if (Jester.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
-            {           
-                if (role.Is(CustomRoles.Jester))
-                {
-                    if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
-                    {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jester);
-                        CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
-                    }
-
-                    foreach (var executioner in Executioner.playerIdList)
-                    {
-                        if (Executioner.IsTarget(executioner, exiled.PlayerId))
-                        {
-                            CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Executioner);
-                            CustomWinnerHolder.WinnerIds.Add(executioner);
-                        }
-                    }
-                    DecidedWinner = true;
-                }
-            }
-
-            // Mini win
-            if (role.Is(CustomRoles.NiceMini) && Mini.Age < 18)
-            {
-                if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
-                {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
-                    CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
-                }
-            }
-
             //Terrorist check win
             if (role.Is(CustomRoles.Terrorist))
             {

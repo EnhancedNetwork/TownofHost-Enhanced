@@ -1,4 +1,5 @@
 using Hazel;
+using System;
 using System.Collections.Generic;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
@@ -12,26 +13,27 @@ internal class Mini : RoleBase
     private static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.NiceMini.IsClassEnable() || CustomRoles.EvilMini.IsClassEnable();
-    public override CustomRoles ThisRoleBase => throw new System.NotImplementedException(); //not sure :/
-
+    public override CustomRoles ThisRoleBase => IsEvilMini ? CustomRoles.Impostor : CustomRoles.Crewmate;
     //==================================================================\\
-    public static bool IsEvilMini = false;
+
+    private static OptionItem GrowUpDuration;
+    private static OptionItem EveryoneCanKnowMini;
+    private static OptionItem CountMeetingTime;
+    private static OptionItem EvilMiniSpawnChances;
+    private static OptionItem CanBeEvil;
+    private static OptionItem UpDateAge;
+    private static OptionItem MinorCD;
+    private static OptionItem MajorCD;
 
     private static List<byte> playerIdList = [];
-    public static int GrowUpTime = new();
-    public static int GrowUp = new();
-    //public static int EvilKillCDmin = new();
-    private static long LastFixedUpdate = new();
+
     public static int Age = new();
-    public static OptionItem GrowUpDuration;
-    public static OptionItem EveryoneCanKnowMini;
-    public static OptionItem CountMeetingTime;
-    public static bool misguessed = false;
-    public static OptionItem EvilMiniSpawnChances;
-    public static OptionItem CanBeEvil;
-    public static OptionItem UpDateAge;
-    public static OptionItem MinorCD;
-    public static OptionItem MajorCD;
+    private static bool IsEvilMini = false;
+    private static int GrowUpTime = new();
+    private static int GrowUp = new();
+    private static long LastFixedUpdate = new();
+    private static bool misguessed = false;
+
     public static void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mini, 1, zeroOne: false);
@@ -56,6 +58,9 @@ internal class Mini : RoleBase
         On = false;
         Age = 0;
         misguessed = false;
+
+        var rand = new Random();
+        IsEvilMini = CanBeEvil.GetBool() && (rand.Next(0, 100) < EvilMiniSpawnChances.GetInt());
     }
     public override void Add(byte playerId)
     {
@@ -76,6 +81,9 @@ internal class Mini : RoleBase
     {
         Age = reader.ReadInt32();
     }
+
+    public static bool CheckSpawnEvilMini() => IsEvilMini;
+
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (Age < 18)
@@ -87,8 +95,9 @@ internal class Mini : RoleBase
     }
     public static void OnFixedUpdates(PlayerControl player)
     {
-        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
+        if (!GameStates.IsInGame) return;
         if (Age >= 18) return;
+
         //Check if nice mini is dead
         if (!player.IsAlive() && player.Is(CustomRoles.NiceMini))
         {
@@ -177,6 +186,26 @@ internal class Mini : RoleBase
         }
 
         return false;
+    }
+
+    public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    {
+        if (GetPlayerById(exiled.PlayerId).Is(CustomRoles.NiceMini) && Age < 18)
+        {
+            if (isMeetingHud)
+            {
+                name = string.Format(GetString("ExiledNiceMini"), Main.LastVotedPlayer, GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                DecidedWinner = true;
+            }
+            else
+            {
+                if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
+                {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
+                    CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
+                }
+            }
+        }
     }
 
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
