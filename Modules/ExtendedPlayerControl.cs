@@ -1516,8 +1516,8 @@ static class ExtendedPlayerControl
 
         var playerNetTransform = player.NetTransform;
         var newSidForHost = (ushort)(playerNetTransform.lastSequenceId + 20);
-        var newSidForLocal = (ushort)(playerNetTransform.lastSequenceId + 11);
-        var newSidForGlobal = (ushort)(playerNetTransform.lastSequenceId + 16);
+        var newSidForLocal = (ushort)(playerNetTransform.lastSequenceId + 18);
+        var newSidForGlobal = (ushort)(playerNetTransform.lastSequenceId + 26);
 
         Logger.Info($"before teleport lastSequenceId: {player.NetTransform.lastSequenceId}", "RpcTeleport");
 
