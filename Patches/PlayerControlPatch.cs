@@ -337,27 +337,6 @@ class CheckMurderPatch
             switch (killerRole)
             {
                 //==========On Check Murder==========//
-                case CustomRoles.Warlock:
-                    if (!Main.CheckShapeshift[killer.PlayerId] && !Main.isCurseAndKill[killer.PlayerId])
-                    { //Warlockが変身時以外にキルしたら、呪われる処理
-                        if (target.Is(CustomRoles.LazyGuy) || target.Is(CustomRoles.Lazy) || target.Is(CustomRoles.NiceMini) && Mini.Age < 18) return false;
-                        Main.isCursed = true;
-                        killer.SetKillCooldown();
-                        //RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-                        killer.RPCPlayCustomSound("Line");
-                        Main.CursedPlayers[killer.PlayerId] = target;
-                        Main.WarlockTimer.Add(killer.PlayerId, 0f);
-                        Main.isCurseAndKill[killer.PlayerId] = true;
-                        //RPC.RpcSyncCurseAndKill();
-                        return false;
-                    }
-                    if (Main.CheckShapeshift[killer.PlayerId])
-                    {//呪われてる人がいないくて変身してるときに通常キルになる
-                        killer.RpcCheckAndMurder(target);
-                        return false;
-                    }
-                    if (Main.isCurseAndKill[killer.PlayerId]) killer.RpcGuardAndKill(target);
-                    return false;
                 case CustomRoles.Pirate:
                     if (!Pirate.OnCheckMurder(killer, target))
                         return false;
@@ -537,16 +516,6 @@ class CheckMurderPatch
                     else if (target.GetRealKiller() != null && target.GetRealKiller() != target && killer != null)
                         { Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; ExtendedPlayerControl.RpcMurderPlayerV3(target.GetRealKiller(), target);  }
                 return false;
-
-            case CustomRoles.Wildling:
-                if (Wildling.InProtect(target.PlayerId))
-                {
-                    killer.RpcGuardAndKill(target);
-                    if (!Options.DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
-                    target.Notify(GetString("BKOffsetKill"));
-                    return false;
-                }
-                break;
         }
 
         if (killer.PlayerId != target.PlayerId)
@@ -708,9 +677,6 @@ class MurderPlayerPatch
 
         switch (killer.GetCustomRole())
         {
-            case CustomRoles.Wildling:
-                Wildling.OnMurderPlayer(killer, target);
-                break;
             case CustomRoles.Butcher:
                 Butcher.OnMurderPlayer(killer, target);
                 break;
@@ -848,79 +814,6 @@ public static class CheckShapeShiftPatch
         }
 
         bool shapeshiftIsHidden = true;
-
-        switch (role)
-        {
-
-            case CustomRoles.BountyHunter:
-                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-                shapeshifter.RejectShapeshiftAndReset(false);
-                return false;
-
-            case CustomRoles.Penguin:
-                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-                shapeshifter.RejectShapeshiftAndReset(false);
-                return false;
-
-            case CustomRoles.SerialKiller:
-                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-                shapeshifter.RejectShapeshiftAndReset(false);
-                return false;
-
-            case CustomRoles.Warlock:
-                shapeshifter.RejectShapeshiftAndReset();
-                if (Main.CursedPlayers[shapeshifter.PlayerId] != null)
-                {
-                    if (Main.CursedPlayers[shapeshifter.PlayerId].IsAlive())
-                    {
-                        var cp = Main.CursedPlayers[shapeshifter.PlayerId];
-                        Vector2 cppos = cp.transform.position;
-                        Dictionary<PlayerControl, float> cpdistance = [];
-                        float dis;
-                        foreach (PlayerControl p in Main.AllAlivePlayerControls)
-                        {
-                            if (p.PlayerId == cp.PlayerId) continue;
-                            if (!Options.WarlockCanKillSelf.GetBool() && p.PlayerId == shapeshifter.PlayerId) continue;
-                            if (!Options.WarlockCanKillAllies.GetBool() && p.GetCustomRole().IsImpostor()) continue;
-                            if (p.Is(CustomRoles.Glitch)) continue;
-                            if (p.Is(CustomRoles.Pestilence)) continue;
-                            if (Pelican.IsEaten(p.PlayerId) || Medic.ProtectList.Contains(p.PlayerId)) continue;
-                            dis = Vector2.Distance(cppos, p.transform.position);
-                            cpdistance.Add(p, dis);
-                            Logger.Info($"{p?.Data?.PlayerName}の位置{dis}", "Warlock");
-                        }
-                        if (cpdistance.Count >= 1)
-                        {
-                            var min = cpdistance.OrderBy(c => c.Value).FirstOrDefault(); // Retrieve the smallest value
-                            PlayerControl targetw = min.Key;
-                            if (cp.RpcCheckAndMurder(targetw, true))
-                            {
-                                targetw.SetRealKiller(shapeshifter);
-                                Logger.Info($"{targetw.GetNameWithRole()} was killed", "Warlock");
-                                cp.RpcMurderPlayerV3(targetw);
-                                shapeshifter.SetKillCooldown(forceAnime: true);
-                                shapeshifter.Notify(GetString("WarlockControlKill"));
-                            }
-                        }
-                        else
-                        {
-                            shapeshifter.Notify(GetString("WarlockNoTarget"));
-                        }
-                        Main.isCurseAndKill[shapeshifter.PlayerId] = false;
-                    }
-                    else
-                    {
-                        shapeshifter.Notify(GetString("WarlockTargetDead"));
-                    }
-                    Main.CursedPlayers[shapeshifter.PlayerId] = null;
-                }
-                else
-                {
-                    shapeshifter.Notify(GetString("WarlockNoTargetYet"));
-                }
-                return false;
-        }
-
         shapeshifter.RejectShapeshiftAndReset();
         shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
         return false;
@@ -969,53 +862,6 @@ class ShapeshiftPatch
         {
             var shapeshiftIsHidden = false;
             shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden);
-
-            switch (shapeshifter.GetCustomRole())
-            {
-                case CustomRoles.Warlock:
-                    if (Main.CursedPlayers[shapeshifter.PlayerId] != null)
-                    {
-                        if (shapeshifting && !Main.CursedPlayers[shapeshifter.PlayerId].Data.IsDead)
-                        {
-                            var cp = Main.CursedPlayers[shapeshifter.PlayerId];
-                            Vector2 cppos = cp.transform.position;
-                            Dictionary<PlayerControl, float> cpdistance = [];
-                            float dis;
-                            foreach (PlayerControl p in Main.AllAlivePlayerControls)
-                            {
-                                if (p.PlayerId == cp.PlayerId) continue;
-                                if (!Options.WarlockCanKillSelf.GetBool() && p.PlayerId == shapeshifter.PlayerId) continue;
-                                if (!Options.WarlockCanKillAllies.GetBool() && p.GetCustomRole().IsImpostor()) continue;
-                                if (p.Is(CustomRoles.Glitch)) continue;
-                                if (p.Is(CustomRoles.Pestilence)) continue;
-                                if (Pelican.IsEaten(p.PlayerId) || Medic.ProtectList.Contains(p.PlayerId)) continue;
-                                dis = Vector2.Distance(cppos, p.transform.position);
-                                cpdistance.Add(p, dis);
-                                Logger.Info($"{p?.Data?.PlayerName}の位置{dis}", "Warlock");
-                            }
-                            if (cpdistance.Count >= 1)
-                            {
-                                var min = cpdistance.OrderBy(c => c.Value).FirstOrDefault();//一番小さい値を取り出す
-                                PlayerControl targetw = min.Key;
-                                if (cp.RpcCheckAndMurder(targetw, true))
-                                {
-                                    targetw.SetRealKiller(shapeshifter);
-                                    Logger.Info($"{targetw.GetNameWithRole()}was killed", "Warlock");
-                                    cp.RpcMurderPlayerV3(targetw);//殺す
-                                    shapeshifter.RpcGuardAndKill(shapeshifter);
-                                    shapeshifter.Notify(GetString("WarlockControlKill"));
-                                }
-                            }
-                            else
-                            {
-                                shapeshifter.Notify(GetString("WarlockNoTarget"));
-                            }
-                            Main.isCurseAndKill[shapeshifter.PlayerId] = false;
-                        }
-                        Main.CursedPlayers[shapeshifter.PlayerId] = null;
-                    }
-                    break;
-            }
         }
 
         //変身解除のタイミングがずれて名前が直せなかった時のために強制書き換え
@@ -1454,32 +1300,6 @@ class FixedUpdateInNormalGamePatch
 
                 switch (playerRole)
                 {
-                    case CustomRoles.Warlock:
-                        if (Main.WarlockTimer.TryGetValue(player.PlayerId, out var warlockTimer))
-                        {
-                            var playerId = player.PlayerId;
-                            if (player.IsAlive())
-                            {
-                                if (warlockTimer >= 1f)
-                                {
-                                    player.RpcResetAbilityCooldown();
-                                    Main.isCursed = false;
-                                    player.SyncSettings();
-                                    Main.WarlockTimer.Remove(playerId);
-                                }
-                                else
-                                {
-                                    warlockTimer += Time.fixedDeltaTime;
-                                    Main.WarlockTimer[playerId] = warlockTimer;
-                                }
-                            }
-                            else
-                            {
-                                Main.WarlockTimer.Remove(playerId);
-                            }
-                        }
-                        break;
-
                     case CustomRoles.Solsticer:
                         Solsticer.OnFixedUpdate(player);
                         break;
@@ -1606,12 +1426,6 @@ class FixedUpdateInNormalGamePatch
 
                     switch (playerRole)
                     {
-
-                        case CustomRoles.Wildling:
-                            Wildling.OnFixedUpdate(player);
-                            break;
-
-
                         case CustomRoles.Mario:
                             if (Main.MarioVentCount[player.PlayerId] >= Options.MarioVentNumWin.GetInt())
                             {

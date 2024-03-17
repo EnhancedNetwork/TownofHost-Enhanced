@@ -76,7 +76,8 @@ internal class PlagueBearer : RoleBase
     public static void SendRPC(PlayerControl player, PlayerControl target)
     {
         MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.setPlaguedPlayer, SendOption.Reliable, -1);//RPCによる同期
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);//RPCによる同期
+        writer.WritePacked((int)CustomRoles.PlagueBearer); // setPlaguedPlayer
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -166,7 +167,7 @@ internal class PlagueBearer : RoleBase
     {
         return Puppeteer.PuppetIsActive(killer.PlayerId) ||
             Shroud.ShroudIsActive(killer.PlayerId) ||
-            Main.CursedPlayers.ContainsValue(killer) ||
+            Warlock.CursedIsActive(killer) ||
             Sniper.SnipeIsActive(killer.PlayerId);
     }
     public override bool CanUseImpostorVentButton(PlayerControl pc)

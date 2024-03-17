@@ -29,8 +29,7 @@ internal class Amnesiac : RoleBase
         "Role.Maverick",
         "Role.Imitator",
     ];
-
-
+    
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Amnesiac);
@@ -48,6 +47,7 @@ internal class Amnesiac : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

@@ -61,7 +61,8 @@ internal class Pelican : RoleBase
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPelicanEatenNum, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Pelican); // SetPelicanEatenNum
         writer.Write(playerId);
         if (playerId != byte.MaxValue)
         {

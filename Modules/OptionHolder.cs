@@ -486,14 +486,6 @@ public static class Options
     public static OptionItem ShapeshiftCD;
     public static OptionItem ShapeshiftDur;
 
-    public static OptionItem VindicatorAdditionalVote;
-    public static OptionItem VindicatorHideVote;
-
-    public static OptionItem WarlockCanKillAllies;
-    public static OptionItem WarlockCanKillSelf;
-    public static OptionItem WarlockShiftDuration;
-
-
     // Crewmates role settings
     public static OptionItem ScientistCD;
     public static OptionItem ScientistDur;
@@ -550,8 +542,6 @@ public static class Options
     public static OptionItem NeutralCanBeInLove;
 
     // Experimental Roles
-    public static OptionItem ZombieKillCooldown;
-    public static OptionItem ZombieSpeedReduce;
 
     //public static OptionItem SpeedBoosterUpSpeed;
     //public static OptionItem SpeedBoosterTimes;
@@ -922,13 +912,7 @@ public static class Options
         /*
          * Zombie
          */
-        SetupRoleOptions(23900, TabGroup.ImpostorRoles, CustomRoles.Zombie);
-        ZombieKillCooldown = FloatOptionItem.Create(23903, "KillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Zombie])
-            .SetValueFormat(OptionFormat.Seconds);
-        ZombieSpeedReduce = FloatOptionItem.Create(23904, "ZombieSpeedReduce", new(0.0f, 1.0f, 0.1f), 0.1f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Zombie])
-            .SetValueFormat(OptionFormat.Multiplier);
+        Zombie.SetupCustomOption();
 
         /*
          * SUPPORT ROLES
@@ -999,17 +983,12 @@ public static class Options
         /*
          * Vindicator
          */
-        SetupRoleOptions(3800, TabGroup.ImpostorRoles, CustomRoles.Vindicator);
-        VindicatorAdditionalVote = IntegerOptionItem.Create(3802, "MayorAdditionalVote", new(1, 20, 1), 3, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Vindicator])
-            .SetValueFormat(OptionFormat.Votes);
-        VindicatorHideVote = BooleanOptionItem.Create(3803, "MayorHideVote", false, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Vindicator]);
+        Vindicator.SetupCustomOption();
 
         /*
          * Visionary
          */
-        SetupRoleOptions(3900, TabGroup.ImpostorRoles, CustomRoles.Visionary);
+        Visionary.SetupCustomOption();
 
         /*
          * CONCEALING ROLES
@@ -1086,14 +1065,7 @@ public static class Options
         /*
          * Warlock
          */
-        SetupRoleOptions(5100, TabGroup.ImpostorRoles, CustomRoles.Warlock);
-        WarlockCanKillAllies = BooleanOptionItem.Create(5102, "CanKillAllies", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Warlock]);
-        WarlockCanKillSelf = BooleanOptionItem.Create(5103, "CanKillSelf", false, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Warlock]);
-        WarlockShiftDuration = FloatOptionItem.Create(5104, "ShapeshiftDuration", new(1, 180, 1), 1, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Warlock])
-            .SetValueFormat(OptionFormat.Seconds);
+        Warlock.SetupCustomOption();
 
         /*
          * Wildling

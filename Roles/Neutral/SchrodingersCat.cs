@@ -27,7 +27,8 @@ public static class SchrodingersCat
 
     private static void SendRPC(byte catID)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSchrodingerData, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.SchrodingersCat);
         writer.Write(catID);
         writer.Write(teammate[catID]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

@@ -51,7 +51,8 @@ internal class Shroud : RoleBase
     }
     private static void SendRPC(byte shroudId, byte targetId, byte typeId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncShroud, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Shroud); // syncShroud
         writer.Write(typeId);
         writer.Write(shroudId);
         writer.Write(targetId);
@@ -175,4 +176,9 @@ internal class Shroud : RoleBase
     
     private static string GetShroudMark(PlayerControl seer, PlayerControl target, bool isMeeting)
         => isMeeting && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton?.OverrideText($"{GetString("ShroudButtonText")}");
+    }
 }

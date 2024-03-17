@@ -101,7 +101,8 @@ internal class Quizmaster : RoleBase
     }
     private static void SendRPC(byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.QuizmasterMarkPlayer, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Quizmaster);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

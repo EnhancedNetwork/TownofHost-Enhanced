@@ -369,20 +369,6 @@ public static class GuessManager
                     }
                 }
 
-                /* if ((pc.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor) && !Options.ImpCanGuessImp.GetBool()) && Options.GuesserMode.GetBool())
-                   {
-                       if (!isUI) Utils.SendMessage(GetString("GuessImpRole"), pc.PlayerId);
-                       else pc.ShowPopUp(GetString("GuessImpRole"));
-                       return true;
-                   }
-                   if ((role == CustomRoles.Phantom && pc.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoleTypes.Crewmate) && !Options.CrewCanGuessCrew.GetBool()) && Options.GuesserMode.GetBool())
-                   {
-                       if (!isUI) Utils.SendMessage(GetString("GuessCrewRole"), pc.PlayerId);
-                       else pc.ShowPopUp(GetString("GuessCrewRole"));
-                       return true;
-                   } */
-
-
                 if (pc.PlayerId == target.PlayerId)
                 {
                     if (pc.Is(CustomRoles.DoubleShot) && !DoubleShot.IsActive.Contains(pc.PlayerId))
@@ -427,9 +413,6 @@ public static class GuessManager
                         Logger.Msg($"Nice Guesser try guess crewmate: guesserSuicide - {guesserSuicide}", "GuesserSuicide");
                     }
                 }
-
-                //  else if (pc.Is(CustomRoles.Guesser)/* && role.IsImpostor() && !Options.GCanGuessImp.GetBool()*/) guesserSuicide = true;
-                //   else if (pc.Is(CustomRoles.Guesser)/* && role.IsCrewmate() && !pc.Is(CustomRoles.Madmate) && !Options.GCanGuessCrew.GetBool() */) guesserSuicide = true;
                 else if (!target.Is(role))
                 {
                     if (pc.Is(CustomRoles.DoubleShot) && !DoubleShot.IsActive.Contains(pc.PlayerId))

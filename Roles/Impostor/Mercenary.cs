@@ -53,6 +53,12 @@ internal class Mercenary : RoleBase
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    {
+        if (shapeshiftIsHidden)
+            Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+    }
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         SuicideTimer.Remove(killer.PlayerId);

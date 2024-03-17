@@ -86,7 +86,8 @@ internal class Doomsayer : RoleBase
     public static void SendRPC(PlayerControl player)
     {
         MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDoomsayerProgress, SendOption.Reliable, -1);
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Doomsayer);
         writer.Write(player.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

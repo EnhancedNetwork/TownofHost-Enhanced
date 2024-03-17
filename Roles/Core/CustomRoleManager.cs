@@ -90,12 +90,12 @@ public static class CustomRoleManager
         CustomRoles.Underdog => new Underdog(),
         CustomRoles.Undertaker => new Undertaker(),
         CustomRoles.Vampire or CustomRoles.Vampiress => new Vampire(),
-        //CustomRoles.Vindicator => new Vindicator(),
-        //CustomRoles.Visionary => new Visionary(),
-        //CustomRoles.Warlock => new Warlock(),
-        //CustomRoles.Wildling => new Wildling(),
+        CustomRoles.Vindicator => new Vindicator(),
+        CustomRoles.Visionary => new Visionary(),
+        CustomRoles.Warlock => new Warlock(),
+        CustomRoles.Wildling => new Wildling(),
         CustomRoles.Witch => new Witch(),
-        //CustomRoles.Zombie => new Zombie(),
+        CustomRoles.Zombie => new Zombie(),
 
         // ==== Mini ====
         CustomRoles.EvilMini or CustomRoles.NiceMini => new Mini(),
@@ -202,7 +202,6 @@ public static class CustomRoleManager
         CustomRoles.Demon => new Demon(),
         CustomRoles.Doppelganger => new Doppelganger(),
         CustomRoles.Doomsayer => new Doomsayer(),
-        //CustomRoles.Eclipse => new Eclipse(),
         //CustomRoles.Enderman => new Enderman(),
         CustomRoles.Executioner => new Executioner(),
         //CustomRoles.Totocalcio => new Totocalcio(),
@@ -260,8 +259,6 @@ public static class CustomRoleManager
         //CustomRoles.Workaholic => new Workaholic(),
         //CustomRoles.KB_Normal => new KB_Normal(),
         //CustomRoles.Killer => new Killer(),
-        //CustomRoles.GM => new GM(),
-        //CustomRoles.Convict => new Convict(),
         _ => new VanillaRole(),
     };
 

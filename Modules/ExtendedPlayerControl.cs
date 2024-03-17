@@ -580,10 +580,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Maverick:
                 Maverick.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Zombie:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.ZombieKillCooldown.GetFloat();
-                Main.AllPlayerSpeed[player.PlayerId] -= Options.ZombieSpeedReduce.GetFloat();
-                break;
             case CustomRoles.Pursuer:
                 Pursuer.SetKillCooldown(player.PlayerId);
                 break;

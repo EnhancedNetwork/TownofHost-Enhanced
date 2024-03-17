@@ -153,9 +153,6 @@ public class Main : BasePlugin
     public static HashSet<byte> UnreportableBodies = [];
     public static List<byte> InfectedBodies = [];
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
-    public static Dictionary<byte, float> WarlockTimer = [];
-    public static Dictionary<byte, PlayerControl> CursedPlayers = [];
-    public static Dictionary<byte, bool> isCurseAndKill = [];
     public static Dictionary<byte, int> NemesisRevenged = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
     public static Dictionary<(byte, byte), bool> isDraw = [];
@@ -169,7 +166,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, int> MarioVentCount = [];
     public static Dictionary<byte, long> AllKillers = [];
     public static int AliveImpostorCount;
-    public static bool isCursed;
     public static Dictionary<byte, bool> CheckShapeshift = [];
     public static Dictionary<byte, byte> ShapeshiftTarget = [];
     public static Dictionary<(byte, byte), string> targetArrows = [];

@@ -52,17 +52,13 @@ internal class ChangeRoleSettings
             Main.AllPlayerKillCooldown = [];
             Main.AllPlayerSpeed = [];
             Main.AllPlayerCustomRoles = [];
-            Main.WarlockTimer = [];
             Main.isDraw = [];
             Main.isRevealed = [];
             Main.RevolutionistTimer = [];
             Main.RevolutionistStart = [];
             Main.RevolutionistLastTime = [];
             Main.RevolutionistCountdown = [];
-            Main.CursedPlayers = [];
             Main.NemesisRevenged = [];
-            Main.isCurseAndKill = [];
-            Main.isCursed = false;
             Main.ForCrusade = [];
             Main.WorkaholicAlive = [];
             Main.TasklessCrewmate = [];
@@ -215,7 +211,6 @@ internal class ChangeRoleSettings
             DoubleShot.Init();
             Warden.Init();
             Vulture.Init();
-            Wildling.Init();
             Lucky.Init();
             Pirate.Init();
             Bewilder.Init();
@@ -450,10 +445,6 @@ internal class SelectRolesPatch
 
                 switch (pc.GetCustomRole())
                 {
-                    case CustomRoles.Warlock:
-                        Main.CursedPlayers.Add(pc.PlayerId, null);
-                        Main.isCurseAndKill.Add(pc.PlayerId, false);
-                        break;
                     case CustomRoles.Revolutionist:
                         foreach (var ar in Main.AllPlayerControls)
                             Main.isDraw.Add((pc.PlayerId, ar.PlayerId), false);
@@ -502,9 +493,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Imitator:
                         Imitator.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Wildling:
-                        Wildling.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Maverick:
                         Maverick.Add(pc.PlayerId);

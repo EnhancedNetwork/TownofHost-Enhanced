@@ -81,7 +81,8 @@ internal class Virus : RoleBase
     public override void MeetingHudClear() => VirusNotify.Clear();
     private static void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetVirusInfectLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Virus); //SetVirusInfectLimit
         writer.Write(InfectLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
