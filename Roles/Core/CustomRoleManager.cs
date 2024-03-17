@@ -17,6 +17,7 @@ public static class CustomRoleManager
     {
         //Impostor
         IsImpostor,
+        IsMadmate,
 
         //Crewmates
         IsCrewKilling,
@@ -24,11 +25,16 @@ public static class CustomRoleManager
         IsTaskbasedCrewmate,
 
         //Neutral
+        IsNeutralEvil,
+        IsNeutralChaos,
         IsNeutralBenign,
+        IsNotNeutralKilling,
         IsNeutralKilling,
+
         
         //Common
         IsRevealingRole,
+        IsGhostRole,
 
     }
     public static void SetupRoleAttributes(this CustomRoles Role, params Attribute[] Attributes)
