@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.Collections.Generic;
@@ -6,17 +7,21 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Wildling
+internal class Wildling : RoleBase
 {
-    private static readonly int Id = 5200;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 5200;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem ProtectDuration;
-    public static OptionItem ShapeshiftCD;
-    public static OptionItem ShapeshiftDur;
+    private static OptionItem ShapeshiftCD;
+    private static OptionItem ShapeshiftDur;
 
-    private static Dictionary<byte, long> TimeStamp = [];
+    private static readonly Dictionary<byte, long> TimeStamp = [];
 
     public static void SetupCustomOption()
     {
@@ -28,18 +33,17 @@ public static class Wildling
         ShapeshiftDur = FloatOptionItem.Create(Id + 16, "ShapeshiftDuration", new(1f, 180f, 1f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Wildling])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        TimeStamp = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        TimeStamp.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         TimeStamp.TryAdd(playerId, 0);
-        IsEnable = true;
     }
+
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
@@ -55,29 +59,52 @@ public static class Wildling
         TimeStamp.TryAdd(PlayerId, long.Parse(Time));
         TimeStamp[PlayerId] = long.Parse(Time);
     }
-    public static bool InProtect(byte playerId) => TimeStamp.TryGetValue(playerId, out var time) && time > Utils.GetTimeStamp(DateTime.Now);
-    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target)
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.ShapeshifterCooldown = ShapeshiftCD.GetFloat();
+        AURoleOptions.ShapeshifterDuration = ShapeshiftDur.GetFloat();
+    }
+
+    private static bool InProtect(byte playerId) => TimeStamp.TryGetValue(playerId, out var time) && time > Utils.GetTimeStamp(DateTime.Now);
+
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (InProtect(target.PlayerId))
+        {
+            killer.RpcGuardAndKill(target);
+            if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
+            target.Notify(Translator.GetString("BKOffsetKill"));
+            return false;
+        }
+        return true;
+    }
+
+    public override void OnMurder(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return;
+
         TimeStamp[killer.PlayerId] = Utils.GetTimeStamp(DateTime.Now) + (long)ProtectDuration.GetFloat();
         SendRPC(killer.PlayerId);
+
         killer.Notify(Translator.GetString("BKInProtect"));
     }
-    public static void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdateLowLoad(PlayerControl pc)
     {
-        if (TimeStamp[pc.PlayerId] < Utils.GetTimeStamp(DateTime.Now) && TimeStamp[pc.PlayerId] != 0)
+        if (TimeStamp.TryGetValue(pc.PlayerId, out var time) && time != 0 && time < Utils.GetTimeStamp(DateTime.Now))
         {
             TimeStamp[pc.PlayerId] = 0;
             pc.Notify(Translator.GetString("BKProtectOut"));
         }
     }
-    public static string GetHudText(PlayerControl pc)
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (pc == null || !GameStates.IsInTask || !PlayerControl.LocalPlayer.IsAlive()) return "";
+        if (seer == null || isForMeeting || !isForHud || !seer.IsAlive()) return string.Empty;
+
         var str = new StringBuilder();
-        if (InProtect(pc.PlayerId))
+        if (InProtect(seer.PlayerId))
         {
-            var remainTime = TimeStamp[pc.PlayerId] - Utils.GetTimeStamp(DateTime.Now);
+            var remainTime = TimeStamp[seer.PlayerId] - Utils.GetTimeStamp(DateTime.Now);
             str.Append(string.Format(Translator.GetString("BKSkillTimeRemain"), remainTime));
         }
         else

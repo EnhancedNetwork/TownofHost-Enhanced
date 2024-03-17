@@ -219,19 +219,6 @@ class CheckForEndVotingPatch
                 Swapper.SwapVotes(__instance);
 
                 playerRoleClass?.AddVisualVotes(ps, ref statesList);
-
-                
-                if (CheckRole(ps.TargetPlayerId, CustomRoles.Vindicator) && !Options.VindicatorHideVote.GetBool())
-                {
-                    for (var i2 = 0; i2 < Options.VindicatorAdditionalVote.GetFloat(); i2++)
-                    {
-                        statesList.Add(new MeetingHud.VoterState()
-                        {
-                            VoterId = ps.TargetPlayerId,
-                            VotedForId = ps.VotedFor
-                        });
-                    }
-                }
             }
 
             var VotingData = __instance.CustomCalculateVotes(); //Influenced vote mun isnt counted here
@@ -692,7 +679,8 @@ static class ExtendedMeetingHud
                 var target = Utils.GetPlayerById(ps.VotedFor);
                 if (target != null)
                 {
-                    if (target.Is(CustomRoles.Zombie)) VoteNum = 0;
+                    // Remove all votes for Zombie
+                    Zombie.CheckRealVotes(target, ref VoteNum);
                     
                     //Solsticer can not get voted out
                     if (target.Is(CustomRoles.Solsticer)) VoteNum = 0;
@@ -714,10 +702,6 @@ static class ExtendedMeetingHud
                     && ps.TargetPlayerId != ps.VotedFor
                     ) VoteNum += 1;
 
-                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Vindicator)
-                    && ps.TargetPlayerId != ps.VotedFor
-                    ) VoteNum += Options.VindicatorAdditionalVote.GetInt();
-
                 if (Schizophrenic.DualVotes.GetBool())
                 {
                     if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Schizophrenic)
@@ -731,7 +715,7 @@ static class ExtendedMeetingHud
                     VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Stealer.TicketsPerKill.GetFloat());
                 }
 
-                // 主动叛变模式下自票无效
+                // Madmate assign by vote
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) VoteNum = 0;
 
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.VoidBallot)) VoteNum = 0;
@@ -747,8 +731,8 @@ static class ExtendedMeetingHud
                 }
                 //Set influenced vote num to zero while counting votes, and count influenced vote upon finishing influenced check
 
-                //投票を1追加 キーが定義されていない場合は1で上書きして定義
-                dic[ps.VotedFor] = !dic.TryGetValue(ps.VotedFor, out int num) ? VoteNum : num + VoteNum;//统计该玩家被投的数量
+                //Add 1 vote If key is not defined, overwrite with 1 and define
+                dic[ps.VotedFor] = !dic.TryGetValue(ps.VotedFor, out int num) ? VoteNum : num + VoteNum; //Count the number of times this player has been voted in
             }
         }
         return dic;

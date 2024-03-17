@@ -130,15 +130,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
-            case CustomRoles.Warlock:
-                AURoleOptions.ShapeshifterCooldown = Main.isCursed ? 1f : Options.DefaultKillCooldown;
-                AURoleOptions.ShapeshifterDuration = Options.WarlockShiftDuration.GetFloat();
-                break;
             case CustomRoles.Refugee:
                 opt.SetVision(true);
-                break;
-            case CustomRoles.Zombie:
-                opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.2f);
                 break;
          /* case CustomRoles.Paranoia:
                 AURoleOptions.EngineerCooldown =
@@ -157,10 +150,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.ScientistTOHE:
                 AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
                 AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
-                break;
-            case CustomRoles.Wildling:
-                AURoleOptions.ShapeshifterCooldown = Wildling.ShapeshiftCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Wildling.ShapeshiftDur.GetFloat();
                 break;
             case CustomRoles.Vulture:
                 Vulture.ApplyGameOptions(opt);

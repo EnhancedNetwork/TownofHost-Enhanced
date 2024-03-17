@@ -106,14 +106,6 @@ public static class HudSpritePatch
             case CustomRoles.Pursuer:
                 newAbilityButton = CustomButton.Get("Pursuer");
                 break;
-            case CustomRoles.Warlock:
-                if (!shapeshifting)
-                {
-                    newKillButton = CustomButton.Get("Curse");
-                    if (Main.isCurseAndKill.TryGetValue(player.PlayerId, out bool curse) && curse)
-                        newAbilityButton = CustomButton.Get("CurseKill");
-                }
-                break;
         }
 
     EndOfSelectImg:

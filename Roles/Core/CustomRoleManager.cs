@@ -90,12 +90,12 @@ public static class CustomRoleManager
         CustomRoles.Underdog => new Underdog(),
         CustomRoles.Undertaker => new Undertaker(),
         CustomRoles.Vampire or CustomRoles.Vampiress => new Vampire(),
-        //CustomRoles.Vindicator => new Vindicator(),
-        //CustomRoles.Visionary => new Visionary(),
-        //CustomRoles.Warlock => new Warlock(),
-        //CustomRoles.Wildling => new Wildling(),
+        CustomRoles.Vindicator => new Vindicator(),
+        CustomRoles.Visionary => new Visionary(),
+        CustomRoles.Warlock => new Warlock(),
+        CustomRoles.Wildling => new Wildling(),
         CustomRoles.Witch => new Witch(),
-        //CustomRoles.Zombie => new Zombie(),
+        CustomRoles.Zombie => new Zombie(),
 
         // ==== Mini ====
         CustomRoles.EvilMini or CustomRoles.NiceMini => new Mini(),

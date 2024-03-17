@@ -13,7 +13,7 @@ internal class Undertaker : RoleBase
     private static HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     //==================================================================\\
 
     private static OptionItem SSCooldown;
@@ -140,6 +140,12 @@ internal class Undertaker : RoleBase
             Main.AllPlayerSpeed[playerId] = DefaultSpeed;
             SendRPC(playerId);
         }
+    }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
+        hud.AbilityButton?.OverrideText(Translator.GetString("UndertakerButtonText"));
     }
 }
 

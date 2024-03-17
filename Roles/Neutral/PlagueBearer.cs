@@ -166,7 +166,7 @@ internal class PlagueBearer : RoleBase
     {
         return Puppeteer.PuppetIsActive(killer.PlayerId) ||
             Shroud.ShroudIsActive(killer.PlayerId) ||
-            Main.CursedPlayers.ContainsValue(killer) ||
+            Warlock.CursedIsActive(killer) ||
             Sniper.SnipeIsActive(killer.PlayerId);
     }
     public override bool CanUseImpostorVentButton(PlayerControl pc)

@@ -43,7 +43,7 @@ public static class Necroview
             return Main.roleColors[CustomRoles.Bait];
         }
 
-        return Main.roleColors[CustomRoles.Knight]; 
+        return Main.roleColors[CustomRoles.Knight];
     }
 }
 

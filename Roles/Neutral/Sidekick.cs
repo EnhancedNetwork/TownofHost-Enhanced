@@ -35,4 +35,10 @@ internal class Sidekick : RoleBase
     //{
     //    return target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick);
     //}
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(Translator.GetString("KillButtonText"));
+        hud.SabotageButton.OverrideText(Translator.GetString("SabotageButtonText"));
+    }
 }

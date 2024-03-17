@@ -91,37 +91,10 @@ public static class NameColorManager
             }
         }
 
-        // Visionary
-        if (seer.Is(CustomRoles.Visionary) && seer.IsAlive())
-        {
-            if (target.IsAlive() && !target.Data.IsDead)
-            {
-                if (target.Is(CustomRoleTypes.Impostor)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Madmate)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Admired)) color = Main.roleColors[CustomRoles.Bait];
-                if (target.Is(CustomRoles.Parasite)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Crewpostor)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Minion)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Convict)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Refugee)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Rascal)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoleTypes.Crewmate)) color = Main.roleColors[CustomRoles.Bait];
-                if (target.Is(CustomRoleTypes.Neutral)) color = Main.roleColors[CustomRoles.Knight];
-                if (target.Is(CustomRoles.Charmed)) color = Main.roleColors[CustomRoles.Knight];
-                if (target.Is(CustomRoles.Infected)) color = Main.roleColors[CustomRoles.Knight];
-                if (target.Is(CustomRoles.Contagious)) color = Main.roleColors[CustomRoles.Knight];
-                if (target.Is(CustomRoles.Egoist)) color = Main.roleColors[CustomRoles.Knight];
-                if (target.Is(CustomRoles.Recruit)) color = Main.roleColors[CustomRoles.Knight];
-                if (target.Is(CustomRoles.Soulless)) color = Main.roleColors[CustomRoles.Knight];
-            }
-        }
-
         // Jackal recruit
         if (Jackal.JackalKnowRole(seer, target)) color = Main.roleColors[CustomRoles.Jackal];
 
         if (target.Is(CustomRoles.Mare) && Utils.IsActive(SystemTypes.Electrical) && !isMeeting) color = Main.roleColors[CustomRoles.Mare];
-
-        // if ((target.PlayerId == Pirate.PirateTarget) && isMeeting) color = Main.roleColors[CustomRoles.Pirate]; */
 
         //Virus
         if (Virus.KnowRoleColor(seer, target) != "") color = Virus.KnowRoleColor(seer, target);

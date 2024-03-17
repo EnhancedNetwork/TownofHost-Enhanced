@@ -175,4 +175,9 @@ internal class Shroud : RoleBase
     
     private static string GetShroudMark(PlayerControl seer, PlayerControl target, bool isMeeting)
         => isMeeting && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton?.OverrideText($"{GetString("ShroudButtonText")}");
+    }
 }

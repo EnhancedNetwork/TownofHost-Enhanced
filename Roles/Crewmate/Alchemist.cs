@@ -375,14 +375,14 @@ internal class Alchemist : RoleBase
         }, 0.5f, "Alchemist Invis");
     }
 
-    public static string GetHudText(PlayerControl pc)
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (pc == null || GameStates.IsMeeting || !PlayerControl.LocalPlayer.IsAlive()) return string.Empty;
+        if (seer == null || isForMeeting || !isForHud || !seer.IsAlive()) return string.Empty;
         
         var str = new StringBuilder();
-        if (IsInvis(pc.PlayerId))
+        if (IsInvis(seer.PlayerId))
         {
-            var remainTime = InvisTime[pc.PlayerId] + (long)InvisDuration.GetFloat() - Utils.GetTimeStamp();
+            var remainTime = InvisTime[seer.PlayerId] + (long)InvisDuration.GetFloat() - Utils.GetTimeStamp();
             str.Append(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime + 1));
         }
         else 

@@ -112,16 +112,6 @@ class ExileControllerWrapUpPatch
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
-            CustomRoles playerRole = player.GetCustomRole(); // Only roles (no add-ons)
-
-            switch (playerRole)
-            {
-                case CustomRoles.Warlock:
-                    Main.CursedPlayers[player.PlayerId] = null;
-                    Main.isCurseAndKill[player.PlayerId] = false;
-                    break;
-            }
-
             // Check Anti BlackOut
             if (player.GetCustomRole().IsImpostor() 
                 && !player.IsAlive() // if player is dead impostor

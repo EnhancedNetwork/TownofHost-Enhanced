@@ -60,8 +60,6 @@ class HudManagerPatch
 
         Utils.CountAlivePlayers();
 
-        bool shapeshifting = Main.CheckShapeshift.TryGetValue(player.PlayerId, out bool ss) && ss;
-
         if (SetHudActivePatch.IsActive)
         {
             if (Options.CurrentGameMode == CustomGameMode.FFA)
@@ -96,15 +94,6 @@ class HudManagerPatch
 
                 switch (player.GetCustomRole())
                 {
-                    case CustomRoles.Warlock:
-                        bool curse = Main.isCurseAndKill.TryGetValue(player.PlayerId, out bool wcs) && wcs;
-                        if (!shapeshifting && !curse)
-                            __instance.KillButton.OverrideText(GetString("WarlockCurseButtonText"));
-                        else
-                            __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        if (!shapeshifting && curse)
-                            __instance.AbilityButton.OverrideText(GetString("WarlockShapeshiftButtonText"));
-                        break;
                     case CustomRoles.Shaman:
                         __instance.KillButton.OverrideText(GetString("ShamanButtonText"));
                         break;
@@ -115,12 +104,6 @@ class HudManagerPatch
                         __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
                         __instance.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");
                         break;
-                    case CustomRoles.Puppeteer:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        break;
-                    case CustomRoles.Shroud:
-                        __instance.KillButton.OverrideText($"{GetString("ShroudButtonText")}");
-                       break;
                     case CustomRoles.Pursuer:
                         __instance.KillButton.OverrideText(GetString("PursuerButtonText"));
                         break;
@@ -140,28 +123,17 @@ class HudManagerPatch
                     case CustomRoles.Paranoia:
                         __instance.AbilityButton.buttonLabelText.text = GetString("ParanoiaVentButtonText");
                         break;
-                    case CustomRoles.Undertaker:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        __instance.AbilityButton.OverrideText(GetString("UndertakerButtonText"));
-                        break;
                     case CustomRoles.Totocalcio:
                         __instance.KillButton.OverrideText(GetString("TotocalcioKillButtonText"));
                         break;
                     case CustomRoles.Succubus:
                         __instance.KillButton.OverrideText(GetString("SuccubusKillButtonText"));
                         break;
-                    case CustomRoles.Admirer:
-                        __instance.KillButton.OverrideText(GetString("AdmireButtonText"));
-                        break;
                     case CustomRoles.Amnesiac:
                         __instance.ReportButton.OverrideText(GetString("RememberButtonText"));
                         break;
                     case CustomRoles.Imitator:
                         __instance.KillButton.OverrideText(GetString("ImitatorKillButtonText"));
-                        break;
-                    case CustomRoles.Sidekick:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        __instance.SabotageButton.OverrideText(GetString("SabotageButtonText"));
                         break;
                 }
 
@@ -182,24 +154,10 @@ class HudManagerPatch
                 {
                     case CustomGameMode.Standard:
                         var roleClass = player.GetRoleClass();
-                        //LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
-
-                        //if (LowerInfoText.text != "" || LowerInfoText.text != string.Empty)
-                            LowerInfoText.text = player.GetCustomRole() switch
-                            {
-                                CustomRoles.Alchemist => Alchemist.GetHudText(player),
-                                CustomRoles.Wildling => Wildling.GetHudText(player),
-                                _ => roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "",
-                            };
+                        LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? string.Empty;
                         break;
                 }
-                
-                //else if (player.Is(CustomRoles.Occultist))
-                //{
-                //    LowerInfoText.text = Occultist.GetHexModeText(player, true);
-                //}
-
-                LowerInfoText.enabled = LowerInfoText.text != "";
+                LowerInfoText.enabled = LowerInfoText.text != "" && LowerInfoText.text != string.Empty;
 
                 if ((!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay) || GameStates.IsMeeting)
                 {
