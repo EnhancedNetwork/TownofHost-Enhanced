@@ -372,9 +372,6 @@ class CheckMurderPatch
                 case CustomRoles.Succubus:
                     Succubus.OnCheckMurder(killer, target);
                     return false;
-                case CustomRoles.Imitator:
-                    Imitator.OnCheckMurder(killer, target);
-                    return false;
                 case CustomRoles.Shaman:
                     if (Main.ShamanTargetChoosen == false)
                     {

@@ -203,7 +203,6 @@ internal class ChangeRoleSettings
             RuthlessRomantic.Init();
             Succubus.Init();
             Antidote.Init();
-            Imitator.Init();
             Fool.Init();
             Burst.Init();
             Maverick.Init();
@@ -485,9 +484,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Succubus:
                         Succubus.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Imitator:
-                        Imitator.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Maverick:
                         Maverick.Add(pc.PlayerId);

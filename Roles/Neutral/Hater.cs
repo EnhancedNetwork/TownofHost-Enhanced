@@ -46,7 +46,7 @@ internal class Hater : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         isWon = false;
     }
 

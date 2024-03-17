@@ -446,9 +446,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncAdmiredList:
                 Admirer.ReceiveRPC(reader, true);
                 break;
-            case CustomRPC.SetRememberLimit:
-                Imitator.ReceiveRPC(reader);
-                break;
             case CustomRPC.PlayCustomSound:
                 CustomSoundsManager.ReceiveRPC(reader);
                 break;
@@ -877,9 +874,6 @@ internal static class RPC
                 break;
             case CustomRoles.Succubus:
                 Succubus.Add(targetId);
-                break;
-            case CustomRoles.Imitator:
-                Imitator.Add(targetId);
                 break;
             case CustomRoles.Vulture:
                 Vulture.Add(targetId); 

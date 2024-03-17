@@ -475,7 +475,6 @@ static class ExtendedPlayerControl
             CustomRoles.RuthlessRomantic => pc.IsAlive(),
             CustomRoles.VengefulRomantic => VengefulRomantic.CanUseKillButton(pc),
             CustomRoles.Succubus => Succubus.CanUseKillButton(pc),
-            CustomRoles.Imitator => Imitator.CanUseKillButton(pc),
             CustomRoles.Pirate => pc.IsAlive(),
             _ => false,
         };

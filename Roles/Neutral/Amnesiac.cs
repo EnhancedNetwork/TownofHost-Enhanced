@@ -100,25 +100,21 @@ internal class Amnesiac : RoleBase
                         tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         break;
                     case 1: // Pursuer
-                        Pursuer.Add(__instance.PlayerId);
                         __instance.RpcSetCustomRole(CustomRoles.Pursuer);
                         __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                         tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         break;
                     case 2: // Follower
-                        Follower.Add(__instance.PlayerId);
                         __instance.RpcSetCustomRole(CustomRoles.Follower);
                         __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                         tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         break;
                     case 3: // Maverick
-                        Maverick.Add(__instance.PlayerId);
                         __instance.RpcSetCustomRole(CustomRoles.Maverick);
                         __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                         tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         break;
                     case 4: // Imitator..........................................................................kill me
-                        Imitator.Add(__instance.PlayerId);
                         __instance.RpcSetCustomRole(CustomRoles.Imitator);
                         __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                         tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));

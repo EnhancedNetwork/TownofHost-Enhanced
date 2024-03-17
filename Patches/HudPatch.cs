@@ -123,9 +123,6 @@ class HudManagerPatch
                     case CustomRoles.Succubus:
                         __instance.KillButton.OverrideText(GetString("SuccubusKillButtonText"));
                         break;
-                    case CustomRoles.Imitator:
-                        __instance.KillButton.OverrideText(GetString("ImitatorKillButtonText"));
-                        break;
                 }
 
                 // Set lower info text for modded players
