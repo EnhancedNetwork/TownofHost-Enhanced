@@ -218,7 +218,7 @@ internal class Merchant : RoleBase
             addonsSold[player.PlayerId] += 1;
         }
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
         if (target.Is(CustomRoles.Merchant) && IsBribedKiller(pc, target))
         {

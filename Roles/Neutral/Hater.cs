@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Hater
 {
-    private static readonly int Id = 12900;
+    private const int Id = 12900;
     public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 

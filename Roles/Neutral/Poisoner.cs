@@ -8,23 +8,30 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Poisoner
+internal class Poisoner : RoleBase
 {
-    private class PoisonedInfo(byte poisonerId, float killTimer)
+    private class PoisonedInfo(byte poisonerId, float killTimer) // Mf's before Dictionary(item1, item2) was discovered 💀
     {
         public byte PoisonerId = poisonerId;
         public float KillTimer = killTimer;
     }
+    //===========================SETUP================================\\
+    private const int Id = 17500;
+    public static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
-    private static readonly int Id = 17500;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
     private static OptionItem OptionKillDelay;
-    private static float KillDelay;
-    public static OptionItem CanVent;
+    private static OptionItem CanVent;
     public static OptionItem KillCooldown;
-    public static OptionItem HasImpostorVision;
+    private static OptionItem HasImpostorVision;
+
     private static readonly Dictionary<byte, PoisonedInfo> PoisonedPlayers = [];
+
+    private static float KillDelay;
+
     public static void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Poisoner, 1, zeroOne: false);
@@ -36,29 +43,29 @@ public static class Poisoner
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
     }
 
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         PoisonedPlayers.Clear();
-        IsEnable = false;
 
         KillDelay = OptionKillDelay.GetFloat();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (!IsThisRole(killer.PlayerId)) return true;
         if (target.Is(CustomRoles.Bait)) return true;
         if (Guardian.CannotBeKilled(target)) return true;
         if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted() && Options.OppoImmuneToAttacksWhenTasksDone.GetBool()) return false;
@@ -76,10 +83,8 @@ public static class Poisoner
         return false;
     }
 
-    public static void OnFixedUpdate(PlayerControl poisoner)
+    public override void OnFixedUpdate(PlayerControl poisoner)
     {
-        if (!IsThisRole(poisoner.PlayerId)) return;
-
         var poisonerID = poisoner.PlayerId;
         List<byte> targetList = new(PoisonedPlayers.Where(b => b.Value.PoisonerId == poisonerID).Select(b => b.Key));
 
@@ -101,7 +106,7 @@ public static class Poisoner
             }
         }
     }
-    public static void KillPoisoned(PlayerControl poisoner, PlayerControl target, bool isButton = false)
+    private static void KillPoisoned(PlayerControl poisoner, PlayerControl target, bool isButton = false)
     {
         if (poisoner == null || target == null || target.Data.Disconnected) return;
         if (target.IsAlive())
@@ -124,9 +129,7 @@ public static class Poisoner
             Logger.Info("Poisonerに噛まれている" + target.name + "はすでに死んでいました。", "Poisoner");
         }
     }
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
-
-    public static void OnStartMeeting()
+    public override void OnReportDeadBody(PlayerControl sans, PlayerControl bateman)
     {
         foreach (var targetId in PoisonedPlayers.Keys)
         {
@@ -136,8 +139,8 @@ public static class Poisoner
         }
         PoisonedPlayers.Clear();
     }
-    public static void SetKillButtonText()
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        HudManager.Instance.KillButton.OverrideText(GetString("PoisonerPoisonButtonText"));
+        hud.KillButton.OverrideText(GetString("PoisonerPoisonButtonText"));
     }
 }

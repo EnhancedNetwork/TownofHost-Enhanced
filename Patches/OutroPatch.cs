@@ -61,17 +61,13 @@ class EndGamePatch
 
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
-            if (Doppelganger.IsEnable && Doppelganger.DoppelVictim.ContainsKey(id))
+            if (Doppelganger.HasEnabled && Doppelganger.DoppelVictim.TryGetValue(id, out var playerName))
             {
                 var dpc = Utils.GetPlayerById(id);
                 if (dpc != null)
                 {
-                    //if (id == PlayerControl.LocalPlayer.PlayerId) Main.nickName = Doppelganger.DoppelVictim[id];
-                    //else
-                    //{ 
-                    dpc.RpcSetName(Doppelganger.DoppelVictim[id]);
-                    //}
-                    Main.AllPlayerNames[id] = Doppelganger.DoppelVictim[id];
+                    dpc.RpcSetName(playerName);
+                    Main.AllPlayerNames[id] = playerName;
                 }
             }
 
@@ -119,7 +115,6 @@ class EndGamePatch
         }
 
         BountyHunter.ChangeTimer = [];
-        Main.isDoused = [];
         Main.isDraw = [];
         Main.isRevealed = [];
         Main.PlayerQuitTimes = [];
@@ -337,6 +332,8 @@ class SetEverythingUpPatch
         var RoleSummaryRectTransform = RoleSummary.GetComponent<RectTransform>();
         RoleSummaryRectTransform.anchoredPosition = new Vector2(Pos.x + 3.5f, Pos.y - 0.1f);
         RoleSummary.text = sb.ToString();
+
+        Logger.Info($"{RoleSummary.text.RemoveHtmlTags()}", "Role Summary");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

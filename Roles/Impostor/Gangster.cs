@@ -116,7 +116,7 @@ internal class Gangster : RoleBase
                 Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
                 Admirer.SendRPC(killer.PlayerId, target.PlayerId);
             }
-            else if (killer.Is(CustomRoles.Recruit) && target.CanBeSidekick())
+            else if (killer.Is(CustomRoles.Recruit) && Jackal.CanBeSidekick(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Recruit.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Recruit);
@@ -130,7 +130,7 @@ internal class Gangster : RoleBase
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("BeRecruitedByGangster")));
             }
-            else if (killer.Is(CustomRoles.Infected) && target.CanBeBitten())
+            else if (killer.Is(CustomRoles.Infected) && Infectious.CanBeBitten(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Infected.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Infected);

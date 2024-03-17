@@ -201,9 +201,8 @@ internal class Benefactor : RoleBase
         return false;
     }
 
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdateLowLoad(PlayerControl pc)
     {
-        if (!CustomRoles.Benefactor.IsClassEnable()) return;
         var now = Utils.GetTimeStamp();
         foreach (var x in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < now).ToArray())
         {

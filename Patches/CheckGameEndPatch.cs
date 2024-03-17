@@ -145,13 +145,13 @@ class GameEndCheckerForNormal
             {
                 foreach (var pc in Main.AllPlayerControls)
                 {
-                    if (pc.Is(CustomRoles.DarkHide) && pc.IsAlive()
-                        && ((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor && !reason.Equals(GameOverReason.ImpostorBySabotage)) || CustomWinnerHolder.WinnerTeam == CustomWinner.DarkHide
-                        || (CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate && !reason.Equals(GameOverReason.HumansByTask) && (DarkHide.IsWinKill[pc.PlayerId] == true && DarkHide.SnatchesWin.GetBool()))))
+                    if (pc.Is(CustomRoles.Stalker) && pc.IsAlive()
+                        && ((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor && !reason.Equals(GameOverReason.ImpostorBySabotage)) || CustomWinnerHolder.WinnerTeam == CustomWinner.Stalker
+                        || (CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate && !reason.Equals(GameOverReason.HumansByTask) && (Stalker.IsWinKill[pc.PlayerId] == true && Stalker.SnatchesWin.GetBool()))))
                     {
                         if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))
                         {
-                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.DarkHide);
+                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Stalker);
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         }
                     }
@@ -463,7 +463,7 @@ class GameEndCheckerForNormal
     }
     private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
     {
-        if (Quizmaster.IsEnable) Quizmaster.ResetMarkedPlayer();
+        if (Quizmaster.HasEnabled) Quizmaster.ResetMarkedPlayer();
 
         foreach (var playerState in Main.PlayerStates.Values.ToArray())
         {

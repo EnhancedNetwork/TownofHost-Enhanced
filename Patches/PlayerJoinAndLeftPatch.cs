@@ -12,6 +12,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -90,7 +91,7 @@ class OnGameJoinedPatch
                     break;
 
                 default:
-                    Logger.Info(" No find", "Game Mode");
+                    Logger.Info(" No found", "Game Mode");
                     break;
             }
         }
@@ -259,6 +260,12 @@ public static class OnPlayerJoinedPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
 class OnPlayerLeftPatch
 {
+    static void Prefix([HarmonyArgument(0)] ClientData data)
+    {
+        //if (!AmongUsClient.Instance.AmHost) return;
+
+        data.Character.GetRoleClass()?.OnPlayerLeft(data);
+    }
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
         try
@@ -274,20 +281,7 @@ class OnPlayerLeftPatch
                         Main.PlayerStates[lovers.PlayerId].RemoveSubRole(CustomRoles.Lovers);
                     }
                 }
-
-                if (data.Character.Is(CustomRoles.Executioner) && Executioner.Target.ContainsKey(data.Character.PlayerId))
-                {
-                    Executioner.ChangeRole(data.Character);
-                }
-                else if (Executioner.Target.ContainsValue(data.Character.PlayerId))
-                {
-                    Executioner.ChangeRoleByTarget(data.Character);
-                }
                 
-                if (data.Character.Is(CustomRoles.Lawyer) && Lawyer.Target.ContainsKey(data.Character.PlayerId))
-                {
-                    Lawyer.ChangeRole(data.Character);
-                }
                 if (Lawyer.Target.ContainsValue(data.Character.PlayerId))
                 {
                     Lawyer.ChangeRoleByTarget(data.Character);
@@ -295,7 +289,7 @@ class OnPlayerLeftPatch
 
                 if (data.Character.Is(CustomRoles.Pelican))
                 {
-                    Pelican.OnPelicanDied(data.Character.PlayerId);
+                    data.Character.GetRoleClass().OnTargetDead(data.Character, data.Character);
                 }
 
                 if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
@@ -409,6 +403,7 @@ class OnPlayerLeftPatch
 
             if (data != null)
                 Main.playerVersion.Remove(data.Id);
+
             if (AmongUsClient.Instance.AmHost)
             {
                 Main.SayStartTimes.Remove(__instance.ClientId);

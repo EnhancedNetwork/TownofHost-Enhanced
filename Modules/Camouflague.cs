@@ -185,13 +185,13 @@ public static class Camouflage
             }
 
             // if game not end and Doppelganger clone skins
-            if (!GameEnd && Doppelganger.DoppelPresentSkin.ContainsKey(id)) newOutfit = Doppelganger.DoppelPresentSkin[id];
+            if (!GameEnd && Doppelganger.DoppelPresentSkin.TryGetValue(id, out var playerOutfit)) newOutfit = playerOutfit;
             else
             {
                 // if game end, set normal name
-                if (GameEnd && Doppelganger.DoppelVictim.ContainsKey(id))
+                if (GameEnd && Doppelganger.DoppelVictim.TryGetValue(id, out var playerName))
                 {
-                    Utils.GetPlayerById(id)?.RpcSetName(Doppelganger.DoppelVictim[id]);
+                    Utils.GetPlayerById(id)?.RpcSetName(playerName);
                 }
 
                 // Set Outfit

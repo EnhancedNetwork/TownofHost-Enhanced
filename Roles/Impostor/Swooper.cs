@@ -117,7 +117,7 @@ internal class Swooper : RoleBase
         }, 0.5f, "Swooper Vent");
     }
 
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
         var now = Utils.GetTimeStamp();
         var playerId = player.PlayerId;
@@ -158,7 +158,7 @@ internal class Swooper : RoleBase
                 else if (remainTime <= 10)
                 {
                     if (!swooper.IsModClient())
-                        swooper.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime + 1));
+                        swooper.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime + 1), sendInLog: false);
                 }
                 newList.Add(swooperId, swoopInfo.Value);
             }

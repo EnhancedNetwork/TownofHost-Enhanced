@@ -1,4 +1,6 @@
 ﻿
+using AmongUs.GameOptions;
+
 namespace TOHE.Roles.Impostor;
 
 internal class Parasite : RoleBase
@@ -26,6 +28,7 @@ internal class Parasite : RoleBase
         On = true;
     }
 
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ParasiteCD.GetFloat();
 
     public override bool CanUseKillButton(PlayerControl pc) => true;

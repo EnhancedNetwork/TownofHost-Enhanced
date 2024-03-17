@@ -300,7 +300,11 @@ internal class ChatCommands
                     subArgs = args.Length < 2 ? "" : args[1];
                     Utils.SendMessage(GetString("Message.MaxPlayers") + subArgs);
                     var numbereer = Convert.ToByte(subArgs);
-                    GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers = numbereer;
+                    if (GameStates.IsNormalGame)
+                        GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers = numbereer;
+                    
+                    else if (GameStates.IsHideNSeek)
+                        GameOptionsManager.Instance.currentHideNSeekGameOptions.MaxPlayers = numbereer;
                     break;
 
                 case "/h":
@@ -1218,8 +1222,8 @@ internal class ChatCommands
             "革命家" or "革命者" => GetString("Revolutionist"),
             "單身狗" => GetString("Hater"),
             "柯南" => GetString("Konan"),
-            "玩家" => GetString("Gamer"),
-            "潛藏者" or "潜藏" => GetString("DarkHide"),
+            "玩家" => GetString("Demon"),
+            "潛藏者" or "潜藏" => GetString("Stalker"),
             "工作狂" => GetString("Workaholic"),
             "至日者" or "至日" => GetString("Solsticer"),
             "集票者" or "集票" => GetString("Collector"),

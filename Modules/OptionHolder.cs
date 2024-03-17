@@ -33,14 +33,14 @@ public static class Options
     {
         Logger.Msg("Mod option loading start", "Load Options");
         taskOptionsLoad = Task.Run(Load);
-        taskOptionsLoad.ContinueWith(t => { Logger.Msg("Mod option loading end", "Load Options"); });
+        //taskOptionsLoad.ContinueWith(t => { Logger.Msg("Mod option loading end", "Load Options"); });
     }
-    //[HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
-    //public static void WaitOptionsLoad_Postfix()
-    //{
-    //    taskOptionsLoad.Wait();
-    //    Logger.Info("Mod option loading eng", "Load Options");
-    //}
+    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
+    public static void WaitOptionsLoad_Postfix()
+    {
+        taskOptionsLoad.Wait();
+        Logger.Info("Mod option loading eng", "Load Options");
+    }
 
     // Presets
     private static readonly string[] presets =
@@ -513,18 +513,6 @@ public static class Options
 
     public static OptionItem VoodooCooldown;
 
-    public static OptionItem InnocentCanWinByImp;
-
-    public static OptionItem JesterCanUseButton;
-    public static OptionItem JesterHasImpostorVision;
-    public static OptionItem JesterCanVent;
-    public static OptionItem JesterVision;
-    public static OptionItem MeetingsNeededForJesterWin;
-    public static OptionItem HideJesterVote;
-    public static OptionItem SunnyboyChance;
-
-    public static OptionItem MasochistKillMax;
-
     public static OptionItem PhantomCanVent;
     public static OptionItem PhantomSnatchesWin;
     public static OptionItem PhantomCanGuess;
@@ -548,13 +536,6 @@ public static class Options
     public static OptionItem WorkaholicVisibleToEveryone;
     public static OptionItem WorkaholicGiveAdviceAlive;
     public static OptionItem WorkaholicCanGuess;
-
-    public static OptionItem ArsonistDouseTime;
-    public static OptionItem ArsonistCooldown;
-    //public static OptionItem ArsonistKeepsGameGoing;
-    public static OptionItem ArsonistCanIgniteAnytime;
-    public static OptionItem ArsonistMinPlayersToIgnite;
-    public static OptionItem ArsonistMaxPlayersToIgnite;
 
 
     // Add-Ons settings 
@@ -596,12 +577,6 @@ public static class Options
          "GuesserMode.All", "GuesserMode.Harmful", "GuesserMode.Random"
      }; */
     
-    public static readonly string[] sidekickCountMode =
-    [
-        "SidekickCountMode.Jackal",
-        "SidekickCountMode.None",
-        "SidekickCountMode.Original",
-    ];
     public static readonly string[] suffixModes =
     [
         "SuffixMode.None",
@@ -1593,32 +1568,13 @@ public static class Options
 
         Executioner.SetupCustomOption();
 
-        SetupRoleOptions(14300, TabGroup.NeutralRoles, CustomRoles.Innocent);
-        InnocentCanWinByImp = BooleanOptionItem.Create(14302, "InnocentCanWinByImp", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Innocent]);
+        Innocent.SetupCustomOptions();
 
-        SetupRoleOptions(14400, TabGroup.NeutralRoles, CustomRoles.Jester);
-        JesterCanUseButton = BooleanOptionItem.Create(14402, "JesterCanUseButton", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        JesterCanVent = BooleanOptionItem.Create(14403, "CanVent", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        JesterHasImpostorVision = BooleanOptionItem.Create(14404, "ImpostorVision", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        HideJesterVote = BooleanOptionItem.Create(14405, "HideJesterVote", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        MeetingsNeededForJesterWin = IntegerOptionItem.Create(14406, "MeetingsNeededForWin", new(0, 10, 1), 0, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester])
-            .SetValueFormat(OptionFormat.Times);
-        SunnyboyChance = IntegerOptionItem.Create(14407, "SunnyboyChance", new(0, 100, 5), 0, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester])
-            .SetValueFormat(OptionFormat.Percent);
+        Jester.SetupCustomOptions();
 
-        SetupRoleOptions(14500, TabGroup.NeutralRoles, CustomRoles.Masochist);
-        MasochistKillMax = IntegerOptionItem.Create(14502, "MasochistKillMax", new(1, 30, 1), 5, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Masochist])
-            .SetValueFormat(OptionFormat.Times);
-        
         Seeker.SetupCustomOption();
+
+        Masochist.SetupCustomOptions();
 
 
         TextOptionItem.Create(10000013, "RoleType.NeutralChaos", TabGroup.NeutralRoles)
@@ -1705,26 +1661,14 @@ public static class Options
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
         
         Agitater.SetupCustomOption();
-        
-        SetupRoleOptions(15900, TabGroup.NeutralRoles, CustomRoles.Arsonist);
-        ArsonistDouseTime = FloatOptionItem.Create(15902, "ArsonistDouseTime", new(0f, 10f, 1f), 0f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist])
-            .SetValueFormat(OptionFormat.Seconds);
-        ArsonistCooldown = FloatOptionItem.Create(15903, "Cooldown", new(0f, 180f, 1f), 25f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist])
-            .SetValueFormat(OptionFormat.Seconds);
-        ArsonistCanIgniteAnytime = BooleanOptionItem.Create(15904, "ArsonistCanIgniteAnytime", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist]);
-        ArsonistMinPlayersToIgnite = IntegerOptionItem.Create(15905, "ArsonistMinPlayersToIgnite", new(1, 14, 1), 1, TabGroup.NeutralRoles, false)
-            .SetParent(ArsonistCanIgniteAnytime);
-        ArsonistMaxPlayersToIgnite = IntegerOptionItem.Create(15906, "ArsonistMaxPlayersToIgnite", new(1, 14, 1), 3, TabGroup.NeutralRoles, false)
-            .SetParent(ArsonistCanIgniteAnytime);
-        
+
+        Arsonist.SetupCustomOptions();
+
         Bandit.SetupCustomOption();
 
         BloodKnight.SetupCustomOption();
 
-        Gamer.SetupCustomOption();
+        Demon.SetupCustomOption();
 
         Glitch.SetupCustomOption();
 
@@ -1744,7 +1688,7 @@ public static class Options
 
         Necromancer.SetupCustomOption();
 
-        //Occultist.SetupCustomOption();
+        Spiritcaller.SetupCustomOption();
 
         Pelican.SetupCustomOption();
 
@@ -1763,11 +1707,11 @@ public static class Options
         if (!Quizmaster.InExperimental)
             Quizmaster.SetupCustomOption();
 
-        SerialKiller.SetupCustomOption(); // Serial Killer
+        SerialKiller.SetupCustomOption(); 
 
         Shroud.SetupCustomOption();
 
-        DarkHide.SetupCustomOption(); // Stalker (TOHY)
+        Stalker.SetupCustomOption(); // Stalker (TOHY)
 
         Traitor.SetupCustomOption();
 
@@ -1989,7 +1933,6 @@ public static class Options
         if (Quizmaster.InExperimental)
             Quizmaster.SetupCustomOption();
 
-        Spiritcaller.SetupCustomOption();
 
         // 副职
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)

@@ -126,14 +126,14 @@ public static class Solsticer
             }
             target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
             ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
-            NameNotifyManager.Notify(target, string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
+            target.Notify(string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
             target.RpcGuardAndKill();
             patched = true;
             target.MarkDirtySettings();
             ResetTasks(target);
             if (EveryOneKnowSolsticer.GetBool())
             {
-                NameNotifyManager.Notify(killer, GetString("MurderSolsticer"));
+                killer.Notify(GetString("MurderSolsticer"));
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
             }
             killer.SetKillCooldown(time: 10f, forceAnime: EveryOneKnowSolsticer.GetBool());
@@ -230,7 +230,7 @@ public static class Solsticer
         GameData.Instance.RpcSetTasks(pc.PlayerId, System.Array.Empty<byte>()); //Let taskassign patch decide the tasks
         taskState.CompletedTasksCount = 0;
         pc.RpcGuardAndKill();
-        NameNotifyManager.Notify(pc, GetString("SolsticerTasksReset"));
+        pc.Notify(GetString("SolsticerTasksReset"));
         Main.AllPlayerControls.Do(x => TargetArrow.Remove(x.PlayerId, pc.PlayerId));
         warningActived = false;
         SendRPC();
