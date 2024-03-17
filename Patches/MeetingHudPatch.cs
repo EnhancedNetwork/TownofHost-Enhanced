@@ -1167,8 +1167,9 @@ class MeetingHudUpdatePatch
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Execution;
                     player.RpcExileV2();
                     Main.PlayerStates[player.PlayerId].SetDead();
+
                     Utils.SendMessage(string.Format(GetString("Message.Executed"), player.Data.PlayerName));
-                    Logger.Info($"{player.GetNameWithRole()}を処刑しました", "Execution");
+                    Logger.Info($"{player.GetNameWithRole()} was executed", "Execution");
                     __instance.CheckForEndVoting();
                 }
             });

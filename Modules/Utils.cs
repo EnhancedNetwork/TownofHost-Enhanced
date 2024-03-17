@@ -1300,10 +1300,8 @@ public static class Utils
                 }
                 else if (!pc.Data.IsDead)
                 {
-                    //生存者は爆死
-                    pc.SetRealKiller(Terrorist.Object);
                     Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                    Main.PlayerStates[pc.PlayerId].SetDead();
+                    pc.SetRealKiller(Terrorist.Object);
                     pc.RpcMurderPlayerV3(pc);
                     
                 }

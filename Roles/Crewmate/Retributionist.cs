@@ -167,19 +167,18 @@ internal class Retributionist : RoleBase
         _ = new LateTask(() =>
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
-            target.SetRealKiller(pc);
             if (GameStates.IsMeeting)
             {
                 GuessManager.RpcGuesserMurderPlayer(target);
-
                 AfterPlayerDeathTasks(target, true);
-                NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
             }
             else
             {
                 target.RpcMurderPlayerV3(target);
-                Main.PlayerStates[target.PlayerId].SetDead();
+                NotifyRoles(NoCache: true);
             }
+            target.SetRealKiller(pc);
+
             _ = new LateTask(() => {
                 SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, ColorString(GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true);
             }, 0.6f, "Retributionist Kill");
