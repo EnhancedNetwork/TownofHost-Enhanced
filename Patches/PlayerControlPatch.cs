@@ -814,25 +814,6 @@ public static class CheckShapeShiftPatch
         }
 
         bool shapeshiftIsHidden = true;
-
-        switch (role)
-        {
-            case CustomRoles.BountyHunter:
-                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-                shapeshifter.RejectShapeshiftAndReset(false);
-                return false;
-
-            case CustomRoles.Penguin:
-                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-                shapeshifter.RejectShapeshiftAndReset(false);
-                return false;
-
-            case CustomRoles.SerialKiller:
-                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-                shapeshifter.RejectShapeshiftAndReset(false);
-                return false;
-        }
-
         shapeshifter.RejectShapeshiftAndReset();
         shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
         return false;
