@@ -53,7 +53,7 @@ internal class Lightning : RoleBase
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGhostPlayer, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.LightningSetGhostPlayer, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(IsGhost(playerId));
         AmongUsClient.Instance.FinishRpcImmediately(writer);

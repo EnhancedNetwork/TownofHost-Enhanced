@@ -64,7 +64,8 @@ public static class Succubus
 
     private static void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSuccubusCharmLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Succubus); //SetSuccubusCharmLimit
         writer.Write(CharmLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

@@ -76,7 +76,8 @@ internal class PlagueBearer : RoleBase
     public static void SendRPC(PlayerControl player, PlayerControl target)
     {
         MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.setPlaguedPlayer, SendOption.Reliable, -1);//RPCによる同期
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);//RPCによる同期
+        writer.WritePacked((int)CustomRoles.PlagueBearer); // setPlaguedPlayer
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

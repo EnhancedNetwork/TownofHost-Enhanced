@@ -73,7 +73,8 @@ public static class Pirate
 
     public static void SendRPC(int operate, byte target = byte.MaxValue, int points = -1)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PirateSyncData, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Pirate);
         writer.Write(operate);
         writer.Write(target);
         if (operate == 1)

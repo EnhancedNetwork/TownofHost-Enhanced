@@ -27,7 +27,7 @@ internal class PotionMaster : RoleBase
 
     public static void SetupCustomOption()
     {
-    SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.PotionMaster, 1, zeroOne: false);
+        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.PotionMaster, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 14, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster])
             .SetValueFormat(OptionFormat.Seconds);
         RitualMaxCount = IntegerOptionItem.Create(Id + 11, "RitualMaxCount", new(1, 15, 1), 5, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster])
@@ -57,7 +57,8 @@ internal class PotionMaster : RoleBase
 
     private static void SendRPC(byte playerId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPotionMaster, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.PotionMaster);
         writer.Write(playerId);
         writer.Write(RitualCount[playerId]);
         writer.Write(targetId);
@@ -71,7 +72,8 @@ internal class PotionMaster : RoleBase
                 RitualCount[playerId] = reader.ReadInt32();
             else
                 RitualCount.Add(playerId, RitualMaxCount.GetInt());
-        }{
+        }
+        {
             if (RitualCount.ContainsKey(playerId))
                 RitualTarget[playerId].Add(reader.ReadByte());
             else
@@ -90,7 +92,7 @@ internal class PotionMaster : RoleBase
         {
             return killer.CheckDoubleTrigger(target, () => { SetRitual(killer, target); });
         }
-        else return true;  
+        else return true;
     }
 
     public static bool IsRitual(byte seer, byte target)
@@ -108,7 +110,7 @@ internal class PotionMaster : RoleBase
             RitualCount[killer.PlayerId]--;
             RitualTarget[killer.PlayerId].Add(target.PlayerId);
             Logger.Info($"{killer.GetNameWithRole()}: Divined divination destination -> {target.GetNameWithRole()} || remaining {RitualCount[killer.PlayerId]} times", "PotionMaster");
-            
+
             Utils.NotifyRoles(SpecifySeer: killer);
             SendRPC(killer.PlayerId, target.PlayerId);
 

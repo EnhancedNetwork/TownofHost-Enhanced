@@ -29,7 +29,7 @@ internal class Spiritcaller : RoleBase
     private static OptionItem SpiritCauseVisionTime;
 
     private static Dictionary<byte, long> PlayersHaunted = [];
-    
+
     private static long ProtectTimeStamp = new();
     private static int SpiritLimit = new();
 
@@ -80,7 +80,8 @@ internal class Spiritcaller : RoleBase
 
     private static void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSpiritcallerSpiritLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Spiritcaller);
         writer.Write(SpiritLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -195,5 +196,5 @@ internal class Spiritcaller : RoleBase
     }
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
         => seer.Is(CustomRoles.Spiritcaller) && target.Is(CustomRoles.EvilSpirit) ? Main.roleColors[CustomRoles.EvilSpirit] : "";
-    
+
 }

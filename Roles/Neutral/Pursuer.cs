@@ -43,7 +43,8 @@ public static class Pursuer
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPursuerSellLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Pursuer); //SetPursuerSellLimit
         writer.Write(playerId);
         writer.Write(SeelLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
