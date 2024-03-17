@@ -1,5 +1,4 @@
-﻿using Il2CppMono.Net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -413,8 +412,6 @@ public static class CustomRoleManager
 
     public static void Initialize()
     {
-        
-
         MarkOthers.Clear();
         LowerOthers.Clear();
         SuffixOthers.Clear();
