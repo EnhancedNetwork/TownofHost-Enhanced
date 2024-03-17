@@ -5,6 +5,7 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using static TOHE.Roles.Core.CustomRoleManager;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 
@@ -648,8 +649,8 @@ public static class CustomRolesHelper
             CustomRoles.Quizmaster;
     }
     public static bool IsCK(this CustomRoles role)
-    {
-        return role is
+    => role.HasThisAttribute(Attribute.IsCrewKilling)
+        || role is
             CustomRoles.Knight or
             CustomRoles.Veteran or
             CustomRoles.Judge or
@@ -660,15 +661,9 @@ public static class CustomRolesHelper
             CustomRoles.NiceGuesser or
             CustomRoles.Deceiver or
             CustomRoles.Retributionist or
-            CustomRoles.Sheriff or
             CustomRoles.Vigilante or
             CustomRoles.Jailer;
-    }
-    public static bool IsMini(this CustomRoles role) // �Ƿ��ڹ�
-    {
-        return role is
-            CustomRoles.Mini;
-    }
+
     public static bool IsImpostor(this CustomRoles role) // IsImp
     {
         return role is
@@ -999,16 +994,14 @@ public static class CustomRolesHelper
             CustomRoles.Seeker;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
-    {
-        return role is
-            CustomRoles.Sheriff or
+    => role.HasThisAttribute(Attribute.IsTasklessCrewmate) 
+       || role is
             CustomRoles.Jailer or
             CustomRoles.Medic or
             CustomRoles.CopyCat or
             CustomRoles.Reverie or
             CustomRoles.Crusader or
             CustomRoles.Deceiver or
-            CustomRoles.Witness or
             CustomRoles.Monarch or
             CustomRoles.Overseer or
             CustomRoles.Investigator or
@@ -1017,7 +1010,7 @@ public static class CustomRolesHelper
             CustomRoles.Reverie or
             CustomRoles.Deputy or
             CustomRoles.Vigilante;
-    }
+    
     public static bool IsTaskBasedCrewmate(this CustomRoles role)
     {
         return role is

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Core;
 using UnityEngine;
+using static TOHE.Roles.Core.CustomRoleManager;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -50,6 +51,11 @@ internal class Sheriff : RoleBase
 
     public static void SetupCustomOption()
     {
+        CustomRoles.Sheriff.SetupRoleAttributes(
+            Attribute.IsCrewKilling,
+            Attribute.IsTasklessCrewmate);
+
+
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Sheriff);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 60f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff])
             .SetValueFormat(OptionFormat.Seconds);

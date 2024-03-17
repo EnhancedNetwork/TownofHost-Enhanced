@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Il2CppMono.Net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -11,9 +13,43 @@ namespace TOHE.Roles.Core;
 
 public static class CustomRoleManager
 {
+    public static Dictionary<CustomRoles, Attribute[]> RoleAttributes = [];
+    public enum Attribute
+    {
+        //Impostor
+        IsImpostor,
+
+        //Crewmates
+        IsCrewKilling,
+        IsTasklessCrewmate,
+        IsTaskbasedCrewmate,
+
+        //Neutral
+        IsNeutralBenign,
+        IsNeutralKilling,
+        
+        //Common
+        IsRevealingRole,
+
+    }
+    public static void SetupRoleAttributes(this CustomRoles Role, params Attribute[] Attributes)
+    {
+        if (!RoleAttributes.ContainsKey(Role))
+        {
+            RoleAttributes.Add(Role, Attributes);
+            Logger.Info($"Added {Role} / {string.Join(",", Attributes)}", "CustomRoleManager.RoleAttributes");
+        }
+    }
+    public static bool HasThisAttribute(this CustomRoles Role, Attribute Attribute)
+    {
+        if (RoleAttributes.TryGetValue(Role, out var roleAttributes))
+            if (roleAttributes.Contains(Attribute))
+                return true;
+
+        return false;
+    }
     //public static Dictionary<byte, RoleBase> AllActiveRoles = new(15);
     public static bool IsClassEnable(this CustomRoles role) => Main.PlayerStates.Any(x => x.Value.MainRole == role && x.Value.RoleClass.IsEnable);
-
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
 
@@ -377,6 +413,8 @@ public static class CustomRoleManager
 
     public static void Initialize()
     {
+        
+
         MarkOthers.Clear();
         LowerOthers.Clear();
         SuffixOthers.Clear();

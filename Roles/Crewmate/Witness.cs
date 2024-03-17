@@ -2,6 +2,7 @@
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Roles.Core.CustomRoleManager;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -18,6 +19,9 @@ internal class Witness : RoleBase
 
     public static void SetupCustomOptions()
     {
+        CustomRoles.Witness.SetupRoleAttributes(
+            Attribute.IsTasklessCrewmate);
+
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Witness, 1);
         WitnessCD = FloatOptionItem.Create(Id + 10, "AbilityCD", new(0f, 60f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Witness])
             .SetValueFormat(OptionFormat.Seconds);
