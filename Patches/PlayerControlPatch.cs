@@ -1446,7 +1446,8 @@ class ReportDeadBodyPatch
             Logger.SendInGame("Error: " + e.ToString());
 
             // If there is an error in ReportDeadBodyPatch, update the player nicknames anyway
-            NameNotifyManager.Notice.Clear();
+            MeetingTimeManager.OnReportDeadBody();
+            NameNotifyManager.ClearForEveryone();
             Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
             _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
         }
@@ -1522,7 +1523,7 @@ class ReportDeadBodyPatch
         MeetingTimeManager.OnReportDeadBody();
 
         // Clear all Notice players
-        NameNotifyManager.Notice.Clear();
+        NameNotifyManager.ClearForEveryone();
 
         // Update Notify Roles for Meeting
         Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
