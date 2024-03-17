@@ -337,15 +337,6 @@ class CheckMurderPatch
             switch (killerRole)
             {
                 //==========On Check Murder==========//
-                case CustomRoles.Vampire:
-                    if (!Vampire.OnCheckMurder(killer, target)) return false;
-                    break;
-                case CustomRoles.Vampiress:
-                    if (!Vampiress.OnCheckKill(killer, target)) return false;
-                    break;
-                case CustomRoles.Undertaker:
-                    if (!Undertaker.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Warlock:
                     if (!Main.CheckShapeshift[killer.PlayerId] && !Main.isCurseAndKill[killer.PlayerId])
                     { //Warlockが変身時以外にキルしたら、呪われる処理
@@ -856,7 +847,6 @@ public static class CheckShapeShiftPatch
             return false;
         }
 
-        bool shapeshifting = false;
         bool shapeshiftIsHidden = true;
 
         switch (role)
@@ -929,12 +919,6 @@ public static class CheckShapeShiftPatch
                     shapeshifter.Notify(GetString("WarlockNoTargetYet"));
                 }
                 return false;
-
-            case CustomRoles.Undertaker:
-                Undertaker.OnShapeshift(shapeshifter, shapeshifting);
-                shapeshifter.RejectShapeshiftAndReset();
-                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-                return false;
         }
 
         shapeshifter.RejectShapeshiftAndReset();
@@ -988,9 +972,6 @@ class ShapeshiftPatch
 
             switch (shapeshifter.GetCustomRole())
             {
-                case CustomRoles.Undertaker:
-                    Undertaker.OnShapeshift(shapeshifter, shapeshifting);
-                    break;
                 case CustomRoles.Warlock:
                     if (Main.CursedPlayers[shapeshifter.PlayerId] != null)
                     {
@@ -1472,9 +1453,6 @@ class ReportDeadBodyPatch
         }
 
         if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
-        if (Undertaker.IsEnable) Undertaker.OnReportDeadBody();
-        if (Vampire.IsEnable) Vampire.OnStartMeeting();
-        if (Vampiress.IsEnable) Vampiress.OnStartMeeting();
         if (Vulture.IsEnable) Vulture.Clear();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
 
@@ -1702,13 +1680,6 @@ class FixedUpdateInNormalGamePatch
 
                 switch (playerRole)
                 {
-                    case CustomRoles.Vampire:
-                        Vampire.OnFixedUpdate(player);
-                        break;
-
-                    case CustomRoles.Vampiress:
-                        Vampiress.OnFixedUpdate(player);
-                        break;
                     case CustomRoles.Warlock:
                         if (Main.WarlockTimer.TryGetValue(player.PlayerId, out var warlockTimer))
                         {

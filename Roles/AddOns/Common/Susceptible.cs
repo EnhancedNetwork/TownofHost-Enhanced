@@ -109,7 +109,7 @@ public class Susceptible
 
 
                 case PlayerState.DeathReason.Bite:
-                    if (!Vampire.IsEnable)
+                    if (!Vampire.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

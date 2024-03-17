@@ -183,11 +183,8 @@ internal class ChangeRoleSettings
                 role.CreateRoleClass()?.Init();
             }
 
-            Undertaker.Init();
             Lawyer.Init();
             Solsticer.Init();
-            Vampire.Init();
-            Vampiress.Init();
             LastImpostor.Init();
             TargetArrow.Init();
             LocateArrow.Init();
@@ -457,15 +454,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Warlock:
                         Main.CursedPlayers.Add(pc.PlayerId, null);
                         Main.isCurseAndKill.Add(pc.PlayerId, false);
-                        break;
-                    case CustomRoles.Undertaker:
-                        Undertaker.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Vampire:
-                        Vampire.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Vampiress:
-                        Vampiress.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Revolutionist:
                         foreach (var ar in Main.AllPlayerControls)

@@ -514,8 +514,6 @@ static class ExtendedPlayerControl
         {
             CustomRoles.VengefulRomantic => Romantic.VengefulCanVent.GetBool(),
             CustomRoles.RuthlessRomantic => Romantic.RuthlessCanVent.GetBool(),
-            CustomRoles.Vampiress => Vampire.CanVent.GetBool(),
-            CustomRoles.Vampire => Vampire.CanVent.GetBool(),
             CustomRoles.Maverick => Maverick.CanVent.GetBool(),
             CustomRoles.Amnesiac => true,
             CustomRoles.Revolutionist => pc.IsDrawDone(),
@@ -577,9 +575,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Revolutionist:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.RevolutionistCooldown.GetFloat();
                 break;
-            case CustomRoles.Undertaker:
-                Undertaker.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Shaman:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.VoodooCooldown.GetFloat();
                 break;
@@ -598,9 +593,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Provocateur:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ProvKillCD.GetFloat();
-                break;
-            case CustomRoles.Vampiress:
-                Vampiress.SetKillCooldown(player.PlayerId);
                 break;
             //FFA
             case CustomRoles.Killer:

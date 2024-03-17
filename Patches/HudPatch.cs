@@ -111,10 +111,6 @@ class HudManagerPatch
                     case CustomRoles.Pirate:
                         __instance.KillButton.OverrideText(GetString("PirateDuelButtonText"));
                         break;
-                    case CustomRoles.Vampire:
-                    case CustomRoles.Vampiress:
-                        Vampire.SetKillButtonText();
-                        break;
                     case CustomRoles.Revolutionist:
                         __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
                         __instance.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");

@@ -967,15 +967,6 @@ internal static class RPC
 
         switch (role)
         {
-            case CustomRoles.Undertaker:
-                Undertaker.Add(targetId);
-                break;
-            case CustomRoles.Vampire:
-                Vampire.Add(targetId);
-                break;
-            case CustomRoles.Vampiress:
-                Vampiress.Add(targetId);
-                break;
             case CustomRoles.Lawyer:
                 Lawyer.Add(targetId);
                 break;

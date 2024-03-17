@@ -1558,8 +1558,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Circumvent:
-                if (pc.Is(CustomRoles.Vampire) && !Vampire.CanVent.GetBool()
-                    || pc.Is(CustomRoles.Vampiress) && !Vampire.CanVent.GetBool()
+                if (pc.GetCustomRole() is CustomRoles.Vampire or CustomRoles.Vampiress && !Vampire.CheckCanUseVent()
                     || pc.Is(CustomRoles.Witch) && Witch.ModeSwitchActionOpt.GetValue() == 1
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Wildling)
