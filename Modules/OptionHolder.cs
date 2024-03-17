@@ -1499,7 +1499,7 @@ public static class Options
 
         Amnesiac.SetupCustomOption();
 
-        Totocalcio.SetupCustomOption();
+        Follower.SetupCustomOption();
 
         Hater.SetupCustomOption();
 

@@ -116,8 +116,8 @@ public static class Imitator
                     break;
                 case 2:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedFollower")));
-                    killer.RpcSetCustomRole(CustomRoles.Totocalcio);
-                    Totocalcio.Add(killer.PlayerId);
+                    killer.RpcSetCustomRole(CustomRoles.Follower);
+                    Follower.Add(killer.PlayerId);
                     break;
                 case 3:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedMaverick")));

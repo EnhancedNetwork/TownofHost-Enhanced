@@ -366,9 +366,6 @@ class CheckMurderPatch
                     killer.SetRealKiller(target);
                     Main.Provoked.TryAdd(killer.PlayerId, target.PlayerId);
                     return false;
-                case CustomRoles.Totocalcio:
-                    Totocalcio.OnCheckMurder(killer, target);
-                    return false;
                 case CustomRoles.Romantic:
                     if (!Romantic.OnCheckMurder(killer, target)) return false;
                     break;
@@ -1601,9 +1598,6 @@ class FixedUpdateInNormalGamePatch
                 if (CustomRoles.Solsticer.RoleExist())
                     if (target.AmOwner || target.Is(CustomRoles.Solsticer))
                         Mark.Append(Solsticer.GetWarningArrow(seer, target));
-
-                if (Totocalcio.IsEnable)
-                    Mark.Append(Totocalcio.TargetMark(seer, target));
 
                 if (Romantic.IsEnable)
                     Mark.Append(Romantic.TargetMark(seer, target));

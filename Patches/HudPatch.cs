@@ -123,9 +123,6 @@ class HudManagerPatch
                     case CustomRoles.Paranoia:
                         __instance.AbilityButton.buttonLabelText.text = GetString("ParanoiaVentButtonText");
                         break;
-                    case CustomRoles.Totocalcio:
-                        __instance.KillButton.OverrideText(GetString("TotocalcioKillButtonText"));
-                        break;
                     case CustomRoles.Succubus:
                         __instance.KillButton.OverrideText(GetString("SuccubusKillButtonText"));
                         break;

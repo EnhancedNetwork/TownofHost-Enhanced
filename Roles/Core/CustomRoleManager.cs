@@ -204,7 +204,7 @@ public static class CustomRoleManager
         CustomRoles.Doomsayer => new Doomsayer(),
         //CustomRoles.Enderman => new Enderman(),
         CustomRoles.Executioner => new Executioner(),
-        //CustomRoles.Totocalcio => new Totocalcio(),
+        //CustomRoles.Follower => new Follower(),
         //CustomRoles.God => new God(),
         //CustomRoles.FFF => new FFF(),
         CustomRoles.Huntsman => new Huntsman(),

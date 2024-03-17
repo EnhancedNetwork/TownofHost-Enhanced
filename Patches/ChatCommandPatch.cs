@@ -1233,7 +1233,7 @@ internal class ChatCommands
             "萬疫之神" or "瘟疫" => GetString("Pestilence"),
             "故障者" or "缺点者" or "缺点" => GetString("Glitch"),
             "跟班" or "跟班小弟" => GetString("Sidekick"),
-            "追隨者" or "赌徒" or "下注" => GetString("Totocalcio"),
+            "追隨者" or "赌徒" or "下注" => GetString("Follower"),
             "魅魔" => GetString("Succubus"),
             "連環殺手" or "连环杀手" => GetString("SerialKiller"),
             "劍聖" or "天启" => GetString("Juggernaut"),

@@ -866,9 +866,6 @@ internal static class RPC
             case CustomRoles.Warden:
                 Warden.Add(targetId);
                 break;
-            case CustomRoles.Totocalcio:
-                Totocalcio.Add(targetId);
-                break;
             case CustomRoles.Romantic:
                 Romantic.Add(targetId);
                 break;
@@ -1118,8 +1115,8 @@ internal static class RPC
             case CustomRoles.Taskinator:
                 Taskinator.ReceiveRPC(reader);
                 break;
-            case CustomRoles.Totocalcio:
-                Totocalcio.ReceiveRPC(reader);
+            case CustomRoles.Follower:
+                Follower.ReceiveRPC(reader);
                 break;
             case CustomRoles.Virus:
                 Virus.ReceiveRPC(reader);

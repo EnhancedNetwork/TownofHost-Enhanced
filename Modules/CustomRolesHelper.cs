@@ -242,7 +242,7 @@ public static class CustomRolesHelper
             CustomRoles.PlagueDoctor => RoleTypes.Impostor,
             CustomRoles.Necromancer => RoleTypes.Impostor,
             CustomRoles.Shroud => RoleTypes.Impostor,
-            CustomRoles.Totocalcio => RoleTypes.Impostor,
+            CustomRoles.Follower => RoleTypes.Impostor,
             CustomRoles.Romantic => RoleTypes.Impostor,
             CustomRoles.VengefulRomantic => RoleTypes.Impostor,
             CustomRoles.RuthlessRomantic => RoleTypes.Impostor,
@@ -446,7 +446,7 @@ public static class CustomRolesHelper
             //     CustomRoles.Juggernaut or
             //     CustomRoles.Poisoner or
             //     CustomRoles.HexMaster or
-            CustomRoles.Totocalcio;
+            CustomRoles.Follower;
     }
     public static bool IsAmneNK(this CustomRoles role)
     {
@@ -522,7 +522,7 @@ public static class CustomRolesHelper
 
         return role is
             CustomRoles.Amnesiac or
-            CustomRoles.Totocalcio or
+            CustomRoles.Follower or
             CustomRoles.Hater or
             CustomRoles.Lawyer or
             CustomRoles.Imitator or
@@ -561,7 +561,7 @@ public static class CustomRolesHelper
     {
         return role is
             CustomRoles.Amnesiac or
-            CustomRoles.Totocalcio or
+            CustomRoles.Follower or
             CustomRoles.Hater or
             CustomRoles.Imitator or
             CustomRoles.Lawyer or
@@ -819,7 +819,7 @@ public static class CustomRolesHelper
             CustomRoles.Sunnyboy or
             CustomRoles.Phantom or
             CustomRoles.BloodKnight or
-            CustomRoles.Totocalcio or
+            CustomRoles.Follower or
             CustomRoles.Romantic or
             CustomRoles.RuthlessRomantic or
             CustomRoles.VengefulRomantic or
@@ -889,7 +889,7 @@ public static class CustomRolesHelper
             CustomRoles.Jinx or
             CustomRoles.Deceiver or
             CustomRoles.Witness or
-            CustomRoles.Totocalcio or
+            CustomRoles.Follower or
             CustomRoles.Imitator or
             CustomRoles.Overseer or
             CustomRoles.Hater or
@@ -953,7 +953,7 @@ public static class CustomRolesHelper
             CustomRoles.Sunnyboy or
             CustomRoles.Phantom or
             CustomRoles.BloodKnight or
-            CustomRoles.Totocalcio or
+            CustomRoles.Follower or
             CustomRoles.Virus or
             CustomRoles.Succubus or
             CustomRoles.Spiritcaller or
@@ -991,7 +991,7 @@ public static class CustomRolesHelper
             CustomRoles.PlagueBearer or
             CustomRoles.Pirate or
             CustomRoles.Hater or
-            CustomRoles.Totocalcio or
+            CustomRoles.Follower or
             CustomRoles.Provocateur or
             CustomRoles.Stalker or
             CustomRoles.Pixie or

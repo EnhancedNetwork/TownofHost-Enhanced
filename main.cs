@@ -672,7 +672,7 @@ public enum CustomRoles
     Doomsayer,
     Doppelganger,
     Executioner,
-    Totocalcio, //follower
+    Follower, //follower
     Glitch,
     God,
     Hater,
@@ -897,7 +897,7 @@ public enum AdditionalWinners
     Hater = CustomRoles.Hater,
     Provocateur = CustomRoles.Provocateur,
     Sunnyboy = CustomRoles.Sunnyboy,
-    Totocalcio = CustomRoles.Totocalcio,
+    Follower = CustomRoles.Follower,
     Romantic = CustomRoles.Romantic,
     VengefulRomantic = CustomRoles.VengefulRomantic,
     RuthlessRomantic = CustomRoles.RuthlessRomantic,

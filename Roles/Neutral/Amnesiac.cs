@@ -18,9 +18,8 @@ internal class Amnesiac : RoleBase
     public static bool HasEnabled = playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
-    public static OptionItem IncompatibleNeutralMode;
+    private static OptionItem IncompatibleNeutralMode;
     public static readonly string[] amnesiacIncompatibleNeutralMode =
     [
         "Role.Amnesiac",
@@ -107,8 +106,8 @@ internal class Amnesiac : RoleBase
                         tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         break;
                     case 2: // Follower
-                        Totocalcio.Add(__instance.PlayerId);
-                        __instance.RpcSetCustomRole(CustomRoles.Totocalcio);
+                        Follower.Add(__instance.PlayerId);
+                        __instance.RpcSetCustomRole(CustomRoles.Follower);
                         __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                         tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         break;

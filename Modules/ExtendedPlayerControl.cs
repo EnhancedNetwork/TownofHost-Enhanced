@@ -471,7 +471,6 @@ static class ExtendedPlayerControl
             CustomRoles.Pursuer => Pursuer.CanUseKillButton(pc.PlayerId),
             CustomRoles.Hater => pc.IsAlive(),
             CustomRoles.Provocateur => pc.IsAlive(),
-            CustomRoles.Totocalcio => Totocalcio.CanUseKillButton(pc),
             CustomRoles.Romantic => pc.IsAlive(),
             CustomRoles.RuthlessRomantic => pc.IsAlive(),
             CustomRoles.VengefulRomantic => VengefulRomantic.CanUseKillButton(pc),
@@ -592,9 +591,6 @@ static class ExtendedPlayerControl
             //FFA
             case CustomRoles.Killer:
                 Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
-                break;
-            case CustomRoles.Totocalcio:
-                Totocalcio.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Romantic:
                 Romantic.SetKillCooldown(player.PlayerId);
@@ -912,7 +908,6 @@ static class ExtendedPlayerControl
         else if (Options.WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic)) return true;
         else if (Jackal.JackalKnowRole(seer, target)) return true;
         else if (seer.IsRevealedPlayer(target) && !target.Is(CustomRoles.Trickster)) return true;
-        else if (Totocalcio.KnowRole(seer, target)) return true;
         else if (Romantic.KnowRole(seer, target)) return true;
         else if (Lawyer.KnowRole(seer, target)) return true;
         else if (Succubus.KnowRole(seer, target)) return true;

@@ -198,7 +198,6 @@ internal class ChangeRoleSettings
             Bloodmoon.Init();
             SoulCollector.Init();
             SchrodingersCat.Init();
-            Totocalcio.Init();
             Romantic.Init();
             VengefulRomantic.Init();
             RuthlessRomantic.Init();
@@ -475,9 +474,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.SchrodingersCat:
                         SchrodingersCat.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Totocalcio:
-                        Totocalcio.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Romantic:
                         Romantic.Add(pc.PlayerId);

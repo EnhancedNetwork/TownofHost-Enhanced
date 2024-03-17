@@ -378,7 +378,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Witch],
                 
                 [CustomRoles.LazyGuy,
-                CustomRoles.Totocalcio,
+                CustomRoles.Follower,
                 CustomRoles.Pelican,
                 CustomRoles.Scavenger,
                 CustomRoles.Ludopath,

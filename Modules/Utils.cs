@@ -508,7 +508,7 @@ public static class Utils
             case CustomRoles.Medic:
             case CustomRoles.BloodKnight:
             case CustomRoles.Camouflager:
-            case CustomRoles.Totocalcio:
+            case CustomRoles.Follower:
             case CustomRoles.Succubus:
             case CustomRoles.CursedSoul:
             case CustomRoles.Admirer:
@@ -656,9 +656,6 @@ public static class Utils
                     break;
                 case CustomRoles.Killer:
                     ProgressText.Append(FFAManager.GetDisplayScore(playerId));
-                    break;
-                case CustomRoles.Totocalcio:
-                    ProgressText.Append(Totocalcio.GetProgressText(playerId));
                     break;
                 case CustomRoles.Romantic:
                     ProgressText.Append(Romantic.GetProgressText(playerId));
@@ -1823,9 +1820,6 @@ public static class Utils
                             TargetMark.Append(Solsticer.GetWarningArrow(seer, target));
                         }
 
-
-                        if (Totocalcio.IsEnable)
-                            TargetMark.Append(Totocalcio.TargetMark(seer, target));
 
                         if (Romantic.IsEnable)
                             TargetMark.Append(Romantic.TargetMark(seer, target));

@@ -343,15 +343,15 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Totocalcio)).ToArray())
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Follower)).ToArray())
                 {
-                    if (Totocalcio.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) && (
+                    if (Follower.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) && (
                         CustomWinnerHolder.WinnerIds.Contains(betTarget) ||
                         (Main.PlayerStates.TryGetValue(betTarget, out var ps) && CustomWinnerHolder.WinnerRoles.Contains(ps.MainRole)
                         )))
                     {
                         CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Totocalcio);
+                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Follower);
                     }
                 }
 

@@ -1128,7 +1128,6 @@ class MeetingHudStartPatch
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■"));
 
             //赌徒提示
-            sb.Append(Totocalcio.TargetMark(seer, target));
             sb.Append(Romantic.TargetMark(seer, target));
 
 
