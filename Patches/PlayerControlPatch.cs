@@ -1161,6 +1161,19 @@ class ReportDeadBodyPatch
                         return false;
                     }
                 }
+
+                var tar = Utils.GetPlayerById(target.PlayerId);
+
+                if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
+                {
+                    var Ue = IRandom.Instance;
+                    if (Ue.Next(1, 100) <= Unlucky.UnluckyReportSuicideChance.GetInt())
+                    {
+                        Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                        __instance.RpcMurderPlayerV3(__instance);
+                        return false;
+                    }
+                }
             }
 
             if (Options.SyncButtonMode.GetBool() && target == null)
