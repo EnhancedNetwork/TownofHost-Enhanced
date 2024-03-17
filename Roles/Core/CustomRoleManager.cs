@@ -31,17 +31,18 @@ public static class CustomRoleManager
         IsNotNeutralKilling,
         IsNeutralKilling,
 
-        
         //Common
-        IsRevealingRole,
         IsGhostRole,
+
+        EmptyAttribute,
 
     }
     public static void SetupRoleAttributes(this CustomRoles Role, params Attribute[] Attributes)
     {
+        var IfAttribute = Attributes.Where(x => x != Attribute.EmptyAttribute);
         if (!RoleAttributes.ContainsKey(Role))
         {
-            RoleAttributes.Add(Role, Attributes);
+            RoleAttributes.Add(Role, (Attribute[])IfAttribute);
             Logger.Info($"Added {Role} / {string.Join(",", Attributes)}", "CustomRoleManager.RoleAttributes");
         }
     }

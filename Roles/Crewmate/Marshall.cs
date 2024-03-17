@@ -3,6 +3,7 @@ using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;
+using static TOHE.Roles.Core.CustomRoleManager;
 
 namespace TOHE.Roles.Crewmate;
 
