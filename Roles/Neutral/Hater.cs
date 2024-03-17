@@ -1,14 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Hater
+internal class Hater : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 12900;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => false;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     public static OptionItem CanVent;
     public static OptionItem ChooseConverted;
@@ -39,24 +44,22 @@ public static class Hater
         CanKillAdmired = BooleanOptionItem.Create(Id + 20, "HaterCanKillAdmired", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
     }
 
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
-        IsEnable = false;
         isWon = false;
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
         if (killer.PlayerId == target.PlayerId) return true;  // Return true to allow suicides
@@ -103,6 +106,10 @@ public static class Hater
         Main.PlayerStates[killer.PlayerId].SetDead();
         Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "FFF");
         return false;
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(GetString("HaterButtonText"));
     }
 
     private static bool IsConvertedMainRole(CustomRoles role)

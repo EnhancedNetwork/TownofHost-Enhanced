@@ -107,9 +107,6 @@ class HudManagerPatch
                     case CustomRoles.Pursuer:
                         __instance.KillButton.OverrideText(GetString("PursuerButtonText"));
                         break;
-                    case CustomRoles.Hater:
-                        __instance.KillButton.OverrideText(GetString("HaterButtonText"));
-                        break;
                     case CustomRoles.Provocateur:
                         __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
                         break;

@@ -351,9 +351,6 @@ class CheckMurderPatch
                         RPC.SetCurrentDrawTarget(killer.PlayerId, target.PlayerId);
                     }
                     return false;
-                case CustomRoles.Hater:
-                    if (!Hater.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Provocateur:
                     if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
                     {

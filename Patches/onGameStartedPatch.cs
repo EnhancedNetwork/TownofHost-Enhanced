@@ -216,7 +216,6 @@ internal class ChangeRoleSettings
             ChiefOfPolice.Init();
             Cyber.Init();
             Oiiai.Init();
-            Hater.Init();
             Tired.Init();
             Statue.Init();
             Ghoul.Init();
@@ -501,9 +500,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.ChiefOfPolice:
                         ChiefOfPolice.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Hater:
-                        Hater.Add(pc.PlayerId);
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())
