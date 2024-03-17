@@ -142,7 +142,7 @@ internal class Chameleon : RoleBase
         UseLimit[pc.PlayerId] += ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
         SendRPC(pc, isLimit: true);
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
         var now = GetTimeStamp();
 
@@ -168,7 +168,7 @@ internal class Chameleon : RoleBase
                     lastTime.Add(pc.PlayerId, now);
                     pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
                     ventedId.Remove(pc.PlayerId);
-                    NameNotifyManager.Notify(pc, GetString("ChameleonInvisStateOut"));
+                    pc.Notify(GetString("ChameleonInvisStateOut"));
                     pc.RpcResetAbilityCooldown();
                     SendRPC(pc);
                     continue;

@@ -1459,31 +1459,6 @@ class ReportDeadBodyPatch
         // Hereinafter, it is assumed that the button is confirmed to be pressed
         //=============================================
 
-        if (target == null) // Emergency Button
-        {
-        }
-        else
-        {
-            var tpc = Utils.GetPlayerById(target.PlayerId);
-            if (tpc != null && !tpc.IsAlive())
-            {
-                if (player.Is(CustomRoles.Sleuth) && player.PlayerId != target.PlayerId)
-                {
-                    string msg;
-                    msg = string.Format(GetString("SleuthNoticeVictim"), tpc.GetRealName(), tpc.GetDisplayRoleAndSubName(tpc, false));
-                    if (Sleuth.SleuthCanKnowKillerRole.GetBool())
-                    {
-                        var realKiller = tpc.GetRealKiller();
-                        if (realKiller == null) msg += "；" + GetString("SleuthNoticeKillerNotFound");
-                        else msg += "；" + string.Format(GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false));
-                    }
-                    Sleuth.SleuthNotify.Add(player.PlayerId, msg);
-                }
-            }
-
-            Virus.OnKilledBodyReport(player);
-        }
-
         Main.LastVotedPlayerInfo = null;
         Main.GuesserGuessed.Clear();
         Main.AllKillers.Clear();
@@ -1506,6 +1481,8 @@ class ReportDeadBodyPatch
         Alchemist.OnReportDeadBodyGlobal();
 
         if (Aware.IsEnable) Aware.OnReportDeadBody();
+        
+        Sleuth.OnReportDeadBody(player, target?.Object);
 
         foreach (var x in Main.RevolutionistStart.Keys.ToArray())
         {

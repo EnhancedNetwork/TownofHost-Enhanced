@@ -21,10 +21,10 @@ internal class Shroud : RoleBase
     //==================================================================\\
 
     private static OptionItem ShroudCooldown;
-    public static OptionItem CanVent;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
 
-    public static Dictionary<byte, byte> ShroudList = [];
+    private static Dictionary<byte, byte> ShroudList = [];
 
     public static void SetupCustomOption()
     {
@@ -82,6 +82,8 @@ internal class Shroud : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ShroudCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+
+    public static bool ShroudIsActive(byte playerId) => ShroudList.ContainsKey(playerId);
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {

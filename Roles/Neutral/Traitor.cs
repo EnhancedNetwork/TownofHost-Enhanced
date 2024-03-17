@@ -6,20 +6,18 @@ namespace TOHE.Roles.Neutral;
 
 internal class Traitor : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 18200;
     public static HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem KillCooldown;
-    public static OptionItem CanVent;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
-    public static OptionItem CanUsesSabotage;
+    private static OptionItem CanUsesSabotage;
 
     public static void SetupCustomOption()
     {

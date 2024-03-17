@@ -1,5 +1,4 @@
-﻿using MS.Internal.Xml.XPath;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +6,6 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Core;
 

@@ -188,9 +188,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Undertaker:
                 Undertaker.ApplyGameOptions();
                 break;
-            case CustomRoles.Spiritcaller:
-                opt.SetVision(Spiritcaller.ImpostorVision.GetBool());
-                break;
             case CustomRoles.Warden:
                 Warden.SetAbilityCooldown();
                 break;

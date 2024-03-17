@@ -763,7 +763,7 @@ static class ExtendedPlayerControl
                     killer.RpcTeleport(target.GetTruePosition());
                     killer.RpcGuardAndKill(target);
                     killer.SetKillCooldown(forceAnime: true);
-                    NameNotifyManager.Notify(killer, GetString("MurderSolsticer"));
+                    killer.Notify(GetString("MurderSolsticer"));
                 }
 
                 target.RpcGuardAndKill();
@@ -771,7 +771,7 @@ static class ExtendedPlayerControl
                 Solsticer.ResetTasks(target);
                 target.MarkDirtySettings();
 
-                NameNotifyManager.Notify(target, string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
+                target.Notify(string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
                 if (Solsticer.SolsticerKnowKiller.GetBool())
                     Solsticer.MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
                 else Solsticer.MurderMessage = "";

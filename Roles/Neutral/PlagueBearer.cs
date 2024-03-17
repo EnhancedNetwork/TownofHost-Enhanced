@@ -165,7 +165,7 @@ internal class PlagueBearer : RoleBase
     private static bool IsIndirectKill(PlayerControl killer)
     {
         return Puppeteer.PuppetIsActive(killer.PlayerId) ||
-            Shroud.ShroudList.ContainsKey(killer.PlayerId) ||
+            Shroud.ShroudIsActive(killer.PlayerId) ||
             Main.CursedPlayers.ContainsValue(killer) ||
             Sniper.SnipeIsActive(killer.PlayerId);
     }

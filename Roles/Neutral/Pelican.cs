@@ -231,18 +231,8 @@ internal class Pelican : RoleBase
         Utils.NotifyRoles();
     }
 
-    public override void OnFixedUpdate(PlayerControl peli)
-    {
-        if (!GameStates.IsInTask)
-        {
-            if (eatenList.Count > 0)
-            {
-                eatenList.Clear();
-                SyncEatenList();
-            }
-            return;
-        }
-        
+    public override void OnFixedUpdateLowLoad(PlayerControl pelican)
+    {        
         Count--;
         
         if (Count > 0) return; 
