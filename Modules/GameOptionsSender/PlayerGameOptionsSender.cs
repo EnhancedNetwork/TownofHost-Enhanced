@@ -174,9 +174,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Maverick:
                 Maverick.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Parasite:
-                opt.SetVision(true);
-                break;
             case CustomRoles.Workaholic:
                 AURoleOptions.EngineerCooldown = Options.WorkaholicVentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 0f;

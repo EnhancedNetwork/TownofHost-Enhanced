@@ -77,10 +77,7 @@ class ExileControllerWrapUpPatch
             var role = exiled.GetCustomRole();
             var player = Utils.GetPlayerById(exiled.PlayerId);
             var exiledRoleClass = player.GetRoleClass();
-            
-            if (Quizmaster.HasEnabled)
-                Quizmaster.OnPlayerExile(exiled);
-
+           
             var emptyString = string.Empty;
             exiledRoleClass?.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
 

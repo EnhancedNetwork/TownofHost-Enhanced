@@ -663,14 +663,6 @@ class MurderPlayerPatch
         var killerRoleClass = killer.GetRoleClass();
         var targetRoleClass = target.GetRoleClass();
 
-        if (PlagueDoctor.HasEnabled)
-        {
-            PlagueDoctor.OnAnyMurder();
-        }
-
-        if (Quizmaster.HasEnabled)
-            Quizmaster.OnPlayerDead(target);
-
         if (killer != __instance)
         {
             Logger.Info($"Real Killer => {killer.GetNameWithRole().RemoveHtmlTags()}", "MurderPlayer");
@@ -756,7 +748,7 @@ class MurderPlayerPatch
         //================GHOST ASSIGN PATCH============
         if (target.Is(CustomRoles.EvilSpirit))
         {
-         target.RpcSetRole(RoleTypes.GuardianAngel);
+            target.RpcSetRole(RoleTypes.GuardianAngel);
         }
         //
         //{
@@ -1469,8 +1461,6 @@ class ReportDeadBodyPatch
 
         if (target == null) // Emergency Button
         {
-            if (Quizmaster.HasEnabled)
-                Quizmaster.OnButtonPress(player);
         }
         else
         {
@@ -1955,6 +1945,7 @@ class FixedUpdateInNormalGamePatch
                     {
                         if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja) || pc.Is(CustomRoles.Vampiress))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Options.DefaultKillCooldown * 2;
+                        
                         if (pc.Is(CustomRoles.Poisoner))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;
                     }

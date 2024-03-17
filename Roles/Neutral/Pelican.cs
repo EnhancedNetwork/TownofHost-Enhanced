@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -19,15 +18,17 @@ internal class Pelican : RoleBase
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
+
+    private static OptionItem KillCooldown;
+    private static OptionItem HasImpostorVision;
+    private static OptionItem CanVent;
 
     private static Dictionary<byte, List<byte>> eatenList = [];
     private static readonly Dictionary<byte, float> originalSpeed = [];
+
     private static int Count = 0;
-    public static OptionItem KillCooldown;
-    public static OptionItem HasImpostorVision;
-    public static OptionItem CanVent;
+
     public static void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pelican, 1, zeroOne: false);
@@ -40,6 +41,8 @@ internal class Pelican : RoleBase
     {
         playerIdList = [];
         eatenList = [];
+        originalSpeed.Clear();
+
         Count = 0;
     }
     public override void Add(byte playerId)

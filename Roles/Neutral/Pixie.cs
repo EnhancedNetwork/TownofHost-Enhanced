@@ -7,19 +7,21 @@ using static TOHE.Translator;
 namespace TOHE.Roles.Neutral;
 internal class Pixie : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 25900;
-    private static List<byte> playerIdList = [];
-    public static bool On;
-    public override bool IsEnable => On;
+    private static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
-    private static Dictionary<byte, HashSet<byte>> PixieTargets = [];
-    private static Dictionary<byte, int> PixiePoints = [];
+    //==================================================================\\
 
     private static OptionItem PixiePointsToWin;
     private static OptionItem PixieMaxTargets;
     private static OptionItem PixieMarkCD;
     private static OptionItem PixieSuicideOpt;
+
+    private static Dictionary<byte, HashSet<byte>> PixieTargets = [];
+    private static Dictionary<byte, int> PixiePoints = [];
 
     public static void SetupCustomOption()
     {
@@ -37,7 +39,6 @@ internal class Pixie : RoleBase
         playerIdList = [];
         PixieTargets = [];
         PixiePoints = [];
-        On = false;
     }
 
     public override void Add(byte playerId)
@@ -45,7 +46,6 @@ internal class Pixie : RoleBase
         playerIdList.Add(playerId);
         PixieTargets[playerId] = [];
         PixiePoints.Add(playerId, 0);
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -61,9 +61,10 @@ internal class Pixie : RoleBase
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pixie).ShadeColor(0.25f), PixiePoints.TryGetValue(playerId, out var x) ? $"({x}/{PixiePointsToWin.GetInt()})" : "Invalid");
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PixieMarkCD.GetFloat();
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseSabotage(PlayerControl pc) => false;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
+    
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         HudManager.Instance.KillButton.OverrideText(GetString("PixieButtonText"));
@@ -137,7 +138,6 @@ internal class Pixie : RoleBase
 
     public override void OnPlayerExiled(PlayerControl pc, GameData.PlayerInfo exiled)
     {
-        if (!On || pc == null || !pc.Is(CustomRoles.Pixie)) return;
         byte pixieId = pc.PlayerId;
         if (PixieTargets.ContainsKey(pixieId))
         {

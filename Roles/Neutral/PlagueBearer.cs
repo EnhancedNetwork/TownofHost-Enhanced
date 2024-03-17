@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -16,19 +15,17 @@ internal class PlagueBearer : RoleBase
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
-    public static Dictionary<byte, List<byte>> PlaguedList = [];
-    public static Dictionary<byte, float> PlagueBearerCD = [];
-    public static Dictionary<byte, int> PestilenceCD = [];
-    public static List<byte> PestilenceList = [];
+    private static OptionItem PlagueBearerCDOpt;
+    private static OptionItem PestilenceCDOpt;
+    private static OptionItem PestilenceCanVent;
+    private static OptionItem PestilenceHasImpostorVision;
 
-    public static OptionItem PlagueBearerCDOpt;
-    public static OptionItem PestilenceCDOpt;
-    public static OptionItem PestilenceCanVent;
-    public static OptionItem PestilenceHasImpostorVision;
-
+    private static Dictionary<byte, List<byte>> PlaguedList = [];
+    private static Dictionary<byte, float> PlagueBearerCD = [];
+    //private static Dictionary<byte, int> PestilenceCD = [];
+    private static List<byte> PestilenceList = [];
 
     public static void SetupCustomOption()
     {
@@ -86,7 +83,7 @@ internal class PlagueBearer : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        if(PestilenceList.Contains(playerId))
+        if (PestilenceList.Contains(playerId))
             opt.SetVision(PestilenceHasImpostorVision.GetBool());
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
@@ -108,15 +105,13 @@ internal class PlagueBearer : RoleBase
     }
     private static (int, int) PlaguedPlayerCount(byte playerId)
     {
-        int plagued = 0, all = 0; //学校で習った書き方
-                                  //多分この方がMain.isDousedでforeachするより他のアーソニストの分ループ数少なくて済む
+        int plagued = 0, all = 0;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (pc.PlayerId == playerId) continue; //塗れない人は除外 (死んでたり切断済みだったり あとアーソニスト自身も)
+            if (pc.PlayerId == playerId) continue;
 
             all++;
             if (IsPlagued(playerId, pc.PlayerId))
-                //塗れている場合
                 plagued++;
         }
         return (plagued, all);
@@ -206,6 +201,5 @@ internal class PlagueBearer : RoleBase
 
         player.ResetKillCooldown();
         playerIdList.Remove(playerId);
-
     }
 }

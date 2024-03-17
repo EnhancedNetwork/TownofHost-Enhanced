@@ -1243,9 +1243,6 @@ class MeetingHudOnDestroyPatch
         Logger.Info("------------End Meeting------------", "Phase");
         if (AmongUsClient.Instance.AmHost)
         {
-            if (Quizmaster.HasEnabled)
-                Quizmaster.OnMeetingEnd();
-
             AntiBlackout.SetIsDead();
 
             Main.LastVotedPlayerInfo = null;

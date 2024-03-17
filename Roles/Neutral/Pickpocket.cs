@@ -10,17 +10,16 @@ internal class Pickpocket : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17400;
-    public static HashSet<byte> playerIdList = [];
+    private static HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem KillCooldown;
-    public static OptionItem CanVent;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
-    public static OptionItem VotesPerKill;
+    private static OptionItem VotesPerKill;
 
     public static void SetupCustomOption()
     {
@@ -31,7 +30,7 @@ internal class Pickpocket : RoleBase
         CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pickpocket]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pickpocket]);
         VotesPerKill = FloatOptionItem.Create(Id + 12, "VotesPerKill", new(0.1f, 10f, 0.1f), 0.5f, TabGroup.NeutralRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.Pickpocket]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Pickpocket]);
     }
     public override void Init()
     {
@@ -52,11 +51,11 @@ internal class Pickpocket : RoleBase
 
     public override int AddRealVotesNum(PlayerVoteArea ps)
     {
-        return (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Pickpocket.VotesPerKill.GetFloat());
+        return (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * VotesPerKill.GetFloat());
     }
     public override void OnMurder(PlayerControl killer, PlayerControl target)
     {
         if (killer.Is(CustomRoles.Pickpocket) && killer.PlayerId != target.PlayerId)
-            killer.Notify(string.Format(GetString("PickpocketGetVote"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * Pickpocket.VotesPerKill.GetFloat()).ToString("0.0#####")));
+            killer.Notify(string.Format(GetString("PickpocketGetVote"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * VotesPerKill.GetFloat()).ToString("0.0#####")));
     }
 }

@@ -4,13 +4,16 @@ using System.Linq;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
+
 internal class Seeker : RoleBase
 {
-    private static readonly int Id = 14600;
-    private static List<byte> playerIdList = [];
-    public static bool On;
-    public override bool IsEnable => On;
+    //===========================SETUP================================\\
+    private const int Id = 14600;
+    private static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem PointsToWin;
     private static OptionItem TagCooldownOpt;
@@ -34,13 +37,11 @@ internal class Seeker : RoleBase
         Targets = [];
         TotalPoints = [];
         DefaultSpeed = []; 
-        On = false;
     }
 
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
 
         TotalPoints.Add(playerId, 0);
         DefaultSpeed[playerId] = Main.AllPlayerSpeed[playerId];
@@ -190,7 +191,7 @@ internal class Seeker : RoleBase
         FreezeSeeker(player);
         return targetId;
     }
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => Targets.ContainsValue(target.PlayerId) ? Main.roleColors[CustomRoles.Seeker] : "";
     public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({TotalPoints[PlayerId]}/{PointsToWin.GetInt()})");
 
