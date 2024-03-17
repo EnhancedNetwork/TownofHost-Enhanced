@@ -2772,18 +2772,23 @@ class ReportDeadBodyPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            // Update skins again, since players have different skins
-            // And can be easily distinguished from each other
-            if (Camouflage.IsCamouflage && Options.KPDCamouflageMode.GetValue() is 2 or 3)
+            if (!Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId))
             {
-                Camouflage.RpcSetSkin(pc);
+                // Update skins again, since players have different skins
+                // And can be easily distinguished from each other
+                if (Camouflage.IsCamouflage && Options.KPDCamouflageMode.GetValue() is 2 or 3)
+                {
+                    Camouflage.RpcSetSkin(pc);
+                }
+
+                // Check shapeshift and revert skin to default
+                if (Main.CheckShapeshift.ContainsKey(pc.PlayerId))
+                {
+                    Camouflage.RpcSetSkin(pc, RevertToDefault: true);
+                }
             }
 
-            // Check shapeshift and revert skin to default
-            if (Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId))
-            {
-                Camouflage.RpcSetSkin(pc, RevertToDefault: true);
-            }
+            Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
         // Set meeting time
