@@ -204,7 +204,6 @@ internal class ChangeRoleSettings
             Antidote.Init();
             Fool.Init();
             Burst.Init();
-            Maverick.Init();
             DoubleShot.Init();
             Warden.Init();
             Vulture.Init();
@@ -480,9 +479,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Succubus:
                         Succubus.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Maverick:
-                        Maverick.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Vulture:
                         Vulture.Add(pc.PlayerId);

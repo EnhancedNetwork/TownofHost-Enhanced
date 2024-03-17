@@ -875,9 +875,6 @@ internal static class RPC
             case CustomRoles.Vulture:
                 Vulture.Add(targetId); 
                 break;
-            case CustomRoles.Maverick:
-                Maverick.Add(targetId);
-                break;
             case CustomRoles.Pirate:
                 Pirate.Add(targetId);
                 break;
