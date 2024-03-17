@@ -1131,8 +1131,6 @@ class MeetingHudStartPatch
             sb.Append(Romantic.TargetMark(seer, target));
 
 
-            sb.Append(Lawyer.LawyerMark(seer, target));
-
             //会議画面ではインポスター自身の名前にSnitchマークはつけません。
 
             pva.NameText.text += sb.ToString();

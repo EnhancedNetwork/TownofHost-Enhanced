@@ -595,27 +595,6 @@ public static class Options
     ];
     public static SuffixModes GetSuffixMode() => (SuffixModes)SuffixMode.GetValue();
 
-
-    // Options not using
-    /*public static OptionItem ButtonBarryButtons;
-      public static OptionItem GlitchCanVote;
-      public static OptionItem JackalWinWithSidekick;
-      public static OptionItem FlashWhenTrapBoobyTrap;
-      public static OptionItem CrewmateCanBeSidekick;
-      public static OptionItem NeutralCanBeSidekick;
-      public static OptionItem ImpostorCanBeSidekick;
-      public static OptionItem ImpCanBeReflective;
-      public static OptionItem CrewCanBeReflective;
-      public static OptionItem NeutralCanBeReflective;
-      public static OptionItem ImpCanBeRogue;
-      public static OptionItem CrewCanBeRogue;
-      public static OptionItem NeutralCanBeRogue;
-      public static OptionItem RogueKnowEachOther;
-      public static OptionItem RogueKnowEachOtherRoles;
-      public static OptionItem ControlCooldown;
-      public static OptionItem LawyerVision;
-      public static OptionItem BardChance; */
-
     // Override Tasks
     public static OverrideTasksData TerroristTasks;
     public static OverrideTasksData WorkaholicTasks;

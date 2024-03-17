@@ -827,9 +827,6 @@ internal static class RPC
 
         switch (role)
         {
-            case CustomRoles.Lawyer:
-                Lawyer.Add(targetId);
-                break;
             case CustomRoles.SoulCollector:
                 SoulCollector.Add(targetId);
                 break;

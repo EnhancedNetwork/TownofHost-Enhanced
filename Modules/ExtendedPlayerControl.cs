@@ -908,7 +908,6 @@ static class ExtendedPlayerControl
         else if (Jackal.JackalKnowRole(seer, target)) return true;
         else if (seer.IsRevealedPlayer(target) && !target.Is(CustomRoles.Trickster)) return true;
         else if (Romantic.KnowRole(seer, target)) return true;
-        else if (Lawyer.KnowRole(seer, target)) return true;
         else if (Succubus.KnowRole(seer, target)) return true;
         else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return true;
         else if (Infectious.KnowRole(seer, target)) return true;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -209,7 +210,7 @@ public static class CustomRoleManager
         //CustomRoles.FFF => new FFF(),
         CustomRoles.Huntsman => new Huntsman(),
         CustomRoles.HexMaster => new HexMaster(),
-        CustomRoles.Hater >= new Hater(),
+        CustomRoles.Hater => new Hater(),
         //CustomRoles.Hookshot => new Hookshot(),
         CustomRoles.Imitator => new Imitator(),
         CustomRoles.Innocent => new Innocent(),
@@ -281,6 +282,16 @@ public static class CustomRoleManager
         }
         return !cancel;
     }
+    public static HashSet<Action<PlayerControl>> OthersAfterDeathTask = [];
+    /// <summary>
+    /// If the role does tasks after target death.
+    /// </summary>
+    public static void OthersAfterPlayerDead(PlayerControl player)
+    {
+        if (!OthersAfterDeathTask.Any()) return;
+
+        OthersAfterDeathTask.ToArray().Do(Method => Method(player));
+    }
 
     public static HashSet<Action<PlayerControl, PlayerControl>> CheckDeadBodyOthers = [];
     /// <summary>
@@ -288,7 +299,7 @@ public static class CustomRoleManager
     /// </summary>
     public static void CheckDeadBody(PlayerControl deadBody, PlayerControl killer)
     {
-        if (CheckDeadBodyOthers.Count <= 0) return;
+        if (!CheckDeadBodyOthers.Any()) return;
         //Execute other viewpoint processing if any
         foreach (var checkDeadBodyOthers in CheckDeadBodyOthers.ToArray())
         {
@@ -318,7 +329,7 @@ public static class CustomRoleManager
     {
         player.GetRoleClass()?.OnFixedUpdateLowLoad(player);
 
-        if (OnFixedUpdateLowLoadOthers.Count <= 0) return;
+        if (!OnFixedUpdateLowLoadOthers.Any()) return;
         //Execute other viewpoint processing if any
         foreach (var onFixedUpdateLowLoad in OnFixedUpdateLowLoadOthers.ToArray())
         {
@@ -350,7 +361,7 @@ public static class CustomRoleManager
 
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (MarkOthers.Count <= 0) return string.Empty;
+        if (!MarkOthers.Any()) return string.Empty;
 
         var sb = new StringBuilder(100);
         foreach (var marker in MarkOthers)
@@ -362,7 +373,7 @@ public static class CustomRoleManager
 
     public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (LowerOthers.Count <= 0) return string.Empty;
+        if (!LowerOthers.Any()) return string.Empty;
 
         var sb = new StringBuilder(100);
         foreach (var lower in LowerOthers)
@@ -374,7 +385,7 @@ public static class CustomRoleManager
 
     public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (SuffixOthers.Count <= 0) return string.Empty;
+        if (!SuffixOthers.Any()) return string.Empty;
 
         var sb = new StringBuilder(100);
         foreach (var suffix in SuffixOthers)
@@ -392,5 +403,6 @@ public static class CustomRoleManager
         OnFixedUpdateOthers.Clear();
         OnFixedUpdateLowLoadOthers.Clear();
         CheckDeadBodyOthers.Clear();
+        OthersAfterDeathTask.Clear();   
     }
 }

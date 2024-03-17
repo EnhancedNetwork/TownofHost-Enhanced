@@ -687,8 +687,6 @@ class MurderPlayerPatch
             Oiiai.OnMurderPlayer(killer, target);
         }
 
-        if (Lawyer.Target.ContainsValue(target.PlayerId))
-            Lawyer.ChangeRoleByTarget(target);
 
         if (Vulture.IsEnable) Vulture.OnPlayerDead(target);
         if (SoulCollector.IsEnable) SoulCollector.OnPlayerDead(target);
@@ -1596,8 +1594,6 @@ class FixedUpdateInNormalGamePatch
                 if (Romantic.IsEnable)
                     Mark.Append(Romantic.TargetMark(seer, target));
 
-                if (Lawyer.IsEnable)
-                    Mark.Append(Lawyer.LawyerMark(seer, target));
 
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));

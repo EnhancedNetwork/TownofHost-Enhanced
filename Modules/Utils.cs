@@ -1824,8 +1824,6 @@ public static class Utils
                         if (Romantic.IsEnable)
                             TargetMark.Append(Romantic.TargetMark(seer, target));
 
-                        if (Lawyer.IsEnable)
-                            TargetMark.Append(Lawyer.LawyerMark(seer, target));
 
 
                         if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
@@ -2032,7 +2030,6 @@ public static class Utils
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();
-        if (Lawyer.IsEnable) Lawyer.AfterMeetingTasks();
 
         if (CustomRoles.CopyCat.IsClassEnable()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
         
@@ -2055,6 +2052,7 @@ public static class Utils
     public static void AfterPlayerDeathTasks(PlayerControl target, bool onMeeting = false)
     {
         target.GetRoleClass()?.AfterPlayerDeathTask(target);
+        CustomRoleManager.OthersAfterPlayerDead(target);
 
         switch (target.GetCustomRole())
         {
@@ -2064,13 +2062,6 @@ public static class Utils
                 break;
             case CustomRoles.Executioner:
                 Executioner.ExecutionerWasDead(target.PlayerId);
-                break;
-            case CustomRoles.Lawyer:
-                if (Lawyer.Target.ContainsKey(target.PlayerId))
-                {
-                    Lawyer.Target.Remove(target.PlayerId);
-                    Lawyer.SendRPC(target.PlayerId, SetTarget: false);
-                }
                 break;
             case CustomRoles.Romantic:
                 Romantic.isRomanticAlive = false;
@@ -2109,8 +2100,6 @@ public static class Utils
         if (Romantic.BetPlayer.ContainsValue(target.PlayerId))
             Romantic.ChangeRole(target.PlayerId);
 
-        if (Lawyer.Target.ContainsValue(target.PlayerId))
-            Lawyer.ChangeRoleByTarget(target);
 
         FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, onMeeting);
 

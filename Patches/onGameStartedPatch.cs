@@ -179,7 +179,6 @@ internal class ChangeRoleSettings
                 role.CreateRoleClass()?.Init();
             }
 
-            Lawyer.Init();
             Solsticer.Init();
             LastImpostor.Init();
             TargetArrow.Init();
@@ -445,9 +444,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Revolutionist:
                         foreach (var ar in Main.AllPlayerControls)
                             Main.isDraw.Add((pc.PlayerId, ar.PlayerId), false);
-                        break;
-                    case CustomRoles.Lawyer:
-                        Lawyer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Paranoia:
                         Main.ParaUsedButtonCount[pc.PlayerId] = 0;
