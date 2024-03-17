@@ -469,9 +469,6 @@ static class ExtendedPlayerControl
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
             CustomRoles.Hater => pc.IsAlive(),
             CustomRoles.Provocateur => pc.IsAlive(),
-            CustomRoles.Romantic => pc.IsAlive(),
-            CustomRoles.RuthlessRomantic => pc.IsAlive(),
-            CustomRoles.VengefulRomantic => VengefulRomantic.CanUseKillButton(pc),
             CustomRoles.Succubus => Succubus.CanUseKillButton(pc),
             CustomRoles.Pirate => pc.IsAlive(),
             _ => false,
@@ -508,8 +505,6 @@ static class ExtendedPlayerControl
 
         return pc.GetCustomRole() switch
         {
-            CustomRoles.VengefulRomantic => Romantic.VengefulCanVent.GetBool(),
-            CustomRoles.RuthlessRomantic => Romantic.RuthlessCanVent.GetBool(),
             CustomRoles.Revolutionist => pc.IsDrawDone(),
 
             //FFA
@@ -578,15 +573,6 @@ static class ExtendedPlayerControl
             //FFA
             case CustomRoles.Killer:
                 Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
-                break;
-            case CustomRoles.Romantic:
-                Romantic.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.VengefulRomantic:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Romantic.VengefulKCD.GetFloat();
-                break;
-            case CustomRoles.RuthlessRomantic:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Romantic.RuthlessKCD.GetFloat();
                 break;
             case CustomRoles.Succubus:
                 Succubus.SetKillCooldown(player.PlayerId);
@@ -895,7 +881,6 @@ static class ExtendedPlayerControl
         else if (Options.WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic)) return true;
         else if (Jackal.JackalKnowRole(seer, target)) return true;
         else if (seer.IsRevealedPlayer(target) && !target.Is(CustomRoles.Trickster)) return true;
-        else if (Romantic.KnowRole(seer, target)) return true;
         else if (Succubus.KnowRole(seer, target)) return true;
         else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return true;
         else if (Infectious.KnowRole(seer, target)) return true;

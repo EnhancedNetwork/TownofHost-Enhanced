@@ -16,7 +16,6 @@ internal class Hater : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
 
-    public static OptionItem CanVent;
     public static OptionItem ChooseConverted;
     public static OptionItem MisFireKillTarget;
 

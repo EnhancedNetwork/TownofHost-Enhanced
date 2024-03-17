@@ -196,9 +196,6 @@ internal class ChangeRoleSettings
             Bloodmoon.Init();
             SoulCollector.Init();
             SchrodingersCat.Init();
-            Romantic.Init();
-            VengefulRomantic.Init();
-            RuthlessRomantic.Init();
             Succubus.Init();
             Antidote.Init();
             Fool.Init();
@@ -464,14 +461,8 @@ internal class SelectRolesPatch
                     case CustomRoles.SchrodingersCat:
                         SchrodingersCat.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Romantic:
-                        Romantic.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.VengefulRomantic:
                         VengefulRomantic.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.RuthlessRomantic:
-                        RuthlessRomantic.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Succubus:
                         Succubus.Add(pc.PlayerId);

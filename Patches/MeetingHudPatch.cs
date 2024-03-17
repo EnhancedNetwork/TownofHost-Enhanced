@@ -1127,9 +1127,6 @@ class MeetingHudStartPatch
             if (Lightning.IsGhost(target))
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■"));
 
-            //赌徒提示
-            sb.Append(Romantic.TargetMark(seer, target));
-
 
             //会議画面ではインポスター自身の名前にSnitchマークはつけません。
 

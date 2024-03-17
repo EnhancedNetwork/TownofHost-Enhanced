@@ -17,7 +17,6 @@ internal class Imitator : RoleBase
     //==================================================================\\
 
     public static OptionItem RememberCooldown;
-    public static OptionItem RefugeeKillCD;
     public static OptionItem IncompatibleNeutralMode;
     public static readonly string[] ImitatorIncompatibleNeutralMode =
     [

@@ -1,19 +1,26 @@
 ﻿using HarmonyLib;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using System.Collections.Generic;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Romantic
+internal class Romantic : RoleBase
 {
+    //===========================SETUP================================\\
     private static readonly int Id = 13500;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static readonly int MaxBetTimes = 1;
     public static bool isProtect = false;
@@ -51,20 +58,20 @@ public static class Romantic
             .SetValueFormat(OptionFormat.Seconds);
         RuthlessCanVent = BooleanOptionItem.Create(Id + 18, "RuthlessCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         BetTimes = [];
         BetPlayer = [];
         isProtect = false;
         isPartnerProtected = false;
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         BetTimes.Add(playerId, MaxBetTimes);
-        IsEnable = true;
+        CustomRoleManager.MarkOthers.Add(TargetMark);
+        CustomRoleManager.OthersAfterDeathTask.Add(ChangeRole);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -90,8 +97,8 @@ public static class Romantic
         if (Target != byte.MaxValue)
             BetPlayer.Add(PlayerId, Target);
     }
-    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead;
-    public static void SetKillCooldown(byte id)
+    public override bool CanUseKillButton(PlayerControl player) => true;
+    public override void SetKillCooldown(byte id)
     {
         if (BetTimes.TryGetValue(id, out var times) && times < 1)
         {
@@ -104,12 +111,12 @@ public static class Romantic
         //cd = Math.Min(cd, MaxBetCooldown.GetFloat());
         //Main.AllPlayerKillCooldown[id] = cd;
     }
-    public static bool KnowRole(PlayerControl player, PlayerControl target)
+    public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;
         return player.Is(CustomRoles.Romantic) && BetPlayer.TryGetValue(player.PlayerId, out var tar) && tar == target.PlayerId;
     }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return true;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
@@ -173,7 +180,7 @@ public static class Romantic
 
         return false;
     }
-    public static string SelfMark(PlayerControl seer)
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (seer == null || seer.Is(CustomRoles.Romantic)) return string.Empty;
         if (!BetPlayer.ContainsValue(seer.PlayerId)) return string.Empty;
@@ -181,7 +188,12 @@ public static class Romantic
 
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
     }
-    public static string TargetMark(PlayerControl seer, PlayerControl target)
+    public static bool OnCheckMurderOthers(PlayerControl target)
+    {
+        return isPartnerProtected && BetPlayer.ContainsValue(target.PlayerId);
+    }
+    public override void AfterPlayerDeathTask(PlayerControl target) => Romantic.isRomanticAlive = false;
+    private static string TargetMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {
         if (!seer.Is(CustomRoles.Romantic))
         {
@@ -192,28 +204,29 @@ public static class Romantic
         var GetValue = BetPlayer.TryGetValue(seer.PlayerId, out var targetId);
         return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥") : "";
     }
-    public static string GetProgressText(byte playerId)
+    public override string GetProgressText(byte playerId, bool cooms)
     {
         var player = Utils.GetPlayerById(playerId);
         if (player == null) return null;
         return Utils.ColorString(BetTimes.TryGetValue(playerId, out var timesV1) && timesV1 >= 1 ? Color.white : Utils.GetRoleColor(CustomRoles.Romantic), $"<color=#ffffff>-</color> {(BetTimes.TryGetValue(playerId, out var timesV2) && timesV2 >= 1 && timesV2 >= 1 ? "♡" : "♥")}");
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl ugandan, PlayerControl knuckles)
     {
         isPartnerProtected = false;
     }
-    public static void ChangeRole(byte playerId)
+    private static void ChangeRole(PlayerControl player)
     {
-        var player = Utils.GetPlayerById(playerId);
-        if (player == null) return;
-        byte Romantic = 0x73;
+        var playerId = player.PlayerId;
+        if (!Romantic.BetPlayer.ContainsValue(playerId) || player == null) return;
+
+        byte romantic = 0x73;
         BetPlayer.Do(x =>
         {
             if (x.Value == playerId)
-                Romantic = x.Key;
+                romantic = x.Key;
         });
-        if (Romantic == 0x73) return;
-        var pc = Utils.GetPlayerById(Romantic);
+        if (romantic == 0x73) return;
+        var pc = Utils.GetPlayerById(romantic);
         if (pc == null) return;
         if (player.GetCustomRole().IsImpostorTeamV3())
         {
@@ -226,8 +239,8 @@ public static class Romantic
         else if (player.IsNeutralKiller())
         {
             Logger.Info($"Neutral Romantic Partner Died changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
-            RuthlessRomantic.Add(Romantic);
             pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
+            pc.GetRoleClass().Add(pc.PlayerId);
             Utils.NotifyRoles(ForceLoop: true);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
@@ -240,8 +253,8 @@ public static class Romantic
                 var killer = player.GetRealKiller();
                 if (killer == null) //change role to RuthlessRomantic if there is no killer for partner in game
                 {
-                    RuthlessRomantic.Add(Romantic);
                     pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
+                    pc.GetRoleClass().Add(pc.PlayerId);
                     Logger.Info($"No real killer for {player.GetRealName().RemoveHtmlTags()}, role changed to ruthless romantic", "Romantic");
                 }
                 else 
@@ -260,35 +273,46 @@ public static class Romantic
     }
 }
 
-public static class VengefulRomantic
+internal class VengefulRomantic : RoleBase
 {
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+
+    //===========================SETUP================================\\
+    private static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase; 
+    //==================================================================\\
 
     public static bool hasKilledKiller = false;
     public static Dictionary<byte, byte> VengefulTarget = [];
 
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        VengefulTarget = [];
+        playerIdList.Clear();
+        VengefulTarget.Clear();
         hasKilledKiller = false;
-        IsEnable = false;
     }
-    public static void Add(byte playerId, byte killerId = byte.MaxValue)
+    public override void Add(byte playerId)
+    {
+        playerIdList.Add(playerId);
+
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
+    }
+    public static void Add(byte playerId, byte killerId = byte.MaxValue) // some reason setting role midgame dosen't .Add() it.
     {
         playerIdList.Add(playerId);
         VengefulTarget.Add(playerId, killerId);
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && !hasKilledKiller;
+    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && !hasKilledKiller;
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return true; //set it to true coz shaman can do this, and killer shd die
 
@@ -304,7 +328,7 @@ public static class VengefulRomantic
             return false;
         }
     }
-    public static string GetProgressText(byte playerId)
+    public override string GetProgressText(byte playerId, bool cooms)
     {
         var player = Utils.GetPlayerById(playerId);
         if (player == null) return null;
@@ -327,24 +351,33 @@ public static class VengefulRomantic
         if (Target != byte.MaxValue)
             VengefulTarget.Add(PlayerId, Target);
     }
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Romantic.VengefulKCD.GetFloat();
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => Romantic.VengefulCanVent.GetBool();
 }
 
-public static class RuthlessRomantic
+internal class RuthlessRomantic : RoleBase
 {
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
-    public static void Init()
+
+    //===========================SETUP================================\\
+    private static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
+
+    //==================================================================\\
+    public override void Init()
     {
-        playerIdList = [];
-        IsEnable = false;
+        playerIdList.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Romantic.RuthlessKCD.GetFloat();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => Romantic.RuthlessCanVent.GetBool();
 }

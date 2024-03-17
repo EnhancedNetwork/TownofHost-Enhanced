@@ -246,6 +246,9 @@ class CheckMurderPatch
             return false;
         }
 
+        if (Romantic.OnCheckMurderOthers(target))
+            return false;
+
         // Check murder on others targets
         if (!CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target))
         {
@@ -363,12 +366,6 @@ class CheckMurderPatch
                     killer.SetRealKiller(target);
                     Main.Provoked.TryAdd(killer.PlayerId, target.PlayerId);
                     return false;
-                case CustomRoles.Romantic:
-                    if (!Romantic.OnCheckMurder(killer, target)) return false;
-                    break;
-                case CustomRoles.VengefulRomantic:
-                    if (!VengefulRomantic.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Succubus:
                     Succubus.OnCheckMurder(killer, target);
                     return false;
@@ -441,9 +438,6 @@ class CheckMurderPatch
         // Jackal
         if (!Jackal.RpcCheckAndMurder(killer, target)) return false;
 
-        // Romantic partner is protected
-        if (Romantic.isPartnerProtected && Romantic.BetPlayer.ContainsValue(target.PlayerId))
-            return false;
 
         // Impostors can kill Madmate
         if (killer.Is(CustomRoleTypes.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
@@ -1056,7 +1050,6 @@ class ReportDeadBodyPatch
 
         if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
         if (Vulture.IsEnable) Vulture.Clear();
-        if (Romantic.IsEnable) Romantic.OnReportDeadBody();
 
         // Alchemist & Bloodlust
         Alchemist.OnReportDeadBodyGlobal();
@@ -1583,10 +1576,6 @@ class FixedUpdateInNormalGamePatch
                 if (CustomRoles.Solsticer.RoleExist())
                     if (target.AmOwner || target.Is(CustomRoles.Solsticer))
                         Mark.Append(Solsticer.GetWarningArrow(seer, target));
-
-                if (Romantic.IsEnable)
-                    Mark.Append(Romantic.TargetMark(seer, target));
-
 
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));

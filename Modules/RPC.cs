@@ -857,14 +857,8 @@ internal static class RPC
             case CustomRoles.Warden:
                 Warden.Add(targetId);
                 break;
-            case CustomRoles.Romantic:
-                Romantic.Add(targetId);
-                break;
             case CustomRoles.VengefulRomantic:
                 VengefulRomantic.Add(targetId);
-                break;
-            case CustomRoles.RuthlessRomantic:
-                RuthlessRomantic.Add(targetId);
                 break;
             case CustomRoles.Succubus:
                 Succubus.Add(targetId);

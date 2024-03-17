@@ -25,11 +25,8 @@ internal class Lawyer : RoleBase
     private static OptionItem CanTargetJester;
     public static OptionItem ShouldChangeRoleAfterTargetDeath;
     public static OptionItem ChangeRolesAfterTargetKilled;
-    public static OptionItem LawyerVision;
     public static OptionItem KnowTargetRole;
     public static OptionItem TargetKnowsLawyer;
-
-    public static byte WinnerID;
 
     public static Dictionary<byte, byte> Target = [];
     public static readonly string[] ChangeRoles =

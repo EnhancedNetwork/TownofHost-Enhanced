@@ -654,12 +654,6 @@ public static class Utils
                 case CustomRoles.Killer:
                     ProgressText.Append(FFAManager.GetDisplayScore(playerId));
                     break;
-                case CustomRoles.Romantic:
-                    ProgressText.Append(Romantic.GetProgressText(playerId));
-                    break;
-                case CustomRoles.VengefulRomantic:
-                    ProgressText.Append(VengefulRomantic.GetProgressText(playerId));
-                    break;
                 case CustomRoles.Succubus:
                     ProgressText.Append(Succubus.GetCharmLimit());
                     break;
@@ -1648,9 +1642,6 @@ public static class Utils
                     SelfMark.Append(Solsticer.GetWarningArrow(seer, seer));
 
 
-                if (Romantic.IsEnable)
-                    SelfMark.Append(Romantic.SelfMark(seer));
-
                 // ====== Add SelfSuffix for seer ======
 
                 SelfSuffix.Clear();
@@ -1817,9 +1808,6 @@ public static class Utils
                             TargetMark.Append(Solsticer.GetWarningArrow(seer, target));
                         }
 
-
-                        if (Romantic.IsEnable)
-                            TargetMark.Append(Romantic.TargetMark(seer, target));
 
 
 
@@ -2060,9 +2048,6 @@ public static class Utils
             case CustomRoles.Executioner:
                 Executioner.ExecutionerWasDead(target.PlayerId);
                 break;
-            case CustomRoles.Romantic:
-                Romantic.isRomanticAlive = false;
-                break;
             case CustomRoles.Devourer:
                 Devourer.OnDevourerDied(target.PlayerId);
                 break;
@@ -2094,8 +2079,6 @@ public static class Utils
         if (Executioner.Target.ContainsValue(target.PlayerId))
             Executioner.ChangeRoleByTarget(target);
 
-        if (Romantic.BetPlayer.ContainsValue(target.PlayerId))
-            Romantic.ChangeRole(target.PlayerId);
 
 
         FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, onMeeting);
