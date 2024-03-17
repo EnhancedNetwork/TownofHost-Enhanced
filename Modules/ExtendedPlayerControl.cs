@@ -1515,13 +1515,16 @@ static class ExtendedPlayerControl
         }
 
         var playerNetTransform = player.NetTransform;
-        var newSidForHost = (ushort)(playerNetTransform.lastSequenceId + 22); //132
-        var newSidForLocal = (ushort)(playerNetTransform.lastSequenceId + 16);
-        var newSidForGlobal = (ushort)(playerNetTransform.lastSequenceId + 22);
+        var newSidForHost = (ushort)(playerNetTransform.lastSequenceId + 20);
+        var newSidForLocal = (ushort)(playerNetTransform.lastSequenceId + 11);
+        var newSidForGlobal = (ushort)(playerNetTransform.lastSequenceId + 16);
 
         Logger.Info($"before teleport lastSequenceId: {player.NetTransform.lastSequenceId}", "RpcTeleport");
 
-        playerNetTransform.SnapTo(position, newSidForHost);
+        if (AmongUsClient.Instance.AmClient)
+        {
+            playerNetTransform.SnapTo(position, newSidForHost);
+        }
 
         // Local Teleport For Client
         if (PlayerControl.LocalPlayer.PlayerId != player.PlayerId)
