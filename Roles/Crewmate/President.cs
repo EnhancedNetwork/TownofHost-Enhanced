@@ -222,7 +222,7 @@ internal class President : RoleBase
         }
         EndMsg(pc, $"/finish");
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
         if ((target.Is(CustomRoles.President)) && CheckPresidentReveal[target.PlayerId] && !PresidentCanBeGuessedAfterRevealing.GetBool())
         {
@@ -232,9 +232,10 @@ internal class President : RoleBase
         return false;
     }
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-    => ((target.Is(CustomRoles.President) && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) && CheckPresidentReveal[target.PlayerId] == true) ||
-                (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && MadmatesSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
-                (target.Is(CustomRoles.President) && seer.GetCustomRole().IsNeutral() && NeutralsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
-                (target.Is(CustomRoles.President) && (seer.GetCustomRole().IsImpostorTeam()) && ImpsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true));
+    => (seer.Is(CustomRoles.President) && target.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) && CheckPresidentReveal[seer.PlayerId] == true) ||
+        (seer.Is(CustomRoles.President) && target.Is(CustomRoles.Madmate) && MadmatesSeePresident.GetBool() && CheckPresidentReveal[seer.PlayerId] == true) ||
+        (seer.Is(CustomRoles.President) && target.GetCustomRole().IsNeutral() && NeutralsSeePresident.GetBool() && CheckPresidentReveal[seer.PlayerId] == true) ||
+        (seer.Is(CustomRoles.President) && target.GetCustomRole().IsImpostor() && ImpsSeePresident.GetBool() && CheckPresidentReveal[seer.PlayerId] == true);
+    
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
 }

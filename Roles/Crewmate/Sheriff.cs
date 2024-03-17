@@ -101,7 +101,6 @@ internal class Sheriff : RoleBase
         CurrentKillCooldown.Remove(playerId);
         ShotLimit.Remove(playerId);
     }
-    public override bool CanUseKillButton(PlayerControl pc) => IsUseKillButton(pc);
     public static void SetUpNeutralOptions(int Id)
     {
         foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && x is not CustomRoles.Konan && x is not CustomRoles.Pestilence && x is not CustomRoles.Glitch).ToArray())
@@ -137,6 +136,8 @@ internal class Sheriff : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown[id] : 300f;
+
+    public override bool CanUseKillButton(PlayerControl pc) => IsUseKillButton(pc);
     public static bool IsUseKillButton(PlayerControl pc)
         => !Main.PlayerStates[pc.PlayerId].IsDead
         && (CanKillAllAlive.GetBool() || GameStates.AlreadyDied)
@@ -205,10 +206,6 @@ internal class Sheriff : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
         hud.KillButton.OverrideText(GetString("SheriffKillButtonText"));
-
-        hud.SabotageButton.ToggleVisible(false);
-        hud.AbilityButton.ToggleVisible(false);
-        hud.ImpostorVentButton.ToggleVisible(false);
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Kill");
 }

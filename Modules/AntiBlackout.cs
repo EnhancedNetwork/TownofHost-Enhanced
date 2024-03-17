@@ -37,7 +37,7 @@ public static class AntiBlackout
             else if (Main.PlayerStates[pc.PlayerId].countTypes == CountTypes.Impostor) Impostors.Add(pc.PlayerId); // Madmates
 
             else if (pc.GetCustomRole().IsNK() && !(pc.Is(CustomRoles.Arsonist) || pc.Is(CustomRoles.Quizmaster))) NeutralKillers.Add(pc.PlayerId); // Neutral Killers
-            else if (pc.Is(CustomRoles.Arsonist) && Options.ArsonistCanIgniteAnytime.GetBool()) NeutralKillers.Add(pc.PlayerId);
+            else if (pc.Is(CustomRoles.Arsonist) && Arsonist.CanIgniteAnytime()) NeutralKillers.Add(pc.PlayerId);
             else if (pc.Is(CustomRoles.Succubus)) NeutralKillers.Add(pc.PlayerId);
 
             else Crewmates.Add(pc.PlayerId);

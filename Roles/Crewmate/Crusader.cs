@@ -72,12 +72,17 @@ internal class Crusader : RoleBase
         else
             CrusaderLimit.Add(PlayerId, Limit);
     }
+
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown[id] : 300f;
+
     public override bool CanUseKillButton(PlayerControl pc)
         => !Main.PlayerStates[pc.PlayerId].IsDead
         && (CrusaderLimit.TryGetValue(pc.PlayerId, out var x) ? x : 1) >= 1;
+    
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown[id] : 300f;
+    
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Crusader).ShadeColor(0.25f) : Color.gray, CrusaderLimit.TryGetValue(playerId, out var constableLimit) ? $"({constableLimit})" : "Invalid");
+    
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (CrusaderLimit[killer.PlayerId] <= 0) return false;
@@ -126,9 +131,5 @@ internal class Crusader : RoleBase
     {
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.KillButton.OverrideText(GetString("CrusaderKillButtonText"));
-
-        hud.SabotageButton.ToggleVisible(false);
-        hud.AbilityButton.ToggleVisible(false);
-        hud.ImpostorVentButton.ToggleVisible(false);
     }
 }

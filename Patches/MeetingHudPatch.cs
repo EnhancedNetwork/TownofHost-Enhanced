@@ -206,8 +206,6 @@ class CheckForEndVotingPatch
                 // Hide roles vote
                 if (playerRoleClass.HideVote(ps)) continue;
                 
-                // Hide Jester Vote
-                if (CheckRole(ps.TargetPlayerId, CustomRoles.Jester) && Options.HideJesterVote.GetBool()) continue;
                 // Assing Madmate Slef Vote
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) continue;
 
@@ -465,43 +463,7 @@ class CheckForEndVotingPatch
         }
         var DecidedWinner = false;
 
-        //迷你船员长大前被驱逐抢夺胜利
-        if (crole.Is(CustomRoles.NiceMini) && Mini.Age < 18)
-        {
-            name = string.Format(GetString("ExiledNiceMini"), realName, coloredRole);
-            DecidedWinner = true;
-        }
-        //if (crole.Is(CustomRoles.Captain))
-        //    Captain.OnExile(exileId); /*Runs multiple times here*/
-
-        //小丑胜利
-        if (crole.Is(CustomRoles.Jester))
-        {
-            if (Options.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
-            {
-                name = string.Format(GetString("ExiledJester"), realName, coloredRole);
-                DecidedWinner = true;
-            }
-            else if (Options.CEMode.GetInt() == 2) name += string.Format(GetString("JesterMeetingLoose"), Options.MeetingsNeededForJesterWin.GetInt() + 1);
-        }
-
-        //处刑人胜利
-        if (Executioner.CheckExileTarget(exiledPlayer, DecidedWinner, true))
-        {
-            name = string.Format(GetString("ExiledExeTarget"), realName, coloredRole);
-            DecidedWinner = true;
-        }
-
-        //冤罪师胜利
-        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exileId))
-        {
-            if (!(!Options.InnocentCanWinByImp.GetBool() && crole.IsImpostor()))
-            {
-                if (DecidedWinner) name += string.Format(GetString("ExiledInnocentTargetAddBelow"));
-                else name = string.Format(GetString("ExiledInnocentTargetInOneLine"), realName, coloredRole);
-                DecidedWinner = true;
-            }
-        }
+        player.GetRoleClass()?.CheckExileTarget(exiledPlayer, ref DecidedWinner, isMeetingHud: true, name: ref name);
 
         if (DecidedWinner) name += "<size=0>";
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
@@ -768,10 +730,6 @@ static class ExtendedMeetingHud
                 {
                     VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Stealer.TicketsPerKill.GetFloat());
                 }
-                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Pickpocket))
-                {
-                    VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Pickpocket.VotesPerKill.GetFloat());
-                }
 
                 // 主动叛变模式下自票无效
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) VoteNum = 0;
@@ -901,8 +859,6 @@ class MeetingHudStartPatch
             if (pc.Is(CustomRoles.Mimic) && !pc.IsAlive())
                 Main.AllAlivePlayerControls.Where(x => x.GetRealKiller()?.PlayerId == pc.PlayerId).Do(x => MimicMsg += $"\n{x.GetNameWithRole(true)}");
             
-            if (Main.VirusNotify.ContainsKey(pc.PlayerId))
-                AddMsg(Main.VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
             if (pc.Is(CustomRoles.Solsticer))
             {
                 Solsticer.SetShortTasksToAdd();
@@ -934,8 +890,6 @@ class MeetingHudStartPatch
         
         Main.PlayerStates.Where(x => x.Value.RoleClass.IsEnable)?.Do(x
             => x.Value.RoleClass.MeetingHudClear());
-
-        Main.VirusNotify.Clear();
         
         Cyber.Clear();
         Sleuth.Clear();
@@ -1110,13 +1064,6 @@ class MeetingHudStartPatch
 
             switch (seer.GetCustomRole())
             {
-                case CustomRoles.Arsonist:
-                    if (seer.IsDousedPlayer(target))
-                        sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Arsonist), "▲"));
-                    break;
-                case CustomRoles.Executioner:
-                    sb.Append(Executioner.TargetMark(seer, target));
-                    break;
                 case CustomRoles.Revolutionist:
                     if (seer.IsDrawPlayer(target))
                         sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Revolutionist), "●"));
@@ -1137,23 +1084,10 @@ class MeetingHudStartPatch
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lookout), target.PlayerId.ToString()) + " " + pva.NameText.text;
                     break;
-                case CustomRoles.Doomsayer:
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                    break;
 
                 case CustomRoles.Councillor:
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + pva.NameText.text;
-
-                    break;
-
-                case CustomRoles.Gamer:
-                    sb.Append(Gamer.TargetMark(seer, target));
-                    break;
-
-                case CustomRoles.Quizmaster:
-                    sb.Append(Quizmaster.TargetMark(seer, target));
                     break;
             }
 
@@ -1198,10 +1132,6 @@ class MeetingHudStartPatch
             else if (seer == target && CustomRolesHelper.RoleExist(CustomRoles.Ntr) && !isLover)
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
 
-
-            sb.Append(HexMaster.GetHexedMark(target.PlayerId, true));
-            sb.Append(Shroud.GetShroudMark(target.PlayerId, true));
-
             if (target.PlayerId == Pirate.PirateTarget)
                 sb.Append(Pirate.GetPlunderedMark(target.PlayerId, true));
 
@@ -1219,9 +1149,6 @@ class MeetingHudStartPatch
 
 
             sb.Append(Lawyer.LawyerMark(seer, target));
-
-            if (PlagueDoctor.IsEnable)
-                sb.Append(PlagueDoctor.GetMarkOthers(seer, target));
 
             //会議画面ではインポスター自身の名前にSnitchマークはつけません。
 
@@ -1316,9 +1243,6 @@ class MeetingHudOnDestroyPatch
         Logger.Info("------------End Meeting------------", "Phase");
         if (AmongUsClient.Instance.AmHost)
         {
-            if (Quizmaster.IsEnable)
-                Quizmaster.OnMeetingEnd();
-
             AntiBlackout.SetIsDead();
 
             Main.LastVotedPlayerInfo = null;

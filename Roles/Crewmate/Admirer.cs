@@ -135,7 +135,7 @@ internal class Admirer : RoleBase
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmirerAdmired")));
             }
-            else if (killer.Is(CustomRoles.Recruit) && target.CanBeSidekick())
+            else if (killer.Is(CustomRoles.Recruit) && Jackal.CanBeSidekick(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Recruit.ToString(), "Admirer Assign");
                 target.RpcSetCustomRole(CustomRoles.Recruit);

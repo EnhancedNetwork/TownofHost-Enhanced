@@ -8,7 +8,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Lawyer
 {
-    private static readonly int Id = 13100;
+    private const int Id = 13100;
     public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
     public static byte WinnerID;

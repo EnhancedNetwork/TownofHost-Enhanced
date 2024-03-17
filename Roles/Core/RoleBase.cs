@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using InnerNet;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -99,6 +100,10 @@ public abstract class RoleBase
     /// <summary>
     /// A method for activating actions when role is already in vent
     /// </summary>
+    public virtual bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId) => physics == null;
+    /// <summary>
+    /// A method for activating actions when role is already in vent
+    /// </summary>
     public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
     { }
     /// <summary>
@@ -180,16 +185,21 @@ public abstract class RoleBase
     /// <summary>
     /// When guesser need check guess (Check limit or Cannot guess а role/add-on)
     /// </summary>
-    public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role) => target == null;
+    public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
     /// <summary>
     /// When guesser trying guess target a role
     /// </summary>
-    public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role) => target == null;
+    public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide) => target == null;
+
+    /// <summary>
+    /// When guesser was misguessed
+    /// </summary>
+    public virtual bool CheckMisGuessed(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
 
     /// <summary>
     /// Check exile role
     /// </summary>
-    public virtual void CheckExileTarget(PlayerControl player, bool DecidedWinner)
+    public virtual void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     { }
     /// <summary>
     /// When player was exiled
@@ -224,6 +234,12 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// When player left the game
+    /// </summary>
+    public virtual void OnPlayerLeft(ClientData clientData)
+    { }
+
+    /// <summary>
     /// When the game starts to ending
     /// </summary>
     public virtual void OnCoEndGame()
@@ -254,13 +270,15 @@ public abstract class RoleBase
     /// </summary>
     public virtual int AddRealVotesNum(PlayerVoteArea PVA) => 0;
 
-    // Set text for Kill/Shapeshift/Report/Vent/Protect button
+    /// <summary>
+    /// Set text for Kill/Shapeshift/Report/Vent/Protect button
+    /// </summary>
     public virtual void SetAbilityButtonText(HudManager hud, byte playerId)
     { }
 
     public virtual Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => null;
     public virtual Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => null;
-    public virtual Sprite ImpostorVentButtonSprite { get; }
+    public virtual Sprite ImpostorVentButtonSprite(PlayerControl player) => null;
     public virtual Sprite ReportButtonSprite { get; }
 
     /// <summary>

@@ -7,8 +7,9 @@ public static class NameNotifyManager
 {
     public static Dictionary<byte, (string, long)> Notice = [];
     public static void Reset() => Notice = [];
+    public static void ClearForEveryone() => Notice.Clear();
     public static bool Notifying(this PlayerControl pc) => Notice.ContainsKey(pc.PlayerId);
-    public static void Notify(this PlayerControl pc, string text, float time = 4f)
+    public static void Notify(this PlayerControl pc, string text, float time = 4f, bool sendInLog = true)
     {
         if (!AmongUsClient.Instance.AmHost || pc == null) return;
         if (!GameStates.IsInTask) return;
@@ -17,7 +18,7 @@ public static class NameNotifyManager
         Notice.Add(pc.PlayerId, new(text, Utils.GetTimeStamp() + (long)time));
         SendRPC(pc.PlayerId);
         Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);
-        Logger.Info($"New name notify for {pc.GetNameWithRole().RemoveHtmlTags()}: {text} ({time}s)", "Name Notify");
+        if (sendInLog) Logger.Info($"New name notify for {pc.GetNameWithRole().RemoveHtmlTags()}: {text} ({time}s)", "Name Notify");
     }
     public static void OnFixedUpdate(PlayerControl player)
     {

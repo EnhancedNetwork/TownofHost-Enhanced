@@ -40,7 +40,7 @@ internal class Doctor : RoleBase
         AURoleOptions.ScientistCooldown = 0f;
         AURoleOptions.ScientistBatteryCharge = TaskCompletedBatteryChargeOpt.GetFloat();
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
         if (target.Is(CustomRoles.Doctor) && VisibleToEveryoneOpt.GetBool() && !target.IsEvilAddons())
         {
@@ -50,7 +50,7 @@ internal class Doctor : RoleBase
         }
         return false;
     }
-    public static bool VisibleToEveryone(PlayerControl player) => player.Is(CustomRoles.Doctor) && VisibleToEveryoneOpt.GetBool();
+    public static bool VisibleToEveryone(PlayerControl target) => target.Is(CustomRoles.Doctor) && VisibleToEveryoneOpt.GetBool();
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => OthersKnowTargetRoleColor(seer, target);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
 }

@@ -60,10 +60,9 @@ internal class Monarch : RoleBase
     {
         KnightLimit = reader.ReadInt32();
     }
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KnightCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && KnightLimit >= 1;
+    public override bool CanUseKillButton(PlayerControl player) => player.IsAlive() && KnightLimit >= 1;
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (KnightLimit < 1) return false;
@@ -100,7 +99,7 @@ internal class Monarch : RoleBase
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{KnightLimit}次招募机会", "Monarch");
         return false;
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
         if (target.Is(CustomRoles.Monarch) && CustomRoles.Knighted.RoleExist())
         {
