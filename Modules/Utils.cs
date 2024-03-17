@@ -2038,7 +2038,8 @@ public static class Utils
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();
-        
+        if (Lawyer.IsEnable) Lawyer.AfterMeetingTasks();
+
         if (CustomRoles.CopyCat.IsClassEnable()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
         
         Main.ShamanTarget = byte.MaxValue;

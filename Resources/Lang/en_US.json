@@ -1510,6 +1510,9 @@
   "LawyerCanTargetCrewmate": "Can Target <color=#8cffff>Crewmates</color>",
   "LawyerCanTargetJester": "Can Target <color=#ec62a5>Jester</color>",
   "LawyerChangeRolesAfterTargetKilled": "When Target Dies, <color=#008080>Lawyer</color> becomes",
+  "LaywerShouldChangeRoleAfterTargetKilled": "Should Laywer Change Role when Target Dies",
+  "LawyerTargetDeadInMeeting": "Your target was killed while meeting./nYour role may change depending on the settings.",
+
   "MercenaryLimit": "Time Until Suicide",
   "ArsonistDouseTime": "Douse Duration",
   "CanTerroristSuicideWin": "Can Win By Suicide",

@@ -282,10 +282,6 @@ class OnPlayerLeftPatch
                     }
                 }
                 
-                if (data.Character.Is(CustomRoles.Lawyer) && Lawyer.Target.ContainsKey(data.Character.PlayerId))
-                {
-                    Lawyer.ChangeRole(data.Character);
-                }
                 if (Lawyer.Target.ContainsValue(data.Character.PlayerId))
                 {
                     Lawyer.ChangeRoleByTarget(data.Character);
