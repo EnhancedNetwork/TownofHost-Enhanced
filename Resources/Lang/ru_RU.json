@@ -1536,7 +1536,7 @@
   "EvilTrackerTargetMode": "Может установить цель",
   "EvilTrackerTargetMode.Never": "Никогда",
   "EvilTrackerTargetMode.OnceInGame": "В каждой игре",
-  "EvilTrackerTargetMode.EveryMeeting": "На каждой встрече",
+  "EvilTrackerTargetMode.EveryMeeting": "На каждом собрании",
   "EvilTrackerTargetMode.Always": "Всегда",
   "WitchModeSwitchAction": "Действие для смены режима",
   "NBareRed": "<color=#7f8c8d>Добрые Нейтралы</color> показываются красным",
