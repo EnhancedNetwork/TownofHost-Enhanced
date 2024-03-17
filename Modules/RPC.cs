@@ -30,20 +30,39 @@ enum CustomRPC
     EndGame,
     PlaySound,
     SetCustomRole,
+
+    // TOHE
+    AntiBlackout,
+    SetRealKiller,
+    PlayCustomSound,
+    SetKillTimer,
+    SyncAllPlayerNames,
+    SyncNameNotify,
+    ShowPopUp,
+    KillFlash,
+    DumpLog,
+    SyncRoleSkill,
+    SetNameColorData,
+    GuessKill,
+    Judge,
+    Guess,
+    CouncillorJudge,
+    NemesisRevenge,
+    RetributionistRevenge,
+
+    //Roles
     SetBountyTarget,
     SyncPuppet,
     SyncKami,
     SetKillOrSpell,
     SetKillOrHex,
     SetKillOrCurse,
-    //SetCopyCatMiscopyLimit,
     SetCaptainTargetSpeed,
     RevertCaptainTargetSpeed,
     RevertCaptainAllTargetSpeed,
     SetCaptainVotedTarget,
     RevertCaptainVoteRemove,
     SetDousedPlayer,
-    SetNameColorData,
     DoSpell,
     DoHex,
     DoCurse,
@@ -54,21 +73,6 @@ enum CustomRPC
     SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
-    SetRealKiller,
-
-
-    // TOHE
-    AntiBlackout,
-    PlayCustomSound,
-    SetKillTimer,
-    SyncAllPlayerNames,
-    SyncNameNotify,
-    ShowPopUp,
-    KillFlash,
-    DumpLog,
-    SyncRoleSkill,
-
-    //Roles
     SetDrawPlayer,
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
@@ -79,7 +83,7 @@ enum CustomRPC
     SetAlchemistTimer,
     UndertakerLocationSync,
     RiftMakerSyncData,
-    SetGhostPlayer,
+    LightningSetGhostPlayer,
     SetDarkHiderKillCount,
     SetConsigliere,
     SetGreedy,
@@ -87,20 +91,14 @@ enum CustomRPC
     SetJinxSpellCount,
     BenefactorRPC,
     SetSwapperVotes,
-    GuessKill,
     SetMarkedPlayer,
     SetConcealerTimer,
     SetMedicalerProtectList,
     SyncPsychicRedList,
     SetMorticianArrow,
     SetTracefinderArrow,
-    Judge,
-    Guess,
     PresidentEnd,
     PresidentReveal,
-    MeetingKill,
-    NemesisRevenge,
-    RetributionistRevenge,
     SetBKTimer,
     SetCursedSoulCurseLimit,
     SetInvestgatorLimit,
@@ -134,7 +132,7 @@ public enum Sounds
 internal class RPCHandlerPatch
 {
     public static bool TrustedRpc(byte id)
-    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.MeetingKill or CustomRPC.NemesisRevenge or CustomRPC.RetributionistRevenge or CustomRPC.Guess or CustomRPC.PresidentEnd or CustomRPC.SetSwapperVotes or CustomRPC.DumpLog;
+    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.CouncillorJudge or CustomRPC.NemesisRevenge or CustomRPC.RetributionistRevenge or CustomRPC.Guess or CustomRPC.PresidentEnd or CustomRPC.SetSwapperVotes or CustomRPC.DumpLog;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -457,7 +455,7 @@ internal class RPCHandlerPatch
             case CustomRPC.PlayCustomSound:
                 CustomSoundsManager.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetGhostPlayer:
+            case CustomRPC.LightningSetGhostPlayer:
                 Lightning.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetDarkHiderKillCount:
@@ -530,7 +528,7 @@ internal class RPCHandlerPatch
             case CustomRPC.PresidentReveal:
                 President.ReceiveRPC(reader, __instance, isEnd: false);
                 break;
-            case CustomRPC.MeetingKill:
+            case CustomRPC.CouncillorJudge:
                 Councillor.ReceiveRPC(reader, __instance);
                 break;
             case CustomRPC.Guess:
@@ -1259,6 +1257,7 @@ internal static class RPC
                 Wraith.ReceiveRPC(reader);
                 break;
 
+            // Ghosts
             case CustomRoles.Hawk:
                 Hawk.ReceiveRPC(reader);
                 break;
