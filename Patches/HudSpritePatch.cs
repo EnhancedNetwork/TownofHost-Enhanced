@@ -100,9 +100,6 @@ public static class HudSpritePatch
             case CustomRoles.Vulture:
                 newReportButton = CustomButton.Get("Eat");
                 break;
-            case CustomRoles.Pursuer:
-                newAbilityButton = CustomButton.Get("Pursuer");
-                break;
         }
 
     EndOfSelectImg:

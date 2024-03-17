@@ -842,9 +842,6 @@ internal static class RPC
             case CustomRoles.Workhorse:
                 Workhorse.Add(targetId);
                 break;
-            case CustomRoles.Pursuer:
-                Pursuer.Add(targetId);
-                break;
             case CustomRoles.Collector:
                 Collector.Add(targetId);
                 break;

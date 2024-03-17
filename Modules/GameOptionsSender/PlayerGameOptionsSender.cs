@@ -156,10 +156,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
-            case CustomRoles.Hater:
-            case CustomRoles.Pursuer:
-                opt.SetVision(true);
-                break;
             case CustomRoles.Workaholic:
                 AURoleOptions.EngineerCooldown = Options.WorkaholicVentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 0f;

@@ -270,7 +270,7 @@ class CheckMurderPatch
         if (Pelican.IsEaten(target.PlayerId))
             return false;
 
-        if (Pursuer.IsEnable && Pursuer.OnClientMurder(killer))
+        if (Pursuer.HasEnabled && Pursuer.OnTargetMurders(killer))
             return false;
 
         // Check murder as killer
@@ -380,12 +380,6 @@ class CheckMurderPatch
                         Main.ShamanTargetChoosen = true;
                     }
                     else killer.Notify(GetString("ShamanTargetAlreadySelected"));
-                    return false;
-                case CustomRoles.Pursuer:
-                    if (target.Is(CustomRoles.Pestilence)) break;
-                    if (target.Is(CustomRoles.SerialKiller)) return true;
-                    if (Pursuer.CanBeClient(target) && Pursuer.CanSeel(killer.PlayerId))
-                        Pursuer.SeelToClient(killer, target);
                     return false;
                 case CustomRoles.ChiefOfPolice:
                     ChiefOfPolice.OnCheckMurder(killer, target);

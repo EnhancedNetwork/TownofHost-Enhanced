@@ -467,7 +467,6 @@ static class ExtendedPlayerControl
             //Standard
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
-            CustomRoles.Pursuer => Pursuer.CanUseKillButton(pc.PlayerId),
             CustomRoles.Hater => pc.IsAlive(),
             CustomRoles.Provocateur => pc.IsAlive(),
             CustomRoles.Romantic => pc.IsAlive(),
@@ -572,12 +571,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Shaman:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.VoodooCooldown.GetFloat();
-                break;
-            case CustomRoles.Pursuer:
-                Pursuer.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Hater:
-                Main.AllPlayerKillCooldown[player.PlayerId] = 1f;
                 break;
             case CustomRoles.Provocateur:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ProvKillCD.GetFloat();

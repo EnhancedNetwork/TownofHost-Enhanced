@@ -185,7 +185,6 @@ internal class ChangeRoleSettings
             LocateArrow.Init();
             DoubleTrigger.Init();
             Workhorse.Init();
-            Pursuer.Init();
             Diseased.Init();
             Collector.Init();
             Clumsy.Init();
@@ -452,9 +451,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Mario:
                         Main.MarioVentCount[pc.PlayerId] = 0;
-                        break;
-                    case CustomRoles.Pursuer:
-                        Pursuer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Collector:
                         Collector.Add(pc.PlayerId);

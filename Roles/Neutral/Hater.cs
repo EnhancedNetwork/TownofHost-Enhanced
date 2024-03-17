@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AmongUs.GameOptions;
+using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -107,11 +108,12 @@ internal class Hater : RoleBase
         Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "FFF");
         return false;
     }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.KillButton.OverrideText(GetString("HaterButtonText"));
     }
-
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 1f;
     private static bool IsConvertedMainRole(CustomRoles role)
     {
         return role switch  // Use the switch expression whenever possible instead of the switch statement to improve performance

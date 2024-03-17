@@ -638,9 +638,6 @@ public static class Utils
                 case CustomRoles.Vulture:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Vulture).ShadeColor(0.25f), $"({(Vulture.BodyReportCount.TryGetValue(playerId, out var count1) ? count1 : 0)}/{Vulture.NumberOfReportsToWin.GetInt()})"));
                     break;
-                case CustomRoles.Pursuer:
-                    ProgressText.Append(Pursuer.GetSeelLimit(playerId));
-                    break;
                 case CustomRoles.Revolutionist:
                     var draw = GetDrawPlayerCount(playerId, out var _);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Revolutionist).ShadeColor(0.25f), $"({draw.Item1}/{draw.Item2})"));

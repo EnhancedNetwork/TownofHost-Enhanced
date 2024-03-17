@@ -104,9 +104,6 @@ class HudManagerPatch
                         __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
                         __instance.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");
                         break;
-                    case CustomRoles.Pursuer:
-                        __instance.KillButton.OverrideText(GetString("PursuerButtonText"));
-                        break;
                     case CustomRoles.Provocateur:
                         __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
                         break;
