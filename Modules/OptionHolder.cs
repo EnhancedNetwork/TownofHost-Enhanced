@@ -599,7 +599,6 @@ public static class Options
     public static OverrideTasksData TerroristTasks;
     public static OverrideTasksData WorkaholicTasks;
     public static OverrideTasksData PhantomTasks;
-    public static OverrideTasksData OpportunistTasks;
 
 
     public static int SnitchExposeTaskLeft = 1;
@@ -1488,10 +1487,7 @@ public static class Options
 
         Maverick.SetupCustomOption();
 
-        SetupRoleOptions(13300, TabGroup.NeutralRoles, CustomRoles.Opportunist);
-        OppoImmuneToAttacksWhenTasksDone = BooleanOptionItem.Create(13302, "ImmuneToAttacksWhenTasksDone", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Opportunist]);
-        OpportunistTasks = OverrideTasksData.Create(13303, TabGroup.NeutralRoles, CustomRoles.Opportunist);
+        Opportunist.SetupCustomOptions();
         
         Pixie.SetupCustomOption();
         

@@ -498,7 +498,6 @@ class CheckMurderPatch
 
         switch (targetRole)
         {
-            case CustomRoles.Opportunist when Options.OppoImmuneToAttacksWhenTasksDone.GetBool() && target.AllTasksCompleted():
             case CustomRoles.Monarch when CustomRoles.Knighted.RoleExist():
                 return false;
             case CustomRoles.Pestilence: // 🗿🗿
