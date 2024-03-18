@@ -642,9 +642,6 @@ public static class Utils
                     var draw = GetDrawPlayerCount(playerId, out var _);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Revolutionist).ShadeColor(0.25f), $"({draw.Item1}/{draw.Item2})"));
                     break;
-                case CustomRoles.Collector:
-                    ProgressText.Append(Collector.GetProgressText(playerId));
-                    break;
                 case CustomRoles.Anonymous:
                     ProgressText.Append(Anonymous.GetHackLimit(playerId));
                     break;
@@ -2005,7 +2002,7 @@ public static class Utils
             playerState.RoleClass?.AfterMeetingTasks();
         }
 
-        if (Collector.IsEnable) Collector.AfterMeetingTasks();
+
         if (Hawk.IsEnable) Hawk.AfterMeetingTasks();
         if (Pirate.IsEnable) Pirate.AfterMeetingTask();
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
