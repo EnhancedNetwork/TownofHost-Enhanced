@@ -282,15 +282,19 @@ public static class CustomRoleManager
         }
         return !cancel;
     }
-    public static HashSet<Action<PlayerControl>> OthersAfterDeathTask = [];
     /// <summary>
     /// If the role does tasks after target death.
     /// </summary>
     public static void OthersAfterPlayerDead(PlayerControl player)
     {
-        if (!OthersAfterDeathTask.Any()) return;
-
-        OthersAfterDeathTask.ToArray().Do(Method => Method(player));
+        Main.PlayerStates.Values.ToArray().Do(PlrState => PlrState.RoleClass.OthersAfterPlayerDeathTask(player));
+    }
+    /// <summary>
+    /// Check if this task is marked by a role and do something.
+    /// </summary>
+    public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task)
+    {
+        Main.PlayerStates.Values.ToArray().Do(PlrState => PlrState.RoleClass.OnOthersTaskComplete(player, task));
     }
 
     public static HashSet<Action<PlayerControl, PlayerControl>> CheckDeadBodyOthers = [];
@@ -403,6 +407,5 @@ public static class CustomRoleManager
         OnFixedUpdateOthers.Clear();
         OnFixedUpdateLowLoadOthers.Clear();
         CheckDeadBodyOthers.Clear();
-        OthersAfterDeathTask.Clear();   
     }
 }

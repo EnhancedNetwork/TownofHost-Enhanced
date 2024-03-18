@@ -845,9 +845,6 @@ internal static class RPC
             case CustomRoles.Collector:
                 Collector.Add(targetId);
                 break;
-            case CustomRoles.Taskinator:
-                Taskinator.Add(targetId);
-                break;
             case CustomRoles.Hawk:
                 Hawk.Add(targetId);
                 break;

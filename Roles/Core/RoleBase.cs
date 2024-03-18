@@ -83,6 +83,11 @@ public abstract class RoleBase
     public virtual void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     { }
     /// <summary>
+    /// Other player complete A Marked task
+    /// </summary>
+    public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
+    { }
+    /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
     public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
@@ -157,6 +162,12 @@ public abstract class RoleBase
     /// </summary>
     public virtual void AfterPlayerDeathTask(PlayerControl target)
     { }
+    /// <summary>
+    /// Always do these tasks once the the role's targets die
+    /// </summary>
+    public virtual void OthersAfterPlayerDeathTask(PlayerControl target)
+    { }
+
     /// <summary>
     /// When the target role died and need run kill flash
     /// </summary>

@@ -38,9 +38,9 @@ internal class Benefactor : RoleBase
 
     public override void Init()
     {
-        taskIndex = [];
-        shieldedPlayers = [];
-        TaskMarkPerRound = [];
+        taskIndex.Clear();
+        shieldedPlayers.Clear();
+        TaskMarkPerRound.Clear();
         On = false;
         maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
     }
@@ -142,7 +142,7 @@ internal class Benefactor : RoleBase
         }
     }
 
-    public static void OnTasKComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
+    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (!CustomRoles.Benefactor.IsClassEnable()) return;

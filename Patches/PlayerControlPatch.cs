@@ -1877,8 +1877,7 @@ class PlayerControlCompleteTaskPatch
             int taskIndex = Convert.ToInt32(__args[0]);
 
             var playerTask = pc.myTasks[taskIndex];
-            Benefactor.OnTasKComplete(pc, playerTask);
-            Taskinator.OnTasKComplete(pc, playerTask);
+            CustomRoleManager.OthersCompleteThisTask(pc, playerTask);
         }
         var isTaskFinish = pc.GetPlayerTaskState().IsTaskFinished;
         if (isTaskFinish && pc.Is(CustomRoles.Snitch) && pc.Is(CustomRoles.Madmate))

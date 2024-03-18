@@ -645,9 +645,6 @@ public static class Utils
                 case CustomRoles.Collector:
                     ProgressText.Append(Collector.GetProgressText(playerId));
                     break;
-                case CustomRoles.Taskinator:
-                    ProgressText.Append(Taskinator.GetProgressText(playerId));
-                    break;
                 case CustomRoles.Anonymous:
                     ProgressText.Append(Anonymous.GetHackLimit(playerId));
                     break;
@@ -2009,7 +2006,6 @@ public static class Utils
         }
 
         if (Collector.IsEnable) Collector.AfterMeetingTasks();
-        if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
         if (Hawk.IsEnable) Hawk.AfterMeetingTasks();
         if (Pirate.IsEnable) Pirate.AfterMeetingTask();
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();

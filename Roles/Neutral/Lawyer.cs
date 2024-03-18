@@ -67,7 +67,6 @@ internal class Lawyer : RoleBase
     {
         playerIdList.Add(playerId);
         CustomRoleManager.MarkOthers.Add(LawyerMark);
-        CustomRoleManager.OthersAfterDeathTask.Add(ChangeRoleByTarget);
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -135,7 +134,7 @@ internal class Lawyer : RoleBase
         else
             Target.Remove(reader.ReadByte());
     }
-    public static void ChangeRoleByTarget(PlayerControl target)
+    public override void OthersAfterPlayerDeathTask(PlayerControl target)
     {
         if (!Target.ContainsValue(target.PlayerId)) return;
 

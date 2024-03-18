@@ -126,7 +126,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Terrorist:
             case CustomRoles.EngineerTOHE:
             case CustomRoles.Phantom:
-            case CustomRoles.Taskinator:
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;

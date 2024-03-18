@@ -186,7 +186,6 @@ internal class ChangeRoleSettings
             Diseased.Init();
             Collector.Init();
             Clumsy.Init();
-            Taskinator.Init();
             Aware.Init();
             Sleuth.Init();
             Bait.Init();
@@ -449,9 +448,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Collector:
                         Collector.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Taskinator:
-                        Taskinator.Add(pc.PlayerId);
                         break;
                     case CustomRoles.SoulCollector:
                         SoulCollector.Add(pc.PlayerId);

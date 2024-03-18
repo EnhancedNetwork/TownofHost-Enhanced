@@ -74,7 +74,6 @@ internal class Romantic : RoleBase
         playerIdList.Add(playerId);
         BetTimes.Add(playerId, MaxBetTimes);
         CustomRoleManager.MarkOthers.Add(TargetMark);
-        CustomRoleManager.OthersAfterDeathTask.Add(ChangeRole);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -217,7 +216,7 @@ internal class Romantic : RoleBase
     {
         isPartnerProtected = false;
     }
-    private static void ChangeRole(PlayerControl player)
+    public override void OthersAfterPlayerDeathTask(PlayerControl player)
     {
         var playerId = player.PlayerId;
         if (!Romantic.BetPlayer.ContainsValue(playerId) || player == null) return;
