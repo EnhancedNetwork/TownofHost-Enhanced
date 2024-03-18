@@ -304,7 +304,7 @@ class GameEndCheckerForNormal
                         }
                     }
                     //自爆卡车来咯
-                    if (pc.Is(CustomRoles.Provocateur) && Main.Provoked.TryGetValue(pc.PlayerId, out var tar))
+                    if (pc.Is(CustomRoles.Provocateur) && Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tar))
                     {
                         if (!CustomWinnerHolder.WinnerIds.Contains(tar))
                         {

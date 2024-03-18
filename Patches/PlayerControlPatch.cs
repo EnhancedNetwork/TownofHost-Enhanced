@@ -346,18 +346,7 @@ class CheckMurderPatch
                         RPC.SetCurrentDrawTarget(killer.PlayerId, target.PlayerId);
                     }
                     return false;
-                case CustomRoles.Provocateur:
-                    if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
-                    {
-                        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantBoom")));
-                        return false;
-                    }
-                    Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
-                    killer.RpcMurderPlayerV3(target);
-                    killer.RpcMurderPlayerV3(killer);
-                    killer.SetRealKiller(target);
-                    Main.Provoked.TryAdd(killer.PlayerId, target.PlayerId);
-                    return false;
+                    
                 case CustomRoles.ChiefOfPolice:
                     ChiefOfPolice.OnCheckMurder(killer, target);
                     return false;

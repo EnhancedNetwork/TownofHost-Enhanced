@@ -503,10 +503,6 @@ public static class Options
     // Neutrals role settings
     public static OptionItem OppoImmuneToAttacksWhenTasksDone;
 
-
-
-    public static OptionItem ProvKillCD;
-
     public static OptionItem RevolutionistDrawTime;
     public static OptionItem RevolutionistCooldown;
     public static OptionItem RevolutionistDrawCount;
@@ -1527,11 +1523,8 @@ public static class Options
         Phantom.SetupCustomOptions();
         
         Pirate.SetupCustomOption();
-        
-        SetupRoleOptions(15100, TabGroup.NeutralRoles, CustomRoles.Provocateur);
-        ProvKillCD = FloatOptionItem.Create(15102, "KillCooldown", new(0f, 100f, 2.5f), 15f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Provocateur])
-            .SetValueFormat(OptionFormat.Seconds);
+
+        Provocateur.SetupCustomOptions();
         
         SetupRoleOptions(15200, TabGroup.NeutralRoles, CustomRoles.Revolutionist);
         RevolutionistDrawTime = FloatOptionItem.Create(15202, "RevolutionistDrawTime", new(0f, 10f, 1f), 3f, TabGroup.NeutralRoles, false)

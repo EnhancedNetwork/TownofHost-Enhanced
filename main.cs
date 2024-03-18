@@ -185,7 +185,6 @@ public class Main : BasePlugin
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
-    public static Dictionary<byte, byte> Provoked = [];
     
     
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];

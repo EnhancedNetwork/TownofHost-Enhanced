@@ -98,9 +98,6 @@ class HudManagerPatch
                         __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
                         __instance.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");
                         break;
-                    case CustomRoles.Provocateur:
-                        __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
-                        break;
                     case CustomRoles.Vulture:
                         __instance.ReportButton.OverrideText(GetString("VultureEatButtonText"));
                         break;
@@ -252,7 +249,6 @@ class SetHudActivePatch
         switch (player.GetCustomRole())
         {
             case CustomRoles.Revolutionist:
-            case CustomRoles.Provocateur:
                 __instance.SabotageButton.ToggleVisible(false);
                 __instance.AbilityButton.ToggleVisible(false);
                 __instance.ReportButton.ToggleVisible(false);

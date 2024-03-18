@@ -80,7 +80,6 @@ internal class ChangeRoleSettings
             Main.MarioVentCount = [];
             Main.AllKillers = [];
             Main.OverDeadPlayerList = [];
-            Main.Provoked = [];
             Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;

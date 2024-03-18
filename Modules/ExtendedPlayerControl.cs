@@ -467,7 +467,6 @@ static class ExtendedPlayerControl
             //Standard
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
             CustomRoles.Hater => pc.IsAlive(),
-            CustomRoles.Provocateur => pc.IsAlive(),
             _ => false,
         };
     }
@@ -560,9 +559,6 @@ static class ExtendedPlayerControl
         {
             case CustomRoles.Revolutionist:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.RevolutionistCooldown.GetFloat();
-                break;
-            case CustomRoles.Provocateur:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.ProvKillCD.GetFloat();
                 break;
             //FFA
             case CustomRoles.Killer:
