@@ -461,9 +461,6 @@ internal class SelectRolesPatch
                     case CustomRoles.SchrodingersCat:
                         SchrodingersCat.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.VengefulRomantic:
-                        VengefulRomantic.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Succubus:
                         Succubus.Add(pc.PlayerId);
                         break;

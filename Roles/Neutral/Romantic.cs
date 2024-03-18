@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Hazel;
 using MS.Internal.Xml.XPath;
+using Sentry.Internal.Extensions;
 using System.Collections.Generic;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -37,6 +38,7 @@ internal class Romantic : RoleBase
     public static OptionItem RuthlessKCD;
     public static OptionItem RuthlessCanVent;
 
+    public static byte VengefulTargetId;
     private static Dictionary<byte, int> BetTimes = [];
     public static Dictionary<byte, byte> BetPlayer = [];
 
@@ -60,6 +62,7 @@ internal class Romantic : RoleBase
     }
     public override void Init()
     {
+        VengefulTargetId = byte.MaxValue;
         playerIdList.Clear();
         BetTimes.Clear();
         BetPlayer.Clear();
@@ -258,12 +261,13 @@ internal class Romantic : RoleBase
                     Logger.Info($"No real killer for {player.GetRealName().RemoveHtmlTags()}, role changed to ruthless romantic", "Romantic");
                 }
                 else 
-                { 
-                    var killerId = killer.PlayerId;
-                    VengefulRomantic.Add(pc.PlayerId, killerId);
+                {
+                    VengefulTargetId = killer.PlayerId;
+
                     VengefulRomantic.SendRPC(pc.PlayerId);
                     pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
-                    Logger.Info($"Vengeful romantic target: {killer.GetRealName().RemoveHtmlTags()}, [{killerId}]", "Vengeful Romantic");
+                    pc.GetRoleClass().Add(pc.PlayerId);
+                    Logger.Info($"Vengeful romantic target: {killer.GetRealName().RemoveHtmlTags()}, [{VengefulTargetId}]", "Vengeful Romantic");
                 }
                 Utils.NotifyRoles(ForceLoop: true);
                 pc.ResetKillCooldown();
@@ -295,15 +299,7 @@ internal class VengefulRomantic : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
-    }
-    public static void Add(byte playerId, byte killerId = byte.MaxValue) // some reason setting role midgame dosen't .Add() it.
-    {
-        playerIdList.Add(playerId);
-        VengefulTarget.Add(playerId, killerId);
+        VengefulTarget.Add(playerId, Romantic.VengefulTargetId);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
