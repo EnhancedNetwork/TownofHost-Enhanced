@@ -187,8 +187,6 @@ public class Main : BasePlugin
     public static int MeetingsPassed = 0;
     public static Dictionary<byte, byte> Provoked = [];
     
-    public static byte ShamanTarget = byte.MaxValue;
-    public static bool ShamanTargetChoosen = false;
     
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
     public static Dictionary<string, int> PlayerQuitTimes = [];

@@ -503,7 +503,6 @@ public static class Options
     // Neutrals role settings
     public static OptionItem OppoImmuneToAttacksWhenTasksDone;
 
-    public static OptionItem VoodooCooldown;
 
     public static OptionItem PhantomCanVent;
     public static OptionItem PhantomSnatchesWin;
@@ -1497,10 +1496,7 @@ public static class Options
 
         SchrodingersCat.SetupCustomOption();
 
-        SetupRoleOptions(13600, TabGroup.NeutralRoles, CustomRoles.Shaman);
-        VoodooCooldown = FloatOptionItem.Create(13602, "VoodooCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Shaman])
-            .SetValueFormat(OptionFormat.Seconds);
+        Shaman.SetupCustomOptions();
 
         Taskinator.SetupCustomOption();
 

@@ -86,8 +86,6 @@ internal class ChangeRoleSettings
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
-            Main.ShamanTarget = byte.MaxValue;
-            Main.ShamanTargetChoosen = false;
             Main.MeetingIsStarted = false;
             ChatManager.ResetHistory();
 

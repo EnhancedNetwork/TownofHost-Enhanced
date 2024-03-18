@@ -2018,8 +2018,6 @@ public static class Utils
 
         if (CustomRoles.CopyCat.IsClassEnable()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
         
-        Main.ShamanTarget = byte.MaxValue;
-        Main.ShamanTargetChoosen = false;
 
         if (Options.AirshipVariableElectrical.GetBool())
             AirshipElectricalDoors.Initialize();

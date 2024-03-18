@@ -19,6 +19,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using UnityEngine.Bindings;
 
 namespace TOHE;
 
@@ -276,6 +277,8 @@ class CheckMurderPatch
         if (Pursuer.HasEnabled && Pursuer.OnTargetMurders(killer))
             return false;
 
+        if (Shaman.HasEnabled) target = Shaman.ChangeTarget(target);
+
         // Check murder as killer
         if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
         {
@@ -316,13 +319,6 @@ class CheckMurderPatch
         {
             case CustomRoles.SchrodingersCat:
                 if (!SchrodingersCat.OnCheckMurder(killer, target)) return false;
-                break;
-            case CustomRoles.Shaman:
-                if (Main.ShamanTarget != byte.MaxValue && target.IsAlive())
-                {
-                    target = Utils.GetPlayerById(Main.ShamanTarget);
-                    Main.ShamanTarget = byte.MaxValue;
-                }
                 break;
             case CustomRoles.Solsticer:
                 if (Solsticer.OnCheckMurder(killer, target))
@@ -368,15 +364,6 @@ class CheckMurderPatch
                     return false;
                 case CustomRoles.Succubus:
                     Succubus.OnCheckMurder(killer, target);
-                    return false;
-                case CustomRoles.Shaman:
-                    if (Main.ShamanTargetChoosen == false)
-                    {
-                        Main.ShamanTarget = target.PlayerId;
-                        killer.RpcGuardAndKill(killer);
-                        Main.ShamanTargetChoosen = true;
-                    }
-                    else killer.Notify(GetString("ShamanTargetAlreadySelected"));
                     return false;
                 case CustomRoles.ChiefOfPolice:
                     ChiefOfPolice.OnCheckMurder(killer, target);

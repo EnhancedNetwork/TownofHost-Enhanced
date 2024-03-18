@@ -94,9 +94,6 @@ class HudManagerPatch
 
                 switch (player.GetCustomRole())
                 {
-                    case CustomRoles.Shaman:
-                        __instance.KillButton.OverrideText(GetString("ShamanButtonText"));
-                        break;
                     case CustomRoles.Pirate:
                         __instance.KillButton.OverrideText(GetString("PirateDuelButtonText"));
                         break;
