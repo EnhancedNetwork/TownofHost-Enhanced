@@ -199,7 +199,6 @@ internal class ChangeRoleSettings
             Warden.Init();
             Vulture.Init();
             Lucky.Init();
-            Pirate.Init();
             Bewilder.Init();
             ChiefOfPolice.Init();
             Cyber.Init();
@@ -452,9 +451,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Vulture:
                         Vulture.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Pirate:
-                        Pirate.Add(pc.PlayerId);
                         break;
                     case CustomRoles.ChiefOfPolice:
                         ChiefOfPolice.Add(pc.PlayerId);

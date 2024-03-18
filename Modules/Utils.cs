@@ -537,9 +537,6 @@ public static class Utils
                 case CustomRoles.SoulCollector:
                     ProgressText.Append(SoulCollector.GetProgressText(playerId));
                     break;
-                case CustomRoles.Pirate:
-                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Pirate).ShadeColor(0.25f), $"({Pirate.NumWin}/{Pirate.SuccessfulDuelsToWin.GetInt()})"));
-                    break;
                 /*     case CustomRoles.CopyCat:
                          ProgressText.Append(ColorString(GetRoleColor(CustomRoles.CopyCat).ShadeColor(0.25f), $"({(CopyCat.MiscopyLimit.TryGetValue(playerId, out var count2) ? count2 : 0)})"));
                          break; */
@@ -1570,12 +1567,6 @@ public static class Utils
                             break;
                     }
                 }
-                else // Only during meeting
-                {
-
-                    if (Pirate.IsEnable && seer.PlayerId == Pirate.PirateTarget)
-                        SelfMark.Append(Pirate.GetPlunderedMark(seer.PlayerId, true));
-                }
                 switch (Options.CurrentGameMode)
                 {
                     case CustomGameMode.FFA:
@@ -1693,14 +1684,6 @@ public static class Utils
 
                         TargetMark.Append(seerRoleClass?.GetMark(seer, target, isForMeeting));
                         TargetMark.Append(CustomRoleManager.GetMarkOthers(seer, target, isForMeeting));
-
-                        if (isForMeeting)
-                        {
-
-
-                            if (Pirate.IsEnable)
-                                TargetMark.Append(Pirate.GetPlunderedMark(target.PlayerId, true));
-                        }
 
                         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
@@ -1916,7 +1899,6 @@ public static class Utils
 
 
         if (Hawk.IsEnable) Hawk.AfterMeetingTasks();
-        if (Pirate.IsEnable) Pirate.AfterMeetingTask();
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();

@@ -468,7 +468,6 @@ static class ExtendedPlayerControl
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
             CustomRoles.Hater => pc.IsAlive(),
             CustomRoles.Provocateur => pc.IsAlive(),
-            CustomRoles.Pirate => pc.IsAlive(),
             _ => false,
         };
     }
@@ -568,9 +567,6 @@ static class ExtendedPlayerControl
             //FFA
             case CustomRoles.Killer:
                 Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
-                break;
-            case CustomRoles.Pirate:
-                Pirate.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);

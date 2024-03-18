@@ -94,9 +94,6 @@ class HudManagerPatch
 
                 switch (player.GetCustomRole())
                 {
-                    case CustomRoles.Pirate:
-                        __instance.KillButton.OverrideText(GetString("PirateDuelButtonText"));
-                        break;
                     case CustomRoles.Revolutionist:
                         __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
                         __instance.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");

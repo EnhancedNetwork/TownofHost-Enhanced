@@ -871,12 +871,11 @@ class MeetingHudStartPatch
             msgToSend.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3));
         }, 3f, "Skill Notice On Meeting Start");
         
-        Main.PlayerStates.Where(x => x.Value.RoleClass.IsEnable)?.Do(x
+        Main.PlayerStates.Do(x
             => x.Value.RoleClass.MeetingHudClear());
         
         Cyber.Clear();
         Sleuth.Clear();
-        Pirate.OnMeetingStart();
     }
     public static void Prefix(/*MeetingHud __instance*/)
     {
@@ -1114,9 +1113,6 @@ class MeetingHudStartPatch
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
             else if (seer == target && CustomRolesHelper.RoleExist(CustomRoles.Ntr) && !isLover)
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
-
-            if (target.PlayerId == Pirate.PirateTarget)
-                sb.Append(Pirate.GetPlunderedMark(target.PlayerId, true));
 
             //网络人提示
             if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())

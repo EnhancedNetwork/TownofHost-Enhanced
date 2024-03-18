@@ -336,10 +336,6 @@ class CheckMurderPatch
             switch (killerRole)
             {
                 //==========On Check Murder==========//
-                case CustomRoles.Pirate:
-                    if (!Pirate.OnCheckMurder(killer, target))
-                        return false;
-                    break;
                 
                 case CustomRoles.Revolutionist:
                     killer.SetKillCooldown(Options.RevolutionistDrawTime.GetFloat());
