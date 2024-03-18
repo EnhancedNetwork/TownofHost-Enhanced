@@ -138,7 +138,7 @@ public static class CustomRolesHelper
                 CustomRoles.Butcher => CustomRoles.Impostor,
                 CustomRoles.Hangman => CustomRoles.Shapeshifter,
                 CustomRoles.Sunnyboy => CustomRoles.Scientist,
-                CustomRoles.Phantom => Options.PhantomCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
+                CustomRoles.Phantom => Phantom.PhantomCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Judge => CustomRoles.Crewmate,
                 CustomRoles.Councillor => CustomRoles.Impostor, 
                 CustomRoles.Mortician => CustomRoles.Crewmate,
@@ -1117,7 +1117,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Councillor)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
-                if ((pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
+                if ((pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool())
                     || (pc.Is(CustomRoles.Terrorist) && (!Options.TerroristCanGuess.GetBool() || Options.CanTerroristSuicideWin.GetBool()))
                     || (pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool())
                     || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
@@ -1136,7 +1136,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Doomsayer)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
-                if ((pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
+                if ((pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool())
                     || (pc.Is(CustomRoles.Terrorist) && (!Options.TerroristCanGuess.GetBool() || Options.CanTerroristSuicideWin.GetBool()))
                     || (pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool())
                     || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
@@ -1193,7 +1193,7 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.CopyCat) 
                     || pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool()
                     || (pc.Is(CustomRoles.Terrorist) && (!Options.TerroristCanGuess.GetBool() || Options.CanTerroristSuicideWin.GetBool())
-                    || (pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool()))
+                    || (pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool()))
                     || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
                     || (pc.Is(CustomRoles.God) && !Options.GodCanGuess.GetBool()))
                     return false;

@@ -12,6 +12,7 @@ internal class Collector : RoleBase
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => false;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
     public static Dictionary<byte, byte> CollectorVoteFor = [];

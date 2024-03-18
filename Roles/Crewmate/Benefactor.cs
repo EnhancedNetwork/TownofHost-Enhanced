@@ -21,9 +21,9 @@ internal class Benefactor : RoleBase
 
     private static int maxTasksMarkedPerRound = new();
 
-    private static Dictionary<byte, List<int>> taskIndex = [];
-    private static Dictionary<byte, int> TaskMarkPerRound = [];
-    private static Dictionary<byte, long> shieldedPlayers = [];
+    private static readonly Dictionary<byte, List<int>> taskIndex = [];
+    private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
+    private static readonly Dictionary<byte, long> shieldedPlayers = [];
 
     public static void SetupCustomOption()
     {

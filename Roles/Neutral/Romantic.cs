@@ -39,7 +39,7 @@ internal class Romantic : RoleBase
     public static OptionItem RuthlessCanVent;
 
     public static byte VengefulTargetId;
-    private static Dictionary<byte, int> BetTimes = [];
+    private static readonly Dictionary<byte, int> BetTimes = [];
     public static Dictionary<byte, byte> BetPlayer = [];
 
     public static void SetupCustomOption()

@@ -468,7 +468,6 @@ static class ExtendedPlayerControl
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
             CustomRoles.Hater => pc.IsAlive(),
             CustomRoles.Provocateur => pc.IsAlive(),
-            CustomRoles.Cultist => Cultist.CanUseKillButton(pc),
             CustomRoles.Pirate => pc.IsAlive(),
             _ => false,
         };

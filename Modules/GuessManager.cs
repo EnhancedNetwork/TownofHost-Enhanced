@@ -238,7 +238,7 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("SolsticerGuessMax"));
                     return true;
                 }
-                if (pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
+                if (pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessDisabled"));

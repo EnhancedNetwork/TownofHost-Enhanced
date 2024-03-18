@@ -142,7 +142,7 @@ internal class Admirer : RoleBase
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmirerAdmired")));
             }
-            else if (killer.Is(CustomRoles.Charmed) && target.CanBeCharmed())
+            else if (killer.Is(CustomRoles.Charmed) && Cultist.CanBeCharmed(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Charmed.ToString(), "Admirer Assign");
                 target.RpcSetCustomRole(CustomRoles.Charmed);

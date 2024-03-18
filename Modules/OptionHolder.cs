@@ -504,9 +504,6 @@ public static class Options
     public static OptionItem OppoImmuneToAttacksWhenTasksDone;
 
 
-    public static OptionItem PhantomCanVent;
-    public static OptionItem PhantomSnatchesWin;
-    public static OptionItem PhantomCanGuess;
 
     public static OptionItem ProvKillCD;
 
@@ -597,7 +594,6 @@ public static class Options
     // Override Tasks
     public static OverrideTasksData TerroristTasks;
     public static OverrideTasksData WorkaholicTasks;
-    public static OverrideTasksData PhantomTasks;
 
 
     public static int SnitchExposeTaskLeft = 1;
@@ -1527,15 +1523,8 @@ public static class Options
         Collector.SetupCustomOption();
         
         Cultist.SetupCustomOption();
-        
-        SetupRoleOptions(14900, TabGroup.NeutralRoles, CustomRoles.Phantom);
-        PhantomCanVent = BooleanOptionItem.Create(14902, "CanVent", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Phantom]);
-        PhantomSnatchesWin = BooleanOptionItem.Create(14903, "SnatchesWin", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Phantom]);
-        PhantomCanGuess = BooleanOptionItem.Create(14904, "CanGuess", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Phantom]);
-        PhantomTasks = OverrideTasksData.Create(14905, TabGroup.NeutralRoles, CustomRoles.Phantom);
+
+        Phantom.SetupCustomOptions();
         
         Pirate.SetupCustomOption();
         
