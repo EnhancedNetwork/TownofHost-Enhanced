@@ -73,12 +73,6 @@ public static class HudSpritePatch
             case CustomRoles.Puppeteer:
                 newKillButton = CustomButton.Get("Puttpuer");
                 break;
-            case CustomRoles.Succubus:
-                newKillButton = CustomButton.Get("Subbus");
-                break;
-            case CustomRoles.Vampire:
-                newKillButton = CustomButton.Get("Bite");
-                break;
             case CustomRoles.Witness:
                 newKillButton = CustomButton.Get("Examine");
                 break;

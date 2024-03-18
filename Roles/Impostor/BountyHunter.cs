@@ -173,7 +173,7 @@ internal class BountyHunter : RoleBase
             && ((Lawyer.Target.TryGetValue(target.PlayerId, out byte lawyerTarget) && lawyerTarget == player.PlayerId) && Lawyer.TargetKnowsLawyer.GetBool())) return false;
 
         if (player.Is(CustomRoles.Charmed)
-            && (target.Is(CustomRoles.Succubus) || (target.Is(CustomRoles.Charmed) && Succubus.TargetKnowOtherTarget.GetBool()))) return false;
+            && (target.Is(CustomRoles.Cultist) || (target.Is(CustomRoles.Charmed) && Cultist.TargetKnowOtherTarget.GetBool()))) return false;
 
         if (player.Is(CustomRoles.Infected)
             && (target.Is(CustomRoles.Infectious) || (target.Is(CustomRoles.Infected) && Infectious.TargetKnowOtherTargets))) return false;

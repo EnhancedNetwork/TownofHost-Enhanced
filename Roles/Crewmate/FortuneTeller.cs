@@ -309,7 +309,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Virus,
                 CustomRoles.Monarch,
                 CustomRoles.Revolutionist,
-                CustomRoles.Succubus,
+                CustomRoles.Cultist,
                 CustomRoles.Enigma,
                 CustomRoles.PlagueDoctor],
                 

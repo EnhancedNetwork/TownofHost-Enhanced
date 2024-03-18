@@ -344,9 +344,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetKillOrHex:
                 HexMaster.ReceiveRPC(reader, false);
                 break;
-            //case CustomRPC.SetKillOrCurse:
-            //    Occultist.ReceiveRPC(reader, false);
-            //    break;
 
             case CustomRPC.SetCaptainTargetSpeed:
                 Captain.ReceiveRPCSetSpeed(reader);
@@ -384,9 +381,6 @@ internal class RPCHandlerPatch
             case CustomRPC.DoHex:
                 HexMaster.ReceiveRPC(reader, true);
                 break;
-            //case CustomRPC.DoCurse:
-            //    Occultist.ReceiveRPC(reader, true);
-            //    break;
             case CustomRPC.SniperSync:
                 Sniper.ReceiveRPC(reader);
                 break;
@@ -851,9 +845,6 @@ internal static class RPC
             case CustomRoles.Warden:
                 Warden.Add(targetId);
                 break;
-            case CustomRoles.Succubus:
-                Succubus.Add(targetId);
-                break;
             case CustomRoles.Vulture:
                 Vulture.Add(targetId); 
                 break;
@@ -1079,8 +1070,8 @@ internal static class RPC
             case CustomRoles.Spiritcaller:
                 Spiritcaller.ReceiveRPC(reader);
                 break;
-            case CustomRoles.Succubus:
-                Succubus.ReceiveRPC(reader);
+            case CustomRoles.Cultist:
+                Cultist.ReceiveRPC(reader);
                 break;
             case CustomRoles.Taskinator:
                 Taskinator.ReceiveRPC(reader);

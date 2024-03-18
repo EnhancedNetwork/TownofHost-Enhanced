@@ -448,95 +448,12 @@ public static class Utils
 
         if (p.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
         var role = States.MainRole;
+
+        if (!States.RoleClass.HasTasks(p.PlayerId, role))
+            hasTasks = false;
+
         switch (role)
         {
-            case CustomRoles.GM:
-            case CustomRoles.Sheriff:
-            case CustomRoles.Vigilante:
-            case CustomRoles.Jailer:
-            case CustomRoles.CopyCat:
-            case CustomRoles.Shaman:
-            case CustomRoles.Arsonist:
-            case CustomRoles.Jackal:
-            case CustomRoles.Bandit:
-            case CustomRoles.Doppelganger:
-            case CustomRoles.Sidekick:
-            case CustomRoles.Poisoner:
-            case CustomRoles.Necromancer:
-            case CustomRoles.SerialKiller:
-            case CustomRoles.Pyromaniac:
-            case CustomRoles.Werewolf:
-            case CustomRoles.Traitor:
-            case CustomRoles.Huntsman:
-            case CustomRoles.Glitch:
-            case CustomRoles.Pickpocket:
-            case CustomRoles.Maverick:
-            case CustomRoles.Agitater:
-            case CustomRoles.Jinx:
-            case CustomRoles.SoulCollector:
-            case CustomRoles.SchrodingersCat:
-            case CustomRoles.Parasite:
-            case CustomRoles.Minion:
-            case CustomRoles.Bloodmoon:
-            case CustomRoles.Crusader:
-            case CustomRoles.Refugee:
-            case CustomRoles.Jester:
-            case CustomRoles.Pirate:
-            case CustomRoles.Pixie:
-            case CustomRoles.PlagueDoctor:
-            case CustomRoles.Shroud:
-            case CustomRoles.Mario:
-            case CustomRoles.Vulture:
-            case CustomRoles.God:
-            case CustomRoles.Knight:
-            case CustomRoles.Innocent:
-            case CustomRoles.Pelican:
-            case CustomRoles.Medusa:
-            case CustomRoles.Revolutionist:
-            case CustomRoles.Hater:
-            case CustomRoles.Demon:
-            case CustomRoles.HexMaster:
-            //case CustomRoles.Occultist:
-            case CustomRoles.Wraith:
-            case CustomRoles.Juggernaut:
-            case CustomRoles.Reverie:
-            case CustomRoles.PotionMaster:
-            case CustomRoles.Stalker:
-            case CustomRoles.Collector:
-            case CustomRoles.SoulCatcher:
-            case CustomRoles.Provocateur:
-            case CustomRoles.Medic:
-            case CustomRoles.BloodKnight:
-            case CustomRoles.Camouflager:
-            case CustomRoles.Follower:
-            case CustomRoles.Succubus:
-            case CustomRoles.CursedSoul:
-            case CustomRoles.Admirer:
-            case CustomRoles.Amnesiac:
-            case CustomRoles.Imitator:
-            case CustomRoles.Infectious:
-            case CustomRoles.Monarch:
-            case CustomRoles.Deputy:
-            case CustomRoles.Investigator:
-            case CustomRoles.Virus:
-            case CustomRoles.Overseer:
-            case CustomRoles.Deceiver:
-            case CustomRoles.Witness:
-            case CustomRoles.Pursuer:
-            case CustomRoles.Spiritcaller:
-            case CustomRoles.PlagueBearer:
-            case CustomRoles.Pestilence:
-            case CustomRoles.Masochist:
-            case CustomRoles.Executioner:
-            case CustomRoles.Lawyer:
-            case CustomRoles.Doomsayer:
-            case CustomRoles.Seeker:
-            case CustomRoles.Romantic:
-            case CustomRoles.VengefulRomantic:
-            case CustomRoles.RuthlessRomantic:
-            case CustomRoles.Quizmaster:
-                hasTasks = false;
-                break;
             case CustomRoles.Workaholic:
             case CustomRoles.Terrorist:
             case CustomRoles.Sunnyboy:
@@ -647,9 +564,6 @@ public static class Utils
                     break;
                 case CustomRoles.Killer:
                     ProgressText.Append(FFAManager.GetDisplayScore(playerId));
-                    break;
-                case CustomRoles.Succubus:
-                    ProgressText.Append(Succubus.GetCharmLimit());
                     break;
                 case CustomRoles.Hawk:
                     ProgressText.Append(Hawk.GetSnatchLimit(playerId));
@@ -1783,8 +1697,6 @@ public static class Utils
                         if (isForMeeting)
                         {
 
-                            //if (Occultist.IsEnable)
-                            //    TargetMark.Append(Occultist.GetCursedMark(target.PlayerId, true));
 
                             if (Pirate.IsEnable)
                                 TargetMark.Append(Pirate.GetPlunderedMark(target.PlayerId, true));

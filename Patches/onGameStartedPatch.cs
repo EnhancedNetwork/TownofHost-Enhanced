@@ -192,7 +192,6 @@ internal class ChangeRoleSettings
             Bloodmoon.Init();
             SoulCollector.Init();
             SchrodingersCat.Init();
-            Succubus.Init();
             Antidote.Init();
             Fool.Init();
             Burst.Init();
@@ -450,9 +449,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.SchrodingersCat:
                         SchrodingersCat.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Succubus:
-                        Succubus.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Vulture:
                         Vulture.Add(pc.PlayerId);

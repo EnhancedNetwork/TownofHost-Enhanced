@@ -362,9 +362,6 @@ class CheckMurderPatch
                     killer.SetRealKiller(target);
                     Main.Provoked.TryAdd(killer.PlayerId, target.PlayerId);
                     return false;
-                case CustomRoles.Succubus:
-                    Succubus.OnCheckMurder(killer, target);
-                    return false;
                 case CustomRoles.ChiefOfPolice:
                     ChiefOfPolice.OnCheckMurder(killer, target);
                     return false;

@@ -121,7 +121,7 @@ internal class Infectious : RoleBase
         if (BiteLimit < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
         if (DoubleClickKill.GetBool())
@@ -179,7 +179,7 @@ internal class Infectious : RoleBase
             || pc.GetCustomRole().IsNK()) && !pc.Is(CustomRoles.Infected) 
             && !pc.Is(CustomRoles.Admired) 
             && !pc.Is(CustomRoles.Loyal) 
-            && !pc.Is(CustomRoles.Succubus) 
+            && !pc.Is(CustomRoles.Cultist) 
             && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

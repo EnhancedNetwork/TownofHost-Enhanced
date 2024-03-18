@@ -87,6 +87,10 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
     { }
+    // <summary>
+    /// The role's tasks are needed for a task win
+    /// </summary>
+    public virtual bool HasTasks(byte player, CustomRoles role) => role.IsCrewmate() && !role.IsTasklessCrewmate();
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>

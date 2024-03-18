@@ -226,7 +226,6 @@ public static class CustomRolesHelper
             CustomRoles.Medic => RoleTypes.Impostor,
             CustomRoles.Demon => RoleTypes.Impostor,
             CustomRoles.HexMaster => RoleTypes.Impostor,
-            //CustomRoles.Occultist => RoleTypes.Impostor,
             CustomRoles.Wraith => RoleTypes.Impostor,
             CustomRoles.Glitch => RoleTypes.Impostor,
             CustomRoles.Juggernaut => RoleTypes.Impostor,
@@ -246,7 +245,7 @@ public static class CustomRolesHelper
             CustomRoles.Romantic => RoleTypes.Impostor,
             CustomRoles.VengefulRomantic => RoleTypes.Impostor,
             CustomRoles.RuthlessRomantic => RoleTypes.Impostor,
-            CustomRoles.Succubus => RoleTypes.Impostor,
+            CustomRoles.Cultist => RoleTypes.Impostor,
             CustomRoles.Infectious => RoleTypes.Impostor,
             CustomRoles.Virus => RoleTypes.Impostor,
             CustomRoles.Overseer => RoleTypes.Impostor,
@@ -471,7 +470,7 @@ public static class CustomRolesHelper
             CustomRoles.Jackal or
             CustomRoles.Juggernaut or
             CustomRoles.BloodKnight or
-            CustomRoles.Succubus;
+            CustomRoles.Cultist;
     }
 
     public static bool IsNK(this CustomRoles role)
@@ -541,7 +540,7 @@ public static class CustomRolesHelper
             CustomRoles.Seeker or
             CustomRoles.Pixie or
             CustomRoles.Collector or
-            CustomRoles.Succubus or
+            CustomRoles.Cultist or
             CustomRoles.Phantom or
             CustomRoles.Pirate or
             CustomRoles.Terrorist or
@@ -592,7 +591,7 @@ public static class CustomRolesHelper
     {
         return role is
             CustomRoles.Collector or
-            CustomRoles.Succubus or
+            CustomRoles.Cultist or
             CustomRoles.Phantom or
             CustomRoles.Mario or
             CustomRoles.SoulCollector or
@@ -613,7 +612,6 @@ public static class CustomRolesHelper
             CustomRoles.Bandit or
             CustomRoles.Sidekick or
             CustomRoles.HexMaster or
-            //CustomRoles.Occultist or
             CustomRoles.Necromancer or
             CustomRoles.Refugee or
             CustomRoles.Pyromaniac or
@@ -636,7 +634,7 @@ public static class CustomRolesHelper
             CustomRoles.Demon or
             CustomRoles.Pelican or
             CustomRoles.Virus or
-            CustomRoles.Succubus or
+            CustomRoles.Cultist or
             CustomRoles.BloodKnight or
             CustomRoles.Spiritcaller or
             CustomRoles.PlagueBearer or
@@ -761,7 +759,6 @@ public static class CustomRolesHelper
             CustomRoles.Huntsman or
             CustomRoles.Medusa or
             CustomRoles.HexMaster or
-            //CustomRoles.Occultist or
             CustomRoles.Glitch or
             CustomRoles.Imitator or
             CustomRoles.Shaman or
@@ -824,7 +821,7 @@ public static class CustomRolesHelper
             CustomRoles.RuthlessRomantic or
             CustomRoles.VengefulRomantic or
             CustomRoles.Virus or
-            CustomRoles.Succubus or
+            CustomRoles.Cultist or
             CustomRoles.Doomsayer or
             CustomRoles.Spiritcaller or
             CustomRoles.SchrodingersCat or
@@ -874,7 +871,7 @@ public static class CustomRolesHelper
             CustomRoles.PlagueDoctor or
             CustomRoles.Pyromaniac or
             CustomRoles.Shroud or
-            CustomRoles.Succubus or
+            CustomRoles.Cultist or
             CustomRoles.Demon or
             CustomRoles.Stalker or
             CustomRoles.Necromancer or
@@ -955,7 +952,7 @@ public static class CustomRolesHelper
             CustomRoles.BloodKnight or
             CustomRoles.Follower or
             CustomRoles.Virus or
-            CustomRoles.Succubus or
+            CustomRoles.Cultist or
             CustomRoles.Spiritcaller or
             CustomRoles.Doomsayer or
             CustomRoles.Agitater or
@@ -1888,9 +1885,8 @@ public static class CustomRolesHelper
            CustomRoles.Bloodmoon => CountTypes.Impostor,
            CustomRoles.Demon => CountTypes.Demon,
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
-           CustomRoles.Succubus => CountTypes.Succubus,
+           CustomRoles.Cultist => CountTypes.Cultist,
            CustomRoles.HexMaster => CountTypes.HexMaster,
-           //CustomRoles.Occultist => CountTypes.Occultist,
            CustomRoles.Necromancer => CountTypes.Necromancer,
            CustomRoles.Stalker => !Stalker.SnatchesWin.GetBool() ? CountTypes.Stalker : CountTypes.Crew,
            CustomRoles.Arsonist => Arsonist.CanIgniteAnytime() ? CountTypes.Arsonist : CountTypes.Crew,
@@ -1954,8 +1950,7 @@ public static class CustomRolesHelper
             CustomRoles.BloodKnight => CustomWinner.BloodKnight,
             CustomRoles.Poisoner => CustomWinner.Poisoner,
             CustomRoles.HexMaster => CustomWinner.HexMaster,
-            //Occultist = CustomRoles.Occultist,
-            CustomRoles.Succubus => CustomWinner.Succubus,
+            CustomRoles.Cultist => CustomWinner.Cultist,
             CustomRoles.Wraith => CustomWinner.Wraith,
             CustomRoles.Bandit => CustomWinner.Bandit,
             CustomRoles.Pirate => CustomWinner.Pirate,
@@ -2002,9 +1997,8 @@ public static class CustomRolesHelper
             CountTypes.Pelican => CustomRoles.Pelican,
             CountTypes.Demon => CustomRoles.Demon,
             CountTypes.BloodKnight => CustomRoles.BloodKnight,
-            CountTypes.Succubus => CustomRoles.Succubus,
+            CountTypes.Cultist => CustomRoles.Cultist,
             CountTypes.HexMaster => CustomRoles.HexMaster,
-            //CustomRoles.Occultist => CountTypes.Occultist,
             CountTypes.Necromancer => CustomRoles.Necromancer,
             CountTypes.Shroud => CustomRoles.Shroud,
             CountTypes.Werewolf => CustomRoles.Werewolf,
@@ -2034,9 +2028,6 @@ public static class CustomRolesHelper
             CountTypes.RuthlessRomantic => CustomRoles.RuthlessRomantic,
             //CountTypes.Impostor => CustomRoles.ImpostorTOHE,
             //CountTypes.Crew => CustomRoles.CrewmateTOHE,
-            //CountTypes.None => throw new System.NotImplementedException(),
-            //CountTypes.Charmed => throw new System.NotImplementedException(),
-            //CountTypes.Rogue => throw new System.NotImplementedException(),
             _ => throw new System.NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Count > 0;
@@ -2063,7 +2054,7 @@ public enum CountTypes
     BloodKnight,
     Poisoner,
     Charmed,
-    Succubus,
+    Cultist,
     HexMaster,
     Wraith,
     SerialKiller,
@@ -2088,7 +2079,6 @@ public enum CountTypes
     Shroud,
     Werewolf,
     Agitater,
-    //Occultist,
     //Shade,
     RuthlessRomantic,
     Necromancer

@@ -114,9 +114,6 @@ class HudManagerPatch
                     case CustomRoles.Paranoia:
                         __instance.AbilityButton.buttonLabelText.text = GetString("ParanoiaVentButtonText");
                         break;
-                    case CustomRoles.Succubus:
-                        __instance.KillButton.OverrideText(GetString("SuccubusKillButtonText"));
-                        break;
                 }
 
                 // Set lower info text for modded players

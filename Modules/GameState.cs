@@ -87,10 +87,10 @@ public class PlayerState(byte playerId)
         }
         if (pc.Is(CustomRoles.Charmed))
         {
-            countTypes = Succubus.CharmedCountMode.GetInt() switch
+            countTypes = Cultist.CharmedCountMode.GetInt() switch
             {
                 0 => CountTypes.OutOfGame,
-                1 => CountTypes.Succubus,
+                1 => CountTypes.Cultist,
                 2 => countTypes,
                 _ => throw new NotImplementedException()
             };
@@ -185,10 +185,10 @@ public class PlayerState(byte playerId)
                 break;
 
             case CustomRoles.Charmed:
-                countTypes = Succubus.CharmedCountMode.GetInt() switch
+                countTypes = Cultist.CharmedCountMode.GetInt() switch
                 {
                     0 => CountTypes.OutOfGame,
-                    1 => CountTypes.Succubus,
+                    1 => CountTypes.Cultist,
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };

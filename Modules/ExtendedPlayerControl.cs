@@ -468,7 +468,7 @@ static class ExtendedPlayerControl
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
             CustomRoles.Hater => pc.IsAlive(),
             CustomRoles.Provocateur => pc.IsAlive(),
-            CustomRoles.Succubus => Succubus.CanUseKillButton(pc),
+            CustomRoles.Cultist => Cultist.CanUseKillButton(pc),
             CustomRoles.Pirate => pc.IsAlive(),
             _ => false,
         };
@@ -569,9 +569,6 @@ static class ExtendedPlayerControl
             //FFA
             case CustomRoles.Killer:
                 Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
-                break;
-            case CustomRoles.Succubus:
-                Succubus.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Pirate:
                 Pirate.SetKillCooldown(player.PlayerId);
@@ -877,7 +874,7 @@ static class ExtendedPlayerControl
         else if (Options.WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic)) return true;
         else if (Jackal.JackalKnowRole(seer, target)) return true;
         else if (seer.IsRevealedPlayer(target) && !target.Is(CustomRoles.Trickster)) return true;
-        else if (Succubus.KnowRole(seer, target)) return true;
+        else if (Cultist.KnowRole(seer, target)) return true;
         else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
@@ -925,7 +922,7 @@ static class ExtendedPlayerControl
                 return true;
         }
         else if (Admirer.On && Admirer.CheckKnowRoleTarget(seer, target)) return true;
-        else if (Succubus.IsEnable && Succubus.KnowRole(seer, target)) return true;
+        else if (Cultist.HasEnabled && Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.HasEnabled && Infectious.KnowRole(seer, target)) return true;
         else if (Virus.HasEnabled && Virus.KnowRole(seer, target)) return true;
         else if (Jackal.HasEnabled)

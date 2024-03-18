@@ -75,7 +75,7 @@ internal class Hater : RoleBase
             }
             else if (
                 ((target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Gangster)) && CanKillMadmate.GetBool())
-                || ((target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Succubus)) && CanKillCharmed.GetBool())
+                || ((target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Cultist)) && CanKillCharmed.GetBool())
                 || ((target.Is(CustomRoles.Lovers) || target.Is(CustomRoles.Ntr)) && CanKillLovers.GetBool())
                 || ((target.Is(CustomRoles.Romantic) || target.Is(CustomRoles.RuthlessRomantic) || target.Is(CustomRoles.VengefulRomantic)
                     || Romantic.BetPlayer.ContainsValue(target.PlayerId)) && CanKillLovers.GetBool())
@@ -118,7 +118,7 @@ internal class Hater : RoleBase
         return role switch  // Use the switch expression whenever possible instead of the switch statement to improve performance
         {
             CustomRoles.Gangster or
-            CustomRoles.Succubus or
+            CustomRoles.Cultist or
             CustomRoles.Romantic or
             CustomRoles.RuthlessRomantic or
             CustomRoles.VengefulRomantic or

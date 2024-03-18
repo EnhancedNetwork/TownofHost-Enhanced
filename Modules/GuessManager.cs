@@ -944,7 +944,7 @@ public static class GuessManager
                         listOfRoles.Add(CustomRoles.Recruit);
                 }
 
-                if (CustomRoles.Succubus.IsEnable())
+                if (CustomRoles.Cultist.IsEnable())
                 {
                     if (!listOfRoles.Contains(CustomRoles.Charmed))
                         listOfRoles.Add(CustomRoles.Charmed);

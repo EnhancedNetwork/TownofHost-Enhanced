@@ -249,7 +249,7 @@ public static class CustomRoleManager
         //CustomRoles.SoulHunter => new SoulHunter(),
         CustomRoles.Spiritcaller => new Spiritcaller(),
         CustomRoles.Stalker => new Stalker(),
-        //CustomRoles.Succubus => new Succubus(),
+        //CustomRoles.Cultist => new Cultist(),
         //CustomRoles.Terrorist => new Terrorist(),
         CustomRoles.Traitor => new Traitor(),
         //CustomRoles.Vengeance => new Vengeance(),
