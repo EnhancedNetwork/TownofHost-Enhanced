@@ -256,12 +256,6 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessKnighted"));
                     return true;
                 }
-                if (pc.Is(CustomRoles.Terrorist) && !Options.TerroristCanGuess.GetBool())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessDisabled"));
-                    return true;
-                }
                 if (pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);

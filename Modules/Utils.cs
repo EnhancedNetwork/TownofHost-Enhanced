@@ -1159,45 +1159,7 @@ public static class Utils
         //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
             , ID);
     }
-    public static void CheckTerroristWin(GameData.PlayerInfo Terrorist)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        var taskState = GetPlayerById(Terrorist.PlayerId).GetPlayerTaskState();
-        if (taskState.IsTaskFinished && (!Main.PlayerStates[Terrorist.PlayerId].IsSuicide || Options.CanTerroristSuicideWin.GetBool())) //タスクが完了で（自殺じゃない OR 自殺勝ちが許可）されていれば
-        {
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                if (pc.Is(CustomRoles.Terrorist))
-                {
-                    if (Main.PlayerStates[pc.PlayerId].deathReason == PlayerState.DeathReason.Vote)
-                    {
-                        //追放された場合は生存扱い
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.etc;
-                        //生存扱いのためSetDeadは必要なし
-                    }
-                    else
-                    {
-                        //キルされた場合は自爆扱い
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                    }
-                }
-                else if (!pc.Data.IsDead)
-                {
-                    //生存者は爆死
-                    pc.SetRealKiller(Terrorist.Object);
-                    Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                    Main.PlayerStates[pc.PlayerId].SetDead();
-                    pc.RpcMurderPlayerV3(pc);
-                    
-                }
-            }
-            if (!CustomWinnerHolder.CheckForConvertedWinner(Terrorist.PlayerId))
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
-                CustomWinnerHolder.WinnerIds.Add(Terrorist.PlayerId);
-            }
-        }
-    }
+    
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -1902,13 +1864,6 @@ public static class Utils
 
         switch (target.GetCustomRole())
         {
-            case CustomRoles.Terrorist:
-                Logger.Info(target?.Data?.PlayerName + " was Terrorist", "AfterPlayerDeathTasks");
-                CheckTerroristWin(target.Data);
-                break;
-            case CustomRoles.Executioner:
-                Executioner.ExecutionerWasDead(target.PlayerId);
-                break;
             case CustomRoles.Devourer:
                 Devourer.OnDevourerDied(target.PlayerId);
                 break;

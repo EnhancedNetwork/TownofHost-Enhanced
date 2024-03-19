@@ -123,7 +123,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
         switch (role)
         {
-            case CustomRoles.Terrorist:
             case CustomRoles.EngineerTOHE:
             case CustomRoles.Phantom:
                 AURoleOptions.EngineerCooldown = 0f;

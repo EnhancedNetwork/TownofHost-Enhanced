@@ -504,8 +504,6 @@ public static class Options
     public static OptionItem OppoImmuneToAttacksWhenTasksDone;
 
 
-    public static OptionItem CanTerroristSuicideWin;
-    public static OptionItem TerroristCanGuess;
 
     public static OptionItem MarioVentNumWin;
     public static OptionItem MarioVentCD;
@@ -583,7 +581,6 @@ public static class Options
     public static SuffixModes GetSuffixMode() => (SuffixModes)SuffixMode.GetValue();
 
     // Override Tasks
-    public static OverrideTasksData TerroristTasks;
     public static OverrideTasksData WorkaholicTasks;
 
 
@@ -1529,13 +1526,8 @@ public static class Options
         Solsticer.SetupCustomOption();
 
         SoulCollector.SetupCustomOption();
-        
-        SetupRoleOptions(15400, TabGroup.NeutralRoles, CustomRoles.Terrorist);
-        CanTerroristSuicideWin = BooleanOptionItem.Create(15402, "CanTerroristSuicideWin", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
-        TerroristCanGuess = BooleanOptionItem.Create(15403, "CanGuess", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
-        TerroristTasks = OverrideTasksData.Create(15404, TabGroup.NeutralRoles, CustomRoles.Terrorist);
+
+        Terrorist.SetupCustomOptions();
         
         SetupRoleOptions(15500, TabGroup.NeutralRoles, CustomRoles.Mario);
         MarioVentNumWin = IntegerOptionItem.Create(15502, "MarioVentNumWin", new(5, 500, 5), 40, TabGroup.NeutralRoles, false)

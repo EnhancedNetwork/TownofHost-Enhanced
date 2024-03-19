@@ -176,13 +176,17 @@ internal class Executioner : RoleBase
             ChangeRoleByTarget(clientData.Character);
     }
 
-    public static void ExecutionerWasDead(byte targetId)
+    private static void ExecutionerWasDead(byte targetId)
     {
         if (Target.ContainsKey(targetId))
         {
             Target.Remove(targetId);
             SendRPC(targetId);
         }
+    }
+    public override void AfterPlayerDeathTask(PlayerControl target)
+    {
+        ExecutionerWasDead(target.PlayerId);
     }
 
     public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
