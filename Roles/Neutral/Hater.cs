@@ -95,15 +95,14 @@ internal class Hater : RoleBase
         if (MisFireKillTarget.GetBool() && killer.RpcCheckAndMurder(target, true)) // RpcCheckAndMurder checks if the target can be murdered or not (checks for shields and other stuff); the 'true' parameter indicates that we just want a check, and not murder yet.
         {
             target.SetRealKiller(killer);
-            target.Data.IsDead = true;
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
             killer.RpcMurderPlayerV3(target); // Murder the target only if the setting is on and the target can be killed
 
         }
-        killer.Data.IsDead = true;
+
         Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
         killer.RpcMurderPlayerV3(killer);
-        Main.PlayerStates[killer.PlayerId].SetDead();
+        
         Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "FFF");
         return false;
     }

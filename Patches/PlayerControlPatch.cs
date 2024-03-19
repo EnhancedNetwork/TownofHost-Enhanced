@@ -1020,6 +1020,8 @@ class ReportDeadBodyPatch
                     Camouflage.RpcSetSkin(pc, RevertToDefault: true);
                 }
             }
+
+            Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
         // Set meeting time
@@ -1213,8 +1215,6 @@ class FixedUpdateInNormalGamePatch
                 if (player.Is(CustomRoles.Statue) && player.IsAlive())
                     Statue.OnFixedUpdate(player);
             
-
-
                 if (!lowLoad)
                 {
                     playerRole = player.GetCustomRole();

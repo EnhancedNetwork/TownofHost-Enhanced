@@ -2,12 +2,10 @@ using AmongUs.GameOptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Utils;
@@ -309,6 +307,12 @@ public class PlayerState(byte playerId)
 
     public void SetDead()
     {
+        var caller = new System.Diagnostics.StackFrame(1, false);
+        var callerMethod = caller.GetMethod();
+        string callerMethodName = callerMethod.Name;
+        string callerClassName = callerMethod.DeclaringType.FullName;
+        Logger.Msg($"Player was dead, activated from: {callerClassName}.{callerMethodName}", "PlayerState.SetDead()");
+
         IsDead = true;
         if (AmongUsClient.Instance.AmHost)
         {
@@ -481,7 +485,6 @@ public class TaskState
                                 PlayerState.DeathReason.Overtired : PlayerState.DeathReason.Ashamed;
 
                             pc.RpcMurderPlayerV3(pc);
-                            Main.PlayerStates[pc.PlayerId].SetDead();
                             pc.SetRealKiller(player);
                         }
                     }

@@ -112,18 +112,21 @@ internal class Pursuer : RoleBase // #%&&#&!&!!!!((SIASJVG"!/""/&#/(#/("(#/"/&& 
     public static bool OnTargetMurders(PlayerControl pc) // Target of Pursuer attempt to murder someone
     {
         if (!IsClient(pc.PlayerId) || notActiveList.Contains(pc.PlayerId)) return false;
+        
         byte cfId = byte.MaxValue;
         foreach (var cf in clientList)
             if (cf.Value.Contains(pc.PlayerId)) cfId = cf.Key;
+        
         if (cfId == byte.MaxValue) return false;
+        
         var killer = Utils.GetPlayerById(cfId);
         var target = pc;
         if (killer == null) return false;
-        target.SetRealKiller(killer);
-        target.Data.IsDead = true;
+        
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
+        target.SetRealKiller(killer);
         target.RpcMurderPlayerV3(target);
-        Main.PlayerStates[target.PlayerId].SetDead();
+        
         Logger.Info($"赝品商 {pc.GetRealName()} 的客户 {target.GetRealName()} 因使用赝品走火自杀", "Pursuer");
         return true;
     }

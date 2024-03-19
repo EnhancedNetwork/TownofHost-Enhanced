@@ -147,19 +147,18 @@ internal class Nemesis : RoleBase
         _ = new LateTask(() =>
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
-            target.SetRealKiller(pc);
             if (GameStates.IsMeeting)
             {
                 GuessManager.RpcGuesserMurderPlayer(target);
-
                 Utils.AfterPlayerDeathTasks(target, true);
-                Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
             }
             else
             {
                 target.RpcMurderPlayerV3(target);
-                Main.PlayerStates[target.PlayerId].SetDead();
+                Utils.NotifyRoles(NoCache: true);
             }
+            target.SetRealKiller(pc);
+
             _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("NemesisKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), GetString("NemesisRevengeTitle")), true); }, 0.6f, "Nemesis Kill");
         }, 0.2f, "Nemesis Start Kill");
         return true;
