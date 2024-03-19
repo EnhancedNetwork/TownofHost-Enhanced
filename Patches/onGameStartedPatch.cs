@@ -54,10 +54,6 @@ internal class ChangeRoleSettings
             Main.AllPlayerCustomRoles = [];
             Main.isDraw = [];
             Main.isRevealed = [];
-            Main.RevolutionistTimer = [];
-            Main.RevolutionistStart = [];
-            Main.RevolutionistLastTime = [];
-            Main.RevolutionistCountdown = [];
             Main.NemesisRevenged = [];
             Main.ForCrusade = [];
             Main.WorkaholicAlive = [];

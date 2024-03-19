@@ -9,10 +9,9 @@ namespace TOHE.Roles.Neutral
 {
     internal class Provocateur : RoleBase
     {
-
         //===========================SETUP================================\\
         private const int Id = 15100;
-        private static HashSet<byte> Playerids = [];
+        private static readonly HashSet<byte> Playerids = [];
         public static bool HasEnabled => Playerids.Any();
         public override bool IsEnable => HasEnabled;
         public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

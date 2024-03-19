@@ -361,10 +361,7 @@ internal class RPCHandlerPatch
                 Captain.ReceiveRPCVoteRemove(reader);
                 break;
             case CustomRPC.SetDrawPlayer:
-                byte RevolutionistId = reader.ReadByte();
-                byte DrawId = reader.ReadByte();
-                bool drawed = reader.ReadBoolean();
-                Main.isDraw[(RevolutionistId, DrawId)] = drawed;
+                Revolutionist.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetRevealedPlayer:
                 byte OverseerId = reader.ReadByte();

@@ -42,6 +42,7 @@ internal class Addict : RoleBase
         ImmortalTimer = [];
         DefaultSpeed = new();
         On = false;
+
     }
     public override void Add(byte playerId)
     {

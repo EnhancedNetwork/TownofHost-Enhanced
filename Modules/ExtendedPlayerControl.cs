@@ -464,9 +464,6 @@ static class ExtendedPlayerControl
         {
             //FFA
             CustomRoles.Killer => pc.IsAlive(),
-            //Standard
-            CustomRoles.Revolutionist => !pc.IsDrawDone(),
-            CustomRoles.Hater => pc.IsAlive(),
             _ => false,
         };
     }
@@ -501,11 +498,7 @@ static class ExtendedPlayerControl
 
         return pc.GetCustomRole() switch
         {
-            CustomRoles.Revolutionist => pc.IsDrawDone(),
-
-            //FFA
             CustomRoles.Killer => true,
-
             _ => false,
         };
     }
@@ -557,15 +550,9 @@ static class ExtendedPlayerControl
 
         switch (player.GetCustomRole())
         {
-            case CustomRoles.Revolutionist:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.RevolutionistCooldown.GetFloat();
-                break;
             //FFA
             case CustomRoles.Killer:
                 Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
-                break;
-            case CustomRoles.ChiefOfPolice:
-                ChiefOfPolice.SetKillCooldown(player.PlayerId);
                 break;
 
         }

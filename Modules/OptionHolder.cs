@@ -503,11 +503,6 @@ public static class Options
     // Neutrals role settings
     public static OptionItem OppoImmuneToAttacksWhenTasksDone;
 
-    public static OptionItem RevolutionistDrawTime;
-    public static OptionItem RevolutionistCooldown;
-    public static OptionItem RevolutionistDrawCount;
-    public static OptionItem RevolutionistKillProbability;
-    public static OptionItem RevolutionistVentCountDown;
 
     public static OptionItem CanTerroristSuicideWin;
     public static OptionItem TerroristCanGuess;
@@ -1526,22 +1521,7 @@ public static class Options
 
         Provocateur.SetupCustomOptions();
         
-        SetupRoleOptions(15200, TabGroup.NeutralRoles, CustomRoles.Revolutionist);
-        RevolutionistDrawTime = FloatOptionItem.Create(15202, "RevolutionistDrawTime", new(0f, 10f, 1f), 3f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
-            .SetValueFormat(OptionFormat.Seconds);
-        RevolutionistCooldown = FloatOptionItem.Create(15203, "RevolutionistCooldown", new(5f, 100f, 1f), 10f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
-            .SetValueFormat(OptionFormat.Seconds);
-        RevolutionistDrawCount = IntegerOptionItem.Create(15204, "RevolutionistDrawCount", new(1, 14, 1), 6, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
-            .SetValueFormat(OptionFormat.Players);
-        RevolutionistKillProbability = IntegerOptionItem.Create(15205, "RevolutionistKillProbability", new(0, 100, 5), 15, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
-            .SetValueFormat(OptionFormat.Percent);
-        RevolutionistVentCountDown = FloatOptionItem.Create(15206, "RevolutionistVentCountDown", new(1f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
-            .SetValueFormat(OptionFormat.Seconds);
+        
 
         /*
          * Solsticer

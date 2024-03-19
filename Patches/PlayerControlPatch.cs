@@ -326,32 +326,7 @@ class CheckMurderPatch
                 break;
         }
 
-        killerRole = killer.GetCustomRole();
-        //targetRole = target.GetCustomRole();
 
-        // if not suicide
-        if (killer.PlayerId != target.PlayerId)
-        {
-            // Triggered only in non-suicide scenarios
-            switch (killerRole)
-            {
-                //==========On Check Murder==========//
-                
-                case CustomRoles.Revolutionist:
-                    killer.SetKillCooldown(Options.RevolutionistDrawTime.GetFloat());
-                    if (!Main.isDraw[(killer.PlayerId, target.PlayerId)] && !Main.RevolutionistTimer.ContainsKey(killer.PlayerId))
-                    {
-                        Main.RevolutionistTimer.TryAdd(killer.PlayerId, (target, 0f));
-                        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
-                        RPC.SetCurrentDrawTarget(killer.PlayerId, target.PlayerId);
-                    }
-                    return false;
-                    
-                case CustomRoles.ChiefOfPolice:
-                    ChiefOfPolice.OnCheckMurder(killer, target);
-                    return false;
-            }
-        }
 
         if (!killer.RpcCheckAndMurder(target, true))
             return false;
@@ -1027,19 +1002,6 @@ class ReportDeadBodyPatch
         
         Sleuth.OnReportDeadBody(player, target?.Object);
 
-        foreach (var x in Main.RevolutionistStart.Keys.ToArray())
-        {
-            var tar = Utils.GetPlayerById(x);
-            if (tar == null) continue;
-            tar.Data.IsDead = true;
-            Main.PlayerStates[tar.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-            tar.RpcExileV2();
-            Main.PlayerStates[tar.PlayerId].SetDead();
-            Logger.Info($"{tar.GetRealName()} 因会议革命失败", "Revolutionist");
-        }
-        Main.RevolutionistTimer.Clear();
-        Main.RevolutionistStart.Clear();
-        Main.RevolutionistLastTime.Clear();
 
 
         foreach (var pc in Main.AllPlayerControls)
@@ -1252,111 +1214,6 @@ class FixedUpdateInNormalGamePatch
                 if (player.Is(CustomRoles.Statue) && player.IsAlive())
                     Statue.OnFixedUpdate(player);
             
-                // Revolutionist
-                #region Revolutionist Timer
-                if (Main.RevolutionistTimer.TryGetValue(player.PlayerId, out var revolutionistTimerData))
-                {
-                    var playerId = player.PlayerId;
-                    if (!player.IsAlive() || Pelican.IsEaten(playerId))
-                    {
-                        Main.RevolutionistTimer.Remove(playerId);
-                        Utils.NotifyRoles(SpecifySeer: player);
-                        RPC.ResetCurrentDrawTarget(playerId);
-                    }
-                    else
-                    {
-                        var (rv_target, rv_time) = revolutionistTimerData;
-
-                        if (!rv_target.IsAlive())
-                        {
-                            Main.RevolutionistTimer.Remove(playerId);
-                        }
-                        else if (rv_time >= Options.RevolutionistDrawTime.GetFloat())
-                        {
-                            var rvTargetId = rv_target.PlayerId;
-                            player.SetKillCooldown();
-                            Main.RevolutionistTimer.Remove(playerId);
-                            Main.isDraw[(playerId, rvTargetId)] = true;
-                            player.RpcSetDrawPlayer(rv_target, true);
-                            Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
-                            RPC.ResetCurrentDrawTarget(playerId);
-                            if (IRandom.Instance.Next(1, 100) <= Options.RevolutionistKillProbability.GetInt())
-                            {
-                                rv_target.SetRealKiller(player);
-                                Main.PlayerStates[rvTargetId].deathReason = PlayerState.DeathReason.Sacrifice;
-                                player.RpcMurderPlayerV3(rv_target);
-                                Main.PlayerStates[rvTargetId].SetDead();
-                                Logger.Info($"Revolutionist: {player.GetNameWithRole()} killed by {rv_target.GetNameWithRole()}", "Revolutionist");
-                            }
-                        }
-                        else
-                        {
-                            float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                            float dis = Vector2.Distance(player.GetCustomPosition(), rv_target.GetCustomPosition());
-                            if (dis <= range)
-                            {
-                                Main.RevolutionistTimer[playerId] = (rv_target, rv_time + Time.fixedDeltaTime);
-                            }
-                            else
-                            {
-                                Main.RevolutionistTimer.Remove(playerId);
-                                Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
-                                RPC.ResetCurrentDrawTarget(playerId);
-                                Logger.Info($"Canceled: {__instance.GetNameWithRole()}", "Revolutionist");
-                            }
-                        }
-                    }
-                }
-                if (player.IsDrawDone() && player.IsAlive())
-                {
-                    var playerId = player.PlayerId;
-                    if (Main.RevolutionistStart.TryGetValue(playerId, out long startTime))
-                    {
-                        if (Main.RevolutionistLastTime.TryGetValue(playerId, out long lastTime))
-                        {
-                            long nowtime = Utils.GetTimeStamp();
-                            if (lastTime != nowtime)
-                            {
-                                Main.RevolutionistLastTime[playerId] = nowtime;
-                                lastTime = nowtime;
-                            }
-                            int time = (int)(lastTime - startTime);
-                            int countdown = Options.RevolutionistVentCountDown.GetInt() - time;
-                            Main.RevolutionistCountdown.Clear();
-
-                            if (countdown <= 0)
-                            {
-                                Utils.GetDrawPlayerCount(playerId, out var list);
-
-                                foreach (var pc in list.Where(x => x != null && x.IsAlive()).ToArray())
-                                {
-                                    pc.Data.IsDead = true;
-                                    Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-                                    pc.RpcMurderPlayerV3(pc);
-                                    Main.PlayerStates[pc.PlayerId].SetDead();
-                                    Utils.NotifyRoles(SpecifySeer: pc);
-                                }
-                                player.Data.IsDead = true;
-                                Main.PlayerStates[playerId].deathReason = PlayerState.DeathReason.Sacrifice;
-                                player.RpcMurderPlayerV3(player);
-                                Main.PlayerStates[playerId].SetDead();
-                            }
-                            else
-                            {
-                                Main.RevolutionistCountdown.TryAdd(playerId, countdown);
-                            }
-                        }
-                        else
-                        {
-                            Main.RevolutionistLastTime.TryAdd(playerId, Main.RevolutionistStart[playerId]);
-                        }
-                    }
-                    else
-                    {
-                        Main.RevolutionistStart.TryAdd(playerId, Utils.GetTimeStamp());
-                    }
-                }
-                #endregion
 
 
                 if (!lowLoad)
@@ -1498,13 +1355,8 @@ class FixedUpdateInNormalGamePatch
 
                 if (target.AmOwner && GameStates.IsInTask)
                 {
-                    switch (target.GetCustomRole())
-                    {
-                        case CustomRoles.Revolutionist:
-                            if (target.IsDrawDone())
-                                RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Revolutionist), string.Format(GetString("EnterVentWinCountDown"), Main.RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10));
-                            break;
-                    }
+                    if(Revolutionist.HasEnabled && target.GetCustomRole() == CustomRoles.Revolutionist)
+                         Revolutionist.SetRealName(seer, target, ref RealName);
 
                     if (Pelican.IsEaten(seer.PlayerId))
                         RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
@@ -1556,14 +1408,6 @@ class FixedUpdateInNormalGamePatch
                     case CustomRoles.Lookout:
                         if (seer.IsAlive() && target.IsAlive())
                             Mark.Append(Utils.ColorString(Utils.GetRoleColor(seerRole), " " + target.PlayerId.ToString()) + " ");
-                        break;
-
-                    case CustomRoles.Revolutionist:
-                        if (seer.IsDrawPlayer(target))
-                            Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>●</color>");
-
-                        else if (Main.currentDrawTarget != byte.MaxValue && Main.currentDrawTarget == target.PlayerId)
-                            Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>○</color>");
                         break;
                 }
 
@@ -1784,18 +1628,7 @@ class CoEnterVentPatch
             return false;
         }
 
-        if (AmongUsClient.Instance.IsGameStarted && __instance.myPlayer.IsDrawDone())
-        {
-            if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Revolutionist);
-                Utils.GetDrawPlayerCount(__instance.myPlayer.PlayerId, out var x);
-                CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
-                foreach (var apc in x.ToArray())
-                    CustomWinnerHolder.WinnerIds.Add(apc.PlayerId);
-            }
-            return true;
-        }
+        
 
         playerRoleClass?.OnCoEnterVent(__instance, id);
 

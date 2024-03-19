@@ -552,10 +552,6 @@ public static class Utils
                 case CustomRoles.Vulture:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Vulture).ShadeColor(0.25f), $"({(Vulture.BodyReportCount.TryGetValue(playerId, out var count1) ? count1 : 0)}/{Vulture.NumberOfReportsToWin.GetInt()})"));
                     break;
-                case CustomRoles.Revolutionist:
-                    var draw = GetDrawPlayerCount(playerId, out var _);
-                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Revolutionist).ShadeColor(0.25f), $"({draw.Item1}/{draw.Item2})"));
-                    break;
                 case CustomRoles.Anonymous:
                     ProgressText.Append(Anonymous.GetHackLimit(playerId));
                     break;
@@ -1611,12 +1607,9 @@ public static class Utils
                     case CustomRoles.PlagueBearer:
                         PlagueBearer.PlaguerNotify(seer);
                         break;
-
-                    case CustomRoles.Revolutionist:
-                        if (seer.IsDrawDone())
-                            SelfName = $">{ColorString(seer.GetRoleColor(), string.Format(GetString("EnterVentWinCountDown"), Main.RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10))}";
-                        break;
                 }
+                if (Revolutionist.HasEnabled)
+                    Revolutionist.SetSeerName(seer, ref SelfName);
 
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
@@ -1713,17 +1706,6 @@ public static class Utils
                             TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                         }
 
-                        switch (seerRole)
-                        {
-
-                            case CustomRoles.Revolutionist:
-                                if (seer.IsDrawPlayer(target))
-                                    TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Revolutionist)}>●</color>");
-
-                                if (Main.RevolutionistTimer.TryGetValue(seer.PlayerId, out var re_kvp) && re_kvp.Item1 == target)
-                                    TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Revolutionist)}>○</color>");
-                                break;
-                        }
 
 
                         // ====== Seer know target role ======
@@ -2039,7 +2021,7 @@ public static class Utils
     public static (int, int) GetDrawPlayerCount(byte playerId, out List<PlayerControl> winnerList)
     {
         int draw = 0;
-        int all = Options.RevolutionistDrawCount.GetInt();
+        int all = Revolutionist.RevolutionistDrawCount.GetInt();
         int max = Main.AllAlivePlayerControls.Length;
         if (!Main.PlayerStates[playerId].IsDead) max--;
         winnerList = [];

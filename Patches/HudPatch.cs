@@ -94,10 +94,6 @@ class HudManagerPatch
 
                 switch (player.GetCustomRole())
                 {
-                    case CustomRoles.Revolutionist:
-                        __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
-                        __instance.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");
-                        break;
                     case CustomRoles.Vulture:
                         __instance.ReportButton.OverrideText(GetString("VultureEatButtonText"));
                         break;
@@ -243,18 +239,6 @@ class SetHudActivePatch
 
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
-
-
-        // Remove this after Revolutionist and Provocateur will be done
-        switch (player.GetCustomRole())
-        {
-            case CustomRoles.Revolutionist:
-                __instance.SabotageButton.ToggleVisible(false);
-                __instance.AbilityButton.ToggleVisible(false);
-                __instance.ReportButton.ToggleVisible(false);
-                break;
-            
-        }
 
         if (player.Is(CustomRoles.Oblivious))
             __instance.ReportButton.ToggleVisible(false);
