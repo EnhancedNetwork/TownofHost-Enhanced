@@ -1038,7 +1038,7 @@ internal class ChatCommands
             // Position should be same with the role name in en_US.json
             // So translators can put nicknames or common misspellings here
             // eg : "A" or "B" => GetString("RealRoleName"),
-            // eg : "Vector" or "Mario" => GetString("Mario"),
+            // eg : "Vector" or "Vector" => GetString("Vector"),
             // If you need to remove the roles, please delete them directly instead of commenting them out
 
             // GM
@@ -1211,7 +1211,7 @@ internal class ChatCommands
             "暴民" or "处刑人" or "处刑" or "处刑者" => GetString("Executioner"),
             "律師" or "律师" => GetString("Lawyer"),
             "投機主義者" or "投机者" or "投机" => GetString("Opportunist"),
-            "瑪利歐" or "马里奥" => GetString("Mario"),
+            "瑪利歐" or "马里奥" => GetString("Vector"),
             "豺狼" or "蓝狼" => GetString("Jackal"),
             "神" or "上帝" => GetString("God"),
             "冤罪師" or "冤罪师" or "冤罪" => GetString("Innocent"),

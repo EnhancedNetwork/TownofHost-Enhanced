@@ -97,10 +97,6 @@ class HudManagerPatch
                     case CustomRoles.Vulture:
                         __instance.ReportButton.OverrideText(GetString("VultureEatButtonText"));
                         break;
-                    case CustomRoles.Mario:
-                        __instance.AbilityButton.buttonLabelText.text = GetString("VectorVentButtonText");
-                        __instance.AbilityButton.SetUsesRemaining(Options.MarioVentNumWin.GetInt() - (Main.MarioVentCount.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var mx) ? mx : 0));
-                        break;
                     case CustomRoles.Paranoia:
                         __instance.AbilityButton.buttonLabelText.text = GetString("ParanoiaVentButtonText");
                         break;

@@ -161,10 +161,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Solsticer:
                 Solsticer.ApplyGameOptions();
                 break;
-            case CustomRoles.Mario:
-                AURoleOptions.EngineerCooldown = Options.MarioVentCD.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
             case CustomRoles.Warden:
                 Warden.SetAbilityCooldown();
                 break;

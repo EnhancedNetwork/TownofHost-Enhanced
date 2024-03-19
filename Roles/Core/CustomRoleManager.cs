@@ -223,7 +223,7 @@ public static class CustomRoleManager
         CustomRoles.Juggernaut => new Juggernaut(),
         //CustomRoles.Lawyer => new Lawyer(),
         CustomRoles.Masochist => new Masochist(),
-        //CustomRoles.Mario => new Mario(),
+        //CustomRoles.Vector => new Vector(),
         //CustomRoles.Maverick => new Maverick(),
         CustomRoles.CursedSoul => new CursedSoul(),
         CustomRoles.Medusa => new Medusa(),

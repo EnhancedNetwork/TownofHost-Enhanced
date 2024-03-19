@@ -322,7 +322,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Saboteur],
                 
                 [CustomRoles.Medic,
-                CustomRoles.Mario,
+                CustomRoles.Vector,
                 CustomRoles.Jester,
                 CustomRoles.Lurker,
                 CustomRoles.Swapper,

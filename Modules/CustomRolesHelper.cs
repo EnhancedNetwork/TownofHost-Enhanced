@@ -105,7 +105,7 @@ public static class CustomRolesHelper
                 CustomRoles.Warden => CustomRoles.GuardianAngel,
                 CustomRoles.Minion => CustomRoles.GuardianAngel,
                 CustomRoles.Zombie => CustomRoles.Impostor,
-                CustomRoles.Mario => CustomRoles.Engineer,
+                CustomRoles.Vector => CustomRoles.Engineer,
                 CustomRoles.AntiAdminer => CustomRoles.Impostor,
                 CustomRoles.Arrogance => CustomRoles.Impostor,
                 CustomRoles.Bomber => CustomRoles.Shapeshifter,
@@ -403,7 +403,7 @@ public static class CustomRolesHelper
             CustomRoles.Masochist or
             CustomRoles.Huntsman or
             CustomRoles.Executioner or
-            CustomRoles.Mario or
+            CustomRoles.Vector or
             CustomRoles.Shaman or
             CustomRoles.Crewpostor or
             CustomRoles.Lawyer or
@@ -549,7 +549,7 @@ public static class CustomRolesHelper
             CustomRoles.Workaholic or
             CustomRoles.Solsticer or
             CustomRoles.God or
-            CustomRoles.Mario or
+            CustomRoles.Vector or
             CustomRoles.Revolutionist or
             CustomRoles.Romantic or
             CustomRoles.VengefulRomantic or
@@ -593,7 +593,7 @@ public static class CustomRolesHelper
             CustomRoles.Collector or
             CustomRoles.Cultist or
             CustomRoles.Phantom or
-            CustomRoles.Mario or
+            CustomRoles.Vector or
             CustomRoles.SoulCollector or
             CustomRoles.Pirate or
             CustomRoles.Terrorist or
@@ -753,7 +753,7 @@ public static class CustomRolesHelper
             //Standard
             CustomRoles.Jester or
             CustomRoles.Opportunist or
-            CustomRoles.Mario or
+            CustomRoles.Vector or
             CustomRoles.Masochist or
             CustomRoles.Amnesiac or
             CustomRoles.Huntsman or
@@ -911,7 +911,7 @@ public static class CustomRolesHelper
             //Standard
             CustomRoles.Jester or
             CustomRoles.Opportunist or
-            CustomRoles.Mario or
+            CustomRoles.Vector or
             CustomRoles.HexMaster or
             CustomRoles.Crewpostor or
             CustomRoles.Wraith or
@@ -1377,10 +1377,10 @@ public static class CustomRolesHelper
 
             case CustomRoles.Unlucky:
                 if (//pc.Is(CustomRoles.Luckey)
-                    pc.Is(CustomRoles.Mario)
+                    pc.Is(CustomRoles.Vector)
                     || pc.Is(CustomRoles.Lucky)
                     || pc.Is(CustomRoles.Lucky)
-                    || pc.Is(CustomRoles.Mario)
+                    || pc.Is(CustomRoles.Vector)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Taskinator))
                     return false;
@@ -1937,7 +1937,7 @@ public static class CustomRolesHelper
             CustomRoles.Jackal => CustomWinner.Jackal,
             CustomRoles.Sidekick => CustomWinner.Sidekick,
             CustomRoles.God => CustomWinner.God,
-            CustomRoles.Mario => CustomWinner.Mario,
+            CustomRoles.Vector => CustomWinner.Vector,
             CustomRoles.Innocent => CustomWinner.Innocent,
             CustomRoles.Pelican => CustomWinner.Pelican,
             CustomRoles.Youtuber => CustomWinner.Youtuber,

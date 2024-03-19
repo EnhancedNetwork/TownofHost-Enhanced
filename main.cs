@@ -159,7 +159,6 @@ public class Main : BasePlugin
     public static Dictionary<(byte, byte), bool> isRevealed = [];
     public static Dictionary<byte, byte> SpeedBoostTarget = [];
     public static Dictionary<byte, int> ParaUsedButtonCount = [];
-    public static Dictionary<byte, int> MarioVentCount = [];
     public static Dictionary<byte, long> AllKillers = [];
     public static int AliveImpostorCount;
     public static Dictionary<byte, bool> CheckShapeshift = [];
@@ -716,7 +715,7 @@ public enum CustomRoles
     Taskinator,
     Terrorist,
     Traitor,
-    Mario,//vector
+    Vector,//vector
     VengefulRomantic,
     Virus,
     Vulture,
@@ -831,7 +830,7 @@ public enum CustomWinner
     Jackal = CustomRoles.Jackal,
     Sidekick = CustomRoles.Sidekick,
     God = CustomRoles.God,
-    Mario = CustomRoles.Mario,
+    Vector = CustomRoles.Vector,
     Innocent = CustomRoles.Innocent,
     Pelican = CustomRoles.Pelican,
     Youtuber = CustomRoles.Youtuber,

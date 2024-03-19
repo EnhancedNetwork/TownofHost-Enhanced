@@ -505,8 +505,6 @@ public static class Options
 
 
 
-    public static OptionItem MarioVentNumWin;
-    public static OptionItem MarioVentCD;
 
     public static OptionItem WorkaholicCannotWinAtDeath;
     public static OptionItem WorkaholicVentCooldown;
@@ -1528,14 +1526,8 @@ public static class Options
         SoulCollector.SetupCustomOption();
 
         Terrorist.SetupCustomOptions();
-        
-        SetupRoleOptions(15500, TabGroup.NeutralRoles, CustomRoles.Mario);
-        MarioVentNumWin = IntegerOptionItem.Create(15502, "MarioVentNumWin", new(5, 500, 5), 40, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mario])
-            .SetValueFormat(OptionFormat.Times);
-        MarioVentCD = FloatOptionItem.Create(15503, "VentCooldown", new(0f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mario])
-            .SetValueFormat(OptionFormat.Seconds);
+
+        Vector.SetupCustomOptions();
         
         Vulture.SetupCustomOption();
         

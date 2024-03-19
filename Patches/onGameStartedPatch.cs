@@ -73,7 +73,6 @@ internal class ChangeRoleSettings
             Main.ShapeshiftTarget = [];
             Main.SpeedBoostTarget = [];
             Main.ParaUsedButtonCount = [];
-            Main.MarioVentCount = [];
             Main.AllKillers = [];
             Main.OverDeadPlayerList = [];
             Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
@@ -433,9 +432,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Solsticer:
                         Solsticer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Mario:
-                        Main.MarioVentCount[pc.PlayerId] = 0;
                         break;
                     case CustomRoles.SchrodingersCat:
                         SchrodingersCat.Add(pc.PlayerId);

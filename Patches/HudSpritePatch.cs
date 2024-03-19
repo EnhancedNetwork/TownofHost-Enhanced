@@ -76,9 +76,6 @@ public static class HudSpritePatch
             case CustomRoles.Witness:
                 newKillButton = CustomButton.Get("Examine");
                 break;
-            case CustomRoles.Mario:
-                newAbilityButton = CustomButton.Get("Happy");
-                break;
             case CustomRoles.SoulCatcher:
                 newKillButton = CustomButton.Get("Teleport");
                 break;

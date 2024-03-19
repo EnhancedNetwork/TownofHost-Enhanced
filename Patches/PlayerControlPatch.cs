@@ -1226,18 +1226,6 @@ class FixedUpdateInNormalGamePatch
 
                     switch (playerRole)
                     {
-                        case CustomRoles.Mario:
-                            if (Main.MarioVentCount[player.PlayerId] >= Options.MarioVentNumWin.GetInt())
-                            {
-                                Main.MarioVentCount[player.PlayerId] = Options.MarioVentNumWin.GetInt();
-                                if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
-                                {
-                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
-                                    CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-                                }
-                            }
-                            break;
-
                         case CustomRoles.Vulture:
                             if (Vulture.BodyReportCount[player.PlayerId] >= Vulture.NumberOfReportsToWin.GetInt())
                             {
@@ -1555,21 +1543,6 @@ class EnterVentPatch
     public static void Postfix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
     {
         if (GameStates.IsHideNSeek) return;
-
-        if (pc.Is(CustomRoles.Mario))
-        {
-            Main.MarioVentCount.TryAdd(pc.PlayerId, 0);
-            Main.MarioVentCount[pc.PlayerId]++;
-            Utils.NotifyRoles(SpecifySeer: pc);
-            if (AmongUsClient.Instance.AmHost && Main.MarioVentCount[pc.PlayerId] >= Options.MarioVentNumWin.GetInt())
-            {
-                if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))
-                {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
-                    CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                }
-            }
-        }
 
         Main.LastEnteredVent.Remove(pc.PlayerId);
         Main.LastEnteredVent.Add(pc.PlayerId, __instance);
