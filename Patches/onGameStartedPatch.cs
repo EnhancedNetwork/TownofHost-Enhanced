@@ -185,7 +185,6 @@ internal class ChangeRoleSettings
             Bait.Init();
             Hawk.Init();
             Bloodmoon.Init();
-            SoulCollector.Init();
             SchrodingersCat.Init();
             Antidote.Init();
             Fool.Init();
@@ -437,9 +436,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Mario:
                         Main.MarioVentCount[pc.PlayerId] = 0;
-                        break;
-                    case CustomRoles.SoulCollector:
-                        SoulCollector.Add(pc.PlayerId);
                         break;
                     case CustomRoles.SchrodingersCat:
                         SchrodingersCat.Add(pc.PlayerId);

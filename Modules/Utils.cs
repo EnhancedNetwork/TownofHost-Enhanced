@@ -534,12 +534,6 @@ public static class Utils
 
             switch (role)
             {
-                case CustomRoles.SoulCollector:
-                    ProgressText.Append(SoulCollector.GetProgressText(playerId));
-                    break;
-                /*     case CustomRoles.CopyCat:
-                         ProgressText.Append(ColorString(GetRoleColor(CustomRoles.CopyCat).ShadeColor(0.25f), $"({(CopyCat.MiscopyLimit.TryGetValue(playerId, out var count2) ? count2 : 0)})"));
-                         break; */
                 case CustomRoles.SchrodingersCat:
                     ProgressText.Append(SchrodingersCat.GetProgressText(playerId));
                     break;

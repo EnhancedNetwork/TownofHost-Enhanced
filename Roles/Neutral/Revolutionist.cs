@@ -16,8 +16,6 @@ namespace TOHE.Roles.Neutral
 {
     internal class Revolutionist : RoleBase // 😓
     {
-
-
         //===========================SETUP================================\\
         private const int Id = 15200;
         private static readonly HashSet<byte> PlayerIds = [];

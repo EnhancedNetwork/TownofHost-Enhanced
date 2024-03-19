@@ -620,7 +620,7 @@ class MurderPlayerPatch
 
 
         if (Vulture.IsEnable) Vulture.OnPlayerDead(target);
-        if (SoulCollector.IsEnable) SoulCollector.OnPlayerDead(target);
+        if (SoulCollector.HasEnabled) SoulCollector.OnPlayerDead(target);
 
         //================GHOST ASSIGN PATCH============
         if (target.Is(CustomRoles.EvilSpirit))
@@ -992,7 +992,6 @@ class ReportDeadBodyPatch
             playerStates.RoleClass?.OnReportDeadBody(player, target?.Object);
         }
 
-        if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
         if (Vulture.IsEnable) Vulture.Clear();
 
         // Alchemist & Bloodlust

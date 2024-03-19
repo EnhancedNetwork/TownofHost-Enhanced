@@ -118,12 +118,7 @@ class CheckForEndVotingPatch
 
                     if (voteTarget != null)
                     {
-                        switch (pc.GetCustomRole())
-                        {
-                            case CustomRoles.SoulCollector:
-                                SoulCollector.OnVote(pc, voteTarget);
-                                break;
-                        }
+
                         pc.GetRoleClass()?.OnVote(pc, voteTarget); // Role has voted
                         voteTarget.GetRoleClass()?.OnVoted(voteTarget, pc); // Role is voted
 
