@@ -884,38 +884,6 @@ class ReportDeadBodyPatch
 
                 if (target.Object.Is(CustomRoles.Unreportable)) return false;
 
-                // Vulture was eat body
-                if (Vulture.UnreportablePlayers.Contains(target.PlayerId)) return false;
-
-
-                if (__instance.Is(CustomRoles.Vulture))
-                {
-                    long now = Utils.GetTimeStamp();
-                    if ((Vulture.AbilityLeftInRound[__instance.PlayerId] > 0) && (now - Vulture.LastReport[__instance.PlayerId] > (long)Vulture.VultureReportCD.GetFloat()))
-                    {
-                        Vulture.LastReport[__instance.PlayerId] = now;
-
-                        __instance.GetRoleClass().OnReportDeadBody(__instance, target.Object);
-                        __instance.RpcGuardAndKill(__instance);
-                        __instance.Notify(GetString("VultureReportBody"));
-                        if (Vulture.AbilityLeftInRound[__instance.PlayerId] > 0)
-                        {
-                            _ = new LateTask(() =>
-                            {
-                                if (GameStates.IsInTask)
-                                {
-                                    if (!Options.DisableShieldAnimations.GetBool()) __instance.RpcGuardAndKill(__instance);
-                                    __instance.Notify(GetString("VultureCooldownUp"));
-                                }
-                                return;
-                            }, Vulture.VultureReportCD.GetFloat(), "Vulture CD");
-                        }
-
-                        Logger.Info($"{__instance.GetRealName()} ate {target.PlayerName} corpse", "Vulture");
-                        return false;
-                    }
-                }
-
 
                 // 胆小鬼不敢报告
                 var tpc = Utils.GetPlayerById(target.PlayerId);
@@ -1220,22 +1188,6 @@ class FixedUpdateInNormalGamePatch
 
                     if (Rainbow.isEnabled)
                         Rainbow.OnFixedUpdate();
-
-                    switch (playerRole)
-                    {
-                        case CustomRoles.Vulture:
-                            if (Vulture.BodyReportCount[player.PlayerId] >= Vulture.NumberOfReportsToWin.GetInt())
-                            {
-                                Vulture.BodyReportCount[player.PlayerId] = Vulture.NumberOfReportsToWin.GetInt();
-                                if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
-                                {
-                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vulture);
-                                    CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-                                }
-                            }
-                            break;
-                    }
-
                     if (Options.LadderDeath.GetBool() && player.IsAlive())
                         FallFromLadder.FixedUpdate(player);
 
