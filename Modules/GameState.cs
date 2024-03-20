@@ -461,19 +461,6 @@ public class TaskState
 
             player.GetRoleClass()?.OnTaskComplete(player, CompletedTasksCount, AllTasksCount);
 
-            switch (playerRole)
-            {
-                //case CustomRoles.SpeedBooster when player.IsAlive():
-                //    if ((CompletedTasksCount + 1) <= Options.SpeedBoosterTimes.GetInt())
-                //    {
-                //        Logger.Info($"Speed Booster: {player.GetNameWithRole().RemoveHtmlTags()} completed the task", "SpeedBooster");
-                //        Main.AllPlayerSpeed[player.PlayerId] += Options.SpeedBoosterUpSpeed.GetFloat();
-                //        if (Main.AllPlayerSpeed[player.PlayerId] > 3) player.Notify(Translator.GetString("SpeedBoosterSpeedLimit"));
-                //        else player.Notify(string.Format(Translator.GetString("SpeedBoosterTaskDone"), Main.AllPlayerSpeed[player.PlayerId].ToString("0.0#####")));
-                //    }
-                //    break;
-            }
-
 
             // Add-Ons
             if (playerSubRoles.Count > 0)

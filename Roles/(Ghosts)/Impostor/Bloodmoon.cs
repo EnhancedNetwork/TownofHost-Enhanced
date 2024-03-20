@@ -8,7 +8,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
-namespace TOHE.Roles.Impostor
+namespace TOHE.Roles._Ghosts_.Impostor
 {
     public static class Bloodmoon
     {
