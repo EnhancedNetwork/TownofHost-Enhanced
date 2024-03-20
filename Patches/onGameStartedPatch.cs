@@ -56,7 +56,6 @@ internal class ChangeRoleSettings
             Main.isRevealed = [];
             Main.NemesisRevenged = [];
             Main.ForCrusade = [];
-            Main.WorkaholicAlive = [];
             Main.TasklessCrewmate = [];
             Main.UnreportableBodies = [];
             Main.InfectedBodies = [];
@@ -190,7 +189,6 @@ internal class ChangeRoleSettings
             Burst.Init();
             DoubleShot.Init();
             Warden.Init();
-            Vulture.Init();
             Lucky.Init();
             Bewilder.Init();
             ChiefOfPolice.Init();
@@ -435,9 +433,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.SchrodingersCat:
                         SchrodingersCat.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Vulture:
-                        Vulture.Add(pc.PlayerId);
                         break;
                     case CustomRoles.ChiefOfPolice:
                         ChiefOfPolice.Add(pc.PlayerId);

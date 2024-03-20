@@ -269,6 +269,7 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
+
         bool cancel = false;
         foreach (var player in Main.PlayerStates.Values.ToArray())
         {

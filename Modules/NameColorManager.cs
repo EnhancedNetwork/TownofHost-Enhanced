@@ -111,7 +111,7 @@ public static class NameColorManager
             || (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor) && Madmate.MadmateKnowWhosImp.GetBool())
             || (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
             || (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool())
-            || (target.Is(CustomRoles.Workaholic) && Options.WorkaholicVisibleToEveryone.GetBool())
+            || Workaholic.OthersKnowWorka(target)
             || (target.Is(CustomRoles.Gravestone) && Main.PlayerStates[target.Data.PlayerId].IsDead)
             || Mare.KnowTargetRoleColor(target, isMeeting);
     }

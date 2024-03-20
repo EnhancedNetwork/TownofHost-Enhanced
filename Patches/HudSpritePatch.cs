@@ -85,9 +85,6 @@ public static class HudSpritePatch
             case CustomRoles.Chameleon:
                 newAbilityButton = CustomButton.Get("invisible");
                 break;
-            case CustomRoles.Vulture:
-                newReportButton = CustomButton.Get("Eat");
-                break;
         }
 
     EndOfSelectImg:

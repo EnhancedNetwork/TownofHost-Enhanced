@@ -619,7 +619,6 @@ class MurderPlayerPatch
         }
 
 
-        if (Vulture.IsEnable) Vulture.OnPlayerDead(target);
         if (SoulCollector.HasEnabled) SoulCollector.OnPlayerDead(target);
 
         //================GHOST ASSIGN PATCH============
@@ -896,7 +895,7 @@ class ReportDeadBodyPatch
                     {
                         Vulture.LastReport[__instance.PlayerId] = now;
 
-                        Vulture.OnReportDeadBody(__instance, target);
+                        __instance.GetRoleClass().OnReportDeadBody(__instance, target.Object);
                         __instance.RpcGuardAndKill(__instance);
                         __instance.Notify(GetString("VultureReportBody"));
                         if (Vulture.AbilityLeftInRound[__instance.PlayerId] > 0)
@@ -991,8 +990,6 @@ class ReportDeadBodyPatch
         {
             playerStates.RoleClass?.OnReportDeadBody(player, target?.Object);
         }
-
-        if (Vulture.IsEnable) Vulture.Clear();
 
         // Alchemist & Bloodlust
         Alchemist.OnReportDeadBodyGlobal();
@@ -1419,8 +1416,6 @@ class FixedUpdateInNormalGamePatch
                 if (Options.CurrentGameMode == CustomGameMode.FFA)
                     Suffix.Append(FFAManager.GetPlayerArrow(seer, target));
 
-                if (Vulture.IsEnable && Vulture.ArrowsPointingToDeadBody.GetBool())
-                    Suffix.Append(Vulture.GetTargetArrow(seer, target));
 
                 if (GameStates.IsInTask)
                 {

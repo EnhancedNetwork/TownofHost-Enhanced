@@ -94,9 +94,6 @@ class HudManagerPatch
 
                 switch (player.GetCustomRole())
                 {
-                    case CustomRoles.Vulture:
-                        __instance.ReportButton.OverrideText(GetString("VultureEatButtonText"));
-                        break;
                     case CustomRoles.Paranoia:
                         __instance.AbilityButton.buttonLabelText.text = GetString("ParanoiaVentButtonText");
                         break;

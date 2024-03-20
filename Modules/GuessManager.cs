@@ -244,22 +244,10 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessDisabled"));
                     return true;
                 }
-                if (target.Is(CustomRoles.Workaholic) && Options.WorkaholicVisibleToEveryone.GetBool())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessWorkaholic"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessWorkaholic"));
-                    return true;
-                }
                 if (role == CustomRoles.Knighted && pc.Is(CustomRoles.Monarch))
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessKnighted"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessKnighted"));
-                    return true;
-                }
-                if (pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessDisabled"));
                     return true;
                 }
                 if (pc.Is(CustomRoles.God) && !Options.GodCanGuess.GetBool())

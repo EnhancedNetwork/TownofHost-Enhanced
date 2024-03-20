@@ -501,17 +501,6 @@ public static class Options
     public static OptionItem GGTryHideMsg;
 
     // Neutrals role settings
-    public static OptionItem OppoImmuneToAttacksWhenTasksDone;
-
-
-
-
-    public static OptionItem WorkaholicCannotWinAtDeath;
-    public static OptionItem WorkaholicVentCooldown;
-    public static OptionItem WorkaholicVisibleToEveryone;
-    public static OptionItem WorkaholicGiveAdviceAlive;
-    public static OptionItem WorkaholicCanGuess;
-
 
     // Add-Ons settings 
 
@@ -577,9 +566,6 @@ public static class Options
         "FormatNameModes.Snacks",
     ];
     public static SuffixModes GetSuffixMode() => (SuffixModes)SuffixMode.GetValue();
-
-    // Override Tasks
-    public static OverrideTasksData WorkaholicTasks;
 
 
     public static int SnitchExposeTaskLeft = 1;
@@ -1530,20 +1516,8 @@ public static class Options
         Vector.SetupCustomOptions();
         
         Vulture.SetupCustomOption();
-        
-        SetupRoleOptions(15700, TabGroup.NeutralRoles, CustomRoles.Workaholic); //TOH_Y
-        WorkaholicCannotWinAtDeath = BooleanOptionItem.Create(15702, "WorkaholicCannotWinAtDeath", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic]);
-        WorkaholicVentCooldown = FloatOptionItem.Create(15703, "VentCooldown", new(0f, 180f, 2.5f), 0f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic])
-            .SetValueFormat(OptionFormat.Seconds);
-        WorkaholicVisibleToEveryone = BooleanOptionItem.Create(15704, "WorkaholicVisibleToEveryone", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic]);
-        WorkaholicGiveAdviceAlive = BooleanOptionItem.Create(15705, "WorkaholicGiveAdviceAlive", true, TabGroup.NeutralRoles, false)
-            .SetParent(WorkaholicVisibleToEveryone);
-        WorkaholicCanGuess = BooleanOptionItem.Create(15706, "CanGuess", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic]);
-        WorkaholicTasks = OverrideTasksData.Create(15707, TabGroup.NeutralRoles, CustomRoles.Workaholic);
+
+        Workaholic.SetupCustomOptions();
 
         TextOptionItem.Create(10000014, "RoleType.NeutralKilling", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)

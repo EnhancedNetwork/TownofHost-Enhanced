@@ -848,7 +848,7 @@ static class ExtendedPlayerControl
         else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(CustomRoleTypes.Impostor)) return true;
         else if (seer.Is(CustomRoleTypes.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor()) return true;
-        else if (Options.WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic)) return true;
+        else if (Workaholic.OthersKnowWorka(target)) return true;
         else if (Jackal.JackalKnowRole(seer, target)) return true;
         else if (seer.IsRevealedPlayer(target) && !target.Is(CustomRoles.Trickster)) return true;
         else if (Cultist.KnowRole(seer, target)) return true;

@@ -149,15 +149,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
                 AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
                 break;
-            case CustomRoles.Vulture:
-                Vulture.ApplyGameOptions(opt);
-                AURoleOptions.EngineerCooldown = 0f;
-                AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            case CustomRoles.Workaholic:
-                AURoleOptions.EngineerCooldown = Options.WorkaholicVentCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
             case CustomRoles.Solsticer:
                 Solsticer.ApplyGameOptions();
                 break;

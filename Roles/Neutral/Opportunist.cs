@@ -16,6 +16,9 @@ namespace TOHE.Roles.Neutral
         public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
         //==================================================================\\
+
+
+        public static OptionItem OppoImmuneToAttacksWhenTasksDone;
         public static void SetupCustomOptions()
         {
             SetupRoleOptions(13300, TabGroup.NeutralRoles, CustomRoles.Opportunist);

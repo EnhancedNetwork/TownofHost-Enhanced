@@ -540,9 +540,6 @@ public static class Utils
                 case CustomRoles.TimeThief:
                     ProgressText.Append(TimeThief.GetProgressText(playerId));
                     break;
-                case CustomRoles.Vulture:
-                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Vulture).ShadeColor(0.25f), $"({(Vulture.BodyReportCount.TryGetValue(playerId, out var count1) ? count1 : 0)}/{Vulture.NumberOfReportsToWin.GetInt()})"));
-                    break;
                 case CustomRoles.Anonymous:
                     ProgressText.Append(Anonymous.GetHackLimit(playerId));
                     break;
@@ -1506,16 +1503,6 @@ public static class Utils
                 SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
 
-                if (!isForMeeting) // Only during game
-                {
-                    switch (seerRole)
-                    {
-                        case CustomRoles.Vulture:
-                            if (Vulture.ArrowsPointingToDeadBody.GetBool())
-                                SelfSuffix.Append(Vulture.GetTargetArrow(seer));
-                            break;
-                    }
-                }
                 switch (Options.CurrentGameMode)
                 {
                     case CustomGameMode.FFA:
@@ -1824,8 +1811,6 @@ public static class Utils
         if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
 
         AntiBlackout.AfterMeetingTasks();
-
-        if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
 
         foreach (var playerState in Main.PlayerStates.Values.ToArray())
         {

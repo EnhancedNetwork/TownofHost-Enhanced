@@ -33,7 +33,6 @@ public static class CustomRolesHelper
                 CustomRoles.Telecommunication => Telecommunication.CanUseVent() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Mayor => Mayor.MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Captain => CustomRoles.Crewmate,
-                CustomRoles.Vulture => Vulture.CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Opportunist => CustomRoles.Crewmate,
                 CustomRoles.Vindicator => CustomRoles.Impostor,
                 CustomRoles.Snitch => CustomRoles.Crewmate,
@@ -1119,7 +1118,7 @@ public static class CustomRolesHelper
                     return false;
                 if ((pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool())
                     || (pc.Is(CustomRoles.Terrorist) && (!Terrorist.TerroristCanGuess.GetBool() || Terrorist.CanTerroristSuicideWin.GetBool()))
-                    || (pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool())
+                    || (pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicCanGuess.GetBool())
                     || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
                     || (pc.Is(CustomRoles.God) && !Options.GodCanGuess.GetBool()))
                     return false; //Based on guess manager
@@ -1138,7 +1137,7 @@ public static class CustomRolesHelper
                     return false;
                 if ((pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool())
                     || (pc.Is(CustomRoles.Terrorist) && (!Terrorist.TerroristCanGuess.GetBool() || Terrorist.CanTerroristSuicideWin.GetBool()))
-                    || (pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool())
+                    || (pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicCanGuess.GetBool())
                     || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
                     || (pc.Is(CustomRoles.God) && !Options.GodCanGuess.GetBool()))
                     return false; //Based on guess manager
@@ -1164,7 +1163,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Rebound)
-                    || pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicVisibleToEveryone.GetBool())
+                    || pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicVisibleToEveryone.GetBool())
                     return false; //Based on guess manager
                 if ((pc.GetCustomRole().IsCrewmate() && !Onbound.CrewCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Onbound.NeutralCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Onbound.ImpCanBeOnbound.GetBool()))
                     return false;
@@ -1179,7 +1178,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Onbound)
-                    || pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicVisibleToEveryone.GetBool())
+                    || pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicVisibleToEveryone.GetBool())
                 {
                     return false;
                 } //Based on guess manager
@@ -1191,7 +1190,7 @@ public static class CustomRolesHelper
                 if (!Options.GuesserMode.GetBool() && !pc.Is(CustomRoles.EvilGuesser) && !pc.Is(CustomRoles.NiceGuesser) && !pc.Is(CustomRoles.Doomsayer) && !pc.Is(CustomRoles.Guesser))
                     return false;
                 if (pc.Is(CustomRoles.CopyCat) 
-                    || pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool()
+                    || pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicCanGuess.GetBool()
                     || (pc.Is(CustomRoles.Terrorist) && (!Terrorist.TerroristCanGuess.GetBool() || Terrorist.CanTerroristSuicideWin.GetBool())
                     || (pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool()))
                     || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
@@ -1792,7 +1791,7 @@ public static class CustomRolesHelper
         return (role is CustomRoles.Mayor && Mayor.VisibleToEveryone(target))
             || (role is CustomRoles.SuperStar && SuperStar.VisibleToEveryone(target))
             || (role is CustomRoles.Marshall && target.AllTasksCompleted())
-            || (role is CustomRoles.Workaholic && Options.WorkaholicVisibleToEveryone.GetBool())
+            || (role is CustomRoles.Workaholic && Workaholic.WorkaholicVisibleToEveryone.GetBool())
             || (role is CustomRoles.Doctor && Doctor.VisibleToEveryone(target))
             || (role is CustomRoles.Bait && Bait.BaitNotification.GetBool() && Inspector.CheckBaitCountType)
             || (role is CustomRoles.President && President.CheckReveal(target.PlayerId))
