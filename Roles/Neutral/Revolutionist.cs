@@ -68,6 +68,10 @@ namespace TOHE.Roles.Neutral
         {
             PlayerIds.Add(playerId);
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
+
+
+            foreach (var ar in Main.AllPlayerControls)
+                Main.isDraw.Add((playerId, ar.PlayerId), false);
         }
         public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RevolutionistCooldown.GetFloat();
 

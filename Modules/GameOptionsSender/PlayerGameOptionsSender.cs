@@ -149,9 +149,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
                 AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
                 break;
-            case CustomRoles.Solsticer:
-                Solsticer.ApplyGameOptions();
-                break;
             case CustomRoles.Warden:
                 Warden.SetAbilityCooldown();
                 break;

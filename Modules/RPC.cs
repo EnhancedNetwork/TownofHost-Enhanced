@@ -818,9 +818,6 @@ internal static class RPC
 
         switch (role)
         {
-            case CustomRoles.SchrodingersCat:
-                SchrodingersCat.Add(targetId);
-                break;
             case CustomRoles.LastImpostor:
                 LastImpostor.Add(targetId);
                 break;

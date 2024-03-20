@@ -170,7 +170,6 @@ internal class ChangeRoleSettings
                 role.CreateRoleClass()?.Init();
             }
 
-            Solsticer.Init();
             LastImpostor.Init();
             TargetArrow.Init();
             LocateArrow.Init();
@@ -183,7 +182,6 @@ internal class ChangeRoleSettings
             Bait.Init();
             Hawk.Init();
             Bloodmoon.Init();
-            SchrodingersCat.Init();
             Antidote.Init();
             Fool.Init();
             Burst.Init();
@@ -421,18 +419,8 @@ internal class SelectRolesPatch
 
                 switch (pc.GetCustomRole())
                 {
-                    case CustomRoles.Revolutionist:
-                        foreach (var ar in Main.AllPlayerControls)
-                            Main.isDraw.Add((pc.PlayerId, ar.PlayerId), false);
-                        break;
                     case CustomRoles.Paranoia:
                         Main.ParaUsedButtonCount[pc.PlayerId] = 0;
-                        break;
-                    case CustomRoles.Solsticer:
-                        Solsticer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.SchrodingersCat:
-                        SchrodingersCat.Add(pc.PlayerId);
                         break;
                     case CustomRoles.ChiefOfPolice:
                         ChiefOfPolice.Add(pc.PlayerId);

@@ -1,16 +1,28 @@
-﻿using HarmonyLib;
+﻿using AmongUs.GameOptions;
+using HarmonyLib;
 using Hazel;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.MeetingHudStartPatch;
+using System.Drawing;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Solsticer
+internal class Solsticer : RoleBase
 {
-    private static readonly int Id = 26200;
-    public static bool IsEnable = false;
+
+    //===========================SETUP================================\\
+    private const int Id = 26200;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => SolsticerCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
+    //==================================================================\\
 
     public static OptionItem EveryOneKnowSolsticer;
     public static OptionItem SolsticerCanVent;
@@ -45,8 +57,9 @@ public static class Solsticer
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
         OverrideTasksData.Create(Id + 17, TabGroup.NeutralRoles, CustomRoles.Solsticer);
     }
-    public static void Init()
+    public override void Init()
     {
+        PlayerIds.Clear();
         playerid = byte.MaxValue;
         warningActived = false;
         patched = false;
@@ -54,21 +67,21 @@ public static class Solsticer
         Count = 0;
         CanGuess = true;
         MurderMessage = "";
-        IsEnable = false;
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerid = playerId;
-        IsEnable = true;
+        PlayerIds.Add(playerId);
+        CustomRoleManager.SuffixOthers.Add(GetSuffixOthers);
     }
-    public static void ApplyGameOptions()
+    public override void ApplyGameOptions(IGameOptions opt, byte id)
     {
         AURoleOptions.EngineerCooldown = 0f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
         AURoleOptions.PlayerSpeedMod = !patched ? SolsticerSpeed.GetFloat() : 0.5f;
     } //Enabled Solsticer can vent
-    public static void OnCompleteTask(PlayerControl player)
+    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (player == null || !player.Is(CustomRoles.Solsticer)) return;
@@ -87,24 +100,20 @@ public static class Solsticer
             ActiveWarning(player);
         }
     }
-    public static bool IsSolsticerTarget(this PlayerControl pc, bool onlyKiller)
-    {
-        return pc.IsAlive() && (!onlyKiller || pc.HasImpKillButton());
-    }
-    public static string GetWarningArrow(PlayerControl seer, PlayerControl target)
+    private static string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {
         if (GameStates.IsMeeting || !warningActived) return "";
         if (seer.Is(CustomRoles.Solsticer)) return "";
 
         var warning = "⚠";
-        if (seer.IsSolsticerTarget(onlyKiller: true) && !target.Is(CustomRoles.Solsticer))
+        if (IsSolsticerTarget(seer, onlyKiller: true) && !target.Is(CustomRoles.Solsticer))
             warning += TargetArrow.GetArrows(seer, playerid);
 
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), warning);
     }
-    public static void ActiveWarning(PlayerControl pc)
+    private static void ActiveWarning(PlayerControl pc)
     {
-        foreach (var target in Main.AllAlivePlayerControls.Where(x => x.IsSolsticerTarget(onlyKiller: true)).ToArray())
+        foreach (var target in Main.AllAlivePlayerControls.Where(x => IsSolsticerTarget(x, onlyKiller: true)).ToArray())
         {
             TargetArrow.Add(target.PlayerId, pc.PlayerId);
         }
@@ -115,7 +124,7 @@ public static class Solsticer
             Utils.NotifyRoles(ForceLoop: true);
         }
     }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
         if (!GameStates.IsMeeting)
@@ -144,7 +153,33 @@ public static class Solsticer
         }
         return true; //should be patched before every others
     } //My idea is to encourage everyone to kill Solsticer and won't waste shoots on it, only resets cd.
-    public static void AfterMeetingTasks()
+    public static bool OnCheckRpcMurderv3(PlayerControl killer, PlayerControl target)
+    {
+        if (!HasEnabled || !target.Is(CustomRoles.Solsticer)) return false;
+        if (!GameStates.IsMeeting)
+        {
+            if (target.PlayerId != killer.PlayerId)
+            {
+                killer.RpcTeleport(target.GetTruePosition());
+                killer.RpcGuardAndKill(target);
+                killer.SetKillCooldown(forceAnime: true);
+                killer.Notify(GetString("MurderSolsticer"));
+            }
+
+            target.RpcGuardAndKill();
+            patched = true;
+            ResetTasks(target);
+            target.MarkDirtySettings();
+
+            target.Notify(string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
+            if (SolsticerKnowKiller.GetBool())
+                MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
+            else MurderMessage = "";
+        }
+        //Solsticer wont die anyway.
+        return true;
+    }
+    public override void AfterMeetingTasks()
     {
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Solsticer)).ToArray())
         {
@@ -157,7 +192,7 @@ public static class Solsticer
         patched = false;
     }
     private static int Count;
-    public static void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl pc)
     {
         if (patched && GameStates.IsInTask)
         {
@@ -223,6 +258,12 @@ public static class Solsticer
             ActiveWarning(Utils.GetPlayerById(playerid));
         }
     }
+    public static bool OtherKnowSolsticer(PlayerControl target)
+        => target.Is(CustomRoles.Solsticer) && EveryOneKnowSolsticer.GetBool();
+    private static bool IsSolsticerTarget(PlayerControl pc, bool onlyKiller)
+    {
+        return pc.IsAlive() && (!onlyKiller || pc.HasImpKillButton());
+    }
     public static void ResetTasks(PlayerControl pc)
     {
         SetShortTasksToAdd();
@@ -241,5 +282,70 @@ public static class Solsticer
         var AlivePlayer = Main.AllAlivePlayerControls.Length;
 
         AddShortTasks = (int)((TotalPlayer - AlivePlayer) * AddTasksPreDeadPlayer.GetFloat());
+    }
+    public override bool CheckMisGuessed(bool isUI, PlayerControl pc, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
+    {
+        var dp = guesserSuicide ? pc : target;
+        if (pc.PlayerId == target.PlayerId)
+        {
+            CanGuess = false;
+            _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
+            return true;
+        }
+        return false;
+    }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
+    {
+        if( role == CustomRoles.Solsticer)
+        {
+            if (!isUI) Utils.SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
+            else pc.ShowPopUp(GetString("GuessSolsticer"));
+            return true;
+        }
+        return false;
+    }
+    public override bool GuessCheck(bool isUI, PlayerControl pc, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (pc.Is(CustomRoles.Solsticer) && (!CanGuess || !SolsticerCanGuess.GetBool()))
+        {
+            if (!isUI) Utils.SendMessage(GetString("SolsticerGuessMax"), pc.PlayerId);
+            else pc.ShowPopUp(GetString("SolsticerGuessMax"));
+            return true;
+        }
+        return false;
+    }
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    {
+        patched = false;
+    }
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (pc.Is(CustomRoles.Solsticer))
+        {
+            SetShortTasksToAdd();
+            if (MurderMessage == "")
+                MurderMessage = string.Format(GetString("SolsticerOnMeeting"), AddShortTasks);
+            AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
+        }
+    }
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+    {
+        if (seer.Is(CustomRoles.SchrodingersCat))
+        {
+            if (SchrodingersCat.teammate.ContainsKey(seer.PlayerId) && target.PlayerId == SchrodingersCat.teammate[seer.PlayerId])
+            {
+                if (target.GetCustomRole().IsCrewmate()) return "#8CFFFF";
+                else return Main.roleColors[target.GetCustomRole()];
+            }
+        }
+        if (target.Is(CustomRoles.SchrodingersCat))
+        {
+            if (SchrodingersCat.teammate.ContainsKey(target.PlayerId) && seer.PlayerId == SchrodingersCat.teammate[target.PlayerId])
+            {
+                if (seer.GetCustomRole().IsCrewmate()) return "#8CFFFF";
+                else return Main.roleColors[seer.GetCustomRole()];
+            }
+        }
+        return "";
     }
 }

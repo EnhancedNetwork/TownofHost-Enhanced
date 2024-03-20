@@ -315,19 +315,6 @@ class CheckMurderPatch
             }
         }
 
-        switch (targetRole)
-        {
-            case CustomRoles.SchrodingersCat:
-                if (!SchrodingersCat.OnCheckMurder(killer, target)) return false;
-                break;
-            case CustomRoles.Solsticer:
-                if (Solsticer.OnCheckMurder(killer, target))
-                    return false;
-                break;
-        }
-
-
-
         if (!killer.RpcCheckAndMurder(target, true))
             return false;
 
@@ -951,7 +938,6 @@ class ReportDeadBodyPatch
         Main.LastVotedPlayerInfo = null;
         Main.GuesserGuessed.Clear();
         Main.AllKillers.Clear();
-        Solsticer.patched = false;
 
 
         foreach (var playerStates in Main.PlayerStates.Values.ToArray())
@@ -1170,12 +1156,6 @@ class FixedUpdateInNormalGamePatch
 
                 CustomRoleManager.OnFixedUpdate(player);
 
-                switch (playerRole)
-                {
-                    case CustomRoles.Solsticer:
-                        Solsticer.OnFixedUpdate(player);
-                        break;
-                }
 
                 if (player.Is(CustomRoles.Statue) && player.IsAlive())
                     Statue.OnFixedUpdate(player);
@@ -1329,10 +1309,6 @@ class FixedUpdateInNormalGamePatch
                             Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
                     }
                 }
-
-                if (CustomRoles.Solsticer.RoleExist())
-                    if (target.AmOwner || target.Is(CustomRoles.Solsticer))
-                        Mark.Append(Solsticer.GetWarningArrow(seer, target));
 
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
@@ -1628,10 +1604,6 @@ class PlayerControlCompleteTaskPatch
         {
             //ライターもしくはスピードブースターもしくはドクターがいる試合のみタスク終了時にCustomSyncAllSettingsを実行する
             Utils.MarkEveryoneDirtySettings();
-        }
-        if (pc.Is(CustomRoles.Solsticer))
-        {
-            Solsticer.OnCompleteTask(pc);
         }
     }
 }

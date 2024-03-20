@@ -534,9 +534,6 @@ public static class Utils
 
             switch (role)
             {
-                case CustomRoles.SchrodingersCat:
-                    ProgressText.Append(SchrodingersCat.GetProgressText(playerId));
-                    break;
                 case CustomRoles.TimeThief:
                     ProgressText.Append(TimeThief.GetProgressText(playerId));
                     break;
@@ -1489,9 +1486,6 @@ public static class Utils
                 if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
-                if (CustomRoles.Solsticer.RoleExist())
-                    SelfMark.Append(Solsticer.GetWarningArrow(seer, seer));
-
 
                 // ====== Add SelfSuffix for seer ======
 
@@ -1624,11 +1618,6 @@ public static class Utils
 
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
-
-                        if (target.Is(CustomRoles.Solsticer))
-                        {
-                            TargetMark.Append(Solsticer.GetWarningArrow(seer, target));
-                        }
 
 
 
@@ -1819,7 +1808,6 @@ public static class Utils
 
 
         if (Hawk.IsEnable) Hawk.AfterMeetingTasks();
-        if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();
 

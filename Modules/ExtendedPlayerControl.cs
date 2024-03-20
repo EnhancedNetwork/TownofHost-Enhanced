@@ -692,35 +692,10 @@ static class ExtendedPlayerControl
         postPest:
 
         if (target.Is(CustomRoles.Susceptible))
-        {
             Susceptible.CallEnabledAndChange(target);
-        }
-        
-        if (target.Is(CustomRoles.Solsticer))
-        {
-            if (!GameStates.IsMeeting)
-            {
-                if (target.PlayerId != killer.PlayerId)
-                {
-                    killer.RpcTeleport(target.GetTruePosition());
-                    killer.RpcGuardAndKill(target);
-                    killer.SetKillCooldown(forceAnime: true);
-                    killer.Notify(GetString("MurderSolsticer"));
-                }
 
-                target.RpcGuardAndKill();
-                Solsticer.patched = true;
-                Solsticer.ResetTasks(target);
-                target.MarkDirtySettings();
-
-                target.Notify(string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
-                if (Solsticer.SolsticerKnowKiller.GetBool())
-                    Solsticer.MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
-                else Solsticer.MurderMessage = "";
-            }
-            //Solsticer wont die anyway.
+        if (Solsticer.OnCheckRpcMurderv3(killer, target))
             return;
-        }
 
         if (killer.PlayerId == target.PlayerId && killer.shapeshifting)
         {
@@ -839,8 +814,8 @@ static class ExtendedPlayerControl
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (PlayerControl.LocalPlayer.PlayerId == seer.PlayerId && Main.GodMode.Value)) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
+        else if (Solsticer.OtherKnowSolsticer(target)) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
-        else if (target.Is(CustomRoles.Solsticer) && Solsticer.EveryOneKnowSolsticer.GetBool()) return true;
         else if (Gravestone.EveryoneKnowRole(target)) return true;
         else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Options.LoverKnowRoles.GetBool() && (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) || target.Is(CustomRoles.Ntr)) return true;

@@ -827,7 +827,7 @@ class MeetingHudStartPatch
                 AddMsg(string.Format(GetString("CyberDead"), Main.AllPlayerNames[csId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
             }
 
-            Main.PlayerStates.Where(x => x.Value.RoleClass.IsEnable)?.Do(x
+            Main.PlayerStates.Do(x
                 => x.Value.RoleClass.OnMeetingHudStart(pc));
 
             //侦探报告线索
@@ -836,14 +836,6 @@ class MeetingHudStartPatch
             //宝箱怪的消息（记录）
             if (pc.Is(CustomRoles.Mimic) && !pc.IsAlive())
                 Main.AllAlivePlayerControls.Where(x => x.GetRealKiller()?.PlayerId == pc.PlayerId).Do(x => MimicMsg += $"\n{x.GetNameWithRole(true)}");
-            
-            if (pc.Is(CustomRoles.Solsticer))
-            {
-                Solsticer.SetShortTasksToAdd();
-                if (Solsticer.MurderMessage == "")
-                    Solsticer.MurderMessage = string.Format(GetString("SolsticerOnMeeting"), Solsticer.AddShortTasks);
-                AddMsg(Solsticer.MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
-            }
         }
             
         //宝箱怪的消息（合并）
