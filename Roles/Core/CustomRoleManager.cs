@@ -35,7 +35,7 @@ public static class CustomRoleManager
         else return "TOHE.Roles.Neutral.";
     }
     public static RoleBase CreateRoleClass(this CustomRoles role) // CHATGPT COOKED 🔥🔥🗿☕
-    {
+    { 
         role = role switch // Switch role to FatherRole (Double Classes)
         {
             CustomRoles.Vampiress => CustomRoles.Vampire,

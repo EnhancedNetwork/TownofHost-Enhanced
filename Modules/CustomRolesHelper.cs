@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using System.Linq;
+using System.Collections.Generic;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
@@ -7,6 +8,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using HarmonyLib;
 
 namespace TOHE;
 
@@ -15,172 +17,65 @@ public static class CustomRolesHelper
     public static readonly CustomRoles[] AllRoles = EnumHelper.GetAllValues<CustomRoles>();
     public static readonly CustomRoleTypes[] AllRoleTypes = EnumHelper.GetAllValues<CustomRoleTypes>();
 
-    public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
+    public static Dictionary<CustomRoles, Attribute[]> RoleAttributes = [];
+    public enum Attribute
     {
+        //Impostor
+        IsImpostor,
+        IsMadmate,
 
-        if (role.IsVanilla())
-            return role;
-        
-        /*else if (role.GetRoleClass().ThisRoleBase < (CustomRoles)500)
-        {
-            return role.GetRoleClass().ThisRoleBase;
-        }*/ // Will not work untill all roles are done
-            
-            return role switch
-            {
-                CustomRoles.Sniper => CustomRoles.Shapeshifter,
-                CustomRoles.Jester => Jester.JesterCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
-                CustomRoles.Telecommunication => Telecommunication.CanUseVent() ? CustomRoles.Engineer : CustomRoles.Crewmate,
-                CustomRoles.Mayor => Mayor.MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
-                CustomRoles.Captain => CustomRoles.Crewmate,
-                CustomRoles.Opportunist => CustomRoles.Crewmate,
-                CustomRoles.Vindicator => CustomRoles.Impostor,
-                CustomRoles.Snitch => CustomRoles.Crewmate,
-                CustomRoles.Masochist => CustomRoles.Crewmate,
-                CustomRoles.Cleanser => CustomRoles.Crewmate,
-                CustomRoles.Inspector => CustomRoles.Crewmate,
-                CustomRoles.GuessMaster => CustomRoles.Crewmate,
-                CustomRoles.Benefactor => CustomRoles.Crewmate,
-                CustomRoles.Keeper => CustomRoles.Crewmate,
-                CustomRoles.President => CustomRoles.Crewmate,
-                CustomRoles.Marshall => CustomRoles.Crewmate,
-                CustomRoles.Nemesis => Nemesis.LegacyNemesis.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor,
-                CustomRoles.Bloodmoon => CustomRoles.GuardianAngel,
-                CustomRoles.Mechanic => CustomRoles.Engineer,
-                CustomRoles.Terrorist => CustomRoles.Engineer,
-                CustomRoles.Executioner => CustomRoles.Crewmate,
-                CustomRoles.Lawyer => CustomRoles.Crewmate,
-                CustomRoles.Bastion => CustomRoles.Engineer,
-                CustomRoles.Vampire => CustomRoles.Impostor,
-                CustomRoles.Vampiress => CustomRoles.Impostor,
-                CustomRoles.BountyHunter => CustomRoles.Shapeshifter,
-                CustomRoles.Trickster => CustomRoles.Impostor,
-                CustomRoles.Witch => CustomRoles.Impostor,
-                CustomRoles.ShapeMaster => CustomRoles.Shapeshifter,
-                CustomRoles.ShapeshifterTOHE => CustomRoles.Shapeshifter,
-                CustomRoles.Chronomancer => CustomRoles.Impostor,
-                CustomRoles.Stealth => CustomRoles.Impostor,
-                CustomRoles.Penguin => CustomRoles.Shapeshifter,
-                CustomRoles.ImpostorTOHE => CustomRoles.Impostor,
-                CustomRoles.Consigliere => CustomRoles.Impostor,
-                CustomRoles.Wildling => CustomRoles.Shapeshifter,
-                CustomRoles.Morphling => CustomRoles.Shapeshifter,
-                CustomRoles.Warlock => CustomRoles.Shapeshifter,
-                CustomRoles.Undertaker => CustomRoles.Shapeshifter,
-                CustomRoles.Mercenary => CustomRoles.Shapeshifter,
-                CustomRoles.Fireworker => CustomRoles.Shapeshifter,
-                CustomRoles.SpeedBooster => CustomRoles.Crewmate,
-                CustomRoles.Dictator => CustomRoles.Crewmate,
-                CustomRoles.Inhibitor => CustomRoles.Impostor,
-                CustomRoles.Saboteur => CustomRoles.Impostor,
-                CustomRoles.Berserker => CustomRoles.Impostor,
-                CustomRoles.Doctor => CustomRoles.Scientist,
-                CustomRoles.ScientistTOHE => CustomRoles.Scientist,
-                CustomRoles.Tracefinder => CustomRoles.Scientist,
-                CustomRoles.Puppeteer => CustomRoles.Impostor,
-                CustomRoles.Mastermind => CustomRoles.Impostor,
-                CustomRoles.TimeThief => CustomRoles.Impostor,
-                CustomRoles.EvilTracker => CustomRoles.Shapeshifter,
-                CustomRoles.Paranoia => CustomRoles.Engineer,
-                CustomRoles.EngineerTOHE => CustomRoles.Engineer,
-                CustomRoles.TimeMaster => CustomRoles.Engineer,
-                CustomRoles.CrewmateTOHE => CustomRoles.Crewmate,
-                CustomRoles.Miner => CustomRoles.Shapeshifter,
-                CustomRoles.Psychic => CustomRoles.Crewmate,
-                CustomRoles.LazyGuy => CustomRoles.Crewmate,
-                CustomRoles.Twister => CustomRoles.Shapeshifter,
-                CustomRoles.SuperStar => CustomRoles.Crewmate,
-                CustomRoles.Anonymous => CustomRoles.Shapeshifter,
-                CustomRoles.Visionary => CustomRoles.Impostor,
-                CustomRoles.Ninja => CustomRoles.Shapeshifter,
-                CustomRoles.Celebrity => CustomRoles.Crewmate,
-                CustomRoles.TaskManager => CustomRoles.Crewmate,
-                CustomRoles.Escapist => CustomRoles.Shapeshifter,
-                CustomRoles.NiceGuesser => CustomRoles.Crewmate,
-                CustomRoles.EvilGuesser => CustomRoles.Impostor,
-                CustomRoles.Detective => CustomRoles.Crewmate,
-                CustomRoles.God => CustomRoles.Crewmate,
-                CustomRoles.GuardianAngelTOHE => CustomRoles.GuardianAngel,
-                CustomRoles.Warden => CustomRoles.GuardianAngel,
-                CustomRoles.Minion => CustomRoles.GuardianAngel,
-                CustomRoles.Zombie => CustomRoles.Impostor,
-                CustomRoles.Vector => CustomRoles.Engineer,
-                CustomRoles.AntiAdminer => CustomRoles.Impostor,
-                CustomRoles.Arrogance => CustomRoles.Impostor,
-                CustomRoles.Bomber => CustomRoles.Shapeshifter,
-                CustomRoles.Nuker => CustomRoles.Shapeshifter,
-                CustomRoles.Kamikaze => CustomRoles.Impostor,
-                CustomRoles.Trapster => CustomRoles.Impostor,
-                CustomRoles.Scavenger => CustomRoles.Impostor,
-                CustomRoles.Transporter => CustomRoles.Crewmate,
-                CustomRoles.Veteran => CustomRoles.Engineer,
-                CustomRoles.Bodyguard => CustomRoles.Crewmate,
-                CustomRoles.Grenadier => CustomRoles.Engineer,
-                CustomRoles.Lighter => CustomRoles.Engineer,
-                CustomRoles.Gangster => CustomRoles.Impostor,
-                CustomRoles.Cleaner => CustomRoles.Impostor,
-                CustomRoles.Konan => CustomRoles.Crewmate,
-                CustomRoles.FortuneTeller => CustomRoles.Crewmate,
-                CustomRoles.Oracle => CustomRoles.Crewmate,
-                CustomRoles.Lightning => CustomRoles.Impostor,
-                CustomRoles.Greedy => CustomRoles.Impostor,
-                CustomRoles.Ludopath => CustomRoles.Impostor,
-                CustomRoles.Godfather => CustomRoles.Impostor,
-                CustomRoles.Workaholic => CustomRoles.Engineer,
-                CustomRoles.Solsticer => Solsticer.SolsticerCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
-                CustomRoles.CursedWolf => CustomRoles.Impostor,
-                CustomRoles.Collector => CustomRoles.Crewmate,
-                CustomRoles.Taskinator => CustomRoles.Engineer,
-                CustomRoles.SoulCatcher => CustomRoles.Shapeshifter,
-                CustomRoles.QuickShooter => CustomRoles.Shapeshifter,
-                CustomRoles.Eraser => CustomRoles.Impostor,
-                CustomRoles.Butcher => CustomRoles.Impostor,
-                CustomRoles.Hangman => CustomRoles.Shapeshifter,
-                CustomRoles.Sunnyboy => CustomRoles.Scientist,
-                CustomRoles.Phantom => Phantom.PhantomCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
-                CustomRoles.Judge => CustomRoles.Crewmate,
-                CustomRoles.Councillor => CustomRoles.Impostor, 
-                CustomRoles.Mortician => CustomRoles.Crewmate,
-                CustomRoles.Medium => CustomRoles.Crewmate,
-                CustomRoles.Bard => CustomRoles.Impostor,
-                CustomRoles.Swooper => CustomRoles.Impostor,
-                CustomRoles.SoulCollector => CustomRoles.Crewmate,
-                CustomRoles.Crewpostor => CustomRoles.Engineer,
-                CustomRoles.Observer => CustomRoles.Crewmate,
-                CustomRoles.Pacifist => CustomRoles.Engineer,
-                CustomRoles.Disperser => CustomRoles.Shapeshifter,
-                CustomRoles.Camouflager => CustomRoles.Shapeshifter,
-                CustomRoles.Dazzler => CustomRoles.Shapeshifter,
-                CustomRoles.Devourer => CustomRoles.Shapeshifter,
-                CustomRoles.Deathpact => CustomRoles.Shapeshifter,
-                CustomRoles.Coroner => CustomRoles.Crewmate,
-                CustomRoles.Tracker => CustomRoles.Crewmate,
-                CustomRoles.Merchant => CustomRoles.Crewmate,
-                CustomRoles.Retributionist => CustomRoles.Crewmate,
-                CustomRoles.Hawk => CustomRoles.GuardianAngel,
-                CustomRoles.Guardian => CustomRoles.Crewmate,
-                CustomRoles.Addict => CustomRoles.Engineer,
-                CustomRoles.Mole => CustomRoles.Engineer,
-                CustomRoles.Chameleon => CustomRoles.Engineer,
-                CustomRoles.EvilSpirit => CustomRoles.GuardianAngel,
-                CustomRoles.Lurker => CustomRoles.Impostor,
-                CustomRoles.Doomsayer => CustomRoles.Crewmate,
-                CustomRoles.Alchemist => CustomRoles.Engineer,
-                CustomRoles.Pitfall => CustomRoles.Shapeshifter,
-                CustomRoles.Swapper => CustomRoles.Crewmate,
-                CustomRoles.NiceMini => CustomRoles.Crewmate,
-                CustomRoles.EvilMini => CustomRoles.Impostor,
-                CustomRoles.Blackmailer => CustomRoles.Shapeshifter,
-                CustomRoles.Spy => CustomRoles.Crewmate,
-                CustomRoles.Randomizer => CustomRoles.Crewmate,
-                CustomRoles.Enigma => CustomRoles.Crewmate,
-                CustomRoles.SchrodingersCat => CustomRoles.Crewmate,
-                CustomRoles.Instigator => CustomRoles.Impostor,
-                CustomRoles.RiftMaker => CustomRoles.Shapeshifter,
+        //Crewmates
+        IsCrewKilling,
+        IsTasklessCrewmate,
+        IsTaskbasedCrewmate,
 
-                _ => role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate,
-            };
+        //Neutral
+        IsNeutralEvil,
+        IsNeutralChaos,
+        IsNeutralBenign,
+        IsNotNeutralKilling,
+        IsNeutralKilling,
+
+        //Common
+        IsGhostRole,
+        IsRevealing,
+        CanUseVent,
+        CanUseKill,
+        CanUseSabotage,
+
+        //Addons
+        EmptyAttribute,
+
+        IsAdittionRole,
+        IsBetrayalAddon,
+        IsImpOnlyAddon,
     }
+    public static void SetupRoleAttributes(this CustomRoles Role, params Attribute[] Attributes)
+    {
+        var IfAttribute = Attributes.Where(x => x != Attribute.EmptyAttribute);
+
+        if (!RoleAttributes.ContainsKey(Role))
+        {
+            RoleAttributes.Add(Role, (Attribute[])IfAttribute);
+            Logger.Info($"Added {Role} / {string.Join(",", Attributes)}", "CustomRoleManager.RoleAttributes");
+        }
+        else
+        {
+            RoleAttributes[Role] = (Attribute[])IfAttribute;
+            Logger.Info($"Changed RoleAttributes[{Role}] to : {string.Join(",", Attributes)}", "CustomRoleManager.RoleAttributes");
+        }
+    }
+    public static bool HasThisAttribute(this CustomRoles Role, Attribute Attribute)
+    {
+        if (RoleAttributes.TryGetValue(Role, out var roleAttributes))
+            if (roleAttributes.Contains(Attribute))
+                return true;
+
+        return false;
+    }
+    public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
+        => role.IsVanilla() ? role : role.CreateRoleClass().ThisRoleBase;
+    
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
     {
         return role switch
