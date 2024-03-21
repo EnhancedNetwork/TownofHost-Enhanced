@@ -1518,6 +1518,8 @@ static class ExtendedPlayerControl
 
         if (AmongUsClient.Instance.AmClient)
         {
+            // +128 because lastSequenceId has delay between the host and the vanilla client
+            // And this it cannot forced telopopt the player
             netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + 128));
         }
 
