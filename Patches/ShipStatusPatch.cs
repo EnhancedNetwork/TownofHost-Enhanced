@@ -207,6 +207,13 @@ class StartMeetingPatch
         MeetingStates.ReportTarget = target;
         MeetingStates.DeadBodies = UnityEngine.Object.FindObjectsOfType<DeadBody>();
     }
+    public static void Postfix()
+    {
+        foreach (var state in Main.PlayerStates.Values)
+        {
+            state.HasSpawned = false;
+        }
+    }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
 class BeginPatch

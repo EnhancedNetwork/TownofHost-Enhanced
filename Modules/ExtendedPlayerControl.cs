@@ -1514,34 +1514,18 @@ static class ExtendedPlayerControl
             }
         }
 
-        var playerNetTransform = player.NetTransform;
-        var newSidForHost = (ushort)(playerNetTransform.lastSequenceId + 20);
-        var newSidForLocal = (ushort)(playerNetTransform.lastSequenceId + 18);
-        var newSidForGlobal = (ushort)(playerNetTransform.lastSequenceId + 26);
-
-        Logger.Info($"before teleport lastSequenceId: {player.NetTransform.lastSequenceId}", "RpcTeleport");
+        var netTransform = player.NetTransform;
 
         if (AmongUsClient.Instance.AmClient)
         {
-            playerNetTransform.SnapTo(position, newSidForHost);
+            netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + 128));
         }
 
-        // Local Teleport For Client
-        if (PlayerControl.LocalPlayer.PlayerId != player.PlayerId)
-        {
-            MessageWriter localMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, player.GetClientId());
-            NetHelpers.WriteVector2(position, localMessageWriter);
-            localMessageWriter.Write(newSidForLocal);
-            AmongUsClient.Instance.FinishRpcImmediately(localMessageWriter);
-        }
-
-        // Global Teleport
-        MessageWriter globalMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
-        NetHelpers.WriteVector2(position, globalMessageWriter);
-        globalMessageWriter.Write(newSidForGlobal);
-        AmongUsClient.Instance.FinishRpcImmediately(globalMessageWriter);
-
-        Logger.Info($"after teleport lastSequenceId: {player.NetTransform.lastSequenceId}", "RpcTeleport");
+        ushort newSid = (ushort)(netTransform.lastSequenceId + 2);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
+        NetHelpers.WriteVector2(position, messageWriter);
+        messageWriter.Write(newSid);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
