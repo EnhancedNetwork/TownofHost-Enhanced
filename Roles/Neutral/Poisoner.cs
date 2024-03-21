@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
+using static TOHE.CustomRolesHelper;
 using TOHE.Roles.AddOns.Common;
 using static TOHE.Translator;
 
@@ -60,7 +61,6 @@ internal class Poisoner : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 

@@ -10,6 +10,7 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles._Ghosts_.Impostor;
 using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.Core;
+using static TOHE.CustomRolesHelper;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;

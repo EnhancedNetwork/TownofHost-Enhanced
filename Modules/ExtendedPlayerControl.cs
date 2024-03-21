@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TOHE.Modules;
+using static TOHE.CustomRolesHelper;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;

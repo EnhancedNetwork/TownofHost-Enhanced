@@ -44,6 +44,7 @@ public static class CustomRoleManager
             CustomRoles.Nuker => CustomRoles.Bomber,
             _ => role
         };
+
         Logger.Info($"Attempting to Create new {role}()", "CreateRoleClass");
 
         string RoleNameSpace = GetNameSpace(role);
