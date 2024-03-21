@@ -84,16 +84,14 @@ public static class CustomRoleManager
     /// If the role does tasks after target death.
     /// </summary>
     public static void OthersAfterPlayerDead(PlayerControl player)
-    {
-        Main.PlayerStates.Values.ToArray().Do(PlrState => PlrState.RoleClass.OthersAfterPlayerDeathTask(player));
-    }
+        => Main.PlayerStates.Values.ToArray().Do(PlrState => PlrState.RoleClass.OthersAfterPlayerDeathTask(player));
+    
     /// <summary>
     /// Check if this task is marked by a role and do something.
     /// </summary>
     public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task)
-    {
-        Main.PlayerStates.Values.ToArray().Do(PlrState => PlrState.RoleClass.OnOthersTaskComplete(player, task));
-    }
+        => Main.PlayerStates.Values.ToArray().Do(PlrState => PlrState.RoleClass.OnOthersTaskComplete(player, task));
+    
 
     public static HashSet<Action<PlayerControl, PlayerControl>> CheckDeadBodyOthers = [];
     /// <summary>

@@ -249,9 +249,6 @@ class CheckMurderPatch
             return false;
         }
 
-        if (Romantic.OnCheckMurderOthers(target))
-            return false;
-
         // Check murder on others targets
         if (!CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target))
         {

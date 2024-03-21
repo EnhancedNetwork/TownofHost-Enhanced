@@ -190,10 +190,9 @@ internal class Romantic : RoleBase
 
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
     }
-    public static bool OnCheckMurderOthers(PlayerControl target)
-    {
-        return isPartnerProtected && BetPlayer.ContainsValue(target.PlayerId);
-    }
+    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
+        => isPartnerProtected && BetPlayer.ContainsValue(target.PlayerId);
+    
     public override void AfterPlayerDeathTask(PlayerControl target) => Romantic.isRomanticAlive = false;
     private static string TargetMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {
