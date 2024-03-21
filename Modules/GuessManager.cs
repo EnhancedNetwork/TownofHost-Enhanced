@@ -1209,9 +1209,6 @@ public static class GuessManager
 
                 if (CustomRoles.Jackal.IsEnable())
                 {
-                    if (!listOfRoles.Contains(CustomRoles.Sidekick))
-                        listOfRoles.Add(CustomRoles.Sidekick);
-
                     if (!listOfRoles.Contains(CustomRoles.Recruit))
                         listOfRoles.Add(CustomRoles.Recruit);
                 }
