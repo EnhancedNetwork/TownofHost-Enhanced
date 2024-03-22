@@ -9,14 +9,15 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
 {
     //===========================SETUP================================\\
     private const int Id = 14500;
-    private static HashSet<byte> PlayerIds = [];
+    private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
     private static OptionItem MasochistKillMax;
-    private static Dictionary<byte, int> MasochistMax = [];
+    
+    private static readonly Dictionary<byte, int> MasochistMax = [];
 
     public static void SetupCustomOptions()
     {
@@ -27,8 +28,8 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
     }
     public override void Init()
     {
-        PlayerIds = [];
-        MasochistMax = [];
+        PlayerIds.Clear();
+        MasochistMax.Clear();
     }
     public override void Add(byte playerId)
     {

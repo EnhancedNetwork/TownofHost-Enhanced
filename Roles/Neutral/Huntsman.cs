@@ -12,11 +12,10 @@ internal class Huntsman : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16500;
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem KillCooldown;
@@ -28,7 +27,7 @@ internal class Huntsman : RoleBase
     private static OptionItem MinKCD;
     private static OptionItem MaxKCD;
 
-    private static List<byte> Targets = [];
+    private static readonly HashSet<byte> Targets = [];
     private static float KCD = 25;
 
     public static void SetupCustomOption()
@@ -52,8 +51,8 @@ internal class Huntsman : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        Targets = [];
+        playerIdList.Clear();
+        Targets.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -121,7 +120,13 @@ internal class Huntsman : RoleBase
 
         var targetId = player.PlayerId;
         string output = string.Empty;
-        for (int i = 0; i < Targets.Count; i++) { byte playerId = Targets[i]; if (i != 0) output += ", "; output += Utils.GetPlayerById(playerId).GetRealName(); }
+        byte item = 0;
+        foreach (var playerId in Targets)
+        {
+            if (item != 0) output += ", ";
+            output += Utils.GetPlayerById(playerId).GetRealName();
+            item++;
+        }
         return targetId != 0xff ? GetString("Targets") + $"<b><color=#ff1919>{output}</color></b>" : string.Empty;
     }
     private static void ResetTargets(bool isStartedGame = false)

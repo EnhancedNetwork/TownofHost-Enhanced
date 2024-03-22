@@ -10,7 +10,7 @@ internal class Pickpocket : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17400;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -23,7 +23,6 @@ internal class Pickpocket : RoleBase
 
     public static void SetupCustomOption()
     {
-        //Pickpocketは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pickpocket, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pickpocket])
             .SetValueFormat(OptionFormat.Seconds);
@@ -34,7 +33,7 @@ internal class Pickpocket : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {

@@ -10,31 +10,32 @@ internal class Imitator : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 13000;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
 
-    public static OptionItem RememberCooldown;
-    public static OptionItem IncompatibleNeutralMode;
-    public static readonly string[] ImitatorIncompatibleNeutralMode =
-    [
-        "Role.Imitator",
-        "Role.Pursuer",
-        "Role.Follower",
-        "Role.Maverick",
-        "Role.Amnesiac",
-    ];
+    private static OptionItem RememberCooldown;
+    private static OptionItem IncompatibleNeutralMode;
 
-    private static Dictionary<byte, int> RememberLimit = [];
+    private static readonly Dictionary<byte, int> RememberLimit = [];
+
+    private enum ImitatorIncompatibleNeutralModeSelect
+    {
+        Role_Imitator,
+        Role_Pursuer,
+        Role_Follower,
+        Role_Maverick,
+        Role_Amnesiac
+    }
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Imitator);
         RememberCooldown = FloatOptionItem.Create(Id + 10, "RememberCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator])
                 .SetValueFormat(OptionFormat.Seconds);
-        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", ImitatorIncompatibleNeutralMode, 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
+        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", EnumHelper.GetAllNames<ImitatorIncompatibleNeutralModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
     }
     public override void Init()
     {

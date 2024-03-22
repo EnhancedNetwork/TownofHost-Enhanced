@@ -11,15 +11,14 @@ internal class Demon : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16200;
-    private static List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
-    private static Dictionary<byte, int> PlayerHealth = [];
-    private static Dictionary<byte, int> DemonHealth = [];
+    private static readonly Dictionary<byte, int> PlayerHealth = [];
+    private static readonly Dictionary<byte, int> DemonHealth = [];
 
     private static OptionItem KillCooldown;
     private static OptionItem CanVent;
@@ -47,9 +46,9 @@ internal class Demon : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        DemonHealth = [];
-        PlayerHealth = [];
+        playerIdList.Clear();
+        DemonHealth.Clear();
+        PlayerHealth.Clear();
     }
     public override void Add(byte playerId)
     {

@@ -15,7 +15,7 @@ internal class PlagueDoctor : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 27600;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -40,7 +40,7 @@ internal class PlagueDoctor : RoleBase
     private static bool CanInfectSelf;
     private static bool CanInfectVent;
 
-    private static Dictionary<byte, float> InfectInfos;
+    private static readonly Dictionary<byte, float> InfectInfos = [];
 
     public static void SetupCustomOption()
     {
@@ -67,8 +67,8 @@ internal class PlagueDoctor : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        InfectInfos = [];
+        playerIdList.Clear();
+        InfectInfos.Clear();
     }
     public override void Add(byte playerId)
     {

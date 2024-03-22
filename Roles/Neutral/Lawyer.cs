@@ -1,9 +1,7 @@
 using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Core;
-using static Il2CppSystem.Globalization.CultureInfo;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -23,27 +21,35 @@ internal class Lawyer : RoleBase
     private static OptionItem CanTargetNeutralKiller;
     private static OptionItem CanTargetCrewmate;
     private static OptionItem CanTargetJester;
-    public static OptionItem ShouldChangeRoleAfterTargetDeath;
-    public static OptionItem ChangeRolesAfterTargetKilled;
-    public static OptionItem KnowTargetRole;
-    public static OptionItem TargetKnowsLawyer;
+    private static OptionItem ShouldChangeRoleAfterTargetDeath;
+    private static OptionItem ChangeRolesAfterTargetKilled;
+    private static OptionItem KnowTargetRole;
+    private static OptionItem TargetKnowsLawyer;
 
-    public static Dictionary<byte, byte> Target = [];
-    public static readonly string[] ChangeRoles =
-    [
-        "Role.Crewmate",
-        "Role.Jester",
-        "Role.Opportunist",
-        "Role.Convict",
-        "Role.Celebrity",
-        "Role.Bodyguard",
-        "Role.Dictator",
-        "Role.Mayor",
-        "Role.Doctor",
-    ];
+    public static readonly Dictionary<byte, byte> Target = [];
+    private enum ChangeRolesSelect
+    {
+        Role_Crewmate,
+        Role_Jester,
+        Role_Opportunist,
+        Role_Convict,
+        Role_Celebrity,
+        Role_Bodyguard,
+        Role_Dictator,
+        Role_Mayor,
+        Role_Doctor
+    }
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
-        CustomRoles.CrewmateTOHE, CustomRoles.Jester, CustomRoles.Opportunist, CustomRoles.Convict, CustomRoles.Celebrity, CustomRoles.Bodyguard, CustomRoles.Dictator, CustomRoles.Mayor, CustomRoles.Doctor,
+        CustomRoles.CrewmateTOHE,
+        CustomRoles.Jester,
+        CustomRoles.Opportunist,
+        CustomRoles.Convict,
+        CustomRoles.Celebrity,
+        CustomRoles.Bodyguard,
+        CustomRoles.Dictator,
+        CustomRoles.Mayor,
+        CustomRoles.Doctor,
     ];
 
     public static void SetupCustomOption()
@@ -56,7 +62,7 @@ internal class Lawyer : RoleBase
         KnowTargetRole = BooleanOptionItem.Create(Id + 14, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         TargetKnowsLawyer = BooleanOptionItem.Create(Id + 15, "TargetKnowsLawyer", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         ShouldChangeRoleAfterTargetDeath = BooleanOptionItem.Create(Id + 17, "LaywerShouldChangeRoleAfterTargetKilled", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
-        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 16, "LawyerChangeRolesAfterTargetKilled", ChangeRoles, 1, TabGroup.NeutralRoles, false).SetParent(ShouldChangeRoleAfterTargetDeath);
+        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 16, "LawyerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelect>(), 1, TabGroup.NeutralRoles, false).SetParent(ShouldChangeRoleAfterTargetDeath);
     }
     public override void Init()
     {
@@ -164,6 +170,7 @@ internal class Lawyer : RoleBase
             Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(Lawyer));
         }
     }
+    public static bool TargetKnowLawyer => TargetKnowsLawyer.GetBool();
     public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;

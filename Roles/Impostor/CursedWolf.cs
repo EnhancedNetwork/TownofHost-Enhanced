@@ -23,7 +23,7 @@ internal class CursedWolf : RoleBase
         GuardSpellTimes = IntegerOptionItem.Create(Id + 2, "CursedWolfGuardSpellTimes", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.CursedWolf])
             .SetValueFormat(OptionFormat.Times);
-        KillAttacker = BooleanOptionItem.Create(Id + 3, "CursedWolfKillAttacker", true, TabGroup.ImpostorRoles, false)
+        KillAttacker = BooleanOptionItem.Create(Id + 3, "Jinx/CursedWolf___KillAttacker", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.CursedWolf]);
     }
 

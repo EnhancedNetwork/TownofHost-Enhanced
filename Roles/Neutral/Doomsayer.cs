@@ -10,15 +10,14 @@ internal class Doomsayer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14100;
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-
     //==================================================================\\
 
-    private static List<CustomRoles> GuessedRoles = [];
-    private static Dictionary<byte, int> GuessingToWin = [];
+    private static readonly HashSet<CustomRoles> GuessedRoles = [];
+    private static readonly Dictionary<byte, int> GuessingToWin = [];
 
     private static int GuessesCount = 0;
     private static int GuessesCountPerMeeting = 0;
@@ -71,9 +70,9 @@ internal class Doomsayer : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        GuessedRoles = [];
-        GuessingToWin = [];
+        playerIdList.Clear();
+        GuessedRoles.Clear();
+        GuessingToWin.Clear();
         GuessesCount = 0;
         GuessesCountPerMeeting = 0;
         CantGuess = false;

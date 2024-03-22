@@ -8,7 +8,7 @@ internal class Jester : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14400;
-    private static HashSet<byte> PlayerIds = [];
+    private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => JesterCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
@@ -16,7 +16,7 @@ internal class Jester : RoleBase
 
     private static OptionItem JesterCanUseButton;
     private static OptionItem JesterHasImpostorVision;
-    public static OptionItem JesterCanVent;
+    private static OptionItem JesterCanVent;
     private static OptionItem MeetingsNeededForJesterWin;
     private static OptionItem HideJesterVote;
     private static OptionItem SunnyboyChance;
@@ -41,7 +41,7 @@ internal class Jester : RoleBase
     }
     public override void Init()
     {
-        PlayerIds = [];
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {

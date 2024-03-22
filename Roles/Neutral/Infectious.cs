@@ -13,7 +13,7 @@ internal class Infectious : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16600;
-    private static HashSet<byte> PlayerIds = [];
+    private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -45,7 +45,7 @@ internal class Infectious : RoleBase
     public override void Init()
     {
         BiteLimit = 0;
-        PlayerIds = [];
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {

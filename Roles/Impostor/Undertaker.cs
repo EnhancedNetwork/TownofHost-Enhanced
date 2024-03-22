@@ -113,7 +113,6 @@ internal class Undertaker : RoleBase
 
         if (target.Is(CustomRoles.Bait)) return true;
         if (Guardian.CannotBeKilled(target)) return true;
-        if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted() && Opportunist.OppoImmuneToAttacksWhenTasksDone.GetBool()) return false;
 
         if (target.CanBeTeleported())
         {

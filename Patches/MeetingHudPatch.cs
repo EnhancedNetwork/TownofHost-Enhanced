@@ -654,7 +654,7 @@ static class ExtendedMeetingHud
         Logger.Info("===Start of vote counting processing===", "Vote");
         
         Dictionary<byte, int> dic = [];
-        Collector.CollectorVoteFor = [];
+        Collector.Clear();
         Tiebreaker.Clear();
 
         // |Voted By| Number of Times Voted For

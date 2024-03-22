@@ -12,11 +12,10 @@ internal class Agitater : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 15800;
-    private static List<byte> playerIdList = [];
+    private static readonly List<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem BombExplodeCooldown;
@@ -48,7 +47,7 @@ internal class Agitater : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         CurrentBombedPlayer = byte.MaxValue;
         LastBombedPlayer = byte.MaxValue;
         AgitaterHasBombed = false;

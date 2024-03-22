@@ -16,23 +16,21 @@ internal class HexMaster : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16400;
-
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem ModeSwitchAction;
     private static OptionItem HexesLookLikeSpells;
     private static OptionItem HasImpostorVision;
 
-    private static Dictionary<byte, bool> HexMode = [];
-    private static Dictionary<byte, List<byte>> HexedPlayer = [];
+    private static readonly Dictionary<byte, bool> HexMode = [];
+    private static readonly Dictionary<byte, List<byte>> HexedPlayer = [];
 
-    private static Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
-    private static Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
+    private static readonly Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
+    private static readonly Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
 
     private enum SwitchTrigger
     {
@@ -51,9 +49,9 @@ internal class HexMaster : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        HexMode = [];
-        HexedPlayer = [];
+        playerIdList.Clear();
+        HexMode.Clear();
+        HexedPlayer.Clear();
     }
     public override void Add(byte playerId)
     {

@@ -17,7 +17,7 @@ internal class Jackal : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16700;
-    public static HashSet<byte> playerIdList = [];
+    public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -42,7 +42,7 @@ internal class Jackal : RoleBase
     private static OptionItem SidekickCanKillJackal;
     private static OptionItem SidekickCanKillSidekick;
     
-    public static Dictionary<byte, int> RecruitLimit = [];
+    public static readonly Dictionary<byte, int> RecruitLimit = [];
 
     private enum SidekickAssignModeSelect
     {
@@ -87,8 +87,8 @@ internal class Jackal : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        RecruitLimit = [];
+        playerIdList.Clear();
+        RecruitLimit.Clear();
         ResetKillCooldownWhenSbGetKilled = OptionResetKillCooldownWhenSbGetKilled;
     }
     public override void Add(byte playerId)

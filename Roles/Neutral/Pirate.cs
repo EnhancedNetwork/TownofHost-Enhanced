@@ -19,16 +19,16 @@ internal class Pirate : RoleBase
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
+
+    private static OptionItem SuccessfulDuelsToWin;
+    private static OptionItem TryHideMsg;
+    private static OptionItem DuelCooldown;
+
+    private static readonly Dictionary<byte, bool> DuelDone = [];
+
     public static byte PirateTarget;
-    private static Dictionary<byte, bool> DuelDone = [];
     private static int pirateChose, targetChose;
     public static int NumWin = 0;
-
-
-    public static OptionItem SuccessfulDuelsToWin;
-    private static OptionItem TryHideMsg;
-    public static OptionItem DuelCooldown;
-
 
     public static void SetupCustomOption()
     {

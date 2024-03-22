@@ -10,25 +10,25 @@ internal class Hater : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 12900;
-    public static HashSet<byte> playerIdList = [];
+    public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
 
-    public static OptionItem ChooseConverted;
-    public static OptionItem MisFireKillTarget;
-
-    public static OptionItem CanKillLovers;
-    public static OptionItem CanKillMadmate;
-    public static OptionItem CanKillCharmed;
-    public static OptionItem CanKillAdmired;
-    public static OptionItem CanKillSidekicks;
-    public static OptionItem CanKillEgoists;
-    public static OptionItem CanKillInfected;
-    public static OptionItem CanKillContagious;
+    private static OptionItem ChooseConverted;
+    private static OptionItem MisFireKillTarget;
+    private static OptionItem CanKillLovers;
+    private static OptionItem CanKillMadmate;
+    private static OptionItem CanKillCharmed;
+    private static OptionItem CanKillAdmired;
+    private static OptionItem CanKillSidekicks;
+    private static OptionItem CanKillEgoists;
+    private static OptionItem CanKillInfected;
+    private static OptionItem CanKillContagious;
 
     public static bool isWon = false; // There's already a playerIdList, so replaced this with a boolean value
+    
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Hater, zeroOne: false);

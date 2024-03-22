@@ -14,7 +14,7 @@ internal class Arsonist : RoleBase
 {
     //===========================SETUP================================\\
     private const int id = 15900;
-    private static HashSet<byte> PlayerIds = [];
+    private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled = PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -26,8 +26,8 @@ internal class Arsonist : RoleBase
     private static OptionItem ArsonistMinPlayersToIgnite;
     private static OptionItem ArsonistMaxPlayersToIgnite;
 
-    private static Dictionary<byte, (PlayerControl, float)> ArsonistTimer = [];
-    private static Dictionary<(byte, byte), bool> IsDoused = [];
+    private static readonly Dictionary<byte, (PlayerControl, float)> ArsonistTimer = [];
+    private static readonly Dictionary<(byte, byte), bool> IsDoused = [];
 
     private static byte CurrentDousingTarget = byte.MaxValue;
 
@@ -44,9 +44,9 @@ internal class Arsonist : RoleBase
     }
     public override void Init()
     {
-        PlayerIds = [];
-        ArsonistTimer = [];
-        IsDoused = [];
+        PlayerIds.Clear();
+        ArsonistTimer.Clear();
+        IsDoused.Clear();
         CurrentDousingTarget = byte.MaxValue;
     }
     public override void Add(byte playerId)

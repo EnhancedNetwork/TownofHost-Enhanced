@@ -11,7 +11,7 @@ internal class BloodKnight : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16100;
-    private static List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -23,7 +23,7 @@ internal class BloodKnight : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem ProtectDuration;
 
-    private static Dictionary<byte, long> TimeStamp = [];
+    private static readonly Dictionary<byte, long> TimeStamp = [];
 
     public static void SetupCustomOption()
     {
@@ -37,8 +37,8 @@ internal class BloodKnight : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        TimeStamp = [];
+        playerIdList.Clear();
+        TimeStamp.Clear();
     }
     public override void Add(byte playerId)
     {

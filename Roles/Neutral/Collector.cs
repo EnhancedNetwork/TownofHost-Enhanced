@@ -15,12 +15,13 @@ internal class Collector : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
-    public static Dictionary<byte, byte> CollectorVoteFor = [];
-    public static Dictionary<byte, int> CollectVote = [];
-    public static Dictionary<byte, int> NewVote = [];
-    public static bool calculated = false;
+    private static OptionItem CollectorCollectAmount;
 
-    public static OptionItem CollectorCollectAmount;
+    private static readonly Dictionary<byte, byte> CollectorVoteFor = [];
+    private static readonly Dictionary<byte, int> CollectVote = [];
+    private static readonly Dictionary<byte, int> NewVote = [];
+
+    private static bool calculated = false;
 
     public static void SetupCustomOption()
     {
@@ -60,6 +61,10 @@ internal class Collector : RoleBase
         int VoteAmount = CollectVote[playerId];
         int CollectNum = CollectorCollectAmount.GetInt();
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Collector).ShadeColor(0.25f), $"({VoteAmount}/{CollectNum})");
+    }
+    public static void Clear()
+    {
+        CollectorVoteFor.Clear();
     }
     public static bool CollectorWin(bool check = true)
     {

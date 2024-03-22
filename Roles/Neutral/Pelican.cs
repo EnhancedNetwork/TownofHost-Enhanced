@@ -14,7 +14,7 @@ internal class Pelican : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17300;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -24,7 +24,7 @@ internal class Pelican : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem CanVent;
 
-    private static Dictionary<byte, List<byte>> eatenList = [];
+    private static readonly Dictionary<byte, List<byte>> eatenList = [];
     private static readonly Dictionary<byte, float> originalSpeed = [];
 
     private static int Count = 0;
@@ -39,8 +39,8 @@ internal class Pelican : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        eatenList = [];
+        playerIdList.Clear();
+        eatenList.Clear();
         originalSpeed.Clear();
 
         Count = 0;

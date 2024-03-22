@@ -12,11 +12,10 @@ internal class Executioner : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14200;
-    public static HashSet<byte> playerIdList = [];
+    public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-
     //==================================================================\\
 
     private static OptionItem CanTargetImpostor;
@@ -27,23 +26,31 @@ internal class Executioner : RoleBase
     private static OptionItem KnowTargetRole;
     private static OptionItem ChangeRolesAfterTargetKilled;
 
-    public static Dictionary<byte, byte> Target = [];
+    public static readonly Dictionary<byte, byte> Target = [];
     
-    private static readonly string[] ChangeRoles =
-    [
-        "Role.Crewmate",
-        "Role.Celebrity",
-        "Role.Bodyguard",
-        "Role.Dictator",
-        "Role.Mayor",
-        "Role.Doctor",
-        "Role.Jester",
-        "Role.Opportunist",
-        "Role.Convict",
-    ];
+    private enum ChangeRolesSelect
+    {
+        Role_Crewmate,
+        Role_Celebrity,
+        Role_Bodyguard,
+        Role_Dictator,
+        Role_Mayor,
+        Role_Doctor,
+        Role_Jester,
+        Role_Opportunist,
+        Role_Convict
+    }
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
-        CustomRoles.CrewmateTOHE, CustomRoles.Celebrity, CustomRoles.Bodyguard, CustomRoles.Dictator, CustomRoles.Mayor, CustomRoles.Doctor, CustomRoles.Jester, CustomRoles.Opportunist, CustomRoles.Convict,
+        CustomRoles.CrewmateTOHE,
+        CustomRoles.Celebrity,
+        CustomRoles.Bodyguard,
+        CustomRoles.Dictator,
+        CustomRoles.Mayor,
+        CustomRoles.Doctor,
+        CustomRoles.Jester,
+        CustomRoles.Opportunist,
+        CustomRoles.Convict,
     ];
 
     public static void SetupCustomOption()
@@ -51,16 +58,16 @@ internal class Executioner : RoleBase
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Executioner);
         CanTargetImpostor = BooleanOptionItem.Create(Id + 10, "ExecutionerCanTargetImpostor", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         CanTargetNeutralKiller = BooleanOptionItem.Create(Id + 12, "ExecutionerCanTargetNeutralKiller", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        CanTargetNeutralBenign = BooleanOptionItem.Create(Id + 14, "CanTargetNeutralBenign", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        CanTargetNeutralEvil = BooleanOptionItem.Create(Id + 15, "CanTargetNeutralEvil", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        CanTargetNeutralChaos = BooleanOptionItem.Create(Id + 16, "CanTargetNeutralChaos", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        CanTargetNeutralBenign = BooleanOptionItem.Create(Id + 14, "ExecutionerCanTargetNeutralBenign", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        CanTargetNeutralEvil = BooleanOptionItem.Create(Id + 15, "ExecutionerCanTargetNeutralEvil", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        CanTargetNeutralChaos = BooleanOptionItem.Create(Id + 16, "ExecutionerCanTargetNeutralChaos", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", ChangeRoles, 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelect>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
     }
     public override void Init()
     {
-        playerIdList = [];
-        Target = [];
+        playerIdList.Clear();
+        Target.Clear();
     }
     public override void Add(byte playerId)
     {

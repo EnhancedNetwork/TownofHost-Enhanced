@@ -1,12 +1,8 @@
-using Hazel;
 using System.Collections.Generic;
-using static TOHE.Options;
 using UnityEngine;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.RemoteConfigSettingsHelper;
+using static TOHE.Options;
 using static TOHE.Roles.Core.CustomRoleManager;
-using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Neutral;
 
@@ -14,29 +10,31 @@ internal class Amnesiac : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 12700;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled = playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
+    
     private static OptionItem IncompatibleNeutralMode;
-    public static readonly string[] amnesiacIncompatibleNeutralMode =
-    [
-        "Role.Amnesiac",
-        "Role.Pursuer",
-        "Role.Follower",
-        "Role.Maverick",
-        "Role.Imitator",
-    ];
+
+    private enum AmnesiacIncompatibleNeutralModeSelect
+    {
+        Role_Amnesiac,
+        Role_Pursuer,
+        Role_Follower,
+        Role_Maverick,
+        Role_Imitator,
+    }
     
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Amnesiac);
-        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", amnesiacIncompatibleNeutralMode, 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
+        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", EnumHelper.GetAllNames<AmnesiacIncompatibleNeutralModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
