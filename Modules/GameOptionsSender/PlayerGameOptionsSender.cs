@@ -7,7 +7,10 @@ using InnerNet;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles._Ghosts_.Impostor;
+using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.Core;
+using static TOHE.CustomRolesHelper;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -123,10 +126,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
         switch (role)
         {
-            case CustomRoles.Terrorist:
             case CustomRoles.EngineerTOHE:
             case CustomRoles.Phantom:
-            case CustomRoles.Taskinator:
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
@@ -150,29 +151,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.ScientistTOHE:
                 AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
                 AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
-                break;
-            case CustomRoles.Vulture:
-                Vulture.ApplyGameOptions(opt);
-                AURoleOptions.EngineerCooldown = 0f;
-                AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            case CustomRoles.Hater:
-            case CustomRoles.Pursuer:
-                opt.SetVision(true);
-                break;
-            case CustomRoles.Maverick:
-                Maverick.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Workaholic:
-                AURoleOptions.EngineerCooldown = Options.WorkaholicVentCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            case CustomRoles.Solsticer:
-                Solsticer.ApplyGameOptions();
-                break;
-            case CustomRoles.Mario:
-                AURoleOptions.EngineerCooldown = Options.MarioVentCD.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
             case CustomRoles.Warden:
                 Warden.SetAbilityCooldown();

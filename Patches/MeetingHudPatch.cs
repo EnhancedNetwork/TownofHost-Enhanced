@@ -118,12 +118,7 @@ class CheckForEndVotingPatch
 
                     if (voteTarget != null)
                     {
-                        switch (pc.GetCustomRole())
-                        {
-                            case CustomRoles.SoulCollector:
-                                SoulCollector.OnVote(pc, voteTarget);
-                                break;
-                        }
+
                         pc.GetRoleClass()?.OnVote(pc, voteTarget); // Role has voted
                         voteTarget.GetRoleClass()?.OnVoted(voteTarget, pc); // Role is voted
 
@@ -553,7 +548,6 @@ class CheckForEndVotingPatch
     {
         Witch.OnCheckForEndVoting(deathReason, playerIds);
         HexMaster.OnCheckForEndVoting(deathReason, playerIds);
-        //Occultist.OnCheckForEndVoting(deathReason, playerIds);
         Virus.OnCheckForEndVoting(deathReason, playerIds);
 
         foreach (var playerId in playerIds)
@@ -787,14 +781,14 @@ class MeetingHudStartPatch
         if (CustomRoles.God.RoleExist() && Options.NotifyGodAlive.GetBool())
             AddMsg(GetString("GodNoticeAlive"), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.God), GetString("GodAliveTitle")));
         //工作狂的生存技巧
-        if (MeetingStates.FirstMeeting && CustomRoles.Workaholic.RoleExist() && Options.WorkaholicGiveAdviceAlive.GetBool() && !Options.WorkaholicCannotWinAtDeath.GetBool() && !Options.GhostIgnoreTasks.GetBool())
+        if (MeetingStates.FirstMeeting && CustomRoles.Workaholic.RoleExist() && Workaholic.WorkaholicGiveAdviceAlive.GetBool() && !Workaholic.WorkaholicCannotWinAtDeath.GetBool() && !Options.GhostIgnoreTasks.GetBool())
         {
             foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Workaholic)).ToArray())
             {
-                Main.WorkaholicAlive.Add(pc.PlayerId);
+                Workaholic.WorkaholicAlive.Add(pc.PlayerId);
             }
             List<string> workaholicAliveList = [];
-            foreach (var whId in Main.WorkaholicAlive.ToArray())
+            foreach (var whId in Workaholic.WorkaholicAlive.ToArray())
             {
                 workaholicAliveList.Add(Main.AllPlayerNames[whId]);
             }
@@ -833,7 +827,7 @@ class MeetingHudStartPatch
                 AddMsg(string.Format(GetString("CyberDead"), Main.AllPlayerNames[csId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
             }
 
-            Main.PlayerStates.Where(x => x.Value.RoleClass.IsEnable)?.Do(x
+            Main.PlayerStates.Do(x
                 => x.Value.RoleClass.OnMeetingHudStart(pc));
 
             //侦探报告线索
@@ -842,14 +836,6 @@ class MeetingHudStartPatch
             //宝箱怪的消息（记录）
             if (pc.Is(CustomRoles.Mimic) && !pc.IsAlive())
                 Main.AllAlivePlayerControls.Where(x => x.GetRealKiller()?.PlayerId == pc.PlayerId).Do(x => MimicMsg += $"\n{x.GetNameWithRole(true)}");
-            
-            if (pc.Is(CustomRoles.Solsticer))
-            {
-                Solsticer.SetShortTasksToAdd();
-                if (Solsticer.MurderMessage == "")
-                    Solsticer.MurderMessage = string.Format(GetString("SolsticerOnMeeting"), Solsticer.AddShortTasks);
-                AddMsg(Solsticer.MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
-            }
         }
             
         //宝箱怪的消息（合并）
@@ -872,12 +858,11 @@ class MeetingHudStartPatch
             msgToSend.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3));
         }, 3f, "Skill Notice On Meeting Start");
         
-        Main.PlayerStates.Where(x => x.Value.RoleClass.IsEnable)?.Do(x
+        Main.PlayerStates.Do(x
             => x.Value.RoleClass.MeetingHudClear());
         
         Cyber.Clear();
         Sleuth.Clear();
-        Pirate.OnMeetingStart();
     }
     public static void Prefix(/*MeetingHud __instance*/)
     {
@@ -1116,9 +1101,6 @@ class MeetingHudStartPatch
             else if (seer == target && CustomRolesHelper.RoleExist(CustomRoles.Ntr) && !isLover)
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
 
-            if (target.PlayerId == Pirate.PirateTarget)
-                sb.Append(Pirate.GetPlunderedMark(target.PlayerId, true));
-
             //网络人提示
             if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
@@ -1127,12 +1109,6 @@ class MeetingHudStartPatch
             if (Lightning.IsGhost(target))
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■"));
 
-            //赌徒提示
-            sb.Append(Totocalcio.TargetMark(seer, target));
-            sb.Append(Romantic.TargetMark(seer, target));
-
-
-            sb.Append(Lawyer.LawyerMark(seer, target));
 
             //会議画面ではインポスター自身の名前にSnitchマークはつけません。
 

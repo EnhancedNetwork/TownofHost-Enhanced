@@ -123,7 +123,7 @@ internal class Gangster : RoleBase
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("BeRecruitedByGangster")));
             }
-            else if (killer.Is(CustomRoles.Charmed) && target.CanBeCharmed())
+            else if (killer.Is(CustomRoles.Charmed) && Cultist.CanBeCharmed(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Charmed.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Charmed);

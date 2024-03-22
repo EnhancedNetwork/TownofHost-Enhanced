@@ -1,6 +1,6 @@
 ﻿using static TOHE.Options;
 
-namespace TOHE.Roles.Impostor;
+namespace TOHE.Roles._Ghosts_.Impostor;
 
 public static class Minion
 {

@@ -4,11 +4,16 @@ using System.Linq;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Collector
+internal class Collector : RoleBase
 {
+
+    //===========================SETUP================================\\
     private const int Id = 14700;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => false;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     public static Dictionary<byte, byte> CollectorVoteFor = [];
     public static Dictionary<byte, int> CollectVote = [];
@@ -23,19 +28,17 @@ public static class Collector
         CollectorCollectAmount = IntegerOptionItem.Create(Id + 13, "CollectorCollectAmount", new(1, 100, 1), 20, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Collector])
             .SetValueFormat(OptionFormat.Votes);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        CollectorVoteFor = [];
-        CollectVote = [];
+        playerIdList.Clear();
+        CollectorVoteFor.Clear();
+        CollectVote.Clear();
         calculated = false;
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CollectVote.TryAdd(playerId, 0);
-        IsEnable = true;
     }
     private static void SendRPC(byte playerId)
     {
@@ -52,7 +55,7 @@ public static class Collector
         CollectVote.TryAdd(PlayerId, 0);
         CollectVote[PlayerId] = Num;
     }
-    public static string GetProgressText(byte playerId)
+    public override string GetProgressText(byte playerId, bool cooms)
     {
         int VoteAmount = CollectVote[playerId];
         int CollectNum = CollectorCollectAmount.GetInt();
@@ -84,7 +87,7 @@ public static class Collector
         }
         return false;
     }
-    public static bool CollectDone(PlayerControl player)
+    private static bool CollectDone(PlayerControl player)
     {
         if (player.Is(CustomRoles.Collector))
         {
@@ -100,7 +103,7 @@ public static class Collector
         if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Collector))
             CollectorVoteFor.TryAdd(target.PlayerId, ps.TargetPlayerId);
     }
-    public static void AfterMeetingTasks() => calculated = false;
+    public override void AfterMeetingTasks() => calculated = false;
     public static void CollectAmount(Dictionary<byte, int> VotingData, MeetingHud __instance)//得到集票者收集到的票
     {
         if (calculated) return;

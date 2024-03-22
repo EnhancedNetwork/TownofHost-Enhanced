@@ -140,7 +140,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, Vent> LastEnteredVent = [];
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = [];
     //public static Dictionary<byte, long> FlashbangInProtect = [];
-    public static List<byte> WorkaholicAlive = [];
     public static List<byte> TasklessCrewmate = [];
     public static List<byte> OverDeadPlayerList = [];
     public static bool DoBlockNameChange = false;
@@ -157,13 +156,8 @@ public class Main : BasePlugin
     public static Dictionary<byte, int> GuesserGuessed = [];
     public static Dictionary<(byte, byte), bool> isDraw = [];
     public static Dictionary<(byte, byte), bool> isRevealed = [];
-    public static Dictionary<byte, (PlayerControl, float)> RevolutionistTimer = [];
-    public static Dictionary<byte, long> RevolutionistStart = [];
-    public static Dictionary<byte, long> RevolutionistLastTime = [];
-    public static Dictionary<byte, int> RevolutionistCountdown = [];
     public static Dictionary<byte, byte> SpeedBoostTarget = [];
     public static Dictionary<byte, int> ParaUsedButtonCount = [];
-    public static Dictionary<byte, int> MarioVentCount = [];
     public static Dictionary<byte, long> AllKillers = [];
     public static int AliveImpostorCount;
     public static Dictionary<byte, bool> CheckShapeshift = [];
@@ -185,10 +179,7 @@ public class Main : BasePlugin
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
-    public static Dictionary<byte, byte> Provoked = [];
     
-    public static byte ShamanTarget = byte.MaxValue;
-    public static bool ShamanTargetChoosen = false;
     
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
     public static Dictionary<string, int> PlayerQuitTimes = [];
@@ -432,6 +423,8 @@ public class Main : BasePlugin
         // 認証関連-認証
         DebugModeManager.Auth(DebugKeyAuth, DebugKeyInput.Value);
 
+
+
         Preset1 = Config.Bind("Preset Name Options", "Preset1", "Preset_1");
         Preset2 = Config.Bind("Preset Name Options", "Preset2", "Preset_2");
         Preset3 = Config.Bind("Preset Name Options", "Preset3", "Preset_3");
@@ -666,13 +659,13 @@ public enum CustomRoles
     Bandit,
     BloodKnight,
     Collector,
-    Succubus, //cultist
+    Cultist, 
     CursedSoul,
     Demon, 
     Doomsayer,
     Doppelganger,
     Executioner,
-    Totocalcio, //follower
+    Follower, //follower
     Glitch,
     God,
     Hater,
@@ -723,7 +716,7 @@ public enum CustomRoles
     Taskinator,
     Terrorist,
     Traitor,
-    Mario,//vector
+    Vector,//vector
     VengefulRomantic,
     Virus,
     Vulture,
@@ -838,7 +831,7 @@ public enum CustomWinner
     Jackal = CustomRoles.Jackal,
     Sidekick = CustomRoles.Sidekick,
     God = CustomRoles.God,
-    Mario = CustomRoles.Mario,
+    Vector = CustomRoles.Vector,
     Innocent = CustomRoles.Innocent,
     Pelican = CustomRoles.Pelican,
     Youtuber = CustomRoles.Youtuber,
@@ -850,9 +843,8 @@ public enum CustomWinner
     BloodKnight = CustomRoles.BloodKnight,
     Poisoner = CustomRoles.Poisoner,
     HexMaster = CustomRoles.HexMaster,
-    //Occultist = CustomRoles.Occultist,
     Quizmaster = CustomRoles.Quizmaster,
-    Succubus = CustomRoles.Succubus,
+    Cultist = CustomRoles.Cultist,
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
     Pirate = CustomRoles.Pirate,
@@ -897,7 +889,7 @@ public enum AdditionalWinners
     Hater = CustomRoles.Hater,
     Provocateur = CustomRoles.Provocateur,
     Sunnyboy = CustomRoles.Sunnyboy,
-    Totocalcio = CustomRoles.Totocalcio,
+    Follower = CustomRoles.Follower,
     Romantic = CustomRoles.Romantic,
     VengefulRomantic = CustomRoles.VengefulRomantic,
     RuthlessRomantic = CustomRoles.RuthlessRomantic,

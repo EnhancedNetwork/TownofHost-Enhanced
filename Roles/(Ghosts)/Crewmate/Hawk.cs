@@ -6,7 +6,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
-namespace TOHE.Roles.Crewmate;
+namespace TOHE.Roles._Ghosts_.Crewmate;
 
 public static class Hawk
 {

@@ -6,6 +6,8 @@ using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles._Ghosts_.Impostor;
+using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -501,34 +503,6 @@ public static class Options
     public static OptionItem GGTryHideMsg;
 
     // Neutrals role settings
-    public static OptionItem OppoImmuneToAttacksWhenTasksDone;
-
-    public static OptionItem VoodooCooldown;
-
-    public static OptionItem PhantomCanVent;
-    public static OptionItem PhantomSnatchesWin;
-    public static OptionItem PhantomCanGuess;
-
-    public static OptionItem ProvKillCD;
-
-    public static OptionItem RevolutionistDrawTime;
-    public static OptionItem RevolutionistCooldown;
-    public static OptionItem RevolutionistDrawCount;
-    public static OptionItem RevolutionistKillProbability;
-    public static OptionItem RevolutionistVentCountDown;
-
-    public static OptionItem CanTerroristSuicideWin;
-    public static OptionItem TerroristCanGuess;
-
-    public static OptionItem MarioVentNumWin;
-    public static OptionItem MarioVentCD;
-
-    public static OptionItem WorkaholicCannotWinAtDeath;
-    public static OptionItem WorkaholicVentCooldown;
-    public static OptionItem WorkaholicVisibleToEveryone;
-    public static OptionItem WorkaholicGiveAdviceAlive;
-    public static OptionItem WorkaholicCanGuess;
-
 
     // Add-Ons settings 
 
@@ -594,33 +568,6 @@ public static class Options
         "FormatNameModes.Snacks",
     ];
     public static SuffixModes GetSuffixMode() => (SuffixModes)SuffixMode.GetValue();
-
-
-    // Options not using
-    /*public static OptionItem ButtonBarryButtons;
-      public static OptionItem GlitchCanVote;
-      public static OptionItem JackalWinWithSidekick;
-      public static OptionItem FlashWhenTrapBoobyTrap;
-      public static OptionItem CrewmateCanBeSidekick;
-      public static OptionItem NeutralCanBeSidekick;
-      public static OptionItem ImpostorCanBeSidekick;
-      public static OptionItem ImpCanBeReflective;
-      public static OptionItem CrewCanBeReflective;
-      public static OptionItem NeutralCanBeReflective;
-      public static OptionItem ImpCanBeRogue;
-      public static OptionItem CrewCanBeRogue;
-      public static OptionItem NeutralCanBeRogue;
-      public static OptionItem RogueKnowEachOther;
-      public static OptionItem RogueKnowEachOtherRoles;
-      public static OptionItem ControlCooldown;
-      public static OptionItem LawyerVision;
-      public static OptionItem BardChance; */
-
-    // Override Tasks
-    public static OverrideTasksData TerroristTasks;
-    public static OverrideTasksData WorkaholicTasks;
-    public static OverrideTasksData PhantomTasks;
-    public static OverrideTasksData OpportunistTasks;
 
 
     public static int SnitchExposeTaskLeft = 1;
@@ -1499,7 +1446,7 @@ public static class Options
 
         Amnesiac.SetupCustomOption();
 
-        Totocalcio.SetupCustomOption();
+        Follower.SetupCustomOption();
 
         Hater.SetupCustomOption();
 
@@ -1509,10 +1456,7 @@ public static class Options
 
         Maverick.SetupCustomOption();
 
-        SetupRoleOptions(13300, TabGroup.NeutralRoles, CustomRoles.Opportunist);
-        OppoImmuneToAttacksWhenTasksDone = BooleanOptionItem.Create(13302, "ImmuneToAttacksWhenTasksDone", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Opportunist]);
-        OpportunistTasks = OverrideTasksData.Create(13303, TabGroup.NeutralRoles, CustomRoles.Opportunist);
+        Opportunist.SetupCustomOptions();
         
         Pixie.SetupCustomOption();
         
@@ -1522,10 +1466,7 @@ public static class Options
 
         SchrodingersCat.SetupCustomOption();
 
-        SetupRoleOptions(13600, TabGroup.NeutralRoles, CustomRoles.Shaman);
-        VoodooCooldown = FloatOptionItem.Create(13602, "VoodooCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Shaman])
-            .SetValueFormat(OptionFormat.Seconds);
+        Shaman.SetupCustomOptions();
 
         Taskinator.SetupCustomOption();
 
@@ -1555,40 +1496,15 @@ public static class Options
         
         Collector.SetupCustomOption();
         
-        Succubus.SetupCustomOption();
-        
-        SetupRoleOptions(14900, TabGroup.NeutralRoles, CustomRoles.Phantom);
-        PhantomCanVent = BooleanOptionItem.Create(14902, "CanVent", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Phantom]);
-        PhantomSnatchesWin = BooleanOptionItem.Create(14903, "SnatchesWin", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Phantom]);
-        PhantomCanGuess = BooleanOptionItem.Create(14904, "CanGuess", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Phantom]);
-        PhantomTasks = OverrideTasksData.Create(14905, TabGroup.NeutralRoles, CustomRoles.Phantom);
+        Cultist.SetupCustomOption();
+
+        Phantom.SetupCustomOptions();
         
         Pirate.SetupCustomOption();
+
+        Provocateur.SetupCustomOptions();
         
-        SetupRoleOptions(15100, TabGroup.NeutralRoles, CustomRoles.Provocateur);
-        ProvKillCD = FloatOptionItem.Create(15102, "KillCooldown", new(0f, 100f, 2.5f), 15f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Provocateur])
-            .SetValueFormat(OptionFormat.Seconds);
         
-        SetupRoleOptions(15200, TabGroup.NeutralRoles, CustomRoles.Revolutionist);
-        RevolutionistDrawTime = FloatOptionItem.Create(15202, "RevolutionistDrawTime", new(0f, 10f, 1f), 3f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
-            .SetValueFormat(OptionFormat.Seconds);
-        RevolutionistCooldown = FloatOptionItem.Create(15203, "RevolutionistCooldown", new(5f, 100f, 1f), 10f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
-            .SetValueFormat(OptionFormat.Seconds);
-        RevolutionistDrawCount = IntegerOptionItem.Create(15204, "RevolutionistDrawCount", new(1, 14, 1), 6, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
-            .SetValueFormat(OptionFormat.Players);
-        RevolutionistKillProbability = IntegerOptionItem.Create(15205, "RevolutionistKillProbability", new(0, 100, 5), 15, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
-            .SetValueFormat(OptionFormat.Percent);
-        RevolutionistVentCountDown = FloatOptionItem.Create(15206, "RevolutionistVentCountDown", new(1f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
-            .SetValueFormat(OptionFormat.Seconds);
 
         /*
          * Solsticer
@@ -1596,37 +1512,14 @@ public static class Options
         Solsticer.SetupCustomOption();
 
         SoulCollector.SetupCustomOption();
-        
-        SetupRoleOptions(15400, TabGroup.NeutralRoles, CustomRoles.Terrorist);
-        CanTerroristSuicideWin = BooleanOptionItem.Create(15402, "CanTerroristSuicideWin", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
-        TerroristCanGuess = BooleanOptionItem.Create(15403, "CanGuess", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
-        TerroristTasks = OverrideTasksData.Create(15404, TabGroup.NeutralRoles, CustomRoles.Terrorist);
-        
-        SetupRoleOptions(15500, TabGroup.NeutralRoles, CustomRoles.Mario);
-        MarioVentNumWin = IntegerOptionItem.Create(15502, "MarioVentNumWin", new(5, 500, 5), 40, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mario])
-            .SetValueFormat(OptionFormat.Times);
-        MarioVentCD = FloatOptionItem.Create(15503, "VentCooldown", new(0f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mario])
-            .SetValueFormat(OptionFormat.Seconds);
+
+        Terrorist.SetupCustomOptions();
+
+        Vector.SetupCustomOptions();
         
         Vulture.SetupCustomOption();
-        
-        SetupRoleOptions(15700, TabGroup.NeutralRoles, CustomRoles.Workaholic); //TOH_Y
-        WorkaholicCannotWinAtDeath = BooleanOptionItem.Create(15702, "WorkaholicCannotWinAtDeath", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic]);
-        WorkaholicVentCooldown = FloatOptionItem.Create(15703, "VentCooldown", new(0f, 180f, 2.5f), 0f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic])
-            .SetValueFormat(OptionFormat.Seconds);
-        WorkaholicVisibleToEveryone = BooleanOptionItem.Create(15704, "WorkaholicVisibleToEveryone", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic]);
-        WorkaholicGiveAdviceAlive = BooleanOptionItem.Create(15705, "WorkaholicGiveAdviceAlive", true, TabGroup.NeutralRoles, false)
-            .SetParent(WorkaholicVisibleToEveryone);
-        WorkaholicCanGuess = BooleanOptionItem.Create(15706, "CanGuess", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic]);
-        WorkaholicTasks = OverrideTasksData.Create(15707, TabGroup.NeutralRoles, CustomRoles.Workaholic);
+
+        Workaholic.SetupCustomOptions();
 
         TextOptionItem.Create(10000014, "RoleType.NeutralKilling", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)

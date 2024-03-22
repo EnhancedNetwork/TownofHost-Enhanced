@@ -9,6 +9,8 @@ using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles._Ghosts_.Impostor;
+using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -344,9 +346,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetKillOrHex:
                 HexMaster.ReceiveRPC(reader, false);
                 break;
-            //case CustomRPC.SetKillOrCurse:
-            //    Occultist.ReceiveRPC(reader, false);
-            //    break;
 
             case CustomRPC.SetCaptainTargetSpeed:
                 Captain.ReceiveRPCSetSpeed(reader);
@@ -364,10 +363,7 @@ internal class RPCHandlerPatch
                 Captain.ReceiveRPCVoteRemove(reader);
                 break;
             case CustomRPC.SetDrawPlayer:
-                byte RevolutionistId = reader.ReadByte();
-                byte DrawId = reader.ReadByte();
-                bool drawed = reader.ReadBoolean();
-                Main.isDraw[(RevolutionistId, DrawId)] = drawed;
+                Revolutionist.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetRevealedPlayer:
                 byte OverseerId = reader.ReadByte();
@@ -384,9 +380,6 @@ internal class RPCHandlerPatch
             case CustomRPC.DoHex:
                 HexMaster.ReceiveRPC(reader, true);
                 break;
-            //case CustomRPC.DoCurse:
-            //    Occultist.ReceiveRPC(reader, true);
-            //    break;
             case CustomRPC.SniperSync:
                 Sniper.ReceiveRPC(reader);
                 break;
@@ -827,15 +820,6 @@ internal static class RPC
 
         switch (role)
         {
-            case CustomRoles.Lawyer:
-                Lawyer.Add(targetId);
-                break;
-            case CustomRoles.SoulCollector:
-                SoulCollector.Add(targetId);
-                break;
-            case CustomRoles.SchrodingersCat:
-                SchrodingersCat.Add(targetId);
-                break;
             case CustomRoles.LastImpostor:
                 LastImpostor.Add(targetId);
                 break;
@@ -845,15 +829,6 @@ internal static class RPC
             case CustomRoles.Workhorse:
                 Workhorse.Add(targetId);
                 break;
-            case CustomRoles.Pursuer:
-                Pursuer.Add(targetId);
-                break;
-            case CustomRoles.Collector:
-                Collector.Add(targetId);
-                break;
-            case CustomRoles.Taskinator:
-                Taskinator.Add(targetId);
-                break;
             case CustomRoles.Hawk:
                 Hawk.Add(targetId);
                 break;
@@ -862,36 +837,6 @@ internal static class RPC
                 break;
             case CustomRoles.Warden:
                 Warden.Add(targetId);
-                break;
-            case CustomRoles.Totocalcio:
-                Totocalcio.Add(targetId);
-                break;
-            case CustomRoles.Romantic:
-                Romantic.Add(targetId);
-                break;
-            case CustomRoles.VengefulRomantic:
-                VengefulRomantic.Add(targetId);
-                break;
-            case CustomRoles.RuthlessRomantic:
-                RuthlessRomantic.Add(targetId);
-                break;
-            case CustomRoles.Succubus:
-                Succubus.Add(targetId);
-                break;
-            case CustomRoles.Amnesiac:
-                Amnesiac.Add(targetId);
-                break;
-            case CustomRoles.Imitator:
-                Imitator.Add(targetId);
-                break;
-            case CustomRoles.Vulture:
-                Vulture.Add(targetId); 
-                break;
-            case CustomRoles.Maverick:
-                Maverick.Add(targetId);
-                break;
-            case CustomRoles.Pirate:
-                Pirate.Add(targetId);
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.Add(targetId);
@@ -1112,14 +1057,14 @@ internal static class RPC
             case CustomRoles.Spiritcaller:
                 Spiritcaller.ReceiveRPC(reader);
                 break;
-            case CustomRoles.Succubus:
-                Succubus.ReceiveRPC(reader);
+            case CustomRoles.Cultist:
+                Cultist.ReceiveRPC(reader);
                 break;
             case CustomRoles.Taskinator:
                 Taskinator.ReceiveRPC(reader);
                 break;
-            case CustomRoles.Totocalcio:
-                Totocalcio.ReceiveRPC(reader);
+            case CustomRoles.Follower:
+                Follower.ReceiveRPC(reader);
                 break;
             case CustomRoles.Virus:
                 Virus.ReceiveRPC(reader);

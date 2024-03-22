@@ -73,23 +73,8 @@ public static class HudSpritePatch
             case CustomRoles.Puppeteer:
                 newKillButton = CustomButton.Get("Puttpuer");
                 break;
-            case CustomRoles.Succubus:
-                newKillButton = CustomButton.Get("Subbus");
-                break;
-            case CustomRoles.Vampire:
-                newKillButton = CustomButton.Get("Bite");
-                break;
             case CustomRoles.Witness:
                 newKillButton = CustomButton.Get("Examine");
-                break;
-            case CustomRoles.Amnesiac:
-                newReportButton = CustomButton.Get("Amnesiac");
-                break;
-            case CustomRoles.Mario:
-                newAbilityButton = CustomButton.Get("Happy");
-                break;
-            case CustomRoles.Pirate:
-                newKillButton = CustomButton.Get("Challenge");
                 break;
             case CustomRoles.SoulCatcher:
                 newKillButton = CustomButton.Get("Teleport");
@@ -99,12 +84,6 @@ public static class HudSpritePatch
                 break;
             case CustomRoles.Chameleon:
                 newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Vulture:
-                newReportButton = CustomButton.Get("Eat");
-                break;
-            case CustomRoles.Pursuer:
-                newAbilityButton = CustomButton.Get("Pursuer");
                 break;
         }
 

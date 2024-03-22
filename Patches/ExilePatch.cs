@@ -84,7 +84,7 @@ class ExileControllerWrapUpPatch
             //Terrorist check win
             if (role.Is(CustomRoles.Terrorist))
             {
-                Utils.CheckTerroristWin(exiled);
+                Terrorist.CheckTerroristWin(exiled);
             }
 
             //Devourer check win

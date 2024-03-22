@@ -272,6 +272,8 @@ class OnPlayerLeftPatch
         {
             if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
+                Utils.AfterPlayerDeathTasks(data?.Character);
+
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
                 {
                     foreach (var lovers in Main.LoversPlayers.ToArray())
@@ -280,11 +282,6 @@ class OnPlayerLeftPatch
                         Main.LoversPlayers.Remove(lovers);
                         Main.PlayerStates[lovers.PlayerId].RemoveSubRole(CustomRoles.Lovers);
                     }
-                }
-                
-                if (Lawyer.Target.ContainsValue(data.Character.PlayerId))
-                {
-                    Lawyer.ChangeRoleByTarget(data.Character);
                 }
 
                 if (data.Character.Is(CustomRoles.Pelican))

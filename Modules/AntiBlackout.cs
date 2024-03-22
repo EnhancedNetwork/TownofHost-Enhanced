@@ -38,7 +38,7 @@ public static class AntiBlackout
 
             else if (pc.GetCustomRole().IsNK() && !(pc.Is(CustomRoles.Arsonist) || pc.Is(CustomRoles.Quizmaster))) NeutralKillers.Add(pc.PlayerId); // Neutral Killers
             else if (pc.Is(CustomRoles.Arsonist) && Arsonist.CanIgniteAnytime()) NeutralKillers.Add(pc.PlayerId);
-            else if (pc.Is(CustomRoles.Succubus)) NeutralKillers.Add(pc.PlayerId);
+            else if (pc.Is(CustomRoles.Cultist)) NeutralKillers.Add(pc.PlayerId);
 
             else Crewmates.Add(pc.PlayerId);
         }
@@ -235,7 +235,6 @@ public static class AntiBlackout
                 {
                     pc.GetRoleClass()?.NotifyAfterMeeting();
 
-                    if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
                 }
             }, timeNotify + 0.2f, "Notify AfterMeetingTasks");
         }

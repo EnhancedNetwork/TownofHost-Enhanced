@@ -296,7 +296,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Pirate:
-                    if (!Pirate.IsEnable)
+                    if (!Pirate.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
