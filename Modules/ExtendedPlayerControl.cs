@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TOHE.Modules;
-using static TOHE.CustomRolesHelper;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
@@ -454,18 +453,12 @@ static class ExtendedPlayerControl
     public static bool CanUseKillButton(this PlayerControl pc)
     {
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
-        
-        if (Mastermind.PlayerIsManipulated(pc)) return true;
+        if (pc.Is(CustomRoles.Killer) || Mastermind.PlayerIsManipulated(pc)) return true;
 
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseKillButton(pc)) return true;
 
-        return pc.GetCustomRole() switch
-        {
-            //FFA
-            CustomRoles.Killer => pc.IsAlive(),
-            _ => false,
-        };
+        return false;
     }
     public static bool HasKillButton(PlayerControl pc = null)
     {
@@ -488,19 +481,15 @@ static class ExtendedPlayerControl
     {
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
         if (GameStates.IsHideNSeek) return true;
+        if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
         if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
-        if (pc.Is(CustomRoles.Nimble)) return true;
         if (Circumvent.CantUseVent(pc)) return false;
 
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseImpostorVentButton(pc)) return true;
 
-        return pc.GetCustomRole() switch
-        {
-            CustomRoles.Killer => true,
-            _ => false,
-        };
+        return false;
     }
     public static bool CanUseSabotage(this PlayerControl pc)
     {
@@ -546,16 +535,13 @@ static class ExtendedPlayerControl
     {
         Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
 
-        player.GetRoleClass()?.SetKillCooldown(player.PlayerId);
-
-        switch (player.GetCustomRole())
+        if (player.Is(CustomRoles.Killer))
         {
-            //FFA
-            case CustomRoles.Killer:
-                Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
-                break;
-
+            Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
+            return;
         }
+
+        player.GetRoleClass()?.SetKillCooldown(player.PlayerId);
 
         var playerSubRoles = player.GetCustomSubRoles().ToArray();
 

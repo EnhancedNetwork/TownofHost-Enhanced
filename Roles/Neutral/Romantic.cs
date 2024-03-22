@@ -40,7 +40,7 @@ internal class Romantic : RoleBase
 
     public static byte VengefulTargetId;
     private static readonly Dictionary<byte, int> BetTimes = [];
-    public static Dictionary<byte, byte> BetPlayer = [];
+    public static readonly Dictionary<byte, byte> BetPlayer = [];
 
     public static void SetupCustomOption()
     {
@@ -218,7 +218,7 @@ internal class Romantic : RoleBase
     public override void OthersAfterPlayerDeathTask(PlayerControl player)
     {
         var playerId = player.PlayerId;
-        if (!Romantic.BetPlayer.ContainsValue(playerId) || player == null) return;
+        if (!BetPlayer.ContainsValue(playerId) || player == null) return;
 
         byte romantic = 0x73;
         BetPlayer.Do(x =>
