@@ -83,11 +83,19 @@ public static class CustomRoleManager
     /// </summary>
     public static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        // ############-INFO-##############
+        // When using this code, keep in mind that killer and target can be equal (Suicide)
+        // And the player can also die during the Meeting
+        // ################################
+
         var killerRoleClass = killer.GetRoleClass();
         var targetRoleClass = target.GetRoleClass();
 
         var killerSubRoles = killer.GetCustomSubRoles();
         var targetSubRoles = target.GetCustomSubRoles();
+
+        // Check suicide
+        var isSuicide = killer.PlayerId == target.PlayerId;
 
         // target was murder by killer
         targetRoleClass.OnMurderPlayerAsTarget(killer, target, inMeeting);
@@ -102,23 +110,23 @@ public static class CustomRoleManager
                         Cyber.AfterCyberDeadTask(target, inMeeting);
                         break;
 
-                    case CustomRoles.Bait when !inMeeting:
+                    case CustomRoles.Bait when !inMeeting && !isSuicide:
                         Bait.BaitAfterDeathTasks(killer, target);
                         break;
 
-                    case CustomRoles.Trapper when !inMeeting && killer != target && !killer.Is(CustomRoles.KillingMachine):
+                    case CustomRoles.Trapper when !inMeeting && !isSuicide && !killer.Is(CustomRoles.KillingMachine):
                         killer.TrapperKilled(target);
                         break;
 
-                    case CustomRoles.Avanger when !inMeeting:
+                    case CustomRoles.Avanger when !inMeeting && !isSuicide:
                         Avanger.OnMurderPlayer(target);
                         break;
 
-                    case CustomRoles.Burst when killer.IsAlive() && !killer.Is(CustomRoles.KillingMachine):
+                    case CustomRoles.Burst when killer.IsAlive() && !inMeeting && !isSuicide && !killer.Is(CustomRoles.KillingMachine):
                         Burst.AfterBurstDeadTasks(killer, target);
                         break;
 
-                    case CustomRoles.Oiiai:
+                    case CustomRoles.Oiiai when !isSuicide:
                         Oiiai.OnMurderPlayer(killer, target);
                         break;
 
@@ -126,7 +134,7 @@ public static class CustomRoleManager
                         Tricky.AfterPlayerDeathTasks(target);
                         break;
 
-                    case CustomRoles.EvilSpirit:
+                    case CustomRoles.EvilSpirit when !inMeeting && !isSuicide:
                         target.RpcSetRole(RoleTypes.GuardianAngel);
                         break;
 
@@ -142,7 +150,7 @@ public static class CustomRoleManager
             {
                 switch (subRole)
                 {
-                    case CustomRoles.TicketsStealer when !inMeeting && killer.PlayerId != target.PlayerId:
+                    case CustomRoles.TicketsStealer when !inMeeting && !isSuicide:
                         killer.Notify(string.Format(Translator.GetString("TicketsStealerGetTicket"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * Stealer.TicketsPerKill.GetFloat()).ToString("0.0#####")));
                         break;
                 }
