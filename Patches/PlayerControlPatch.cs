@@ -1486,23 +1486,11 @@ class MurderPlayerPatch
         if (SoulCollector.IsEnable) SoulCollector.OnPlayerDead(target);
         if (Medic.IsEnable) Medic.IsDead(target);
 
-        //================GHOST ASSIGN PATCH============
         if (target.Is(CustomRoles.EvilSpirit))
         {
          target.RpcSetRole(RoleTypes.GuardianAngel);
         }
-        //
-        //{
-        // try
-        //{
-        //GhostRoleAssign.GhostAssignPatch(target);
-        //}
-        //    catch (Exception error)
-        // {
-        // Logger.Error($"Error after Ghost assign: {error}", "MurderPlayerPatch.GhostAssign");
-        //}
-        // }
-
+        
         Utils.AfterPlayerDeathTasks(target);
 
         Main.PlayerStates[target.PlayerId].SetDead();
@@ -4426,7 +4414,7 @@ public static class PlayerControlCheckUseZiplinePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class PlayerControlDiePatch
 {
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref DeathReason reason, [HarmonyArgument(1)] ref bool assignGhostRole)
+    public static void Postfix(PlayerControl __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
@@ -4435,16 +4423,12 @@ public static class PlayerControlDiePatch
             var DeathPlayer = __instance;
 
             GhostRoleAssign.GhostAssignPatch(DeathPlayer);
-            
-            if (DeathPlayer.IsAnySubRole(AddON => AddON.IsGhostRole()) || DeathPlayer.GetCustomRole().IsGhostRole()) assignGhostRole = true;
-            //else assignGhostRole = false;
         }
         catch (Exception error)
         {
             Logger.Error($"Error after Ghost assign: {error}", "DiePlayerPatch.GhostAssign");
         }
 
-        
         __instance.RpcRemovePet();
     }
 }
