@@ -2428,7 +2428,9 @@ class ChatUpdatePatch
         
         int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
         var name = player.Data.PlayerName;
-        
+
+        __instance.freeChatField.textArea.characterLimit = 999;
+
         if (clientId == -1)
         {
             player.SetName(title);
