@@ -80,11 +80,9 @@ internal class Wildling : RoleBase
         return true;
     }
 
-    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (inMeeting) return;
-
-        if (killer.PlayerId == target.PlayerId) return;
+        if (inMeeting || isSuicide) return;
 
         TimeStamp[killer.PlayerId] = Utils.GetTimeStamp(DateTime.Now) + (long)ProtectDuration.GetFloat();
         SendRPC(killer.PlayerId);

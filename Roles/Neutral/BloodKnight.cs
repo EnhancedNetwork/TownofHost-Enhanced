@@ -82,11 +82,10 @@ internal class BloodKnight : RoleBase
         else if (killer.GetCustomRole() == target.GetCustomRole()) return false;
         return true;
     }
-    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (inMeeting) return;
+        if (inMeeting || isSuicide) return;
 
-        if (killer.PlayerId == target.PlayerId) return;
         TimeStamp[killer.PlayerId] = Utils.GetTimeStamp() + (long)ProtectDuration.GetFloat();
         SendRPC(killer.PlayerId);
         killer.Notify(GetString("BKInProtect"));

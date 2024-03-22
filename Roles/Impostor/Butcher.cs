@@ -36,11 +36,10 @@ internal class Butcher : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(Translator.GetString("ButcherButtonText"));
 
-    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (inMeeting) return;
-
-        if (killer.PlayerId == target.PlayerId || target == null) return;
+        if (inMeeting || isSuicide) return;
+        if (target == null) return;
 
         target.SetRealKiller(killer);
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Dismembered;

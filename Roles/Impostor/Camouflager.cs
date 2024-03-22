@@ -113,7 +113,7 @@ internal class Camouflager : RoleBase
         Timer = [];
     }
 
-    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         if (inMeeting || !AbilityActivated) return;
 

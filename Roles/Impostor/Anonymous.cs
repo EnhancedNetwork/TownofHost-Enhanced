@@ -84,9 +84,9 @@ internal class Anonymous : RoleBase
         }
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => DeadBodyList = [];
-    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (inMeeting) return;
+        if (inMeeting || isSuicide) return;
 
         if (target != null && !DeadBodyList.Contains(target.PlayerId))
             DeadBodyList.Add(target.PlayerId);

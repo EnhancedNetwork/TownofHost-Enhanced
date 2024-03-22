@@ -195,7 +195,7 @@ internal class Romantic : RoleBase
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
         => isPartnerProtected && BetPlayer.ContainsValue(target.PlayerId);
     
-    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting) => isRomanticAlive = false;
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide) => isRomanticAlive = false;
     
     private static string TargetMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {

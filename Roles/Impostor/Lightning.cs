@@ -116,11 +116,11 @@ internal class Lightning : RoleBase
             }
         }, ConvertTime.GetFloat(), "Lightning Convert Player To Ghost");
     }
-    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (inMeeting) return;
+        if (inMeeting || isSuicide) return;
 
-        if (killer == null || target == null || killer == target) return;
+        if (killer == null || target == null) return;
         if (!KillerConvertGhost.GetBool() || IsGhost(killer)) return;
         RealKiller.TryAdd(killer.PlayerId, target);
         StartConvertCountDown(target, killer);

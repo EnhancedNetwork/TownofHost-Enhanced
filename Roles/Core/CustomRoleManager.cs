@@ -98,7 +98,7 @@ public static class CustomRoleManager
         var isSuicide = killer.PlayerId == target.PlayerId;
 
         // target was murder by killer
-        targetRoleClass.OnMurderPlayerAsTarget(killer, target, inMeeting);
+        targetRoleClass.OnMurderPlayerAsTarget(killer, target, inMeeting, isSuicide);
 
         // Check target add-ons
         if (targetSubRoles.Any())
@@ -142,7 +142,7 @@ public static class CustomRoleManager
             }
 
         // Killer murder target
-        killerRoleClass.OnMurderPlayerAsKiller(killer, target, inMeeting);
+        killerRoleClass.OnMurderPlayerAsKiller(killer, target, inMeeting, isSuicide);
 
         // Check killer add-ons
         if (killerSubRoles.Any())

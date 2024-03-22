@@ -109,7 +109,7 @@ internal class Devourer : RoleBase
         PlayerSkinsCosumed[devourerId].Clear();
     }
 
-    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl devourer, bool inMeeting)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl devourer, bool inMeeting, bool isSuicide)
     {
         OnDevourerDied(devourer);
     }

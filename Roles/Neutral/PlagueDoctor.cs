@@ -148,7 +148,7 @@ internal class PlagueDoctor : RoleBase
         }
         return false;
     }
-    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         if (InfectWhenKilled && InfectCount > 0)
         {

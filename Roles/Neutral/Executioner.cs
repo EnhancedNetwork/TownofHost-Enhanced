@@ -155,7 +155,7 @@ internal class Executioner : RoleBase
     public static bool CheckTarget(byte targetId) => Target.ContainsValue(targetId);
     public static bool IsTarget(byte executionerId, byte targetId) => Target.TryGetValue(executionerId, out var exeTargetId) && exeTargetId == targetId;
 
-    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         ExecutionerWasDead(target.PlayerId);
     }

@@ -205,7 +205,7 @@ internal class Pelican : RoleBase
         return false;
     }
 
-    public override void OnMurderPlayerAsTarget(PlayerControl SLAT, PlayerControl victim, bool inMeeting)
+    public override void OnMurderPlayerAsTarget(PlayerControl SLAT, PlayerControl victim, bool inMeeting, bool isSuicide)
     {
         if (inMeeting) return;
 

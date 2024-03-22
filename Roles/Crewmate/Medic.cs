@@ -242,7 +242,7 @@ internal class Medic : RoleBase
         }
         NotifyRoles(ForceLoop: true);
     }
-    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         IsDead(target);
     }
