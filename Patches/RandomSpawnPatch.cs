@@ -16,8 +16,12 @@ class RandomSpawn
     {
         public static bool Prefix(CustomNetworkTransform __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
         {
-            if (!AmongUsClient.Instance.AmHost || !__instance.isActiveAndEnabled) return false;
-
+            if (!AmongUsClient.Instance.AmHost) return true;
+            
+            if (!__instance.isActiveAndEnabled)
+            {
+                return false;
+            }
             if ((RpcCalls)callId == RpcCalls.SnapTo && GameStates.AirshipIsActive)
             {
                 var player = __instance.myPlayer;
