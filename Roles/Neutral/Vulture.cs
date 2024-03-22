@@ -2,11 +2,11 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static TOHE.Roles.Core.CustomRoleManager;
 
 namespace TOHE.Roles.Neutral;
 
@@ -14,23 +14,23 @@ internal class Vulture : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 15600;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     //==================================================================\\
 
-    public static List<byte> UnreportablePlayers = [];
-    public static Dictionary<byte, int> BodyReportCount = [];
-    public static Dictionary<byte, int> AbilityLeftInRound = [];
-    public static Dictionary<byte, long> LastReport = [];
+    private static readonly List<byte> UnreportablePlayers = [];
+    private static readonly Dictionary<byte, int> BodyReportCount = [];
+    private static readonly Dictionary<byte, int> AbilityLeftInRound = [];
+    private static readonly Dictionary<byte, long> LastReport = [];
 
-    public static OptionItem ArrowsPointingToDeadBody;
-    public static OptionItem NumberOfReportsToWin;
-    public static OptionItem CanVent;
-    public static OptionItem VultureReportCD;
-    public static OptionItem MaxEaten;
-    public static OptionItem HasImpVision;
+    private static OptionItem ArrowsPointingToDeadBody;
+    private static OptionItem NumberOfReportsToWin;
+    private static OptionItem CanVent;
+    private static OptionItem VultureReportCD;
+    private static OptionItem MaxEaten;
+    private static OptionItem HasImpVision;
 
     public static void SetupCustomOption()
     {
@@ -57,15 +57,21 @@ internal class Vulture : RoleBase
         BodyReportCount[playerId] = 0;
         AbilityLeftInRound[playerId] = MaxEaten.GetInt();
         LastReport[playerId] = GetTimeStamp();
-        _ = new LateTask(() =>
+
+        if (AmongUsClient.Instance.AmHost)
         {
-            if (GameStates.IsInTask)
+            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+
+            _ = new LateTask(() =>
             {
-                if (!DisableShieldAnimations.GetBool()) GetPlayerById(playerId).RpcGuardAndKill(GetPlayerById(playerId));
-                GetPlayerById(playerId).Notify(GetString("VultureCooldownUp"));
-            }
-            return;
-        }, VultureReportCD.GetFloat() + 8f, "Vulture Cooldown Up In Start");  //for some reason that idk vulture cd completes 8s faster when the game starts, so I added 8f for now 
+                if (GameStates.IsInTask)
+                {
+                    if (!DisableShieldAnimations.GetBool()) GetPlayerById(playerId).RpcGuardAndKill(GetPlayerById(playerId));
+                    GetPlayerById(playerId).Notify(GetString("VultureCooldownUp"));
+                }
+                return;
+            }, VultureReportCD.GetFloat() + 8f, "Vulture Cooldown Up In Start");  //for some reason that idk vulture cd completes 8s faster when the game starts, so I added 8f for now 
+        }
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte id)
@@ -128,42 +134,51 @@ internal class Vulture : RoleBase
             }
         }
     }
-    public override bool OnCheckReportDeadBody(PlayerControl __instance, GameData.PlayerInfo target, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
-        long now = Utils.GetTimeStamp();
-        if ((AbilityLeftInRound[__instance.PlayerId] > 0) && (now - LastReport[__instance.PlayerId] > (long)VultureReportCD.GetFloat()))
+        // Vulture was eat body
+        if (UnreportablePlayers.Contains(deadBody.PlayerId)) return false;
+
+        if (reporter.Is(CustomRoles.Vulture))
         {
-            LastReport[__instance.PlayerId] = now;
-
-            __instance.GetRoleClass().OnReportDeadBody(__instance, target.Object);
-            __instance.RpcGuardAndKill(__instance);
-            __instance.Notify(GetString("VultureReportBody"));
-            if (AbilityLeftInRound[__instance.PlayerId] > 0)
+            var reporterId = reporter.PlayerId;
+            long now = GetTimeStamp();
+            if ((AbilityLeftInRound[reporterId] > 0) && (now - LastReport[reporterId] > (long)VultureReportCD.GetFloat()))
             {
-                _ = new LateTask(() =>
-                {
-                    if (GameStates.IsInTask)
-                    {
-                        if (!DisableShieldAnimations.GetBool()) __instance.RpcGuardAndKill(__instance);
-                        __instance.Notify(GetString("VultureCooldownUp"));
-                    }
-                    return;
-                }, VultureReportCD.GetFloat(), "Vulture CD");
-            }
+                LastReport[reporterId] = now;
 
-            Logger.Info($"{__instance.GetRealName()} ate {target.PlayerName} corpse", "Vulture");
-            return false;
+                OnEatDeadBody(reporter, deadBody.Object);
+                reporter.RpcGuardAndKill(reporter);
+                reporter.Notify(GetString("VultureReportBody"));
+                if (AbilityLeftInRound[reporterId] > 0)
+                {
+                    _ = new LateTask(() =>
+                    {
+                        if (GameStates.IsInTask)
+                        {
+                            if (!DisableShieldAnimations.GetBool()) reporter.RpcGuardAndKill(reporter);
+                            reporter.Notify(GetString("VultureCooldownUp"));
+                        }
+                        return;
+                    }, VultureReportCD.GetFloat(), "Vulture CD");
+                }
+
+                Logger.Info($"{reporter.GetRealName()} ate {deadBody.PlayerName} corpse", "Vulture");
+                return false;
+            }
         }
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl pc, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         foreach (var apc in playerIdList)
         {
             LocateArrow.RemoveAllTarget(apc);
             SendRPC(apc, false);
         }
-       
+    }
+    public static void OnEatDeadBody(PlayerControl pc, PlayerControl target)
+    {       
         BodyReportCount[pc.PlayerId]++;
         AbilityLeftInRound[pc.PlayerId]--;
         Logger.Msg($"target.object {target.Data}, is null? {target == null}", "VultureNull");
@@ -193,7 +208,6 @@ internal class Vulture : RoleBase
             }
             SendBodyRPC(player.PlayerId);
         }
-
     }
     public override void NotifyAfterMeeting()
     {
@@ -215,7 +229,7 @@ internal class Vulture : RoleBase
             SendBodyRPC(player.PlayerId);
         }
     }
-    public override void OthersAfterPlayerDeathTask(PlayerControl target)
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target)
     {
         if (!ArrowsPointingToDeadBody.GetBool()) return;
 
@@ -242,10 +256,10 @@ internal class Vulture : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (seer == null || !isForMeeting) return string.Empty;
+        if (seer == null || isForMeeting) return string.Empty;
         if (!seer.Is(CustomRoles.Vulture)) return string.Empty;
         if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
-        if (GameStates.IsMeeting) return string.Empty;
+        
         return ColorString(Color.white, LocateArrow.GetArrows(seer));
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

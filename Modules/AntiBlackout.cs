@@ -36,8 +36,7 @@ public static class AntiBlackout
             if (pc.GetCustomRole().IsImpostor()) Impostors.Add(pc.PlayerId); // Impostors
             else if (Main.PlayerStates[pc.PlayerId].countTypes == CountTypes.Impostor) Impostors.Add(pc.PlayerId); // Madmates
 
-            else if (pc.GetCustomRole().IsNK() && !(pc.Is(CustomRoles.Arsonist) || pc.Is(CustomRoles.Quizmaster))) NeutralKillers.Add(pc.PlayerId); // Neutral Killers
-            else if (pc.Is(CustomRoles.Arsonist) && Arsonist.CanIgniteAnytime()) NeutralKillers.Add(pc.PlayerId);
+            else if (pc.GetCustomRole().IsNK()) NeutralKillers.Add(pc.PlayerId); // Neutral Killers
             else if (pc.Is(CustomRoles.Cultist)) NeutralKillers.Add(pc.PlayerId);
 
             else Crewmates.Add(pc.PlayerId);
@@ -234,7 +233,6 @@ public static class AntiBlackout
                 foreach (var pc in Main.AllAlivePlayerControls)
                 {
                     pc.GetRoleClass()?.NotifyAfterMeeting();
-
                 }
             }, timeNotify + 0.2f, "Notify AfterMeetingTasks");
         }
