@@ -1486,6 +1486,11 @@ class MurderPlayerPatch
         if (SoulCollector.IsEnable) SoulCollector.OnPlayerDead(target);
         if (Medic.IsEnable) Medic.IsDead(target);
 
+        if (target.Is(CustomRoles.EvilSpirit))
+        {
+         target.RpcSetRole(RoleTypes.GuardianAngel);
+        }
+        
         Utils.AfterPlayerDeathTasks(target);
 
         Main.PlayerStates[target.PlayerId].SetDead();
