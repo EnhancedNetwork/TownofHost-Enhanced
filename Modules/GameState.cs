@@ -456,7 +456,6 @@ public class TaskState
 
         if (AmongUsClient.Instance.AmHost)
         {
-            var playerRole = player.GetCustomRole();
             var playerSubRoles = player.GetCustomSubRoles();
 
             player.GetRoleClass()?.OnTaskComplete(player, CompletedTasksCount, AllTasksCount);

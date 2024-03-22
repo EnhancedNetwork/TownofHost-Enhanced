@@ -11,6 +11,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using static TOHE.MeetingHudStartPatch;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -170,7 +171,7 @@ internal class Retributionist : RoleBase
             if (GameStates.IsMeeting)
             {
                 GuessManager.RpcGuesserMurderPlayer(target);
-                AfterPlayerDeathTasks(target, true);
+                MurderPlayerPatch.AfterPlayerDeathTasks(pc, target, true);
             }
             else
             {

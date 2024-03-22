@@ -1,6 +1,7 @@
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -43,6 +44,8 @@ internal class SoulCollector : RoleBase
         SoulCollectorTarget.Add(playerId, byte.MaxValue);
         SoulCollectorPoints.Add(playerId, 0);
         DidVote[playerId] = false;
+
+        CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
 
     public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), SoulCollectorPoints.TryGetValue(playerId, out var x) ? $"({x}/{SoulCollectorPointsOpt.GetInt()})" : "Invalid");
@@ -102,7 +105,7 @@ internal class SoulCollector : RoleBase
             DidVote[playerId] = false;
         }
     }
-    public static void OnPlayerDead(PlayerControl deadPlayer)
+    private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
         foreach (var playerId in SoulCollectorTarget.Keys.ToArray())
         {

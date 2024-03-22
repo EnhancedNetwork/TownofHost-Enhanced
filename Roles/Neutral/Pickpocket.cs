@@ -53,9 +53,9 @@ internal class Pickpocket : RoleBase
     {
         return (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * VotesPerKill.GetFloat());
     }
-    public override void OnMurder(PlayerControl killer, PlayerControl target)
+    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (killer.Is(CustomRoles.Pickpocket) && killer.PlayerId != target.PlayerId)
+        if (killer.PlayerId != target.PlayerId)
             killer.Notify(string.Format(GetString("PickpocketGetVote"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * VotesPerKill.GetFloat()).ToString("0.0#####")));
     }
 }

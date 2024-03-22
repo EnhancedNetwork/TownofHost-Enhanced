@@ -430,7 +430,7 @@ public static class GuessManager
 
                         if (dp == pc) GuessMaster.OnGuess(role, isMisguess: true, dp: dp);
                         
-                        Utils.AfterPlayerDeathTasks(dp, true);
+                        MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
                         Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
 

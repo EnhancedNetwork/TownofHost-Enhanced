@@ -229,8 +229,9 @@ internal class Vulture : RoleBase
             SendBodyRPC(player.PlayerId);
         }
     }
-    private void CheckDeadBody(PlayerControl killer, PlayerControl target)
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        if (inMeeting) return;
         if (!ArrowsPointingToDeadBody.GetBool()) return;
 
         Vector2 pos = target.transform.position;

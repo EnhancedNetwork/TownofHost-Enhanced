@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using static TOHE.Options;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -16,6 +17,7 @@ public class Cyber
     public static OptionItem CrewKnowCyberDead;
     public static OptionItem NeutralKnowCyberDead;
     public static OptionItem CyberKnown;
+
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Cyber, canSetNum: true);
@@ -32,9 +34,31 @@ public class Cyber
     {
         CyberDead = [];
     }
-
     public static void Clear()
     {
         CyberDead.Clear();
+    }
+
+    public static void AfterCyberDeadTask(PlayerControl target, bool inMeeting)
+    {
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (!ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
+            if (!NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
+            if (!CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
+
+            if (inMeeting)
+            {
+                Utils.SendMessage(string.Format(Translator.GetString("CyberDead"), target.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), Translator.GetString("CyberNewsTitle")));
+            }
+            else
+            {
+                pc.KillFlash();
+                pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), Translator.GetString("OnCyberDead")));
+            }
+        }
+
+        if (!inMeeting && !CyberDead.Contains(target.PlayerId))
+            CyberDead.Add(target.PlayerId);
     }
 }

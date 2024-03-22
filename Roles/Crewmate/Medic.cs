@@ -228,7 +228,7 @@ internal class Medic : RoleBase
             NotifyRoles();
         }
     }
-    public static void IsDead(PlayerControl target)
+    private static void IsDead(PlayerControl target)
     {
         if (!target.Is(CustomRoles.Medic)) return;
         if (!ShieldDeactivatesWhenMedicDies.GetBool()) return;
@@ -242,7 +242,7 @@ internal class Medic : RoleBase
         }
         NotifyRoles(ForceLoop: true);
     }
-    public override void OnTargetDead(PlayerControl killer, PlayerControl target)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         IsDead(target);
     }

@@ -148,7 +148,7 @@ internal class PlagueDoctor : RoleBase
         }
         return false;
     }
-    public override void OnTargetDead(PlayerControl killer, PlayerControl target)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (InfectWhenKilled && InfectCount > 0)
         {
@@ -156,7 +156,7 @@ internal class PlagueDoctor : RoleBase
             DirectInfect(killer, target);
         }
     }
-    private void OnAnyMurder(PlayerControl killer, PlayerControl target)
+    private void OnAnyMurder(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         LateCheckWin = true;
     }

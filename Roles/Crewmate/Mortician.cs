@@ -70,8 +70,10 @@ internal class Mortician : RoleBase
         else
             LocateArrow.RemoveAllTarget(playerId);
     }
-    private void CheckDeadBody(PlayerControl killer, PlayerControl target)
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        if (inMeeting) return;
+
         Vector2 pos = target.transform.position;
         float minDis = float.MaxValue;
         string minName = "";

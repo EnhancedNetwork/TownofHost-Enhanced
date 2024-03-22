@@ -291,8 +291,10 @@ internal class Quizmaster : RoleBase
         MarkedPlayer = byte.MaxValue;
     }
 
-    private void OnPlayerDead(PlayerControl killer, PlayerControl target)
+    private void OnPlayerDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        if (inMeeting) return;
+
         diedThisRound++;
         if (target.PlayerId == MarkedPlayer) ResetMarkedPlayer(false);
     }

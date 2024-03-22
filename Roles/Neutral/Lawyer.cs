@@ -13,7 +13,7 @@ internal class Lawyer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 13100;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -70,6 +70,8 @@ internal class Lawyer : RoleBase
 
         if (AmongUsClient.Instance.AmHost)
         {
+            CustomRoleManager.CheckDeadBodyOthers.Add(OthersAfterPlayerDeathTask);
+
             List<PlayerControl> targetList = [];
             var rand = IRandom.Instance;
             foreach (var target in Main.AllPlayerControls)
@@ -134,7 +136,7 @@ internal class Lawyer : RoleBase
         else
             Target.Remove(reader.ReadByte());
     }
-    public override void OthersAfterPlayerDeathTask(PlayerControl target)
+    private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (!Target.ContainsValue(target.PlayerId)) return;
 
@@ -208,7 +210,7 @@ internal class Lawyer : RoleBase
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         lawyer.Notify(text);
     }
-    public override void AfterPlayerDeathTask(PlayerControl target)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (Target.ContainsKey(target.PlayerId))
         {

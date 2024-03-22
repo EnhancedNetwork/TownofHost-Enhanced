@@ -52,7 +52,7 @@ internal class Hangman : RoleBase
             target.SetRealKiller(killer);
 
             killer.SetKillCooldown();
-            Utils.AfterPlayerDeathTasks(target);
+            MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, false);
             return false;
         }
         return true;

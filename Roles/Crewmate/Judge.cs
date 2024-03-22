@@ -186,6 +186,7 @@ internal class Judge : RoleBase
                 TrialLimit[pc.PlayerId]--;
 
                 if (!GameStates.IsProceeding)
+                
                 _ = new LateTask(() =>
                 {
                     Main.PlayerStates[dp.PlayerId].deathReason = PlayerState.DeathReason.Trialed;
@@ -193,7 +194,7 @@ internal class Judge : RoleBase
                     GuessManager.RpcGuesserMurderPlayer(dp);
 
                     //死者检查
-                    AfterPlayerDeathTasks(dp, true);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
                     NotifyRoles(isForMeeting: false, NoCache: true);
 

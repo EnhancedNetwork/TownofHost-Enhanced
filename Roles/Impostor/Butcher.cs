@@ -35,8 +35,11 @@ internal class Butcher : RoleBase
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(Translator.GetString("ButcherButtonText"));
-    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target)
+
+    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        if (inMeeting) return;
+
         if (killer.PlayerId == target.PlayerId || target == null) return;
 
         target.SetRealKiller(killer);

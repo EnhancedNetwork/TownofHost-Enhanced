@@ -170,7 +170,7 @@ internal class Councillor : RoleBase
                     GuessManager.RpcGuesserMurderPlayer(dp);
 
                     //死者检查
-                    Utils.AfterPlayerDeathTasks(dp, true);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
                     Utils.NotifyRoles(isForMeeting: false, NoCache: true);
 

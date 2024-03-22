@@ -149,7 +149,6 @@ class CheckMurderPatch
         var killer = __instance; // Alternative variable
 
         var killerRole = __instance.GetCustomRole();
-        var targetRole = target.GetCustomRole();
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
@@ -526,10 +525,6 @@ class MurderPlayerPatch
         if (Main.OverDeadPlayerList.Contains(target.PlayerId)) return;
 
         PlayerControl killer = __instance;
-        bool needUpadteNotifyRoles = true;
-
-        var killerRoleClass = killer.GetRoleClass();
-        var targetRoleClass = target.GetRoleClass();
 
         if (killer != __instance)
         {
@@ -541,7 +536,7 @@ class MurderPlayerPatch
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill;
         }
 
-        //看看UP是不是被首刀了
+        // Check Youtuber first died
         if (Main.FirstDied == "" && target.Is(CustomRoles.Youtuber) && !killer.Is(CustomRoles.KillingMachine))
         {
             CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
@@ -550,32 +545,11 @@ class MurderPlayerPatch
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Youtuber);
                 CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
             }
+            return;
             //Imagine youtuber is converted
         }
-
         if (Main.FirstDied == "")
             Main.FirstDied = target.GetClient().GetHashedPuid();
-
-        targetRoleClass.OnTargetDead(killer, target);
-
-        killerRoleClass.OnMurder(killer, target);
-
-        // Check dead body for others roles
-        CustomRoleManager.CheckDeadBody(target, killer);
-
-
-        if (target.Is(CustomRoles.Bait))
-        {
-            Bait.BaitAfterDeathTasks(killer, target);
-        }
-
-        if (target.Is(CustomRoles.Burst) && killer.IsAlive() && !killer.Is(CustomRoles.KillingMachine))
-        {
-            Burst.AfterBurstDeadTasks(killer, target);
-        }
-        
-        if (target.Is(CustomRoles.Trapper) && killer != target && !killer.Is(CustomRoles.KillingMachine))
-            killer.TrapperKilled(target);
 
         if (Main.AllKillers.ContainsKey(killer.PlayerId))
             Main.AllKillers.Remove(killer.PlayerId);
@@ -583,36 +557,7 @@ class MurderPlayerPatch
         if (!killer.Is(CustomRoles.Trickster))
             Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
 
-        switch (killer.GetCustomRole())
-        {
-            case CustomRoles.Butcher:
-                Butcher.OnMurderPlayer(killer, target);
-                break;
-        }
-
-        if (killer.Is(CustomRoles.TicketsStealer) && killer.PlayerId != target.PlayerId)
-            killer.Notify(string.Format(GetString("TicketsStealerGetTicket"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * Stealer.TicketsPerKill.GetFloat()).ToString("0.0#####")));
-
-
-        if (target.Is(CustomRoles.Avanger))
-        {
-            Avanger.OnMurderPlayer(target);
-        }
-
-        if (target.Is(CustomRoles.Oiiai))
-        {
-            Oiiai.OnMurderPlayer(killer, target);
-        }
-
-
-        if (SoulCollector.HasEnabled) SoulCollector.OnPlayerDead(target);
-
-        if (target.Is(CustomRoles.EvilSpirit))
-        {
-            target.RpcSetRole(RoleTypes.GuardianAngel);
-        }
-        
-        Utils.AfterPlayerDeathTasks(target);
+        AfterPlayerDeathTasks(killer, target, false);
 
         Main.PlayerStates[target.PlayerId].SetDead();
         target.SetRealKiller(killer, true);
@@ -630,11 +575,12 @@ class MurderPlayerPatch
             Utils.SyncAllSettings();
         }
 
-        if (needUpadteNotifyRoles)
-        {
-            Utils.NotifyRoles(SpecifySeer: killer);
-            Utils.NotifyRoles(SpecifySeer: target);
-        }
+        Utils.NotifyRoles(SpecifySeer: killer);
+        Utils.NotifyRoles(SpecifySeer: target);
+    }
+    public static void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting)
+    {
+        CustomRoleManager.OnMurderPlayer(killer, target, inMeeting);
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
@@ -909,7 +855,7 @@ class ReportDeadBodyPatch
 
             // If there is an error in ReportDeadBodyPatch, update the player nicknames anyway
             MeetingTimeManager.OnReportDeadBody();
-            NameNotifyManager.ClearForEveryone();
+            NameNotifyManager.Reset();
             Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
             _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
         }
@@ -966,7 +912,7 @@ class ReportDeadBodyPatch
         MeetingTimeManager.OnReportDeadBody();
 
         // Clear all Notice players
-        NameNotifyManager.ClearForEveryone();
+        NameNotifyManager.Reset();
 
         // Update Notify Roles for Meeting
         Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
@@ -1139,22 +1085,18 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask)
             {
-                var playerRole = player.GetCustomRole();
-
                 CustomRoleManager.OnFixedUpdate(player);
-
 
                 if (player.Is(CustomRoles.Statue) && player.IsAlive())
                     Statue.OnFixedUpdate(player);
             
                 if (!lowLoad)
                 {
-                    playerRole = player.GetCustomRole();
-
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
 
                     if (Rainbow.isEnabled)
                         Rainbow.OnFixedUpdate();
+
                     if (Options.LadderDeath.GetBool() && player.IsAlive())
                         FallFromLadder.FixedUpdate(player);
 
@@ -1288,8 +1230,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (target.GetPlayerTaskState().IsTaskFinished)
                 {
-                    seerRole = seer.GetCustomRole();
-
                     if (seerRole.IsImpostor())
                     {
                         if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))

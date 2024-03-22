@@ -1,12 +1,11 @@
-﻿using HarmonyLib;
+﻿using AmongUs.GameOptions;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
+using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE.Roles.Core;
 
@@ -66,7 +65,6 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
-
         bool cancel = false;
         foreach (var player in Main.PlayerStates.Values.ToArray())
         {
@@ -81,10 +79,81 @@ public static class CustomRoleManager
         return !cancel;
     }
     /// <summary>
-    /// If the role does tasks after target death.
+    /// Tasks after killer murder target
     /// </summary>
-    public static void OthersAfterPlayerDead(PlayerControl player)
-        => Main.PlayerStates.Values.ToArray().Do(PlrState => PlrState.RoleClass.OthersAfterPlayerDeathTask(player));
+    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting)
+    {
+        var killerRoleClass = killer.GetRoleClass();
+        var targetRoleClass = target.GetRoleClass();
+
+        var killerSubRoles = killer.GetCustomSubRoles();
+        var targetSubRoles = target.GetCustomSubRoles();
+
+        // target was murder by killer
+        targetRoleClass.OnMurderPlayerAsTarget(killer, target, inMeeting);
+
+        // Check target add-ons
+        if (targetSubRoles.Any())
+            foreach (var subRole in targetSubRoles.ToArray())
+            {
+                switch (subRole)
+                {
+                    case CustomRoles.Cyber:
+                        Cyber.AfterCyberDeadTask(target, inMeeting);
+                        break;
+
+                    case CustomRoles.Bait when !inMeeting:
+                        Bait.BaitAfterDeathTasks(killer, target);
+                        break;
+
+                    case CustomRoles.Trapper when !inMeeting && killer != target && !killer.Is(CustomRoles.KillingMachine):
+                        killer.TrapperKilled(target);
+                        break;
+
+                    case CustomRoles.Avanger when !inMeeting:
+                        Avanger.OnMurderPlayer(target);
+                        break;
+
+                    case CustomRoles.Burst when killer.IsAlive() && !killer.Is(CustomRoles.KillingMachine):
+                        Burst.AfterBurstDeadTasks(killer, target);
+                        break;
+
+                    case CustomRoles.Oiiai:
+                        Oiiai.OnMurderPlayer(killer, target);
+                        break;
+
+                    case CustomRoles.Tricky:
+                        Tricky.AfterPlayerDeathTasks(target);
+                        break;
+
+                    case CustomRoles.EvilSpirit:
+                        target.RpcSetRole(RoleTypes.GuardianAngel);
+                        break;
+
+                }
+            }
+
+        // Killer murder target
+        killerRoleClass.OnMurderPlayerAsKiller(killer, target, inMeeting);
+
+        // Check killer add-ons
+        if (killerSubRoles.Any())
+            foreach (var subRole in killerSubRoles.ToArray())
+            {
+                switch (subRole)
+                {
+                    case CustomRoles.TicketsStealer when !inMeeting && killer.PlayerId != target.PlayerId:
+                        killer.Notify(string.Format(Translator.GetString("TicketsStealerGetTicket"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * Stealer.TicketsPerKill.GetFloat()).ToString("0.0#####")));
+                        break;
+                }
+            }
+
+        // Check dead body for others roles
+        CheckDeadBody(target, killer, inMeeting);
+
+        // Check Lovers Suicide
+        FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
+    }
     
     /// <summary>
     /// Check if this task is marked by a role and do something.
@@ -93,17 +162,17 @@ public static class CustomRoleManager
         => Main.PlayerStates.Values.ToArray().Do(PlrState => PlrState.RoleClass.OnOthersTaskComplete(player, task));
     
 
-    public static HashSet<Action<PlayerControl, PlayerControl>> CheckDeadBodyOthers = [];
+    public static HashSet<Action<PlayerControl, PlayerControl, bool>> CheckDeadBodyOthers = [];
     /// <summary>
     /// If the role need check a present dead body
     /// </summary>
-    public static void CheckDeadBody(PlayerControl deadBody, PlayerControl killer)
+    public static void CheckDeadBody(PlayerControl deadBody, PlayerControl killer, bool inMeeting)
     {
         if (!CheckDeadBodyOthers.Any()) return;
         //Execute other viewpoint processing if any
         foreach (var checkDeadBodyOthers in CheckDeadBodyOthers.ToArray())
         {
-            checkDeadBodyOthers(deadBody, killer);
+            checkDeadBodyOthers(deadBody, killer, inMeeting);
         }
     }
 

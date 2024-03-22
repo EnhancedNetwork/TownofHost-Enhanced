@@ -154,22 +154,12 @@ public abstract class RoleBase
     /// <summary>
     /// When the killer murder his target
     /// </summary>
-    public virtual void OnMurder(PlayerControl killer, PlayerControl target)
+    public virtual void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting)
     { }
     /// <summary>
     /// When the target role died by killer
     /// </summary>
-    public virtual void OnTargetDead(PlayerControl killer, PlayerControl target)
-    { }
-    /// <summary>
-    /// Always do these tasks once the role dies
-    /// </summary>
-    public virtual void AfterPlayerDeathTask(PlayerControl target)
-    { }
-    /// <summary>
-    /// Always do these tasks once the the role's targets die
-    /// </summary>
-    public virtual void OthersAfterPlayerDeathTask(PlayerControl target)
+    public virtual void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting)
     { }
 
     /// <summary>

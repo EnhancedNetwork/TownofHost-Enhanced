@@ -180,7 +180,7 @@ internal class Pelican : RoleBase
                 target.SetRealKiller(killer);
                 Main.PlayerStates[tar].deathReason = PlayerState.DeathReason.Eaten;
                 Main.PlayerStates[tar].SetDead();
-                Utils.AfterPlayerDeathTasks(target, true);
+                MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
                 Logger.Info($"{killer.GetRealName()} 消化了 {target.GetRealName()}", "Pelican");
             }
         }
@@ -205,8 +205,10 @@ internal class Pelican : RoleBase
         return false;
     }
 
-    public override void OnTargetDead(PlayerControl SLAT, PlayerControl victim)
+    public override void OnMurderPlayerAsTarget(PlayerControl SLAT, PlayerControl victim, bool inMeeting)
     {
+        if (inMeeting) return;
+
         var pc = victim.PlayerId;
         if (!eatenList.ContainsKey(pc)) return;
 

@@ -48,9 +48,9 @@ internal class Celebrity : RoleBase
         seer.Notify(ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("OnCelebrityDead")));
         return true;
     }
-    public override void AfterPlayerDeathTask(PlayerControl target)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (GameStates.IsMeeting)
+        if (inMeeting)
         {
             //Death Message
             foreach (var pc in Main.AllPlayerControls)

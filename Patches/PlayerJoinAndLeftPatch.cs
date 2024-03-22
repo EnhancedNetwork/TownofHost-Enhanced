@@ -264,7 +264,10 @@ class OnPlayerLeftPatch
     {
         //if (!AmongUsClient.Instance.AmHost) return;
 
-        data.Character.GetRoleClass()?.OnPlayerLeft(data);
+        if (GameStates.IsNormalGame && GameStates.IsInGame)
+            MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
+        
+        //data.Character.GetRoleClass()?.OnPlayerLeft(data);
     }
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
@@ -272,8 +275,6 @@ class OnPlayerLeftPatch
         {
             if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
-                Utils.AfterPlayerDeathTasks(data?.Character);
-
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
                 {
                     foreach (var lovers in Main.LoversPlayers.ToArray())
@@ -282,11 +283,6 @@ class OnPlayerLeftPatch
                         Main.LoversPlayers.Remove(lovers);
                         Main.PlayerStates[lovers.PlayerId].RemoveSubRole(CustomRoles.Lovers);
                     }
-                }
-
-                if (data.Character.Is(CustomRoles.Pelican))
-                {
-                    data.Character.GetRoleClass().OnTargetDead(data.Character, data.Character);
                 }
 
                 if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);

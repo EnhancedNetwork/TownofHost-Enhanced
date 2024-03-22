@@ -155,11 +155,11 @@ internal class Executioner : RoleBase
     public static bool CheckTarget(byte targetId) => Target.ContainsValue(targetId);
     public static bool IsTarget(byte executionerId, byte targetId) => Target.TryGetValue(executionerId, out var exeTargetId) && exeTargetId == targetId;
 
-    public override void OnTargetDead(PlayerControl killer, PlayerControl target)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         ExecutionerWasDead(target.PlayerId);
     }
-    private void OnOthersDead(PlayerControl killer, PlayerControl target)
+    private void OnOthersDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (CheckTarget(target.PlayerId))
             ChangeRoleByTarget(target);
@@ -183,10 +183,6 @@ internal class Executioner : RoleBase
             Target.Remove(targetId);
             SendRPC(targetId);
         }
-    }
-    public override void AfterPlayerDeathTask(PlayerControl target)
-    {
-        ExecutionerWasDead(target.PlayerId);
     }
 
     public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)

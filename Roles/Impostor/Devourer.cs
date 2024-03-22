@@ -89,9 +89,10 @@ internal class Devourer : RoleBase
 
     public static bool HideNameOfTheDevoured(byte targetId) => HideNameOfConsumedPlayer.GetBool() && PlayerSkinsCosumed.Any(a => a.Value.Contains(targetId));
 
-    public static void OnDevourerDied(byte Devourer)
+    private static void OnDevourerDied(PlayerControl devourer)
     {
-        foreach (byte player in PlayerSkinsCosumed[Devourer])
+        var devourerId = devourer.PlayerId;
+        foreach (byte player in PlayerSkinsCosumed[devourerId])
         {
             Camouflage.PlayerSkins[player] = OriginalPlayerSkins[player];
 
@@ -105,7 +106,18 @@ internal class Devourer : RoleBase
             }
         }
 
-        PlayerSkinsCosumed[Devourer].Clear();
+        PlayerSkinsCosumed[devourerId].Clear();
+    }
+
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl devourer, bool inMeeting)
+    {
+        OnDevourerDied(devourer);
+    }
+
+    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    {
+        if (exiled != null && exiled.Object.Is(CustomRoles.Devourer))
+            OnDevourerDied(exiled.Object);
     }
 
     private static void SetSkin(PlayerControl target, GameData.PlayerOutfit outfit)

@@ -150,7 +150,7 @@ internal class Nemesis : RoleBase
             if (GameStates.IsMeeting)
             {
                 GuessManager.RpcGuesserMurderPlayer(target);
-                Utils.AfterPlayerDeathTasks(target, true);
+                MurderPlayerPatch.AfterPlayerDeathTasks(pc, target, true);
             }
             else
             {

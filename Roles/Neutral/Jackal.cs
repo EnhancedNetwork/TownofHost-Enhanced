@@ -148,8 +148,10 @@ internal class Jackal : RoleBase
             hud.KillButton?.OverrideText($"{GetString("KillButtonText")}");
     }
 
-    private void OthersPlayersDead(PlayerControl killer, PlayerControl target)
+    private void OthersPlayersDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        if (inMeeting) return;
+
         if (ResetKillCooldownWhenSbGetKilled.GetBool() && !killer.Is(CustomRoles.Sidekick) && !killer.Is(CustomRoles.Jackal) && !target.Is(CustomRoles.Sidekick) && !target.Is(CustomRoles.Jackal) && !GameStates.IsMeeting)
         {
             Main.AllAlivePlayerControls

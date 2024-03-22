@@ -244,16 +244,12 @@ public static class Utils
                 seer.KillFlash();
                 continue;
             }
-            else if (target.Is(CustomRoles.Cyber))
-            {
-                if (!Cyber.ImpKnowCyberDead.GetBool() && seer.GetCustomRole().IsImpostor()) continue;
-                if (!Cyber.NeutralKnowCyberDead.GetBool() && seer.GetCustomRole().IsNeutral()) continue;
-                if (!Cyber.CrewKnowCyberDead.GetBool() && seer.GetCustomRole().IsCrewmate()) continue;
-                seer.KillFlash();
-                seer.Notify(ColorString(GetRoleColor(CustomRoles.Cyber), GetString("OnCyberDead"))); 
-            } 
         }
-        if (target.Is(CustomRoles.Cyber) && !Cyber.CyberDead.Contains(target.PlayerId)) Cyber.CyberDead.Add(target.PlayerId);
+
+        if (target.Is(CustomRoles.Cyber))
+        {
+            Cyber.AfterCyberDeadTask(target, false);
+        }
     }
     public static bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
     {
@@ -1828,50 +1824,6 @@ public static class Utils
             ventilationSystem.PlayersInsideVents.Clear();
             ventilationSystem.IsDirty = true;
         }
-    }
-    public static void AfterPlayerDeathTasks(PlayerControl target, bool onMeeting = false)
-    {
-        target.GetRoleClass()?.AfterPlayerDeathTask(target);
-        CustomRoleManager.OthersAfterPlayerDead(target);
-
-        switch (target.GetCustomRole())
-        {
-            case CustomRoles.Devourer:
-                Devourer.OnDevourerDied(target.PlayerId);
-                break;
-        }
-
-        var States = Main.PlayerStates[target.PlayerId];
-        foreach (var subRole in States.SubRoles.ToArray())
-        {
-            switch (subRole)
-            {
-                case CustomRoles.Cyber:
-                    if (GameStates.IsMeeting)
-                    {
-                        //网红死亡消息提示
-                        foreach (var pc in Main.AllPlayerControls)
-                        {
-                            if (!Cyber.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                            if (!Cyber.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
-                            if (!Cyber.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
-                            SendMessage(string.Format(GetString("CyberDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
-                        }
-                    }
-                    break;
-            }
-        }
-
-        Medic.IsDead(target);
-
-        if (Executioner.Target.ContainsValue(target.PlayerId))
-            Executioner.ChangeRoleByTarget(target);
-
-
-
-        FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, onMeeting);
-
-        Tricky.AfterPlayerDeathTasks(target);
     }
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {

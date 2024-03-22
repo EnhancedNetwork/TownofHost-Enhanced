@@ -73,7 +73,9 @@ internal class Romantic : RoleBase
     {
         playerIdList.Add(playerId);
         BetTimes.Add(playerId, MaxBetTimes);
+        
         CustomRoleManager.MarkOthers.Add(TargetMark);
+        CustomRoleManager.CheckDeadBodyOthers.Add(OthersAfterPlayerDeathTask);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -193,7 +195,8 @@ internal class Romantic : RoleBase
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
         => isPartnerProtected && BetPlayer.ContainsValue(target.PlayerId);
     
-    public override void AfterPlayerDeathTask(PlayerControl target) => Romantic.isRomanticAlive = false;
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting) => isRomanticAlive = false;
+    
     private static string TargetMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {
         if (!seer.Is(CustomRoles.Romantic))
@@ -215,7 +218,7 @@ internal class Romantic : RoleBase
     {
         isPartnerProtected = false;
     }
-    public override void OthersAfterPlayerDeathTask(PlayerControl player)
+    private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl player, bool inMeeting)
     {
         var playerId = player.PlayerId;
         if (!BetPlayer.ContainsValue(playerId) || player == null) return;
