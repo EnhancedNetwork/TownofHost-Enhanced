@@ -535,13 +535,15 @@ static class ExtendedPlayerControl
     {
         Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
 
+        // FFA
         if (player.Is(CustomRoles.Killer))
         {
             Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
-            return;
         }
-
-        player.GetRoleClass()?.SetKillCooldown(player.PlayerId);
+        else
+        {
+            player.GetRoleClass()?.SetKillCooldown(player.PlayerId);
+        }
 
         var playerSubRoles = player.GetCustomSubRoles().ToArray();
 
