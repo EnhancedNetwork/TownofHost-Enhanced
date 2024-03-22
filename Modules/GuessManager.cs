@@ -934,12 +934,27 @@ public static class GuessManager
                 
                 List<CustomRoles> listOfRoles = CustomRolesHelper.AllRoles.Where(role => !role.IsGhostRole() && (role.IsEnable() || role.RoleExist(countDead: true))).ToList();
 
+                // Always show
+                if (!listOfRoles.Contains(CustomRoles.ImpostorTOHE))
+                    listOfRoles.Add(CustomRoles.ImpostorTOHE);
+
+                if (!listOfRoles.Contains(CustomRoles.ShapeshifterTOHE))
+                    listOfRoles.Add(CustomRoles.ShapeshifterTOHE);
+
+                if (!listOfRoles.Contains(CustomRoles.CrewmateTOHE))
+                    listOfRoles.Add(CustomRoles.CrewmateTOHE);
+
+                if (!listOfRoles.Contains(CustomRoles.ScientistTOHE))
+                    listOfRoles.Add(CustomRoles.ScientistTOHE);
+
+                if (!listOfRoles.Contains(CustomRoles.EngineerTOHE))
+                    listOfRoles.Add(CustomRoles.EngineerTOHE);
+
+                if (!listOfRoles.Contains(CustomRoles.Amnesiac))
+                    listOfRoles.Add(CustomRoles.Amnesiac);
 
                 if (CustomRoles.Jackal.IsEnable())
                 {
-                    if (!listOfRoles.Contains(CustomRoles.Sidekick))
-                        listOfRoles.Add(CustomRoles.Sidekick);
-
                     if (!listOfRoles.Contains(CustomRoles.Recruit))
                         listOfRoles.Add(CustomRoles.Recruit);
                 }

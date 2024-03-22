@@ -119,6 +119,12 @@ class ExileControllerWrapUpPatch
             {
                 player.ResetPlayerCam(1f);
             }
+            // Reset camera for ghost roles
+            // Temporary fix black screens for vanilla
+            else if (player.GetCustomRole().IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()))
+            {
+                player.ResetPlayerCam(1f);
+            }
 
             // Check for remove pet
             player.RpcRemovePet();
