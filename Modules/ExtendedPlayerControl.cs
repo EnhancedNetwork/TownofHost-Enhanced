@@ -1043,12 +1043,12 @@ static class ExtendedPlayerControl
 
         if (AmongUsClient.Instance.AmClient)
         {
-            // +128 because lastSequenceId has delay between the host and the vanilla client
+            // +328 because lastSequenceId has delay between the host and the vanilla client
             // And this cannot forced teleport the player
-            netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + 128));
+            netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + 328));
         }
 
-        ushort newSid = (ushort)(netTransform.lastSequenceId + 2);
+        ushort newSid = (ushort)(netTransform.lastSequenceId + 8);
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
         NetHelpers.WriteVector2(position, messageWriter);
         messageWriter.Write(newSid);
