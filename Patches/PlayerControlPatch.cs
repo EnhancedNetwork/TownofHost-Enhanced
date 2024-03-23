@@ -65,13 +65,6 @@ class CheckProtectPatch
         if (!angel.GetRoleClass().OnCheckProtect(angel, target))
             return false;
 
-        switch (getAngelRole)
-        {
-
-            case CustomRoles.Hawk:
-                return Hawk.OnCheckProtect(angel, target);
-        }
-
         if (angel.Is(CustomRoles.EvilSpirit))
         {
             if (target.Is(CustomRoles.Spiritcaller))
