@@ -505,10 +505,6 @@ public static class Options
     //public static OptionItem SpeedBoosterUpSpeed;
     //public static OptionItem SpeedBoosterTimes;
 
-    public static OptionItem NotifyGodAlive;
-    public static OptionItem GodCanGuess;
-
-
 
     public static VoteMode GetWhenSkipVote() => (VoteMode)WhenSkipVote.GetValue();
     public static VoteMode GetWhenNonVote() => (VoteMode)WhenNonVote.GetValue();
@@ -1773,12 +1769,8 @@ public static class Options
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
         
         Doppelganger.SetupCustomOption();
-        
-        SetupRoleOptions(25100, TabGroup.OtherRoles, CustomRoles.God);
-        NotifyGodAlive = BooleanOptionItem.Create(25103, "NotifyGodAlive", true, TabGroup.OtherRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.God]);
-        GodCanGuess = BooleanOptionItem.Create(25104, "CanGuess", false, TabGroup.OtherRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.God]);
+
+        God.SetupCustomOption();
 
         if (Quizmaster.InExperimental)
             Quizmaster.SetupCustomOption();

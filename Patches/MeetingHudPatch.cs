@@ -779,7 +779,7 @@ class MeetingHudStartPatch
             AddMsg(string.Format(GetString("Message.MadmateSelfVoteModeNotify"), GetString("MadmateSpawnMode.SelfVote")));
         
         //提示神存活
-        if (CustomRoles.God.RoleExist() && Options.NotifyGodAlive.GetBool())
+        if (CustomRoles.God.RoleExist() && God.NotifyGodAlive.GetBool())
             AddMsg(GetString("GodNoticeAlive"), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.God), GetString("GodAliveTitle")));
         
         //工作狂的生存技巧
