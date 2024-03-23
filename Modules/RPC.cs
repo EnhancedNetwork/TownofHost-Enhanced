@@ -408,7 +408,7 @@ internal class RPCHandlerPatch
                 Arsonist.ReceiveSetDousedPlayerRPC(reader);
                 break;
             case CustomRPC.SetCurrentDrawTarget:
-                Revolutionist.ReceiveSetDousedPlayerRPC(reader);
+                Revolutionist.ReceiveSetCurrentDrawTarget(reader);
                 break;
             case CustomRPC.SetEvilTrackerTarget:
                 EvilTracker.ReceiveRPC(reader);

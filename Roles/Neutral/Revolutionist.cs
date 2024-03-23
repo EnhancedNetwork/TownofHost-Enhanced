@@ -135,7 +135,7 @@ internal class Revolutionist : RoleBase
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public static void ReceiveSetDousedPlayerRPC(MessageReader reader)
+    public static void ReceiveSetCurrentDrawTarget(MessageReader reader)
     {
         byte RevolutionistId = reader.ReadByte();
         byte doTargetId = reader.ReadByte();
