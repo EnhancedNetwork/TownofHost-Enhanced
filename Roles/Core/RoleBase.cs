@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using InnerNet;
 using System.Collections.Generic;
+using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 
 namespace TOHE;
@@ -225,7 +226,7 @@ public abstract class RoleBase
     /// <summary>
     /// Notify the playername for modded clients OnMeeting
     /// </summary>
-    public virtual string PVANameText(PlayerVoteArea pva, PlayerControl target) => string.Empty;
+    public virtual string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target) => string.Empty;
 
     /// <summary>
     /// Notify a specific role about something after the meeting was ended.

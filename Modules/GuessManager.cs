@@ -156,7 +156,7 @@ public static class GuessManager
         {
 
             if (
-            (pc.Is(CustomRoles.NiceGuesser) && Options.GGTryHideMsg.GetBool()) ||
+            NiceGuesser.NeedHideMsg(pc) ||
             EvilGuesser.NeedHideMsg(pc) ||
             Doomsayer.NeedHideMsg(pc) ||
             (pc.Is(CustomRoles.Guesser) && Guesser.GTryHideMsg.GetBool()) ||
@@ -224,14 +224,6 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessShielded"));
                     return true;
                 }
-
-
-                if (pc.Is(CustomRoles.NiceGuesser) && Main.GuesserGuessed[pc.PlayerId] >= Options.GGCanGuessTime.GetInt())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GGGuessMax"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GGGuessMax"));
-                    return true;
-                }
                 
                 if (pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool())
                 {
@@ -288,15 +280,8 @@ public static class GuessManager
                     return true;
                 }
 
-                // Nice Guesser Cant Guess Addons
-                if (role.IsAdditionRole() && pc.Is(CustomRoles.NiceGuesser) && !Options.GGCanGuessAdt.GetBool())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessAdtRole"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessAdtRole"));
-                    return true;
-                }
                 // Guesser (add-on) Cant Guess Addons
-                else if (role.IsAdditionRole() && pc.Is(CustomRoles.Guesser) && !Guesser.GCanGuessAdt.GetBool())
+                if (role.IsAdditionRole() && pc.Is(CustomRoles.Guesser) && !Guesser.GCanGuessAdt.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessAdtRole"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessAdtRole"));
@@ -355,27 +340,6 @@ public static class GuessManager
                         else pc.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("LaughToWhoGuessSelf"));
                         guesserSuicide = true;
                         Logger.Msg($"Self guess: guesserSuicide - {guesserSuicide}", "GuesserSuicide");
-                    }
-                }
-                else if (pc.Is(CustomRoles.NiceGuesser) && target.Is(CustomRoleTypes.Crewmate) && !Options.GGCanGuessCrew.GetBool() && !pc.Is(CustomRoles.Madmate))
-                {
-                    if (pc.Is(CustomRoles.DoubleShot) && !DoubleShot.IsActive.Contains(pc.PlayerId))
-                    {
-                        DoubleShot.IsActive.Add(pc.PlayerId);
-
-                        Logger.Msg($"{pc.PlayerId}", "GuesserDoubleShotIsActive-2");
-
-                        if (!isUI) Utils.SendMessage(GetString("GuessDoubleShot"), pc.PlayerId);
-                        else pc.ShowPopUp(GetString("GuessDoubleShot"));
-                        return true;
-                    }
-                    else
-                    {
-                        if (pc.Is(CustomRoles.DoubleShot) && DoubleShot.IsActive.Contains(pc.PlayerId))
-                            DoubleShot.IsActive.Remove(pc.PlayerId);
-
-                        guesserSuicide = true;
-                        Logger.Msg($"Nice Guesser try guess crewmate: guesserSuicide - {guesserSuicide}", "GuesserSuicide");
                     }
                 }
                 else if (!target.Is(role))
@@ -768,8 +732,7 @@ public static class GuessManager
                 }
                 else if (PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser))
                 {
-                    if (!Options.GGCanGuessCrew.GetBool() && TabId == 0) continue;
-                    if (!Options.GGCanGuessAdt.GetBool() && TabId == 3) continue;
+                    if (NiceGuesser.HideTabInGuesserUI(TabId)) continue;
                 }
                 else if (PlayerControl.LocalPlayer.Is(CustomRoles.Doomsayer))
                 {

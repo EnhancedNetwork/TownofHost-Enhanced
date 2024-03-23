@@ -492,22 +492,7 @@ public static class Options
     public static OptionItem ScientistCD;
     public static OptionItem ScientistDur;
 
-   //public static OptionItem LuckeyProbability;
-
-    //public static OptionItem ParanoiaNumOfUseButton;
-    //public static OptionItem ParanoiaVentCooldown;
-
-    public static OptionItem GGCanGuessTime;
-    public static OptionItem GGCanGuessCrew;
-    public static OptionItem GGCanGuessAdt;
-    public static OptionItem GGTryHideMsg;
-
-    // Neutrals role settings
-
     // Add-Ons settings 
-
-    
-
     public static OptionItem LoverSpawnChances;
     public static OptionItem LoverKnowRoles;
     public static OptionItem LoverSuicide;

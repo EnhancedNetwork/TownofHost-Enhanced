@@ -50,7 +50,7 @@ internal class AntiAdminer : RoleBase
     }
 
     private static int Count = 0;
-    public static void FixedUpdateLowLoad()
+    public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
         Count--; if (Count > 0) return; Count = 5;
 

@@ -1602,8 +1602,6 @@ public static class Utils
                     }
                     else
                     {
-                        seerRole = seer.GetCustomRole();
-
                         // ====== Add TargetMark for target ======
 
                         TargetMark.Clear();
@@ -1646,41 +1644,13 @@ public static class Utils
 
                         string TargetPlayerName = target.GetRealName(isForMeeting);
 
-                        // ========= During Game And Meeting =========
-                        switch (seerRole)
-                        {                            
-                            case CustomRoles.Nemesis:
-                                if (!seer.IsAlive() && target.IsAlive())
-                                    TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Nemesis), target.PlayerId.ToString()) + " " + TargetPlayerName;
-                                break;
-                            
-                            case CustomRoles.Swapper:
-                                if (seer.IsAlive() && target.IsAlive())
-                                    TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
-                                break;
-
-
-                        }
-
-                        if (seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName, isForMeeting) != string.Empty)
-                            TargetPlayerName = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName);
+                        var tempNameText = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName, isForMeeting);
+                        if (tempNameText != string.Empty)
+                            TargetPlayerName = tempNameText;
 
                         // ========= Only During Meeting =========
                         if (isForMeeting)
                         {
-                            switch (seerRole)
-                            {
-                                case CustomRoles.Councillor:
-                                    if (seer.IsAlive() && target.IsAlive())
-                                        TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + TargetPlayerName;
-                                    break;
-
-                                case CustomRoles.Doomsayer:
-                                    if (seer.IsAlive() && target.IsAlive())
-                                        TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Doomsayer), " " + target.PlayerId.ToString()) + " " + TargetPlayerName;
-                                    break;
-                            }
-
                             // Guesser Mode is On ID
                             if (Options.GuesserMode.GetBool())
                             {

@@ -8,6 +8,7 @@ using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -200,6 +201,16 @@ internal class Nemesis : RoleBase
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
         if (AmongUsClient.Instance.AmHost) NemesisMsgCheck(PlayerControl.LocalPlayer, $"/rv {playerId}", true);
         else SendRPC(playerId);
+    }
+
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        seen ??= seer;
+
+        if (!seer.IsAlive() && seen.IsAlive())
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), " " + seen.PlayerId.ToString()) + " ";
+
+        return string.Empty;
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]

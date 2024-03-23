@@ -11,6 +11,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using UnityEngine.UI;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -1019,47 +1020,17 @@ class MeetingHudStartPatch
             sb.Append(seerRoleClass?.GetMark(seer, target, true));
             sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));
 
-            //インポスター表示
-
-            switch (seer.GetCustomRole().GetCustomRoleTypes())
+            if (seer.GetCustomRole().IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
             {
-                case CustomRoleTypes.Impostor:
-                    if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
-                        sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
-                    break;
+                if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
+                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
             }
 
-            if (seer.GetRoleClass().PVANameText(pva, target) != string.Empty)
+            var tempNemeText = seer.GetRoleClass().PVANameText(pva, seer, target);
+            if (tempNemeText != string.Empty)
             {
-                pva.NameText.text = seer.GetRoleClass().PVANameText(pva, target);
+                pva.NameText.text = tempNemeText;
             }
-
-            switch (seer.GetCustomRole())
-            {
-                case CustomRoles.Nemesis:
-                    if (seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                    break;
-                case CustomRoles.EvilGuesser:
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.Is(CustomRoles.NiceGuesser) ? CustomRoles.NiceGuesser : CustomRoles.EvilGuesser), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                    break;
-                case CustomRoles.Swapper:
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                    break;
-                case CustomRoles.Lookout:
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lookout), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                    break;
-
-                case CustomRoles.Councillor:
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                    break;
-            }
-
-            bool isLover = false;
 
             foreach (var SeerSubRole in seer.GetCustomSubRoles().ToArray())
             {
@@ -1072,6 +1043,7 @@ class MeetingHudStartPatch
                 }
             }
 
+            bool isLover = false;
             foreach (var TargetSubRole in target.GetCustomSubRoles().ToArray())
             {
                 switch (TargetSubRole)
@@ -1083,33 +1055,17 @@ class MeetingHudStartPatch
                             isLover = true;
                         }
                         break;
-                        /*     case CustomRoles.Sidekick:
-                             if (seer.Is(CustomRoles.Sidekick) && target.Is(CustomRoles.Sidekick) && Options.SidekickKnowOtherSidekick.GetBool())
-                             {
-                                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), " ♥")); //変更対象にSnitchマークをつける
-                             sb.Append(Snitch.GetWarningMark(seer, target));
-                             }
-                             break; */
                 }
             }
             //add checks for both seer and target's subrole, maybe one day we can use them...
 
-            //海王相关显示
             if ((seer.Is(CustomRoles.Ntr) || target.Is(CustomRoles.Ntr)) && !seer.Data.IsDead && !isLover)
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
-            else if (seer == target && CustomRolesHelper.RoleExist(CustomRoles.Ntr) && !isLover)
+            else if (seer == target && CustomRoles.Ntr.RoleExist() && !isLover)
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
 
-            //网络人提示
             if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
-
-            //球状闪电提示
-            if (Lightning.IsGhost(target))
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■"));
-
-
-            //会議画面ではインポスター自身の名前にSnitchマークはつけません。
 
             pva.NameText.text += sb.ToString();
             pva.ColorBlindName.transform.localPosition -= new Vector3(1.35f, 0f, 0f);

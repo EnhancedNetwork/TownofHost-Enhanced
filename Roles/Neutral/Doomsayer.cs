@@ -131,8 +131,11 @@ internal class Doomsayer : RoleBase
         CantGuess = false;
         GuessesCountPerMeeting = 0;
     }
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl target)
-        => (!GetPlayerById(pva.TargetPlayerId).Data.IsDead && !target.Data.IsDead) ? ColorString(GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
+
+    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
+        => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
+        => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
 
     public static bool HideTabInGuesserUI(int TabId)

@@ -52,8 +52,17 @@ internal class Retributionist : RoleBase
         On = true;
         RetributionistRevenged.Add(playerId, RetributionistCanKillNum.GetInt());
     }
-    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
-            => !seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
+    
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        seen ??= seer;
+
+        if (!seer.IsAlive() && seen.IsAlive())
+            return ColorString(GetRoleColor(CustomRoles.Retributionist), " " + seen.PlayerId.ToString()) + " ";
+
+        return string.Empty;
+    }
+
     public static bool RetributionistMsgCheck(PlayerControl pc, string msg, bool isUI = false)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -213,9 +222,6 @@ internal class Retributionist : RoleBase
         if (!pc.IsAlive())
             AddMsg(GetString("RetributionistDeadMsg"), pc.PlayerId);
     }
-
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl target)
-            => GetPlayerById(pva.TargetPlayerId).Data.IsDead && !target.Data.IsDead ? ColorString(GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
     
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     class StartMeetingPatch

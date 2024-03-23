@@ -176,7 +176,7 @@ internal class Lightning : RoleBase
         Utils.NotifyRoles();
     }
 
-    public string GetMarkInGhostPlayer(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    private string GetMarkInGhostPlayer(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (isForMeeting) return string.Empty;
 

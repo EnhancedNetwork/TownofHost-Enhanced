@@ -1108,12 +1108,6 @@ class FixedUpdateInNormalGamePatch
                     if (player.AmOwner)
                     {
                         DisableDevice.FixedUpdate();
-
-                        if (CustomRoles.AntiAdminer.IsClassEnable())
-                            AntiAdminer.FixedUpdateLowLoad();
-
-                        if (CustomRoles.Telecommunication.IsClassEnable())
-                            Telecommunication.FixedUpdate();
                     }
                 }
             }
@@ -1170,9 +1164,11 @@ class FixedUpdateInNormalGamePatch
                 RoleText.text = RoleTextData.Item1;
                 RoleText.color = RoleTextData.Item2;
                 if (Options.CurrentGameMode == CustomGameMode.FFA) RoleText.text = string.Empty;
+                
                 if (__instance.AmOwner || Options.CurrentGameMode == CustomGameMode.FFA) RoleText.enabled = true;
                 else if (ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, __instance)) RoleText.enabled = true;
                 else RoleText.enabled = false;
+                
                 if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(__instance) && __instance.Is(CustomRoles.Trickster))
                 {
                     RoleText.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
@@ -1181,11 +1177,12 @@ class FixedUpdateInNormalGamePatch
 
                 if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
                 {
-                    RoleText.enabled = false; //ゲームが始まっておらずフリープレイでなければロールを非表示
+                    RoleText.enabled = false;
                     if (!__instance.AmOwner) __instance.cosmetics.nameText.text = __instance?.Data?.PlayerName;
                 }
-                if (Main.VisibleTasksCount) //他プレイヤーでVisibleTasksCountは有効なら
-                    RoleText.text += Utils.GetProgressText(__instance); //ロールの横にタスクなど進行状況表示
+
+                if (Main.VisibleTasksCount)
+                    RoleText.text += Utils.GetProgressText(__instance);
 
 
                 var seer = PlayerControl.LocalPlayer;
@@ -1200,11 +1197,11 @@ class FixedUpdateInNormalGamePatch
 
                 if (target.AmOwner && GameStates.IsInTask)
                 {
-                    if (Pelican.IsEaten(seer.PlayerId))
-                        RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
-
                     if (Options.CurrentGameMode == CustomGameMode.FFA)
                         FFAManager.GetNameNotify(target, ref RealName);
+
+                    if (Pelican.IsEaten(seer.PlayerId))
+                        RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
 
                     if (Deathpact.IsInActiveDeathpact(seer))
                         RealName = Deathpact.GetDeathpactString(seer);
@@ -1225,27 +1222,14 @@ class FixedUpdateInNormalGamePatch
                 Suffix.Append(seerRoleClass?.GetSuffix(seer, target));
                 Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
 
-                if (target.GetPlayerTaskState().IsTaskFinished)
+                if (seerRole.IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
                 {
-                    if (seerRole.IsImpostor())
-                    {
-                        if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
-                            Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
-                    }
+                    if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
+                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
                 }
 
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
-
-
-                seerRole = seer.GetCustomRole();
-                switch (seerRole)
-                {
-                    case CustomRoles.Lookout:
-                        if (seer.IsAlive() && target.IsAlive())
-                            Mark.Append(Utils.ColorString(Utils.GetRoleColor(seerRole), " " + target.PlayerId.ToString()) + " ");
-                        break;
-                }
 
                 if (target.Is(CustomRoles.Lovers) && seer.Is(CustomRoles.Lovers))
                 {
@@ -1268,19 +1252,6 @@ class FixedUpdateInNormalGamePatch
                 if (Options.CurrentGameMode == CustomGameMode.FFA)
                     Suffix.Append(FFAManager.GetPlayerArrow(seer, target));
 
-
-                if (GameStates.IsInTask)
-                {
-                    if (seer.Is(CustomRoles.AntiAdminer))
-                    {
-                        AntiAdminer.FixedUpdateLowLoad();
-                    }
-                    else if (seer.Is(CustomRoles.Telecommunication))
-                    {
-                        Telecommunication.FixedUpdate();
-                    }
-                }
-
                 /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
                     Mark = isBlocked ? "(true)" : "(false)";}*/
 
@@ -1296,12 +1267,8 @@ class FixedUpdateInNormalGamePatch
                 if ((Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated)
                     RealName = $"<size=0%>{RealName}</size> ";
 
-                // When MushroomMixup Sabotage Is Active
-                //else if (Utils.IsActive(SystemTypes.MushroomMixupSabotage))
-                //    RealName = $"<size=0%>{RealName}</size> ";
-
-
-                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : "";
+                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
+                    ? $" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : string.Empty;
 
                 target.cosmetics.nameText.text = $"{RealName}{DeathReason}{Mark}";
 
