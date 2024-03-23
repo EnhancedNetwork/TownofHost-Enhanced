@@ -13,7 +13,7 @@ internal class Spy : RoleBase
     private const int Id = 9700;
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Spy.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Spy.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static OptionItem SpyRedNameDur;

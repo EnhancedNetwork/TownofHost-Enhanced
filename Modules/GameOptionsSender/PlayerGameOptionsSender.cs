@@ -138,12 +138,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
-            case CustomRoles.Warden:
-                Warden.SetAbilityCooldown();
-                break;
-            case CustomRoles.Minion:
-                Minion.SetAbilityCooldown();
-                break;
             case CustomRoles.Hawk:
                 Hawk.SetKillCooldown();
                 break;

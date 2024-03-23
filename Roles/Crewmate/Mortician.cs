@@ -12,7 +12,7 @@ internal class Mortician : RoleBase
     private const int Id = 8900;
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Mortician.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Mortician.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static OptionItem ShowArrows;

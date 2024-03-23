@@ -11,7 +11,7 @@ internal class Bodyguard : RoleBase
     private const int Id = 10300;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Bodyguard.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Bodyguard.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static OptionItem ProtectRadiusOpt;

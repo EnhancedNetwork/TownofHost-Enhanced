@@ -68,17 +68,8 @@ class CheckProtectPatch
         switch (getAngelRole)
         {
 
-            case CustomRoles.Warden:
-                return Warden.OnCheckProtect(angel, target);
-
-            case CustomRoles.Minion:
-                return Minion.OnCheckProtect(angel, target);
-
             case CustomRoles.Hawk:
                 return Hawk.OnCheckProtect(angel, target);
-
-            default:
-                break;
         }
 
         if (angel.Is(CustomRoles.EvilSpirit))
@@ -1253,7 +1244,7 @@ class FixedUpdateInNormalGamePatch
                     Mark = isBlocked ? "(true)" : "(false)";}*/
 
                 // Devourer
-                if (CustomRoles.Devourer.IsClassEnable())
+                if (CustomRoles.Devourer.HasEnabled())
                 {
                     bool targetDevoured = Devourer.HideNameOfTheDevoured(target.PlayerId);
                     if (targetDevoured)

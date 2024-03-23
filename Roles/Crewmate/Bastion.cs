@@ -16,7 +16,7 @@ internal class Bastion : RoleBase
     private const int Id = 10200;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Bastion.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Bastion.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
     private static OptionItem BombsClearAfterMeeting;

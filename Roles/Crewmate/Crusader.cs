@@ -14,7 +14,7 @@ internal class Crusader : RoleBase
     private static readonly HashSet<byte> playerIdList = [];
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Crusader.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Crusader.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem SkillLimitOpt;

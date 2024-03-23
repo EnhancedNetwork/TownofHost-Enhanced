@@ -11,7 +11,7 @@ internal class Observer : RoleBase
     private static HashSet<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Observer.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Observer.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     public static void SetupCustomOption()

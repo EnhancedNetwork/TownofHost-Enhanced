@@ -19,7 +19,7 @@ internal class Pacifist : RoleBase
     public const int Id = 9200;
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Pacifist.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Pacifist.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
     private static OptionItem PacifistCooldown;

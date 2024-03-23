@@ -14,7 +14,7 @@ internal class Medic : RoleBase
     private const int Id = 8600;
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Medic.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Medic.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem WhoCanSeeProtectOpt;

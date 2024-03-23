@@ -18,7 +18,7 @@ internal class Judge : RoleBase
     private static List<byte> playerIdList = [];
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Judge.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Judge.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     public static OptionItem TrialLimitPerMeeting;

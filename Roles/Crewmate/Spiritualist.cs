@@ -13,7 +13,7 @@ internal class Spiritualist : RoleBase
     private static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Spiritualist.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Spiritualist.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static OptionItem ShowGhostArrowEverySeconds;

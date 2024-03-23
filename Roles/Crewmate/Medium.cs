@@ -17,7 +17,7 @@ internal class Medium : RoleBase
     public static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Medium.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Medium.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static OptionItem ContactLimitOpt;

@@ -15,7 +15,7 @@ internal class TimeMaster : RoleBase
     private const int Id = 9900;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.TimeMaster.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.TimeMaster.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
     private static OptionItem TimeMasterSkillCooldown;

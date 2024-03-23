@@ -14,7 +14,7 @@ internal class Randomizer : RoleBase
     private const int Id = 7500;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Randomizer.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Randomizer.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 

@@ -4,6 +4,7 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
+using Il2CppSystem;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -146,6 +147,9 @@ public class Main : BasePlugin
     public static readonly Dictionary<int, int> SayStartTimes = [];
     public static readonly Dictionary<int, int> SayBanwordsTimes = [];
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
+    
+    public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
+
     public static readonly Dictionary<byte, int> GuesserGuessed = [];
     public static readonly Dictionary<byte, long> AllKillers = [];
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];

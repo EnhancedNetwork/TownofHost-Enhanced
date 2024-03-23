@@ -12,7 +12,7 @@ internal class Knight : RoleBase
     public static List<byte> playerIdList = [];
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Knight.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Knight.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem CanVent;

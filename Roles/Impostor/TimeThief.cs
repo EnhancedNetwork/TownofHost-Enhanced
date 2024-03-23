@@ -8,7 +8,7 @@ internal class TimeThief : RoleBase
     private const int Id = 3700;
     public static bool On;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.TimeThief.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.TimeThief.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem KillCooldown;

@@ -145,7 +145,7 @@ internal class Benefactor : RoleBase
     public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (!CustomRoles.Benefactor.IsClassEnable()) return;
+        if (!CustomRoles.Benefactor.HasEnabled()) return;
         if (player == null) return;
         if (!player.IsAlive()) return;
         byte playerId = player.PlayerId;

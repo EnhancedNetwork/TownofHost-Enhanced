@@ -13,7 +13,7 @@ internal class Deceiver : RoleBase
     private const int Id = 10500;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Deceiver.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Deceiver.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem DeceiverSkillCooldown;

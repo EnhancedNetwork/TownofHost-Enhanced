@@ -502,7 +502,14 @@ public static class Utils
 
         return hasTasks;
     }
-  
+    public static RoleBase IsRoleClass(this CustomRoles role) 
+    {
+        if (Main.RoleClass.TryGetValue(role, out var RoleClass))
+            return RoleClass;
+
+        Main.RoleClass.Add(role, role.CreateRoleClass(IsToAccess: true));
+        return Main.RoleClass[role];
+    }
     public static string GetProgressText(PlayerControl pc)
     {
         try
@@ -546,9 +553,6 @@ public static class Utils
                     break;
                 case CustomRoles.Hawk:
                     ProgressText.Append(Hawk.GetSnatchLimit(playerId));
-                    break;
-                case CustomRoles.Warden:
-                    ProgressText.Append(Warden.GetNotifyLimit(playerId));
                     break;
                 case CustomRoles.ChiefOfPolice:
                     ProgressText.Append(ChiefOfPolice.GetSkillLimit(playerId));
@@ -1544,11 +1548,11 @@ public static class Utils
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
 
-                if (CustomRoles.Deathpact.IsClassEnable() && Deathpact.IsInActiveDeathpact(seer))
+                if (CustomRoles.Deathpact.HasEnabled() && Deathpact.IsInActiveDeathpact(seer))
                     SelfName = Deathpact.GetDeathpactString(seer);
 
                 // Devourer
-                if (CustomRoles.Devourer.IsClassEnable())
+                if (CustomRoles.Devourer.HasEnabled())
                 {
                     bool playerDevoured = Devourer.HideNameOfTheDevoured(seer.PlayerId);
                     if (playerDevoured && !CamouflageIsForMeeting)
@@ -1714,7 +1718,7 @@ public static class Utils
                             ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})" : "";
 
                         // Devourer
-                        if (CustomRoles.Devourer.IsClassEnable())
+                        if (CustomRoles.Devourer.HasEnabled())
                         {
                             bool targetDevoured = Devourer.HideNameOfTheDevoured(target.PlayerId);
                             if (targetDevoured && !CamouflageIsForMeeting)
@@ -1766,7 +1770,7 @@ public static class Utils
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();
 
-        if (CustomRoles.CopyCat.IsClassEnable()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
+        if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
         
 
         if (Options.AirshipVariableElectrical.GetBool())

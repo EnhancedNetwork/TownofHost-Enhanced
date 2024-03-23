@@ -11,7 +11,7 @@ internal class Merchant : RoleBase
     private const int Id = 8800;
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled = CustomRoles.Merchant.IsClassEnable();
+    public static bool HasEnabled = CustomRoles.Merchant.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static readonly List<byte> playerIdList = [];

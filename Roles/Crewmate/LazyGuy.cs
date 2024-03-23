@@ -9,7 +9,7 @@ internal class LazyGuy : RoleBase
     private const int Id = 6800;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.LazyGuy.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.LazyGuy.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 

@@ -17,7 +17,7 @@ internal class Oracle : RoleBase
 
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Oracle.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Oracle.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static OptionItem CheckLimitOpt;

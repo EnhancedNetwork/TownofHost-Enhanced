@@ -19,7 +19,7 @@ internal class Retributionist : RoleBase
     public const int Id = 11000;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Retributionist.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Retributionist.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static OptionItem RetributionistCanKillNum;

@@ -12,7 +12,7 @@ internal class Mini : RoleBase
     private const int Id = 7000;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.NiceMini.IsClassEnable() || CustomRoles.EvilMini.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.NiceMini.HasEnabled() || CustomRoles.EvilMini.HasEnabled();
     public override CustomRoles ThisRoleBase => IsEvilMini ? CustomRoles.Impostor : CustomRoles.Crewmate;
     //==================================================================\\
 

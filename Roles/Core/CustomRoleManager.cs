@@ -12,8 +12,7 @@ namespace TOHE.Roles.Core;
 public static class CustomRoleManager
 {
     //public static Dictionary<byte, RoleBase> AllActiveRoles = new(15);
-    public static bool IsClassEnable(this CustomRoles role) => Main.PlayerStates.Any(x => x.Value.MainRole == role && x.Value.RoleClass.IsEnable);
-
+    public static bool HasEnabled(this CustomRoles role) => Utils.IsRoleClass(role).IsEnable;
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
 

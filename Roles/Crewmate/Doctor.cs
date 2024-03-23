@@ -11,7 +11,7 @@ internal class Doctor : RoleBase
     private const int Id = 6700;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Doctor.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Doctor.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
 
     //==================================================================\\

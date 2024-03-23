@@ -13,7 +13,7 @@ internal class Jailer : RoleBase
     private const int Id = 10600;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Jailer.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Jailer.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static List<byte> playerIdList = [];

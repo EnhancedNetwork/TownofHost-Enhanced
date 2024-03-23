@@ -161,7 +161,8 @@ internal class ChangeRoleSettings
             // Initialize all custom roles
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
             {
-                role.CreateRoleClass(IsToAccess: true)?.Init();
+                var RoleClass = Utils.IsRoleClass(role);
+                RoleClass?.Init();
             }
 
             LastImpostor.Init();
@@ -174,12 +175,10 @@ internal class ChangeRoleSettings
             Aware.Init();
             Sleuth.Init();
             Bait.Init();
-            Hawk.Init();
             Antidote.Init();
             Fool.Init();
             Burst.Init();
             DoubleShot.Init();
-            Warden.Init();
             Lucky.Init();
             Bewilder.Init();
             ChiefOfPolice.Init();
