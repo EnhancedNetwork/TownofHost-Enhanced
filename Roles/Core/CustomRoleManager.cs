@@ -26,11 +26,13 @@ public static class CustomRoleManager
             if (role.IsCrewmate())
                 return "TOHE.Roles._Ghosts_.Crewmate.";
         }
+        if (role is CustomRoles.Mini)
+            return "TOHE.Roles.Double.";
         if (role.IsImpostor())
             return "TOHE.Roles.Impostor.";
         if (role.IsCrewmate())
             return "TOHE.Roles.Crewmate.";
-        
+
         else return "TOHE.Roles.Neutral.";
     }
     public static RoleBase CreateRoleClass(this CustomRoles role) // CHATGPT COOKED 🔥🔥🗿☕
