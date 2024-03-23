@@ -44,7 +44,8 @@ public static class Oiiai
     }
     public static void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
+        Eraser.ErasedRoleStorage.Clear();
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -68,9 +69,9 @@ public static class Oiiai
             Logger.Info(killer.GetNameWithRole() + " gets Oiiai addon by " + target.GetNameWithRole(), "Oiiai");
         }
 
-        if (!Main.ErasedRoleStorage.ContainsKey(killer.PlayerId))
+        if (!Eraser.ErasedRoleStorage.ContainsKey(killer.PlayerId))
         {
-            Main.ErasedRoleStorage.Add(killer.PlayerId, killer.GetCustomRole());
+            Eraser.ErasedRoleStorage.Add(killer.PlayerId, killer.GetCustomRole());
             Logger.Info($"Added {killer.GetNameWithRole()} to ErasedRoleStorage", "Oiiai");
         }
         else

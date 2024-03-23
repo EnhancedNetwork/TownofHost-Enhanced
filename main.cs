@@ -133,6 +133,7 @@ public class Main : BasePlugin
     public static readonly HashSet<string> winnerNameList = [];
     public static readonly HashSet<int> clientIdList = [];
     public static readonly List<(string, byte, string)> MessagesToSend = [];
+    public static readonly Dictionary<string, int> PlayerQuitTimes = [];
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
 
@@ -173,10 +174,6 @@ public class Main : BasePlugin
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
-    
-    
-    public static readonly Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
-    public static readonly Dictionary<string, int> PlayerQuitTimes = [];
 
     public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToArray();
     public static PlayerControl[] AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToArray();

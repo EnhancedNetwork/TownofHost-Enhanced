@@ -56,7 +56,6 @@ internal class ChangeRoleSettings
             Main.AllPlayerCustomRoles.Clear();
             Main.TasklessCrewmate.Clear();
             Main.UnreportableBodies.Clear();
-            Main.ErasedRoleStorage.Clear();
 
             Main.LastEnteredVent.Clear();
             Main.LastEnteredVentLocation.Clear();
