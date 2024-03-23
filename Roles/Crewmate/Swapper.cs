@@ -63,21 +63,10 @@ internal class Swapper : RoleBase
     public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString((Swappermax.TryGetValue(PlayerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Swapper).ShadeColor(0.25f) : Color.gray, Swappermax.TryGetValue(PlayerId, out var changermax) ? $"({changermax})" : "Invalid");
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
-    {
-        if (!IsForMeeting) return string.Empty;
-
-        if (seer.IsAlive() && target.IsAlive())
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
-
-        return string.Empty;
-    }
+        => IsForMeeting && seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
+    
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
-    {
-        if (seer.IsAlive() && target.IsAlive())
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + pva.NameText.text;
-
-        return string.Empty;
-    }
+        => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
     public static bool SwapMsg(PlayerControl pc, string msg, bool isUI = false)
     {
