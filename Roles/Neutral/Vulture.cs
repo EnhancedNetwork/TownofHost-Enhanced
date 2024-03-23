@@ -20,17 +20,17 @@ internal class Vulture : RoleBase
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     //==================================================================\\
 
-    private static readonly List<byte> UnreportablePlayers = [];
-    private static readonly Dictionary<byte, int> BodyReportCount = [];
-    private static readonly Dictionary<byte, int> AbilityLeftInRound = [];
-    private static readonly Dictionary<byte, long> LastReport = [];
-
     private static OptionItem ArrowsPointingToDeadBody;
     private static OptionItem NumberOfReportsToWin;
     private static OptionItem CanVent;
     private static OptionItem VultureReportCD;
     private static OptionItem MaxEaten;
     private static OptionItem HasImpVision;
+
+    private static readonly HashSet<byte> UnreportablePlayers = [];
+    private static readonly Dictionary<byte, int> BodyReportCount = [];
+    private static readonly Dictionary<byte, int> AbilityLeftInRound = [];
+    private static readonly Dictionary<byte, long> LastReport = [];
 
     public static void SetupCustomOption()
     {

@@ -3,6 +3,7 @@ using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -241,4 +242,5 @@ internal class Swooper : RoleBase
     {
         hud.ImpostorVentButton?.OverrideText(GetString(IsInvis(playerId) ? "SwooperRevertVentButtonText" : "SwooperVentButtonText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("invisible");
 }

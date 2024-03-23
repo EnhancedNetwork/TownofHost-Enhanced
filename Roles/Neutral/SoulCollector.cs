@@ -16,12 +16,12 @@ internal class SoulCollector : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
-    public static Dictionary<byte, byte> SoulCollectorTarget = [];
-    public static Dictionary<byte, int> SoulCollectorPoints = [];
-    public static Dictionary<byte, bool> DidVote = [];
+    private static OptionItem SoulCollectorPointsOpt;
+    private static OptionItem CollectOwnSoulOpt;
 
-    public static OptionItem SoulCollectorPointsOpt;
-    public static OptionItem CollectOwnSoulOpt;
+    private static readonly Dictionary<byte, byte> SoulCollectorTarget = [];
+    private static readonly Dictionary<byte, int> SoulCollectorPoints = [];
+    private static readonly Dictionary<byte, bool> DidVote = [];
 
     public static void SetupCustomOption()
     {

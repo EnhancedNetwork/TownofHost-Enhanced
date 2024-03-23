@@ -10,7 +10,7 @@ internal class Stalker : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18100;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -22,8 +22,8 @@ internal class Stalker : RoleBase
     private static OptionItem CanCountNeutralKiller;
     public static OptionItem SnatchesWin;
 
-    private static Dictionary<byte, float> CurrentKillCooldown = [];
-    public static Dictionary<byte, bool> IsWinKill = [];
+    private static readonly Dictionary<byte, float> CurrentKillCooldown = [];
+    public static readonly Dictionary<byte, bool> IsWinKill = [];
 
     public static void SetupCustomOption()
     {
@@ -38,9 +38,9 @@ internal class Stalker : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        CurrentKillCooldown = [];
-        IsWinKill = [];
+        playerIdList.Clear();
+        CurrentKillCooldown.Clear();
+        IsWinKill.Clear();
     }
     public override void Add(byte playerId)
     {

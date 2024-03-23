@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.AddOns.Impostor;
+using UnityEngine;
 using static TOHE.Options;
 namespace TOHE.Roles.Impostor;
 
@@ -57,4 +58,6 @@ internal class Hangman : RoleBase
         }
         return true;
     }
+
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => shapeshifting ? CustomButton.Get("Hangman") : null;
 }

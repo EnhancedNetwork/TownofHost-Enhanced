@@ -15,7 +15,7 @@ internal class Virus : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18300;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -30,8 +30,8 @@ internal class Virus : RoleBase
     private static OptionItem KillInfectedPlayerAfterMeeting;
     public static OptionItem ContagiousCountMode;
 
-    private static List<byte> InfectedPlayer = [];
-    private static Dictionary<byte, string> VirusNotify = [];
+    private static readonly HashSet<byte> InfectedPlayer = [];
+    private static readonly Dictionary<byte, string> VirusNotify = [];
 
     private static int InfectLimit = new();
 
@@ -59,8 +59,8 @@ internal class Virus : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        VirusNotify = [];
+        playerIdList.Clear();
+        VirusNotify.Clear();
         InfectLimit = new();
     }
     public override void Add(byte playerId)

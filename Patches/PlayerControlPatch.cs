@@ -1200,9 +1200,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (target.AmOwner && GameStates.IsInTask)
                 {
-                    if(Revolutionist.HasEnabled && target.GetCustomRole() == CustomRoles.Revolutionist)
-                         Revolutionist.SetRealName(seer, target, ref RealName);
-
                     if (Pelican.IsEaten(seer.PlayerId))
                         RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
 

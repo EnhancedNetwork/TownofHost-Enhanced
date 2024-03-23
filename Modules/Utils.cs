@@ -452,6 +452,9 @@ public static class Utils
 
         switch (role)
         {
+            case CustomRoles.GM:
+                hasTasks = false;
+                break;
             case CustomRoles.Workaholic:
             case CustomRoles.Terrorist:
             case CustomRoles.Sunnyboy:
@@ -1540,8 +1543,6 @@ public static class Utils
                         PlagueBearer.PlaguerNotify(seer);
                         break;
                 }
-                if (Revolutionist.HasEnabled)
-                    Revolutionist.SetSeerName(seer, ref SelfName);
 
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
@@ -1890,25 +1891,6 @@ public static class Utils
 
         ProcessStartInfo psi = new("Explorer.exe") { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
         Process.Start(psi);
-    }
-    public static (int, int) GetDrawPlayerCount(byte playerId, out List<PlayerControl> winnerList)
-    {
-        int draw = 0;
-        int all = Revolutionist.RevolutionistDrawCount.GetInt();
-        int max = Main.AllAlivePlayerControls.Length;
-        if (!Main.PlayerStates[playerId].IsDead) max--;
-        winnerList = [];
-        if (all > max) all = max;
-
-        foreach (var pc in Main.AllPlayerControls)
-        {
-            if (Main.isDraw.TryGetValue((playerId, pc.PlayerId), out var isDraw) && isDraw)
-            {
-                winnerList.Add(pc);
-                draw++;
-            }
-        }
-        return (draw, all);
     }
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {

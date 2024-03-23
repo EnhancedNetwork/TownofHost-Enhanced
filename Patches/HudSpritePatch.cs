@@ -62,30 +62,7 @@ public static class HudSpritePatch
         if (playerRoleClass?.ReportButtonSprite != null)
             newReportButton = playerRoleClass.ReportButtonSprite;
 
-        switch (player.GetCustomRole())
-        {
-            case CustomRoles.Hangman:
-                if (shapeshifting) newAbilityButton = CustomButton.Get("Hangman");
-                break;
-            case CustomRoles.Paranoia:
-                newAbilityButton = CustomButton.Get("Paranoid");
-                break;
-            case CustomRoles.Puppeteer:
-                newKillButton = CustomButton.Get("Puttpuer");
-                break;
-            case CustomRoles.Witness:
-                newKillButton = CustomButton.Get("Examine");
-                break;
-            case CustomRoles.SoulCatcher:
-                newKillButton = CustomButton.Get("Teleport");
-                break;
-            case CustomRoles.Swooper:
-                newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Chameleon:
-                newAbilityButton = CustomButton.Get("invisible");
-                break;
-        }
+        // CustomButton.Get("Paranoid"); for Paranoid
 
     EndOfSelectImg:
 

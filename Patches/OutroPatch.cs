@@ -114,8 +114,8 @@ class EndGamePatch
             Main.winnerNameList.Add(pc.GetRealName());
         }
 
-        BountyHunter.ChangeTimer = [];
-        Main.isDraw = [];
+        BountyHunter.ChangeTimer.Clear();
+        Revolutionist.IsDraw.Clear();
         Main.isRevealed = [];
         Main.PlayerQuitTimes = [];
         ChatManager.ChatSentBySystem = [];

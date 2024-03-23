@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Hazel;
+using AmongUs.GameOptions;
+using UnityEngine;
+using TOHE.Roles.Core;
+using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
-using Hazel;
-using AmongUs.GameOptions;
-using TOHE.Roles.AddOns.Common;
-using UnityEngine;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -21,17 +21,18 @@ internal class Revolutionist : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
 
-    public static OptionItem RevolutionistDrawTime;
-    public static OptionItem RevolutionistCooldown;
-    public static OptionItem RevolutionistDrawCount;
-    public static OptionItem RevolutionistKillProbability;
-    public static OptionItem RevolutionistVentCountDown;
+    private static OptionItem RevolutionistDrawTime;
+    private static OptionItem RevolutionistCooldown;
+    private static OptionItem RevolutionistDrawCount;
+    private static OptionItem RevolutionistKillProbability;
+    private static OptionItem RevolutionistVentCountDown;
 
 
-    public static readonly Dictionary<byte, (PlayerControl, float)> RevolutionistTimer = [];
-    public static readonly Dictionary<byte, long> RevolutionistStart = [];
-    public static readonly Dictionary<byte, long> RevolutionistLastTime = [];
-    public static readonly Dictionary<byte, int> RevolutionistCountdown = [];
+    public static readonly Dictionary<(byte, byte), bool> IsDraw = [];
+    private static readonly Dictionary<byte, (PlayerControl, float)> RevolutionistTimer = [];
+    private static readonly Dictionary<byte, long> RevolutionistStart = [];
+    private static readonly Dictionary<byte, long> RevolutionistLastTime = [];
+    private static readonly Dictionary<byte, int> RevolutionistCountdown = [];
 
     public static void SetupCustomOptions()
     {
@@ -54,6 +55,7 @@ internal class Revolutionist : RoleBase
     }
     public override void Init()
     {
+        IsDraw.Clear();
         RevolutionistTimer.Clear();
         RevolutionistStart.Clear();
         RevolutionistLastTime.Clear();
@@ -64,11 +66,11 @@ internal class Revolutionist : RoleBase
     public override void Add(byte playerId)
     {
         PlayerIds.Add(playerId);
+        
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
 
-
         foreach (var ar in Main.AllPlayerControls)
-            Main.isDraw.Add((playerId, ar.PlayerId), false);
+            IsDraw.Add((playerId, ar.PlayerId), false);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RevolutionistCooldown.GetFloat();
 
@@ -77,15 +79,10 @@ internal class Revolutionist : RoleBase
         var draw = GetDrawPlayerCount(playerId, out var _);
         return ColorString(GetRoleColor(CustomRoles.Revolutionist).ShadeColor(0.25f), $"({draw.Item1}/{draw.Item2})");
     }
-    public override bool CanUseKillButton(PlayerControl pc) => !pc.IsDrawDone();
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => pc.IsDrawDone();
+    public override bool CanUseKillButton(PlayerControl pc) => !IsDrawDone(pc);
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => IsDrawDone(pc);
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        RevolutionistTimer.Clear();
-        RevolutionistStart.Clear();
-        RevolutionistLastTime.Clear();
-
-
         foreach (var x in RevolutionistStart.Keys.ToArray())
         {
             var tar = GetPlayerById(x);
@@ -96,6 +93,9 @@ internal class Revolutionist : RoleBase
             Main.PlayerStates[tar.PlayerId].SetDead();
             Logger.Info($"{tar.GetRealName()} 因会议革命失败", "Revolutionist");
         }
+        RevolutionistTimer.Clear();
+        RevolutionistStart.Clear();
+        RevolutionistLastTime.Clear();
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
@@ -107,22 +107,56 @@ internal class Revolutionist : RoleBase
         byte RevolutionistId = reader.ReadByte();
         byte DrawId = reader.ReadByte();
         bool drawed = reader.ReadBoolean();
-        Main.isDraw[(RevolutionistId, DrawId)] = drawed;
+        IsDraw[(RevolutionistId, DrawId)] = drawed;
+    }
+    public static bool IsDrawPlayer(PlayerControl arsonist, PlayerControl target)
+    {
+        if (arsonist == null && target == null && IsDraw == null) return false;
+        IsDraw.TryGetValue((arsonist.PlayerId, target.PlayerId), out bool isDraw);
+        return isDraw;
+    }
+    public static bool IsDrawDone(PlayerControl player)
+    {
+        var (countItem1, countItem2) = GetDrawPlayerCount(player.PlayerId, out var _);
+        return countItem1 >= countItem2;
+    }
+    public static (int, int) GetDrawPlayerCount(byte playerId, out List<PlayerControl> winnerList)
+    {
+        int draw = 0;
+        int all = RevolutionistDrawCount.GetInt();
+        int max = Main.AllAlivePlayerControls.Length;
+        if (!Main.PlayerStates[playerId].IsDead) max--;
+        winnerList = [];
+        if (all > max) all = max;
+
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (IsDraw.TryGetValue((playerId, pc.PlayerId), out var isDraw) && isDraw)
+            {
+                winnerList.Add(pc);
+                draw++;
+            }
+        }
+        return (draw, all);
     }
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (seer.IsDrawPlayer(target))
+        if (IsDrawPlayer(seer, target))
             return $"<color={GetRoleColorCode(CustomRoles.Revolutionist)}>●</color>";
 
         if (RevolutionistTimer.TryGetValue(seer.PlayerId, out var re_kvp) && re_kvp.Item1 == target)
             return $"<color={GetRoleColorCode(CustomRoles.Revolutionist)}>○</color>";
 
-        return "";
+        return string.Empty;
     }
+
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+        => ColorString(GetRoleColor(CustomRoles.Revolutionist), string.Format(GetString("EnterVentWinCountDown"), RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10));
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown(RevolutionistDrawTime.GetFloat());
-        if (!Main.isDraw[(killer.PlayerId, target.PlayerId)] && !RevolutionistTimer.ContainsKey(killer.PlayerId))
+        if (!IsDraw[(killer.PlayerId, target.PlayerId)] && !RevolutionistTimer.ContainsKey(killer.PlayerId))
         {
             RevolutionistTimer.TryAdd(killer.PlayerId, (target, 0f));
             NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
@@ -154,7 +188,7 @@ internal class Revolutionist : RoleBase
                     var rvTargetId = rv_target.PlayerId;
                     player.SetKillCooldown();
                     RevolutionistTimer.Remove(playerId);
-                    Main.isDraw[(playerId, rvTargetId)] = true;
+                    IsDraw[(playerId, rvTargetId)] = true;
                     player.RpcSetDrawPlayer(rv_target, true);
                     NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
                     RPC.ResetCurrentDrawTarget(playerId);
@@ -185,7 +219,7 @@ internal class Revolutionist : RoleBase
                 }
             }
         }
-        if (player.IsDrawDone() && player.IsAlive())
+        if (IsDrawDone(player) && player.IsAlive())
         {
             var playerId = player.PlayerId;
             if (RevolutionistStart.TryGetValue(playerId, out long startTime))
@@ -222,6 +256,7 @@ internal class Revolutionist : RoleBase
                     else
                     {
                         RevolutionistCountdown.TryAdd(playerId, countdown);
+                        NotifyRoles(SpecifySeer: player, ForceLoop: false);
                     }
                 }
                 else
@@ -237,12 +272,12 @@ internal class Revolutionist : RoleBase
     }
     public override bool OnCoEnterVentOthers(PlayerPhysics __instance, int ventId)
     {
-        if (AmongUsClient.Instance.IsGameStarted && __instance.myPlayer.IsDrawDone())
+        if (AmongUsClient.Instance.IsGameStarted && IsDrawDone(__instance.myPlayer))
         {
             if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Revolutionist);
-                Utils.GetDrawPlayerCount(__instance.myPlayer.PlayerId, out var x);
+                GetDrawPlayerCount(__instance.myPlayer.PlayerId, out var x);
                 CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
                 foreach (var apc in x.ToArray())
                     CustomWinnerHolder.WinnerIds.Add(apc.PlayerId);
@@ -250,15 +285,5 @@ internal class Revolutionist : RoleBase
             return true;
         }
         return false;
-    }
-    public static void SetSeerName(PlayerControl seer, ref string SelfName)
-    {
-        if (seer.IsDrawDone())
-            SelfName = $">{ColorString(seer.GetRoleColor(), string.Format(GetString("EnterVentWinCountDown"), Revolutionist.RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10))}";
-    }
-    public static void SetRealName(PlayerControl seer,PlayerControl target, ref string RealName)
-    {
-        if (target.IsDrawDone())
-            RealName = ColorString(GetRoleColor(CustomRoles.Revolutionist), string.Format(GetString("EnterVentWinCountDown"), RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10));
     }
 }

@@ -6,7 +6,6 @@ namespace TOHE.Roles.Neutral;
 
 internal class SchrodingersCat : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 6900;
     private static readonly HashSet<byte> PlayerIds = [];
@@ -15,7 +14,8 @@ internal class SchrodingersCat : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
-    public static Dictionary<byte, byte> teammate = [];
+    public static readonly Dictionary<byte, byte> teammate = [];
+
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.SchrodingersCat);

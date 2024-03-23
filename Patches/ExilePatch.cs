@@ -81,12 +81,6 @@ class ExileControllerWrapUpPatch
             var emptyString = string.Empty;
             exiledRoleClass?.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
 
-            //Terrorist check win
-            if (role.Is(CustomRoles.Terrorist))
-            {
-                Terrorist.CheckTerroristWin(exiled);
-            }
-
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
         }
         

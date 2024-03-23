@@ -17,7 +17,4 @@ public static class Autopsy
         CrewCanBeAutopsy = BooleanOptionItem.Create(Id + 11, "CrewCanBeAutopsy", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
         NeutralCanBeAutopsy = BooleanOptionItem.Create(Id + 12, "NeutralCanBeAutopsy", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
     }
-
-
 }
-

@@ -3,6 +3,7 @@ using Il2CppSystem;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -11,24 +12,23 @@ namespace TOHE.Roles.Neutral;
 
 internal class Follower : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 12800;
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
 
     private static OptionItem MaxBetTimes;
-    public static OptionItem BetCooldown;
+    private static OptionItem BetCooldown;
     private static OptionItem BetCooldownIncrese;
     private static OptionItem MaxBetCooldown;
     private static OptionItem KnowTargetRole;
     private static OptionItem BetTargetKnowFollower;
 
-    private static Dictionary<byte, int> BetTimes = [];
-    public static Dictionary<byte, byte> BetPlayer = [];
+    private static readonly Dictionary<byte, int> BetTimes = [];
+    public static readonly Dictionary<byte, byte> BetPlayer = [];
 
     public static void SetupCustomOption()
     {
@@ -54,6 +54,8 @@ internal class Follower : RoleBase
     {
         playerIdList.Add(playerId);
         BetTimes.Add(playerId, MaxBetTimes.GetInt());
+
+        CustomRoleManager.MarkOthers.Add(GetOthersMark);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -129,8 +131,10 @@ internal class Follower : RoleBase
         Logger.Info($" {killer.GetNameWithRole()} => {target.GetNameWithRole()}", "Follower");
         return false;
     }
-    private static string GetOthersMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
+    private string GetOthersMark(PlayerControl seer, PlayerControl target = null, bool IsForMeeting = false)
     {
+        if (target == null) return string.Empty;
+
         if (!seer.Is(CustomRoles.Follower))
         {
             if (!BetTargetKnowFollower.GetBool()) return "";

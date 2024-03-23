@@ -17,11 +17,12 @@ internal class Taskinator : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
-    public static Dictionary<byte, List<int>> taskIndex = [];
-    public static Dictionary<byte, int> TaskMarkPerRound = [];
-    private static int maxTasksMarkedPerRound = new();
+    private static OptionItem TaskMarkPerRoundOpt;
 
-    public static OptionItem TaskMarkPerRoundOpt;
+    private static readonly Dictionary<byte, List<int>> taskIndex = [];
+    private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
+    
+    private static int maxTasksMarkedPerRound = new();
 
     public static void SetupCustomOption()
     {

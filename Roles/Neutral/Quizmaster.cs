@@ -166,8 +166,7 @@ internal class Quizmaster : RoleBase
         {
             question = questions[rnd.Next(0, questions.Count)];
         }
-        if (question == null)
-            question = new PlrColorQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion };
+        question ??= new PlrColorQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion };
 
         previousQuestion = question;
         question.FixUnsetAnswers();

@@ -4,7 +4,6 @@ using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
-
 //Thanks TOH_Y
 namespace TOHE.Roles.Neutral;
 
@@ -24,7 +23,7 @@ internal class Workaholic : RoleBase
     public static OptionItem WorkaholicGiveAdviceAlive;
     public static OptionItem WorkaholicCanGuess;
 
-    public static List<byte> WorkaholicAlive = [];
+    public static readonly HashSet<byte> WorkaholicAlive = [];
 
     public static void SetupCustomOptions()
     {

@@ -502,13 +502,6 @@ static class ExtendedPlayerControl
         return false;
     }
 
-    public static bool IsDrawPlayer(this PlayerControl arsonist, PlayerControl target)
-    {
-        if (arsonist == null && target == null && Main.isDraw == null) return false;
-        Main.isDraw.TryGetValue((arsonist.PlayerId, target.PlayerId), out bool isDraw);
-        return isDraw;
-    }
-
     public static bool IsRevealedPlayer(this PlayerControl player, PlayerControl target)
     {
         if (player == null || target == null || Main.isRevealed == null) return false;
@@ -656,12 +649,6 @@ static class ExtendedPlayerControl
             || target.Is(CustomRoles.Telecommunication) && Telecommunication.CanUseVent()
             || Knight.CheckCanUseVent(target)
             || target.Is(CustomRoles.Nimble);
-    }
-    public static bool IsDrawDone(this PlayerControl player)
-    {
-        if (!player.Is(CustomRoles.Revolutionist)) return false;
-        var (countItem1, countItem2) = Utils.GetDrawPlayerCount(player.PlayerId, out var _);
-        return countItem1 >= countItem2;
     }
     public static void RpcExileV2(this PlayerControl player)
     {

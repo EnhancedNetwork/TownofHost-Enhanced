@@ -3,19 +3,16 @@ using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Intrinsics.Arm;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
-using System.Drawing;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Solsticer : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 26200;
     private static readonly HashSet<byte> PlayerIds = [];
@@ -24,20 +21,22 @@ internal class Solsticer : RoleBase
     public override CustomRoles ThisRoleBase => SolsticerCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     //==================================================================\\
 
-    public static OptionItem EveryOneKnowSolsticer;
-    public static OptionItem SolsticerCanVent;
-    public static OptionItem SolsticerKnowKiller;
+    private static OptionItem EveryOneKnowSolsticer;
+    private static OptionItem SolsticerCanVent;
+    private static OptionItem SolsticerKnowKiller;
     public static OptionItem SolsticerCanGuess;
-    public static OptionItem SolsticerSpeed;
-    public static OptionItem AddTasksPreDeadPlayer;
+    private static OptionItem SolsticerSpeed;
+    private static OptionItem AddTasksPreDeadPlayer;
     private static OptionItem RemainingTasksToBeWarned;
 
-    public static byte playerid;
-    public static bool patched;
-    public static int AddShortTasks;
-    public static bool warningActived;
-    public static bool CanGuess;
-    public static string MurderMessage;
+    private static byte playerid = byte.MaxValue;
+    private static bool patched = false;
+    public static int AddShortTasks = 0;
+    private static int Count = 0;
+    private static bool warningActived = false;
+    private static bool CanGuess = true;
+    private static string MurderMessage = string.Empty;
+
     public static void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Solsticer, 1);
@@ -66,13 +65,14 @@ internal class Solsticer : RoleBase
         AddShortTasks = 0;
         Count = 0;
         CanGuess = true;
-        MurderMessage = "";
+        MurderMessage = string.Empty;
     }
 
     public override void Add(byte playerId)
     {
         playerid = playerId;
         PlayerIds.Add(playerId);
+
         CustomRoleManager.SuffixOthers.Add(GetSuffixOthers);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id)
@@ -191,7 +191,6 @@ internal class Solsticer : RoleBase
         MurderMessage = "";
         patched = false;
     }
-    private static int Count;
     public override void OnFixedUpdate(PlayerControl pc)
     {
         if (patched && GameStates.IsInTask)

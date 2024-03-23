@@ -776,9 +776,11 @@ class MeetingHudStartPatch
         //主动叛变模式提示
         if (Madmate.MadmateSpawnMode.GetInt() == 2 && CustomRoles.Madmate.GetCount() > 0)
             AddMsg(string.Format(GetString("Message.MadmateSelfVoteModeNotify"), GetString("MadmateSpawnMode.SelfVote")));
+        
         //提示神存活
         if (CustomRoles.God.RoleExist() && Options.NotifyGodAlive.GetBool())
             AddMsg(GetString("GodNoticeAlive"), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.God), GetString("GodAliveTitle")));
+        
         //工作狂的生存技巧
         if (MeetingStates.FirstMeeting && CustomRoles.Workaholic.RoleExist() && Workaholic.WorkaholicGiveAdviceAlive.GetBool() && !Workaholic.WorkaholicCannotWinAtDeath.GetBool() && !Options.GhostIgnoreTasks.GetBool())
         {
@@ -794,6 +796,7 @@ class MeetingHudStartPatch
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
             AddMsg(string.Format(GetString("WorkaholicAdviceAlive"), string.Join(separator, workaholicAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Workaholic), GetString("WorkaholicAliveTitle")));
         }
+        
         //Bait Notify
         if (MeetingStates.FirstMeeting && CustomRoles.Bait.RoleExist() && Bait.BaitNotification.GetBool())
         {
@@ -811,6 +814,7 @@ class MeetingHudStartPatch
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
             AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
         }
+        
         string MimicMsg = "";
         foreach (var pc in Main.AllPlayerControls)
         {
@@ -1032,10 +1036,6 @@ class MeetingHudStartPatch
 
             switch (seer.GetCustomRole())
             {
-                case CustomRoles.Revolutionist:
-                    if (seer.IsDrawPlayer(target))
-                        sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Revolutionist), "●"));
-                    break;
                 case CustomRoles.Nemesis:
                     if (seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), target.PlayerId.ToString()) + " " + pva.NameText.text;

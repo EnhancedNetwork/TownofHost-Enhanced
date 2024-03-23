@@ -15,7 +15,7 @@ internal class Wraith : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18500;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -27,8 +27,8 @@ internal class Wraith : RoleBase
     private static OptionItem HasImpostorVision;
 
     private static Dictionary<byte, long> InvisTime = [];
-    private static Dictionary<byte, long> lastTime = [];
-    private static Dictionary<byte, int> ventedId = [];
+    private static readonly Dictionary<byte, long> lastTime = [];
+    private static readonly Dictionary<byte, int> ventedId = [];
 
     private static long lastFixedTime = 0;
 
@@ -44,10 +44,10 @@ internal class Wraith : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        InvisTime = [];
-        lastTime = [];
-        ventedId = [];
+        playerIdList.Clear();
+        InvisTime.Clear();
+        lastTime.Clear();
+        ventedId.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -69,8 +69,8 @@ internal class Wraith : RoleBase
     }
     public static void ReceiveRPC(MessageReader reader)
     {
-        InvisTime = [];
-        lastTime = [];
+        InvisTime.Clear();
+        lastTime.Clear();
         long invis = long.Parse(reader.ReadString());
         long last = long.Parse(reader.ReadString());
         if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
@@ -82,8 +82,8 @@ internal class Wraith : RoleBase
 
     public override void OnReportDeadBody(PlayerControl pa, PlayerControl dum)
     {
-        lastTime = [];
-        InvisTime = [];
+        lastTime.Clear();
+        InvisTime.Clear();
 
         foreach (var wraithId in playerIdList.ToArray())
         {
@@ -95,12 +95,12 @@ internal class Wraith : RoleBase
             SendRPC(wraith);
         }
 
-        ventedId = [];
+        ventedId.Clear();
     }
     public override void AfterMeetingTasks()
     {
-        lastTime = [];
-        InvisTime = [];
+        lastTime.Clear();
+        InvisTime.Clear();
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
         {
             lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());

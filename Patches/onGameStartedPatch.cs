@@ -54,7 +54,6 @@ internal class ChangeRoleSettings
             Main.AllPlayerKillCooldown = [];
             Main.AllPlayerSpeed = [];
             Main.AllPlayerCustomRoles = [];
-            Main.isDraw = [];
             Main.isRevealed = [];
             Main.NemesisRevenged = [];
             Main.ForCrusade = [];

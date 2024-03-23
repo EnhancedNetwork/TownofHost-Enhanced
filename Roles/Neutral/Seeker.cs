@@ -9,7 +9,7 @@ internal class Seeker : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14600;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -20,9 +20,9 @@ internal class Seeker : RoleBase
 
     private static int PointsToWinOpt;
 
-    private static Dictionary<byte, byte> Targets = [];
-    private static Dictionary<byte, int> TotalPoints = [];
-    private static Dictionary<byte, float> DefaultSpeed = [];
+    private static readonly Dictionary<byte, byte> Targets = [];
+    private static readonly Dictionary<byte, int> TotalPoints = [];
+    private static readonly Dictionary<byte, float> DefaultSpeed = [];
 
     public static void SetupCustomOption()
     {
@@ -33,10 +33,10 @@ internal class Seeker : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        Targets = [];
-        TotalPoints = [];
-        DefaultSpeed = []; 
+        playerIdList.Clear();
+        Targets.Clear();
+        TotalPoints.Clear();
+        DefaultSpeed.Clear();
     }
 
     public override void Add(byte playerId)
@@ -147,11 +147,11 @@ internal class Seeker : RoleBase
     }
     private static byte GetTarget(PlayerControl player)
     {
-        if (player == null) return 0xff;
-        Targets ??= [];
+        if (player == null || Targets == null) return 0xff;
 
         if (!Targets.TryGetValue(player.PlayerId, out var targetId))
             targetId = ResetTarget(player);
+        
         return targetId;
     }
     private static void FreezeSeeker(PlayerControl player)

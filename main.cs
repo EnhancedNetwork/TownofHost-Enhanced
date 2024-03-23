@@ -154,7 +154,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
     public static Dictionary<byte, int> NemesisRevenged = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
-    public static Dictionary<(byte, byte), bool> isDraw = [];
     public static Dictionary<(byte, byte), bool> isRevealed = [];
     public static Dictionary<byte, byte> SpeedBoostTarget = [];
     public static Dictionary<byte, int> ParaUsedButtonCount = [];

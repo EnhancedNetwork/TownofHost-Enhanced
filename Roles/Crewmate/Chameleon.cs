@@ -265,6 +265,8 @@ internal class Chameleon : RoleBase
         hud.AbilityButton.OverrideText(GetString(IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "ChameleonRevertDisguise" : "ChameleonDisguise"));
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("invisible");
+
     public override string GetProgressText(byte playerId, bool comms)
     {
         var ProgressText = new StringBuilder();

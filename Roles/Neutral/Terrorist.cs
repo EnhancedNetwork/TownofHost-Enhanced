@@ -8,7 +8,6 @@ namespace TOHE.Roles.Neutral;
 
 internal class Terrorist : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int id = 15400;
     private static readonly HashSet<byte> PlayerIds = [];
@@ -38,9 +37,23 @@ internal class Terrorist : RoleBase
     {
         PlayerIds.Add(playerId);
     }
-    public static void CheckTerroristWin(GameData.PlayerInfo terrorist)
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerInVentMaxTime = 0f;
+    }
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
+    {
+        Logger.Info(target?.Data?.PlayerName + " was Terrorist", "AfterPlayerDeathTasks");
+        CheckTerroristWin(target.Data);
+    }
+    public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    {
+        CheckTerroristWin(exiled);
+    }
+    private static void CheckTerroristWin(GameData.PlayerInfo terrorist)
+    {
         var taskState = Utils.GetPlayerById(terrorist.PlayerId).GetPlayerTaskState();
         if (taskState.IsTaskFinished && (!Main.PlayerStates[terrorist.PlayerId].IsSuicide || CanTerroristSuicideWin.GetBool()))
         {
@@ -81,15 +94,5 @@ internal class Terrorist : RoleBase
             else pc.ShowPopUp(GetString("GuessDisabled"));
             return true;
         }
-    }
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
-    {
-        AURoleOptions.EngineerCooldown = 0f;
-        AURoleOptions.EngineerInVentMaxTime = 0f;
-    }
-    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
-    {
-        Logger.Info(target?.Data?.PlayerName + " was Terrorist", "AfterPlayerDeathTasks");
-        CheckTerroristWin(target.Data);
     }
 }
