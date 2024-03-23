@@ -8,6 +8,7 @@ using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Impostor;
 
@@ -51,6 +52,12 @@ internal class Nemesis : RoleBase
     {
         AURoleOptions.ShapeshifterCooldown = NemesisShapeshiftCD.GetFloat();
         AURoleOptions.ShapeshifterDuration = NemesisShapeshiftDur.GetFloat();
+    }
+
+    public override void OnMeetingHudStart(PlayerControl player)
+    {
+        if (!player.IsAlive())
+            AddMsg(GetString("NemesisDeadMsg"), player.PlayerId);
     }
 
     public static bool NemesisMsgCheck(PlayerControl pc, string msg, bool isUI = false)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.MeetingHudStartPatch;
 
 //Thanks TOH_Y
 namespace TOHE.Roles.Neutral;
@@ -85,6 +86,23 @@ internal class Workaholic : RoleBase
             CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
         }
 
+    }
+    public override void OnMeetingHudStart(PlayerControl player)
+    {
+        if (MeetingStates.FirstMeeting && player.IsAlive() && WorkaholicGiveAdviceAlive.GetBool() && !WorkaholicCannotWinAtDeath.GetBool() && !GhostIgnoreTasks.GetBool())
+        {
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Workaholic)).ToArray())
+            {
+                WorkaholicAlive.Add(pc.PlayerId);
+            }
+            List<string> workaholicAliveList = [];
+            foreach (var whId in WorkaholicAlive.ToArray())
+            {
+                workaholicAliveList.Add(Main.AllPlayerNames[whId]);
+            }
+            string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
+            AddMsg(string.Format(GetString("WorkaholicAdviceAlive"), string.Join(separator, workaholicAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Workaholic), GetString("WorkaholicAliveTitle")));
+        }
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {

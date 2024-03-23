@@ -77,7 +77,6 @@ internal class SoulCollector : RoleBase
 
     public override void OnVote(PlayerControl voter, PlayerControl target)
     {
-        if (!voter.Is(CustomRoles.SoulCollector)) return;
         if (DidVote[voter.PlayerId]) return;
         if (SoulCollectorTarget[voter.PlayerId] != byte.MaxValue) return;
         DidVote[voter.PlayerId] = true;

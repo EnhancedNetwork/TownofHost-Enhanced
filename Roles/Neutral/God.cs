@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Neutral;
 
@@ -43,6 +44,12 @@ internal class God : RoleBase
         }
 
         return false;
+    }
+
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (pc.IsAlive() && NotifyGodAlive.GetBool())
+            AddMsg(Translator.GetString("GodNoticeAlive"), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.God), Translator.GetString("GodAliveTitle")));
     }
 
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => true;

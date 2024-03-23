@@ -747,23 +747,29 @@ class MeetingHudStartPatch
         msgToSend = [];
 
 
-        //首次会议技能提示
+        // Description in first meeting
         if (Options.SendRoleDescriptionFirstMeeting.GetBool() && MeetingStates.FirstMeeting)
             foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.IsModClient()).ToArray())
             {
                 var role = pc.GetCustomRole();
                 var sb = new StringBuilder();
                 sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + pc.GetRoleInfo(true));
+                
                 if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
                     Utils.ShowChildrenSettings(opt, ref sb, command: true);
+                
                 var txt = sb.ToString();
                 sb.Clear().Append(txt.RemoveHtmlTags());
+                
                 foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles.ToArray())
                     sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
+                
                 if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
                     sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
+                
                 AddMsg(sb.ToString(), pc.PlayerId);
             }
+
         if (msgToSend.Count >= 1)
         {
             var msgTemp = msgToSend.ToList();
@@ -772,31 +778,12 @@ class MeetingHudStartPatch
                 msgTemp.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3));
             }, 3f, "Skill Description First Meeting");
         }
+
         msgToSend = [];
 
-        //主动叛变模式提示
+        // Madmate spawn mode: Self vote
         if (Madmate.MadmateSpawnMode.GetInt() == 2 && CustomRoles.Madmate.GetCount() > 0)
             AddMsg(string.Format(GetString("Message.MadmateSelfVoteModeNotify"), GetString("MadmateSpawnMode.SelfVote")));
-        
-        //提示神存活
-        if (CustomRoles.God.RoleExist() && God.NotifyGodAlive.GetBool())
-            AddMsg(GetString("GodNoticeAlive"), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.God), GetString("GodAliveTitle")));
-        
-        //工作狂的生存技巧
-        if (MeetingStates.FirstMeeting && CustomRoles.Workaholic.RoleExist() && Workaholic.WorkaholicGiveAdviceAlive.GetBool() && !Workaholic.WorkaholicCannotWinAtDeath.GetBool() && !Options.GhostIgnoreTasks.GetBool())
-        {
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Workaholic)).ToArray())
-            {
-                Workaholic.WorkaholicAlive.Add(pc.PlayerId);
-            }
-            List<string> workaholicAliveList = [];
-            foreach (var whId in Workaholic.WorkaholicAlive.ToArray())
-            {
-                workaholicAliveList.Add(Main.AllPlayerNames[whId]);
-            }
-            string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
-            AddMsg(string.Format(GetString("WorkaholicAdviceAlive"), string.Join(separator, workaholicAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Workaholic), GetString("WorkaholicAliveTitle")));
-        }
         
         //Bait Notify
         if (MeetingStates.FirstMeeting && CustomRoles.Bait.RoleExist() && Bait.BaitNotification.GetBool())
@@ -819,30 +806,28 @@ class MeetingHudStartPatch
         string MimicMsg = "";
         foreach (var pc in Main.AllPlayerControls)
         {
-            //黑手党死后技能提示
-            if (pc.Is(CustomRoles.Nemesis) && !pc.IsAlive())
-                AddMsg(GetString("NemesisDeadMsg"), pc.PlayerId);
+            Main.PlayerStates.Do(x
+                => x.Value.RoleClass.OnMeetingHudStart(pc));
 
             foreach (var csId in Cyber.CyberDead)
             {
                 if (!Cyber.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
                 if (!Cyber.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
                 if (!Cyber.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
+
                 AddMsg(string.Format(GetString("CyberDead"), Main.AllPlayerNames[csId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
             }
 
-            Main.PlayerStates.Do(x
-                => x.Value.RoleClass.OnMeetingHudStart(pc));
-
-            //侦探报告线索
+            // Sleuth notify msg
             if (Sleuth.SleuthNotify.ContainsKey(pc.PlayerId))
                 AddMsg(Sleuth.SleuthNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sleuth), GetString("SleuthNoticeTitle")));
-            //宝箱怪的消息（记录）
+
+            // Check Mimic kill
             if (pc.Is(CustomRoles.Mimic) && !pc.IsAlive())
                 Main.AllAlivePlayerControls.Where(x => x.GetRealKiller()?.PlayerId == pc.PlayerId).Do(x => MimicMsg += $"\n{x.GetNameWithRole(true)}");
         }
-            
-        //宝箱怪的消息（合并）
+
+        // Add Mimic msg
         if (MimicMsg != "")
         {
             MimicMsg = GetString("MimicDeadMsg") + "\n" + MimicMsg;
@@ -856,7 +841,7 @@ class MeetingHudStartPatch
 
         msgToSend.Do(x => Logger.Info($"To:{x.Item2} {x.Item3} => {x.Item1}", "Skill Notice OnMeeting Start"));
 
-        //总体延迟发送
+        // Send message
         _ = new LateTask(() =>
         {
             msgToSend.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3));
