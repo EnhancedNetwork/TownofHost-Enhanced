@@ -95,8 +95,7 @@ public abstract class RoleBase
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
-    public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
-    { }
+    public virtual bool OnCheckProtect(PlayerControl angel, PlayerControl target) => angel != null && target != null;
 
     /// <summary>
     /// A method for activating actions where the role starts playing an animation when entering a vent

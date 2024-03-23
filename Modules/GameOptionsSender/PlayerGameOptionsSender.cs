@@ -138,9 +138,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
-            case CustomRoles.Bloodmoon:
-                Bloodmoon.SetKillCooldown();
-                break;
             case CustomRoles.Warden:
                 Warden.SetAbilityCooldown();
                 break;

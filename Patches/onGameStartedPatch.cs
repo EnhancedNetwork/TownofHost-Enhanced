@@ -64,6 +64,9 @@ internal class ChangeRoleSettings
             Main.ResetCamPlayerList.Clear();
             Main.clientIdList.Clear();
 
+            PlayerControlSetRolePatch.DidSetGhost.Clear();
+            PlayerControlSetRolePatch.ghostRoles.Clear();
+
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();
             Main.AllKillers.Clear();
@@ -172,7 +175,6 @@ internal class ChangeRoleSettings
             Sleuth.Init();
             Bait.Init();
             Hawk.Init();
-            Bloodmoon.Init();
             Antidote.Init();
             Fool.Init();
             Burst.Init();

@@ -547,9 +547,6 @@ public static class Utils
                 case CustomRoles.Hawk:
                     ProgressText.Append(Hawk.GetSnatchLimit(playerId));
                     break;
-                case CustomRoles.Bloodmoon:
-                    ProgressText.Append(Bloodmoon.GetRevengeLimit(playerId));
-                    break;
                 case CustomRoles.Warden:
                     ProgressText.Append(Warden.GetNotifyLimit(playerId));
                     break;

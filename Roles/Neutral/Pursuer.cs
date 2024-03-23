@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using TOHE.Modules;
 using static TOHE.Translator;
+using System.Linq;
 
 namespace TOHE.Roles.Neutral;
 
@@ -12,7 +13,7 @@ internal class Pursuer : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13400;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\

@@ -1,4 +1,5 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Double;
@@ -8,15 +9,23 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles._Ghosts_.Impostor;
 
-public static class Bloodmoon
+internal class Bloodmoon : RoleBase
 {
+
+    //===========================SETUP================================\\
     private const int Id = 28100;
+    private static HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
+
+    //==================================================================\\
 
 
     public static OptionItem MinimumPlayersAliveToKill;
     public static OptionItem KillCooldown;
     public static OptionItem CanKillNum;
-    public static Dictionary<byte, int> KillCount;
+    public static Dictionary<byte, int> KillCount = [];
 
     public static void SetupCustomOption()
     {
@@ -28,13 +37,19 @@ public static class Bloodmoon
         MinimumPlayersAliveToKill = IntegerOptionItem.Create(Id + 12, "MinimumPlayersAliveToKill", new(0, 15, 1), 4, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
         .SetValueFormat(OptionFormat.Players);
     }
-    public static void Init()
+    public override void Init()
     {
-        KillCount = [];
+        KillCount.Clear();
+        PlayerIds.Clear();
     }
-    public static void Add(byte PlayerId)
+    public override void Add(byte PlayerId)
     {
         KillCount.TryAdd(PlayerId, CanKillNum.GetInt());
+        PlayerIds.Add(PlayerId);
+        if (KillCount.ContainsKey(PlayerId))
+        {
+            Logger.Info($"Succesfully added {Utils.GetPlayerById(PlayerId).GetRealName()}", "BloodMoon ADD") ;
+        }
     }
     private static void SendRPC(byte playerId)
     {
@@ -50,12 +65,12 @@ public static class Bloodmoon
         int Limit = reader.ReadInt32();
         KillCount[PlayerId] = Limit;
     }
-    public static void SetKillCooldown()
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
-    public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         if (!target.Is(CustomRoles.Pestilence) 
             && KillCount[killer.PlayerId] > 0 
@@ -67,10 +82,10 @@ public static class Bloodmoon
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
         }
-        else if (Main.AllAlivePlayerControls.Count() < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkTooManyDied"));
+        else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkTooManyDied"));
         return false;
     }
     public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
-    public static string GetRevengeLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
+    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
 
 }

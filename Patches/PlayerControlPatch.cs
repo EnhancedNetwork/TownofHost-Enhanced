@@ -21,7 +21,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
-using UnityEngine.Bindings;
 
 namespace TOHE;
 
@@ -63,7 +62,8 @@ class CheckProtectPatch
         var angel = __instance;
         var getAngelRole = angel.GetCustomRole();
 
-        //angel.GetRoleClass()?.OnCheckProtect(angel, target);
+        if (!angel.GetRoleClass().OnCheckProtect(angel, target))
+            return false;
 
         switch (getAngelRole)
         {
@@ -76,9 +76,6 @@ class CheckProtectPatch
 
             case CustomRoles.Hawk:
                 return Hawk.OnCheckProtect(angel, target);
-
-            case CustomRoles.Bloodmoon:
-                return Bloodmoon.OnCheckProtect(angel, target);
 
             default:
                 break;
@@ -1568,7 +1565,7 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        try
+        /*try
         {
             var DeathPlayer = __instance;
 
@@ -1577,7 +1574,7 @@ public static class PlayerControlDiePatch
         catch (Exception error)
         {
             Logger.Error($"Error after Ghost assign: {error}", "DiePlayerPatch.GhostAssign");
-        }
+        }*/
 
         __instance.RpcRemovePet();
     }
@@ -1585,6 +1582,8 @@ public static class PlayerControlDiePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
 class PlayerControlSetRolePatch
 {
+    public static readonly Dictionary<byte, bool> DidSetGhost = [];
+    public static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType)
     {
         if (GameStates.IsHideNSeek) return true;
@@ -1593,16 +1592,22 @@ class PlayerControlSetRolePatch
             var target = __instance;
             var targetName = __instance.GetNameWithRole().RemoveHtmlTags();
             Logger.Info($" {targetName} => {roleType}", "PlayerControl.RpcSetRole");
-            if (!ShipStatus.Instance.enabled) return true;
+            if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
             if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
             {
+                if (DidSetGhost.ContainsKey(target.PlayerId) && DidSetGhost[target.PlayerId]) // Prevent double assignment if player gets killed as a ghost
+                    return false;
+
+                GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
+
                 var targetIsKiller = target.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
-                var ghostRoles = new Dictionary<PlayerControl, RoleTypes>();
 
                 foreach (var seer in Main.AllPlayerControls)
                 {
                     var self = seer.PlayerId == target.PlayerId;
                     var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
+                    if (!ghostRoles.ContainsKey(seer))
+                        ghostRoles.Add(seer, roleType);
 
                     if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
                     {
@@ -1620,18 +1625,21 @@ class PlayerControlSetRolePatch
                 if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
                 {
                     roleType = RoleTypes.GuardianAngel;
+                    return true;
                 }
                 else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
                 {
                     roleType = RoleTypes.CrewmateGhost;
+                    return true;
                 }
                 else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
                 {
                     roleType = RoleTypes.ImpostorGhost;
+                    return true;
                 }
                 else
                 {
-                    foreach ((var seer, var role) in ghostRoles)
+                    foreach ((var seer, var role) in ghostRoles) // Idk wtf this for tbh
                     {
                         Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
                         target.RpcSetRoleDesync(role, seer.GetClientId());
@@ -1646,6 +1654,18 @@ class PlayerControlSetRolePatch
         }
 
         return true;
+    }
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, bool __runOriginal)
+    {
+        if (__runOriginal && !DidSetGhost.ContainsKey(__instance.PlayerId))
+        {
+            DidSetGhost.Add(__instance.PlayerId, true);
+        }
+
+        if (roleType == RoleTypes.GuardianAngel)
+        {
+            __instance.RpcResetAbilityCooldown();
+        }
     }
 }
 

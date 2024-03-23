@@ -79,9 +79,9 @@ public static class GhostRoleAssign
             {
                 getCount[ChosenRole]--; // Only deduct if role has been set.
                 player.RpcSetCustomRole(ChosenRole);
-                player.RpcSetRole(RoleTypes.GuardianAngel);
-                player.AddPlayerId(ChosenRole);
-                player.RpcResetAbilityCooldown();
+                // player.RpcSetRole(RoleTypes.GuardianAngel); 
+                player.GetRoleClass().Add(player.PlayerId);
+                // player.RpcResetAbilityCooldown();
             }
             return;
         }
@@ -99,9 +99,9 @@ public static class GhostRoleAssign
             {
                 getCount[ChosenRole]--;
                 player.RpcSetCustomRole(ChosenRole);
-                player.RpcSetRole(RoleTypes.GuardianAngel);
-                player.AddPlayerId(ChosenRole);
-                player.RpcResetAbilityCooldown();
+                // player.RpcSetRole(RoleTypes.GuardianAngel);
+                player.GetRoleClass().Add(player.PlayerId);
+                // player.RpcResetAbilityCooldown();
             }
             return;
         }
@@ -128,9 +128,6 @@ public static class GhostRoleAssign
         {
             case CustomRoles.Hawk:
                 Hawk.Add(target.PlayerId);
-                break;
-             case CustomRoles.Bloodmoon:
-                Bloodmoon.Add(target.PlayerId);
                 break;
             case CustomRoles.Warden:
                 Warden.Add(target.PlayerId);
