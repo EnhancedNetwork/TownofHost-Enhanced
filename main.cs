@@ -39,12 +39,12 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0322.160.0400"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.6.0 Canary 4";
+    public const string PluginVersion = "2024.0324.160.0500"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.6.0 Canary 5";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = true; // ACTIVE - Latest: V1.6.0 Canary 4
+    public static readonly bool Canary = true; // ACTIVE - Latest: V1.6.0 Canary 5
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.2
     public static readonly bool devRelease = false; // INACTIVE - Latest: V1.6.0 Dev 7
 
@@ -117,11 +117,11 @@ public class Main : BasePlugin
     
     public static Dictionary<byte, PlayerState> PlayerStates = [];
     public static readonly Dictionary<byte, string> AllPlayerNames = [];
-    public static readonly Dictionary<byte, CustomRoles> AllPlayerCustomRoles;
-    public static readonly Dictionary<(byte, byte), string> LastNotifyNames;
+    public static readonly Dictionary<byte, CustomRoles> AllPlayerCustomRoles = [];
+    public static readonly Dictionary<(byte, byte), string> LastNotifyNames = [];
     public static readonly Dictionary<byte, Color32> PlayerColors = [];
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
-    public static readonly Dictionary<CustomRoles, string> roleColors;
+    public static readonly Dictionary<CustomRoles, string> roleColors = [];
     const string LANGUAGE_FOLDER_NAME = "Language";
     
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable() || CustomRoles.Vampiress.IsEnable();
