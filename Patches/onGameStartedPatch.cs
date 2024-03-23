@@ -418,15 +418,6 @@ internal class SelectRolesPatch
 
                 pc.GetRoleClass()?.Add(pc.PlayerId);
 
-                switch (pc.GetCustomRole())
-                {
-                    case CustomRoles.Paranoia:
-                        Main.ParaUsedButtonCount[pc.PlayerId] = 0;
-                        break;
-                    case CustomRoles.ChiefOfPolice:
-                        ChiefOfPolice.Add(pc.PlayerId);
-                        break;
-                }
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())
                 {
                     switch (subRole)

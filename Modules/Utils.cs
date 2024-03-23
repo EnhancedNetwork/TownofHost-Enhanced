@@ -1614,12 +1614,8 @@ public static class Utils
                         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
 
-
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
-
-
-
 
                         if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
                         {
@@ -1633,8 +1629,6 @@ public static class Utils
                         {
                             TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                         }
-
-
 
                         // ====== Seer know target role ======
 
@@ -1670,11 +1664,6 @@ public static class Utils
 
                         if (seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName, isForMeeting) != string.Empty)
                             TargetPlayerName = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName);
-
-                        //else if (seer.GetRoleClass()?.NotifyPlayerName(seer, target, string.Empty, isForMeeting) != string.Empty)
-                        //{
-
-                        //}
 
                         // ========= Only During Meeting =========
                         if (isForMeeting)

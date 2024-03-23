@@ -126,31 +126,20 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
         switch (role)
         {
-            case CustomRoles.EngineerTOHE:
-            case CustomRoles.Phantom:
-                AURoleOptions.EngineerCooldown = 0f;
-                AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            case CustomRoles.Refugee:
-                opt.SetVision(true);
-                break;
-         /* case CustomRoles.Paranoia:
-                AURoleOptions.EngineerCooldown =
-                    !Main.ParaUsedButtonCount.TryGetValue(player.PlayerId, out var count2) || count2 < Options.ParanoiaNumOfUseButton.GetInt()
-                    ? Options.ParanoiaVentCooldown.GetFloat()
-                    : 300f;
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break; */
             case CustomRoles.ShapeshifterTOHE:
                 AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
                 break;
-            case CustomRoles.Bloodmoon:
-                Bloodmoon.SetKillCooldown();
-                break;
             case CustomRoles.ScientistTOHE:
                 AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
                 AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
+                break;
+            case CustomRoles.EngineerTOHE:
+                AURoleOptions.EngineerCooldown = 0f;
+                AURoleOptions.EngineerInVentMaxTime = 0f;
+                break;
+            case CustomRoles.Bloodmoon:
+                Bloodmoon.SetKillCooldown();
                 break;
             case CustomRoles.Warden:
                 Warden.SetAbilityCooldown();
@@ -176,41 +165,44 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         if (Bewilder.IsEnable) Bewilder.ApplyGameOptions(opt, player);
         if (Ghoul.IsEnable) Ghoul.ApplyGameOptions(player);
 
-        foreach (var subRole in player.GetCustomSubRoles().ToArray())
-        {
-            switch (subRole)
+        var playerSubRoles = player.GetCustomSubRoles();
+
+        if (playerSubRoles.Any())
+            foreach (var subRole in playerSubRoles.ToArray())
             {
-                case CustomRoles.Watcher:
-                    Watcher.RevealVotes(opt);
-                    break;
-                case CustomRoles.Flash:
-                    Flash.SetSpeed(player.PlayerId, false);
-                    break;
-                case CustomRoles.Torch:
-                    Torch.ApplyGameOptions(opt);
-                    break;
-                case CustomRoles.Tired:
-                    Tired.ApplyGameOptions(opt, player);
-                    break;
-                case CustomRoles.Bewilder:
-                    Bewilder.ApplyVisionOptions(opt);
-                    break;
-                case CustomRoles.Reach:
-                    Reach.ApplyGameOptions(opt);
-                    break;
-                case CustomRoles.Madmate:
-                    Madmate.ApplyGameOptions(opt);
-                    break;
-                case CustomRoles.Mare:
-                    Mare.ApplyGameOptions(player.PlayerId);
-                    break;
-                //case CustomRoles.Sunglasses:
-                    //opt.SetVision(false);
-                    //opt.SetFloat(FloatOptionNames.CrewLightMod, Options.SunglassesVision.GetFloat());
-                    //opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.SunglassesVision.GetFloat());
-                    //break;
+                switch (subRole)
+                {
+                    case CustomRoles.Watcher:
+                        Watcher.RevealVotes(opt);
+                        break;
+                    case CustomRoles.Flash:
+                        Flash.SetSpeed(player.PlayerId, false);
+                        break;
+                    case CustomRoles.Torch:
+                        Torch.ApplyGameOptions(opt);
+                        break;
+                    case CustomRoles.Tired:
+                        Tired.ApplyGameOptions(opt, player);
+                        break;
+                    case CustomRoles.Bewilder:
+                        Bewilder.ApplyVisionOptions(opt);
+                        break;
+                    case CustomRoles.Reach:
+                        Reach.ApplyGameOptions(opt);
+                        break;
+                    case CustomRoles.Madmate:
+                        Madmate.ApplyGameOptions(opt);
+                        break;
+                    case CustomRoles.Mare:
+                        Mare.ApplyGameOptions(player.PlayerId);
+                        break;
+                    //case CustomRoles.Sunglasses:
+                        //opt.SetVision(false);
+                        //opt.SetFloat(FloatOptionNames.CrewLightMod, Options.SunglassesVision.GetFloat());
+                        //opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.SunglassesVision.GetFloat());
+                        //break;
+                }
             }
-        }
 
         AURoleOptions.EngineerCooldown = Mathf.Max(0.01f, AURoleOptions.EngineerCooldown);
 

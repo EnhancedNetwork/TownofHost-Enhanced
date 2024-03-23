@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AmongUs.GameOptions;
+using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Options;
 
@@ -38,4 +39,9 @@ internal class Phantom : RoleBase
         PlayerIds.Add(playerId);
     }
 
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerInVentMaxTime = 0f;
+    }
 }

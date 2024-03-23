@@ -127,7 +127,6 @@ public class Main : BasePlugin
     public static string LastVotedPlayer;
     public static HashSet<byte> ResetCamPlayerList = [];
     public static HashSet<byte> winnerList = [];
-    public static HashSet<byte> ForCrusade = [];
     public static HashSet<string> winnerNameList = [];
     public static HashSet<int> clientIdList = [];
     public static List<(string, byte, string)> MessagesToSend = [];
@@ -150,6 +149,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> AllPlayerSpeed = [];
     public const float MinSpeed = 0.0001f;
     public static HashSet<byte> UnreportableBodies = [];
+    public static HashSet<byte> ForCrusade = [];
     public static List<byte> InfectedBodies = [];
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
     public static Dictionary<byte, int> NemesisRevenged = [];

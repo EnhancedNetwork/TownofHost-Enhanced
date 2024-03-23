@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using TMPro;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -91,13 +88,6 @@ class HudManagerPatch
                 __instance.SabotageButton?.OverrideText(GetString("SabotageButtonText"));
 
                 player.GetRoleClass()?.SetAbilityButtonText(__instance, player.PlayerId);
-
-                switch (player.GetCustomRole())
-                {
-                    case CustomRoles.Paranoia:
-                        __instance.AbilityButton.buttonLabelText.text = GetString("ParanoiaVentButtonText");
-                        break;
-                }
 
                 // Set lower info text for modded players
                 if (LowerInfoText == null)
