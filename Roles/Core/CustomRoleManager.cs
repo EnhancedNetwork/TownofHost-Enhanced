@@ -41,6 +41,7 @@ public static class CustomRoleManager
             CustomRoles.Sunnyboy => CustomRoles.Jester,
             CustomRoles.Pestilence => CustomRoles.PlagueBearer,
             CustomRoles.Nuker => CustomRoles.Bomber,
+            CustomRoles.NiceMini or CustomRoles.EvilMini => CustomRoles.Mini,
             _ => role
         };
 
