@@ -9,7 +9,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Oiiai
 {
-    private static readonly int Id = 25700;
+    private const int Id = 25700;
     public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 

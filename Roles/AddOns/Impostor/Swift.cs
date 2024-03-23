@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public static class Swift
 {
-    private static readonly int Id = 23300;
+    private const int Id = 23300;
     
     public static void SetupCustomOption()
     {

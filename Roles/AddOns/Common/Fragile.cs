@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Fragile
 {
-    private static readonly int Id = 20600;
+    private const int Id = 20600;
 
     public static OptionItem ImpCanBeFragile;
     public static OptionItem CrewCanBeFragile;

@@ -6,7 +6,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Burst
 {
-    private static readonly int Id = 19000;
+    private const int Id = 19000;
     public static bool IsEnable = false;
 
     public static OptionItem ImpCanBeBurst;

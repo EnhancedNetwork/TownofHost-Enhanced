@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class VoidBallot
 {
-    private static readonly int Id = 21100;
+    private const int Id = 21100;
 
     public static OptionItem ImpCanBeVoidBallot;
     public static OptionItem CrewCanBeVoidBallot;

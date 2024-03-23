@@ -1,27 +1,29 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using UnityEngine;
 using System.Collections.Generic;
 using TOHE.Modules;
 using static TOHE.Translator;
-using UnityEngine;
-using MS.Internal.Xml.XPath;
 
 namespace TOHE.Roles.Neutral;
 
-internal class Pursuer : RoleBase // #%&&#&!&!!!!((SIASJVG"!/""/&#/(#/("(#/"/&& 💢💢💢💢💢💢💢💢💢💢💢💢💢💢💢
+internal class Pursuer : RoleBase
 {
     //===========================SETUP================================\\
-    private static readonly int Id = 13400;
-    private static HashSet<byte> playerIdList = [];
+    private const int Id = 13400;
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
-    private static Dictionary<byte, List<byte>> clientList = [];
-    private static List<byte> notActiveList = [];
-    public static Dictionary<byte, int> SeelLimit = [];
-    public static OptionItem PursuerSkillCooldown;
-    public static OptionItem PursuerSkillLimitTimes;
+
+    private static OptionItem PursuerSkillCooldown;
+    private static OptionItem PursuerSkillLimitTimes;
+
+    private static readonly HashSet<byte> notActiveList = [];
+    public static readonly Dictionary<byte, int> SeelLimit = [];
+    private static readonly Dictionary<byte, List<byte>> clientList = [];
+
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pursuer);

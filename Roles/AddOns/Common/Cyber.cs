@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Cyber
 {
-    private static readonly int Id = 19100;
+    private const int Id = 19100;
 
     public static List<byte> CyberDead = [];
 

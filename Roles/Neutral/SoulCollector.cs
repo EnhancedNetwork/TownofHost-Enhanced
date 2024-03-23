@@ -9,7 +9,7 @@ namespace TOHE.Roles.Neutral;
 internal class SoulCollector : RoleBase
 {
     //===========================SETUP================================\\
-    private static readonly int Id = 15300;
+    private const int Id = 15300;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;

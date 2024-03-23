@@ -5,7 +5,7 @@ using static TOHE.Options;
 namespace TOHE.Roles.AddOns.Impostor;
 public static class Tricky
 {
-    private static readonly int Id = 19900;
+    private const int Id = 19900;
     private static OptionItem EnabledDeathReasons;
     //private static Dictionary<byte, PlayerState.DeathReason> randomReason = [];
 

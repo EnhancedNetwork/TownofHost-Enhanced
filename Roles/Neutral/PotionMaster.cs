@@ -11,7 +11,7 @@ internal class PotionMaster : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17700;
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -22,8 +22,8 @@ internal class PotionMaster : RoleBase
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
 
-    private static Dictionary<byte, int> RitualCount = [];
-    private static Dictionary<byte, List<byte>> RitualTarget = [];
+    private static readonly Dictionary<byte, int> RitualCount = [];
+    private static readonly Dictionary<byte, List<byte>> RitualTarget = [];
 
     public static void SetupCustomOption()
     {
@@ -37,9 +37,9 @@ internal class PotionMaster : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        RitualCount = [];
-        RitualTarget = [];
+        playerIdList.Clear();
+        RitualCount.Clear();
+        RitualTarget.Clear();
     }
     public override void Add(byte playerId)
     {

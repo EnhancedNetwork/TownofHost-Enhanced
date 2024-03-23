@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Statue
 {
-    private static readonly int Id = 13800;
+    private const int Id = 13800;
     public static bool IsEnable = false;
 
     public static OptionItem CanBeOnCrew;

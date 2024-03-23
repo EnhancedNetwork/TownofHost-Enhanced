@@ -9,11 +9,11 @@ internal class Recruit : RoleBase //Temporarily unused class
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
 
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {

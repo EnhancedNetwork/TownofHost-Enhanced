@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Autopsy
 {
-    private static readonly int Id = 18600;
+    private const int Id = 18600;
 
     public static OptionItem ImpCanBeAutopsy;
     public static OptionItem CrewCanBeAutopsy;

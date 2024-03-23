@@ -12,8 +12,8 @@ namespace TOHE.Roles.Neutral;
 internal class Quizmaster : RoleBase
 {
     //===========================SETUP================================\\
-    private static readonly int Id = 27000;
-    private static HashSet<byte> playerIdList = [];
+    private const int Id = 27000;
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -66,7 +66,7 @@ internal class Quizmaster : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         Player = null;
         firstSabotageOfRound = Sabotages.None;
         //killsForRound = 0;

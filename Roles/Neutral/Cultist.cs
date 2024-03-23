@@ -12,7 +12,7 @@ namespace TOHE.Roles.Neutral;
 internal class Cultist : RoleBase
 {
     //===========================SETUP================================\\
-    private static readonly int Id = 14800;
+    private const int Id = 14800;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;

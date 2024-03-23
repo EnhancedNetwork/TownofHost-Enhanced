@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Sleuth
 {
-    private static readonly int Id = 20100;
+    private const int Id = 20100;
 
     public static OptionItem ImpCanBeSleuth;
     public static OptionItem CrewCanBeSleuth;

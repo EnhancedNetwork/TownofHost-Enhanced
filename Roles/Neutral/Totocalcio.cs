@@ -13,7 +13,7 @@ internal class Follower : RoleBase
 {
 
     //===========================SETUP================================\\
-    private static readonly int Id = 12800;
+    private const int Id = 12800;
     public static HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;

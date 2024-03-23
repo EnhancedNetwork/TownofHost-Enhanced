@@ -9,7 +9,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Avanger
 {
-    private static readonly int Id = 21500;
+    private const int Id = 21500;
     
     public static OptionItem ImpCanBeAvanger;
     public static OptionItem CrewCanBeAvanger;

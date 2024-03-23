@@ -6,7 +6,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Ghoul
 {
-    private static readonly int Id = 21900;
+    private const int Id = 21900;
     public static HashSet<byte> KillGhoul = [];
     public static bool IsEnable;
     

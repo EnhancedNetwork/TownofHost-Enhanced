@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Lazy
 {
-    private static readonly int Id = 19300;
+    private const int Id = 19300;
 
     private static OptionItem TasklessCrewCanBeLazy;
     private static OptionItem TaskBasedCrewCanBeLazy;

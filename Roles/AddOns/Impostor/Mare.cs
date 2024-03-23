@@ -6,7 +6,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public static class Mare
 {
-    private static readonly int Id = 23000;
+    private const int Id = 23000;
     public static List<byte> playerIdList = [];
 
     public static OptionItem KillCooldownInLightsOut;
