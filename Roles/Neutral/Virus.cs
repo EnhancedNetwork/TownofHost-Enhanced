@@ -30,6 +30,7 @@ internal class Virus : RoleBase
     private static OptionItem KillInfectedPlayerAfterMeeting;
     public static OptionItem ContagiousCountMode;
 
+    private static readonly HashSet<byte> InfectedBodies = [];
     private static readonly HashSet<byte> InfectedPlayer = [];
     private static readonly Dictionary<byte, string> VirusNotify = [];
 
@@ -60,6 +61,7 @@ internal class Virus : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
+        InfectedBodies.Clear();
         VirusNotify.Clear();
         InfectLimit = new();
     }
@@ -103,14 +105,14 @@ internal class Virus : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (InfectLimit < 1) return true;
-        Main.InfectedBodies.Add(target.PlayerId);
+        InfectedBodies.Add(target.PlayerId);
         return true;
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         if (target == null || !target.CanBeInfected()) return;
-        if (!Main.InfectedBodies.Contains(target.PlayerId)) return;
+        if (!InfectedBodies.Contains(target.PlayerId)) return;
 
         InfectLimit--;
         SendRPC();

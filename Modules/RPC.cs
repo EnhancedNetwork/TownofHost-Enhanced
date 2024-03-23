@@ -109,7 +109,7 @@ enum CustomRPC
     SetInvestgatorLimit,
     SyncInvestigator, // Unused
     SetRevealedPlayer,
-    SetCurrentRevealTarget,
+    //SetCurrentRevealTarget, // Overseer
     SetCoronerArrow,
     SetCoronerkKillerArrow,
     SetVultureArrow,
@@ -363,13 +363,10 @@ internal class RPCHandlerPatch
                 Captain.ReceiveRPCVoteRemove(reader);
                 break;
             case CustomRPC.SetDrawPlayer:
-                Revolutionist.ReceiveRPC(reader);
+                Revolutionist.ReceiveDrawPlayerRPC(reader);
                 break;
             case CustomRPC.SetRevealedPlayer:
-                byte OverseerId = reader.ReadByte();
-                byte RevealId = reader.ReadByte();
-                bool revealed = reader.ReadBoolean();
-                Main.isRevealed[(OverseerId, RevealId)] = revealed;
+                Overseer.ReceiveSetRevealedPlayerRPC(reader);
                 break;
             case CustomRPC.SetNameColorData:
                 NameColorManager.ReceiveRPC(reader);
@@ -411,10 +408,7 @@ internal class RPCHandlerPatch
                 Arsonist.ReceiveSetDousedPlayerRPC(reader);
                 break;
             case CustomRPC.SetCurrentDrawTarget:
-                byte arsonistId1 = reader.ReadByte();
-                byte doTargetId = reader.ReadByte();
-                if (PlayerControl.LocalPlayer.PlayerId == arsonistId1)
-                    Main.currentDrawTarget = doTargetId;
+                Revolutionist.ReceiveSetDousedPlayerRPC(reader);
                 break;
             case CustomRPC.SetEvilTrackerTarget:
                 EvilTracker.ReceiveRPC(reader);
@@ -484,7 +478,7 @@ internal class RPCHandlerPatch
                 FFAManager.ReceiveRPCSyncFFAPlayer(reader);
                 break;
             case CustomRPC.SyncAllPlayerNames:
-                Main.AllPlayerNames = [];
+                Main.AllPlayerNames.Clear();
                 int num = reader.ReadPackedInt32();
                 for (int i = 0; i < num; i++)
                     Main.AllPlayerNames.TryAdd(reader.ReadByte(), reader.ReadString());
@@ -1130,36 +1124,6 @@ internal static class RPC
         else rpcName = callId.ToString();
         return rpcName;
     }
-    public static void SetCurrentDrawTarget(byte arsonistId, byte targetId)
-    {
-        if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
-        {
-            Main.currentDrawTarget = targetId;
-        }
-        else
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDrawTarget, SendOption.Reliable, -1);
-            writer.Write(arsonistId);
-            writer.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-    }
-    public static void SetCurrentRevealTarget(byte arsonistId, byte targetId)
-    {
-        if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
-        {
-            Main.currentDrawTarget = targetId;
-        }
-        else
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentRevealTarget, SendOption.Reliable, -1);
-            writer.Write(arsonistId);
-            writer.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-    }
-    public static void ResetCurrentDrawTarget(byte arsonistId) => SetCurrentDrawTarget(arsonistId, 255);
-    public static void ResetCurrentRevealTarget(byte arsonistId) => SetCurrentRevealTarget(arsonistId, 255);
     public static void SetRealKiller(byte targetId, byte killerId)
     {
         var state = Main.PlayerStates[targetId];

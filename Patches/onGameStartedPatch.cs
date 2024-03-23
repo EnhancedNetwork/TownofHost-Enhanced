@@ -51,40 +51,38 @@ internal class ChangeRoleSettings
 
             Main.PlayerStates = [];
 
-            Main.AllPlayerKillCooldown = [];
-            Main.AllPlayerSpeed = [];
-            Main.AllPlayerCustomRoles = [];
-            Main.isRevealed = [];
-            Main.NemesisRevenged = [];
-            Main.ForCrusade = [];
-            Main.TasklessCrewmate = [];
-            Main.UnreportableBodies = [];
-            Main.InfectedBodies = [];
-            Main.ErasedRoleStorage = [];
+            Main.AllPlayerKillCooldown.Clear();
+            Main.AllPlayerSpeed.Clear();
+            Main.AllPlayerCustomRoles.Clear();
+            Main.TasklessCrewmate.Clear();
+            Main.UnreportableBodies.Clear();
+            Main.ErasedRoleStorage.Clear();
 
-            Main.LastEnteredVent = [];
-            Main.LastEnteredVentLocation = [];
+            Main.LastEnteredVent.Clear();
+            Main.LastEnteredVentLocation.Clear();
 
-            Main.AfterMeetingDeathPlayers = [];
-            Main.ResetCamPlayerList = [];
-            Main.clientIdList = [];
+            Main.AfterMeetingDeathPlayers.Clear();
+            Main.ResetCamPlayerList.Clear();
+            Main.clientIdList.Clear();
 
-            Main.CheckShapeshift = [];
-            Main.ShapeshiftTarget = [];
-            Main.SpeedBoostTarget = [];
-            Main.ParaUsedButtonCount = [];
-            Main.AllKillers = [];
-            Main.OverDeadPlayerList = [];
+            Main.CheckShapeshift.Clear();
+            Main.ShapeshiftTarget.Clear();
+            Main.AllKillers.Clear();
+            Main.OverDeadPlayerList.Clear();
+
+            Main.LastNotifyNames.Clear();
+            Main.PlayerColors.Clear();
+
             Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
             Main.MeetingIsStarted = false;
+            Main.introDestroyed = false;
+
             ChatManager.ResetHistory();
-
             ReportDeadBodyPatch.CanReport = [];
-
             Options.UsedButtonCount = 0;
 
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
@@ -99,13 +97,6 @@ internal class ChangeRoleSettings
                 Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
                 Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
             }
-
-            Main.introDestroyed = false;
-
-            Main.LastNotifyNames = [];
-
-            Main.currentDrawTarget = byte.MaxValue;
-            Main.PlayerColors = [];
 
             // Clear last exiled
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = null;

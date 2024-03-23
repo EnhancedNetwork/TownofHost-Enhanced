@@ -34,6 +34,8 @@ internal class Revolutionist : RoleBase
     private static readonly Dictionary<byte, long> RevolutionistLastTime = [];
     private static readonly Dictionary<byte, int> RevolutionistCountdown = [];
 
+    private static byte CurrentDrawTarget = byte.MaxValue;
+
     public static void SetupCustomOptions()
     {
         SetupRoleOptions(15200, TabGroup.NeutralRoles, CustomRoles.Revolutionist);
@@ -60,6 +62,7 @@ internal class Revolutionist : RoleBase
         RevolutionistStart.Clear();
         RevolutionistLastTime.Clear();
         RevolutionistCountdown.Clear();
+        CurrentDrawTarget = byte.MaxValue;
 
         PlayerIds.Clear();
     }
@@ -102,13 +105,44 @@ internal class Revolutionist : RoleBase
         hud.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
         hud.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");
     }
-    public static void ReceiveRPC(MessageReader reader)
+    private static void SetDrawPlayerRPC(PlayerControl player, PlayerControl target, bool isDrawed)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDrawPlayer, SendOption.Reliable, -1);
+        writer.Write(player.PlayerId);
+        writer.Write(target.PlayerId);
+        writer.Write(isDrawed);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveDrawPlayerRPC(MessageReader reader)
     {
         byte RevolutionistId = reader.ReadByte();
         byte DrawId = reader.ReadByte();
         bool drawed = reader.ReadBoolean();
         IsDraw[(RevolutionistId, DrawId)] = drawed;
     }
+
+    private static void SetCurrentDrawTargetRPC(byte arsonistId, byte targetId)
+    {
+        if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
+        {
+            CurrentDrawTarget = targetId;
+        }
+        else
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDrawTarget, SendOption.Reliable, -1);
+            writer.Write(arsonistId);
+            writer.Write(targetId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+    }
+    public static void ReceiveSetDousedPlayerRPC(MessageReader reader)
+    {
+        byte RevolutionistId = reader.ReadByte();
+        byte doTargetId = reader.ReadByte();
+        if (PlayerControl.LocalPlayer.PlayerId == RevolutionistId)
+            CurrentDrawTarget = doTargetId;
+    }
+    public static void ResetCurrentDrawTarget(byte arsonistId) => SetCurrentDrawTargetRPC(arsonistId, 255);
     public static bool IsDrawPlayer(PlayerControl arsonist, PlayerControl target)
     {
         if (arsonist == null && target == null && IsDraw == null) return false;
@@ -160,7 +194,7 @@ internal class Revolutionist : RoleBase
         {
             RevolutionistTimer.TryAdd(killer.PlayerId, (target, 0f));
             NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
-            RPC.SetCurrentDrawTarget(killer.PlayerId, target.PlayerId);
+            SetCurrentDrawTargetRPC(killer.PlayerId, target.PlayerId);
         }
         return false;
     }
@@ -173,7 +207,7 @@ internal class Revolutionist : RoleBase
             {
                 RevolutionistTimer.Remove(playerId);
                 NotifyRoles(SpecifySeer: player);
-                RPC.ResetCurrentDrawTarget(playerId);
+                ResetCurrentDrawTarget(playerId);
             }
             else
             {
@@ -189,9 +223,9 @@ internal class Revolutionist : RoleBase
                     player.SetKillCooldown();
                     RevolutionistTimer.Remove(playerId);
                     IsDraw[(playerId, rvTargetId)] = true;
-                    player.RpcSetDrawPlayer(rv_target, true);
+                    SetDrawPlayerRPC(player, rv_target, true);
                     NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
-                    RPC.ResetCurrentDrawTarget(playerId);
+                    ResetCurrentDrawTarget(playerId);
                     if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt())
                     {
                         rv_target.SetRealKiller(player);
@@ -213,7 +247,7 @@ internal class Revolutionist : RoleBase
                     {
                         RevolutionistTimer.Remove(playerId);
                         NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
-                        RPC.ResetCurrentDrawTarget(playerId);
+                        ResetCurrentDrawTarget(playerId);
                         Logger.Info($"Canceled: {player.GetNameWithRole()}", "Revolutionist");
                     }
                 }

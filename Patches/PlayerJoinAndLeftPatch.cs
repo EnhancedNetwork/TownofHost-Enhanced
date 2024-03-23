@@ -9,10 +9,8 @@ using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Neutral;
-using static TOHE.Translator;
 using TOHE.Roles.Core.AssignManager;
-using TOHE.Roles.Core;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -48,11 +46,10 @@ class OnGameJoinedPatch
 
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
-            Main.newLobby = true;
             RoleAssign.SetRoles = [];
             EAC.DeNum = new();
-            Main.AllPlayerNames = [];
-            Main.PlayerQuitTimes = [];
+            Main.AllPlayerNames.Clear();
+            Main.PlayerQuitTimes.Clear();
             KickPlayerPatch.AttemptedKickPlayerList = [];
 
             switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)

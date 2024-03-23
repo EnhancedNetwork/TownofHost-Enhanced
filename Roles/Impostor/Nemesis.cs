@@ -3,6 +3,7 @@ using HarmonyLib;
 using Hazel;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using TOHE.Modules;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -24,6 +25,8 @@ internal class Nemesis : RoleBase
     private static OptionItem NemesisShapeshiftCD;
     private static OptionItem NemesisShapeshiftDur;
 
+    private static readonly Dictionary<byte, int> NemesisRevenged = [];
+
     public static void SetupCustomOptions()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Nemesis);
@@ -41,6 +44,7 @@ internal class Nemesis : RoleBase
     }
     public override void Init()
     {
+        NemesisRevenged.Clear();
         On = false;
     }
     public override void Add(byte playerId)
@@ -89,9 +93,9 @@ internal class Nemesis : RoleBase
             return true;
         }
 
-        if (Main.NemesisRevenged.ContainsKey(pc.PlayerId))
+        if (NemesisRevenged.ContainsKey(pc.PlayerId))
         {
-            if (Main.NemesisRevenged[pc.PlayerId] >= NemesisCanKillNum.GetInt())
+            if (NemesisRevenged[pc.PlayerId] >= NemesisCanKillNum.GetInt())
             {
                 if (!isUI) Utils.SendMessage(GetString("NemesisKillMax"), pc.PlayerId);
                 else pc.ShowPopUp(GetString("NemesisKillMax"));
@@ -101,7 +105,7 @@ internal class Nemesis : RoleBase
 
         else
         {
-            Main.NemesisRevenged.Add(pc.PlayerId, 0);
+            NemesisRevenged.Add(pc.PlayerId, 0);
         }
 
         int targetId;
@@ -147,7 +151,7 @@ internal class Nemesis : RoleBase
 
         string Name = target.GetRealName();
 
-        Main.NemesisRevenged[pc.PlayerId]++;
+        NemesisRevenged[pc.PlayerId]++;
 
         CustomSoundsManager.RPCPlayCustomSoundAll("AWP");
 

@@ -12,6 +12,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.Crewmate;
 
 namespace TOHE;
 
@@ -103,8 +104,8 @@ class EndGamePatch
             winner.AddRange(Main.AllPlayerControls.Where(p => p.Is(team) && !winner.Contains(p)));
         }
 
-        Main.winnerNameList = [];
-        Main.winnerList = [];
+        Main.winnerNameList.Clear();
+        Main.winnerList.Clear();
         foreach (var pc in winner.ToArray())
         {
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw && pc.Is(CustomRoles.GM)) continue;
@@ -116,8 +117,8 @@ class EndGamePatch
 
         BountyHunter.ChangeTimer.Clear();
         Revolutionist.IsDraw.Clear();
-        Main.isRevealed = [];
-        Main.PlayerQuitTimes = [];
+        Overseer.IsRevealed.Clear();
+        Main.PlayerQuitTimes.Clear();
         ChatManager.ChatSentBySystem = [];
 
         Main.VisibleTasksCount = false;

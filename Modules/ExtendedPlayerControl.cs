@@ -501,29 +501,6 @@ static class ExtendedPlayerControl
 
         return false;
     }
-
-    public static bool IsRevealedPlayer(this PlayerControl player, PlayerControl target)
-    {
-        if (player == null || target == null || Main.isRevealed == null) return false;
-        Main.isRevealed.TryGetValue((player.PlayerId, target.PlayerId), out bool isDoused);
-        return isDoused;
-    }
-    public static void RpcSetDrawPlayer(this PlayerControl player, PlayerControl target, bool isDoused)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDrawPlayer, SendOption.Reliable, -1);//RPCによる同期
-        writer.Write(player.PlayerId);
-        writer.Write(target.PlayerId);
-        writer.Write(isDoused);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void RpcSetRevealtPlayer(this PlayerControl player, PlayerControl target, bool isDoused)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRevealedPlayer, SendOption.Reliable, -1);//RPCによる同期
-        writer.Write(player.PlayerId);
-        writer.Write(target.PlayerId);
-        writer.Write(isDoused);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
     public static void ResetKillCooldown(this PlayerControl player)
     {
         Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
@@ -801,7 +778,7 @@ static class ExtendedPlayerControl
         else if (seer.Is(CustomRoleTypes.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor()) return true;
         else if (Workaholic.OthersKnowWorka(target)) return true;
         else if (Jackal.JackalKnowRole(seer, target)) return true;
-        else if (seer.IsRevealedPlayer(target) && !target.Is(CustomRoles.Trickster)) return true;
+        else if (Overseer.IsRevealedPlayer(seer, target) && !target.Is(CustomRoles.Trickster)) return true;
         else if (Cultist.KnowRole(seer, target)) return true;
         else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return true;
         else if (Infectious.KnowRole(seer, target)) return true;

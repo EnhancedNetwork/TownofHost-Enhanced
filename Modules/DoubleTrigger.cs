@@ -6,17 +6,17 @@ namespace TOHE;
 
 static class DoubleTrigger
 {
-    public static List<byte> PlayerIdList = [];
+    public static readonly HashSet<byte> PlayerIdList = [];
 
-    public static Dictionary<byte, float> FirstTriggerTimer = [];
-    public static Dictionary<byte, byte> FirstTriggerTarget = [];
-    public static Dictionary<byte, Action> FirstTriggerAction = [];
+    public static readonly Dictionary<byte, float> FirstTriggerTimer = [];
+    public static readonly Dictionary<byte, byte> FirstTriggerTarget = [];
+    public static readonly Dictionary<byte, Action> FirstTriggerAction = [];
 
     public static void Init()
     {
-        PlayerIdList = [];
-        FirstTriggerTimer = [];
-        FirstTriggerAction = [];
+        PlayerIdList.Clear();
+        FirstTriggerTimer.Clear();
+        FirstTriggerAction.Clear();
     }
     public static void AddDoubleTrigger(this PlayerControl killer)
     {

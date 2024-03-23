@@ -11,7 +11,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Crusader : RoleBase
 {
     private const int Id = 10400;
-    private static List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     private static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.Crusader.IsClassEnable();
@@ -20,8 +20,9 @@ internal class Crusader : RoleBase
     private static OptionItem SkillLimitOpt;
     private static OptionItem SkillCooldown;
 
-    private static Dictionary<byte, int> CrusaderLimit = [];
-    private static Dictionary<byte, float> CurrentKillCooldown = [];
+    private static readonly HashSet<byte> ForCrusade = [];
+    private static readonly Dictionary<byte, int> CrusaderLimit = [];
+    private static readonly Dictionary<byte, float> CurrentKillCooldown = [];
 
     public static void SetupCustomOption()
     {
@@ -33,9 +34,10 @@ internal class Crusader : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        CrusaderLimit = [];
-        CurrentKillCooldown = [];
+        playerIdList.Clear();
+        ForCrusade.Clear();
+        CrusaderLimit.Clear();
+        CurrentKillCooldown.Clear();
         On = false;
     }
     public override void Add(byte playerId)
@@ -87,8 +89,8 @@ internal class Crusader : RoleBase
     {
         if (CrusaderLimit[killer.PlayerId] <= 0) return false;
 
-        Main.ForCrusade.Remove(target.PlayerId);
-        Main.ForCrusade.Add(target.PlayerId);
+        ForCrusade.Remove(target.PlayerId);
+        ForCrusade.Add(target.PlayerId);
         CrusaderLimit[killer.PlayerId]--;
         SendRPC(killer.PlayerId);
 
@@ -102,14 +104,14 @@ internal class Crusader : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (Main.ForCrusade.Contains(target.PlayerId)) return true;
+        if (ForCrusade.Contains(target.PlayerId)) return true;
 
         foreach (var player in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Crusader)).ToArray())
         {
             if (!killer.Is(CustomRoles.Pestilence) && !killer.Is(CustomRoles.KillingMachine))
             {
                 player.RpcMurderPlayerV3(killer);
-                Main.ForCrusade.Remove(target.PlayerId);
+                ForCrusade.Remove(target.PlayerId);
                 killer.RpcGuardAndKill(target);
                 return false;
             }
@@ -118,7 +120,7 @@ internal class Crusader : RoleBase
             {
                 Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
                 killer.RpcMurderPlayerV3(player);
-                Main.ForCrusade.Remove(target.PlayerId);
+                ForCrusade.Remove(target.PlayerId);
                 target.RpcGuardAndKill(killer);
 
                 return false;
