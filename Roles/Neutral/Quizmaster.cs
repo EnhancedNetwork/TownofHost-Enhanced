@@ -12,8 +12,8 @@ namespace TOHE.Roles.Neutral;
 internal class Quizmaster : RoleBase
 {
     //===========================SETUP================================\\
-    private static readonly int Id = 27000;
-    private static HashSet<byte> playerIdList = [];
+    private const int Id = 27000;
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -66,7 +66,7 @@ internal class Quizmaster : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         Player = null;
         firstSabotageOfRound = Sabotages.None;
         //killsForRound = 0;
@@ -166,8 +166,7 @@ internal class Quizmaster : RoleBase
         {
             question = questions[rnd.Next(0, questions.Count)];
         }
-        if (question == null)
-            question = new PlrColorQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion };
+        question ??= new PlrColorQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion };
 
         previousQuestion = question;
         question.FixUnsetAnswers();
@@ -291,8 +290,10 @@ internal class Quizmaster : RoleBase
         MarkedPlayer = byte.MaxValue;
     }
 
-    private void OnPlayerDead(PlayerControl killer, PlayerControl target)
+    private void OnPlayerDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        if (inMeeting) return;
+
         diedThisRound++;
         if (target.PlayerId == MarkedPlayer) ResetMarkedPlayer(false);
     }

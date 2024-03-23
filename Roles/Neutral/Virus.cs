@@ -15,7 +15,7 @@ internal class Virus : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18300;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -30,8 +30,9 @@ internal class Virus : RoleBase
     private static OptionItem KillInfectedPlayerAfterMeeting;
     public static OptionItem ContagiousCountMode;
 
-    private static List<byte> InfectedPlayer = [];
-    private static Dictionary<byte, string> VirusNotify = [];
+    private static readonly HashSet<byte> InfectedBodies = [];
+    private static readonly HashSet<byte> InfectedPlayer = [];
+    private static readonly Dictionary<byte, string> VirusNotify = [];
 
     private static int InfectLimit = new();
 
@@ -59,8 +60,9 @@ internal class Virus : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        VirusNotify = [];
+        playerIdList.Clear();
+        InfectedBodies.Clear();
+        VirusNotify.Clear();
         InfectLimit = new();
     }
     public override void Add(byte playerId)
@@ -103,14 +105,14 @@ internal class Virus : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (InfectLimit < 1) return true;
-        Main.InfectedBodies.Add(target.PlayerId);
+        InfectedBodies.Add(target.PlayerId);
         return true;
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         if (target == null || !target.CanBeInfected()) return;
-        if (!Main.InfectedBodies.Contains(target.PlayerId)) return;
+        if (!InfectedBodies.Contains(target.PlayerId)) return;
 
         InfectLimit--;
         SendRPC();
@@ -198,7 +200,7 @@ public static class VirusPlayerControls
     public static bool CanBeInfected(this PlayerControl pc)
     {
         return true && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Loyal)
-            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Succubus) && !pc.Is(CustomRoles.Infectious)
+            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Cultist) && !pc.Is(CustomRoles.Infectious)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 }

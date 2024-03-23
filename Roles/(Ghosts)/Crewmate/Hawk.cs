@@ -6,12 +6,12 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
-namespace TOHE.Roles.Crewmate;
+namespace TOHE.Roles._Ghosts_.Crewmate;
 
 public static class Hawk
 {
 
-    private static readonly int Id = 28000;
+    private const int Id = 28000;
     public static OptionItem KillCooldown;
     public static OptionItem HawkCanKillNum;
     public static OptionItem MinimumPlayersAliveToKill;

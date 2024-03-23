@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Autopsy
 {
-    private static readonly int Id = 18600;
+    private const int Id = 18600;
 
     public static OptionItem ImpCanBeAutopsy;
     public static OptionItem CrewCanBeAutopsy;
@@ -17,7 +17,4 @@ public static class Autopsy
         CrewCanBeAutopsy = BooleanOptionItem.Create(Id + 11, "CrewCanBeAutopsy", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
         NeutralCanBeAutopsy = BooleanOptionItem.Create(Id + 12, "NeutralCanBeAutopsy", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
     }
-
-
 }
-

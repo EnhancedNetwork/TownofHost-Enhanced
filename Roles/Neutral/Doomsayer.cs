@@ -10,15 +10,14 @@ internal class Doomsayer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14100;
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-
     //==================================================================\\
 
-    private static List<CustomRoles> GuessedRoles = [];
-    private static Dictionary<byte, int> GuessingToWin = [];
+    private static readonly HashSet<CustomRoles> GuessedRoles = [];
+    private static readonly Dictionary<byte, int> GuessingToWin = [];
 
     private static int GuessesCount = 0;
     private static int GuessesCountPerMeeting = 0;
@@ -71,9 +70,9 @@ internal class Doomsayer : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        GuessedRoles = [];
-        GuessingToWin = [];
+        playerIdList.Clear();
+        GuessedRoles.Clear();
+        GuessingToWin.Clear();
         GuessesCount = 0;
         GuessesCountPerMeeting = 0;
         CantGuess = false;
@@ -132,8 +131,11 @@ internal class Doomsayer : RoleBase
         CantGuess = false;
         GuessesCountPerMeeting = 0;
     }
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl target)
-        => (!GetPlayerById(pva.TargetPlayerId).Data.IsDead && !target.Data.IsDead) ? ColorString(GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
+
+    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
+        => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
+        => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
 
     public static bool HideTabInGuesserUI(int TabId)

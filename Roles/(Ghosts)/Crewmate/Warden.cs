@@ -5,11 +5,11 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
-namespace TOHE.Roles.Crewmate;
+namespace TOHE.Roles._Ghosts_.Crewmate;
 
 public class Warden
 {
-    private static readonly int Id = 27800; // id
+    private const int Id = 27800;
     public static OptionItem AbilityCooldown;
     public static OptionItem IncreaseSpeed;
     public static OptionItem WardenCanAlertNum;

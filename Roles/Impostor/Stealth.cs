@@ -8,7 +8,7 @@ namespace TOHE.Roles.Impostor;
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Impostor/Stealth.cs
 internal class Stealth : RoleBase
 {
-    private static readonly int Id = 27400;
+    private const int Id = 27400;
     private static List<byte> playerIdList = [];
     public static bool On;
     public override bool IsEnable => On;

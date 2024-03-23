@@ -62,51 +62,7 @@ public static class HudSpritePatch
         if (playerRoleClass?.ReportButtonSprite != null)
             newReportButton = playerRoleClass.ReportButtonSprite;
 
-        switch (player.GetCustomRole())
-        {
-            case CustomRoles.Hangman:
-                if (shapeshifting) newAbilityButton = CustomButton.Get("Hangman");
-                break;
-            case CustomRoles.Paranoia:
-                newAbilityButton = CustomButton.Get("Paranoid");
-                break;
-            case CustomRoles.Puppeteer:
-                newKillButton = CustomButton.Get("Puttpuer");
-                break;
-            case CustomRoles.Succubus:
-                newKillButton = CustomButton.Get("Subbus");
-                break;
-            case CustomRoles.Vampire:
-                newKillButton = CustomButton.Get("Bite");
-                break;
-            case CustomRoles.Witness:
-                newKillButton = CustomButton.Get("Examine");
-                break;
-            case CustomRoles.Amnesiac:
-                newReportButton = CustomButton.Get("Amnesiac");
-                break;
-            case CustomRoles.Mario:
-                newAbilityButton = CustomButton.Get("Happy");
-                break;
-            case CustomRoles.Pirate:
-                newKillButton = CustomButton.Get("Challenge");
-                break;
-            case CustomRoles.SoulCatcher:
-                newKillButton = CustomButton.Get("Teleport");
-                break;
-            case CustomRoles.Swooper:
-                newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Chameleon:
-                newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Vulture:
-                newReportButton = CustomButton.Get("Eat");
-                break;
-            case CustomRoles.Pursuer:
-                newAbilityButton = CustomButton.Get("Pursuer");
-                break;
-        }
+        // CustomButton.Get("Paranoid"); for Paranoid
 
     EndOfSelectImg:
 

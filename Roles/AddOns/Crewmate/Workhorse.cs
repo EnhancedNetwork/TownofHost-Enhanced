@@ -7,7 +7,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public static class Workhorse
 {
-    private static readonly int Id = 23730;
+    private const int Id = 23730;
     private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 

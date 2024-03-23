@@ -12,7 +12,7 @@ internal class Spiritcaller : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 25200;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled = playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -28,7 +28,7 @@ internal class Spiritcaller : RoleBase
     private static OptionItem SpiritCauseVision;
     private static OptionItem SpiritCauseVisionTime;
 
-    private static Dictionary<byte, long> PlayersHaunted = [];
+    private static readonly Dictionary<byte, long> PlayersHaunted = [];
 
     private static long ProtectTimeStamp = new();
     private static int SpiritLimit = new();
@@ -56,10 +56,10 @@ internal class Spiritcaller : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         SpiritLimit = new();
         ProtectTimeStamp = new();
-        PlayersHaunted = [];
+        PlayersHaunted.Clear();
     }
     public override void Add(byte playerId)
     {

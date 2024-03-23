@@ -14,7 +14,7 @@ internal class Shroud : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18000;
-    private static HashSet<byte> PlayerIds = [];
+    private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -24,7 +24,7 @@ internal class Shroud : RoleBase
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
 
-    private static Dictionary<byte, byte> ShroudList = [];
+    private static readonly Dictionary<byte, byte> ShroudList = [];
 
     public static void SetupCustomOption()
     {
@@ -36,8 +36,8 @@ internal class Shroud : RoleBase
     }
     public override void Init()
     {
-        PlayerIds = [];
-        ShroudList = [];
+        PlayerIds.Clear();
+        ShroudList.Clear();
     }
     public override void Add(byte playerId)
     {

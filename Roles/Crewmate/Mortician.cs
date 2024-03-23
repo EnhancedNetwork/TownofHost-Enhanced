@@ -70,8 +70,10 @@ internal class Mortician : RoleBase
         else
             LocateArrow.RemoveAllTarget(playerId);
     }
-    private void CheckDeadBody(PlayerControl killer, PlayerControl target)
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        if (inMeeting) return;
+
         Vector2 pos = target.transform.position;
         float minDis = float.MaxValue;
         string minName = "";
@@ -110,6 +112,8 @@ internal class Mortician : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
+        if (isForMeeting) return string.Empty;
+
         if (ShowArrows.GetBool())
         {
             if (!seer.Is(CustomRoles.Mortician)) return "";

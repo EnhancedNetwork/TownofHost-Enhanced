@@ -81,24 +81,6 @@ class ExileControllerWrapUpPatch
             var emptyString = string.Empty;
             exiledRoleClass?.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
 
-            //Terrorist check win
-            if (role.Is(CustomRoles.Terrorist))
-            {
-                Utils.CheckTerroristWin(exiled);
-            }
-
-            //Devourer check win
-            if (role.Is(CustomRoles.Devourer))
-            {
-                Devourer.OnDevourerDied(exiled.PlayerId);
-            }
-
-            if (role.Is(CustomRoles.Devourer))
-            {
-                Devourer.OnDevourerDied(exiled.PlayerId);
-            }
-
-
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
         }
         
@@ -201,7 +183,7 @@ class ExileControllerWrapUpPatch
                         player?.ResetPlayerCam(1f);
                     }
 
-                    Utils.AfterPlayerDeathTasks(player);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(player, player, false);
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
 

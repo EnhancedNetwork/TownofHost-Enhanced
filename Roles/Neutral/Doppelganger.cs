@@ -10,11 +10,10 @@ internal class Doppelganger : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 25000;
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem KillCooldown;
@@ -22,9 +21,9 @@ internal class Doppelganger : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem MaxSteals;
 
-    public static Dictionary<byte, string> DoppelVictim = [];
-    public static Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
-    private static Dictionary<byte, int> TotalSteals = [];
+    public static readonly Dictionary<byte, string> DoppelVictim = [];
+    public static readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
+    private static readonly Dictionary<byte, int> TotalSteals = [];
 
 
     public static void SetupCustomOption()
@@ -39,10 +38,10 @@ internal class Doppelganger : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        DoppelVictim = [];
-        TotalSteals = [];
-        DoppelPresentSkin = [];
+        playerIdList.Clear();
+        DoppelVictim.Clear();
+        TotalSteals.Clear();
+        DoppelPresentSkin.Clear();
     }
     public override void Add(byte playerId)
     {

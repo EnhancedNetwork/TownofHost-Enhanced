@@ -7,11 +7,12 @@ using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
+
 internal class PlagueBearer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17600;
-    public static HashSet<byte> playerIdList = [];
+    public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -22,10 +23,10 @@ internal class PlagueBearer : RoleBase
     private static OptionItem PestilenceCanVent;
     private static OptionItem PestilenceHasImpostorVision;
 
-    private static Dictionary<byte, List<byte>> PlaguedList = [];
-    private static Dictionary<byte, float> PlagueBearerCD = [];
-    //private static Dictionary<byte, int> PestilenceCD = [];
-    private static List<byte> PestilenceList = [];
+    private static readonly Dictionary<byte, HashSet<byte>> PlaguedList = [];
+    private static readonly Dictionary<byte, float> PlagueBearerCD = [];
+    //private static readonly Dictionary<byte, int> PestilenceCD = [];
+    private static readonly HashSet<byte> PestilenceList = [];
 
     public static void SetupCustomOption()
     {
@@ -42,10 +43,10 @@ internal class PlagueBearer : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        PlaguedList = [];
-        PlagueBearerCD = [];
-        PestilenceList = [];
+        playerIdList.Clear();
+        PlaguedList.Clear();
+        PlagueBearerCD.Clear();
+        PestilenceList.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -71,7 +72,7 @@ internal class PlagueBearer : RoleBase
         return PlaguedList[pc].Contains(target);
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-        => PlaguedList[seer.PlayerId].Contains(seen.PlayerId) ? $"<color={Utils.GetRoleColorCode(seer.GetCustomRole())}>●</color>" : "";
+        => PlaguedList[seer.PlayerId].Contains(seen.PlayerId) ? $"<color={GetRoleColorCode(seer.GetCustomRole())}>●</color>" : "";
     
     public static void SendRPC(PlayerControl player, PlayerControl target)
     {

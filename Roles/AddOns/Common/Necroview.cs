@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Necroview
 {
-    private static readonly int Id = 19600;
+    private const int Id = 19600;
 
     public static OptionItem ImpCanBeNecroview;
     public static OptionItem CrewCanBeNecroview;

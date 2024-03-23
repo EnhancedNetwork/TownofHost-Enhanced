@@ -1,29 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using AmongUs.GameOptions;
+using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Hater
+internal class Hater : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 12900;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => false;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
-    public static OptionItem CanVent;
-    public static OptionItem ChooseConverted;
-    public static OptionItem MisFireKillTarget;
-
-    public static OptionItem CanKillLovers;
-    public static OptionItem CanKillMadmate;
-    public static OptionItem CanKillCharmed;
-    public static OptionItem CanKillAdmired;
-    public static OptionItem CanKillSidekicks;
-    public static OptionItem CanKillEgoists;
-    public static OptionItem CanKillInfected;
-    public static OptionItem CanKillContagious;
+    private static OptionItem ChooseConverted;
+    private static OptionItem MisFireKillTarget;
+    private static OptionItem CanKillLovers;
+    private static OptionItem CanKillMadmate;
+    private static OptionItem CanKillCharmed;
+    private static OptionItem CanKillAdmired;
+    private static OptionItem CanKillSidekicks;
+    private static OptionItem CanKillEgoists;
+    private static OptionItem CanKillInfected;
+    private static OptionItem CanKillContagious;
 
     public static bool isWon = false; // There's already a playerIdList, so replaced this with a boolean value
+    
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Hater, zeroOne: false);
@@ -39,24 +44,22 @@ public static class Hater
         CanKillAdmired = BooleanOptionItem.Create(Id + 20, "HaterCanKillAdmired", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        IsEnable = false;
+        playerIdList.Clear();
         isWon = false;
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
         if (killer.PlayerId == target.PlayerId) return true;  // Return true to allow suicides
@@ -72,7 +75,7 @@ public static class Hater
             }
             else if (
                 ((target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Gangster)) && CanKillMadmate.GetBool())
-                || ((target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Succubus)) && CanKillCharmed.GetBool())
+                || ((target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Cultist)) && CanKillCharmed.GetBool())
                 || ((target.Is(CustomRoles.Lovers) || target.Is(CustomRoles.Ntr)) && CanKillLovers.GetBool())
                 || ((target.Is(CustomRoles.Romantic) || target.Is(CustomRoles.RuthlessRomantic) || target.Is(CustomRoles.VengefulRomantic)
                     || Romantic.BetPlayer.ContainsValue(target.PlayerId)) && CanKillLovers.GetBool())
@@ -103,13 +106,18 @@ public static class Hater
         Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "FFF");
         return false;
     }
-
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(GetString("HaterButtonText"));
+    }
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 1f;
     private static bool IsConvertedMainRole(CustomRoles role)
     {
         return role switch  // Use the switch expression whenever possible instead of the switch statement to improve performance
         {
             CustomRoles.Gangster or
-            CustomRoles.Succubus or
+            CustomRoles.Cultist or
             CustomRoles.Romantic or
             CustomRoles.RuthlessRomantic or
             CustomRoles.VengefulRomantic or

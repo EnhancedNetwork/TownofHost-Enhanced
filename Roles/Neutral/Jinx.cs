@@ -10,7 +10,7 @@ internal class Jinx : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16800;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -22,12 +22,10 @@ internal class Jinx : RoleBase
     private static OptionItem JinxSpellTimes;
     private static OptionItem killAttacker;
 
-    private static Dictionary<byte, int> JinxSpellCount = [];
+    private static readonly Dictionary<byte, int> JinxSpellCount = [];
 
     public static void SetupCustomOption()
-    
     {
-        //Jinxは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Jinx, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jinx])
             .SetValueFormat(OptionFormat.Seconds);
@@ -36,13 +34,13 @@ internal class Jinx : RoleBase
         JinxSpellTimes = IntegerOptionItem.Create(Id + 14, "JinxSpellTimes", new(1, 15, 1), 3, TabGroup.NeutralRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Jinx])
         .SetValueFormat(OptionFormat.Times);
-        killAttacker = BooleanOptionItem.Create(Id + 15, "killAttacker", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jinx]);
+        killAttacker = BooleanOptionItem.Create(Id + 15, "Jinx/CursedWolf___KillAttacker", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jinx]);
 
     }
     public override void Init()
     {
-        playerIdList = [];
-        JinxSpellCount = [];
+        playerIdList.Clear();
+        JinxSpellCount.Clear();
     }
     public override void Add(byte playerId)
     {

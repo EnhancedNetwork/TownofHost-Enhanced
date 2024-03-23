@@ -2,6 +2,7 @@
 using Hazel;
 using System.Collections.Generic;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
@@ -112,7 +113,6 @@ internal class Undertaker : RoleBase
 
         if (target.Is(CustomRoles.Bait)) return true;
         if (Guardian.CannotBeKilled(target)) return true;
-        if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted() && Options.OppoImmuneToAttacksWhenTasksDone.GetBool()) return false;
 
         if (target.CanBeTeleported())
         {

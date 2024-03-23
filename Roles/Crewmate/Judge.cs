@@ -186,6 +186,7 @@ internal class Judge : RoleBase
                 TrialLimit[pc.PlayerId]--;
 
                 if (!GameStates.IsProceeding)
+                
                 _ = new LateTask(() =>
                 {
                     Main.PlayerStates[dp.PlayerId].deathReason = PlayerState.DeathReason.Trialed;
@@ -193,7 +194,7 @@ internal class Judge : RoleBase
                     GuessManager.RpcGuesserMurderPlayer(dp);
 
                     //死者检查
-                    AfterPlayerDeathTasks(dp, true);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
                     NotifyRoles(isForMeeting: false, NoCache: true);
 
@@ -282,10 +283,11 @@ internal class Judge : RoleBase
         if (AmongUsClient.Instance.AmHost) TrialMsg(PlayerControl.LocalPlayer, $"/tl {playerId}", true);
         else SendRPC(playerId);
     }
+
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
-            => seer.IsAlive() && target.IsAlive() && IsForMeeting ? ColorString(GetRoleColor(CustomRoles.Judge), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl target)
-    => !GetPlayerById(pva.TargetPlayerId).Data.IsDead && !target.Data.IsDead ? ColorString(GetRoleColor(CustomRoles.Judge), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
+        => IsForMeeting && seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Judge), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
+        => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Judge), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     class StartMeetingPatch

@@ -5,6 +5,7 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.AddOns.Common;
 using static TOHE.Translator;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Impostor;
 
@@ -66,7 +67,6 @@ internal class Vampire : RoleBase
     {
         if (target.Is(CustomRoles.Bait)) return true;
         if (Guardian.CannotBeKilled(target)) return true;
-        if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted() && Options.OppoImmuneToAttacksWhenTasksDone.GetBool()) return false;
 
         if (killer.Is(CustomRoles.Vampire))
         {
@@ -156,4 +156,5 @@ internal class Vampire : RoleBase
     {
         hud.KillButton?.OverrideText(GetString("VampireBiteButtonText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Bite");
 }

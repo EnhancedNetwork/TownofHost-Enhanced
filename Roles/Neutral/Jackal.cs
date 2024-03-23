@@ -17,7 +17,7 @@ internal class Jackal : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16700;
-    public static HashSet<byte> playerIdList = [];
+    public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -42,7 +42,7 @@ internal class Jackal : RoleBase
     private static OptionItem SidekickCanKillJackal;
     private static OptionItem SidekickCanKillSidekick;
     
-    public static Dictionary<byte, int> RecruitLimit = [];
+    public static readonly Dictionary<byte, int> RecruitLimit = [];
 
     private enum SidekickAssignModeSelect
     {
@@ -87,8 +87,8 @@ internal class Jackal : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        RecruitLimit = [];
+        playerIdList.Clear();
+        RecruitLimit.Clear();
         ResetKillCooldownWhenSbGetKilled = OptionResetKillCooldownWhenSbGetKilled;
     }
     public override void Add(byte playerId)
@@ -148,8 +148,10 @@ internal class Jackal : RoleBase
             hud.KillButton?.OverrideText($"{GetString("KillButtonText")}");
     }
 
-    private void OthersPlayersDead(PlayerControl killer, PlayerControl target)
+    private void OthersPlayersDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        if (inMeeting) return;
+
         if (ResetKillCooldownWhenSbGetKilled.GetBool() && !killer.Is(CustomRoles.Sidekick) && !killer.Is(CustomRoles.Jackal) && !target.Is(CustomRoles.Sidekick) && !target.Is(CustomRoles.Jackal) && !GameStates.IsMeeting)
         {
             Main.AllAlivePlayerControls
@@ -164,7 +166,7 @@ internal class Jackal : RoleBase
 
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
         if (!CanRecruitSidekick.GetBool() || RecruitLimit[killer.PlayerId] < 1) return false;

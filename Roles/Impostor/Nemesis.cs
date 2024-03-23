@@ -3,11 +3,13 @@ using HarmonyLib;
 using Hazel;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using TOHE.Modules;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Impostor;
 
@@ -22,6 +24,8 @@ internal class Nemesis : RoleBase
     public static OptionItem LegacyNemesis;
     private static OptionItem NemesisShapeshiftCD;
     private static OptionItem NemesisShapeshiftDur;
+
+    private static readonly Dictionary<byte, int> NemesisRevenged = [];
 
     public static void SetupCustomOptions()
     {
@@ -40,6 +44,7 @@ internal class Nemesis : RoleBase
     }
     public override void Init()
     {
+        NemesisRevenged.Clear();
         On = false;
     }
     public override void Add(byte playerId)
@@ -51,6 +56,12 @@ internal class Nemesis : RoleBase
     {
         AURoleOptions.ShapeshifterCooldown = NemesisShapeshiftCD.GetFloat();
         AURoleOptions.ShapeshifterDuration = NemesisShapeshiftDur.GetFloat();
+    }
+
+    public override void OnMeetingHudStart(PlayerControl player)
+    {
+        if (!player.IsAlive())
+            AddMsg(GetString("NemesisDeadMsg"), player.PlayerId);
     }
 
     public static bool NemesisMsgCheck(PlayerControl pc, string msg, bool isUI = false)
@@ -82,9 +93,9 @@ internal class Nemesis : RoleBase
             return true;
         }
 
-        if (Main.NemesisRevenged.ContainsKey(pc.PlayerId))
+        if (NemesisRevenged.ContainsKey(pc.PlayerId))
         {
-            if (Main.NemesisRevenged[pc.PlayerId] >= NemesisCanKillNum.GetInt())
+            if (NemesisRevenged[pc.PlayerId] >= NemesisCanKillNum.GetInt())
             {
                 if (!isUI) Utils.SendMessage(GetString("NemesisKillMax"), pc.PlayerId);
                 else pc.ShowPopUp(GetString("NemesisKillMax"));
@@ -94,7 +105,7 @@ internal class Nemesis : RoleBase
 
         else
         {
-            Main.NemesisRevenged.Add(pc.PlayerId, 0);
+            NemesisRevenged.Add(pc.PlayerId, 0);
         }
 
         int targetId;
@@ -140,7 +151,7 @@ internal class Nemesis : RoleBase
 
         string Name = target.GetRealName();
 
-        Main.NemesisRevenged[pc.PlayerId]++;
+        NemesisRevenged[pc.PlayerId]++;
 
         CustomSoundsManager.RPCPlayCustomSoundAll("AWP");
 
@@ -150,7 +161,7 @@ internal class Nemesis : RoleBase
             if (GameStates.IsMeeting)
             {
                 GuessManager.RpcGuesserMurderPlayer(target);
-                Utils.AfterPlayerDeathTasks(target, true);
+                MurderPlayerPatch.AfterPlayerDeathTasks(pc, target, true);
             }
             else
             {
@@ -200,6 +211,16 @@ internal class Nemesis : RoleBase
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
         if (AmongUsClient.Instance.AmHost) NemesisMsgCheck(PlayerControl.LocalPlayer, $"/rv {playerId}", true);
         else SendRPC(playerId);
+    }
+
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        seen ??= seer;
+
+        if (!seer.IsAlive() && seen.IsAlive())
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), " " + seen.PlayerId.ToString()) + " ";
+
+        return string.Empty;
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]

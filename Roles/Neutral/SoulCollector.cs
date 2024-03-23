@@ -1,49 +1,54 @@
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
-public static class SoulCollector
+internal class SoulCollector : RoleBase
 {
-    private static readonly int Id = 15300;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 15300;
+    public static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
-    public static Dictionary<byte, byte> SoulCollectorTarget = [];
-    public static Dictionary<byte, int> SoulCollectorPoints = [];
-    public static Dictionary<byte, bool> DidVote = [];
+    private static OptionItem SoulCollectorPointsOpt;
+    private static OptionItem CollectOwnSoulOpt;
 
-    public static OptionItem SoulCollectorPointsOpt;
-    public static OptionItem CollectOwnSoulOpt;
+    private static readonly Dictionary<byte, byte> SoulCollectorTarget = [];
+    private static readonly Dictionary<byte, int> SoulCollectorPoints = [];
+    private static readonly Dictionary<byte, bool> DidVote = [];
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.SoulCollector);
-        SoulCollectorPointsOpt = IntegerOptionItem.Create(Id + 10, "SoulCollectorPointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SoulCollector])
+        SoulCollectorPointsOpt = IntegerOptionItem.Create(Id + 10, "SoulCollectorPointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector])
             .SetValueFormat(OptionFormat.Times);
-        CollectOwnSoulOpt = BooleanOptionItem.Create(Id + 11, "CollectOwnSoulOpt", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SoulCollector]);
+        CollectOwnSoulOpt = BooleanOptionItem.Create(Id + 11, "CollectOwnSoulOpt", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        SoulCollectorTarget = [];
-        SoulCollectorPoints = [];
-        DidVote = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        SoulCollectorTarget.Clear();
+        SoulCollectorPoints.Clear();
+        DidVote.Clear();
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         SoulCollectorTarget.Add(playerId, byte.MaxValue);
         SoulCollectorPoints.Add(playerId, 0);
         DidVote[playerId] = false;
-        IsEnable = true;
+
+        CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
 
-    public static string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), SoulCollectorPoints.TryGetValue(playerId, out var x) ? $"({x}/{SoulCollectorPointsOpt.GetInt()})" : "Invalid");
+    public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), SoulCollectorPoints.TryGetValue(playerId, out var x) ? $"({x}/{SoulCollectorPointsOpt.GetInt()})" : "Invalid");
 
     private static void SendRPC(byte playerId)
     {
@@ -70,9 +75,8 @@ public static class SoulCollector
             SoulCollectorTarget.Add(SoulCollectorId, byte.MaxValue);
     }
 
-    public static void OnVote(PlayerControl voter, PlayerControl target)
+    public override void OnVote(PlayerControl voter, PlayerControl target)
     {
-        if (!voter.Is(CustomRoles.SoulCollector)) return;
         if (DidVote[voter.PlayerId]) return;
         if (SoulCollectorTarget[voter.PlayerId] != byte.MaxValue) return;
         DidVote[voter.PlayerId] = true;
@@ -92,7 +96,7 @@ public static class SoulCollector
         SendRPC(voter.PlayerId);
     }
 
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl ryuak, PlayerControl iscute)
     {
         foreach (var playerId in SoulCollectorTarget.Keys) 
         { 
@@ -100,8 +104,7 @@ public static class SoulCollector
             DidVote[playerId] = false;
         }
     }
-
-    public static void OnPlayerDead(PlayerControl deadPlayer)
+    private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
         foreach (var playerId in SoulCollectorTarget.Keys.ToArray())
         {

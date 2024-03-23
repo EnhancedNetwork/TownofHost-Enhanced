@@ -12,7 +12,7 @@ internal class Bandit : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16000;
-    private static List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -27,9 +27,9 @@ internal class Bandit : RoleBase
     private static OptionItem CanUsesSabotage;
     private static OptionItem CanVent;
 
-    private static Dictionary<byte, float> killCooldown = [];
-    private static Dictionary<byte, int> TotalSteals = [];
-    private static Dictionary<byte, Dictionary<byte, CustomRoles>> Targets = [];
+    private static readonly Dictionary<byte, float> killCooldown = [];
+    private static readonly Dictionary<byte, int> TotalSteals = [];
+    private static readonly Dictionary<byte, Dictionary<byte, CustomRoles>> Targets = [];
 
     private enum BanditStealModeOpt
     {
@@ -54,10 +54,10 @@ internal class Bandit : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        Targets = [];
-        TotalSteals = [];
-        killCooldown = [];
+        playerIdList.Clear();
+        Targets.Clear();
+        TotalSteals.Clear();
+        killCooldown.Clear();
     }
 
     public override void Add(byte playerId)

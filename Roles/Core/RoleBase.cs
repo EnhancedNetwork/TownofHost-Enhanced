@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using InnerNet;
 using System.Collections.Generic;
+using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 
 namespace TOHE;
@@ -83,6 +84,15 @@ public abstract class RoleBase
     public virtual void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     { }
     /// <summary>
+    /// Other player complete A Marked task
+    /// </summary>
+    public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
+    { }
+    // <summary>
+    /// The role's tasks are needed for a task win
+    /// </summary>
+    public virtual bool HasTasks(byte player, CustomRoles role) => role.IsCrewmate() && !role.IsTasklessCrewmate();
+    /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
     public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
@@ -145,18 +155,14 @@ public abstract class RoleBase
     /// <summary>
     /// When the killer murder his target
     /// </summary>
-    public virtual void OnMurder(PlayerControl killer, PlayerControl target)
+    public virtual void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     { }
     /// <summary>
     /// When the target role died by killer
     /// </summary>
-    public virtual void OnTargetDead(PlayerControl killer, PlayerControl target)
+    public virtual void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     { }
-    /// <summary>
-    /// Always do these tasks once the role dies
-    /// </summary>
-    public virtual void AfterPlayerDeathTask(PlayerControl target)
-    { }
+
     /// <summary>
     /// When the target role died and need run kill flash
     /// </summary>
@@ -220,7 +226,7 @@ public abstract class RoleBase
     /// <summary>
     /// Notify the playername for modded clients OnMeeting
     /// </summary>
-    public virtual string PVANameText(PlayerVoteArea pva, PlayerControl target) => string.Empty;
+    public virtual string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target) => string.Empty;
 
     /// <summary>
     /// Notify a specific role about something after the meeting was ended.

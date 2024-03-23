@@ -9,6 +9,8 @@ using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles._Ghosts_.Impostor;
+using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -107,7 +109,7 @@ enum CustomRPC
     SetInvestgatorLimit,
     SyncInvestigator, // Unused
     SetRevealedPlayer,
-    SetCurrentRevealTarget,
+    //SetCurrentRevealTarget, // Overseer
     SetCoronerArrow,
     SetCoronerkKillerArrow,
     SetVultureArrow,
@@ -344,9 +346,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetKillOrHex:
                 HexMaster.ReceiveRPC(reader, false);
                 break;
-            //case CustomRPC.SetKillOrCurse:
-            //    Occultist.ReceiveRPC(reader, false);
-            //    break;
 
             case CustomRPC.SetCaptainTargetSpeed:
                 Captain.ReceiveRPCSetSpeed(reader);
@@ -364,16 +363,10 @@ internal class RPCHandlerPatch
                 Captain.ReceiveRPCVoteRemove(reader);
                 break;
             case CustomRPC.SetDrawPlayer:
-                byte RevolutionistId = reader.ReadByte();
-                byte DrawId = reader.ReadByte();
-                bool drawed = reader.ReadBoolean();
-                Main.isDraw[(RevolutionistId, DrawId)] = drawed;
+                Revolutionist.ReceiveDrawPlayerRPC(reader);
                 break;
             case CustomRPC.SetRevealedPlayer:
-                byte OverseerId = reader.ReadByte();
-                byte RevealId = reader.ReadByte();
-                bool revealed = reader.ReadBoolean();
-                Main.isRevealed[(OverseerId, RevealId)] = revealed;
+                Overseer.ReceiveSetRevealedPlayerRPC(reader);
                 break;
             case CustomRPC.SetNameColorData:
                 NameColorManager.ReceiveRPC(reader);
@@ -384,9 +377,6 @@ internal class RPCHandlerPatch
             case CustomRPC.DoHex:
                 HexMaster.ReceiveRPC(reader, true);
                 break;
-            //case CustomRPC.DoCurse:
-            //    Occultist.ReceiveRPC(reader, true);
-            //    break;
             case CustomRPC.SniperSync:
                 Sniper.ReceiveRPC(reader);
                 break;
@@ -418,10 +408,7 @@ internal class RPCHandlerPatch
                 Arsonist.ReceiveSetDousedPlayerRPC(reader);
                 break;
             case CustomRPC.SetCurrentDrawTarget:
-                byte arsonistId1 = reader.ReadByte();
-                byte doTargetId = reader.ReadByte();
-                if (PlayerControl.LocalPlayer.PlayerId == arsonistId1)
-                    Main.currentDrawTarget = doTargetId;
+                Revolutionist.ReceiveSetCurrentDrawTarget(reader);
                 break;
             case CustomRPC.SetEvilTrackerTarget:
                 EvilTracker.ReceiveRPC(reader);
@@ -491,7 +478,7 @@ internal class RPCHandlerPatch
                 FFAManager.ReceiveRPCSyncFFAPlayer(reader);
                 break;
             case CustomRPC.SyncAllPlayerNames:
-                Main.AllPlayerNames = [];
+                Main.AllPlayerNames.Clear();
                 int num = reader.ReadPackedInt32();
                 for (int i = 0; i < num; i++)
                     Main.AllPlayerNames.TryAdd(reader.ReadByte(), reader.ReadString());
@@ -827,15 +814,6 @@ internal static class RPC
 
         switch (role)
         {
-            case CustomRoles.Lawyer:
-                Lawyer.Add(targetId);
-                break;
-            case CustomRoles.SoulCollector:
-                SoulCollector.Add(targetId);
-                break;
-            case CustomRoles.SchrodingersCat:
-                SchrodingersCat.Add(targetId);
-                break;
             case CustomRoles.LastImpostor:
                 LastImpostor.Add(targetId);
                 break;
@@ -845,15 +823,6 @@ internal static class RPC
             case CustomRoles.Workhorse:
                 Workhorse.Add(targetId);
                 break;
-            case CustomRoles.Pursuer:
-                Pursuer.Add(targetId);
-                break;
-            case CustomRoles.Collector:
-                Collector.Add(targetId);
-                break;
-            case CustomRoles.Taskinator:
-                Taskinator.Add(targetId);
-                break;
             case CustomRoles.Hawk:
                 Hawk.Add(targetId);
                 break;
@@ -862,36 +831,6 @@ internal static class RPC
                 break;
             case CustomRoles.Warden:
                 Warden.Add(targetId);
-                break;
-            case CustomRoles.Totocalcio:
-                Totocalcio.Add(targetId);
-                break;
-            case CustomRoles.Romantic:
-                Romantic.Add(targetId);
-                break;
-            case CustomRoles.VengefulRomantic:
-                VengefulRomantic.Add(targetId);
-                break;
-            case CustomRoles.RuthlessRomantic:
-                RuthlessRomantic.Add(targetId);
-                break;
-            case CustomRoles.Succubus:
-                Succubus.Add(targetId);
-                break;
-            case CustomRoles.Amnesiac:
-                Amnesiac.Add(targetId);
-                break;
-            case CustomRoles.Imitator:
-                Imitator.Add(targetId);
-                break;
-            case CustomRoles.Vulture:
-                Vulture.Add(targetId); 
-                break;
-            case CustomRoles.Maverick:
-                Maverick.Add(targetId);
-                break;
-            case CustomRoles.Pirate:
-                Pirate.Add(targetId);
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.Add(targetId);
@@ -1112,14 +1051,14 @@ internal static class RPC
             case CustomRoles.Spiritcaller:
                 Spiritcaller.ReceiveRPC(reader);
                 break;
-            case CustomRoles.Succubus:
-                Succubus.ReceiveRPC(reader);
+            case CustomRoles.Cultist:
+                Cultist.ReceiveRPC(reader);
                 break;
             case CustomRoles.Taskinator:
                 Taskinator.ReceiveRPC(reader);
                 break;
-            case CustomRoles.Totocalcio:
-                Totocalcio.ReceiveRPC(reader);
+            case CustomRoles.Follower:
+                Follower.ReceiveRPC(reader);
                 break;
             case CustomRoles.Virus:
                 Virus.ReceiveRPC(reader);
@@ -1185,36 +1124,6 @@ internal static class RPC
         else rpcName = callId.ToString();
         return rpcName;
     }
-    public static void SetCurrentDrawTarget(byte arsonistId, byte targetId)
-    {
-        if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
-        {
-            Main.currentDrawTarget = targetId;
-        }
-        else
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDrawTarget, SendOption.Reliable, -1);
-            writer.Write(arsonistId);
-            writer.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-    }
-    public static void SetCurrentRevealTarget(byte arsonistId, byte targetId)
-    {
-        if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
-        {
-            Main.currentDrawTarget = targetId;
-        }
-        else
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentRevealTarget, SendOption.Reliable, -1);
-            writer.Write(arsonistId);
-            writer.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-    }
-    public static void ResetCurrentDrawTarget(byte arsonistId) => SetCurrentDrawTarget(arsonistId, 255);
-    public static void ResetCurrentRevealTarget(byte arsonistId) => SetCurrentRevealTarget(arsonistId, 255);
     public static void SetRealKiller(byte targetId, byte killerId)
     {
         var state = Main.PlayerStates[targetId];

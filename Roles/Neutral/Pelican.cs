@@ -14,7 +14,7 @@ internal class Pelican : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17300;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -24,7 +24,7 @@ internal class Pelican : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem CanVent;
 
-    private static Dictionary<byte, List<byte>> eatenList = [];
+    private static readonly Dictionary<byte, List<byte>> eatenList = [];
     private static readonly Dictionary<byte, float> originalSpeed = [];
 
     private static int Count = 0;
@@ -39,8 +39,8 @@ internal class Pelican : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        eatenList = [];
+        playerIdList.Clear();
+        eatenList.Clear();
         originalSpeed.Clear();
 
         Count = 0;
@@ -180,7 +180,7 @@ internal class Pelican : RoleBase
                 target.SetRealKiller(killer);
                 Main.PlayerStates[tar].deathReason = PlayerState.DeathReason.Eaten;
                 Main.PlayerStates[tar].SetDead();
-                Utils.AfterPlayerDeathTasks(target, true);
+                MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
                 Logger.Info($"{killer.GetRealName()} 消化了 {target.GetRealName()}", "Pelican");
             }
         }
@@ -205,8 +205,10 @@ internal class Pelican : RoleBase
         return false;
     }
 
-    public override void OnTargetDead(PlayerControl SLAT, PlayerControl victim)
+    public override void OnMurderPlayerAsTarget(PlayerControl SLAT, PlayerControl victim, bool inMeeting, bool isSuicide)
     {
+        if (inMeeting) return;
+
         var pc = victim.PlayerId;
         if (!eatenList.ContainsKey(pc)) return;
 

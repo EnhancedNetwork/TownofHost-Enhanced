@@ -9,6 +9,8 @@ using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles._Ghosts_.Impostor;
+using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
@@ -49,50 +51,37 @@ internal class ChangeRoleSettings
 
             Main.PlayerStates = [];
 
-            Main.AllPlayerKillCooldown = [];
-            Main.AllPlayerSpeed = [];
-            Main.AllPlayerCustomRoles = [];
-            Main.isDraw = [];
-            Main.isRevealed = [];
-            Main.RevolutionistTimer = [];
-            Main.RevolutionistStart = [];
-            Main.RevolutionistLastTime = [];
-            Main.RevolutionistCountdown = [];
-            Main.NemesisRevenged = [];
-            Main.ForCrusade = [];
-            Main.WorkaholicAlive = [];
-            Main.TasklessCrewmate = [];
-            Main.UnreportableBodies = [];
-            Main.InfectedBodies = [];
-            Main.ErasedRoleStorage = [];
+            Main.AllPlayerKillCooldown.Clear();
+            Main.AllPlayerSpeed.Clear();
+            Main.AllPlayerCustomRoles.Clear();
+            Main.TasklessCrewmate.Clear();
+            Main.UnreportableBodies.Clear();
 
-            Main.LastEnteredVent = [];
-            Main.LastEnteredVentLocation = [];
+            Main.LastEnteredVent.Clear();
+            Main.LastEnteredVentLocation.Clear();
 
-            Main.AfterMeetingDeathPlayers = [];
-            Main.ResetCamPlayerList = [];
-            Main.clientIdList = [];
+            Main.AfterMeetingDeathPlayers.Clear();
+            Main.ResetCamPlayerList.Clear();
+            Main.clientIdList.Clear();
 
-            Main.CheckShapeshift = [];
-            Main.ShapeshiftTarget = [];
-            Main.SpeedBoostTarget = [];
-            Main.ParaUsedButtonCount = [];
-            Main.MarioVentCount = [];
-            Main.AllKillers = [];
-            Main.OverDeadPlayerList = [];
-            Main.Provoked = [];
+            Main.CheckShapeshift.Clear();
+            Main.ShapeshiftTarget.Clear();
+            Main.AllKillers.Clear();
+            Main.OverDeadPlayerList.Clear();
+
+            Main.LastNotifyNames.Clear();
+            Main.PlayerColors.Clear();
+
             Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
-            Main.ShamanTarget = byte.MaxValue;
-            Main.ShamanTargetChoosen = false;
             Main.MeetingIsStarted = false;
+            Main.introDestroyed = false;
+
             ChatManager.ResetHistory();
-
             ReportDeadBodyPatch.CanReport = [];
-
             Options.UsedButtonCount = 0;
 
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
@@ -107,13 +96,6 @@ internal class ChangeRoleSettings
                 Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
                 Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
             }
-
-            Main.introDestroyed = false;
-
-            Main.LastNotifyNames = [];
-
-            Main.currentDrawTarget = byte.MaxValue;
-            Main.PlayerColors = [];
 
             // Clear last exiled
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = null;
@@ -179,46 +161,28 @@ internal class ChangeRoleSettings
                 role.CreateRoleClass()?.Init();
             }
 
-            Lawyer.Init();
-            Solsticer.Init();
             LastImpostor.Init();
             TargetArrow.Init();
             LocateArrow.Init();
             DoubleTrigger.Init();
             Workhorse.Init();
-            Pursuer.Init();
             Diseased.Init();
-            Collector.Init();
             Clumsy.Init();
-            Taskinator.Init();
             Aware.Init();
             Sleuth.Init();
             Bait.Init();
             Hawk.Init();
             Bloodmoon.Init();
-            SoulCollector.Init();
-            SchrodingersCat.Init();
-            Totocalcio.Init();
-            Romantic.Init();
-            VengefulRomantic.Init();
-            RuthlessRomantic.Init();
-            Succubus.Init();
             Antidote.Init();
-            Imitator.Init();
-            Amnesiac.Init();
             Fool.Init();
             Burst.Init();
-            Maverick.Init();
             DoubleShot.Init();
             Warden.Init();
-            Vulture.Init();
             Lucky.Init();
-            Pirate.Init();
             Bewilder.Init();
             ChiefOfPolice.Init();
             Cyber.Init();
             Oiiai.Init();
-            Hater.Init();
             Tired.Init();
             Statue.Init();
             Ghoul.Init();
@@ -444,76 +408,6 @@ internal class SelectRolesPatch
 
                 pc.GetRoleClass()?.Add(pc.PlayerId);
 
-                switch (pc.GetCustomRole())
-                {
-                    case CustomRoles.Revolutionist:
-                        foreach (var ar in Main.AllPlayerControls)
-                            Main.isDraw.Add((pc.PlayerId, ar.PlayerId), false);
-                        break;
-                    case CustomRoles.Lawyer:
-                        Lawyer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Paranoia:
-                        Main.ParaUsedButtonCount[pc.PlayerId] = 0;
-                        break;
-                    case CustomRoles.Solsticer:
-                        Solsticer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Mario:
-                        Main.MarioVentCount[pc.PlayerId] = 0;
-                        break;
-                    case CustomRoles.Pursuer:
-                        Pursuer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Collector:
-                        Collector.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Taskinator:
-                        Taskinator.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.SoulCollector:
-                        SoulCollector.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.SchrodingersCat:
-                        SchrodingersCat.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Totocalcio:
-                        Totocalcio.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Romantic:
-                        Romantic.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.VengefulRomantic:
-                        VengefulRomantic.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.RuthlessRomantic:
-                        RuthlessRomantic.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Succubus:
-                        Succubus.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Amnesiac:
-                        Amnesiac.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Imitator:
-                        Imitator.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Maverick:
-                        Maverick.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Vulture:
-                        Vulture.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Pirate:
-                        Pirate.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.ChiefOfPolice:
-                        ChiefOfPolice.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Hater:
-                        Hater.Add(pc.PlayerId);
-                        break;
-                }
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())
                 {
                     switch (subRole)

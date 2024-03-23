@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Translator;
@@ -9,20 +10,22 @@ namespace TOHE.Roles.Impostor;
 
 internal class Eraser : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 24200;
-    private static List<byte> playerIdList = [];
-
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem EraseLimitOpt;
     public static OptionItem HideVoteOpt;
 
-    private static List<byte> didVote = [];
-    private static Dictionary<byte, int> EraseLimit = [];
-    private static List<byte> PlayerToErase = [];
-    private static Dictionary<byte, int> TempEraseLimit = [];
+    private static readonly HashSet<byte> didVote = [];
+    private static readonly HashSet<byte> PlayerToErase = [];
+    private static readonly Dictionary<byte, int> EraseLimit = [];
+    private static readonly Dictionary<byte, int> TempEraseLimit = [];
+    public static readonly Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
 
     public static void SetupCustomOption()
     {
@@ -33,18 +36,17 @@ internal class Eraser : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        EraseLimit = [];
-        PlayerToErase = [];
-        didVote = [];
-        TempEraseLimit = [];
-        On = false;
+        playerIdList.Clear();
+        EraseLimit.Clear();
+        PlayerToErase.Clear();
+        didVote.Clear();
+        TempEraseLimit.Clear();
+        ErasedRoleStorage.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         EraseLimit.Add(playerId, EraseLimitOpt.GetInt());
-        On = true;
     }
     private static void SendRPC(byte playerId)
     {
@@ -73,7 +75,7 @@ internal class Eraser : RoleBase
 
     public override void OnVote(PlayerControl player, PlayerControl target)
     {
-        if (!On) return;
+        if (!HasEnabled) return;
         if (player == null || target == null) return;
         if (target.Is(CustomRoles.Eraser)) return;
         if (EraseLimit[player.PlayerId] <= 0) return;
@@ -113,8 +115,8 @@ internal class Eraser : RoleBase
             TempEraseLimit[eraserId] = EraseLimit[eraserId];
         }
 
-        PlayerToErase = [];
-        didVote = [];
+        PlayerToErase.Clear();
+        didVote.Clear();
     }
     public override void NotifyAfterMeeting()
     {
@@ -132,9 +134,9 @@ internal class Eraser : RoleBase
         {
             var player = Utils.GetPlayerById(pc);
             if (player == null) continue;
-            if (!Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
+            if (!ErasedRoleStorage.ContainsKey(player.PlayerId))
             {
-                Main.ErasedRoleStorage.Add(player.PlayerId, player.GetCustomRole());
+                ErasedRoleStorage.Add(player.PlayerId, player.GetCustomRole());
                 Logger.Info($"Added {player.GetNameWithRole()} to ErasedRoleStorage", "Eraser");
             }
             else

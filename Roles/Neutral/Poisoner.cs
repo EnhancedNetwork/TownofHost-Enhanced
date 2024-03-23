@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
+using static TOHE.CustomRolesHelper;
 using TOHE.Roles.AddOns.Common;
 using static TOHE.Translator;
 
@@ -17,7 +18,7 @@ internal class Poisoner : RoleBase
     }
     //===========================SETUP================================\\
     private const int Id = 17500;
-    public static HashSet<byte> playerIdList = [];
+    public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -45,7 +46,7 @@ internal class Poisoner : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         PoisonedPlayers.Clear();
 
         KillDelay = OptionKillDelay.GetFloat();
@@ -60,7 +61,6 @@ internal class Poisoner : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
@@ -68,7 +68,6 @@ internal class Poisoner : RoleBase
     {
         if (target.Is(CustomRoles.Bait)) return true;
         if (Guardian.CannotBeKilled(target)) return true;
-        if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted() && Options.OppoImmuneToAttacksWhenTasksDone.GetBool()) return false;
         if (target.Is(CustomRoles.Glitch)) return true;
         if (target.Is(CustomRoles.Pestilence)) return true;
         if (Medic.ProtectList.Contains(target.PlayerId)) return false;

@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using TMPro;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -91,51 +88,6 @@ class HudManagerPatch
                 __instance.SabotageButton?.OverrideText(GetString("SabotageButtonText"));
 
                 player.GetRoleClass()?.SetAbilityButtonText(__instance, player.PlayerId);
-
-                switch (player.GetCustomRole())
-                {
-                    case CustomRoles.Shaman:
-                        __instance.KillButton.OverrideText(GetString("ShamanButtonText"));
-                        break;
-                    case CustomRoles.Pirate:
-                        __instance.KillButton.OverrideText(GetString("PirateDuelButtonText"));
-                        break;
-                    case CustomRoles.Revolutionist:
-                        __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
-                        __instance.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");
-                        break;
-                    case CustomRoles.Pursuer:
-                        __instance.KillButton.OverrideText(GetString("PursuerButtonText"));
-                        break;
-                    case CustomRoles.Hater:
-                        __instance.KillButton.OverrideText(GetString("HaterButtonText"));
-                        break;
-                    case CustomRoles.Provocateur:
-                        __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
-                        break;
-                    case CustomRoles.Vulture:
-                        __instance.ReportButton.OverrideText(GetString("VultureEatButtonText"));
-                        break;
-                    case CustomRoles.Mario:
-                        __instance.AbilityButton.buttonLabelText.text = GetString("VectorVentButtonText");
-                        __instance.AbilityButton.SetUsesRemaining(Options.MarioVentNumWin.GetInt() - (Main.MarioVentCount.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var mx) ? mx : 0));
-                        break;
-                    case CustomRoles.Paranoia:
-                        __instance.AbilityButton.buttonLabelText.text = GetString("ParanoiaVentButtonText");
-                        break;
-                    case CustomRoles.Totocalcio:
-                        __instance.KillButton.OverrideText(GetString("TotocalcioKillButtonText"));
-                        break;
-                    case CustomRoles.Succubus:
-                        __instance.KillButton.OverrideText(GetString("SuccubusKillButtonText"));
-                        break;
-                    case CustomRoles.Amnesiac:
-                        __instance.ReportButton.OverrideText(GetString("RememberButtonText"));
-                        break;
-                    case CustomRoles.Imitator:
-                        __instance.KillButton.OverrideText(GetString("ImitatorKillButtonText"));
-                        break;
-                }
 
                 // Set lower info text for modded players
                 if (LowerInfoText == null)
@@ -270,19 +222,6 @@ class SetHudActivePatch
 
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
-
-
-        // Remove this after Revolutionist and Provocateur will be done
-        switch (player.GetCustomRole())
-        {
-            case CustomRoles.Revolutionist:
-            case CustomRoles.Provocateur:
-                __instance.SabotageButton.ToggleVisible(false);
-                __instance.AbilityButton.ToggleVisible(false);
-                __instance.ReportButton.ToggleVisible(false);
-                break;
-            
-        }
 
         if (player.Is(CustomRoles.Oblivious))
             __instance.ReportButton.ToggleVisible(false);

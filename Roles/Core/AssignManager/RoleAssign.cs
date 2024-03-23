@@ -626,7 +626,7 @@ public class RoleAssign
         if (Jester.CheckSpawnSunnyboy() && FinalRolesList.Remove(CustomRoles.Jester)) FinalRolesList.Add(CustomRoles.Sunnyboy);
         if (Bard.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Arrogance)) FinalRolesList.Add(CustomRoles.Bard);
 
-        if (Romantic.IsEnable)
+        if (Romantic.HasEnabled)
         {
             if (FinalRolesList.Contains(CustomRoles.Romantic) && FinalRolesList.Contains(CustomRoles.Lovers))
                 FinalRolesList.Remove(CustomRoles.Lovers);

@@ -1,46 +1,55 @@
 using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Lawyer
+internal class Lawyer : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 13100;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
-    public static byte WinnerID;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem CanTargetImpostor;
     private static OptionItem CanTargetNeutralKiller;
     private static OptionItem CanTargetCrewmate;
     private static OptionItem CanTargetJester;
-    public static OptionItem ShouldChangeRoleAfterTargetDeath;
-    public static OptionItem ChangeRolesAfterTargetKilled;
-    public static OptionItem LawyerVision;
-    public static OptionItem KnowTargetRole;
-    public static OptionItem TargetKnowsLawyer;
+    private static OptionItem ShouldChangeRoleAfterTargetDeath;
+    private static OptionItem ChangeRolesAfterTargetKilled;
+    private static OptionItem KnowTargetRole;
+    private static OptionItem TargetKnowsLawyer;
 
-
-    public static Dictionary<byte, byte> Target = [];
-    public static readonly string[] ChangeRoles =
-    [
-        "Role.Crewmate",
-        "Role.Jester",
-        "Role.Opportunist",
-        "Role.Convict",
-        "Role.Celebrity",
-        "Role.Bodyguard",
-        "Role.Dictator",
-        "Role.Mayor",
-        "Role.Doctor",
-    ];
+    public static readonly Dictionary<byte, byte> Target = [];
+    private enum ChangeRolesSelect
+    {
+        Role_Crewmate,
+        Role_Jester,
+        Role_Opportunist,
+        Role_Convict,
+        Role_Celebrity,
+        Role_Bodyguard,
+        Role_Dictator,
+        Role_Mayor,
+        Role_Doctor
+    }
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
-        CustomRoles.CrewmateTOHE, CustomRoles.Jester, CustomRoles.Opportunist, CustomRoles.Convict, CustomRoles.Celebrity, CustomRoles.Bodyguard, CustomRoles.Dictator, CustomRoles.Mayor, CustomRoles.Doctor,
+        CustomRoles.CrewmateTOHE,
+        CustomRoles.Jester,
+        CustomRoles.Opportunist,
+        CustomRoles.Convict,
+        CustomRoles.Celebrity,
+        CustomRoles.Bodyguard,
+        CustomRoles.Dictator,
+        CustomRoles.Mayor,
+        CustomRoles.Doctor,
     ];
 
     public static void SetupCustomOption()
@@ -53,21 +62,22 @@ public static class Lawyer
         KnowTargetRole = BooleanOptionItem.Create(Id + 14, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         TargetKnowsLawyer = BooleanOptionItem.Create(Id + 15, "TargetKnowsLawyer", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         ShouldChangeRoleAfterTargetDeath = BooleanOptionItem.Create(Id + 17, "LaywerShouldChangeRoleAfterTargetKilled", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
-        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 16, "LawyerChangeRolesAfterTargetKilled", ChangeRoles, 1, TabGroup.NeutralRoles, false).SetParent(ShouldChangeRoleAfterTargetDeath);
+        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 16, "LawyerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelect>(), 1, TabGroup.NeutralRoles, false).SetParent(ShouldChangeRoleAfterTargetDeath);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        Target = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        Target.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        CustomRoleManager.MarkOthers.Add(LawyerMark);
 
         if (AmongUsClient.Instance.AmHost)
         {
+            CustomRoleManager.CheckDeadBodyOthers.Add(OthersAfterPlayerDeathTask);
+
             List<PlayerControl> targetList = [];
             var rand = IRandom.Instance;
             foreach (var target in Main.AllPlayerControls)
@@ -132,8 +142,10 @@ public static class Lawyer
         else
             Target.Remove(reader.ReadByte());
     }
-    public static void ChangeRoleByTarget(PlayerControl target)
+    private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        if (!Target.ContainsValue(target.PlayerId)) return;
+
         byte Lawyer = 0x73;
         if (!ShouldChangeRoleAfterTargetDeath.GetBool())
         {
@@ -158,12 +170,13 @@ public static class Lawyer
             Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(Lawyer));
         }
     }
-    public static bool KnowRole(PlayerControl player, PlayerControl target)
+    public static bool TargetKnowLawyer => TargetKnowsLawyer.GetBool();
+    public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;
         return player.Is(CustomRoles.Lawyer) && Target.TryGetValue(player.PlayerId, out var tar) && tar == target.PlayerId;
     }
-    public static string LawyerMark(PlayerControl seer, PlayerControl target)
+    private static string LawyerMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {
         if (!seer.Is(CustomRoles.Lawyer))
         {
@@ -174,7 +187,7 @@ public static class Lawyer
         var GetValue = Target.TryGetValue(seer.PlayerId, out var targetId);
         return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : "";
     }
-    public static void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
         Target.Do(x =>
         {
@@ -189,7 +202,7 @@ public static class Lawyer
             }
         });
     }
-    public static void ChangeRole(PlayerControl lawyer)
+    private static void ChangeRole(PlayerControl lawyer)
     {
         // Called only in after meeting tasks when target death is impossible to check.
         if (!ShouldChangeRoleAfterTargetDeath.GetBool())
@@ -200,20 +213,21 @@ public static class Lawyer
         lawyer.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         Target.Remove(lawyer.PlayerId);
         SendRPC(lawyer.PlayerId, SetTarget: false);
-        var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), Translator.GetString(""));
+        var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), GetString(""));
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         lawyer.Notify(text);
     }
-    public static string TargetMark(PlayerControl seer, PlayerControl target)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (!seer.Is(CustomRoles.Lawyer) || seer.Data.IsDead) return ""; //エクスキューショナー以外処理しない
-
-        var GetValue = Target.TryGetValue(seer.PlayerId, out var targetId);
-        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : "";
+        if (Target.ContainsKey(target.PlayerId))
+        {
+            Target.Remove(target.PlayerId);
+            SendRPC(target.PlayerId, SetTarget: false);
+        }
     }
-    public static bool CheckExileTarget(GameData.PlayerInfo exiled, bool DecidedWinner, bool Check = false)
+    /*public static bool CheckExileTarget(GameData.PlayerInfo exiled, bool DecidedWinner, bool Check = false)
     {
-        if (!IsEnable) return false;
+        if (!HasEnabled) return false;
 
         foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId).ToArray())
         {
@@ -222,5 +236,5 @@ public static class Lawyer
             return true;
         }
         return false;
-    }
+    }*/
 }

@@ -9,7 +9,7 @@ internal class Pyromaniac : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17800;
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -21,7 +21,7 @@ internal class Pyromaniac : RoleBase
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
 
-    private static List<byte> DousedList = [];
+    private static readonly HashSet<byte> DousedList = [];
 
     public static void SetupCustomOption()
     {
@@ -37,8 +37,8 @@ internal class Pyromaniac : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        DousedList = [];
+        playerIdList.Clear();
+        DousedList.Clear();
     }
     public override void Add(byte playerId)
     {

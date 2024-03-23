@@ -166,7 +166,7 @@ class RpcSetTasksPatch
         if (pc.Is(CustomRoles.Workhorse))
         {
             (hasCommonTasks, NumLongTasks, NumShortTasks) = Workhorse.TaskData;
-        }
+        } 
 
         if (pc.Is(CustomRoles.Solsticer))
         {
