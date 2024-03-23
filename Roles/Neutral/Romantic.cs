@@ -1,7 +1,5 @@
 ﻿using HarmonyLib;
 using Hazel;
-using MS.Internal.Xml.XPath;
-using Sentry.Internal.Extensions;
 using System.Collections.Generic;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -9,7 +7,6 @@ using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
