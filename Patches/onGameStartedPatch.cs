@@ -161,7 +161,7 @@ internal class ChangeRoleSettings
             // Initialize all custom roles
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
             {
-                role.CreateRoleClass()?.Init();
+                role.CreateRoleClass(IsToAccess: true)?.Init();
             }
 
             LastImpostor.Init();

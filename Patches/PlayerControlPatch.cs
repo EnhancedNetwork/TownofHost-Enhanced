@@ -1591,7 +1591,6 @@ class PlayerControlSetRolePatch
         {
             var target = __instance;
             var targetName = __instance.GetNameWithRole().RemoveHtmlTags();
-            Logger.Info($" {targetName} => {roleType}", "PlayerControl.RpcSetRole");
             if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
             if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
             {
@@ -1657,9 +1656,12 @@ class PlayerControlSetRolePatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, bool __runOriginal)
     {
-        if (__runOriginal && !DidSetGhost.ContainsKey(__instance.PlayerId))
+        if (__runOriginal)
         {
-            DidSetGhost.Add(__instance.PlayerId, true);
+            Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");
+            
+            if (!DidSetGhost.ContainsKey(__instance.PlayerId))
+                DidSetGhost.Add(__instance.PlayerId, true);
         }
 
         if (roleType == RoleTypes.GuardianAngel)

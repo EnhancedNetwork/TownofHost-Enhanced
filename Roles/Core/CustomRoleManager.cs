@@ -33,7 +33,7 @@ public static class CustomRoleManager
         
         else return "TOHE.Roles.Neutral.";
     }
-    public static RoleBase CreateRoleClass(this CustomRoles role) // CHATGPT COOKED 🔥🔥🗿☕
+    public static RoleBase CreateRoleClass(this CustomRoles role, bool IsToAccess = false) // CHATGPT COOKED 🔥🔥🗿☕
     { 
         role = role switch // Switch role to FatherRole (Double Classes)
         {
@@ -43,8 +43,7 @@ public static class CustomRoleManager
             CustomRoles.Nuker => CustomRoles.Bomber,
             _ => role
         };
-
-        Logger.Info($"Attempting to Create new {role}()", "CreateRoleClass");
+        if (!IsToAccess) Logger.Info($"Attempting to Create new {role}()", "CreateRoleClass");
 
         string RoleNameSpace = GetNameSpace(role);
         string className = $"{RoleNameSpace}" + role.ToString(); 
@@ -52,11 +51,11 @@ public static class CustomRoleManager
 
         if (classType == null || !typeof(RoleBase).IsAssignableFrom(classType))
         {
-            Logger.Info("An unknown RoleType or RoleClass was given, assigning new VanillaRole()", "CreateRoleClass");
+            if (!IsToAccess) Logger.Info("An unknown RoleType or RoleClass was given, assigning new VanillaRole()", "CreateRoleClass");
             return new VanillaRole();
         }
 
-        Logger.Info($"Succesfully Created new {role}()", "CreateRoleClass");
+        if (!IsToAccess) Logger.Info($"Succesfully Created new {role}()", "CreateRoleClass");
         return (RoleBase)Activator.CreateInstance(classType);
     }
 

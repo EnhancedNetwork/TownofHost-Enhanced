@@ -75,7 +75,7 @@ internal class Bloodmoon : RoleBase
         if (!target.Is(CustomRoles.Pestilence) 
             && KillCount[killer.PlayerId] > 0 
             && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
-            && (target.Is(CustomRoles.NiceMini) ? Mini.Age > 18 : true))
+            && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18))
         {
             killer.RpcMurderPlayerV3(target);
             killer.RpcResetAbilityCooldown();
