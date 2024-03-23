@@ -121,7 +121,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<(byte, byte), string> LastNotifyNames;
     public static readonly Dictionary<byte, Color32> PlayerColors = [];
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
-    public static readonly Dictionary<CustomRoles, string> roleColors;
+    public static readonly Dictionary<CustomRoles, string> roleColors = [];
     const string LANGUAGE_FOLDER_NAME = "Language";
     
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable() || CustomRoles.Vampiress.IsEnable();
