@@ -45,6 +45,8 @@ class EndGamePatch
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                 }
             }
+            if (GhostRoleAssign.GhostGetPreviousRole.Count > 0) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
+            // Seems to be a problem with Exiled() Patch. I plan to diligently attempt fixes in RoleBase PR.
         }
         catch(Exception e)
         {
@@ -335,6 +337,8 @@ class SetEverythingUpPatch
         var RoleSummaryRectTransform = RoleSummary.GetComponent<RectTransform>();
         RoleSummaryRectTransform.anchoredPosition = new Vector2(Pos.x + 3.5f, Pos.y - 0.1f);
         RoleSummary.text = sb.ToString();
+
+        Logger.Info($"{RoleSummary.text.RemoveHtmlTags()}", "Role Summary");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

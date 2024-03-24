@@ -197,27 +197,17 @@ public static class Penguin
                     var abductVictim = AbductVictim;
                     _ = new LateTask(() =>
                     {
-                        var sId = abductVictim.NetTransform.lastSequenceId;
+                        var sId = abductVictim.NetTransform.lastSequenceId + 5;
                         //Host side
-                        abductVictim.NetTransform.SnapTo(penguin.transform.position, (ushort)(sId + 6));
+                        abductVictim.NetTransform.SnapTo(penguin.transform.position, (ushort)sId);
                         penguin.MurderPlayer(abductVictim, ExtendedPlayerControl.ResultFlags);
 
                         var sender = CustomRpcSender.Create("PenguinMurder");
-                        {
-                            //Use the same code like Utils.TP
-                            if (abductVictim.PlayerId != PlayerControl.LocalPlayer.PlayerId)
-                            {
-                                sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo, abductVictim.GetClientId());
-                                {
-                                    NetHelpers.WriteVector2(penguin.transform.position, sender.stream);
-                                    sender.Write((ushort)(sId + 48));
-                                }
-                                sender.EndRpc();
-                            }    
+                        {  
                             sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo);
                             {
                                 NetHelpers.WriteVector2(penguin.transform.position, sender.stream);
-                                sender.Write((ushort)(sId + 100));
+                                sender.Write(abductVictim.NetTransform.lastSequenceId);
                             }
                             sender.EndRpc();
                             sender.AutoStartRpc(penguin.NetId, (byte)RpcCalls.MurderPlayer);

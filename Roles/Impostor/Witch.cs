@@ -127,14 +127,9 @@ public static class Witch
         return false;
 
     }
-    public static bool IsSpelled(byte target)
-    {
-        foreach (var witch in playerIdList)
-        {
-            if (SpelledPlayer[witch].Contains(target)) return true;
-        }
-        return false;
-    }
+
+    private static bool IsSpelled(byte target) => SpelledPlayer.Any(x => x.Value.Contains(target));
+
     public static void SetSpelled(PlayerControl killer, PlayerControl target)
     {
         if (!IsSpelled(target.PlayerId))

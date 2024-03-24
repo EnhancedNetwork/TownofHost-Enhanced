@@ -93,6 +93,9 @@
 ### :star: [Stellar Roles](https://github.com/Mr-Fluuff/StellarRolesAU)
 >
 > - Provided role: Inspector (Inspector)
+### :star: [Mini.RegionInstall](https://github.com/miniduikboot/Mini.RegionInstall)
+>
+> - Using Mini.RegionInstall to add modded server regions
 
 ---
 

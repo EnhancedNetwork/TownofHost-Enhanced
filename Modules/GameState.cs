@@ -26,6 +26,7 @@ public class PlayerState(byte playerId)
     public bool IsBlackOut { get; set; } = false;
     public (DateTime, byte) RealKiller = (DateTime.MinValue, byte.MaxValue);
     public PlainShipRoom LastRoom = null;
+    public bool HasSpawned { get; set; } = false;
     public Dictionary<byte, string> TargetColorData = [];
 
     public CustomRoles GetCustomRoleFromRoleType()
@@ -302,6 +303,12 @@ public class PlayerState(byte playerId)
 
     public void SetDead()
     {
+        var caller = new System.Diagnostics.StackFrame(1, false);
+        var callerMethod = caller.GetMethod();
+        string callerMethodName = callerMethod.Name;
+        string callerClassName = callerMethod.DeclaringType.FullName;
+        Logger.Msg($"Player was dead, activated from: {callerClassName}.{callerMethodName}", "PlayerState.SetDead()");
+
         IsDead = true;
         if (AmongUsClient.Instance.AmHost)
         {

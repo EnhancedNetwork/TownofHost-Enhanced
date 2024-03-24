@@ -1,4 +1,4 @@
-using AmongUs.Data;
+﻿using AmongUs.Data;
 using HarmonyLib;
 using System.Linq;
 using TOHE.Roles.Crewmate;
@@ -45,6 +45,15 @@ class ExileControllerWrapUpPatch
     static void WrapUpPostfix(GameData.PlayerInfo exiled)
     {
         if (AntiBlackout.BlackOutIsActive) exiled = AntiBlackout_LastExiled;
+
+        // Still not springing up in airships
+        if (!GameStates.AirshipIsActive)
+        {
+            foreach (var state in Main.PlayerStates.Values)
+            {
+                state.HasSpawned = true;
+            }
+        }
 
         bool DecidedWinner = false;
         if (!AmongUsClient.Instance.AmHost) return;
@@ -234,6 +243,12 @@ class ExileControllerWrapUpPatch
             {
                 player.ResetPlayerCam(1f);
             }
+            // Reset camera for ghost roles
+            // Temporary fix black screens for vanilla
+            else if (player.GetCustomRole().IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()))
+            {
+                player.ResetPlayerCam(1f);
+            }
 
             // Check for remove pet
             player.RpcRemovePet();
@@ -252,34 +267,21 @@ class ExileControllerWrapUpPatch
         Utils.SyncAllSettings();
         Utils.NotifyRoles(ForceLoop: true);
 
-        if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
+        if (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             _ = new LateTask(() =>
             {
-                RandomSpawn.SpawnMap map;
-                switch (Utils.GetActiveMapId())
+                RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
                 {
-                    case 0:
-                        map = new RandomSpawn.SkeldSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                    case 1:
-                        map = new RandomSpawn.MiraHQSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                    case 2:
-                        map = new RandomSpawn.PolusSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                    case 3:
-                        map = new RandomSpawn.DleksSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                    case 5:
-                        map = new RandomSpawn.FungleSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                }
+                    0 => new RandomSpawn.SkeldSpawnMap(),
+                    1 => new RandomSpawn.MiraHQSpawnMap(),
+                    2 => new RandomSpawn.PolusSpawnMap(),
+                    3 => new RandomSpawn.DleksSpawnMap(),
+                    5 => new RandomSpawn.FungleSpawnMap(),
+                    _ => null,
+                };
+                if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
+
             }, 0.8f, "Random Spawn After Meeting");
         }
     }
