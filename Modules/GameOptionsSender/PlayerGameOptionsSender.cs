@@ -138,9 +138,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
-            case CustomRoles.Hawk:
-                Hawk.SetKillCooldown();
-                break;
             default:
                 opt.SetVision(false);
                 break;

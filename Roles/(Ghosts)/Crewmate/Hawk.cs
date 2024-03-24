@@ -24,7 +24,7 @@ internal class Hawk : RoleBase
     public static OptionItem HawkCanKillNum;
     public static OptionItem MinimumPlayersAliveToKill;
     
-    public static Dictionary<byte, int> KillCount;
+    public static Dictionary<byte, int> KillCount = [];
     public static void SetupCustomOptions()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Hawk);
