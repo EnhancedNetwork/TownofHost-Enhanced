@@ -102,8 +102,8 @@ internal class Hawk : RoleBase
     }
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
-        if (!KillerChanceMiss.ContainsKey(killer.PlayerId))
-            KillerChanceMiss.Add(killer.PlayerId, MissChance.GetFloat());
+        if (!KillerChanceMiss.ContainsKey(target.PlayerId))
+            KillerChanceMiss.Add(target.PlayerId, MissChance.GetFloat());
 
         if (CheckRetriConflicts(killer, target) && killer.RpcCheckAndMurder(target, true))
         {
@@ -120,8 +120,8 @@ internal class Hawk : RoleBase
             killer.Notify(ColorString(GetRoleColor(CustomRoles.Hawk), GetString("HawkMissed")));
         }
 
-        KillerChanceMiss[killer.PlayerId] -= KillerChanceMiss[killer.PlayerId] <= 35 ? 0 : 35f;
-        Logger.Info($" {killer.GetRealName()}'s DieChance is :{100f - KillerChanceMiss[killer.PlayerId]}%","Hawk");
+        Logger.Info($" {target.GetRealName()}'s DieChance is :{100f - KillerChanceMiss[target.PlayerId]}%", "Hawk");
+        KillerChanceMiss[target.PlayerId] -= KillerChanceMiss[target.PlayerId] <= 35 ? 0 : 35f;
         return false;
     }
 
@@ -131,7 +131,7 @@ internal class Hawk : RoleBase
 
         return target != null && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
             && KillCount[killer.PlayerId] > 0
-            && rnd.Next(100) >= KillerChanceMiss[killer.PlayerId]
+            && rnd.Next(100) >= KillerChanceMiss[target.PlayerId]
             && !target.Is(CustomRoles.Pestilence)
             && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18);
     }
