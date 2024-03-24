@@ -372,7 +372,7 @@ class CheckMurderPatch
             }
         }
 
-        // Check Murder on target
+        // Check Murder as target
         if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
         {
             return false;
