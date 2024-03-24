@@ -46,7 +46,7 @@ internal class God : RoleBase
         return false;
     }
 
-    public override void OnMeetingHudStart(PlayerControl pc)
+    public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
         if (pc.IsAlive() && NotifyGodAlive.GetBool())
             AddMsg(Translator.GetString("GodNoticeAlive"), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.God), Translator.GetString("GodAliveTitle")));

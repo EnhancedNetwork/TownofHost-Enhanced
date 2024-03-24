@@ -75,7 +75,7 @@ internal class Virus : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public override void OnMeetingHudStart(PlayerControl pc)
+    public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
         if (VirusNotify.ContainsKey(pc.PlayerId))
             AddMsg(VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));

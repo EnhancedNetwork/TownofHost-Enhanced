@@ -216,7 +216,7 @@ internal class Retributionist : RoleBase
         if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/ret {playerId}", true);
         else SendRPC(playerId);
     }
-    public override void OnMeetingHudStart(PlayerControl pc)
+    public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
         if (!pc.IsAlive())
             AddMsg(GetString("RetributionistDeadMsg"), pc.PlayerId);

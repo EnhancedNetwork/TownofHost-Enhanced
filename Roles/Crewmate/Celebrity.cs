@@ -66,7 +66,7 @@ internal class Celebrity : RoleBase
                 CelebrityDead.Add(target.PlayerId);
         }
     }
-    public override void OnMeetingHudStart(PlayerControl targets)
+    public override void OnOthersMeetingHudStart(PlayerControl targets)
     {
         foreach (var csId in CelebrityDead)
         {

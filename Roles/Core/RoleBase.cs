@@ -213,7 +213,12 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When the meeting hud is loaded
+    /// When the meeting hud is loaded for others
+    /// </summary>
+    public virtual void OnOthersMeetingHudStart(PlayerControl pc)
+    { }
+    /// <summary>
+    /// When the meeting hud is loaded 
     /// </summary>
     public virtual void OnMeetingHudStart(PlayerControl pc)
     { }

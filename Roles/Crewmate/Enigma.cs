@@ -151,7 +151,7 @@ internal class Enigma : RoleBase
         }
     }
 
-    public override void OnMeetingHudStart(PlayerControl pc)
+    public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
         if (MsgToSend.ContainsKey(pc.PlayerId))
             AddMsg(MsgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enigma), MsgToSendTitle[pc.PlayerId]));
