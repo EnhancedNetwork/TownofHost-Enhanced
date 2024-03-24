@@ -1756,7 +1756,6 @@ public static class Utils
         }
 
 
-        if (Hawk.IsEnable) Hawk.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();
 

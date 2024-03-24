@@ -122,16 +122,4 @@ public static class GhostRoleAssign
         Options.CustomGhostRoleCounts.Keys.Do(ghostRole
             => getCount.TryAdd(ghostRole, ghostRole.GetCount())); // Add new count Instance (Optionitem gets constantly refreshed)
     }
-    public static void AddPlayerId(this PlayerControl target, CustomRoles GhostRole)
-    {
-        switch (GhostRole)
-        {
-            case CustomRoles.Hawk:
-                Hawk.Add(target.PlayerId);
-                break;
-            case CustomRoles.Warden:
-                Warden.Add(target.PlayerId);
-                break;
-        }
-    }
 }

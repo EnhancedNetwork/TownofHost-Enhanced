@@ -21,8 +21,6 @@ internal class Bloodmoon : RoleBase
 
     //==================================================================\\
 
-
-    public static OptionItem MinimumPlayersAliveToKill;
     public static OptionItem KillCooldown;
     public static OptionItem CanKillNum;
     public static Dictionary<byte, int> KillCount = [];
@@ -34,8 +32,6 @@ internal class Bloodmoon : RoleBase
         .SetValueFormat(OptionFormat.Seconds);
         CanKillNum = IntegerOptionItem.Create(Id + 11, "HawkCanKillNum", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
             .SetValueFormat(OptionFormat.Players);
-        MinimumPlayersAliveToKill = IntegerOptionItem.Create(Id + 12, "MinimumPlayersAliveToKill", new(0, 15, 1), 4, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
-        .SetValueFormat(OptionFormat.Players);
     }
     public override void Init()
     {
@@ -72,16 +68,13 @@ internal class Bloodmoon : RoleBase
     }
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
-        if (KillCount[killer.PlayerId] > 0 
-            && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
-            && killer.RpcCheckAndMurder(target, true))
+        if (KillCount[killer.PlayerId] > 0 && killer.RpcCheckAndMurder(target, true))
         {
             killer.RpcMurderPlayer(target);
             killer.RpcResetAbilityCooldown();
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
         }
-        else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkTooManyDied"));
         return false;
     }
     public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
