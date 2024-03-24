@@ -2166,6 +2166,7 @@
   "MonarchKnightedPlayer": "You successfully knighted a player!",
   "KnightedByMonarch": "You have been knighted by a Monarch!",
   "MonarchInvalidTarget": "Target cannot be knighted",
+  "GhostTransformTitle": "Your Role Has Transformed!",
   "SpiritcallerNoticeTitle": "YOU TURNED INTO AN EVIL SPIRIT ",
   "SpiritcallerNoticeMessage": "The Spiritcaller has killed you and turned you into an Evil Spirit. Your task now is to help the Spiritcaller to victory by using your spook button to hinder other players or to protect the Spiritcaller. Use /m for more information.",
   "OverseerRevealCooldown": "<color=#BA55D3>Reveal</color> Cooldown",

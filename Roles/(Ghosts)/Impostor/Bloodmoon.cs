@@ -52,7 +52,6 @@ internal class Bloodmoon : RoleBase
     {
         KillCount.Add(PlayerId, CanKillNum.GetInt());
         PlayerIds.Add(PlayerId);
-        CustomRoleManager.CheckDeadBodyOthers.Add(RemoveId);
     }
     private static void SendRPC(byte playerId)
     {
@@ -89,22 +88,15 @@ internal class Bloodmoon : RoleBase
     }
     private static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
     public override string GetProgressText(byte playerId, bool cooms) => ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
-    private static void RemoveId(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public static void RemoveId( PlayerControl target)
     {
         var targetid = target.PlayerId;
-        var killerid = killer.PlayerId;
 
         if (PlayerDie.ContainsKey(targetid))
             PlayerDie.Remove(targetid);
 
-        if (PlayerDie.ContainsKey(killerid))
-            PlayerDie.Remove(killerid);
-
         if (LastTime.ContainsKey(targetid))
             LastTime.Remove(targetid);
-
-        if (LastTime.ContainsKey(killerid))
-            LastTime.Remove(killerid);
     }
     public static string OthersNameText(byte playerid) 
     {

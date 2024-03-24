@@ -1394,10 +1394,6 @@ public static class Utils
     {
         return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId);
     }
-    public static PlayerControl GetPlayerByRole(CustomRoles Role)
-    {
-        return Main.AllPlayerControls.FirstOrDefault(pc => pc.GetCustomRole() == Role);
-    }
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();

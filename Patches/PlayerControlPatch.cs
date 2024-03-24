@@ -22,6 +22,7 @@ using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using MS.Internal.Xml.XPath;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -1484,6 +1485,9 @@ public static class PlayerControlDiePatch
         if (__instance.Is(CustomRoles.Susceptible))
             Susceptible.CallEnabledAndChange(__instance);
 
+        if (Bloodmoon.HasEnabled)
+            Bloodmoon.RemoveId(__instance);
+
         __instance.RpcRemovePet();
     }
 }
@@ -1564,6 +1568,8 @@ class PlayerControlSetRolePatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, bool __runOriginal)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
+
         if (__runOriginal)
         {
             Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");
@@ -1574,7 +1580,42 @@ class PlayerControlSetRolePatch
 
         if (roleType == RoleTypes.GuardianAngel)
         {
-            _ = new LateTask(() => { __instance.RpcResetAbilityCooldown(); }, 0.1f, "ResetAbilityAngel");
+            _ = new LateTask(() => { 
+                
+                __instance.RpcResetAbilityCooldown();
+                
+                if (Options.SendRoleDescriptionFirstMeeting.GetBool())
+                {
+                    var host = PlayerControl.LocalPlayer;
+                    var name = host.Data.PlayerName;
+                    var lp = __instance;
+                    var sb = new StringBuilder();
+                    var role = __instance.GetCustomRole();
+                    sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + lp.GetRoleInfo(true));
+                    if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
+                        Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb, command: true);
+                    var txt = sb.ToString();
+                    sb.Clear().Append(txt.RemoveHtmlTags());
+                    foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.ToArray())
+                        sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
+                    var writer = CustomRpcSender.Create("SpiritCallerSendMessage", SendOption.None);
+                    writer.StartMessage(__instance.GetClientId());
+                    writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                        .Write(Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")))
+                        .EndRpc();
+                    writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
+                        .Write(sb.ToString())
+                        .EndRpc();
+                    writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                        .Write(name)
+                        .EndRpc();
+                    writer.EndMessage();
+                    writer.SendMessage();
+                    host.Notify("", 0.1f);
+
+                }
+
+            }, 0.1f, "SetGuardianAngel");
         }
     }
 }
