@@ -90,7 +90,7 @@ internal class Bloodmoon : RoleBase
     private static void OnFixUpdateOthers(PlayerControl pc)
     {
         if (PlayerDie.ContainsKey(pc.PlayerId) && GameStates.IsInTask)
-            Utils.DoNotifyRoles(SpecifyTarget: pc, ForceLoop: true);
+            DoNotifyRoles(SpecifyTarget: pc, ForceLoop: true);
     }
     private static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
     public override string GetProgressText(byte playerId, bool cooms) => ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
@@ -110,7 +110,6 @@ internal class Bloodmoon : RoleBase
         var player = GetPlayerById(playerid);
         if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= GetTimeStamp() && !GameStates.IsMeeting) // Progress text not register onMeeting anyways
         {
-            Logger.Info($"I ran!", "BloodMoon Others");
             LastTime[playerid] = GetTimeStamp();
             PlayerDie[playerid]--;
             if (PlayerDie[playerid] <= 0)
