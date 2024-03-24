@@ -105,9 +105,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             }
         }
         
-        AURoleOptions.GuardianAngelCooldown = Options.DefaultAngelCooldown.GetFloat();
-
-        if (!role.IsGhostRole() || player.IsAnySubRole(x => x is CustomRoles.EvilSpirit)) 
+        if (role.IsGhostRole())
+            AURoleOptions.GuardianAngelCooldown = Options.DefaultAngelCooldown.GetFloat();
+        else if (!role.IsGhostRole() || player.IsAnySubRole(x => x is CustomRoles.EvilSpirit)) 
         {
             switch (role.GetCustomRoleTypes())
             {
