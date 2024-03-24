@@ -59,7 +59,12 @@ public static class OptionShower
                 sb.Append(GetString("ActiveRolesList")).Append('\n');
                 foreach (var kvp in Options.CustomRoleSpawnChances.ToArray())
                     if (kvp.Value.GameMode is CustomGameMode.Standard or CustomGameMode.All && kvp.Value.GetBool()) //スタンダードか全てのゲームモードで表示する役職
-                        sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {kvp.Value.GetString()}×{kvp.Key.GetCount()}\n");
+                    {
+                        string mode = kvp.Value.GetString();
+                        if (kvp.Key.IsAdditionRole())
+                            mode = GetString($"Chance{(Options.CustomAdtRoleSpawnRate.TryGetValue(kvp.Key, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}"); ;
+                        sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {mode}×{kvp.Key.GetCount()}\n"); 
+                    }
                 pages.Add(sb.ToString() + "\n\n");
                 sb.Clear();
             }
