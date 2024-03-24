@@ -318,7 +318,13 @@ class CheckMurderPatch
                     case CustomRoles.Antidote:
                         Antidote.CheckMurder(killer);
                         break;
-                    
+
+                    case CustomRoles.Susceptible:
+                        Susceptible.CallEnabledAndChange(target);
+                        if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote)
+                            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill; // When susceptible is still alive "Vote" triggers role visibility for others.
+                        break;
+
                     case CustomRoles.Fragile:
                         if (Fragile.KillFragile(killer, target))
                             return false;
@@ -1481,9 +1487,6 @@ public static class PlayerControlDiePatch
     public static void Postfix(PlayerControl __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-
-        if (__instance.Is(CustomRoles.Susceptible))
-            Susceptible.CallEnabledAndChange(__instance);
 
         if (Bloodmoon.HasEnabled)
             Bloodmoon.RemoveId(__instance);

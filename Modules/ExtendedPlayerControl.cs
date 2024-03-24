@@ -14,6 +14,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -630,6 +631,11 @@ static class ExtendedPlayerControl
     public static void RpcExileV2(this PlayerControl player)
     {
         player.Exiled();
+        if (player.Is(CustomRoles.Susceptible))
+        {
+            Susceptible.CallEnabledAndChange(player);
+        }
+
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -642,6 +648,9 @@ static class ExtendedPlayerControl
 
         if (Solsticer.OnCheckRpcMurderv3(killer, target))
             return;
+
+        if (target.Is(CustomRoles.Susceptible))
+            Susceptible.CallEnabledAndChange(target);
 
         if (killer.PlayerId == target.PlayerId && killer.shapeshifting)
         {
