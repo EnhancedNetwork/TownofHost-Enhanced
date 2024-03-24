@@ -701,7 +701,7 @@ internal class ChatCommands
                     var target = Utils.GetPlayerById(id2);
                     if (target != null)
                     {
-                        target.RpcMurderPlayerV3(target);
+                        target.RpcMurderPlayer(target);
                         if (target.AmOwner) Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
                         else Utils.SendMessage(string.Format(GetString("Message.Executed"), target.Data.PlayerName));
 

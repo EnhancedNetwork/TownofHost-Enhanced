@@ -52,7 +52,7 @@ public static class Burst
                 if (!killer.inVent && killer.IsAlive() && !GameStates.IsMeeting && GameStates.IsInGame)
                 {
                     Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                    target.RpcMurderPlayerV3(killer);
+                    target.RpcMurderPlayer(killer);
                     killer.SetRealKiller(target);
                 }
                 else if (GameStates.IsInGame)

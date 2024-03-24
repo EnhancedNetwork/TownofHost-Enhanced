@@ -29,18 +29,19 @@ public static class Fragile
     public static bool KillFragile(PlayerControl killer, PlayerControl target)
     {
         var killerRole = killer.GetCustomRole();
-        if ((killerRole.IsImpostorTeamV3() && ImpCanKillFragile.GetBool())
+        if (killer.RpcCheckAndMurder(target, true) 
+            && ((killerRole.IsImpostorTeamV3() && ImpCanKillFragile.GetBool())
             || (killerRole.IsNeutral() && NeutralCanKillFragile.GetBool())
-            || (killerRole.IsCrewmate() && CrewCanKillFragile.GetBool()))
+            || (killerRole.IsCrewmate() && CrewCanKillFragile.GetBool())))
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
             if (FragileKillerLunge.GetBool())
             {
-                killer.RpcMurderPlayerV3(target);
+                killer.RpcMurderPlayer(target);
             }
             else
             {
-                target.RpcMurderPlayerV3(target);
+                target.RpcMurderPlayer(target);
             }
             target.SetRealKiller(killer);
             killer.ResetKillCooldown();

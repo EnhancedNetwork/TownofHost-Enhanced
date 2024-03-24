@@ -57,17 +57,16 @@ public static class Bloodmoon
     }
     public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
-        if (!target.Is(CustomRoles.Pestilence) 
-            && KillCount[killer.PlayerId] > 0 
+        if (KillCount[killer.PlayerId] > 0 
             && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
-            && (target.Is(CustomRoles.NiceMini) ? Mini.Age > 18 : true))
+            && killer.RpcCheckAndMurder(target, true))
         {
-            killer.RpcMurderPlayerV3(target);
+            killer.RpcMurderPlayer(target);
             killer.RpcResetAbilityCooldown();
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
         }
-        else if (Main.AllAlivePlayerControls.Count() < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkTooManyDied"));
+        else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkTooManyDied"));
         return false;
     }
     public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;

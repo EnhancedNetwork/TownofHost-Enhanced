@@ -90,9 +90,9 @@ public static class Hawk
     }
     public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
-        if (CheckRetriConflicts(killer, target))
+        if (CheckRetriConflicts(killer, target) && killer.RpcCheckAndMurder(target, true))
         {
-            killer.RpcMurderPlayerV3(target);
+            killer.RpcMurderPlayer(target);
             killer.RpcResetAbilityCooldown();
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
@@ -107,9 +107,7 @@ public static class Hawk
     {
         return target != null && KillersNoEjects >= OnlyKillAfterXKillerNoEject.GetInt()
             && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
-            && KillCount[killer.PlayerId] > 0
-            && !target.Is(CustomRoles.Pestilence)
-            && (target.Is(CustomRoles.NiceMini) ? Mini.Age > 18 : true);
+            && KillCount[killer.PlayerId] > 0;
     }
     public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
     public static string GetSnatchLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Hawk).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");

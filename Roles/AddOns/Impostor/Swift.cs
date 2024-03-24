@@ -12,12 +12,15 @@ public static class Swift
     }
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Pestilence)) return false;
-        target.RpcMurderPlayerV3(target);
+        target.RpcMurderPlayer(target);
+        
         if (!DisableShieldAnimations.GetBool())
             killer.RpcGuardAndKill(killer);
+        
         killer.SetKillCooldown();
+        
         target.SetRealKiller(killer);
+        
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         return false;
     }

@@ -89,7 +89,7 @@ internal class Addict : RoleBase
         if (SuicideTimer[player.PlayerId] >= TimeLimit.GetFloat())
         {
             Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-            player.RpcMurderPlayerV3(player);
+            player.RpcMurderPlayer(player);
             SuicideTimer.Remove(player.PlayerId);
         }
         else
@@ -112,9 +112,6 @@ internal class Addict : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (!IsEnable) return;
-        if (!pc.Is(CustomRoles.Addict)) return;
-
         SuicideTimer[pc.PlayerId] = 0f;
         ImmortalTimer[pc.PlayerId] = 0f;
 

@@ -195,7 +195,7 @@ internal class Alchemist : RoleBase
                         var bloodlustId = BloodlustList[player.PlayerId];
                         RPC.PlaySoundRPC(bloodlustId, Sounds.KillSound);
                         target.SetRealKiller(Utils.GetPlayerById(bloodlustId));
-                        player.RpcMurderPlayerV3(target);
+                        player.RpcMurderPlayer(target);
                         player.MarkDirtySettings();
                         target.MarkDirtySettings();
                         BloodlustList.Remove(player.PlayerId);
@@ -287,7 +287,7 @@ internal class Alchemist : RoleBase
                 {
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Poison;
                     player.SetRealKiller(player);
-                    player.RpcMurderPlayerV3(player);
+                    player.RpcMurderPlayer(player);
 
                 }, 1f, "Alchemist Is Poisoned");
                 break;

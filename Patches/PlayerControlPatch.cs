@@ -758,7 +758,7 @@ class ReportDeadBodyPatch
                     if (Ue.Next(1, 100) <= Unlucky.UnluckyReportSuicideChance.GetInt())
                     {
                         Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                        __instance.RpcMurderPlayerV3(__instance);
+                        __instance.RpcMurderPlayer(__instance);
                         return false;
                     }
                 }
@@ -1250,7 +1250,7 @@ class FixedUpdateInNormalGamePatch
                             if (isExiled)
                                 CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
                             else
-                                partnerPlayer.RpcMurderPlayerV3(partnerPlayer);
+                                partnerPlayer.RpcMurderPlayer(partnerPlayer);
                         }
                     }
                 }

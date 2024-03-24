@@ -326,7 +326,7 @@ internal static class FFAManager
             FFAEnterVentTime.Remove(killer.PlayerId);
         }
 
-        killer.RpcMurderPlayerV3(target);
+        killer.RpcMurderPlayer(target);
     }
 
     public static void OnPlayerKill(PlayerControl killer)

@@ -106,11 +106,12 @@ internal class Crusader : RoleBase
     {
         if (ForCrusade.Contains(target.PlayerId)) return true;
 
-        foreach (var player in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Crusader)).ToArray())
+        foreach (var crusader in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Crusader)).ToArray())
         {
-            if (!killer.Is(CustomRoles.Pestilence) && !killer.Is(CustomRoles.KillingMachine))
+            if (!killer.Is(CustomRoles.Pestilence) && !killer.Is(CustomRoles.KillingMachine)
+                && killer.CheckForInvalidMurdering(target) && crusader.RpcCheckAndMurder(killer, true))
             {
-                player.RpcMurderPlayerV3(killer);
+                crusader.RpcMurderPlayer(killer);
                 ForCrusade.Remove(target.PlayerId);
                 killer.RpcGuardAndKill(target);
                 return false;
@@ -118,8 +119,8 @@ internal class Crusader : RoleBase
 
             if (killer.Is(CustomRoles.Pestilence))
             {
-                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
-                killer.RpcMurderPlayerV3(player);
+                Main.PlayerStates[crusader.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
+                killer.RpcMurderPlayerV3(crusader);
                 ForCrusade.Remove(target.PlayerId);
                 target.RpcGuardAndKill(killer);
 
