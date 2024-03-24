@@ -10,10 +10,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Lighter : RoleBase
 {
-    public const int Id = 8400;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    //===========================SETUP================================\\
+    private const int Id = 8400;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem LighterVisionNormal;
     private static OptionItem LighterVisionOnLightsOut;
@@ -22,8 +25,8 @@ internal class Lighter : RoleBase
     private static OptionItem LighterSkillMaxOfUseage;
     private static OptionItem LighterAbilityUseGainWithEachTaskCompleted;
 
-    private static Dictionary<byte, long> Timer = [];
-    private static Dictionary<byte, float> LighterNumOfUsed = [];
+    private static readonly Dictionary<byte, long> Timer = [];
+    private static readonly Dictionary<byte, float> LighterNumOfUsed = [];
 
     public static void SetupCustomOptions()
     {
@@ -43,15 +46,18 @@ internal class Lighter : RoleBase
     }
     public override void Init()
     {
-        Timer = [];
-        LighterNumOfUsed = [];
+        playerIdList.Clear();
+        Timer.Clear();
+        LighterNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         LighterNumOfUsed.Add(playerId, LighterSkillMaxOfUseage.GetInt());
     }
     public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
         LighterNumOfUsed.Remove(playerId);
     }
     public override void OnFixedUpdateLowLoad(PlayerControl pc)

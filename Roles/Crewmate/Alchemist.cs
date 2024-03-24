@@ -15,11 +15,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Alchemist : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 6400;
-
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem VentCooldown;
     private static OptionItem ShieldDuration;
@@ -29,10 +31,9 @@ internal class Alchemist : RoleBase
     private static OptionItem Speed;
     private static OptionItem InvisDuration;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, int> ventedId = [];
     private static Dictionary<byte, long> InvisTime = [];
-    public static Dictionary<byte, byte> BloodlustList = [];
+    private static readonly Dictionary<byte, int> ventedId = [];
+    public static readonly Dictionary<byte, byte> BloodlustList = [];
 
     private static byte PotionID = 10;
     private static string PlayerName = string.Empty;
@@ -62,21 +63,19 @@ internal class Alchemist : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        BloodlustList = [];
+        playerIdList.Clear();
+        BloodlustList.Clear();
         PotionID = 10;
         PlayerName = string.Empty;
-        ventedId = [];
-        InvisTime = [];
+        ventedId.Clear();
+        InvisTime.Clear();
         FixNextSabo = false;
         VisionPotionActive = false;
-        On = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         PlayerName = Utils.GetPlayerById(playerId).GetRealName();
-        On = true;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -147,7 +146,7 @@ internal class Alchemist : RoleBase
     }
     public static void ReceiveRPC(MessageReader reader)
     {
-        InvisTime = [];
+        InvisTime.Clear();
         long invis = long.Parse(reader.ReadString());
         if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
     }
@@ -245,7 +244,7 @@ internal class Alchemist : RoleBase
     public static void OnReportDeadBodyGlobal()
     {
         lastFixedTime = new();
-        BloodlustList = [];
+        BloodlustList.Clear();
 
         if (InvisTime.Count > 0)
         {
@@ -260,8 +259,8 @@ internal class Alchemist : RoleBase
             }
         }
 
-        InvisTime = [];
-        ventedId = [];
+        InvisTime.Clear();
+        ventedId.Clear();
     }
 
     public override void OnEnterVent(PlayerControl player, Vent vent)

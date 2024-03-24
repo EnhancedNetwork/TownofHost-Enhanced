@@ -155,7 +155,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
         }
 
-        if (Grenadier.On) Grenadier.ApplyGameOptionsForOthers(opt, player);
+        if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
         if (Dazzler.On) Dazzler.SetDazzled(player, opt);
         if (Deathpact.On) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);

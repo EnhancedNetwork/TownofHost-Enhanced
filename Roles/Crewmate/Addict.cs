@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
 
@@ -7,19 +8,21 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Addict : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 6300;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem VentCooldown;
     private static OptionItem TimeLimit;
     private static OptionItem ImmortalTimeAfterVent;
     private static OptionItem FreezeTimeAfterImmortal;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, float> SuicideTimer = [];
-    private static Dictionary<byte, float> ImmortalTimer = [];
+    private static readonly Dictionary<byte, float> SuicideTimer = [];
+    private static readonly Dictionary<byte, float> ImmortalTimer = [];
 
     private static float DefaultSpeed = new();
 
@@ -37,11 +40,10 @@ internal class Addict : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        SuicideTimer = [];
-        ImmortalTimer = [];
+        playerIdList.Clear();
+        SuicideTimer.Clear();
+        ImmortalTimer.Clear();
         DefaultSpeed = new();
-        On = false;
 
     }
     public override void Add(byte playerId)
@@ -50,7 +52,6 @@ internal class Addict : RoleBase
         SuicideTimer.TryAdd(playerId, -10f);
         ImmortalTimer.TryAdd(playerId, 420f);
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
-        On = true;
     }
     public override void Remove(byte playerId)
     {
@@ -58,7 +59,6 @@ internal class Addict : RoleBase
         SuicideTimer.Remove(playerId);
         ImmortalTimer.Remove(playerId);
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
-        if (playerIdList.Count <= 0) On = false;
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

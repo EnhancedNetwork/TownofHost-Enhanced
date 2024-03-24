@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using TOHE.Modules;
@@ -11,11 +12,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Medic : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8600;
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Medic.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem WhoCanSeeProtectOpt;
     private static OptionItem KnowShieldBrokenOpt;
@@ -24,10 +27,10 @@ internal class Medic : RoleBase
     private static OptionItem ResetCooldown;
     public static OptionItem GuesserIgnoreShield;
 
-    private static List<byte> playerIdList = [];
-    public static List<byte> ProtectList = [];
+    public static readonly List<byte> ProtectList = [];
+    private static readonly Dictionary<byte, int> ProtectLimit = [];
+
     private static byte TempMarkProtected;
-    private static Dictionary<byte, int> ProtectLimit = [];
     private static int SkillLimit;
 
     private enum SelectOptions
@@ -64,25 +67,21 @@ internal class Medic : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        ProtectList = [];
-        ProtectLimit = [];
+        playerIdList.Clear();
+        ProtectList.Clear();
+        ProtectLimit.Clear();
         TempMarkProtected = byte.MaxValue;
         SkillLimit = 1;
-
-        On = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         ProtectLimit.TryAdd(playerId, SkillLimit);
 
-        On = true;
+        CustomRoleManager.MarkOthers.Add(GetMarkForOthers);
 
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.MarkOthers.Add(GetMarkForOthers);
-
             if (!Main.ResetCamPlayerList.Contains(playerId))
                 Main.ResetCamPlayerList.Add(playerId);
         }
@@ -120,7 +119,7 @@ internal class Medic : RoleBase
     public static void ReceiveRPCForProtectList(MessageReader reader)
     {
         int count = reader.ReadInt32();
-        ProtectList = [];
+        ProtectList.Clear();
         for (int i = 0; i < count; i++)
             ProtectList.Add(reader.ReadByte());
     }

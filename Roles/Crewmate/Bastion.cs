@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
@@ -13,18 +12,20 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Bastion : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 10200;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Bastion.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem BombsClearAfterMeeting;
     private static OptionItem BastionBombCooldown;
     private static OptionItem BastionAbilityUseGainWithEachTaskCompleted;
     private static OptionItem BastionMaxBombs;
 
-    private static List<int> BombedVents = [];
+    private static readonly HashSet<int> BombedVents = [];
     private static float BastionNumberOfAbilityUses = 0;
 
     public static void SetupCustomOptions()
@@ -39,13 +40,11 @@ internal class Bastion : RoleBase
     }
     public override void Init()
     {
-        BombedVents = [];
-        On = false;
+        BombedVents.Clear();
     }
     public override void Add(byte playerId)
     {
         BastionNumberOfAbilityUses = BastionMaxBombs.GetInt();
-        On = true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

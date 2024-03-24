@@ -1,19 +1,22 @@
 using UnityEngine;
+using System.Collections.Generic;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Marshall : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 11900;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Marshall);
+    private static readonly Color RoleColor = Utils.GetRoleColor(CustomRoles.Marshall);
 
     public static void SetupCustomOption()
     {
@@ -22,12 +25,11 @@ internal class Marshall : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        playerIdList.Clear();
     }
-
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
     private static bool GetExpose(PlayerControl pc)
     {

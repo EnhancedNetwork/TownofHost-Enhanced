@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Core;
@@ -71,9 +70,9 @@ public static class CustomRoleManager
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
         bool cancel = false;
-        foreach (var player in Main.PlayerStates.Values.ToArray())
+        foreach (var player in Main.AllAlivePlayerControls)
         {
-            var playerRoleClass = player.RoleClass;
+            var playerRoleClass = player.GetRoleClass();
             if (player == null || playerRoleClass == null) continue;
 
             if (!playerRoleClass.CheckMurderOnOthersTarget(killer, target))
@@ -290,9 +289,9 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OthersCoEnterVent(PlayerPhysics physics, int ventId)
     {
-        foreach (var player in Main.PlayerStates.Values.ToArray())
+        foreach (var player in Main.AllAlivePlayerControls)
         {
-            var playerRoleClass = player.RoleClass;
+            var playerRoleClass = player.GetRoleClass();
             if (player == null || playerRoleClass == null) continue;
 
             if (playerRoleClass.OnCoEnterVentOthers(physics, ventId))

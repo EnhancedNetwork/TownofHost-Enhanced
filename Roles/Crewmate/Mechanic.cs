@@ -10,12 +10,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Mechanic : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8500;
-    public static bool On = false;
-    public static List<byte> playerIdList = [];
-    public static Dictionary<byte, float> UsedSkillCount = [];
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem SkillLimit;
     private static OptionItem FixesDoors;
@@ -26,6 +27,8 @@ internal class Mechanic : RoleBase
     private static OptionItem SMAbilityUseGainWithEachTaskCompleted;
     private static OptionItem UsesUsedWhenFixingReactorOrO2;
     private static OptionItem UsesUsedWhenFixingLightsOrComms;
+
+    private static readonly Dictionary<byte, float> UsedSkillCount = [];
 
     private static bool DoorsProgressing = false;
 
@@ -51,15 +54,13 @@ internal class Mechanic : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        UsedSkillCount = [];
-        On = false;
+        playerIdList.Clear();
+        UsedSkillCount.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         UsedSkillCount.Add(playerId, 0);
-        On = true;
     }
     public override void Remove(byte playerId)
     {

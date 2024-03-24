@@ -16,7 +16,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Pacifist : RoleBase
 {
-    public const int Id = 9200;
+    private const int Id = 9200;
     public static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.Pacifist.IsClassEnable();
