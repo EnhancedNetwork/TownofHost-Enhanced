@@ -21,6 +21,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using MS.Internal.Xml.XPath;
 
 namespace TOHE;
 
@@ -420,6 +421,8 @@ class MurderPlayerPatch
                 Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
             }
         }
+
+
         return true;
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/, bool __state)
@@ -1478,7 +1481,8 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        Susceptible.CallEnabledAndChange(__instance);
+        if (__instance.Is(CustomRoles.Susceptible))
+            Susceptible.CallEnabledAndChange(__instance);
 
         __instance.RpcRemovePet();
     }
@@ -1570,7 +1574,7 @@ class PlayerControlSetRolePatch
 
         if (roleType == RoleTypes.GuardianAngel)
         {
-            __instance.RpcResetAbilityCooldown();
+            _ = new LateTask(() => { __instance.RpcResetAbilityCooldown(); }, 0.1f, "ResetAbilityAngel");
         }
     }
 }

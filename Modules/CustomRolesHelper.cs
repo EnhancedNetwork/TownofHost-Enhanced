@@ -19,7 +19,7 @@ public static class CustomRolesHelper
     public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
     {
         if (role.IsVanilla()) return role;
-        if (role.IsRoleClass() != new VanillaRole()) return role.IsRoleClass().ThisRoleBase;
+        if (role.IsRoleClass() is not VanillaRole) return role.IsRoleClass().ThisRoleBase;
         return role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate; 
     }
     

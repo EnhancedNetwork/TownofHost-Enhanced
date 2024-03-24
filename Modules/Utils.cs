@@ -581,8 +581,14 @@ public static class Utils
             }
             if (ProgressText.Length != 0)
                 ProgressText.Insert(0, " "); //空じゃなければ空白を追加
+            
 
-            return ProgressText.ToString();
+            var ExtraText = ProgressText.ToString();
+
+            if (Bloodmoon.HasEnabled && Bloodmoon.OthersNameText(playerId) != string.Empty)
+                ExtraText += Bloodmoon.OthersNameText(playerId);
+
+            return ExtraText;
         }
         catch (Exception error)
         {
@@ -1631,7 +1637,6 @@ public static class Utils
 
                         string TargetRoleText = ExtendedPlayerControl.KnowRoleTarget(seer, target)
                                 ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
-
 
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
                         {

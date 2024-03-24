@@ -39,7 +39,7 @@ internal class Hawk : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         HawkCanKillNum = IntegerOptionItem.Create(Id + 11, "HawkCanKillNum", new(1, 15, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Players);
-        MissChance = FloatOptionItem.Create(Id + 12, "MissChance", new(0f, 100f, 2.5f), 85f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
+        MissChance = FloatOptionItem.Create(Id + 12, "MissChance", new(0f, 97.5f, 2.5f), 85f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Percent);
         MinimumPlayersAliveToKill = IntegerOptionItem.Create(Id + 13, "MinimumPlayersAliveToKill", new(0, 15, 1), 4, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Players);
@@ -119,6 +119,7 @@ internal class Hawk : RoleBase
         else
         {
             killer.RpcResetAbilityCooldown();
+            KillCount[killer.PlayerId]--;
             killer.Notify(ColorString(GetRoleColor(CustomRoles.Hawk), GetString("HawkMissed")));
         }
 
