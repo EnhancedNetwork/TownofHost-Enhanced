@@ -119,7 +119,6 @@ internal class Bloodmoon : RoleBase
                 player.SetDeathReason(PlayerState.DeathReason.BloodLet);
                 player.RpcMurderPlayer(player);
             }
-            return PlayerDie.TryGetValue(playerid, out var DeathTime) ? ColorString(GetRoleColor(CustomRoles.Bloodmoon), GetString("DeathTimer").Replace("{DeathTimer}", DeathTime.ToString())) : "";
         }
 
         return PlayerDie.TryGetValue(playerid, out var DeathTimer) ? ColorString(GetRoleColor(CustomRoles.Bloodmoon), GetString("DeathTimer").Replace("{DeathTimer}", DeathTimer.ToString())) : "";
