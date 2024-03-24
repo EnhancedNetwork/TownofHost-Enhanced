@@ -1613,6 +1613,8 @@ class PlayerControlSetRolePatch
                     writer.SendMessage();
                     host.Notify("", 0.1f);
 
+                   // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
+
                 }
 
             }, 0.1f, "SetGuardianAngel");

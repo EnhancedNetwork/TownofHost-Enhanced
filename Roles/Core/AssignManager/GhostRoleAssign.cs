@@ -18,7 +18,8 @@ public static class GhostRoleAssign
 
     private static readonly IRandom Rnd = IRandom.Instance;
     private static bool GetChance(this CustomRoles role) => role.GetMode() == 100 || Rnd.Next(1, 100) <= role.GetMode();
-
+    private static int ImpCount = 0;
+    private static int CrewCount = 0;
     public static void GhostAssignPatch(PlayerControl player)
     {
         if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
@@ -31,10 +32,10 @@ public static class GhostRoleAssign
         var IsNeutral = getplrRole.IsNeutral();
 
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole() || x == CustomRoles.Gravestone) || Options.CustomGhostRoleCounts.Count <= 0) return;
-        
-        GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
-        if (GhostGetPreviousRole.ContainsKey(player.PlayerId)) Logger.Info($"Succesfully added {player.GetRealName()}/{player.GetCustomRole()}", "GhostAssignPatch.GhostPreviousRole");
-        else Logger.Warn($"Adding {player.GetRealName()} was unsuccessful", "GhostAssignPatch.GhostPreviousRole");
+
+        if (ImpCount >= Options.MaxImpGhost.GetInt() || CrewCount >= Options.MaxCrewGhost.GetInt()) return;
+
+            GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
 
         List<CustomRoles> HauntedList = [];
         List<CustomRoles> ImpHauntedList = [];
@@ -77,6 +78,7 @@ public static class GhostRoleAssign
             }
             if (ChosenRole.IsGhostRole())
             {
+                CrewCount++;
                 getCount[ChosenRole]--; // Only deduct if role has been set.
                 player.RpcSetCustomRole(ChosenRole);
                 // player.RpcSetRole(RoleTypes.GuardianAngel); 
@@ -97,6 +99,7 @@ public static class GhostRoleAssign
             }
             if (ChosenRole.IsGhostRole())
             {
+                ImpCount++;
                 getCount[ChosenRole]--;
                 player.RpcSetCustomRole(ChosenRole);
                 // player.RpcSetRole(RoleTypes.GuardianAngel);
@@ -114,8 +117,10 @@ public static class GhostRoleAssign
     }
     public static void Init() 
     {
-        getCount = []; // Remove oldcount
-        GhostGetPreviousRole = [];
+        CrewCount = 0;
+        ImpCount = 0;
+        getCount.Clear(); // Remove oldcount
+        GhostGetPreviousRole.Clear();
     }
     public static void Add()
     {

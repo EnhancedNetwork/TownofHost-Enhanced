@@ -104,6 +104,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
             }
         }
+        
+        AURoleOptions.GuardianAngelCooldown = Options.DefaultAngelCooldown.GetFloat();
+
         if (!role.IsGhostRole() || player.IsAnySubRole(x => x is CustomRoles.EvilSpirit)) 
         {
             switch (role.GetCustomRoleTypes())

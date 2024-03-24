@@ -82,7 +82,8 @@ public class GameStartManagerPatch
                 if (AURoleOptions.ShapeshifterCooldown == 0f)
                     AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
-                AURoleOptions.GuardianAngelCooldown = 35f; // Temporary until I make a setting of sorts.
+                if (AURoleOptions.GuardianAngelCooldown == 0f)
+                    AURoleOptions.GuardianAngelCooldown = Options.DefaultAngelCooldown.GetFloat();
             }
         }
     }
