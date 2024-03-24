@@ -598,7 +598,7 @@ public static class Options
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
-        // You can use: 20906 (sunglasses), 22004 (Glow)
+        // 22004 (Glow)
 
 
         // Start Load Settings
@@ -1105,6 +1105,11 @@ public static class Options
         ScientistDur = FloatOptionItem.Create(6203, "VitalsDuration", new(1f, 250f, 1f), 15f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.ScientistTOHE])
             .SetValueFormat(OptionFormat.Seconds);
+
+        /*
+         * Guardian Angel
+         */
+        GuardianAngelTOHE.SetupCustomOptions();
 
         /*
          * BASIC ROLES

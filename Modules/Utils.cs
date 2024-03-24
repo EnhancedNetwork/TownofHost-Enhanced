@@ -502,7 +502,9 @@ public static class Utils
 
         return hasTasks;
     }
-    public static RoleBase IsRoleClass(this CustomRoles role) 
+
+    // Only to be used for accessing RoleClass, do not assign players from here.
+    public static RoleBase IsRoleClass(this CustomRoles role)  
     {
         if (Main.RoleClass.TryGetValue(role, out var RoleClass))
             return RoleClass;
@@ -542,20 +544,8 @@ public static class Utils
 
             switch (role)
             {
-                case CustomRoles.TimeThief:
-                    ProgressText.Append(TimeThief.GetProgressText(playerId));
-                    break;
-                case CustomRoles.Anonymous:
-                    ProgressText.Append(Anonymous.GetHackLimit(playerId));
-                    break;
                 case CustomRoles.Killer:
                     ProgressText.Append(FFAManager.GetDisplayScore(playerId));
-                    break;
-                case CustomRoles.Hawk:
-                    ProgressText.Append(Hawk.GetSnatchLimit(playerId));
-                    break;
-                case CustomRoles.ChiefOfPolice:
-                    ProgressText.Append(ChiefOfPolice.GetSkillLimit(playerId));
                     break;
                 default:
                     if (ProgressText.Length != 0) break;

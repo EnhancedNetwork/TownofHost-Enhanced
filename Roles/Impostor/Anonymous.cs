@@ -72,7 +72,7 @@ internal class Anonymous : RoleBase
         AURoleOptions.ShapeshifterCooldown = 1f;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
-    public static string GetHackLimit(byte playerId) => Utils.ColorString((HackLimit.TryGetValue(playerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Anonymous).ShadeColor(0.25f) : Color.gray, HackLimit.TryGetValue(playerId, out var hackLimit) ? $"({hackLimit})" : "Invalid");
+    public override string GetProgressText(byte playerId, bool coomsd) => Utils.ColorString((HackLimit.TryGetValue(playerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Anonymous).ShadeColor(0.25f) : Color.gray, HackLimit.TryGetValue(playerId, out var hackLimit) ? $"({hackLimit})" : "Invalid");
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));

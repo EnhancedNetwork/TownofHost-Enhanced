@@ -57,6 +57,6 @@ internal class TimeThief : RoleBase
         return sec;
     }
 
-    public static string GetProgressText(byte playerId)
+    public override string GetProgressText(byte playerId, bool cooms)
         => StolenTime(playerId) > 0 ? Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), $"{-StolenTime(playerId)}s") : string.Empty;
 }
