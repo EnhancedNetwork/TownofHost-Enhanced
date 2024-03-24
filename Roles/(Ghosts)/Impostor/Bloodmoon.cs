@@ -52,6 +52,7 @@ internal class Bloodmoon : RoleBase
     {
         KillCount.Add(PlayerId, CanKillNum.GetInt());
         PlayerIds.Add(PlayerId);
+        CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
     }
     private static void SendRPC(byte playerId)
     {
@@ -86,6 +87,11 @@ internal class Bloodmoon : RoleBase
         }
         return false;
     }
+    private static void OnFixUpdateOthers(PlayerControl pc)
+    {
+        if (PlayerDie.ContainsKey(pc.PlayerId) && GameStates.IsInTask)
+            Utils.DoNotifyRoles(SpecifyTarget: pc, ForceLoop: true);
+    }
     private static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
     public override string GetProgressText(byte playerId, bool cooms) => ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
     public static void RemoveId( PlayerControl target)
@@ -111,8 +117,8 @@ internal class Bloodmoon : RoleBase
             {
                 PlayerDie.Remove(playerid);
                 LastTime.Remove(playerid);
-                player.SetDeathReason(PlayerState.DeathReason.BloodLet);
                 player.RpcMurderPlayer(player);
+                player.SetDeathReason(PlayerState.DeathReason.BloodLet);
             }
             return PlayerDie.TryGetValue(playerid, out var DeathTime) ? ColorString(GetRoleColor(CustomRoles.Bloodmoon), GetString("DeathTimer").Replace("{DeathTimer}", DeathTime.ToString())) : "";
         }
