@@ -32,6 +32,7 @@ namespace TOHE.Roles.Crewmate
 
         public static void OnExitVent(PlayerControl pc, int id)
         {
+            float delay = Utils.GetActiveMapId() != 5? 0.1f : 0.4f;
             if (!pc.Is(CustomRoles.Mole)) return;
 
             _ = new LateTask(() =>
@@ -42,7 +43,7 @@ namespace TOHE.Roles.Crewmate
 
                 Logger.Info($" {vent.transform.position}", "Mole vent teleport");
                 pc.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));
-            }, 0.1f, "Mole On Exit Vent");
+            }, delay, "Mole On Exit Vent");
         }
     }
 }
