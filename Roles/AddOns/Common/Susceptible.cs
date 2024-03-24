@@ -1,4 +1,6 @@
 using System;
+using TOHE.Roles._Ghosts_.Crewmate;
+using TOHE.Roles._Ghosts_.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -319,6 +321,26 @@ public class Susceptible
 
                 case PlayerState.DeathReason.Mauled:
                     if (!Werewolf.HasEnabled)
+                    {
+                        Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+                    break;
+                case PlayerState.DeathReason.Slice:
+                    if (!Hawk.HasEnabled)
+                    {
+                        Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+                    break;
+                case PlayerState.DeathReason.BloodLet:
+                    if (!Bloodmoon.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
