@@ -111,7 +111,7 @@ internal class Pursuer : RoleBase
         Logger.Info($"Counterfeiters {pc.GetRealName()} sell counterfeits to {target.GetRealName()}", "Pursuer");
         return false;
     }
-    public static bool OnTargetMurders(PlayerControl pc) // Target of Pursuer attempt to murder someone
+    public override bool CheckMurderOnOthersTarget(PlayerControl pc, PlayerControl _)  // Target of Pursuer attempt to murder someone
     {
         if (!IsClient(pc.PlayerId) || notActiveList.Contains(pc.PlayerId)) return false;
         

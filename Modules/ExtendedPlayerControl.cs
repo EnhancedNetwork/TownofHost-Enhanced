@@ -671,6 +671,10 @@ static class ExtendedPlayerControl
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         Utils.NotifyRoles();
     }
+    public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
+    {
+        killer.RpcMurderPlayer(target, true);
+    }
 
     public static void AddInSwitchAddons(PlayerControl Killed, PlayerControl target, CustomRoles Addon = CustomRoles.NotAssigned, CustomRoles? IsAddon = CustomRoles.NotAssigned)
     {

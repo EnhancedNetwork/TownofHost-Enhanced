@@ -17,7 +17,7 @@ internal class Shaman : RoleBase
     
     private static OptionItem VoodooCooldown;
 
-    private static byte ShamanTarget = byte.MaxValue;
+    public static byte ShamanTarget = byte.MaxValue;
     private static bool ShamanTargetChoosen = false;
 
     public static void SetupCustomOptions()
@@ -61,6 +61,6 @@ internal class Shaman : RoleBase
 
     }
     public static PlayerControl ChangeTarget(PlayerControl target)
-        => ShamanTarget != byte.MaxValue && target.IsAlive() && ShamanTargetChoosen ? Utils.GetPlayerById(ShamanTarget) : target;
+        => target.IsAlive() && ShamanTargetChoosen ? Utils.GetPlayerById(ShamanTarget) : target;
     
 }

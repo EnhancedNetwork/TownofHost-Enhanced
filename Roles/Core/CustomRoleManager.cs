@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Core;
 
@@ -80,6 +82,70 @@ public static class CustomRoleManager
             }
         }
         return !cancel;
+    }
+    /// <summary>
+    /// Check Murder as Killer in target
+    /// </summary>
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    {
+        var killerRoleClass = killer.GetRoleClass();
+
+        if (killer == target) return true;
+
+        // Forced check
+        if (!killerRoleClass.ForcedCheckMurderAsKiller(killer, target))
+        {
+            return false;
+        }
+
+        // Check in target
+        if (!killer.RpcCheckAndMurder(target, true))
+        {
+            return false;
+        }
+
+        foreach (var killerSubRole in killer.GetCustomSubRoles().ToArray())
+        {
+            switch (killerSubRole)
+            {
+                case CustomRoles.Madmate when target.Is(CustomRoleTypes.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
+                case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTargets:
+                case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
+                    return false;
+
+                case CustomRoles.Mare:
+                    if (Mare.IsLightsOut)
+                        return false;
+                    break;
+
+                case CustomRoles.Unlucky:
+                    Unlucky.SuicideRand(killer);
+                    if (Unlucky.UnluckCheck[killer.PlayerId]) return false;
+                    break;
+
+                case CustomRoles.Tired:
+                    Tired.AfterActionTasks(killer);
+                    break;
+
+                case CustomRoles.Clumsy:
+                    if (!Clumsy.OnCheckMurder(killer))
+                        return false;
+                    break;
+
+                case CustomRoles.Swift:
+                    if (!Swift.OnCheckMurder(killer, target))
+                        return false;
+                    break;
+            }
+        }
+
+        // Check murder as killer
+        if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
+        {
+            return false;
+        }
+
+        return true;
     }
     /// <summary>
     /// Tasks after killer murder target
