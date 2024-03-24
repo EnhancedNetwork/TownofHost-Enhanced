@@ -1933,6 +1933,8 @@
   "DeathReason.Trap": "Trapped",
   "DeathReason.Targeted": "Targeted",
   "DeathReason.Retribution": "Retribution",
+  "DeathReason.Slice": "Sliced",
+  "DeathReason.BloodLet":  "Bleed",
   "OnlyEnabledDeathReasons": "Only Enabled Death Reasons",
   "Alive": "Alive",
   "Win": " Wins!",

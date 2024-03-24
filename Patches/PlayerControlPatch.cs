@@ -317,12 +317,6 @@ class CheckMurderPatch
                     Antidote.CheckMurder(killer);
                     break;
 
-                case CustomRoles.Susceptible:
-                    Susceptible.CallEnabledAndChange(target);
-                    if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote)
-                        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill; // When susceptible is still alive "Vote" triggers role visibility for others.
-                    break;
-
                 case CustomRoles.Fragile:
                     if (Fragile.KillFragile(killer, target))
                         return false;
@@ -1484,16 +1478,7 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        /*try
-        {
-            var DeathPlayer = __instance;
-
-            GhostRoleAssign.GhostAssignPatch(DeathPlayer);
-        }
-        catch (Exception error)
-        {
-            Logger.Error($"Error after Ghost assign: {error}", "DiePlayerPatch.GhostAssign");
-        }*/
+        Susceptible.CallEnabledAndChange(__instance);
 
         __instance.RpcRemovePet();
     }

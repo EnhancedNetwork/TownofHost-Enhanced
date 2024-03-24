@@ -629,10 +629,6 @@ static class ExtendedPlayerControl
     }
     public static void RpcExileV2(this PlayerControl player)
     {
-        if (player.Is(CustomRoles.Susceptible))
-        {
-            Susceptible.CallEnabledAndChange(player);
-        }
         player.Exiled();
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -643,9 +639,6 @@ static class ExtendedPlayerControl
         else if (target.Is(CustomRoles.Pestilence) && target.GetRealKiller() != null && target.GetRealKiller() != target) { var truekill = target.GetRealKiller(); (killer, target) = (target, truekill); Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; goto postPest; }
         else if(target.Is(CustomRoles.Pestilence)) { return; }
         postPest:
-
-        if (target.Is(CustomRoles.Susceptible))
-            Susceptible.CallEnabledAndChange(target);
 
         if (Solsticer.OnCheckRpcMurderv3(killer, target))
             return;

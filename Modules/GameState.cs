@@ -370,6 +370,8 @@ public class PlayerState(byte playerId)
         Trap,
         Targeted,
         Retribution,
+        Slice,
+        BloodLet,
         WrongAnswer,
 
         //Please add all new roles with deathreason & new deathreason in Susceptible.CallEnabledAndChange

@@ -8,6 +8,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static TOHE.PlayerState;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 
@@ -34,7 +35,7 @@ internal class Hawk : RoleBase
     public static void SetupCustomOptions()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Hawk);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 120f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
+        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 120f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Seconds);
         HawkCanKillNum = IntegerOptionItem.Create(Id + 11, "HawkCanKillNum", new(1, 15, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Players);
@@ -109,6 +110,7 @@ internal class Hawk : RoleBase
         {
             killer.RpcMurderPlayer(target);
             killer.RpcResetAbilityCooldown();
+            target.SetDeathReason(PlayerState.DeathReason.Slice);
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
         }
