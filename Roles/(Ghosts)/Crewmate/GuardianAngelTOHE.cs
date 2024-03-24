@@ -69,7 +69,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         
         private static void OnOthersFixUpdate(PlayerControl player)
         {
-            if (PlayerShield.ContainsKey(player.PlayerId) && PlayerShield[player.PlayerId] + ProtectDur.GetInt() >= Utils.GetTimeStamp())
+            if (PlayerShield.ContainsKey(player.PlayerId) && PlayerShield[player.PlayerId] + ProtectDur.GetInt() <= Utils.GetTimeStamp())
             {
                 PlayerShield.Remove(player.PlayerId);
             }
