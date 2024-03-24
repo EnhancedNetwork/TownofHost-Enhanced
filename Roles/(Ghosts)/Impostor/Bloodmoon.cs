@@ -90,7 +90,7 @@ internal class Bloodmoon : RoleBase
     private static void OnFixUpdateOthers(PlayerControl pc)
     {
         if (PlayerDie.ContainsKey(pc.PlayerId) && GameStates.IsInTask)
-            DoNotifyRoles(SpecifyTarget: pc, ForceLoop: true);
+            DoNotifyRoles(SpecifyTarget: pc);
     }
     private static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
     public override string GetProgressText(byte playerId, bool cooms) => ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
