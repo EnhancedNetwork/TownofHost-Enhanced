@@ -62,7 +62,7 @@ public static class OptionShower
                     {
                         string mode = kvp.Value.GetString();
                         if (kvp.Key.IsAdditionRole())
-                            mode = GetString($"Chance{(Options.CustomAdtRoleSpawnRate.TryGetValue(kvp.Key, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}"); ;
+                            mode = GetString($"Chance{(Options.CustomAdtRoleSpawnRate.TryGetValue(kvp.Key, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}");
                         sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {mode}×{kvp.Key.GetCount()}\n"); 
                     }
                 pages.Add(sb.ToString() + "\n\n");
