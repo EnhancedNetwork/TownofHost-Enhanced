@@ -21,7 +21,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
-using UnityEngine.Bindings;
 
 namespace TOHE;
 
@@ -287,6 +286,7 @@ class CheckMurderPatch
 
         var killerRole = killer.GetCustomRole();
         var targetRole = target.GetCustomRole();
+        var targetSubRoles = target.GetCustomSubRoles();
 
         var targetRoleClass = target.GetRoleClass();
 
@@ -324,53 +324,54 @@ class CheckMurderPatch
             return false;
         }
 
-        foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
-        {
-            switch (targetSubRole)
+        if (targetSubRoles.Any())
+            foreach (var targetSubRole in targetSubRoles.ToArray())
             {
-                case CustomRoles.Diseased:
-                    Diseased.CheckMurder(killer);
-                    break;
+                switch (targetSubRole)
+                {
+                    case CustomRoles.Diseased:
+                        Diseased.CheckMurder(killer);
+                        break;
 
-                case CustomRoles.Antidote:
-                    Antidote.CheckMurder(killer);
-                    break;
+                    case CustomRoles.Antidote:
+                        Antidote.CheckMurder(killer);
+                        break;
 
-                case CustomRoles.Susceptible:
-                    Susceptible.CallEnabledAndChange(target);
-                    if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote)
-                        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill; // When susceptible is still alive "Vote" triggers role visibility for others.
-                    break;
+                    case CustomRoles.Susceptible:
+                        Susceptible.CallEnabledAndChange(target);
+                        if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote)
+                            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill; // When susceptible is still alive "Vote" triggers role visibility for others.
+                        break;
 
-                case CustomRoles.Fragile:
-                    if (Fragile.KillFragile(killer, target))
-                        return false;
-                    break;
+                    case CustomRoles.Fragile:
+                        if (Fragile.KillFragile(killer, target))
+                            return false;
+                        break;
 
-                case CustomRoles.Aware:
-                    Aware.OnCheckMurder(killerRole, target);
-                    break;
+                    case CustomRoles.Aware:
+                        Aware.OnCheckMurder(killerRole, target);
+                        break;
 
-                case CustomRoles.Lucky:
-                    if (!Lucky.OnCheckMurder(killer, target))
-                        return false;
-                    break;
+                    case CustomRoles.Lucky:
+                        if (!Lucky.OnCheckMurder(killer, target))
+                            return false;
+                        break;
 
-                case CustomRoles.Cyber when killer.PlayerId != target.PlayerId:
-                    foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToArray())
-                    {
-                        if (target.Is(CustomRoles.Cyber))
+                    case CustomRoles.Cyber when killer.PlayerId != target.PlayerId:
+                        foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToArray())
                         {
-                            if (Main.AllAlivePlayerControls.Any(x =>
-                                x.PlayerId != killer.PlayerId &&
-                                x.PlayerId != target.PlayerId &&
-                                Vector2.Distance(x.transform.position, target.transform.position) < 2f))
-                                return false;
+                            if (target.Is(CustomRoles.Cyber))
+                            {
+                                if (Main.AllAlivePlayerControls.Any(x =>
+                                    x.PlayerId != killer.PlayerId &&
+                                    x.PlayerId != target.PlayerId &&
+                                    Vector2.Distance(x.transform.position, target.transform.position) < 2f))
+                                    return false;
+                            }
                         }
-                    }
-                    break;
+                        break;
+                }
             }
-        }
 
         // Check Murder as target
         if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
