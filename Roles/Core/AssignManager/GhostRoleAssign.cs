@@ -27,9 +27,8 @@ public static class GhostRoleAssign
         var getplrRole = player.GetCustomRole();
         if (getplrRole is CustomRoles.GM or CustomRoles.Nemesis or CustomRoles.Retributionist) return;
 
-        var IsCrewmate = getplrRole.IsCrewmate() && !player.IsAnySubRole(x => x.IsConverted());
-        var IsImpostor = getplrRole.IsImpostor() && !player.IsAnySubRole(x => x.IsConverted());
-        var IsNeutral = getplrRole.IsNeutral();
+        var IsCrewmate = getplrRole.IsCrewmate() && (!player.IsAnySubRole(x => x.IsConverted() || Options.ConvertedCanBecomeGhost.GetBool()));
+        var IsImpostor = getplrRole.IsImpostor() && (!player.IsAnySubRole(x => x.IsConverted() || Options.ConvertedCanBecomeGhost.GetBool()));
 
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole() || x == CustomRoles.Gravestone) || Options.CustomGhostRoleCounts.Count <= 0) return;
 
@@ -109,17 +108,12 @@ public static class GhostRoleAssign
             return;
         }
 
-        if (IsNeutral)
-        {
-            return;
-        }
-
     }
     public static void Init() 
     {
         CrewCount = 0;
         ImpCount = 0;
-        getCount.Clear(); // Remove oldcount
+        getCount.Clear(); 
         GhostGetPreviousRole.Clear();
     }
     public static void Add()
