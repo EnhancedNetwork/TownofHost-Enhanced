@@ -2186,7 +2186,7 @@
   "Message.YTPlanNotice": "提醒: 該房間已啟用【創作者素材保護計畫】，房主可以指定自己的職業。\n該功能只允許創作者錄製影片素材，如有濫用情況，請退出遊戲或舉報。\n目前創作者認證:",
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>錯誤</b></size></color>\n<color=#ff1919>該指令只能由房主使用</color>",
   "Message.MaxPlayers": "最大玩家數量已設定為 ",
-  "Message.GhostRoleInfo": "<size=90%><b>Ghost Role Info</b></size>\n<size=50%><i>Currently in testing phase, use with caution. User might experience blackscreen when using them currently.</i></size>\n\nHiya! A little bit about ghost roles...<size=75%>\n\nGhost roles drastically impact the game, so not recommended for smaller lobbies, if you're unfamiliar.\n\n<b>Spawning:</b>\nGhost-roles only spawn after death, the first x people from (team) to die get them.</size>\n\n<size=50%><b>PS: If your previous role didn't have tasks(e.g sheriff), your tasks as a ghost-role aren't needed for task-win</b></size>",
+  "Message.GhostRoleInfo": "<size=90%>關於幽靈職業</size>\n你好!這裡是有關於幽靈職業的一些介紹<size=75%>\n\n請注意: 幽靈職業會對遊戲產生極大的影響，因此如果您不熟悉幽靈職業，不建議在小型房間中使用。\n\n<b>幽靈職業的生成:</b>\n幽靈職業只有在死亡後才會出現，一個陣營中最先死亡的玩家將會獲得幽靈職業。</size>\n\n<size=50%>注意：如果您以前的職業沒有任務(例如: 警長)，則您作為幽靈職業的任務不需要用於任務勝利</b></size>",
   "EnableGadientTags": "啟用漸層標籤<color=#ff0000>(可能導致斷線)</color>",
   "Warning.GradientTags": "<color=#ff0000><size=150%>警告:</size></color>\n\n房主開啟了漸變標籤，該功能不建議開啟，因為這可能會造成<b>連接中斷問題</b>",
   "WarningTitle": "警告!",

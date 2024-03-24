@@ -65,9 +65,9 @@ internal class Hawk : RoleBase
     }
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
-        if (CheckRetriConflicts(killer, target))
+        if (CheckRetriConflicts(killer, target) && killer.RpcCheckAndMurder(target, true))
         {
-            killer.RpcMurderPlayerV3(target);
+            killer.RpcMurderPlayer(target);
             killer.RpcResetAbilityCooldown();
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);

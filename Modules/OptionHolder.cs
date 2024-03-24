@@ -1612,6 +1612,8 @@ public static class Options
 
         Overclocked.SetupCustomOptions();
 
+        Seer.SetupCustomOptions();
+
         Silent.SetupCustomOptions();
 
         Sleuth.SetupCustomOptions();

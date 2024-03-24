@@ -671,6 +671,10 @@ static class ExtendedPlayerControl
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         Utils.NotifyRoles();
     }
+    public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
+    {
+        killer.RpcMurderPlayer(target, true);
+    }
 
     public static void AddInSwitchAddons(PlayerControl Killed, PlayerControl target, CustomRoles Addon = CustomRoles.NotAssigned, CustomRoles? IsAddon = CustomRoles.NotAssigned)
     {
@@ -706,6 +710,7 @@ static class ExtendedPlayerControl
         }
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false) => CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
+    public static bool CheckForInvalidMurdering(this PlayerControl killer, PlayerControl target) => CheckMurderPatch.CheckForInvalidMurdering(killer, target);
     public static void NoCheckStartMeeting(this PlayerControl reporter, GameData.PlayerInfo target, bool force = false)
     { 
         //Method that can cause a meeting to occur regardless of whether it is in sabotage.

@@ -25,15 +25,14 @@ public static class Avanger
 
     public static void OnMurderPlayer(PlayerControl target)
     {
-        var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !Pelican.IsEaten(x.PlayerId) && !Medic.ProtectList.Contains(x.PlayerId)
-            && !x.Is(CustomRoles.Pestilence) && !x.Is(CustomRoles.Masochist) && !x.Is(CustomRoles.Solsticer) && !((x.Is(CustomRoles.NiceMini) || x.Is(CustomRoles.EvilMini)) && Mini.Age < 18)).ToList();
+        var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && x.RpcCheckAndMurder(target, true)).ToList();
         
         if (pcList.Count > 0)
         {
             PlayerControl rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
             Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
             rp.SetRealKiller(target);
-            rp.RpcMurderPlayerV3(rp);
+            rp.RpcMurderPlayer(rp);
         }
     }
 }

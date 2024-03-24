@@ -72,12 +72,11 @@ internal class Bloodmoon : RoleBase
     }
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
-        if (!target.Is(CustomRoles.Pestilence) 
-            && KillCount[killer.PlayerId] > 0 
+        if (KillCount[killer.PlayerId] > 0 
             && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
-            && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18))
+            && killer.RpcCheckAndMurder(target, true))
         {
-            killer.RpcMurderPlayerV3(target);
+            killer.RpcMurderPlayer(target);
             killer.RpcResetAbilityCooldown();
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);

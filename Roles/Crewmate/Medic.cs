@@ -174,11 +174,11 @@ internal class Medic : RoleBase
         Logger.Info($"{killer.GetNameWithRole()} : {ProtectLimit[killer.PlayerId]} shields left", "Medic");
         return false;
     }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (!ProtectList.Contains(target.PlayerId)) return false;
-        if (killer.Is(CustomRoles.KillingMachine)) return false;
+        if (!ProtectList.Contains(target.PlayerId)) return true;
+
         SendRPCForProtectList();
 
         killer.RpcGuardAndKill(target);
@@ -216,7 +216,7 @@ internal class Medic : RoleBase
         }
 
         Logger.Info($"{target.GetNameWithRole()} : Shield Shatter from the Medic", "Medic");
-        return true;
+        return false;
     }
     public static void OnCheckMark()
     {

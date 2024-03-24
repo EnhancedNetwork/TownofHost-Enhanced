@@ -275,7 +275,7 @@ internal class Glitch : RoleBase
     public static bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
     {
         if (killer == target || killer == null) return true;
-        if (HasEnabled && hackedIdList.ContainsKey(killer.PlayerId))
+        if (hackedIdList.ContainsKey(killer.PlayerId))
         {
             killer.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchKill")));
             return false;

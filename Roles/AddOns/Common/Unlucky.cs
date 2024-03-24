@@ -55,7 +55,7 @@ public static class Unlucky
         if (Ue.Next(1, 100) <= UnluckyTaskSuicideChance.GetInt())
         {
             Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-            victim.RpcMurderPlayerV3(victim);
+            victim.RpcMurderPlayer(victim);
             UnluckCheck[victim.PlayerId] = true;
         }
     }

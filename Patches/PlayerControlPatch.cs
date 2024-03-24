@@ -127,12 +127,46 @@ class CheckMurderPatch
         if (!AmongUsClient.Instance.AmHost) return false;
         if (GameStates.IsHideNSeek) return true;
 
-        var killer = __instance; // Alternative variable
-
+        var killer = __instance;
         var killerRole = __instance.GetCustomRole();
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
+        if (!CheckForInvalidMurdering(killer, target))
+        {
+            return false;
+        }
+
+        // Set kill cooldown for Chronomancer
+        if (killerRole.Is(CustomRoles.Chronomancer))
+            Chronomancer.OnCheckMurder(killer);
+
+        killer.ResetKillCooldown();
+
+        // Replacement process when the actual killer and the KILLER are different
+        if (Sniper.On)
+        {
+            Sniper.TryGetSniper(target.PlayerId, ref killer);
+            
+            if (killer != __instance)
+            {
+                Logger.Info($"Real Killer = {killer.GetNameWithRole().RemoveHtmlTags()}", "Sniper.CheckMurder");
+            }
+        }
+
+        if (CustomRoleManager.OnCheckMurder(killer, target) == false)
+        {
+            return false;
+        }
+
+        //== Kill target ==
+        __instance.RpcMurderPlayer(target);
+        //============
+
+        return false;
+    }
+    public static bool CheckForInvalidMurdering(PlayerControl killer, PlayerControl target)
+    {
         // Killer is already dead
         if (!killer.IsAlive())
         {
@@ -177,11 +211,32 @@ class CheckMurderPatch
         }
         TimeSinceLastKill[killer.PlayerId] = 0f;
 
+        // killable decision
+        if (killer.PlayerId != target.PlayerId && !killer.CanUseKillButton())
+        {
+            Logger.Info(killer.GetNameWithRole().RemoveHtmlTags() + " The hitter is not allowed to use the kill button and the kill is canceled", "CheckMurder");
+            return false;
+        }
+
         //FFA
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
             FFAManager.OnPlayerAttack(killer, target);
             return true;
+        }
+
+        // if player hacked by Glitch
+        if (Glitch.HasEnabled && !Glitch.OnCheckMurderOthers(killer, target))
+        {
+            Logger.Info("Is hacked by Glitch, it cannot kill", "Pelican.CheckMurder");
+            return false;
+        }
+
+        //Is eaten player can't be killed.
+        if (Pelican.IsEaten(target.PlayerId))
+        {
+            Logger.Info("Is eaten player can't be killed", "Pelican.CheckMurder");
+            return false;
         }
 
         // Penguin's victim unable to kill
@@ -192,146 +247,7 @@ class CheckMurderPatch
             return false;
         }
 
-        if (killerRole.Is(CustomRoles.Chronomancer))
-            Chronomancer.OnCheckMurder(killer);
-
-        killer.ResetKillCooldown();
-
-        // killable decision
-        if (killer.PlayerId != target.PlayerId && !killer.CanUseKillButton())
-        {
-            Logger.Info(killer.GetNameWithRole().RemoveHtmlTags() + " The hitter is not allowed to use the kill button and the kill is canceled", "CheckMurder");
-            return false;
-        }
-
-        // Replacement process when the actual killer and the KILLER are different
-        if (Sniper.On)
-        {
-            Sniper.TryGetSniper(target.PlayerId, ref killer);
-        }
-
-        if (killer != __instance)
-        {
-            Logger.Info($"Real Killer = {killer.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
-        }
-
-        if (!Glitch.OnCheckMurderOthers(killer, target))
-        {
-            return false;
-        }
-
-        var killerRoleClass = killer.GetRoleClass();
-        var targetRoleClass = target.GetRoleClass();
-
-        // Forced check
-        if (!killerRoleClass.ForcedCheckMurderAsKiller(killer, target))
-        {
-            return false;
-        }
-
-        // Check murder on others targets
-        if (!CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target))
-        {
-            return false;
-        }
-
-        // Check Murder on target
-        if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
-        {
-            return false;
-        }
-
-        if (Mastermind.PlayerIsManipulated(killer) && !Mastermind.ForceKillForManipulatedPlayer(killer, target))
-        {
-            return false;
-        }
-
-        if (Medic.HasEnabled && Medic.OnCheckMurder(killer, target))
-            return false;
-
-        //Is eaten player can't be killed.
-        if (Pelican.IsEaten(target.PlayerId))
-            return false;
-
-        if (Pursuer.HasEnabled && Pursuer.OnTargetMurders(killer))
-            return false;
-
-        if (Shaman.HasEnabled) target = Shaman.ChangeTarget(target);
-
-        // Check murder as killer
-        if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
-        {
-            return false;
-        }
-
-
-        foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
-        {
-            switch (targetSubRole)
-            {
-                case CustomRoles.Diseased:
-                    Diseased.CheckMurder(killer);
-                    break;
-
-                case CustomRoles.Antidote:
-                    Antidote.CheckMurder(killer);
-                    break;
-
-                case CustomRoles.Susceptible:
-                    Susceptible.CallEnabledAndChange(target);
-                   if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote)
-                        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill; // When susceptible is still alive "Vote" triggers role visibility for others.
-                    break;
-
-                case CustomRoles.Fragile:
-                    if (Fragile.KillFragile(killer, target))
-                        return false;
-                    break;
-
-                case CustomRoles.Aware:
-                    Aware.OnCheckMurder(killerRole, target);
-                    break;
-            }
-        }
-
-        if (!killer.RpcCheckAndMurder(target, true))
-            return false;
-
-        foreach (var killerSubRole in killer.GetCustomSubRoles().ToArray())
-        {
-            switch (killerSubRole)
-            {
-                case CustomRoles.Mare:
-                    if (Mare.IsLightsOut)
-                        return false;
-                    break;
-
-                case CustomRoles.Unlucky:
-                    Unlucky.SuicideRand(killer);
-                    if (Unlucky.UnluckCheck[killer.PlayerId]) return false;
-                    break;
-
-                case CustomRoles.Tired:
-                    Tired.AfterActionTasks(killer);
-                    break;
-
-                case CustomRoles.Clumsy:
-                    if (!Clumsy.OnCheckMurder(killer))
-                        return false;
-                    break;
-
-                case CustomRoles.Swift:
-                    if (!Swift.OnCheckMurder(killer, target))
-                        return false;
-                    break;
-            }
-        }
-
-        //== Kill target ==
-        __instance.RpcMurderPlayerV3(target);
-        //============
-
-        return false;
+        return true;
     }
 
     public static bool RpcCheckAndMurder(PlayerControl killer, PlayerControl target, bool check = false)
@@ -340,35 +256,20 @@ class CheckMurderPatch
 
         if (target == null) target = killer;
 
+        // Shaman replace target
+        if (Shaman.HasEnabled && Shaman.ShamanTarget != byte.MaxValue)
+        {
+            Logger.Info($"Real target before = {target.GetNameWithRole().RemoveHtmlTags()}", "Shaman.CheckMurder");
+
+            target = Shaman.ChangeTarget(target);
+
+            Logger.Info($"Real target after = {target.GetNameWithRole().RemoveHtmlTags()}", "Shaman.CheckMurder");
+        }
+
         var killerRole = killer.GetCustomRole();
         var targetRole = target.GetCustomRole();
 
         var targetRoleClass = target.GetRoleClass();
-
-        // Jackal
-        if (!Jackal.RpcCheckAndMurder(killer, target)) return false;
-
-
-        // Impostors can kill Madmate
-        if (killer.Is(CustomRoleTypes.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
-            return false;
-
-        foreach (var killerSubRole in killer.GetCustomSubRoles().ToArray())
-        {
-            switch (killerSubRole)
-            {
-                case CustomRoles.Madmate when target.Is(CustomRoleTypes.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
-                case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTargets:
-                case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
-                    return false;
-            }
-        }
-
-        if (target.Is(CustomRoles.Lucky))
-        {
-            if (!Lucky.OnCheckMurder(killer, target))
-                return false;
-        }
 
         // Shield Player
         if (Main.ShieldPlayer != "" && Main.ShieldPlayer == target.GetClient().GetHashedPuid() && Utils.IsAllAlive)
@@ -390,41 +291,75 @@ class CheckMurderPatch
             killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Madmate.ToString(), "Assign " + CustomRoles.Madmate.ToString());
+            Logger.Info($"Madmate Spawn: {target?.Data?.PlayerName} = {target.GetCustomRole()} + {CustomRoles.Madmate}", "Assign Madmate");
             return false;
         }
 
-        switch (targetRole)
+        // Impostors can kill Madmate
+        if (killer.Is(CustomRoleTypes.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
+            return false;
+
+        // Check murder on others targets
+        if (!CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target))
         {
-            case CustomRoles.Monarch when CustomRoles.Knighted.RoleExist():
-                return false;
-            case CustomRoles.Pestilence: // 🗿🗿
-                if (killer != null && killer != target)
-                    { Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; ExtendedPlayerControl.RpcMurderPlayerV3(killer, target); }
-                    else if (target.GetRealKiller() != null && target.GetRealKiller() != target && killer != null)
-                        { Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; ExtendedPlayerControl.RpcMurderPlayerV3(target.GetRealKiller(), target);  }
-                return false;
+            return false;
         }
 
-        if (killer.PlayerId != target.PlayerId)
+        foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
         {
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToArray())
-            {                
-                if (target.Is(CustomRoles.Cyber))
-                {
-                    if (Main.AllAlivePlayerControls.Any(x =>
-                        x.PlayerId != killer.PlayerId &&
-                        x.PlayerId != target.PlayerId &&
-                        Vector2.Distance(x.transform.position, target.transform.position) < 2f))
+            switch (targetSubRole)
+            {
+                case CustomRoles.Diseased:
+                    Diseased.CheckMurder(killer);
+                    break;
+
+                case CustomRoles.Antidote:
+                    Antidote.CheckMurder(killer);
+                    break;
+
+                case CustomRoles.Susceptible:
+                    Susceptible.CallEnabledAndChange(target);
+                    if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote)
+                        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill; // When susceptible is still alive "Vote" triggers role visibility for others.
+                    break;
+
+                case CustomRoles.Fragile:
+                    if (Fragile.KillFragile(killer, target))
                         return false;
-                }
+                    break;
+
+                case CustomRoles.Aware:
+                    Aware.OnCheckMurder(killerRole, target);
+                    break;
+
+                case CustomRoles.Lucky:
+                    if (!Lucky.OnCheckMurder(killer, target))
+                        return false;
+                    break;
+
+                case CustomRoles.Cyber when killer.PlayerId != target.PlayerId:
+                    foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToArray())
+                    {
+                        if (target.Is(CustomRoles.Cyber))
+                        {
+                            if (Main.AllAlivePlayerControls.Any(x =>
+                                x.PlayerId != killer.PlayerId &&
+                                x.PlayerId != target.PlayerId &&
+                                Vector2.Distance(x.transform.position, target.transform.position) < 2f))
+                                return false;
+                        }
+                    }
+                    break;
             }
         }
 
+        // Check Murder on target
         if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
+        {
             return false;
+        }
 
-        if (!check) killer.RpcMurderPlayerV3(target);
+        if (!check) killer.RpcMurderPlayer(target);
         return true;
     }
 }
@@ -804,7 +739,7 @@ class ReportDeadBodyPatch
                     if (Ue.Next(1, 100) <= Unlucky.UnluckyReportSuicideChance.GetInt())
                     {
                         Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                        __instance.RpcMurderPlayerV3(__instance);
+                        __instance.RpcMurderPlayer(__instance);
                         return false;
                     }
                 }
@@ -1296,7 +1231,7 @@ class FixedUpdateInNormalGamePatch
                             if (isExiled)
                                 CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
                             else
-                                partnerPlayer.RpcMurderPlayerV3(partnerPlayer);
+                                partnerPlayer.RpcMurderPlayer(partnerPlayer);
                         }
                     }
                 }

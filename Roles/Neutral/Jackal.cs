@@ -270,7 +270,7 @@ internal class Jackal : RoleBase
     public override string GetProgressText(byte playerId, bool comms)
         => CanRecruitSidekick.GetBool() ? GetRecruitLimit(playerId) : "";
 
-    public static bool RpcCheckAndMurder(PlayerControl killer, PlayerControl target)
+    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         if (!JackalCanKillSidekick.GetBool())
         {
