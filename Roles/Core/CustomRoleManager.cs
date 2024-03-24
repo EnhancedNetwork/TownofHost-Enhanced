@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Core;
@@ -69,9 +68,9 @@ public static class CustomRoleManager
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
         bool cancel = false;
-        foreach (var player in Main.PlayerStates.Values.ToArray())
+        foreach (var player in Main.AllAlivePlayerControls)
         {
-            var playerRoleClass = player.RoleClass;
+            var playerRoleClass = player.GetRoleClass();
             if (player == null || playerRoleClass == null) continue;
 
             if (!playerRoleClass.CheckMurderOnOthersTarget(killer, target))
@@ -86,9 +85,10 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        var killerRoleClass = killer.GetRoleClass();
-
         if (killer == target) return true;
+
+        var killerRoleClass = killer.GetRoleClass();
+        var killerSubRoles = killer.GetCustomSubRoles();
 
         // Forced check
         if (!killerRoleClass.ForcedCheckMurderAsKiller(killer, target))
@@ -102,40 +102,41 @@ public static class CustomRoleManager
             return false;
         }
 
-        foreach (var killerSubRole in killer.GetCustomSubRoles().ToArray())
-        {
-            switch (killerSubRole)
+        if (killerSubRoles.Any())
+            foreach (var killerSubRole in killerSubRoles.ToArray())
             {
-                case CustomRoles.Madmate when target.Is(CustomRoleTypes.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
-                case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTargets:
-                case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
-                    return false;
-
-                case CustomRoles.Mare:
-                    if (Mare.IsLightsOut)
+                switch (killerSubRole)
+                {
+                    case CustomRoles.Madmate when target.Is(CustomRoleTypes.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
+                    case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTargets:
+                    case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
                         return false;
-                    break;
 
-                case CustomRoles.Unlucky:
-                    Unlucky.SuicideRand(killer);
-                    if (Unlucky.UnluckCheck[killer.PlayerId]) return false;
-                    break;
+                    case CustomRoles.Mare:
+                        if (Mare.IsLightsOut)
+                            return false;
+                        break;
 
-                case CustomRoles.Tired:
-                    Tired.AfterActionTasks(killer);
-                    break;
+                    case CustomRoles.Unlucky:
+                        Unlucky.SuicideRand(killer);
+                        if (Unlucky.UnluckCheck[killer.PlayerId]) return false;
+                        break;
 
-                case CustomRoles.Clumsy:
-                    if (!Clumsy.OnCheckMurder(killer))
-                        return false;
-                    break;
+                    case CustomRoles.Tired:
+                        Tired.AfterActionTasks(killer);
+                        break;
 
-                case CustomRoles.Swift:
-                    if (!Swift.OnCheckMurder(killer, target))
-                        return false;
-                    break;
+                    case CustomRoles.Clumsy:
+                        if (!Clumsy.OnCheckMurder(killer))
+                            return false;
+                        break;
+
+                    case CustomRoles.Swift:
+                        if (!Swift.OnCheckMurder(killer, target))
+                            return false;
+                        break;
+                }
             }
-        }
 
         // Check murder as killer
         if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
@@ -286,9 +287,9 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OthersCoEnterVent(PlayerPhysics physics, int ventId)
     {
-        foreach (var player in Main.PlayerStates.Values.ToArray())
+        foreach (var player in Main.AllAlivePlayerControls)
         {
-            var playerRoleClass = player.RoleClass;
+            var playerRoleClass = player.GetRoleClass();
             if (player == null || playerRoleClass == null) continue;
 
             if (playerRoleClass.OnCoEnterVentOthers(physics, ventId))

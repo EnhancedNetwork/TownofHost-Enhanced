@@ -13,19 +13,20 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Medium : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8700;
-    public static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Medium.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem ContactLimitOpt;
     private static OptionItem OnlyReceiveMsgFromCrew;
     private static OptionItem MediumAbilityUseGainWithEachTaskCompleted;
 
-    private static Dictionary<byte, byte> ContactPlayer = [];
-    private static Dictionary<byte, float> ContactLimit = [];
+    private static readonly Dictionary<byte, byte> ContactPlayer = [];
+    private static readonly Dictionary<byte, float> ContactLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -41,16 +42,14 @@ internal class Medium : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        ContactPlayer = [];
-        ContactLimit = [];
-        On = false;
+        playerIdList.Clear();
+        ContactPlayer.Clear();
+        ContactLimit.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         ContactLimit.Add(playerId, ContactLimitOpt.GetInt());
-        On = true;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -83,7 +82,7 @@ internal class Medium : RoleBase
         if (isUsed)
         {
             byte targetId = reader.ReadByte();
-            ContactPlayer = [];
+            ContactPlayer.Clear();
             ContactPlayer.TryAdd(targetId, pid);
         }
     }
@@ -95,7 +94,7 @@ internal class Medium : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reported, PlayerControl target)
     {
-        ContactPlayer = [];
+        ContactPlayer.Clear();
         if (target == null) return;
 
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId) && x.PlayerId != target.PlayerId).ToArray())

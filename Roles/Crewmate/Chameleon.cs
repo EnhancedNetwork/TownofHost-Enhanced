@@ -15,11 +15,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Chameleon : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 7600;
-    private static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem ChameleonCooldown;
     private static OptionItem ChameleonDuration;
@@ -27,9 +29,9 @@ internal class Chameleon : RoleBase
     private static OptionItem ChameleonAbilityUseGainWithEachTaskCompleted;
 
     private static Dictionary<byte, long> InvisTime = [];
-    private static Dictionary<byte, long> lastTime = [];
-    private static Dictionary<byte, int> ventedId = [];
-    private static Dictionary<byte, float> UseLimit = [];
+    private static readonly Dictionary<byte, long> lastTime = [];
+    private static readonly Dictionary<byte, int> ventedId = [];
+    private static readonly Dictionary<byte, float> UseLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -46,18 +48,16 @@ internal class Chameleon : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        InvisTime = [];
-        lastTime = [];
-        ventedId = [];
-        UseLimit = [];
-        On = false;
+        playerIdList.Clear();
+        InvisTime.Clear();
+        lastTime.Clear();
+        ventedId.Clear();
+        UseLimit.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         UseLimit.Add(playerId, UseLimitOpt.GetInt());
-        On = true;
     }
     public static void SendRPC(PlayerControl pc, bool isLimit = false)
     {
@@ -90,9 +90,9 @@ internal class Chameleon : RoleBase
             UseLimit[pid] = limit;
         }
         else 
-        { 
-            InvisTime = [];
-            lastTime = [];
+        {
+            InvisTime.Clear();
+            lastTime.Clear();
             long invis = long.Parse(reader.ReadString());
             long last = long.Parse(reader.ReadString());
             if (invis > 0) InvisTime.Add(pid, invis);
@@ -111,8 +111,8 @@ internal class Chameleon : RoleBase
     private static long lastFixedTime = 0;
     public override void OnReportDeadBody(PlayerControl y, PlayerControl x)
     {
-        lastTime = [];
-        InvisTime = [];
+        lastTime.Clear();
+        InvisTime.Clear();
 
         foreach (var chameleonId in playerIdList.ToArray())
         {
@@ -124,12 +124,12 @@ internal class Chameleon : RoleBase
             SendRPC(chameleon);
         }
 
-        ventedId = [];
+        ventedId.Clear();
     }
     public override void AfterMeetingTasks()
     {
-        lastTime = [];
-        InvisTime = [];
+        lastTime.Clear();
+        InvisTime.Clear();
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
         {
             lastTime.Add(pc.PlayerId, GetTimeStamp());

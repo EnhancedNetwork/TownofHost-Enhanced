@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Modules;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -10,20 +10,21 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Deceiver : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 10500;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Deceiver.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem DeceiverSkillCooldown;
     private static OptionItem DeceiverSkillLimitTimes;
     private static OptionItem DeceiverAbilityLost;
 
-    private static List<byte> playerIdList = [];
-    private static List<byte> notActiveList = [];
-    private static Dictionary<byte, List<byte>> clientList = [];
-    private static Dictionary<byte, int> SeelLimit = [];
+    private static readonly HashSet<byte> notActiveList = [];
+    private static readonly Dictionary<byte, HashSet<byte>> clientList = [];
+    private static readonly Dictionary<byte, int> SeelLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -36,17 +37,15 @@ internal class Deceiver : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        clientList = [];
-        notActiveList = [];
-        SeelLimit = [];
-        On = false;
+        playerIdList.Clear();
+        clientList.Clear();
+        notActiveList.Clear();
+        SeelLimit.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         SeelLimit.Add(playerId, DeceiverSkillLimitTimes.GetInt());
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))

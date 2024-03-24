@@ -16,7 +16,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Retributionist : RoleBase
 {
-    public const int Id = 11000;
+    private const int Id = 11000;
     private static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.Retributionist.HasEnabled();

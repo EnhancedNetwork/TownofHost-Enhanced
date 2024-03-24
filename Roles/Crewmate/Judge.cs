@@ -14,12 +14,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Judge : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 10700;
-    private static List<byte> playerIdList = [];
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Judge.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     public static OptionItem TrialLimitPerMeeting;
     private static OptionItem TryHideMsg;
@@ -33,7 +34,8 @@ internal class Judge : RoleBase
     private static OptionItem CanTrialNeutralK;
     private static OptionItem CanTrialNeutralE;
     private static OptionItem CanTrialNeutralC;
-    public static Dictionary<byte, int> TrialLimit;
+
+    private static readonly Dictionary<byte, int> TrialLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -55,15 +57,13 @@ internal class Judge : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        TrialLimit = [];
-        On = false;
+        playerIdList.Clear();
+        TrialLimit.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         TrialLimit.Add(playerId, TrialLimitPerMeeting.GetInt());
-        On = true;
     }
     public override void Remove(byte playerId)
     {

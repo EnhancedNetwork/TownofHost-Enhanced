@@ -9,11 +9,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Captain : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 26300;
-
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem OptionCrewCanFindCaptain;
     private static OptionItem OptionMadmateCanFindCaptain;
@@ -26,8 +28,8 @@ internal class Captain : RoleBase
     private static OptionItem CaptainCanTargetNE;
     private static OptionItem CaptainCanTargetNK;
 
-    private static Dictionary<byte, float> OriginalSpeed = [];
-    private static Dictionary<byte, List<byte>> CaptainVoteTargets = [];
+    private static readonly Dictionary<byte, float> OriginalSpeed = [];
+    private static readonly Dictionary<byte, List<byte>> CaptainVoteTargets = [];
 
     public static void SetupCustomOption()
     {
@@ -49,16 +51,14 @@ internal class Captain : RoleBase
 
     public override void Init()
     {
-        //playerIdList = [];
-        On = false;
-        OriginalSpeed = [];
-        CaptainVoteTargets = [];
+        playerIdList.Clear();
+        OriginalSpeed.Clear();
+        CaptainVoteTargets.Clear();
     }
 
     public override void Add(byte playerId)
     {
-        //playerIdList.Add(playerId);
-        On = true;
+        playerIdList.Add(playerId);
     }
     private static void SendRPCSetSpeed(byte targetId)
     {

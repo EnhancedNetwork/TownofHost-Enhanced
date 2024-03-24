@@ -15,14 +15,17 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Grenadier : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8200;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
-    private static Dictionary<byte, long> GrenadierBlinding = [];
-    private static Dictionary<byte, long> MadGrenadierBlinding = [];
-    private static Dictionary<byte, float> GrenadierNumOfUsed = [];
+    private static readonly Dictionary<byte, long> GrenadierBlinding = [];
+    private static readonly Dictionary<byte, long> MadGrenadierBlinding = [];
+    private static readonly Dictionary<byte, float> GrenadierNumOfUsed = [];
 
     private static OptionItem GrenadierSkillCooldown;
     private static OptionItem GrenadierSkillDuration;
@@ -49,16 +52,15 @@ internal class Grenadier : RoleBase
 
     public override void Init()
     {
-        GrenadierBlinding = [];
-        MadGrenadierBlinding = [];
-        GrenadierNumOfUsed = [];
-        On = false;
+        playerIdList.Clear();
+        GrenadierBlinding.Clear();
+        MadGrenadierBlinding.Clear();
+        GrenadierNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
-        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnGrenaderFixOthers);
         GrenadierNumOfUsed.Add(playerId, GrenadierSkillMaxOfUseage.GetInt());
-        On = true;
+        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnGrenaderFixOthers);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

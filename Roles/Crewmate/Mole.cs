@@ -43,7 +43,7 @@ internal class Mole : RoleBase
     }
     public override void OnExitVent(PlayerControl pc, int ventId)
     {
-        if (!pc.Is(CustomRoles.Mole)) return;
+        float delay = Utils.GetActiveMapId() != 5 ? 0.1f : 0.4f;
 
         _ = new LateTask(() =>
         {
@@ -53,7 +53,7 @@ internal class Mole : RoleBase
 
             Logger.Info($" {vent.transform.position}", "Mole vent teleport");
             pc.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));
-        }, 0.1f, "Mole On Exit Vent");
+        }, delay, "Mole On Exit Vent");
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

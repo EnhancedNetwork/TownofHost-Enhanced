@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -10,12 +9,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Crusader : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 10400;
     private static readonly HashSet<byte> playerIdList = [];
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Crusader.HasEnabled();
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem SkillLimitOpt;
     private static OptionItem SkillCooldown;
@@ -38,14 +38,12 @@ internal class Crusader : RoleBase
         ForCrusade.Clear();
         CrusaderLimit.Clear();
         CurrentKillCooldown.Clear();
-        On = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CrusaderLimit.Add(playerId, SkillLimitOpt.GetInt());
         CurrentKillCooldown.Add(playerId, SkillCooldown.GetFloat());
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))

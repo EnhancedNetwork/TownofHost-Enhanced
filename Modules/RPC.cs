@@ -823,8 +823,6 @@ internal static class RPC
             case CustomRoles.Workhorse:
                 Workhorse.Add(targetId);
                 break;
-            case CustomRoles.ChiefOfPolice:
-                ChiefOfPolice.Add(targetId);
                 break;
             case CustomRoles.Diseased:
                 Diseased.Add();

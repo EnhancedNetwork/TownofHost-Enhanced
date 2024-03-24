@@ -1,24 +1,24 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
-using TOHE.Roles.Core;
 using UnityEngine;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Knight : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 10800;
-    public static List<byte> playerIdList = [];
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Knight.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem CanVent;
     private static OptionItem KillCooldown;
 
-    private static List<byte> killed = [];
+    private static readonly HashSet<byte> killed = [];
 
     public static void SetupCustomOption()
     {
@@ -29,14 +29,12 @@ internal class Knight : RoleBase
     }
     public override void Init()
     {
-        killed = [];
-        playerIdList = [];
-        On = false;
+        playerIdList.Clear();
+        killed.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))

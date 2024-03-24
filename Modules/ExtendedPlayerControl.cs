@@ -503,7 +503,7 @@ static class ExtendedPlayerControl
     }
     public static void ResetKillCooldown(this PlayerControl player)
     {
-        Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
+        Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //Set default kill cooldown first
 
         // FFA
         if (player.Is(CustomRoles.Killer))
@@ -824,7 +824,7 @@ static class ExtendedPlayerControl
             else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool())
                 return true;
         }
-        else if (Admirer.On && Admirer.CheckKnowRoleTarget(seer, target)) return true;
+        else if (Admirer.HasEnabled && Admirer.CheckKnowRoleTarget(seer, target)) return true;
         else if (Cultist.HasEnabled && Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.HasEnabled && Infectious.KnowRole(seer, target)) return true;
         else if (Virus.HasEnabled && Virus.KnowRole(seer, target)) return true;

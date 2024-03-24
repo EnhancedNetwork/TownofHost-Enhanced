@@ -8,15 +8,15 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Bodyguard : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 10300;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Bodyguard.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem ProtectRadiusOpt;
-
-    private static HashSet<byte> playerList = [];
 
     public static void SetupCustomOptions()
     {
@@ -27,19 +27,17 @@ internal class Bodyguard : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerList.Add(playerId);
-        On = true;
+        playerIdList.Add(playerId);
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer.PlayerId == target.PlayerId || playerList.Count <= 0) return true;
+        if (killer.PlayerId == target.PlayerId || playerIdList.Count <= 0) return true;
 
-        foreach (var bodyguardId in playerList.ToArray())
+        foreach (var bodyguardId in playerIdList.ToArray())
         {
             var bodyguard = Utils.GetPlayerById(bodyguardId);
             if (bodyguard == null || !bodyguard.IsAlive()) continue;

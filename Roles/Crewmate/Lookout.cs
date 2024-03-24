@@ -1,14 +1,18 @@
-﻿using static TOHE.Options;
+﻿using System.Collections.Generic;
+using static TOHE.Options;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Lookout : RoleBase
 {
-    public const int Id = 11800;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    //===========================SETUP================================\\
+    private const int Id = 11800;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     public static void SetupCustomOptions()
     {
@@ -17,11 +21,11 @@ internal class Lookout : RoleBase
     
     public override void Init()
     {
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)

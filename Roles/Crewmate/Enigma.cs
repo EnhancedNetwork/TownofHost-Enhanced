@@ -8,11 +8,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Enigma : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8100;
-    private static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem EnigmaClueStage1Tasks;
     private static OptionItem EnigmaClueStage2Tasks;
@@ -21,9 +23,9 @@ internal class Enigma : RoleBase
     private static OptionItem EnigmaClueStage3Probability;
     private static OptionItem EnigmaGetCluesWithoutReporting;
 
-    private static Dictionary<byte, string> MsgToSend = [];
-    private static Dictionary<byte, string> MsgToSendTitle = [];
-    private static Dictionary<byte, List<EnigmaClue>> ShownClues = [];
+    private static readonly Dictionary<byte, string> MsgToSend = [];
+    private static readonly Dictionary<byte, string> MsgToSendTitle = [];
+    private static readonly Dictionary<byte, HashSet<EnigmaClue>> ShownClues = [];
 
     private static readonly List<EnigmaClue> EnigmaClues =
     [
@@ -72,16 +74,14 @@ internal class Enigma : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        On = false;
-        ShownClues = [];
-        MsgToSend = [];
-        MsgToSendTitle = [];
+        playerIdList.Clear();
+        ShownClues.Clear();
+        MsgToSend.Clear();
+        MsgToSendTitle.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
         ShownClues.Add(playerId, []);
     }
     public override void Remove(byte playerId)
@@ -156,7 +156,7 @@ internal class Enigma : RoleBase
         if (MsgToSend.ContainsKey(pc.PlayerId))
             AddMsg(MsgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enigma), MsgToSendTitle[pc.PlayerId]));
     }
-    public override void MeetingHudClear() => MsgToSend = [];
+    public override void MeetingHudClear() => MsgToSend.Clear();
     private abstract class EnigmaClue
     {
         public int ClueStage { get; set; }

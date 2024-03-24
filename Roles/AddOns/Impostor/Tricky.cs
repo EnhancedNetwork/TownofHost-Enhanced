@@ -77,8 +77,9 @@ public static class Tricky
             PlayerState.DeathReason.Targeted => CustomRoles.Kamikaze.IsEnable(),
             PlayerState.DeathReason.Retribution => CustomRoles.Instigator.IsEnable(),
             PlayerState.DeathReason.WrongAnswer => CustomRoles.Quizmaster.IsEnable(),
-            PlayerState.DeathReason.Disconnected or PlayerState.DeathReason.Overtired or PlayerState.DeathReason.etc => false,
-            PlayerState.DeathReason.Kill or PlayerState.DeathReason.Vote => true,
+            PlayerState.DeathReason.Disconnected or PlayerState.DeathReason.Overtired or PlayerState.DeathReason.etc 
+                                or PlayerState.DeathReason.Vote => false,
+            PlayerState.DeathReason.Kill => true,
             _ => true,
         };
     }

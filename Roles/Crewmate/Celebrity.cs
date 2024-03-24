@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
@@ -11,16 +10,16 @@ internal class Celebrity : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6500;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Celebrity.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
     private static OptionItem ImpKnowCelebrityDead;
     private static OptionItem NeutralKnowCelebrityDead;
 
-    private static List<byte> CelebrityDead = [];
+    private static readonly HashSet<byte> CelebrityDead = [];
 
     public static void SetupCustomOptions()
     {
@@ -33,12 +32,12 @@ internal class Celebrity : RoleBase
     }
     public override void Init()
     {
-        CelebrityDead = [];
-        On = false;
+        playerIdList.Clear();
+        CelebrityDead.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
     public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
     {

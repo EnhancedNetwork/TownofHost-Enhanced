@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.Core;
+﻿using System.Collections.Generic;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
@@ -7,9 +7,9 @@ internal class LazyGuy : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6800;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.LazyGuy.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
@@ -19,10 +19,10 @@ internal class LazyGuy : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
 }

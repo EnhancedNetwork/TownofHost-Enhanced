@@ -12,18 +12,20 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Admirer : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 24800;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem AdmireCooldown;
     private static OptionItem KnowTargetRole;
     private static OptionItem SkillLimit;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, int> AdmirerLimit;
-    public static Dictionary<byte, List<byte>> AdmiredList;
+    private static readonly Dictionary<byte, int> AdmirerLimit = [];
+    public static readonly Dictionary<byte, List<byte>> AdmiredList = [];
 
     public static void SetupCustomOption()
     {
@@ -36,17 +38,15 @@ internal class Admirer : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
-        AdmirerLimit = [];
-        AdmiredList = [];
+        playerIdList.Clear();
+        AdmirerLimit.Clear();
+        AdmiredList.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         AdmirerLimit.Add(playerId, SkillLimit.GetInt());
         AdmiredList.Add(playerId, []);
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))

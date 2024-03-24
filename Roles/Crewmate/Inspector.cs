@@ -13,11 +13,13 @@ using static TOHE.Utils;
 namespace TOHE.Roles.Crewmate;
 internal class Inspector : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8300;
-    private static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem TryHideMsg;
     private static OptionItem InspectCheckLimitMax;
@@ -28,8 +30,8 @@ internal class Inspector : RoleBase
     private static OptionItem InspectCheckRevealTargetTeam;
     private static OptionItem InspectAbilityUseGainWithEachTaskCompleted;
 
-    private static Dictionary<byte, float> MaxCheckLimit = [];
-    private static Dictionary<byte, int> RoundCheckLimit = [];
+    private static readonly Dictionary<byte, float> MaxCheckLimit = [];
+    private static readonly Dictionary<byte, int> RoundCheckLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -51,10 +53,9 @@ internal class Inspector : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        MaxCheckLimit = [];
-        RoundCheckLimit = [];
-        On = false;
+        playerIdList.Clear();
+        MaxCheckLimit.Clear();
+        RoundCheckLimit.Clear();
     }
 
     public override void Add(byte playerId)
@@ -62,7 +63,6 @@ internal class Inspector : RoleBase
         playerIdList.Add(playerId);
         MaxCheckLimit.Add(playerId, InspectCheckLimitMax.GetInt());
         RoundCheckLimit.Add(playerId, InspectCheckLimitPerMeeting.GetInt());
-        On = true;
     }
     public override void Remove(byte playerId)
     {

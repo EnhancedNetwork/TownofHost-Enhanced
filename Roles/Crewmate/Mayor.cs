@@ -8,20 +8,23 @@ namespace TOHE.Roles.Crewmate;
 
 internal partial class Mayor : RoleBase
 {
-    public const int Id = 12000;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    //===========================SETUP================================\\
+    private const int Id = 12000;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
+    //==================================================================\\
 
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Collective");
 
     private static OptionItem MayorAdditionalVote;
-    public static OptionItem MayorHasPortableButton;
+    private static OptionItem MayorHasPortableButton;
     private static OptionItem MayorNumOfUseButton;
     private static OptionItem MayorHideVote;
     private static OptionItem MayorRevealWhenDoneTasks;
 
-    private static Dictionary<byte, int> MayorUsedButtonCount = [];
+    private static readonly Dictionary<byte, int> MayorUsedButtonCount = [];
 
     public static void SetupCustomOptions()
     {
@@ -43,16 +46,17 @@ internal partial class Mayor : RoleBase
 
     public override void Init()
     {
-        On = false;
-        MayorUsedButtonCount = [];
+        playerIdList.Clear();
+        MayorUsedButtonCount.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         MayorUsedButtonCount[playerId] = 0;
-        On = true;
     }
     public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
         MayorUsedButtonCount[playerId] = 0;
     }
 

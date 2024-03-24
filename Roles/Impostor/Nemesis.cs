@@ -15,7 +15,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Nemesis : RoleBase
 {
-    public const int Id = 3600;
+    private const int Id = 3600;
     public static bool On;
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => LegacyNemesis.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;

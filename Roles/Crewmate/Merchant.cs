@@ -8,16 +8,17 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Merchant : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8800;
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled = CustomRoles.Merchant.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
-    private static readonly List<byte> playerIdList = [];
     private static List<CustomRoles> addons = [];
-    private static Dictionary<byte, int> addonsSold = [];
-    private static Dictionary<byte, List<byte>> bribedKiller = [];
+    private static readonly Dictionary<byte, int> addonsSold = [];
+    private static readonly Dictionary<byte, HashSet<byte>> bribedKiller = [];
 
     private static readonly List<CustomRoles> helpfulAddons =
     [
@@ -99,11 +100,10 @@ internal class Merchant : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        On = false;
 
-        addons = [];
-        addonsSold = [];
-        bribedKiller = [];
+        addons.Clear();
+        addonsSold.Clear();
+        bribedKiller.Clear();
 
         if (OptionCanSellHelpful.GetBool())
         {
@@ -130,7 +130,6 @@ internal class Merchant : RoleBase
         playerIdList.Add(playerId);
         addonsSold.Add(playerId, 0);
         bribedKiller.Add(playerId, []);
-        On = true;
     }
     public override void Remove(byte playerId)
     {

@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.Core;
+﻿using System.Collections.Generic;
 using AmongUs.GameOptions;
 using static TOHE.Translator;
 using static TOHE.Options;
@@ -9,12 +9,12 @@ internal class Doctor : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6700;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Doctor.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
-
     //==================================================================\\
+
     private static OptionItem TaskCompletedBatteryChargeOpt;
     private static OptionItem VisibleToEveryoneOpt;
 
@@ -29,11 +29,11 @@ internal class Doctor : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
