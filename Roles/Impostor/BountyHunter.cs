@@ -96,6 +96,12 @@ internal class BountyHunter : RoleBase
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    {
+        if (shapeshiftIsHidden)
+            Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+    }
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (GetTarget(killer) == target.PlayerId)
@@ -164,13 +170,13 @@ internal class BountyHunter : RoleBase
             && ((Romantic.BetPlayer.TryGetValue(target.PlayerId, out byte romanticPartner) && romanticPartner == player.PlayerId))) return false;
 
         if (target.Is(CustomRoles.Lawyer)
-            && ((Lawyer.Target.TryGetValue(target.PlayerId, out byte lawyerTarget) && lawyerTarget == player.PlayerId) && Lawyer.TargetKnowsLawyer.GetBool())) return false;
+            && (Lawyer.Target.TryGetValue(target.PlayerId, out byte lawyerTarget) && lawyerTarget == player.PlayerId) && Lawyer.TargetKnowLawyer) return false;
 
         if (player.Is(CustomRoles.Charmed)
-            && (target.Is(CustomRoles.Succubus) || (target.Is(CustomRoles.Charmed) && Succubus.TargetKnowOtherTarget.GetBool()))) return false;
+            && (target.Is(CustomRoles.Cultist) || (target.Is(CustomRoles.Charmed) && Cultist.TargetKnowOtherTargets))) return false;
 
         if (player.Is(CustomRoles.Infected)
-            && (target.Is(CustomRoles.Infectious) || (target.Is(CustomRoles.Infected) && Infectious.TargetKnowOtherTarget.GetBool()))) return false;
+            && (target.Is(CustomRoles.Infectious) || (target.Is(CustomRoles.Infected) && Infectious.TargetKnowOtherTargets))) return false;
 
         if (player.Is(CustomRoles.Recruit)
             && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return false;

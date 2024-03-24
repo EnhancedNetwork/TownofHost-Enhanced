@@ -74,11 +74,11 @@ internal class Bastion : RoleBase
         ProgressText.Append(ColorString(TextColor151, $" <color=#777777>-</color> {Math.Round(BastionNumberOfAbilityUses, 1)}"));
         return ProgressText.ToString();
     }
-    public static bool OnOthersEnterVent(PlayerPhysics __instance, int ventId)
+    public override bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId)
     {
         if (!BombedVents.Contains(ventId)) return false;
 
-        var pc = __instance.myPlayer;
+        var pc = physics.myPlayer;
         if (pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Bastion) && !pc.IsCrewVenter() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId)) 
         {
             return false;
@@ -94,7 +94,7 @@ internal class Bastion : RoleBase
                     pc.Notify(GetString("EnteredBombedVent"));
 
                     Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                    pc.RpcMurderPlayerV3(pc);
+                    pc.RpcMurderPlayer(pc);
                     BombedVents.Remove(ventId);
                 }
             }, 0.5f, "Player bombed by Bastion");

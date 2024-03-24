@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Modules;
+using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
@@ -38,8 +39,10 @@ internal class SoulCatcher : RoleBase
         AURoleOptions.ShapeshifterCooldown = SoulCatcherShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterLeaveSkin = false;
     }
-    public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("SoulCatcherButtonText"));
 
+    public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("SoulCatcherButtonText"));
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Teleport");
+    
     public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
     {
         if (!shapeshifting && !shapeshiftIsHidden) return;

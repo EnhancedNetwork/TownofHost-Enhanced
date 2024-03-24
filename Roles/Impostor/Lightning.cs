@@ -53,7 +53,7 @@ internal class Lightning : RoleBase
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGhostPlayer, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.LightningSetGhostPlayer, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(IsGhost(playerId));
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -116,9 +116,11 @@ internal class Lightning : RoleBase
             }
         }, ConvertTime.GetFloat(), "Lightning Convert Player To Ghost");
     }
-    public override void OnTargetDead(PlayerControl killer, PlayerControl target)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (killer == null || target == null || killer == target) return;
+        if (inMeeting || isSuicide) return;
+
+        if (killer == null || target == null) return;
         if (!KillerConvertGhost.GetBool() || IsGhost(killer)) return;
         RealKiller.TryAdd(killer.PlayerId, target);
         StartConvertCountDown(target, killer);
@@ -174,7 +176,7 @@ internal class Lightning : RoleBase
         Utils.NotifyRoles();
     }
 
-    public string GetMarkInGhostPlayer(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    private string GetMarkInGhostPlayer(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (isForMeeting) return string.Empty;
 

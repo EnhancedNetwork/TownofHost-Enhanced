@@ -11,7 +11,7 @@ internal class BloodKnight : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16100;
-    private static List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -23,7 +23,7 @@ internal class BloodKnight : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem ProtectDuration;
 
-    private static Dictionary<byte, long> TimeStamp = [];
+    private static readonly Dictionary<byte, long> TimeStamp = [];
 
     public static void SetupCustomOption()
     {
@@ -37,8 +37,8 @@ internal class BloodKnight : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        TimeStamp = [];
+        playerIdList.Clear();
+        TimeStamp.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -51,7 +51,8 @@ internal class BloodKnight : RoleBase
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBKTimer, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.BloodKnight);
         writer.Write(playerId);
         writer.Write(TimeStamp[playerId].ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -81,9 +82,10 @@ internal class BloodKnight : RoleBase
         else if (killer.GetCustomRole() == target.GetCustomRole()) return false;
         return true;
     }
-    public override void OnMurder(PlayerControl killer, PlayerControl target)
+    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (killer.PlayerId == target.PlayerId) return;
+        if (inMeeting || isSuicide) return;
+
         TimeStamp[killer.PlayerId] = Utils.GetTimeStamp() + (long)ProtectDuration.GetFloat();
         SendRPC(killer.PlayerId);
         killer.Notify(GetString("BKInProtect"));

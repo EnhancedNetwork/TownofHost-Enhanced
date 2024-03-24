@@ -1,4 +1,6 @@
 ﻿
+using AmongUs.GameOptions;
+
 namespace TOHE.Roles.Impostor;
 
 internal class Refugee : RoleBase
@@ -25,7 +27,7 @@ internal class Refugee : RoleBase
     {
         On = true;
     }
-
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RefugeeKillCD.GetFloat();
 
     public override bool CanUseKillButton(PlayerControl pc) => true;

@@ -106,9 +106,11 @@ internal class Berserker : RoleBase
             killer.RpcTeleport(target.GetCustomPosition());
             RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
             target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
-            target.SetRealKiller(killer);
+            
             Main.PlayerStates[target.PlayerId].SetDead();
             target.RpcMurderPlayerV3(target);
+            target.SetRealKiller(killer);
+
             killer.SetKillCooldownV2();
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), Translator.GetString("KilledByBerserker")));
             return false;

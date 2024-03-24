@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Lucky
 {
-    private static readonly int Id = 19500;
+    private const int Id = 19500;
 
     private static OptionItem LuckyProbability;
     public static OptionItem ImpCanBeLucky;

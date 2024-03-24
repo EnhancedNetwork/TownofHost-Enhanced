@@ -11,15 +11,14 @@ internal class Demon : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16200;
-    private static List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
-    private static Dictionary<byte, int> PlayerHealth = [];
-    private static Dictionary<byte, int> DemonHealth = [];
+    private static readonly Dictionary<byte, int> PlayerHealth = [];
+    private static readonly Dictionary<byte, int> DemonHealth = [];
 
     private static OptionItem KillCooldown;
     private static OptionItem CanVent;
@@ -47,9 +46,9 @@ internal class Demon : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        DemonHealth = [];
-        PlayerHealth = [];
+        playerIdList.Clear();
+        DemonHealth.Clear();
+        PlayerHealth.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -65,13 +64,14 @@ internal class Demon : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-    
+
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl player) => CanVent.GetBool();
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDemonHealth, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Demon);
         writer.Write(playerId);
         if (DemonHealth.ContainsKey(playerId))
             writer.Write(DemonHealth[playerId]);
@@ -135,7 +135,7 @@ internal class Demon : RoleBase
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (!seer.Is(CustomRoles.Demon) || !seer.IsAlive()) return string.Empty;
-        
+
         if (seer.PlayerId == target.PlayerId)
         {
             var GetValue = DemonHealth.TryGetValue(target.PlayerId, out var value);

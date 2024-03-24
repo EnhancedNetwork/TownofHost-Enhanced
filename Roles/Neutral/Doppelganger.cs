@@ -5,26 +5,25 @@ using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
+
 internal class Doppelganger : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 25000;
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem KillCooldown;
-    public static OptionItem CanVent;
-    public static OptionItem HasImpostorVision;
-    public static OptionItem MaxSteals;
+    private static OptionItem CanVent;
+    private static OptionItem HasImpostorVision;
+    private static OptionItem MaxSteals;
 
-    public static Dictionary<byte, string> DoppelVictim = [];
-    public static Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
-    public static Dictionary<byte, int> TotalSteals = [];
+    public static readonly Dictionary<byte, string> DoppelVictim = [];
+    public static readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
+    private static readonly Dictionary<byte, int> TotalSteals = [];
 
 
     public static void SetupCustomOption()
@@ -39,10 +38,10 @@ internal class Doppelganger : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        DoppelVictim = [];
-        TotalSteals = [];
-        DoppelPresentSkin = [];
+        playerIdList.Clear();
+        DoppelVictim.Clear();
+        TotalSteals.Clear();
+        DoppelPresentSkin.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -58,7 +57,8 @@ internal class Doppelganger : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDoppelgangerStealLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Doppelganger);
         writer.Write(playerId);
         writer.Write(TotalSteals[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -75,21 +75,10 @@ internal class Doppelganger : RoleBase
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => Doppelganger.CanVent.GetBool();
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
-    //overloading
-    public static GameData.PlayerOutfit Set(GameData.PlayerOutfit instance, string playerName, int colorId, string hatId, string skinId, string visorId, string petId, string nameplateId)
-    {
-        instance.PlayerName = playerName;
-        instance.ColorId = colorId;
-        instance.HatId = hatId;
-        instance.SkinId = skinId;
-        instance.VisorId = visorId;
-        instance.PetId = petId;
-        instance.NamePlateId = nameplateId;
-        return instance;
-    }
+    public static bool CheckDoppelVictim(byte playerId) => DoppelVictim.ContainsKey(playerId);
 
     public static void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit, uint level)
     {
@@ -131,6 +120,7 @@ internal class Doppelganger : RoleBase
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetNamePlateStr)
             .Write(newOutfit.NamePlateId)
             .EndRpc();
+        
         pc.SetLevel(level);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetLevel)
             .Write(level)
@@ -142,7 +132,7 @@ internal class Doppelganger : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || !HasEnabled || Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)) return true;
+        if (killer == null || target == null || Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)) return true;
         if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out bool isShapeshifitng) && isShapeshifitng)
         {
             Logger.Info("Target was shapeshifting", "Doppelganger");

@@ -5,13 +5,14 @@ namespace TOHE.Roles.Neutral;
 
 internal class Sidekick : RoleBase
 {
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -35,4 +36,10 @@ internal class Sidekick : RoleBase
     //{
     //    return target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick);
     //}
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(Translator.GetString("KillButtonText"));
+        hud.SabotageButton.OverrideText(Translator.GetString("SabotageButtonText"));
+    }
 }

@@ -75,115 +75,15 @@ class ExileControllerWrapUpPatch
             Main.PlayerStates[exiled.PlayerId].deathReason = PlayerState.DeathReason.Vote;
 
             var role = exiled.GetCustomRole();
-
-            if (Quizmaster.HasEnabled)
-                Quizmaster.OnPlayerExile(exiled);
-
-            var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
-            if (pcArray.Length > 0)
-            {
-                if (!Innocent.InnocentCanWinByImp.GetBool() && role.IsImpostor())
-                {
-                    Logger.Info("Exeiled Winner Check for impostor", "Innocent");
-                }
-                else
-                {
-                    bool isInnocentWinConverted = false;
-                    foreach (var Innocent in pcArray)
-                    {
-                        if (CustomWinnerHolder.CheckForConvertedWinner(Innocent.PlayerId))
-                        {
-                            isInnocentWinConverted = true;
-                            break;
-                        }
-                    }
-                    if (!isInnocentWinConverted)
-                    {
-                        if (DecidedWinner)
-                        {
-                            CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Innocent);
-                        }
-                        else
-                        {
-                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Innocent);
-                        }
-
-                        pcArray.Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
-                    }
-                    DecidedWinner = true;
-                }
-            }
-            //Jester win
-            if (Jester.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
-            {           
-                if (role.Is(CustomRoles.Jester) && AmongUsClient.Instance.AmHost)
-                {
-                    if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
-                    {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jester);
-                        CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
-                    }
-
-                    foreach (var executioner in Executioner.playerIdList)
-                    {
-                        //var GetValue = Executioner.Target.TryGetValue(executioner, out var targetId);
-                        if (Executioner.Target.TryGetValue(executioner, out var targetId) && exiled.PlayerId == targetId)
-                        {
-                            CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Executioner);
-                            CustomWinnerHolder.WinnerIds.Add(executioner);
-                        }
-                    }
-                    DecidedWinner = true;
-                }
-            }
-
-            // Mini win
-            if (role.Is(CustomRoles.NiceMini) && Mini.Age < 18)
-            {
-                if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
-                {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
-                    CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
-                }
-            }
-
-            //Executioner check win
-            if (Executioner.CheckExileTarget(exiled, DecidedWinner))
-            {
-                DecidedWinner = true;
-            }
-
-            //Terrorist check win
-            if (role.Is(CustomRoles.Terrorist))
-            {
-                Utils.CheckTerroristWin(exiled);
-            }
-
-            //Devourer check win
-            if (role.Is(CustomRoles.Devourer))
-            {
-                Devourer.OnDevourerDied(exiled.PlayerId);
-            }
-
-            //Lawyer check win
-            if (Lawyer.CheckExileTarget(exiled, DecidedWinner))
-            {
-                DecidedWinner = false;
-            }
-
-            if (role.Is(CustomRoles.Devourer))
-            {
-                Devourer.OnDevourerDied(exiled.PlayerId);
-            }
-
-            if (Lawyer.CheckExileTarget(exiled, DecidedWinner))
-            {
-                DecidedWinner = false;
-            }
-
+            var player = Utils.GetPlayerById(exiled.PlayerId);
+            var exiledRoleClass = player.GetRoleClass();
+           
+            var emptyString = string.Empty;
+            exiledRoleClass?.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
         }
+        
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
         {
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
@@ -194,34 +94,16 @@ class ExileControllerWrapUpPatch
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
-            CustomRoles playerRole = player.GetCustomRole(); // Only roles (no add-ons)
-
-            switch (playerRole)
-            {
-
-                case CustomRoles.Warlock:
-                    Main.CursedPlayers[player.PlayerId] = null;
-                    Main.isCurseAndKill[player.PlayerId] = false;
-                    break;
-            }
-
-            if (Infectious.HasEnabled)
-            {
-                if (playerRole.Is(CustomRoles.Infectious) && !player.IsAlive())
-                {
-                    Infectious.MurderInfectedPlayers();
-                }
-            }
-
-            if (Shroud.HasEnabled)
-            {
-                Shroud.MurderShroudedPlayers(player);
-            }
-
             // Check Anti BlackOut
             if (player.GetCustomRole().IsImpostor() 
                 && !player.IsAlive() // if player is dead impostor
                 && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
+            {
+                player.ResetPlayerCam(1f);
+            }
+            // Reset camera for ghost roles
+            // Temporary fix black screens for vanilla
+            else if (player.GetCustomRole().IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()))
             {
                 player.ResetPlayerCam(1f);
             }
@@ -256,7 +138,7 @@ class ExileControllerWrapUpPatch
                     5 => new RandomSpawn.FungleSpawnMap(),
                     _ => null,
                 };
-                if (map != null) Main.AllAlivePlayerControls.Do(map.RandomTeleport);
+                if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
 
             }, 0.8f, "Random Spawn After Meeting");
         }
@@ -301,7 +183,7 @@ class ExileControllerWrapUpPatch
                         player?.ResetPlayerCam(1f);
                     }
 
-                    Utils.AfterPlayerDeathTasks(player);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(player, player, false);
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
 

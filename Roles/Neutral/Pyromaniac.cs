@@ -7,23 +7,22 @@ namespace TOHE.Roles.Neutral;
 
 internal class Pyromaniac : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 17800;
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem DouseCooldown;
     private static OptionItem BurnCooldown;
-    public static OptionItem CanVent;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
 
-    public static List<byte> DousedList = [];
+    private static readonly HashSet<byte> DousedList = [];
+
     public static void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pyromaniac, 1, zeroOne: false);
@@ -38,8 +37,8 @@ internal class Pyromaniac : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        DousedList = [];
+        playerIdList.Clear();
+        DousedList.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -55,10 +54,12 @@ internal class Pyromaniac : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => Pyromaniac.CanVent.GetBool();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-        => seer.Is(CustomRoles.Pyromaniac) && DousedList.Contains(target.PlayerId) ? "#BA4A00" : "";
+        => seer.Is(CustomRoles.Pyromaniac) && DousedList.Contains(target.PlayerId) ? "#BA4A00" : string.Empty;
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null) return true;

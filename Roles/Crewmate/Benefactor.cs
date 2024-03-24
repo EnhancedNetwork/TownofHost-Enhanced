@@ -21,9 +21,9 @@ internal class Benefactor : RoleBase
 
     private static int maxTasksMarkedPerRound = new();
 
-    private static Dictionary<byte, List<int>> taskIndex = [];
-    private static Dictionary<byte, int> TaskMarkPerRound = [];
-    private static Dictionary<byte, long> shieldedPlayers = [];
+    private static readonly Dictionary<byte, List<int>> taskIndex = [];
+    private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
+    private static readonly Dictionary<byte, long> shieldedPlayers = [];
 
     public static void SetupCustomOption()
     {
@@ -38,9 +38,9 @@ internal class Benefactor : RoleBase
 
     public override void Init()
     {
-        taskIndex = [];
-        shieldedPlayers = [];
-        TaskMarkPerRound = [];
+        taskIndex.Clear();
+        shieldedPlayers.Clear();
+        TaskMarkPerRound.Clear();
         On = false;
         maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
     }
@@ -142,7 +142,7 @@ internal class Benefactor : RoleBase
         }
     }
 
-    public static void OnTasKComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
+    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (!CustomRoles.Benefactor.IsClassEnable()) return;
@@ -201,9 +201,8 @@ internal class Benefactor : RoleBase
         return false;
     }
 
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdateLowLoad(PlayerControl pc)
     {
-        if (!CustomRoles.Benefactor.IsClassEnable()) return;
         var now = Utils.GetTimeStamp();
         foreach (var x in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < now).ToArray())
         {

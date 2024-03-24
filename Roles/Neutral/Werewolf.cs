@@ -10,22 +10,19 @@ internal class Werewolf : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18400;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
-
     //==================================================================\\
 
-    public static OptionItem KillCooldown;
-    public static OptionItem MaulRadius;
-    public static OptionItem CanVent;
+    private static OptionItem KillCooldown;
+    private static OptionItem MaulRadius;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
 
     public static void SetupCustomOption()
     {
-        //Werewolfは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Werewolf, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 9, "KillCooldown", new(0f, 180f, 2.5f), 35f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Werewolf])
             .SetValueFormat(OptionFormat.Seconds);
@@ -37,7 +34,7 @@ internal class Werewolf : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -49,7 +46,7 @@ internal class Werewolf : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

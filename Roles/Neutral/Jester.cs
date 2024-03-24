@@ -1,9 +1,5 @@
 ﻿using AmongUs.GameOptions;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
@@ -11,41 +7,41 @@ namespace TOHE.Roles.Neutral;
 internal class Jester : RoleBase
 {
     //===========================SETUP================================\\
-    private static HashSet<byte> PlayerIds = [];
+    private const int Id = 14400;
+    private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => JesterCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
-
     //==================================================================\\
 
-    public static OptionItem JesterCanUseButton;
-    public static OptionItem JesterHasImpostorVision;
-    public static OptionItem JesterCanVent;
-    public static OptionItem MeetingsNeededForJesterWin;
-    public static OptionItem HideJesterVote;
-    public static OptionItem SunnyboyChance;
+    private static OptionItem JesterCanUseButton;
+    private static OptionItem JesterHasImpostorVision;
+    private static OptionItem JesterCanVent;
+    private static OptionItem MeetingsNeededForJesterWin;
+    private static OptionItem HideJesterVote;
+    private static OptionItem SunnyboyChance;
 
     public static void SetupCustomOptions()
     {
-        SetupRoleOptions(14400, TabGroup.NeutralRoles, CustomRoles.Jester);
-        JesterCanUseButton = BooleanOptionItem.Create(14402, "JesterCanUseButton", false, TabGroup.NeutralRoles, false)
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Jester);
+        JesterCanUseButton = BooleanOptionItem.Create(Id + 2, "JesterCanUseButton", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        JesterCanVent = BooleanOptionItem.Create(14403, "CanVent", true, TabGroup.NeutralRoles, false)
+        JesterCanVent = BooleanOptionItem.Create(Id + 3, "CanVent", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        JesterHasImpostorVision = BooleanOptionItem.Create(14404, "ImpostorVision", true, TabGroup.NeutralRoles, false)
+        JesterHasImpostorVision = BooleanOptionItem.Create(Id + 4, "ImpostorVision", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        HideJesterVote = BooleanOptionItem.Create(14405, "HideJesterVote", true, TabGroup.NeutralRoles, false)
+        HideJesterVote = BooleanOptionItem.Create(Id + 5, "HideJesterVote", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        MeetingsNeededForJesterWin = IntegerOptionItem.Create(14406, "MeetingsNeededForWin", new(0, 10, 1), 0, TabGroup.NeutralRoles, false)
+        MeetingsNeededForJesterWin = IntegerOptionItem.Create(Id + 6, "MeetingsNeededForWin", new(0, 10, 1), 0, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester])
             .SetValueFormat(OptionFormat.Times);
-        SunnyboyChance = IntegerOptionItem.Create(14407, "SunnyboyChance", new(0, 100, 5), 0, TabGroup.NeutralRoles, false)
+        SunnyboyChance = IntegerOptionItem.Create(Id + 7, "SunnyboyChance", new(0, 100, 5), 0, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester])
             .SetValueFormat(OptionFormat.Percent);
     }
     public override void Init()
     {
-        PlayerIds = [];
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -63,5 +59,45 @@ internal class Jester : RoleBase
         
         if (Utils.GetPlayerById(playerId).Is(CustomRoles.Jester))
             opt.SetVision(JesterHasImpostorVision.GetBool());
+    }
+    public static bool CheckSpawnSunnyboy()
+    {
+        var Rand = IRandom.Instance;
+        return Rand.Next(0, 100) < SunnyboyChance.GetInt();
+    }
+    public override bool HideVote(PlayerVoteArea votedPlayer) => HideJesterVote.GetBool();
+    public override bool OnCheckStartMeeting(PlayerControl reporter) => JesterCanUseButton.GetBool();
+
+    public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    {
+        if (MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
+        {
+            if (isMeetingHud)
+            {
+                name = string.Format(Translator.GetString("ExiledJester"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                DecidedWinner = true;
+            }
+            else
+            {
+                if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
+                {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jester);
+                    CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
+                }
+
+                // Check exile target Executioner
+                foreach (var executioner in Executioner.playerIdList)
+                {
+                    if (Executioner.IsTarget(executioner, exiled.PlayerId))
+                    {
+                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Executioner);
+                        CustomWinnerHolder.WinnerIds.Add(executioner);
+                    }
+                }
+                DecidedWinner = true;
+            }
+        }
+        else if (CEMode.GetInt() == 2 && isMeetingHud)
+            name += string.Format(Translator.GetString("JesterMeetingLoose"), MeetingsNeededForJesterWin.GetInt() + 1);
     }
 }

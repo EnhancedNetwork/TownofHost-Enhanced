@@ -12,19 +12,15 @@ internal class Spiritcaller : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 25200;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled = playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
-    private static int SpiritLimit = new();
-
-    private static Dictionary<byte, long> PlayersHaunted = [];
 
     private static OptionItem KillCooldown;
-    public static OptionItem CanVent;
-    public static OptionItem ImpostorVision;
+    private static OptionItem CanVent;
+    private static OptionItem ImpostorVision;
     private static OptionItem SpiritMax;
     public static OptionItem SpiritAbilityCooldown;
     private static OptionItem SpiritFreezeTime;
@@ -32,7 +28,10 @@ internal class Spiritcaller : RoleBase
     private static OptionItem SpiritCauseVision;
     private static OptionItem SpiritCauseVisionTime;
 
+    private static readonly Dictionary<byte, long> PlayersHaunted = [];
+
     private static long ProtectTimeStamp = new();
+    private static int SpiritLimit = new();
 
     public static void SetupCustomOption()
     {
@@ -57,28 +56,32 @@ internal class Spiritcaller : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         SpiritLimit = new();
         ProtectTimeStamp = new();
-        PlayersHaunted = [];
+        PlayersHaunted.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         SpiritLimit = SpiritMax.GetInt();
         ProtectTimeStamp = 0;
-        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
 
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
+
+            if (!Main.ResetCamPlayerList.Contains(playerId))
+                Main.ResetCamPlayerList.Add(playerId);
+        }
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     private static bool InProtect(PlayerControl player) => player.Is(CustomRoles.Spiritcaller) && ProtectTimeStamp > Utils.GetTimeStamp();
 
     private static void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSpiritcallerSpiritLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Spiritcaller);
         writer.Write(SpiritLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -87,6 +90,8 @@ internal class Spiritcaller : RoleBase
     {
         SpiritLimit = reader.ReadInt32();
     }
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(ImpostorVision.GetBool());
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -162,11 +167,11 @@ internal class Spiritcaller : RoleBase
             }, SpiritFreezeTime.GetFloat(), "Spirit UnFreeze");
         }
     }
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => Spiritcaller.CanVent.GetBool();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (Spiritcaller.InProtect(target))
+        if (InProtect(target))
         {
             killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill();
@@ -191,5 +196,5 @@ internal class Spiritcaller : RoleBase
     }
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
         => seer.Is(CustomRoles.Spiritcaller) && target.Is(CustomRoles.EvilSpirit) ? Main.roleColors[CustomRoles.EvilSpirit] : "";
-    
+
 }

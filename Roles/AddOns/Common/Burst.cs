@@ -6,7 +6,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Burst
 {
-    private static readonly int Id = 19000;
+    private const int Id = 19000;
     public static bool IsEnable = false;
 
     public static OptionItem ImpCanBeBurst;
@@ -52,7 +52,7 @@ public static class Burst
                 if (!killer.inVent && killer.IsAlive() && !GameStates.IsMeeting && GameStates.IsInGame)
                 {
                     Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                    target.RpcMurderPlayerV3(killer);
+                    target.RpcMurderPlayer(killer);
                     killer.SetRealKiller(target);
                 }
                 else if (GameStates.IsInGame)

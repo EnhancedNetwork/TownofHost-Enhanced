@@ -5,7 +5,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Lurker : RoleBase
 {
-    private static readonly int Id = 1900;
+    private const int Id = 1900;
 
     public static bool On;
     public override bool IsEnable => On;

@@ -42,6 +42,7 @@ internal class Addict : RoleBase
         ImmortalTimer = [];
         DefaultSpeed = new();
         On = false;
+
     }
     public override void Add(byte playerId)
     {
@@ -81,14 +82,14 @@ internal class Addict : RoleBase
             Main.AllPlayerSpeed[player] = DefaultSpeed;
         }
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player)
     {
         if (!SuicideTimer.ContainsKey(player.PlayerId) || !player.IsAlive()) return;
 
         if (SuicideTimer[player.PlayerId] >= TimeLimit.GetFloat())
         {
             Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-            player.RpcMurderPlayerV3(player);
+            player.RpcMurderPlayer(player);
             SuicideTimer.Remove(player.PlayerId);
         }
         else
@@ -111,9 +112,6 @@ internal class Addict : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (!IsEnable) return;
-        if (!pc.Is(CustomRoles.Addict)) return;
-
         SuicideTimer[pc.PlayerId] = 0f;
         ImmortalTimer[pc.PlayerId] = 0f;
 

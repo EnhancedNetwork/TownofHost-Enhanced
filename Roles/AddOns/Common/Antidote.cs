@@ -6,7 +6,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Antidote
 {
-    private static readonly int Id = 21400;
+    private const int Id = 21400;
     public static bool IsEnable = false;
 
     public static OptionItem ImpCanBeAntidote;

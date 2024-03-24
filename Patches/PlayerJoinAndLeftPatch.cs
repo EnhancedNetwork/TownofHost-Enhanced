@@ -9,10 +9,8 @@ using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Neutral;
-using static TOHE.Translator;
 using TOHE.Roles.Core.AssignManager;
-using TOHE.Roles.Core;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -48,11 +46,10 @@ class OnGameJoinedPatch
 
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
-            Main.newLobby = true;
             RoleAssign.SetRoles = [];
             EAC.DeNum = new();
-            Main.AllPlayerNames = [];
-            Main.PlayerQuitTimes = [];
+            Main.AllPlayerNames.Clear();
+            Main.PlayerQuitTimes.Clear();
             KickPlayerPatch.AttemptedKickPlayerList = [];
 
             switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
@@ -91,7 +88,7 @@ class OnGameJoinedPatch
                     break;
 
                 default:
-                    Logger.Info(" No find", "Game Mode");
+                    Logger.Info(" No found", "Game Mode");
                     break;
             }
         }
@@ -260,6 +257,15 @@ public static class OnPlayerJoinedPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
 class OnPlayerLeftPatch
 {
+    static void Prefix([HarmonyArgument(0)] ClientData data)
+    {
+        //if (!AmongUsClient.Instance.AmHost) return;
+
+        if (GameStates.IsNormalGame && GameStates.IsInGame)
+            MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
+        
+        //data.Character.GetRoleClass()?.OnPlayerLeft(data);
+    }
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
         try
@@ -274,29 +280,6 @@ class OnPlayerLeftPatch
                         Main.LoversPlayers.Remove(lovers);
                         Main.PlayerStates[lovers.PlayerId].RemoveSubRole(CustomRoles.Lovers);
                     }
-                }
-
-                if (data.Character.Is(CustomRoles.Executioner) && Executioner.Target.ContainsKey(data.Character.PlayerId))
-                {
-                    Executioner.ChangeRole(data.Character);
-                }
-                else if (Executioner.Target.ContainsValue(data.Character.PlayerId))
-                {
-                    Executioner.ChangeRoleByTarget(data.Character);
-                }
-                
-                if (data.Character.Is(CustomRoles.Lawyer) && Lawyer.Target.ContainsKey(data.Character.PlayerId))
-                {
-                    Lawyer.ChangeRole(data.Character);
-                }
-                if (Lawyer.Target.ContainsValue(data.Character.PlayerId))
-                {
-                    Lawyer.ChangeRoleByTarget(data.Character);
-                }
-
-                if (data.Character.Is(CustomRoles.Pelican))
-                {
-                    data.Character.GetRoleClass().OnTargetDead(data.Character, data.Character);
                 }
 
                 if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
@@ -410,6 +393,7 @@ class OnPlayerLeftPatch
 
             if (data != null)
                 Main.playerVersion.Remove(data.Id);
+
             if (AmongUsClient.Instance.AmHost)
             {
                 Main.SayStartTimes.Remove(__instance.ClientId);

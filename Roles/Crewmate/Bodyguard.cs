@@ -52,12 +52,12 @@ internal class Bodyguard : RoleBase
             {
                 Logger.Info($"{bodyguard.GetRealName()} He was a traitor, so he chose to ignore the murder scene", "Bodyguard");
             }
-            else
+            else if (bodyguard.CheckForInvalidMurdering(killer))
             {
                 Main.PlayerStates[bodyguardId].deathReason = PlayerState.DeathReason.Sacrifice;
-                bodyguard.RpcMurderPlayerV3(killer);
+                bodyguard.RpcMurderPlayer(killer);
                 bodyguard.SetRealKiller(killer);
-                bodyguard.RpcMurderPlayerV3(bodyguard);
+                bodyguard.RpcMurderPlayer(bodyguard);
                 Logger.Info($"{bodyguard.GetRealName()} Stand up and die with the gangster {killer.GetRealName()}", "Bodyguard");
                 return false;
             }

@@ -12,6 +12,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.Crewmate;
 
 namespace TOHE;
 
@@ -61,17 +62,13 @@ class EndGamePatch
 
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
-            if (Doppelganger.HasEnabled && Doppelganger.DoppelVictim.ContainsKey(id))
+            if (Doppelganger.HasEnabled && Doppelganger.DoppelVictim.TryGetValue(id, out var playerName))
             {
                 var dpc = Utils.GetPlayerById(id);
                 if (dpc != null)
                 {
-                    //if (id == PlayerControl.LocalPlayer.PlayerId) Main.nickName = Doppelganger.DoppelVictim[id];
-                    //else
-                    //{ 
-                    dpc.RpcSetName(Doppelganger.DoppelVictim[id]);
-                    //}
-                    Main.AllPlayerNames[id] = Doppelganger.DoppelVictim[id];
+                    dpc.RpcSetName(playerName);
+                    Main.AllPlayerNames[id] = playerName;
                 }
             }
 
@@ -107,8 +104,8 @@ class EndGamePatch
             winner.AddRange(Main.AllPlayerControls.Where(p => p.Is(team) && !winner.Contains(p)));
         }
 
-        Main.winnerNameList = [];
-        Main.winnerList = [];
+        Main.winnerNameList.Clear();
+        Main.winnerList.Clear();
         foreach (var pc in winner.ToArray())
         {
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw && pc.Is(CustomRoles.GM)) continue;
@@ -118,10 +115,10 @@ class EndGamePatch
             Main.winnerNameList.Add(pc.GetRealName());
         }
 
-        BountyHunter.ChangeTimer = [];
-        Main.isDraw = [];
-        Main.isRevealed = [];
-        Main.PlayerQuitTimes = [];
+        BountyHunter.ChangeTimer.Clear();
+        Revolutionist.IsDraw.Clear();
+        Overseer.IsRevealed.Clear();
+        Main.PlayerQuitTimes.Clear();
         ChatManager.ChatSentBySystem = [];
 
         Main.VisibleTasksCount = false;
@@ -336,6 +333,8 @@ class SetEverythingUpPatch
         var RoleSummaryRectTransform = RoleSummary.GetComponent<RectTransform>();
         RoleSummaryRectTransform.anchoredPosition = new Vector2(Pos.x + 3.5f, Pos.y - 0.1f);
         RoleSummary.text = sb.ToString();
+
+        Logger.Info($"{RoleSummary.text.RemoveHtmlTags()}", "Role Summary");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -47,6 +48,8 @@ internal class Witness : RoleBase
     {
         hud.KillButton.OverrideText(GetString("WitnessButtonText"));
     }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Examine");
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown();

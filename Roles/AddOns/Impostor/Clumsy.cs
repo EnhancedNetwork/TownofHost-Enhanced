@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public static class Clumsy
 {
-    private static readonly int Id = 22700;
+    private const int Id = 22700;
 
     private static OptionItem ChanceToMiss;
 

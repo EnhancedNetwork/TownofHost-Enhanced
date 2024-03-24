@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Double;
 using UnityEngine;
 
@@ -10,28 +11,23 @@ namespace TOHE.Roles.Neutral;
 
 internal class Infectious : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 16600;
-    private static HashSet<byte> PlayerIds = [];
+    private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
-    private static int BiteLimit;
-
     private static OptionItem BiteCooldown;
-    // public static OptionItem BiteCooldownIncrese;
     private static OptionItem BiteMax;
     private static OptionItem KnowTargetRole;
-    public  static OptionItem TargetKnowOtherTarget;
+    private static OptionItem TargetKnowOtherTarget;
     private static OptionItem HasImpostorVision;
     private static OptionItem CanVent;
     private static OptionItem DoubleClickKill;
-    // private static OptionItem HideBittenRolesOnEject;
-    
+
+    private static int BiteLimit;
 
     public static void SetupCustomOption()
     {
@@ -44,13 +40,12 @@ internal class Infectious : RoleBase
         TargetKnowOtherTarget = BooleanOptionItem.Create(Id + 14, "InfectiousTargetKnowOtherTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 15, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         CanVent = BooleanOptionItem.Create(Id + 17, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);        
-        DoubleClickKill = BooleanOptionItem.Create(Id + 18, "DoubleClickKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);        
-    
+        DoubleClickKill = BooleanOptionItem.Create(Id + 18, "DoubleClickKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
     }
     public override void Init()
     {
         BiteLimit = 0;
-        PlayerIds = [];
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -63,10 +58,13 @@ internal class Infectious : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = BiteCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && BiteLimit >= 1;
+
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(HasImpostorVision.GetBool());
+
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = BiteCooldown.GetFloat();
+    public override bool CanUseKillButton(PlayerControl player) => BiteLimit >= 1;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    
     private static bool InfectOrMurder(PlayerControl killer, PlayerControl target)
     {
         if (CanBeBitten(target))
@@ -123,7 +121,7 @@ internal class Infectious : RoleBase
         if (BiteLimit < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
         if (DoubleClickKill.GetBool())
@@ -143,17 +141,20 @@ internal class Infectious : RoleBase
         }
         
     }
-    public static void MurderInfectedPlayers() //OnOthersExiled
+    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
     {
-        foreach (var alivePlayer in Main.AllAlivePlayerControls)
+        if (!player.IsAlive())
         {
-            if (alivePlayer.Is(CustomRoles.Infected))
+            foreach (var alivePlayer in Main.AllAlivePlayerControls.Where(pc => pc.Is(CustomRoles.Infected)))
             {
                 Main.PlayerStates[alivePlayer.PlayerId].deathReason = PlayerState.DeathReason.Infected;
                 alivePlayer.RpcMurderPlayerV3(alivePlayer);
             }
         }
     }
+
+    public static bool TargetKnowOtherTargets => TargetKnowOtherTarget.GetBool();
+
     public static bool KnowRole(PlayerControl player, PlayerControl target) // Addons know each-other
     {
         if (player.Is(CustomRoles.Infected) && target.Is(CustomRoles.Infectious)) return true;
@@ -161,7 +162,16 @@ internal class Infectious : RoleBase
         if (TargetKnowOtherTarget.GetBool() && player.Is(CustomRoles.Infected) && target.Is(CustomRoles.Infected)) return true;
         return false;
     }
+    public static bool InfectedKnowColorOthersInfected(PlayerControl player, PlayerControl target)
+    {
+        if (player.Is(CustomRoles.Infected) && target.Is(CustomRoles.Infectious)) return true;
+        if (player.Is(CustomRoles.Infectious) && target.Is(CustomRoles.Infected)) return true;
+        if (TargetKnowOtherTarget.GetBool() && player.Is(CustomRoles.Infected) && target.Is(CustomRoles.Infected)) return true;
+        return false;
+    }
+
     public override string GetProgressText(byte playerid, bool cooms) => Utils.ColorString(BiteLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Infectious).ShadeColor(0.25f) : Color.gray, $"({BiteLimit})");
+    
     public static bool CanBeBitten(PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() 
@@ -169,7 +179,7 @@ internal class Infectious : RoleBase
             || pc.GetCustomRole().IsNK()) && !pc.Is(CustomRoles.Infected) 
             && !pc.Is(CustomRoles.Admired) 
             && !pc.Is(CustomRoles.Loyal) 
-            && !pc.Is(CustomRoles.Succubus) 
+            && !pc.Is(CustomRoles.Cultist) 
             && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

@@ -35,9 +35,11 @@ internal class Butcher : RoleBase
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(Translator.GetString("ButcherButtonText"));
-    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target)
+
+    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (killer.PlayerId == target.PlayerId || target == null) return;
+        if (inMeeting || isSuicide) return;
+        if (target == null) return;
 
         target.SetRealKiller(killer);
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Dismembered;
@@ -52,10 +54,10 @@ internal class Butcher : RoleBase
             var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId); //No need to do extra check cause nobody is winning
             pcList.Do(x =>
             {
-                x.Data.IsDead = true;
-                x.SetRealKiller(target);
                 Main.PlayerStates[x.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
                 target.RpcSpecificMurderPlayer(x, x);
+                x.Data.IsDead = true;
+                x.SetRealKiller(target);
             });
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
             return;

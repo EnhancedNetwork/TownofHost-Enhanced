@@ -11,11 +11,10 @@ internal class CursedSoul : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14000;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem CurseCooldown;
@@ -40,7 +39,7 @@ internal class CursedSoul : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         CurseLimit = new();
     }
     public override void Add(byte playerId)
@@ -72,7 +71,7 @@ internal class CursedSoul : RoleBase
         if (CurseLimit < 1) return true;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return true;
         }
         if (CanBeSoulless(target))

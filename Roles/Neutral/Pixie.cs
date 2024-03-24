@@ -7,37 +7,38 @@ using static TOHE.Translator;
 namespace TOHE.Roles.Neutral;
 internal class Pixie : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 25900;
-    private static List<byte> playerIdList = [];
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
-    private static Dictionary<byte, HashSet<byte>> PixieTargets = [];
-    private static Dictionary<byte, int> PixiePoints = [];
+    //==================================================================\\
 
     private static OptionItem PixiePointsToWin;
     private static OptionItem PixieMaxTargets;
     private static OptionItem PixieMarkCD;
     private static OptionItem PixieSuicideOpt;
 
+    private static readonly Dictionary<byte, HashSet<byte>> PixieTargets = [];
+    private static readonly Dictionary<byte, int> PixiePoints = [];
+
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pixie);
-        PixiePointsToWin = IntegerOptionItem.Create(Id + 10, "PixiePointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pixie])
+        PixiePointsToWin = IntegerOptionItem.Create(Id + 10, "PixiePointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pixie])
             .SetValueFormat(OptionFormat.Times);
-        PixieMaxTargets = IntegerOptionItem.Create(Id + 11, "MaxTargets", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pixie])
+        PixieMaxTargets = IntegerOptionItem.Create(Id + 11, "MaxTargets", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pixie])
             .SetValueFormat(OptionFormat.Players);
-        PixieMarkCD = FloatOptionItem.Create(Id + 12, "MarkCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pixie])
+        PixieMarkCD = FloatOptionItem.Create(Id + 12, "MarkCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pixie])
             .SetValueFormat(OptionFormat.Seconds);
-        PixieSuicideOpt = BooleanOptionItem.Create(Id + 13, "PixieSuicide", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pixie]);
+        PixieSuicideOpt = BooleanOptionItem.Create(Id + 13, "PixieSuicide", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pixie]);
     }
     public override void Init()
     {
-        playerIdList = [];
-        PixieTargets = [];
-        PixiePoints = [];
-        On = false;
+        playerIdList.Clear();
+        PixieTargets.Clear();
+        PixiePoints.Clear();
     }
 
     public override void Add(byte playerId)
@@ -45,7 +46,6 @@ internal class Pixie : RoleBase
         playerIdList.Add(playerId);
         PixieTargets[playerId] = [];
         PixiePoints.Add(playerId, 0);
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -61,9 +61,10 @@ internal class Pixie : RoleBase
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pixie).ShadeColor(0.25f), PixiePoints.TryGetValue(playerId, out var x) ? $"({x}/{PixiePointsToWin.GetInt()})" : "Invalid");
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PixieMarkCD.GetFloat();
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseSabotage(PlayerControl pc) => false;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
+    
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         HudManager.Instance.KillButton.OverrideText(GetString("PixieButtonText"));
@@ -77,7 +78,8 @@ internal class Pixie : RoleBase
     }
     public static void SendRPC(byte pixieId, bool operate, byte targetId = 0xff)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPixieTargets, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Pixie); //SetPixieTargets
         writer.Write(pixieId);
         writer.Write(operate);
         if (!operate) // false = 0
@@ -137,7 +139,6 @@ internal class Pixie : RoleBase
 
     public override void OnPlayerExiled(PlayerControl pc, GameData.PlayerInfo exiled)
     {
-        if (!On || pc == null || !pc.Is(CustomRoles.Pixie)) return;
         byte pixieId = pc.PlayerId;
         if (PixieTargets.ContainsKey(pixieId))
         {

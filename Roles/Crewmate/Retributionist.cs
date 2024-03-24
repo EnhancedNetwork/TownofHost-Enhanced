@@ -51,8 +51,17 @@ internal class Retributionist : RoleBase
         On = true;
         RetributionistRevenged.Add(playerId, RetributionistCanKillNum.GetInt());
     }
-    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
-            => !seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
+    
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        seen ??= seer;
+
+        if (!seer.IsAlive() && seen.IsAlive())
+            return ColorString(GetRoleColor(CustomRoles.Retributionist), " " + seen.PlayerId.ToString()) + " ";
+
+        return string.Empty;
+    }
+
     public static bool RetributionistMsgCheck(PlayerControl pc, string msg, bool isUI = false)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -167,19 +176,18 @@ internal class Retributionist : RoleBase
         _ = new LateTask(() =>
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
-            target.SetRealKiller(pc);
             if (GameStates.IsMeeting)
             {
                 GuessManager.RpcGuesserMurderPlayer(target);
-
-                AfterPlayerDeathTasks(target, true);
-                NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
+                MurderPlayerPatch.AfterPlayerDeathTasks(pc, target, true);
             }
             else
             {
                 target.RpcMurderPlayerV3(target);
-                Main.PlayerStates[target.PlayerId].SetDead();
+                NotifyRoles(NoCache: true);
             }
+            target.SetRealKiller(pc);
+
             _ = new LateTask(() => {
                 SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, ColorString(GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true);
             }, 0.6f, "Retributionist Kill");
@@ -213,9 +221,6 @@ internal class Retributionist : RoleBase
         if (!pc.IsAlive())
             AddMsg(GetString("RetributionistDeadMsg"), pc.PlayerId);
     }
-
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl target)
-            => GetPlayerById(pva.TargetPlayerId).Data.IsDead && !target.Data.IsDead ? ColorString(GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
     
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     class StartMeetingPatch

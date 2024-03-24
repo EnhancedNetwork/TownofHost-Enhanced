@@ -1,9 +1,11 @@
-﻿using System;
+﻿using AmongUs.GameOptions;
+using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
+using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
@@ -17,254 +19,51 @@ public static class CustomRoleManager
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
 
-    public static RoleBase CreateRoleClass(this CustomRoles role) => role switch
+    private static string GetNameSpace(CustomRoles role)
     {
-        // ==== Vanilla ====
-        CustomRoles.Impostor => new VanillaRole(),
-        CustomRoles.Shapeshifter => new VanillaRole(),
-        CustomRoles.ImpostorTOHE => new VanillaRole(),
-        CustomRoles.ShapeshifterTOHE => new VanillaRole(),
+        if (role.IsGhostRole())
+        {
+            if (role.IsImpostor())
+                return "TOHE.Roles._Ghosts_.Impostor.";
+            if (role.IsCrewmate())
+                return "TOHE.Roles._Ghosts_.Crewmate.";
+        }
+        if (role is CustomRoles.Mini)
+            return "TOHE.Roles.Double.";
+        if (role.IsImpostor())
+            return "TOHE.Roles.Impostor.";
+        if (role.IsCrewmate())
+            return "TOHE.Roles.Crewmate.";
 
-        // ==== Impostors ====
-        CustomRoles.Anonymous => new Anonymous(),
-        CustomRoles.AntiAdminer => new AntiAdminer(),
-        CustomRoles.Arrogance => new Arrogance(),
-        CustomRoles.Bard => new Bard(),
-        CustomRoles.Berserker => new Berserker(),
-        CustomRoles.Blackmailer => new Blackmailer(),
-        CustomRoles.Bomber or CustomRoles.Nuker => new Bomber(),
-        CustomRoles.BountyHunter => new BountyHunter(),
-        CustomRoles.Butcher => new Butcher(),
-        CustomRoles.Camouflager => new Camouflager(),
-        CustomRoles.Chronomancer => new Chronomancer(),
-        CustomRoles.Cleaner => new Cleaner(),
-        CustomRoles.Consigliere => new Consigliere(),
-        CustomRoles.Convict => new Convict(),
-        CustomRoles.Councillor => new Councillor(),
-        CustomRoles.Crewpostor => new Crewpostor(),
-        CustomRoles.CursedWolf => new CursedWolf(),
-        CustomRoles.Dazzler => new Dazzler(),
-        CustomRoles.Deathpact => new Deathpact(),
-        CustomRoles.Devourer => new Devourer(),
-        CustomRoles.Disperser => new Disperser(),
-        CustomRoles.Eraser => new Eraser(),
-        CustomRoles.Escapist => new Escapist(),
-        CustomRoles.EvilGuesser => new EvilGuesser(),
-        CustomRoles.EvilTracker => new EvilTracker(),
-        CustomRoles.Fireworker => new Fireworker(),
-        CustomRoles.Gangster => new Gangster(),
-        CustomRoles.Godfather => new Godfather(),
-        CustomRoles.Greedy => new Greedy(),
-        CustomRoles.Hangman => new Hangman(),
-        CustomRoles.Inhibitor => new Inhibitor(),
-        CustomRoles.Instigator => new Instigator(),
-        CustomRoles.Kamikaze => new Kamikaze(),
-        CustomRoles.KillingMachine => new KillingMachine(),
-        CustomRoles.Lightning => new Lightning(),
-        CustomRoles.Ludopath => new Ludopath(),
-        CustomRoles.Lurker => new Lurker(),
-        CustomRoles.Mastermind => new Mastermind(),
-        CustomRoles.Mercenary => new Mercenary(),
-        CustomRoles.Miner => new Miner(),
-        CustomRoles.Morphling => new Morphling(),
-        CustomRoles.Nemesis => new Nemesis(),
-        CustomRoles.Ninja => new Ninja(),
-        CustomRoles.Parasite => new Parasite(),
-        CustomRoles.Penguin => new Penguin(),
-        CustomRoles.Pitfall => new Pitfall(),
-        CustomRoles.Puppeteer => new Puppeteer(),
-        CustomRoles.QuickShooter => new QuickShooter(),
-        CustomRoles.Refugee => new Refugee(),
-        CustomRoles.RiftMaker => new RiftMaker(),
-        CustomRoles.Saboteur => new Saboteur(),
-        CustomRoles.Scavenger => new Scavenger(),
-        CustomRoles.ShapeMaster => new ShapeMaster(),
-        CustomRoles.Sniper => new Sniper(),
-        CustomRoles.SoulCatcher => new SoulCatcher(),
-        CustomRoles.Swooper => new Swooper(),
-        CustomRoles.Stealth => new Stealth(),
-        CustomRoles.TimeThief => new TimeThief(),
-        CustomRoles.Trapster => new Trapster(),
-        CustomRoles.Trickster => new Trickster(),
-        CustomRoles.Twister => new Twister(),
-        CustomRoles.Underdog => new Underdog(),
-        //CustomRoles.Undertaker => new Undertaker(),
-        //CustomRoles.Vampire => new Vampire(),
-        //CustomRoles.Vampiress => new Vampire(),
-        //CustomRoles.Vindicator => new Vindicator(),
-        //CustomRoles.Visionary => new Visionary(),
-        //CustomRoles.Warlock => new Warlock(),
-        //CustomRoles.Wildling => new Wildling(),
-        CustomRoles.Witch => new Witch(),
-        //CustomRoles.Zombie => new Zombie(),
+        else return "TOHE.Roles.Neutral.";
+    }
+    public static RoleBase CreateRoleClass(this CustomRoles role) // CHATGPT COOKED 🔥🔥🗿☕
+    { 
+        role = role switch // Switch role to FatherRole (Double Classes)
+        {
+            CustomRoles.Vampiress => CustomRoles.Vampire,
+            CustomRoles.Sunnyboy => CustomRoles.Jester,
+            CustomRoles.Pestilence => CustomRoles.PlagueBearer,
+            CustomRoles.Nuker => CustomRoles.Bomber,
+            CustomRoles.NiceMini or CustomRoles.EvilMini => CustomRoles.Mini,
+            _ => role
+        };
 
-        // ==== Mini ====
-        CustomRoles.EvilMini or CustomRoles.NiceMini => new Mini(),
+        Logger.Info($"Attempting to Create new {role}()", "CreateRoleClass");
 
-        // ==== Ghost Impostors ====
-        //CustomRoles.Minion => new Minion(),
-        //CustomRoles.Bloodmoon => new Bloodmoon(),
+        string RoleNameSpace = GetNameSpace(role);
+        string className = $"{RoleNameSpace}" + role.ToString(); 
+        Type classType = Type.GetType(className);
 
-        // ==== Vanilla ====
-        CustomRoles.Crewmate => new VanillaRole(),
-        CustomRoles.Engineer => new VanillaRole(),
-        CustomRoles.Scientist => new VanillaRole(),
-        CustomRoles.GuardianAngel => new VanillaRole(),
-        CustomRoles.CrewmateTOHE => new VanillaRole(),
-        CustomRoles.EngineerTOHE => new VanillaRole(),
-        CustomRoles.ScientistTOHE => new VanillaRole(),
-        CustomRoles.GuardianAngelTOHE => new VanillaRole(),
+        if (classType == null || !typeof(RoleBase).IsAssignableFrom(classType))
+        {
+            Logger.Info("An unknown RoleType or RoleClass was given, assigning new VanillaRole()", "CreateRoleClass");
+            return new VanillaRole();
+        }
 
-        // ==== Crewmates ====
-        CustomRoles.Addict => new Addict(),
-        CustomRoles.Admirer => new Admirer(),
-        CustomRoles.Alchemist => new Alchemist(),
-        CustomRoles.Bastion => new Bastion(),
-        CustomRoles.Benefactor => new Benefactor(),
-        CustomRoles.Bodyguard => new Bodyguard(),
-        CustomRoles.Captain => new Captain(),
-        CustomRoles.Celebrity => new Celebrity(),
-        CustomRoles.Chameleon => new Chameleon(),
-        //CustomRoles.ChiefOfPolice => new ChiefOfPolice(), //role not used
-        CustomRoles.Cleanser => new Cleanser(),
-        CustomRoles.CopyCat => new CopyCat(),
-        CustomRoles.Coroner => new Coroner(),
-        CustomRoles.Crusader => new Crusader(),
-        CustomRoles.Deceiver => new Deceiver(),
-        CustomRoles.Deputy => new Deputy(),
-        CustomRoles.Detective => new Detective(),
-        CustomRoles.Dictator => new Dictator(),
-        CustomRoles.Doctor => new Doctor(),
-        CustomRoles.Enigma => new Enigma(),
-        CustomRoles.FortuneTeller => new FortuneTeller(),
-        CustomRoles.Grenadier => new Grenadier(),
-        CustomRoles.Guardian => new Guardian(),
-        CustomRoles.GuessMaster => new GuessMaster(),
-        CustomRoles.Inspector => new Inspector(),
-        CustomRoles.Investigator => new Investigator(),
-        CustomRoles.Jailer => new Jailer(),
-        CustomRoles.Judge => new Judge(),
-        CustomRoles.Keeper => new Keeper(),
-        CustomRoles.Knight => new Knight(),
-        CustomRoles.LazyGuy => new LazyGuy(),
-        CustomRoles.Lighter => new Lighter(),
-        CustomRoles.Lookout => new Lookout(),
-        CustomRoles.Marshall => new Marshall(),
-        CustomRoles.Mayor => new Mayor(),
-        CustomRoles.Mechanic => new Mechanic(),
-        CustomRoles.Medic => new Medic(),
-        CustomRoles.Medium => new Medium(),
-        CustomRoles.Merchant => new Merchant(),
-        CustomRoles.Mole => new Mole(),
-        CustomRoles.Monarch => new Monarch(),
-        CustomRoles.Telecommunication => new Telecommunication(),
-        CustomRoles.Mortician => new Mortician(),
-        CustomRoles.NiceGuesser => new NiceGuesser(),
-        CustomRoles.Observer => new Observer(),
-        CustomRoles.Oracle => new Oracle(),
-        CustomRoles.Overseer => new Overseer(),
-        CustomRoles.Pacifist => new Pacifist(),
-        CustomRoles.President => new President(),
-        //CustomRoles.Paranoia => new Paranoia(),
-        CustomRoles.Psychic => new Psychic(),
-        CustomRoles.Randomizer => new Randomizer(),
-        CustomRoles.Retributionist => new Retributionist(),
-        CustomRoles.Reverie => new Reverie(),
-        CustomRoles.Sheriff => new Sheriff(),
-        CustomRoles.Snitch => new Snitch(),
-        CustomRoles.Spiritualist => new Spiritualist(),
-        CustomRoles.Spy => new Spy(),
-        CustomRoles.SuperStar => new SuperStar(),
-        CustomRoles.Swapper => new Swapper(),
-        CustomRoles.TaskManager => new TaskManager(),
-        CustomRoles.TimeManager => new TimeManager(),
-        CustomRoles.TimeMaster => new TimeMaster(),
-        CustomRoles.Tracefinder => new Tracefinder(),
-        CustomRoles.Tracker => new Tracker(),
-        CustomRoles.Transporter => new Transporter(),
-        CustomRoles.Veteran => new Veteran(),
-        CustomRoles.Vigilante => new Vigilante(),
-        CustomRoles.Witness => new Witness(),
-
-        // ==== Ghost Crewmates ====
-        //CustomRoles.Hawk => new Hawk(),
-        //CustomRoles.Warden => new Warden(),
-
-        // ==== Neutrals ====
-        CustomRoles.Seeker => new Seeker(),
-        CustomRoles.Pixie => new Pixie(),
-        //CustomRoles.Amnesiac => new Amnesiac(),
-        CustomRoles.Arsonist => new Arsonist(),
-        CustomRoles.Bandit => new Bandit(),
-        CustomRoles.BloodKnight => new BloodKnight(),
-        CustomRoles.Agitater => new Agitater(),
-        //CustomRoles.Collector => new Collector(),
-        //CustomRoles.Convener => new Convener(),
-        CustomRoles.Demon => new Demon(),
-        CustomRoles.Doppelganger => new Doppelganger(),
-        CustomRoles.Doomsayer => new Doomsayer(),
-        //CustomRoles.Eclipse => new Eclipse(),
-        //CustomRoles.Enderman => new Enderman(),
-        CustomRoles.Executioner => new Executioner(),
-        //CustomRoles.Totocalcio => new Totocalcio(),
-        //CustomRoles.God => new God(),
-        //CustomRoles.FFF => new FFF(),
-        CustomRoles.Huntsman => new Huntsman(),
-        CustomRoles.HexMaster => new HexMaster(),
-        //CustomRoles.Hookshot => new Hookshot(),
-        //CustomRoles.Imitator => new Imitator(),
-        CustomRoles.Innocent => new Innocent(),
-        CustomRoles.Infectious => new Infectious(),
-        CustomRoles.Jackal => new Jackal(),
-        CustomRoles.Sidekick => new Sidekick(),
-        //CustomRoles.Recruit => new Recruit(), //i hate this
-        CustomRoles.Sunnyboy or CustomRoles.Jester => new Jester(),
-        CustomRoles.Jinx => new Jinx(),
-        CustomRoles.Juggernaut => new Juggernaut(),
-        //CustomRoles.Lawyer => new Lawyer(),
-        CustomRoles.Masochist => new Masochist(),
-        //CustomRoles.Mario => new Mario(),
-        //CustomRoles.Maverick => new Maverick(),
-        CustomRoles.CursedSoul => new CursedSoul(),
-        CustomRoles.Medusa => new Medusa(),
-        CustomRoles.Necromancer => new Necromancer(),
-        //CustomRoles.Opportunist => new Opportunist(),
-        CustomRoles.Pelican => new Pelican(),
-        CustomRoles.Shroud => new Shroud(),
-        //CustomRoles.Phantom => new Phantom(),
-        CustomRoles.Pickpocket => new Pickpocket(),
-        CustomRoles.Pestilence or CustomRoles.PlagueBearer => new PlagueBearer(),
-        CustomRoles.PlagueDoctor => new PlagueDoctor(),
-        CustomRoles.Poisoner => new Poisoner(),
-        //CustomRoles.Provocateur => new Provocateur(),
-        //CustomRoles.Pursuer => new Pursuer(),
-        CustomRoles.Pyromaniac => new Pyromaniac(),
-        //CustomRoles.Reckless => new Reckless(),
-        //CustomRoles.Revolutionist => new Revolutionist(),
-        CustomRoles.PotionMaster => new PotionMaster(),
-        //CustomRoles.Romantic => new Romantic(),
-        CustomRoles.Quizmaster => new Quizmaster(),
-        //CustomRoles.RuthlessRomantic => new RuthlessRomantic(),
-        CustomRoles.SerialKiller => new SerialKiller(),
-        //CustomRoles.SoulHunter => new SoulHunter(),
-        CustomRoles.Spiritcaller => new Spiritcaller(),
-        CustomRoles.Stalker => new Stalker(),
-        //CustomRoles.Succubus => new Succubus(),
-        //CustomRoles.Terrorist => new Terrorist(),
-        CustomRoles.Traitor => new Traitor(),
-        //CustomRoles.Vengeance => new Vengeance(),
-        //CustomRoles.VengefulRomantic => new VengefulRomantic(),
-        CustomRoles.Virus => new Virus(),
-        //CustomRoles.Vulture => new Vulture(),
-        CustomRoles.Wraith => new Wraith(),
-        CustomRoles.Werewolf => new Werewolf(),
-        //CustomRoles.Workaholic => new Workaholic(),
-        //CustomRoles.KB_Normal => new KB_Normal(),
-        //CustomRoles.Killer => new Killer(),
-        //CustomRoles.GM => new GM(),
-        //CustomRoles.Convict => new Convict(),
-        _ => new VanillaRole(),
-    };
+        Logger.Info($"Succesfully Created new {role}()", "CreateRoleClass");
+        return (RoleBase)Activator.CreateInstance(classType);
+    }
 
     /// <summary>
     /// If the role protect others players
@@ -284,18 +83,173 @@ public static class CustomRoleManager
         }
         return !cancel;
     }
+    /// <summary>
+    /// Check Murder as Killer in target
+    /// </summary>
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    {
+        var killerRoleClass = killer.GetRoleClass();
 
-    public static HashSet<Action<PlayerControl, PlayerControl>> CheckDeadBodyOthers = [];
+        if (killer == target) return true;
+
+        // Forced check
+        if (!killerRoleClass.ForcedCheckMurderAsKiller(killer, target))
+        {
+            return false;
+        }
+
+        // Check in target
+        if (!killer.RpcCheckAndMurder(target, true))
+        {
+            return false;
+        }
+
+        foreach (var killerSubRole in killer.GetCustomSubRoles().ToArray())
+        {
+            switch (killerSubRole)
+            {
+                case CustomRoles.Madmate when target.Is(CustomRoleTypes.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
+                case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTargets:
+                case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
+                    return false;
+
+                case CustomRoles.Mare:
+                    if (Mare.IsLightsOut)
+                        return false;
+                    break;
+
+                case CustomRoles.Unlucky:
+                    Unlucky.SuicideRand(killer);
+                    if (Unlucky.UnluckCheck[killer.PlayerId]) return false;
+                    break;
+
+                case CustomRoles.Tired:
+                    Tired.AfterActionTasks(killer);
+                    break;
+
+                case CustomRoles.Clumsy:
+                    if (!Clumsy.OnCheckMurder(killer))
+                        return false;
+                    break;
+
+                case CustomRoles.Swift:
+                    if (!Swift.OnCheckMurder(killer, target))
+                        return false;
+                    break;
+            }
+        }
+
+        // Check murder as killer
+        if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
+        {
+            return false;
+        }
+
+        return true;
+    }
+    /// <summary>
+    /// Tasks after killer murder target
+    /// </summary>
+    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting)
+    {
+        // ############-INFO-##############
+        // When using this code, keep in mind that killer and target can be equal (Suicide)
+        // And the player can also die during the Meeting
+        // ################################
+
+        var killerRoleClass = killer.GetRoleClass();
+        var targetRoleClass = target.GetRoleClass();
+
+        var killerSubRoles = killer.GetCustomSubRoles();
+        var targetSubRoles = target.GetCustomSubRoles();
+
+        // Check suicide
+        var isSuicide = killer.PlayerId == target.PlayerId;
+
+        // target was murder by killer
+        targetRoleClass.OnMurderPlayerAsTarget(killer, target, inMeeting, isSuicide);
+
+        // Check target add-ons
+        if (targetSubRoles.Any())
+            foreach (var subRole in targetSubRoles.ToArray())
+            {
+                switch (subRole)
+                {
+                    case CustomRoles.Cyber:
+                        Cyber.AfterCyberDeadTask(target, inMeeting);
+                        break;
+
+                    case CustomRoles.Bait when !inMeeting && !isSuicide:
+                        Bait.BaitAfterDeathTasks(killer, target);
+                        break;
+
+                    case CustomRoles.Trapper when !inMeeting && !isSuicide && !killer.Is(CustomRoles.KillingMachine):
+                        killer.TrapperKilled(target);
+                        break;
+
+                    case CustomRoles.Avanger when !inMeeting && !isSuicide:
+                        Avanger.OnMurderPlayer(target);
+                        break;
+
+                    case CustomRoles.Burst when killer.IsAlive() && !inMeeting && !isSuicide && !killer.Is(CustomRoles.KillingMachine):
+                        Burst.AfterBurstDeadTasks(killer, target);
+                        break;
+
+                    case CustomRoles.Oiiai when !isSuicide:
+                        Oiiai.OnMurderPlayer(killer, target);
+                        break;
+
+                    case CustomRoles.Tricky:
+                        Tricky.AfterPlayerDeathTasks(target);
+                        break;
+
+                    case CustomRoles.EvilSpirit when !inMeeting && !isSuicide:
+                        target.RpcSetRole(RoleTypes.GuardianAngel);
+                        break;
+
+                }
+            }
+
+        // Killer murder target
+        killerRoleClass.OnMurderPlayerAsKiller(killer, target, inMeeting, isSuicide);
+
+        // Check killer add-ons
+        if (killerSubRoles.Any())
+            foreach (var subRole in killerSubRoles.ToArray())
+            {
+                switch (subRole)
+                {
+                    case CustomRoles.TicketsStealer when !inMeeting && !isSuicide:
+                        killer.Notify(string.Format(Translator.GetString("TicketsStealerGetTicket"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * Stealer.TicketsPerKill.GetFloat()).ToString("0.0#####")));
+                        break;
+                }
+            }
+
+        // Check dead body for others roles
+        CheckDeadBody(target, killer, inMeeting);
+
+        // Check Lovers Suicide
+        FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
+    }
+    
+    /// <summary>
+    /// Check if this task is marked by a role and do something.
+    /// </summary>
+    public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task)
+        => Main.PlayerStates.Values.ToArray().Do(PlrState => PlrState.RoleClass.OnOthersTaskComplete(player, task));
+    
+
+    public static HashSet<Action<PlayerControl, PlayerControl, bool>> CheckDeadBodyOthers = [];
     /// <summary>
     /// If the role need check a present dead body
     /// </summary>
-    public static void CheckDeadBody(PlayerControl deadBody, PlayerControl killer)
+    public static void CheckDeadBody(PlayerControl deadBody, PlayerControl killer, bool inMeeting)
     {
-        if (CheckDeadBodyOthers.Count <= 0) return;
+        if (!CheckDeadBodyOthers.Any()) return;
         //Execute other viewpoint processing if any
         foreach (var checkDeadBodyOthers in CheckDeadBodyOthers.ToArray())
         {
-            checkDeadBodyOthers(deadBody, killer);
+            checkDeadBodyOthers(deadBody, killer, inMeeting);
         }
     }
 
@@ -321,12 +275,30 @@ public static class CustomRoleManager
     {
         player.GetRoleClass()?.OnFixedUpdateLowLoad(player);
 
-        if (OnFixedUpdateLowLoadOthers.Count <= 0) return;
+        if (!OnFixedUpdateLowLoadOthers.Any()) return;
         //Execute other viewpoint processing if any
         foreach (var onFixedUpdateLowLoad in OnFixedUpdateLowLoadOthers.ToArray())
         {
             onFixedUpdateLowLoad(player);
         }
+    }
+
+    /// <summary>
+    /// When others players on entered to vent
+    /// </summary>
+    public static bool OthersCoEnterVent(PlayerPhysics physics, int ventId)
+    {
+        foreach (var player in Main.PlayerStates.Values.ToArray())
+        {
+            var playerRoleClass = player.RoleClass;
+            if (player == null || playerRoleClass == null) continue;
+
+            if (playerRoleClass.OnCoEnterVentOthers(physics, ventId))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = [];
@@ -335,7 +307,7 @@ public static class CustomRoleManager
 
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (MarkOthers.Count <= 0) return string.Empty;
+        if (!MarkOthers.Any()) return string.Empty;
 
         var sb = new StringBuilder(100);
         foreach (var marker in MarkOthers)
@@ -347,7 +319,7 @@ public static class CustomRoleManager
 
     public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (LowerOthers.Count <= 0) return string.Empty;
+        if (!LowerOthers.Any()) return string.Empty;
 
         var sb = new StringBuilder(100);
         foreach (var lower in LowerOthers)
@@ -359,7 +331,7 @@ public static class CustomRoleManager
 
     public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (SuffixOthers.Count <= 0) return string.Empty;
+        if (!SuffixOthers.Any()) return string.Empty;
 
         var sb = new StringBuilder(100);
         foreach (var suffix in SuffixOthers)

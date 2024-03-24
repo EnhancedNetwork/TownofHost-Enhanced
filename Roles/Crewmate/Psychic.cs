@@ -123,18 +123,10 @@ internal class Psychic : RoleBase
         SendRPC(); //RPC同步红名名单
 
     }
+
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
-    {
-        if(IsForMeeting)
-            if (IsRedForPsy(target, seer) && seer.IsAlive())
-                return ColorString(GetRoleColor(CustomRoles.Impostor), TargetPlayerName);
-        return string.Empty;
-    }
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl target)
-    {
-        var seer = PlayerControl.LocalPlayer;
-        if (IsRedForPsy(target, seer) && !seer.Data.IsDead)
-            return ColorString(GetRoleColor(CustomRoles.Impostor), pva.NameText.text);
-        return string.Empty;
-    }
+        => IsForMeeting && IsRedForPsy(target, seer) && seer.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Impostor), TargetPlayerName) : string.Empty;
+
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
+        => IsRedForPsy(target, seer) && seer.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Impostor), pva.NameText.text) : string.Empty;
 }

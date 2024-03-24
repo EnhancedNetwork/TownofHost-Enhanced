@@ -24,9 +24,12 @@ internal class Lookout : RoleBase
         On = true;
     }
 
-    public override string NotifyPlayerName(PlayerControl seer, PlayerControl seen = null, string TargetPlayerName = "", bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
+        seen ??= seer;
+
         if (!seer.IsAlive() || !seen.IsAlive()) return string.Empty;
-        return ColorString(GetRoleColor(CustomRoles.Lookout), " " + seen.PlayerId.ToString()) + " " + TargetPlayerName;
+
+        return ColorString(GetRoleColor(CustomRoles.Lookout), " " + seen.PlayerId.ToString()) + " ";
     }
 }

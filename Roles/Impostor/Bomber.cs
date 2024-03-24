@@ -111,7 +111,6 @@ internal class Bomber : RoleBase
             Main.PlayerStates[tg.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
             tg.SetRealKiller(shapeshifter);
             tg.RpcMurderPlayerV3(tg);
-            Utils.AfterPlayerDeathTasks(tg);
         }
 
         var timer = shapeshiftIsHidden ? 0.3f : 1.5f;

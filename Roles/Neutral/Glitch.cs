@@ -4,31 +4,27 @@ using System.Linq;
 using System.Text;
 using static TOHE.Translator;
 using static TOHE.Options;
-using UnityEngine;
-using MS.Internal.Xml.XPath;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Glitch : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 16300;
-    public static List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
-    public static Dictionary<byte, long> hackedIdList = [];
+    private static readonly Dictionary<byte, long> hackedIdList = [];
 
     public static OptionItem KillCooldown;
-    public static OptionItem HackCooldown;
-    public static OptionItem HackDuration;
-    public static OptionItem MimicCooldown;
-    public static OptionItem MimicDuration;
-    public static OptionItem CanVent;
+    private static OptionItem HackCooldown;
+    private static OptionItem HackDuration;
+    private static OptionItem MimicCooldown;
+    private static OptionItem MimicDuration;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
 
     public static int HackCDTimer;
@@ -40,7 +36,6 @@ internal class Glitch : RoleBase
     public static long LastMimic;
 
     private static bool isShifted = false;
-    //    public static OptionItem CanUseSabotage;
 
     public static void SetupCustomOption()
     {
@@ -48,21 +43,21 @@ internal class Glitch : RoleBase
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Glitch, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 1f), 20, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
             .SetValueFormat(OptionFormat.Seconds);
-        HackCooldown = IntegerOptionItem.Create(Id + 11, "HackCooldown", new(0, 180, 1), 20, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
+        HackCooldown = IntegerOptionItem.Create(Id + 11, "Glitch_HackCooldown", new(0, 180, 1), 20, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
             .SetValueFormat(OptionFormat.Seconds);
-        HackDuration = FloatOptionItem.Create(Id + 14, "HackDuration", new(0f, 60f, 1f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
+        HackDuration = FloatOptionItem.Create(Id + 14, "Glitch_HackDuration", new(0f, 60f, 1f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
             .SetValueFormat(OptionFormat.Seconds);
-        MimicCooldown = IntegerOptionItem.Create(Id + 15, "MimicCooldown", new(0, 180, 1), 15, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
+        MimicCooldown = IntegerOptionItem.Create(Id + 15, "Glitch_MimicCooldown", new(0, 180, 1), 15, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
             .SetValueFormat(OptionFormat.Seconds);
-        MimicDuration = FloatOptionItem.Create(Id + 16, "MimicDuration", new(0f, 60f, 1f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
+        MimicDuration = FloatOptionItem.Create(Id + 16, "Glitch_MimicDuration", new(0f, 60f, 1f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
             .SetValueFormat(OptionFormat.Seconds);
         CanVent = BooleanOptionItem.Create(Id + 12, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]);
     }
     public override void Init()
     {
-        playerIdList = [];
-        hackedIdList = [];
+        playerIdList.Clear();
+        hackedIdList.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -81,13 +76,15 @@ internal class Glitch : RoleBase
         LastHack = ts;
         LastMimic = ts;
 
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
+        if (AmongUsClient.Instance.AmHost)
+        {
+            if (!Main.ResetCamPlayerList.Contains(playerId))
+                Main.ResetCamPlayerList.Add(playerId);
 
-        // Double Trigger
-        var pc = Utils.GetPlayerById(playerId);
-        pc.AddDoubleTrigger();
+            // Double Trigger
+            var pc = Utils.GetPlayerById(playerId);
+            pc.AddDoubleTrigger();
+        }
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 1f;
@@ -144,7 +141,7 @@ internal class Glitch : RoleBase
         }
         else return false;
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
         if (HackCDTimer > 180 || HackCDTimer < 0) HackCDTimer = 0;
         if (KCDTimer > 180 || KCDTimer < 0) KCDTimer = 0;
@@ -216,10 +213,10 @@ internal class Glitch : RoleBase
         {
             var sb = new StringBuilder();
 
-            if (MimicDurTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("MimicDur"), MimicDurTimer)}");
-            if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"\n{string.Format(Translator.GetString("MimicCD"), MimicCDTimer)}");
-            if (HackCDTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("HackCD"), HackCDTimer)}");
-            if (KCDTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("KCD"), KCDTimer)}");
+            if (MimicDurTimer > 0) sb.Append($"\n{string.Format(GetString("MimicDur"), MimicDurTimer)}");
+            if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"\n{string.Format(GetString("MimicCD"), MimicCDTimer)}");
+            if (HackCDTimer > 0) sb.Append($"\n{string.Format(GetString("HackCD"), HackCDTimer)}");
+            if (KCDTimer > 0) sb.Append($"\n{string.Format(GetString("KCD"), KCDTimer)}");
 
             string ns = sb.ToString();
 
@@ -234,10 +231,10 @@ internal class Glitch : RoleBase
 
         var sb = new StringBuilder();
 
-        if (MimicDurTimer > 0) sb.Append($"{string.Format(Translator.GetString("MimicDur"), MimicDurTimer)}\n");
-        if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"{string.Format(Translator.GetString("MimicCD"), MimicCDTimer)}\n");
-        if (HackCDTimer > 0) sb.Append($"{string.Format(Translator.GetString("HackCD"), HackCDTimer)}\n");
-        if (KCDTimer > 0) sb.Append($"{string.Format(Translator.GetString("KCD"), KCDTimer)}\n");
+        if (MimicDurTimer > 0) sb.Append($"{string.Format(GetString("Glitch_MimicDur"), MimicDurTimer)}\n");
+        if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"{string.Format(GetString("Glitch_MimicCD"), MimicCDTimer)}\n");
+        if (HackCDTimer > 0) sb.Append($"{string.Format(GetString("Glitch_HackCD"), HackCDTimer)}\n");
+        if (KCDTimer > 0) sb.Append($"{string.Format(GetString("Glitch_KCD"), KCDTimer)}\n");
 
         return sb.ToString();
     }
@@ -251,14 +248,14 @@ internal class Glitch : RoleBase
         HackCDTimer = 10;
         MimicCDTimer = 10;
     }
-    public static bool OnCoEnterVentOthers(PlayerPhysics __instance, int id)
+    public override bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId)
     {
-        if (hackedIdList.ContainsKey(__instance.myPlayer.PlayerId))
+        if (hackedIdList.ContainsKey(physics.myPlayer.PlayerId))
         {
             _ = new LateTask(() =>
             {
-                __instance.myPlayer?.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchVent")));
-                __instance.myPlayer?.MyPhysics?.RpcBootFromVent(id);
+                physics.myPlayer?.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchVent")));
+                physics.myPlayer?.MyPhysics?.RpcBootFromVent(ventId);
             }, 0.5f, "Player Boot From Vent By Glith");
             return true;
         }
@@ -278,7 +275,7 @@ internal class Glitch : RoleBase
     public static bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
     {
         if (killer == target || killer == null) return true;
-        if (HasEnabled && hackedIdList.ContainsKey(killer.PlayerId))
+        if (hackedIdList.ContainsKey(killer.PlayerId))
         {
             killer.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchKill")));
             return false;
@@ -288,6 +285,6 @@ internal class Glitch : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.KillButton.OverrideText(GetString("KillButtonText"));
-        hud.SabotageButton.OverrideText(GetString("MimicButtonText"));
+        hud.SabotageButton.OverrideText(GetString("Glitch_MimicButtonText"));
     }
 }

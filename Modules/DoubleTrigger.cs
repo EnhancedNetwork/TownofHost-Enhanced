@@ -6,35 +6,35 @@ namespace TOHE;
 
 static class DoubleTrigger
 {
-    public static List<byte> PlayerIdList = [];
+    public static readonly HashSet<byte> PlayerIdList = [];
 
-    public static Dictionary<byte, float> FirstTriggerTimer = [];
-    public static Dictionary<byte, byte> FirstTriggerTarget = [];
-    public static Dictionary<byte, Action> FirstTriggerAction = [];
+    public static readonly Dictionary<byte, float> FirstTriggerTimer = [];
+    public static readonly Dictionary<byte, byte> FirstTriggerTarget = [];
+    public static readonly Dictionary<byte, Action> FirstTriggerAction = [];
 
     public static void Init()
     {
-        PlayerIdList = [];
-        FirstTriggerTimer = [];
-        FirstTriggerAction = [];
+        PlayerIdList.Clear();
+        FirstTriggerTimer.Clear();
+        FirstTriggerAction.Clear();
     }
     public static void AddDoubleTrigger(this PlayerControl killer)
     {
         PlayerIdList.Add(killer.PlayerId);
     }
-    public static bool CanDoubleTrigger(this PlayerControl killer)
+    private static bool CanDoubleTrigger(this PlayerControl killer)
     {
         return PlayerIdList.Contains(killer.PlayerId);
     }
 
-    ///     一回目アクション時 false、2回目アクション時true
+    /// false on first action, true on second action
     public static bool CheckDoubleTrigger(this PlayerControl killer, PlayerControl target, Action firstAction)
     {
         if (FirstTriggerTimer.ContainsKey(killer.PlayerId))
         {
             if (FirstTriggerTarget[killer.PlayerId] != target.PlayerId)
             {
-                //2回目がターゲットずれてたら最初の相手にシングルアクション
+                // Single action on the first opponent if the second one is off target
                 return false;
             }
             Logger.Info($"{killer.name} DoDoubleAction", "DoubleTrigger");
@@ -43,7 +43,7 @@ static class DoubleTrigger
             FirstTriggerAction.Remove(killer.PlayerId);
             return true;
         }
-        //シングルアクション時はキル間隔を無視
+        // Ignore kill interval when single action
         CheckMurderPatch.TimeSinceLastKill.Remove(killer.PlayerId);
         FirstTriggerTimer.Add(killer.PlayerId, 1f);
         FirstTriggerTarget.Add(killer.PlayerId, target.PlayerId);
@@ -52,6 +52,8 @@ static class DoubleTrigger
     }
     public static void OnFixedUpdate(PlayerControl player)
     {
+        if (!CanDoubleTrigger(player)) return;
+
         if (!GameStates.IsInTask)
         {
             FirstTriggerTimer.Clear();

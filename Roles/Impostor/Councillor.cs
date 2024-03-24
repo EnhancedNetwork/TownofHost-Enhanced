@@ -56,6 +56,13 @@ internal class Councillor : RoleBase
             MurderLimit[playerId] = MurderLimitPerMeeting.GetInt();
         }
     }
+
+    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
+        => IsForMeeting && seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
+
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
+        => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
+
     public static bool MurderMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;
@@ -170,7 +177,7 @@ internal class Councillor : RoleBase
                     GuessManager.RpcGuesserMurderPlayer(dp);
 
                     //死者检查
-                    Utils.AfterPlayerDeathTasks(dp, true);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
                     Utils.NotifyRoles(isForMeeting: false, NoCache: true);
 
@@ -243,7 +250,7 @@ internal class Councillor : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MeetingKill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CouncillorJudge, SendOption.Reliable, -1);
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

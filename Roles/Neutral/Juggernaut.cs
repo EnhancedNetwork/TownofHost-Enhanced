@@ -7,40 +7,38 @@ namespace TOHE;
 
 internal class Juggernaut : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 16900;
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ReduceKillCooldown;
     private static OptionItem MinKillCooldown;
-    public static OptionItem HasImpostorVision;
-    public static OptionItem CanVent;
+    private static OptionItem HasImpostorVision;
+    private static OptionItem CanVent;
 
-    private static Dictionary<byte, float> NowCooldown = [];
+    private static readonly Dictionary<byte, float> NowCooldown = [];
 
     public static void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Juggernaut, 1, zeroOne: false);
-        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "ArroganceDefaultKillCooldown", new(0f, 180f, 2.5f), 65f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
+        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "Arrogance/Juggernaut___DefaultKillCooldown", new(0f, 180f, 2.5f), 65f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
             .SetValueFormat(OptionFormat.Seconds);
-        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "ArroganceReduceKillCooldown", new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
+        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "Arrogance/Juggernaut___ReduceKillCooldown", new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
             .SetValueFormat(OptionFormat.Seconds);
-        MinKillCooldown = FloatOptionItem.Create(Id + 12, "ArroganceMinKillCooldown", new(0f, 180f, 2.5f), 2.5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
+        MinKillCooldown = FloatOptionItem.Create(Id + 12, "Arrogance/Juggernaut___MinKillCooldown", new(0f, 180f, 2.5f), 2.5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
             .SetValueFormat(OptionFormat.Seconds);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut]);
         CanVent = BooleanOptionItem.Create(Id + 14, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut]);
     }
     public override void Init()
     {
-        playerIdList = [];
-        NowCooldown = [];
+        playerIdList.Clear();
+        NowCooldown.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -59,7 +57,7 @@ internal class Juggernaut : RoleBase
         killer.SyncSettings();
         return true;
     }
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => Juggernaut.CanVent.GetBool();
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(Juggernaut.HasImpostorVision.GetBool());
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(HasImpostorVision.GetBool());
 }

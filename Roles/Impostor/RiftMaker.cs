@@ -171,7 +171,6 @@ internal class RiftMaker : RoleBase
 
     public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        if (!GameStates.IsInTask) return;
         if (player == null) return;
         if (Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;
 

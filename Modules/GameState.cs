@@ -2,12 +2,10 @@ using AmongUs.GameOptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Utils;
@@ -55,7 +53,6 @@ public class PlayerState(byte playerId)
         countTypes = role.GetCountTypes();
         RoleClass = role.CreateRoleClass();
 
-
         var pc = GetPlayerById(PlayerId);
 
         if (role == CustomRoles.Opportunist)
@@ -88,10 +85,10 @@ public class PlayerState(byte playerId)
         }
         if (pc.Is(CustomRoles.Charmed))
         {
-            countTypes = Succubus.CharmedCountMode.GetInt() switch
+            countTypes = Cultist.CharmedCountMode.GetInt() switch
             {
                 0 => CountTypes.OutOfGame,
-                1 => CountTypes.Succubus,
+                1 => CountTypes.Cultist,
                 2 => countTypes,
                 _ => throw new NotImplementedException()
             };
@@ -186,10 +183,10 @@ public class PlayerState(byte playerId)
                 break;
 
             case CustomRoles.Charmed:
-                countTypes = Succubus.CharmedCountMode.GetInt() switch
+                countTypes = Cultist.CharmedCountMode.GetInt() switch
                 {
                     0 => CountTypes.OutOfGame,
-                    1 => CountTypes.Succubus,
+                    1 => CountTypes.Cultist,
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };
@@ -310,6 +307,12 @@ public class PlayerState(byte playerId)
 
     public void SetDead()
     {
+        var caller = new System.Diagnostics.StackFrame(1, false);
+        var callerMethod = caller.GetMethod();
+        string callerMethodName = callerMethod.Name;
+        string callerClassName = callerMethod.DeclaringType.FullName;
+        Logger.Msg($"Player was dead, activated from: {callerClassName}.{callerMethodName}", "PlayerState.SetDead()");
+
         IsDead = true;
         if (AmongUsClient.Instance.AmHost)
         {
@@ -453,47 +456,9 @@ public class TaskState
 
         if (AmongUsClient.Instance.AmHost)
         {
-            var playerRole = player.GetCustomRole();
             var playerSubRoles = player.GetCustomSubRoles();
 
             player.GetRoleClass()?.OnTaskComplete(player, CompletedTasksCount, AllTasksCount);
-
-            switch (playerRole)
-            {
-                //case CustomRoles.SpeedBooster when player.IsAlive():
-                //    if ((CompletedTasksCount + 1) <= Options.SpeedBoosterTimes.GetInt())
-                //    {
-                //        Logger.Info($"Speed Booster: {player.GetNameWithRole().RemoveHtmlTags()} completed the task", "SpeedBooster");
-                //        Main.AllPlayerSpeed[player.PlayerId] += Options.SpeedBoosterUpSpeed.GetFloat();
-                //        if (Main.AllPlayerSpeed[player.PlayerId] > 3) player.Notify(Translator.GetString("SpeedBoosterSpeedLimit"));
-                //        else player.Notify(string.Format(Translator.GetString("SpeedBoosterTaskDone"), Main.AllPlayerSpeed[player.PlayerId].ToString("0.0#####")));
-                //    }
-                //    break;
-
-                case CustomRoles.Workaholic when (CompletedTasksCount + 1) >= AllTasksCount && !(Options.WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()):
-                    Logger.Info("The Workaholic task is done", "Workaholic");
-
-                    RPC.PlaySoundRPC(player.PlayerId, Sounds.KillSound);
-                    foreach (var pc in Main.AllAlivePlayerControls)
-                    {
-                        if (pc.PlayerId != player.PlayerId)
-                        {
-                            Main.PlayerStates[pc.PlayerId].deathReason = pc.PlayerId == player.PlayerId ?
-                                PlayerState.DeathReason.Overtired : PlayerState.DeathReason.Ashamed;
-
-                            pc.RpcMurderPlayerV3(pc);
-                            Main.PlayerStates[pc.PlayerId].SetDead();
-                            pc.SetRealKiller(player);
-                        }
-                    }
-
-                    if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
-                    {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic win
-                        CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-                    }
-                    break;
-            }
 
 
             // Add-Ons

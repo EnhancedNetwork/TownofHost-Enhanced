@@ -3,7 +3,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Seer
 {
-    private static readonly int Id = 20000;
+    private const int Id = 20000;
 
     public static OptionItem ImpCanBeSeer;
     public static OptionItem CrewCanBeSeer;

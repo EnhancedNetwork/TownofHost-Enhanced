@@ -300,7 +300,11 @@ internal class ChatCommands
                     subArgs = args.Length < 2 ? "" : args[1];
                     Utils.SendMessage(GetString("Message.MaxPlayers") + subArgs);
                     var numbereer = Convert.ToByte(subArgs);
-                    GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers = numbereer;
+                    if (GameStates.IsNormalGame)
+                        GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers = numbereer;
+                    
+                    else if (GameStates.IsHideNSeek)
+                        GameOptionsManager.Instance.currentHideNSeekGameOptions.MaxPlayers = numbereer;
                     break;
 
                 case "/h":
@@ -697,7 +701,7 @@ internal class ChatCommands
                     var target = Utils.GetPlayerById(id2);
                     if (target != null)
                     {
-                        target.RpcMurderPlayerV3(target);
+                        target.RpcMurderPlayer(target);
                         if (target.AmOwner) Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
                         else Utils.SendMessage(string.Format(GetString("Message.Executed"), target.Data.PlayerName));
 
@@ -1034,7 +1038,7 @@ internal class ChatCommands
             // Position should be same with the role name in en_US.json
             // So translators can put nicknames or common misspellings here
             // eg : "A" or "B" => GetString("RealRoleName"),
-            // eg : "Vector" or "Mario" => GetString("Mario"),
+            // eg : "Vector" or "Vector" => GetString("Vector"),
             // If you need to remove the roles, please delete them directly instead of commenting them out
 
             // GM
@@ -1207,7 +1211,7 @@ internal class ChatCommands
             "暴民" or "处刑人" or "处刑" or "处刑者" => GetString("Executioner"),
             "律師" or "律师" => GetString("Lawyer"),
             "投機主義者" or "投机者" or "投机" => GetString("Opportunist"),
-            "瑪利歐" or "马里奥" => GetString("Mario"),
+            "瑪利歐" or "马里奥" => GetString("Vector"),
             "豺狼" or "蓝狼" => GetString("Jackal"),
             "神" or "上帝" => GetString("God"),
             "冤罪師" or "冤罪师" or "冤罪" => GetString("Innocent"),
@@ -1229,8 +1233,8 @@ internal class ChatCommands
             "萬疫之神" or "瘟疫" => GetString("Pestilence"),
             "故障者" or "缺点者" or "缺点" => GetString("Glitch"),
             "跟班" or "跟班小弟" => GetString("Sidekick"),
-            "追隨者" or "赌徒" or "下注" => GetString("Totocalcio"),
-            "魅魔" => GetString("Succubus"),
+            "追隨者" or "赌徒" or "下注" => GetString("Follower"),
+            "魅魔" => GetString("Cultist"),
             "連環殺手" or "连环杀手" => GetString("SerialKiller"),
             "劍聖" or "天启" => GetString("Juggernaut"),
             "感染者" or "感染" => GetString("Infectious"),
@@ -2424,7 +2428,9 @@ class ChatUpdatePatch
         
         int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
         var name = player.Data.PlayerName;
-        
+
+        __instance.freeChatField.textArea.characterLimit = 999;
+
         if (clientId == -1)
         {
             player.SetName(title);

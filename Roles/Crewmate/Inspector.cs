@@ -432,13 +432,9 @@ internal class Inspector : RoleBase
         return ProgressText.ToString();
     }
 
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl target) => ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + pva.NameText.text;
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
+        => ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + pva.NameText.text;
+    
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
-    {
-        if (IsForMeeting)
-        {
-            return ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + TargetPlayerName;
-        }
-        return string.Empty;
-    }
+        => IsForMeeting ? ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
 }

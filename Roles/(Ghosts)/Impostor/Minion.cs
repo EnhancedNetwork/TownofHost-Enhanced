@@ -1,10 +1,10 @@
 ﻿using static TOHE.Options;
 
-namespace TOHE.Roles.Impostor;
+namespace TOHE.Roles._Ghosts_.Impostor;
 
 public static class Minion
 {
-    private static readonly int Id = 27900; 
+    private const int Id = 27900; 
 
     public static OptionItem AbilityCooldown;
     public static OptionItem AbilityTime;

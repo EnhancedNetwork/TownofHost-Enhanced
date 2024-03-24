@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
@@ -7,7 +9,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Oiiai
 {
-    private static readonly int Id = 25700;
+    private const int Id = 25700;
     public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
@@ -42,7 +44,8 @@ public static class Oiiai
     }
     public static void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
+        Eraser.ErasedRoleStorage.Clear();
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -66,9 +69,9 @@ public static class Oiiai
             Logger.Info(killer.GetNameWithRole() + " gets Oiiai addon by " + target.GetNameWithRole(), "Oiiai");
         }
 
-        if (!Main.ErasedRoleStorage.ContainsKey(killer.PlayerId))
+        if (!Eraser.ErasedRoleStorage.ContainsKey(killer.PlayerId))
         {
-            Main.ErasedRoleStorage.Add(killer.PlayerId, killer.GetCustomRole());
+            Eraser.ErasedRoleStorage.Add(killer.PlayerId, killer.GetCustomRole());
             Logger.Info($"Added {killer.GetNameWithRole()} to ErasedRoleStorage", "Oiiai");
         }
         else
@@ -92,8 +95,7 @@ public static class Oiiai
                 if (changeValue != 0)
                 {
                     killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
-                    if (changeValue == 1) Amnesiac.Add(killer.PlayerId);
-                    else if (changeValue == 2) Imitator.Add(killer.PlayerId);
+                    killer.GetRoleClass().Add(killer.PlayerId);
 
                     Logger.Info($"Oiiai {killer.GetNameWithRole()} with Neutrals with kill button assign.", "Oiiai");
                 }

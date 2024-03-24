@@ -15,11 +15,10 @@ internal class Wraith : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18500;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem WraithCooldown;
@@ -28,8 +27,10 @@ internal class Wraith : RoleBase
     private static OptionItem HasImpostorVision;
 
     private static Dictionary<byte, long> InvisTime = [];
-    private static Dictionary<byte, long> lastTime = [];
-    private static Dictionary<byte, int> ventedId = [];
+    private static readonly Dictionary<byte, long> lastTime = [];
+    private static readonly Dictionary<byte, int> ventedId = [];
+
+    private static long lastFixedTime = 0;
 
     public static void SetupCustomOption()
     {
@@ -43,10 +44,10 @@ internal class Wraith : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        InvisTime = [];
-        lastTime = [];
-        ventedId = [];
+        playerIdList.Clear();
+        InvisTime.Clear();
+        lastTime.Clear();
+        ventedId.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -60,15 +61,16 @@ internal class Wraith : RoleBase
     private static void SendRPC(PlayerControl pc)
     {
         if (pc.AmOwner) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetWraithTimer, SendOption.Reliable, pc.GetClientId());
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
+        writer.WritePacked((int)CustomRoles.Wraith); //SetWraithTimer
         writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
         writer.Write((lastTime.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
-        InvisTime = [];
-        lastTime = [];
+        InvisTime.Clear();
+        lastTime.Clear();
         long invis = long.Parse(reader.ReadString());
         long last = long.Parse(reader.ReadString());
         if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
@@ -78,11 +80,10 @@ internal class Wraith : RoleBase
         => GameStates.IsInTask && !InvisTime.ContainsKey(id) && !lastTime.ContainsKey(id);
     private static bool IsInvis(byte id) => InvisTime.ContainsKey(id);
 
-    private static long lastFixedTime = 0;
     public override void OnReportDeadBody(PlayerControl pa, PlayerControl dum)
     {
-        lastTime = [];
-        InvisTime = [];
+        lastTime.Clear();
+        InvisTime.Clear();
 
         foreach (var wraithId in playerIdList.ToArray())
         {
@@ -94,19 +95,19 @@ internal class Wraith : RoleBase
             SendRPC(wraith);
         }
 
-        ventedId = [];
+        ventedId.Clear();
     }
     public override void AfterMeetingTasks()
     {
-        lastTime = [];
-        InvisTime = [];
+        lastTime.Clear();
+        InvisTime.Clear();
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
         {
             lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());
             SendRPC(pc);
         }
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
         var now = Utils.GetTimeStamp();
 
@@ -132,7 +133,7 @@ internal class Wraith : RoleBase
                     lastTime.Add(pc.PlayerId, now);
                     pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
                     ventedId.Remove(pc.PlayerId);
-                    NameNotifyManager.Notify(pc, GetString("WraithInvisStateOut"));
+                    pc.Notify(GetString("WraithInvisStateOut"));
                     SendRPC(pc);
                     continue;
                 }
@@ -164,14 +165,14 @@ internal class Wraith : RoleBase
 
                 InvisTime.Add(pc.PlayerId, Utils.GetTimeStamp());
                 SendRPC(pc);
-                NameNotifyManager.Notify(pc, GetString("WraithInvisState"), WraithDuration.GetFloat());
+                pc.Notify(GetString("WraithInvisState"), WraithDuration.GetFloat());
             }
             else
             {
                 if (!WraithVentNormallyOnCooldown.GetBool())
                 {
                     __instance.myPlayer.MyPhysics.RpcBootFromVent(ventId);
-                    NameNotifyManager.Notify(pc, GetString("WraithInvisInCooldown"));
+                    pc.Notify(GetString("WraithInvisInCooldown"));
                 }
             }
         }, 0.5f, "Wraith Vent");
@@ -189,7 +190,7 @@ internal class Wraith : RoleBase
         SendRPC(pc);
 
         pc?.MyPhysics?.RpcBootFromVent(vent.Id);
-        NameNotifyManager.Notify(pc, GetString("WraithInvisStateOut"));
+        pc.Notify(GetString("WraithInvisStateOut"));
     }
     public override string GetLowerText(PlayerControl pc, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {

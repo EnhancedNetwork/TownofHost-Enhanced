@@ -169,4 +169,6 @@ internal class Puppeteer : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
         => hud.KillButton?.OverrideText(GetString("PuppeteerOperateButtonText"));
+
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Puttpuer");
 }

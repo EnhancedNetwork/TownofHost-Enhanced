@@ -120,8 +120,8 @@ internal class Spy : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
         => OnKillAttempt(killer, target);
-    
-    public override void OnFixedUpdate(PlayerControl pc)
+
+    public override void OnFixedUpdateLowLoad(PlayerControl pc)
     {
         if (pc == null) return;
         if (SpyRedNameList.Count == 0) return;

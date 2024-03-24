@@ -605,16 +605,14 @@ public class RoleAssign
         if (NKs.Length > 0) Logger.Info(string.Join(", ", NKs.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "NKRoleResult");
         if (Crews.Length > 0) Logger.Info(string.Join(", ", Crews.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "CrewRoleResult");
 
-        if (rd.Next(0, 100) < Jester.SunnyboyChance.GetInt() && FinalRolesList.Remove(CustomRoles.Jester)) FinalRolesList.Add(CustomRoles.Sunnyboy);
-        if (Bard.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Arrogance)) FinalRolesList.Add(CustomRoles.Bard);
-        if (Bomber.CheckSpawnNuker() && FinalRolesList.Remove(CustomRoles.Bomber)) FinalRolesList.Add(CustomRoles.Nuker);
-
         if (FinalRolesList.Contains(CustomRoles.Mini))
         {
             FinalRolesList.Remove(CustomRoles.Mini);
 
-            if (Mini.CanBeEvil.GetBool() && (rd.Next(0, 100) < Mini.EvilMiniSpawnChances.GetInt()))
+            if (Mini.CheckSpawnEvilMini())
             {
+                var tempImpRole = FinalRolesList.FirstOrDefault(role => role.IsImpostor());
+                FinalRolesList.Remove(tempImpRole);
                 FinalRolesList.Add(CustomRoles.EvilMini);
             }
             else
@@ -623,7 +621,12 @@ public class RoleAssign
             }
         }
 
-        if (Romantic.IsEnable)
+        if (Bomber.CheckSpawnNuker() && FinalRolesList.Remove(CustomRoles.Bomber)) FinalRolesList.Add(CustomRoles.Nuker);
+        if (Vampire.CheckSpawnVampiress() && FinalRolesList.Remove(CustomRoles.Vampire)) FinalRolesList.Add(CustomRoles.Vampiress);
+        if (Jester.CheckSpawnSunnyboy() && FinalRolesList.Remove(CustomRoles.Jester)) FinalRolesList.Add(CustomRoles.Sunnyboy);
+        if (Bard.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Arrogance)) FinalRolesList.Add(CustomRoles.Bard);
+
+        if (Romantic.HasEnabled)
         {
             if (FinalRolesList.Contains(CustomRoles.Romantic) && FinalRolesList.Contains(CustomRoles.Lovers))
                 FinalRolesList.Remove(CustomRoles.Lovers);

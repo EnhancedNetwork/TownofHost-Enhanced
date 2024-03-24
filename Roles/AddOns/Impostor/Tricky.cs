@@ -5,7 +5,7 @@ using static TOHE.Options;
 namespace TOHE.Roles.AddOns.Impostor;
 public static class Tricky
 {
-    private static readonly int Id = 19900;
+    private const int Id = 19900;
     private static OptionItem EnabledDeathReasons;
     //private static Dictionary<byte, PlayerState.DeathReason> randomReason = [];
 
@@ -93,6 +93,7 @@ public static class Tricky
             Main.PlayerStates[target.PlayerId].deathReason = ChangeRandomDeath();
             Main.PlayerStates[target.PlayerId].SetDead();
             Utils.NotifyRoles(SpecifySeer: target);
+
         }, 0.3f, "Tricky random death reason");
     }
 }

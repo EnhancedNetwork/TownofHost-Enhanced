@@ -107,8 +107,10 @@ internal class Medium : RoleBase
             Logger.Info($"Psychics Make Connections： {pc.GetNameWithRole()} => {target.GetRealName}", "Medium");
         }
     }
-    public static void CheckDeadBody(PlayerControl Killer, PlayerControl target)
+    public static void CheckDeadBody(PlayerControl Killer, PlayerControl target, bool inMeeting)
     {
+        if (inMeeting) return;
+
         foreach (var mediumId in playerIdList.ToArray())
         {
             var mediun = GetPlayerById(mediumId);

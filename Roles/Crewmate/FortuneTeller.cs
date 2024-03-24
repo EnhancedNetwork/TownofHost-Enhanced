@@ -309,7 +309,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Virus,
                 CustomRoles.Monarch,
                 CustomRoles.Revolutionist,
-                CustomRoles.Succubus,
+                CustomRoles.Cultist,
                 CustomRoles.Enigma,
                 CustomRoles.PlagueDoctor],
                 
@@ -322,7 +322,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Saboteur],
                 
                 [CustomRoles.Medic,
-                CustomRoles.Mario,
+                CustomRoles.Vector,
                 CustomRoles.Jester,
                 CustomRoles.Lurker,
                 CustomRoles.Swapper,
@@ -378,7 +378,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Witch],
                 
                 [CustomRoles.LazyGuy,
-                CustomRoles.Totocalcio,
+                CustomRoles.Follower,
                 CustomRoles.Pelican,
                 CustomRoles.Scavenger,
                 CustomRoles.Ludopath,

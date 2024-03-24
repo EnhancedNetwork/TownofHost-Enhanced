@@ -67,7 +67,7 @@ public static class CustomWinnerHolder
                     ResetAndSetWinner(CustomWinner.Jackal); 
                     return true;
                 case CustomRoles.Charmed:
-                    ResetAndSetWinner(CustomWinner.Succubus); 
+                    ResetAndSetWinner(CustomWinner.Cultist); 
                     return true;
                 case CustomRoles.Infectious:
                     ResetAndSetWinner(CustomWinner.Infectious); 

@@ -12,11 +12,10 @@ internal class Agitater : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 15800;
-    private static List<byte> playerIdList = [];
+    private static readonly List<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem BombExplodeCooldown;
@@ -48,7 +47,7 @@ internal class Agitater : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         CurrentBombedPlayer = byte.MaxValue;
         LastBombedPlayer = byte.MaxValue;
         AgitaterHasBombed = false;
@@ -128,7 +127,7 @@ internal class Agitater : RoleBase
         Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
         Main.PlayerStates[CurrentBombedPlayer].SetDead();
         target.RpcExileV2();
-        Utils.AfterPlayerDeathTasks(target, true);
+        MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
         ResetBomb();
         Logger.Info($"{killer.GetRealName()} bombed {target.GetRealName()} on report", "Agitater");
     }
@@ -199,7 +198,8 @@ internal class Agitater : RoleBase
 
     public static void SendRPC(byte newbomb, byte oldbomb)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RpcPassBomb, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Agitater);
         writer.Write(newbomb);
         writer.Write(oldbomb);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

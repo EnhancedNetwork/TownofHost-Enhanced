@@ -100,8 +100,6 @@ internal class Witch : RoleBase
         }
     }
 
-    private static bool IsSpellMode(byte playerId) => SpellMode.ContainsKey(playerId) && SpellMode[playerId];
-
     private static void SwitchSpellMode(byte playerId, bool kill)
     {
         bool needSwitch = false;
@@ -121,14 +119,11 @@ internal class Witch : RoleBase
             Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
         }
     }
-    private static bool IsSpelled(byte target)
-    {
-        foreach (var witch in playerIdList)
-        {
-            if (SpelledPlayer[witch].Contains(target)) return true;
-        }
-        return false;
-    }
+
+    private static bool IsSpellMode(byte playerId) => SpellMode.TryGetValue(playerId, out var isSpellMode) && isSpellMode;
+
+    private static bool IsSpelled(byte target) => SpelledPlayer.Any(x => x.Value.Contains(target));
+
     private static void SetSpelled(PlayerControl killer, PlayerControl target)
     {
         if (!IsSpelled(target.PlayerId))
@@ -148,23 +143,22 @@ internal class Witch : RoleBase
             SendRPC(true, witch);
         }
     }
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (NowSwitchTrigger == SwitchTrigger.TriggerDouble)
         {
             return killer.CheckDoubleTrigger(target, () => { SetSpelled(killer, target); });
         }
+
         if (!IsSpellMode(killer.PlayerId))
         {
             SwitchSpellMode(killer.PlayerId, true);
-            //キルモードなら通常処理に戻る
             return true;
         }
         SetSpelled(killer, target);
-
-        //スペルに失敗してもスイッチ判定
         SwitchSpellMode(killer.PlayerId, true);
-        //キル処理終了させる
+
         return false;
     }
     public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
@@ -204,11 +198,18 @@ internal class Witch : RoleBase
     {
         RemoveSpelledPlayer();
     }
+    public override void OnEnterVent(PlayerControl pc, Vent vent)
+    {
+        if (NowSwitchTrigger is SwitchTrigger.TriggerVent)
+        {
+            SwitchSpellMode(pc.PlayerId, false);
+        }
+    }
     private string GetSpelledMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
 
-        if (IsSpelled(seen.PlayerId) && isForMeeting)
+        if (isForMeeting && IsSpelled(seen.PlayerId))
         {
             return Utils.ColorString(Palette.ImpostorRed, "†");
         }
@@ -246,14 +247,6 @@ internal class Witch : RoleBase
         else
         {
             hud.KillButton.OverrideText(GetString("KillButtonText"));
-        }
-    }
-
-    public override void OnEnterVent(PlayerControl pc, Vent vent)
-    {
-        if (NowSwitchTrigger is SwitchTrigger.TriggerVent)
-        {
-            SwitchSpellMode(pc.PlayerId, false);
         }
     }
 }

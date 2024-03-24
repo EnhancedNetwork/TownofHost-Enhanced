@@ -3,54 +3,59 @@ using Il2CppSystem;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Totocalcio
+internal class Follower : RoleBase
 {
-    private static readonly int Id = 12800;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 12800;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem MaxBetTimes;
-    public static OptionItem BetCooldown;
+    private static OptionItem BetCooldown;
     private static OptionItem BetCooldownIncrese;
     private static OptionItem MaxBetCooldown;
     private static OptionItem KnowTargetRole;
-    private static OptionItem BetTargetKnowTotocalcio;
+    private static OptionItem BetTargetKnowFollower;
 
-    private static Dictionary<byte, int> BetTimes = [];
-    public static Dictionary<byte, byte> BetPlayer = [];
+    private static readonly Dictionary<byte, int> BetTimes = [];
+    public static readonly Dictionary<byte, byte> BetPlayer = [];
 
     public static void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Totocalcio, 1, zeroOne: false);
-        MaxBetTimes = IntegerOptionItem.Create(Id + 10, "TotocalcioMaxBetTimes", new(1, 20, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Totocalcio])
+        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Follower, 1, zeroOne: false);
+        MaxBetTimes = IntegerOptionItem.Create(Id + 10, "FollowerMaxBetTimes", new(1, 20, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
             .SetValueFormat(OptionFormat.Times);
-        BetCooldown = FloatOptionItem.Create(Id + 12, "TotocalcioBetCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Totocalcio])
+        BetCooldown = FloatOptionItem.Create(Id + 12, "FollowerBetCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
             .SetValueFormat(OptionFormat.Seconds);
-        BetCooldownIncrese = FloatOptionItem.Create(Id + 14, "TotocalcioBetCooldownIncrese", new(0f, 60f, 1f), 4f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Totocalcio])
+        BetCooldownIncrese = FloatOptionItem.Create(Id + 14, "FollowerBetCooldownIncrese", new(0f, 60f, 1f), 4f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
             .SetValueFormat(OptionFormat.Seconds);
-        MaxBetCooldown = FloatOptionItem.Create(Id + 16, "TotocalcioMaxBetCooldown", new(0f, 180f, 2.5f), 50f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Totocalcio])
+        MaxBetCooldown = FloatOptionItem.Create(Id + 16, "FollowerMaxBetCooldown", new(0f, 180f, 2.5f), 50f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
             .SetValueFormat(OptionFormat.Seconds);
-        KnowTargetRole = BooleanOptionItem.Create(Id + 18, "TotocalcioKnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Totocalcio]);
-        BetTargetKnowTotocalcio = BooleanOptionItem.Create(Id + 20, "TotocalcioBetTargetKnowTotocalcio", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Totocalcio]);
+        KnowTargetRole = BooleanOptionItem.Create(Id + 18, "FollowerKnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower]);
+        BetTargetKnowFollower = BooleanOptionItem.Create(Id + 20, "FollowerBetTargetKnowFollower", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower]);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        BetTimes = [];
-        BetPlayer = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        BetTimes.Clear();
+        BetPlayer.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         BetTimes.Add(playerId, MaxBetTimes.GetInt());
-        IsEnable = true;
+
+        CustomRoleManager.MarkOthers.Add(GetOthersMark);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -58,7 +63,8 @@ public static class Totocalcio
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncTotocalcioTargetAndTimes, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Follower); //SyncFollowerTargetAndTimes
         writer.Write(playerId);
         writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : MaxBetTimes.GetInt());
         writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
@@ -75,8 +81,10 @@ public static class Totocalcio
         if (Target != byte.MaxValue)
             BetPlayer.Add(PlayerId, Target);
     }
-    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (!BetTimes.TryGetValue(player.PlayerId, out var times) || times >= 1);
-    public static void SetKillCooldown(byte id)
+
+    private static bool CanKillButton(PlayerControl player) => !player.Data.IsDead && (!BetTimes.TryGetValue(player.PlayerId, out var times) || times >= 1);
+    public override bool CanUseKillButton(PlayerControl player) => CanKillButton(player);
+    public override void SetKillCooldown(byte id)
     {
         if (BetTimes.TryGetValue(id, out var times) && times < 1)
         {
@@ -88,12 +96,12 @@ public static class Totocalcio
         cd = Math.Min(cd, MaxBetCooldown.GetFloat());
         Main.AllPlayerKillCooldown[id] = cd;
     }
-    public static bool KnowRole(PlayerControl player, PlayerControl target)
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;
-        return player.Is(CustomRoles.Totocalcio) && BetPlayer.TryGetValue(player.PlayerId, out var tar) && tar == target.PlayerId;
+        return seer.Is(CustomRoles.Follower) && BetPlayer.TryGetValue(seer.PlayerId, out var tar) && tar == target.PlayerId;
     }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return true;
         if (BetPlayer.TryGetValue(killer.PlayerId, out var tar) && tar == target.PlayerId) return false;
@@ -115,29 +123,35 @@ public static class Totocalcio
         killer.SetKillCooldown();
         killer.RPCPlayCustomSound("Bet");
 
-        killer.Notify(GetString("TotocalcioBetPlayer"));
+        killer.Notify(GetString("FollowerBetPlayer"));
 
-        if (BetTargetKnowTotocalcio.GetBool())
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Totocalcio), GetString("TotocalcioBetOnYou")));
+        if (BetTargetKnowFollower.GetBool())
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Follower), GetString("FollowerBetOnYou")));
 
-        Logger.Info($" {killer.GetNameWithRole()} => {target.GetNameWithRole()}", "Totocalcio");
+        Logger.Info($" {killer.GetNameWithRole()} => {target.GetNameWithRole()}", "Follower");
         return false;
     }
-    public static string TargetMark(PlayerControl seer, PlayerControl target)
+    private string GetOthersMark(PlayerControl seer, PlayerControl target = null, bool IsForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Totocalcio))
+        if (target == null) return string.Empty;
+
+        if (!seer.Is(CustomRoles.Follower))
         {
-            if (!BetTargetKnowTotocalcio.GetBool()) return "";
+            if (!BetTargetKnowFollower.GetBool()) return "";
             return (BetPlayer.TryGetValue(target.PlayerId, out var x) && seer.PlayerId == x) ?
-                Utils.ColorString(Utils.GetRoleColor(CustomRoles.Totocalcio), "♦") : "";
+                Utils.ColorString(Utils.GetRoleColor(CustomRoles.Follower), "♦") : "";
         }
         var GetValue = BetPlayer.TryGetValue(seer.PlayerId, out var targetId);
-        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Totocalcio), "♦") : "";
+        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Follower), "♦") : "";
     }
-    public static string GetProgressText(byte playerId)
+    public override string GetProgressText(byte playerId, bool coooms)
     {
         var player = Utils.GetPlayerById(playerId);
         if (player == null) return null;
-        return Utils.ColorString(CanUseKillButton(player) ? Utils.GetRoleColor(CustomRoles.Totocalcio) : Color.gray, $"({(BetTimes.TryGetValue(playerId, out var times) ? times : "0")})");
+        return Utils.ColorString(CanKillButton(player) ? Utils.GetRoleColor(CustomRoles.Follower) : Color.gray, $"({(BetTimes.TryGetValue(playerId, out var times) ? times : "0")})");
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(GetString("FollowerKillButtonText"));
     }
 }

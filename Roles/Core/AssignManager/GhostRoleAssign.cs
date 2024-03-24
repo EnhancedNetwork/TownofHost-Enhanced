@@ -1,7 +1,10 @@
 ﻿using AmongUs.GameOptions;
 using HarmonyLib;
+using MonoMod.Cil;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles._Ghosts_.Impostor;
+using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
@@ -18,28 +21,29 @@ public static class GhostRoleAssign
 
     public static void GhostAssignPatch(PlayerControl player)
     {
-        if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected) return;
+        if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
 
         var getplrRole = player.GetCustomRole();
         if (getplrRole is CustomRoles.GM or CustomRoles.Nemesis or CustomRoles.Retributionist) return;
 
+        var IsCrewmate = getplrRole.IsCrewmate() && !player.IsAnySubRole(x => x.IsConverted());
+        var IsImpostor = getplrRole.IsImpostor() && !player.IsAnySubRole(x => x.IsConverted());
+        var IsNeutral = getplrRole.IsNeutral();
+
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole() || x == CustomRoles.Gravestone) || Options.CustomGhostRoleCounts.Count <= 0) return;
         
         GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
+        if (GhostGetPreviousRole.ContainsKey(player.PlayerId)) Logger.Info($"Succesfully added {player.GetRealName()}/{player.GetCustomRole()}", "GhostAssignPatch.GhostPreviousRole");
+        else Logger.Warn($"Adding {player.GetRealName()} was unsuccessful", "GhostAssignPatch.GhostPreviousRole");
 
         List<CustomRoles> HauntedList = [];
         List<CustomRoles> ImpHauntedList = [];
 
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
 
-        var IsCrewmate = getplrRole.IsCrewmate() && !player.IsAnySubRole(x => x.IsConverted());
-        var IsImpostor = getplrRole.IsImpostor() && !player.IsAnySubRole(x => x.IsConverted());
-        var IsNeutral = getplrRole.IsNeutral();
 
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys.Where(x => x.GetMode() > 0))
         { 
-            // For each time a player dies, a ghostrole will have another shot at getting in.
-            // Imagine 3 groups: "I want first!" 100-75% // "I want mid-game" 75-45% // "Final Savior" 45%-0%. 
             if (ghostRole.IsCrewmate())
             {
                 if (HauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
@@ -74,8 +78,8 @@ public static class GhostRoleAssign
             if (ChosenRole.IsGhostRole())
             {
                 getCount[ChosenRole]--; // Only deduct if role has been set.
-                player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.AddPlayerId(ChosenRole);
                 player.RpcResetAbilityCooldown();
             }
@@ -94,8 +98,8 @@ public static class GhostRoleAssign
             if (ChosenRole.IsGhostRole())
             {
                 getCount[ChosenRole]--;
-                player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.AddPlayerId(ChosenRole);
                 player.RpcResetAbilityCooldown();
             }

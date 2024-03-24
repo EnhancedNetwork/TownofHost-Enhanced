@@ -8,19 +8,17 @@ internal class SerialKiller : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17900;
-    public static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
-
-    public static OptionItem KillCooldown;
-    public static OptionItem CanVent;
+    private static OptionItem KillCooldown;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
-    public static OptionItem HasSerialKillerBuddy;
-    public static OptionItem ChanceToSpawn;
+    private static OptionItem HasSerialKillerBuddy;
+    //private static OptionItem ChanceToSpawn;
 
     public static void SetupCustomOption()
     {
@@ -30,13 +28,13 @@ internal class SerialKiller : RoleBase
         CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller]);
         HasSerialKillerBuddy = BooleanOptionItem.Create(Id + 16, "HasSerialKillerBuddy", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller]);
-        ChanceToSpawn = IntegerOptionItem.Create(Id + 14, "ChanceToSpawn", new(0, 100, 5), 100, TabGroup.NeutralRoles, false)
-            .SetParent(HasSerialKillerBuddy)
-            .SetValueFormat(OptionFormat.Percent); 
+        //ChanceToSpawn = IntegerOptionItem.Create(Id + 14, "ChanceToSpawn", new(0, 100, 5), 100, TabGroup.NeutralRoles, false)
+        //    .SetParent(HasSerialKillerBuddy)
+        //    .SetValueFormat(OptionFormat.Percent); 
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {

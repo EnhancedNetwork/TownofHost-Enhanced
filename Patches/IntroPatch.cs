@@ -179,7 +179,7 @@ class CoBeginPatch
                 5 => new RandomSpawn.FungleSpawnMap(),
                 _ => null,
             };
-            if (map != null) Main.AllAlivePlayerControls.Do(map.RandomTeleport);
+            if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
         }
     }
     public static byte[] EncryptDES(byte[] data, string key)
@@ -285,7 +285,7 @@ class BeginCrewmatePatch
        
         return true;
     }
-    public static void Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToDisplay)
+    public static void Postfix(IntroCutscene __instance)
     {
         //チーム表示変更
         CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
@@ -500,7 +500,7 @@ class BeginImpostorPatch
             __instance.overlayHandle.color = Palette.CrewmateBlue;
             return false;
         }
-        else if (role is CustomRoles.Romantic or CustomRoles.Doppelganger or CustomRoles.Pyromaniac or CustomRoles.Huntsman or CustomRoles.RuthlessRomantic or CustomRoles.VengefulRomantic or CustomRoles.SerialKiller or CustomRoles.Jackal or CustomRoles.Seeker or CustomRoles.Pixie or CustomRoles.Agitater or CustomRoles.CursedSoul or CustomRoles.Pirate or CustomRoles.Amnesiac or CustomRoles.Arsonist or CustomRoles.Sidekick or CustomRoles.Innocent or CustomRoles.Pelican or CustomRoles.Pursuer or CustomRoles.Revolutionist or CustomRoles.Hater or CustomRoles.Demon or CustomRoles.Glitch or CustomRoles.Juggernaut or CustomRoles.Stalker or CustomRoles.Provocateur or CustomRoles.BloodKnight or CustomRoles.SerialKiller or CustomRoles.Werewolf or CustomRoles.Maverick or CustomRoles.Shroud or CustomRoles.Totocalcio or CustomRoles.Succubus or CustomRoles.Pelican or CustomRoles.Infectious or CustomRoles.Virus or CustomRoles.Pickpocket or CustomRoles.Traitor or CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Spiritcaller or CustomRoles.Necromancer or CustomRoles.Medusa or CustomRoles.HexMaster or CustomRoles.Wraith or CustomRoles.Jinx or CustomRoles.Poisoner or CustomRoles.PotionMaster) //or CustomRoles.Occultist 
+        else if (role is CustomRoles.Romantic or CustomRoles.Doppelganger or CustomRoles.Pyromaniac or CustomRoles.Huntsman or CustomRoles.RuthlessRomantic or CustomRoles.VengefulRomantic or CustomRoles.SerialKiller or CustomRoles.Jackal or CustomRoles.Seeker or CustomRoles.Pixie or CustomRoles.Agitater or CustomRoles.CursedSoul or CustomRoles.Pirate or CustomRoles.Amnesiac or CustomRoles.Arsonist or CustomRoles.Sidekick or CustomRoles.Innocent or CustomRoles.Pelican or CustomRoles.Pursuer or CustomRoles.Revolutionist or CustomRoles.Hater or CustomRoles.Demon or CustomRoles.Glitch or CustomRoles.Juggernaut or CustomRoles.Stalker or CustomRoles.Provocateur or CustomRoles.BloodKnight or CustomRoles.SerialKiller or CustomRoles.Werewolf or CustomRoles.Maverick or CustomRoles.Shroud or CustomRoles.Follower or CustomRoles.Cultist or CustomRoles.Pelican or CustomRoles.Infectious or CustomRoles.Virus or CustomRoles.Pickpocket or CustomRoles.Traitor or CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Spiritcaller or CustomRoles.Necromancer or CustomRoles.Medusa or CustomRoles.HexMaster or CustomRoles.Wraith or CustomRoles.Jinx or CustomRoles.Poisoner or CustomRoles.PotionMaster) //or CustomRoles.Occultist 
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
@@ -515,9 +515,9 @@ class BeginImpostorPatch
         BeginCrewmatePatch.Prefix(__instance, ref yourTeam);
         return true;
     }
-    public static void Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+    public static void Postfix(IntroCutscene __instance)
     {
-        BeginCrewmatePatch.Postfix(__instance, ref yourTeam);
+        BeginCrewmatePatch.Postfix(__instance);
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
@@ -576,7 +576,7 @@ class IntroCutsceneDestroyPatch
                     5 => new RandomSpawn.FungleSpawnMap(),
                     _ => null,
                 };
-                if (map != null) Main.AllAlivePlayerControls.Do(map.RandomTeleport);
+                if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
             }
 
             var amDesyncImpostor = Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId);

@@ -145,9 +145,10 @@ internal class Mastermind : RoleBase
         TempKCDs.Clear();
     }
 
-    public static bool ForceKillForManipulatedPlayer(PlayerControl killer, PlayerControl target)
+    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
+        if (!PlayerIsManipulated(killer)) return true;
 
         ManipulatedPlayers.Remove(killer.PlayerId);
 
@@ -156,7 +157,7 @@ internal class Mastermind : RoleBase
         mastermind?.SetKillCooldown(time: KillCooldown.GetFloat());
         killer.Notify(GetString("SurvivedManipulation"));
 
-        if (target.Is(CustomRoles.Pestilence))
+        if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.Mastermind))
         {
             target.RpcMurderPlayerV3(killer);
             TempKCDs.Remove(killer.PlayerId);
@@ -171,7 +172,7 @@ internal class Mastermind : RoleBase
             TempKCDs.Remove(killer.PlayerId);
         }, 0.1f, "Set KCD for Manipulated Kill");
 
-        return true;
+        return false;
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
