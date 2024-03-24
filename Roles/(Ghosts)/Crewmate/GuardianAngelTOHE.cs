@@ -23,7 +23,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         public static readonly Dictionary<byte, long> PlayerShield = [];
         public static void SetupCustomOptions()
         {
-            SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Hawk);
+            SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.GuardianAngelTOHE);
             AbilityCooldown = FloatOptionItem.Create(Id + 10, "ProtectCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])
                 .SetValueFormat(OptionFormat.Seconds);
             ProtectDur = IntegerOptionItem.Create(Id + 11, "ProtectDur", new(1, 120, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])
