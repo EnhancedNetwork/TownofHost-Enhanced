@@ -1577,8 +1577,9 @@ class PlayerControlSetRolePatch
         {
             Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");
             
-            if (!DidSetGhost.ContainsKey(__instance.PlayerId))
-                DidSetGhost.Add(__instance.PlayerId, true);
+            if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel)
+                if (!DidSetGhost.ContainsKey(__instance.PlayerId))
+                    DidSetGhost.Add(__instance.PlayerId, true);
         }
 
         if (roleType == RoleTypes.GuardianAngel && DidSetGhost.ContainsKey(__instance.PlayerId)) 
