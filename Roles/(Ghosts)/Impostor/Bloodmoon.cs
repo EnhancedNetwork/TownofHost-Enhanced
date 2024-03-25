@@ -52,7 +52,6 @@ internal class Bloodmoon : RoleBase
     {
         KillCount.Add(PlayerId, CanKillNum.GetInt());
         PlayerIds.Add(PlayerId);
-        CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         CustomRoleManager.SuffixOthers.Add(OthersNameText);
 
     }
