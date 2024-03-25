@@ -1581,7 +1581,7 @@ class PlayerControlSetRolePatch
                 DidSetGhost.Add(__instance.PlayerId, true);
         }
 
-        if (roleType == RoleTypes.GuardianAngel)
+        if (roleType == RoleTypes.GuardianAngel && DidSetGhost.ContainsKey(__instance.PlayerId)) 
         {
             _ = new LateTask(() => { 
                 
