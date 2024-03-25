@@ -100,13 +100,11 @@ internal class Bloodmoon : RoleBase
         if (LastTime.ContainsKey(targetid))
             LastTime.Remove(targetid);
     }
-    private static string OthersNameText(PlayerControl seer, PlayerControl target, bool IsForMeeting) 
+    private static string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting) 
     {
+        if (IsForMeeting || seer != player) return "";
+        var playerid = player.PlayerId;  
 
-        if (IsForMeeting || seer != target) return "";
-        var playerid = target.PlayerId;  
-
-        var player = GetPlayerById(playerid);
         if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= GetTimeStamp() && !IsForMeeting)
         {
             LastTime[playerid] = GetTimeStamp();
