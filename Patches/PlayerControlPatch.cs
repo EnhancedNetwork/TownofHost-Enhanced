@@ -1573,15 +1573,6 @@ class PlayerControlSetRolePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (__runOriginal)
-        {
-            Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");
-            
-            if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel)
-                if (!DidSetGhost.ContainsKey(__instance.PlayerId))
-                    DidSetGhost.Add(__instance.PlayerId, true);
-        }
-
         if (roleType == RoleTypes.GuardianAngel && !DidSetGhost.ContainsKey(__instance.PlayerId)) 
         {
             _ = new LateTask(() => { 
@@ -1622,6 +1613,15 @@ class PlayerControlSetRolePatch
                 }
 
             }, 0.1f, "SetGuardianAngel");
+        }
+
+        if (__runOriginal)
+        {
+            Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");
+
+            if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel)
+                if (!DidSetGhost.ContainsKey(__instance.PlayerId))
+                    DidSetGhost.Add(__instance.PlayerId, true);
         }
     }
 }
