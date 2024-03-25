@@ -328,15 +328,29 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+
+    private static readonly List<string> SuffixWaitList = [];
     public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (!SuffixOthers.Any()) return string.Empty;
 
+        SuffixWaitList.Clear();
         var sb = new StringBuilder(100);
+        string Symbol;
         foreach (var suffix in SuffixOthers)
         {
-            sb.Append(suffix(seer, seen, isForMeeting));
+            Symbol = suffix(seer, seen, isForMeeting);
+            if (Symbol.Length == 1)
+                sb.Append(Symbol);
+            else
+                SuffixWaitList.Add(Symbol);
         }
+        if (SuffixWaitList.Any())
+        {
+            foreach (var LongText in SuffixWaitList)
+                sb.Append(LongText);
+        }
+
         return sb.ToString();
     }
 
