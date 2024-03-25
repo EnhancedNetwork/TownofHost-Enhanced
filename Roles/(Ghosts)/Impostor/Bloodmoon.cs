@@ -53,6 +53,8 @@ internal class Bloodmoon : RoleBase
         KillCount.Add(PlayerId, CanKillNum.GetInt());
         PlayerIds.Add(PlayerId);
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
+        CustomRoleManager.SuffixOthers.Add(OthersNameText);
+
     }
     private static void SendRPC(byte playerId)
     {
@@ -87,11 +89,6 @@ internal class Bloodmoon : RoleBase
         }
         return false;
     }
-    private static void OnFixUpdateOthers(PlayerControl pc)
-    {
-        if (PlayerDie.ContainsKey(pc.PlayerId) && GameStates.IsInTask)
-            DoNotifyRoles(SpecifyTarget: pc);
-    }
     private static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
     public override string GetProgressText(byte playerId, bool cooms) => ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
     public static void RemoveId(PlayerControl target)
@@ -104,11 +101,14 @@ internal class Bloodmoon : RoleBase
         if (LastTime.ContainsKey(targetid))
             LastTime.Remove(targetid);
     }
-    public static string OthersNameText(byte playerid) 
+    private static string OthersNameText(PlayerControl seer, PlayerControl target, bool IsForMeeting) 
     {
-        if (GameStates.IsMeeting) return "";
+
+        if (IsForMeeting || seer != target) return "";
+        var playerid = target.PlayerId;  
+
         var player = GetPlayerById(playerid);
-        if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= GetTimeStamp() && !GameStates.IsMeeting) // Progress text not register onMeeting anyways
+        if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= GetTimeStamp() && !IsForMeeting)
         {
             LastTime[playerid] = GetTimeStamp();
             PlayerDie[playerid]--;

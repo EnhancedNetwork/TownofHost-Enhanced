@@ -582,8 +582,6 @@ public static class Utils
             if (ProgressText.Length != 0)
                 ProgressText.Insert(0, " "); //空じゃなければ空白を追加
             
-            if (Bloodmoon.HasEnabled && Bloodmoon.OthersNameText(playerId) != string.Empty)
-                ProgressText.Append(Bloodmoon.OthersNameText(playerId));
 
             return ProgressText.ToString();
         }
