@@ -3,7 +3,6 @@ using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -65,7 +64,7 @@ internal class BountyHunter : RoleBase
         if (AmongUsClient.Instance.AmHost)
         {
             ResetTarget(Utils.GetPlayerById(playerId));
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
+            //CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
         }
     }
     public override void Remove(byte playerId)
@@ -121,7 +120,7 @@ internal class BountyHunter : RoleBase
         return true;
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => ChangeTimer.Clear();
-    public static void OnFixedUpdateLowLoadOthers(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player)
     {
         if (!ChangeTimer.ContainsKey(player.PlayerId)) return;
 
