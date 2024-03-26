@@ -28,6 +28,8 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem AutoRehost;
 #endif
 
+    private static ClientOptionItem ShouldUseProxy;
+
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
         if (__instance.DisableMouseMovement == null) return;
@@ -133,6 +135,10 @@ public static class OptionsMenuBehaviourStartPatch
             }
         }
 #endif
+        if (ShouldUseProxy == null || ShouldUseProxy.ToggleButton == null)
+        {
+            ShouldUseProxy = ClientOptionItem.Create("UseProxy", Main.UseProxy, __instance);
+        }
     }
 }
 

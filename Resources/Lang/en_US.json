@@ -3573,5 +3573,6 @@
   "WardenIncreaseSpeed": "Increase Speed By",
   "WardenWarn": "DANGER! RUN!",
 
-  "MinionAbilityTime": "Ability Duration"
+  "MinionAbilityTime": "Ability Duration",
+  "UseProxy": "Use Proxy"
 }
