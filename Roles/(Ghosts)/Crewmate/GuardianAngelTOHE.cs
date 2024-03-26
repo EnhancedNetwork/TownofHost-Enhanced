@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Core;
 using static TOHE.Options;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles._Ghosts_.Crewmate
 {
@@ -37,7 +38,6 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         }
         public override void Add(byte playerId)
         {
-            CustomRoleManager.CheckDeadBodyOthers.Add(OthersAfterPlayerDeathTask);
             CustomRoleManager.OnFixedUpdateOthers.Add(OnOthersFixUpdate);
             PlayerIds.Add(playerId);
         }
@@ -59,7 +59,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             }
             return true;
         }
-        private static void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool inMeeting)
+        public override void OnOtherTargetsReducedToAtoms(PlayerControl target)
         {
             if (PlayerShield.ContainsKey(target.PlayerId))
                 PlayerShield.Remove(target.PlayerId);

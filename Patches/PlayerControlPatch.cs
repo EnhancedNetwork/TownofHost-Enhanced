@@ -1488,8 +1488,8 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (Bloodmoon.HasEnabled)
-            Bloodmoon.RemoveId(__instance);
+        Main.RoleClass.Values.Where(RoleBase => RoleBase.IsEnable)
+            .Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
 
         __instance.RpcRemovePet();
     }

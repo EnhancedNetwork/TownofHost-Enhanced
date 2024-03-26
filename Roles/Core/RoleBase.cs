@@ -163,6 +163,14 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// A method to always check the state when target has died (murder, exiled, execute etc..)
+    /// </summary>
+    public virtual void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+    {
+
+    }
+
+    /// <summary>
     /// When the target role died and need run kill flash
     /// </summary>
     public virtual bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
