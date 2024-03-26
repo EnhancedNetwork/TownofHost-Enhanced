@@ -317,7 +317,7 @@ internal class Solsticer : RoleBase
     {
         patched = false;
     }
-    public override void OnOthersMeetingHudStart(PlayerControl pc)
+    public override void OnMeetingHudStart(PlayerControl pc)
     {
         if (pc.Is(CustomRoles.Solsticer))
         {

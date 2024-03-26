@@ -87,7 +87,7 @@ internal class Workaholic : RoleBase
         }
 
     }
-    public override void OnOthersMeetingHudStart(PlayerControl player)
+    public override void OnMeetingHudStart(PlayerControl player)
     {
         if (MeetingStates.FirstMeeting && player.IsAlive() && WorkaholicGiveAdviceAlive.GetBool() && !WorkaholicCannotWinAtDeath.GetBool() && !GhostIgnoreTasks.GetBool())
         {
