@@ -111,6 +111,7 @@ public class Main : BasePlugin
     public static ConfigEntry<string> WebhookURL { get; private set; }
     public static ConfigEntry<string> BetaBuildURL { get; private set; }
     public static ConfigEntry<float> LastKillCooldown { get; private set; }
+    public static ConfigEntry<bool> UseProxy { get; private set; }
     public static ConfigEntry<float> LastShapeshifterCooldown { get; private set; }
     public static OptionBackupData RealOptionsData;
     public static Dictionary<byte, PlayerState> PlayerStates = [];
@@ -448,12 +449,22 @@ public class Main : BasePlugin
         GodMode = Config.Bind("Client Options", "GodMode", false);
         AutoRehost = Config.Bind("Client Options", "AutoRehost", false);
 
+        //Proxy
+        UseProxy = Config.Bind("Client Options", "UseProxy", false);
+        if (UseProxy.Value)
+        {
+            //DONT MERGE YET. I will wait for moe to send the proxy address
+            Environment.SetEnvironmentVariable("http_proxy", "http://username:password@your_proxy_adr:your_proxy_port");
+            Environment.SetEnvironmentVariable("https_proxy", "http://username:password@your_proxy_adr:your_proxy_port");
+        }
+
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         TOHE.Logger.Enable();
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
         TOHE.Logger.Disable("CustomRpcSender");
+
         if (!DebugModeManager.AmDebugger)
         {
             TOHE.Logger.Disable("2018k");
