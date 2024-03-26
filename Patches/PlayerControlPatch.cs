@@ -1606,7 +1606,6 @@ class PlayerControlSetRolePatch
                         .EndRpc();
                     writer.EndMessage();
                     writer.SendMessage();
-                    host.Notify("", 0.1f);
 
                    // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
 
