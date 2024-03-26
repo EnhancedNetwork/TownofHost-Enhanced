@@ -78,7 +78,7 @@ internal class Hawk : RoleBase
         {
             KeepCount++;
             var hawk = PlayerIds.ToList().First();
-            KillCount[hawk]++;
+            KillCount[hawk] += ThisCount - KillCount[hawk];
         }
 
     }
