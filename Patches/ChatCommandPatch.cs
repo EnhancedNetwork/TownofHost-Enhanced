@@ -2400,6 +2400,9 @@ class ChatUpdatePatch
     public static bool DoBlockChat = false;
     public static void Postfix(ChatController __instance)
     {
+        if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
+        if (DoBlockChat) return;
+
         if (Main.DarkTheme.Value)
         {
             var chatBubble = __instance.chatBubblePool.Prefab.Cast<ChatBubble>();
@@ -2408,9 +2411,6 @@ class ChatUpdatePatch
             chatBubble.Background.color = Color.black;
         }
 
-        if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
-        if (DoBlockChat) return;
-        
         var player = PlayerControl.LocalPlayer;
         if (GameStates.IsInGame || player.Data.IsDead)
         {
@@ -2426,7 +2426,7 @@ class ChatUpdatePatch
         int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
         var name = player.Data.PlayerName;
 
-        __instance.freeChatField.textArea.characterLimit = 999;
+        //__instance.freeChatField.textArea.characterLimit = 999;
 
         if (clientId == -1)
         {

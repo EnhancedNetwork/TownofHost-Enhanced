@@ -1141,7 +1141,7 @@ internal class SelectRolesPatch
             //HudManager.Instance.Chat.SetVisible(true);
             
             List<PlayerControl> AllPlayers = [];
-            CustomRpcSender sender = CustomRpcSender.Create("SelectRoles Sender", SendOption.Reliable);
+            //CustomRpcSender sender = CustomRpcSender.Create("SelectRoles Sender", SendOption.Reliable);
             
             foreach (var pc in Main.AllPlayerControls)
                 pc.ResetKillCooldown();
