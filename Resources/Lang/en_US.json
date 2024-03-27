@@ -1205,9 +1205,11 @@
   "ForceOwnLanguageRoleName": "Force role names in your language if possible",
   "VersionCheat": "Bypass version synchronization check",
   "GodMode": "God Mode",
+
   "AutoDisplayKillLog": "Display Kill-log",
   "AutoDisplayLastRoles": "Display Last Roles",
   "AutoDisplayLastResult": "Auto Display Last Result",
+  "RevertOldKillLog": "Revert to old kill-log",
 
   "HideExileChat": "Hide exile (lava) chat",
   "ExileSpamMsg": "Someone is trying to be a smart ass by lava chatting",

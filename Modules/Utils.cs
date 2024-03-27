@@ -1267,8 +1267,9 @@ public static class Utils
                 break;
         }
         sb.Append("</size>");
-
-        SendMessage("\n", PlayerId, sb.ToString());
+        string lr = sb.ToString();
+        if (lr.Length > 1200) lr = lr.RemoveHtmlTags();
+        SendMessage("\n", PlayerId, lr);
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
     {
@@ -1277,7 +1278,12 @@ public static class Utils
             SendMessage(GetString("CantUse.killlog"), PlayerId);
             return;
         }
-        if (EndGamePatch.KillLog != "") SendMessage(EndGamePatch.KillLog, PlayerId);
+        if (EndGamePatch.KillLog != "") 
+        {
+            string kl = EndGamePatch.KillLog;
+            if (Options.OldKillLog.GetBool() || kl.Length > 1200) kl = kl.RemoveHtmlTags();
+            SendMessage(kl, PlayerId); 
+        }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
     {
