@@ -13,7 +13,7 @@ internal class Sheriff : RoleBase
     private const int Id = 11200;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Sheriff.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Sheriff.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem KillCooldown;

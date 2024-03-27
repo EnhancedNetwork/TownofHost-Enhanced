@@ -13,7 +13,7 @@ internal class Mole : RoleBase
     private const int Id = 26000;
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Mole.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Mole.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
     //==================================================================\\

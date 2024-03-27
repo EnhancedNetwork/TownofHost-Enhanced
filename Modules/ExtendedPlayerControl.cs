@@ -634,6 +634,7 @@ static class ExtendedPlayerControl
             Susceptible.CallEnabledAndChange(player);
         }
         player.Exiled();
+
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -644,11 +645,11 @@ static class ExtendedPlayerControl
         else if(target.Is(CustomRoles.Pestilence)) { return; }
         postPest:
 
-        if (target.Is(CustomRoles.Susceptible))
-            Susceptible.CallEnabledAndChange(target);
-
         if (Solsticer.OnCheckRpcMurderv3(killer, target))
             return;
+
+        if (target.Is(CustomRoles.Susceptible))
+            Susceptible.CallEnabledAndChange(target);
 
         if (killer.PlayerId == target.PlayerId && killer.shapeshifting)
         {

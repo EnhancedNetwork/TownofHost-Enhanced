@@ -15,7 +15,7 @@ internal class Tracker : RoleBase
     private const int Id = 10000;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Tracker.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Tracker.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static OptionItem TrackLimitOpt;

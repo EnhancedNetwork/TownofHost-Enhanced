@@ -13,8 +13,7 @@ namespace TOHE.Roles.Core;
 public static class CustomRoleManager
 {
     //public static Dictionary<byte, RoleBase> AllActiveRoles = new(15);
-    public static bool IsClassEnable(this CustomRoles role) => Main.PlayerStates.Any(x => x.Value.MainRole == role && x.Value.RoleClass.IsEnable);
-
+    public static bool HasEnabled(this CustomRoles role) => Utils.IsRoleClass(role).IsEnable;
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
 
@@ -36,7 +35,7 @@ public static class CustomRoleManager
 
         else return "TOHE.Roles.Neutral.";
     }
-    public static RoleBase CreateRoleClass(this CustomRoles role) // CHATGPT COOKED 🔥🔥🗿☕
+    public static RoleBase CreateRoleClass(this CustomRoles role, bool IsToAccess = false) // CHATGPT COOKED 🔥🔥🗿☕
     { 
         role = role switch // Switch role to FatherRole (Double Classes)
         {
@@ -47,8 +46,7 @@ public static class CustomRoleManager
             CustomRoles.NiceMini or CustomRoles.EvilMini => CustomRoles.Mini,
             _ => role
         };
-
-        Logger.Info($"Attempting to Create new {role}()", "CreateRoleClass");
+        if (!IsToAccess) Logger.Info($"Attempting to Create new {role}()", "CreateRoleClass");
 
         string RoleNameSpace = GetNameSpace(role);
         string className = $"{RoleNameSpace}" + role.ToString(); 
@@ -56,11 +54,11 @@ public static class CustomRoleManager
 
         if (classType == null || !typeof(RoleBase).IsAssignableFrom(classType))
         {
-            Logger.Info("An unknown RoleType or RoleClass was given, assigning new VanillaRole()", "CreateRoleClass");
+            if (!IsToAccess) Logger.Info("An unknown RoleType or RoleClass was given, assigning new VanillaRole()", "CreateRoleClass");
             return new VanillaRole();
         }
 
-        Logger.Info($"Succesfully Created new {role}()", "CreateRoleClass");
+        if (!IsToAccess) Logger.Info($"Succesfully Created new {role}()", "CreateRoleClass");
         return (RoleBase)Activator.CreateInstance(classType);
     }
 
@@ -330,15 +328,29 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+
+    private static readonly List<string> SuffixWaitList = [];
     public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (!SuffixOthers.Any()) return string.Empty;
 
+        SuffixWaitList.Clear();
         var sb = new StringBuilder(100);
+        string Symbol;
         foreach (var suffix in SuffixOthers)
         {
-            sb.Append(suffix(seer, seen, isForMeeting));
+            Symbol = suffix(seer, seen, isForMeeting);
+            if (Symbol.Length == 1)
+                sb.Append(Symbol);
+            else
+                SuffixWaitList.Add(Symbol);
         }
+        if (SuffixWaitList.Any())
+        {
+            foreach (var LongText in SuffixWaitList)
+                sb.Append(LongText);
+        }
+
         return sb.ToString();
     }
 

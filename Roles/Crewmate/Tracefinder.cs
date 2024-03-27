@@ -14,7 +14,7 @@ internal class Tracefinder : RoleBase
     private const int Id = 7300;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Tracefinder.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Tracefinder.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     //==================================================================\\
 

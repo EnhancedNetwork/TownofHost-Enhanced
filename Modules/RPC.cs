@@ -823,15 +823,6 @@ internal static class RPC
             case CustomRoles.Workhorse:
                 Workhorse.Add(targetId);
                 break;
-            case CustomRoles.Hawk:
-                Hawk.Add(targetId);
-                break;
-            case CustomRoles.Bloodmoon:
-                Bloodmoon.Add(targetId);
-                break;
-            case CustomRoles.Warden:
-                Warden.Add(targetId);
-                break;
             case CustomRoles.Diseased:
                 Diseased.Add();
                 break;

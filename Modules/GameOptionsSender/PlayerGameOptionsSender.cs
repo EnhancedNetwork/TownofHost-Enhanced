@@ -104,7 +104,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
             }
         }
-        if (!role.IsGhostRole() || player.IsAnySubRole(x => x is CustomRoles.EvilSpirit)) 
+        
+        if (role.IsGhostRole())
+            AURoleOptions.GuardianAngelCooldown = Options.DefaultAngelCooldown.GetFloat();
+        else if (!role.IsGhostRole() || player.IsAnySubRole(x => x is CustomRoles.EvilSpirit)) 
         {
             switch (role.GetCustomRoleTypes())
             {
@@ -137,18 +140,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.EngineerTOHE:
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            case CustomRoles.Bloodmoon:
-                Bloodmoon.SetKillCooldown();
-                break;
-            case CustomRoles.Warden:
-                Warden.SetAbilityCooldown();
-                break;
-            case CustomRoles.Minion:
-                Minion.SetAbilityCooldown();
-                break;
-            case CustomRoles.Hawk:
-                Hawk.SetKillCooldown();
                 break;
             default:
                 opt.SetVision(false);

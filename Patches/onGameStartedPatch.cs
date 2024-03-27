@@ -64,6 +64,9 @@ internal class ChangeRoleSettings
             Main.ResetCamPlayerList.Clear();
             Main.clientIdList.Clear();
 
+            PlayerControlSetRolePatch.DidSetGhost.Clear();
+            PlayerControlSetRolePatch.ghostRoles.Clear();
+
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();
             Main.AllKillers.Clear();
@@ -158,7 +161,8 @@ internal class ChangeRoleSettings
             // Initialize all custom roles
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
             {
-                role.CreateRoleClass()?.Init();
+                var RoleClass = Utils.IsRoleClass(role);
+                RoleClass?.Init();
             }
 
             LastImpostor.Init();
@@ -171,13 +175,10 @@ internal class ChangeRoleSettings
             Aware.Init();
             Sleuth.Init();
             Bait.Init();
-            Hawk.Init();
-            Bloodmoon.Init();
             Antidote.Init();
             Fool.Init();
             Burst.Init();
             DoubleShot.Init();
-            Warden.Init();
             Lucky.Init();
             Bewilder.Init();
             ChiefOfPolice.Init();

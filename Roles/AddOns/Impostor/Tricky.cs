@@ -79,6 +79,8 @@ public static class Tricky
             PlayerState.DeathReason.WrongAnswer => CustomRoles.Quizmaster.IsEnable(),
             PlayerState.DeathReason.Disconnected or PlayerState.DeathReason.Overtired or PlayerState.DeathReason.etc 
                                 or PlayerState.DeathReason.Vote => false,
+            PlayerState.DeathReason.Slice => CustomRoles.Hawk.IsEnable(),
+            PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };

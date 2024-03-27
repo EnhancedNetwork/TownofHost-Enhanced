@@ -13,7 +13,7 @@ internal class Transporter : RoleBase
     private const int Id = 7400;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Transporter.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Transporter.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 

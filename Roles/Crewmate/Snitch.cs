@@ -13,7 +13,7 @@ internal class Snitch : RoleBase
     private static readonly List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Snitch.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Snitch.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Snitch);

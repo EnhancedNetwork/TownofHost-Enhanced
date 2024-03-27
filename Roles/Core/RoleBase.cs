@@ -95,8 +95,7 @@ public abstract class RoleBase
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
-    public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
-    { }
+    public virtual bool OnCheckProtect(PlayerControl angel, PlayerControl target) => angel != null && target != null;
 
     /// <summary>
     /// A method for activating actions where the role starts playing an animation when entering a vent
@@ -164,6 +163,12 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// A method to always check the state when target has died (murder, exiled, execute etc..)
+    /// </summary>
+    public virtual void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+    { }
+
+    /// <summary>
     /// When the target role died and need run kill flash
     /// </summary>
     public virtual bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
@@ -214,7 +219,12 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When the meeting hud is loaded
+    /// When the meeting hud is loaded for others
+    /// </summary>
+    public virtual void OnOthersMeetingHudStart(PlayerControl pc)
+    { }
+    /// <summary>
+    /// When the meeting hud is loaded 
     /// </summary>
     public virtual void OnMeetingHudStart(PlayerControl pc)
     { }

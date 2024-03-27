@@ -37,7 +37,7 @@ internal class Marshall : RoleBase
 
         return pc.Is(CustomRoles.Marshall) && pc.GetPlayerTaskState().IsTaskFinished;
     }
-    private static bool IsMarshallTarget(PlayerControl seer) => CustomRoles.Marshall.IsClassEnable() && seer.Is(CustomRoleTypes.Crewmate);
+    private static bool IsMarshallTarget(PlayerControl seer) => CustomRoles.Marshall.HasEnabled() && seer.Is(CustomRoleTypes.Crewmate);
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         target ??= seer;

@@ -216,7 +216,7 @@ internal class Quizmaster : RoleBase
 
     private static void DoQuestion()
     {
-        Player = Utils.GetPlayerByRole(CustomRoles.Quizmaster);
+        Player = Utils.GetPlayerById(playerIdList.ToList().First());
         if (MarkedPlayer != byte.MaxValue)
         {
             CustomRoles randomRole = GetRandomRole([.. CustomRolesHelper.AllRoles], false);

@@ -16,7 +16,7 @@ internal class Veteran : RoleBase
     private const int Id = 11350;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Veteran.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Veteran.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
     private static OptionItem VeteranSkillCooldown;

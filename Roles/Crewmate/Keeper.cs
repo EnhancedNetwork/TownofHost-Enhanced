@@ -118,7 +118,7 @@ internal class Keeper : RoleBase
 
     public static bool OnVotes(PlayerControl voter, PlayerControl target)
     {
-        if (!CustomRoles.Keeper.IsClassEnable()) return true;
+        if (!CustomRoles.Keeper.HasEnabled()) return true;
         if (voter == null || target == null) return true;
         if (!voter.Is(CustomRoles.Keeper)) return true;
         if (DidVote[voter.PlayerId]) return true;

@@ -13,7 +13,7 @@ internal class SuperStar : RoleBase
     private const int Id = 7150;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.SuperStar.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.SuperStar.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 

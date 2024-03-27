@@ -232,6 +232,14 @@ public static class Utils
         }
         return;
     }
+
+    /// <summary>
+    /// Make sure to call PlayerState.Deathreason and not Vanilla Deathreason
+    /// </summary>
+    public static void SetDeathReason(this PlayerControl target, PlayerState.DeathReason reason)
+    {
+        Main.PlayerStates[target.PlayerId].deathReason = reason;
+    }
     
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
@@ -502,7 +510,16 @@ public static class Utils
 
         return hasTasks;
     }
-  
+
+    // Only to be used for accessing RoleClass, do not assign players from here.
+    public static RoleBase IsRoleClass(this CustomRoles role)  
+    {
+        if (Main.RoleClass.TryGetValue(role, out var RoleClass))
+            return RoleClass;
+
+        Main.RoleClass.Add(role, role.CreateRoleClass(IsToAccess: true));
+        return Main.RoleClass[role];
+    }
     public static string GetProgressText(PlayerControl pc)
     {
         try
@@ -535,26 +552,8 @@ public static class Utils
 
             switch (role)
             {
-                case CustomRoles.TimeThief:
-                    ProgressText.Append(TimeThief.GetProgressText(playerId));
-                    break;
-                case CustomRoles.Anonymous:
-                    ProgressText.Append(Anonymous.GetHackLimit(playerId));
-                    break;
                 case CustomRoles.Killer:
                     ProgressText.Append(FFAManager.GetDisplayScore(playerId));
-                    break;
-                case CustomRoles.Hawk:
-                    ProgressText.Append(Hawk.GetSnatchLimit(playerId));
-                    break;
-                case CustomRoles.Bloodmoon:
-                    ProgressText.Append(Bloodmoon.GetRevengeLimit(playerId));
-                    break;
-                case CustomRoles.Warden:
-                    ProgressText.Append(Warden.GetNotifyLimit(playerId));
-                    break;
-                case CustomRoles.ChiefOfPolice:
-                    ProgressText.Append(ChiefOfPolice.GetSkillLimit(playerId));
                     break;
                 default:
                     if (ProgressText.Length != 0) break;
@@ -582,6 +581,7 @@ public static class Utils
             }
             if (ProgressText.Length != 0)
                 ProgressText.Insert(0, " "); //空じゃなければ空白を追加
+            
 
             return ProgressText.ToString();
         }
@@ -1393,10 +1393,6 @@ public static class Utils
     {
         return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId);
     }
-    public static PlayerControl GetPlayerByRole(CustomRoles Role)
-    {
-        return Main.AllPlayerControls.FirstOrDefault(pc => pc.GetCustomRole() == Role);
-    }
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
@@ -1548,11 +1544,11 @@ public static class Utils
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
 
-                if (CustomRoles.Deathpact.IsClassEnable() && Deathpact.IsInActiveDeathpact(seer))
+                if (CustomRoles.Deathpact.HasEnabled() && Deathpact.IsInActiveDeathpact(seer))
                     SelfName = Deathpact.GetDeathpactString(seer);
 
                 // Devourer
-                if (CustomRoles.Devourer.IsClassEnable())
+                if (CustomRoles.Devourer.HasEnabled())
                 {
                     bool playerDevoured = Devourer.HideNameOfTheDevoured(seer.PlayerId);
                     if (playerDevoured && !CamouflageIsForMeeting)
@@ -1633,7 +1629,6 @@ public static class Utils
 
                         string TargetRoleText = ExtendedPlayerControl.KnowRoleTarget(seer, target)
                                 ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
-
 
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
                         {
@@ -1718,7 +1713,7 @@ public static class Utils
                             ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})" : "";
 
                         // Devourer
-                        if (CustomRoles.Devourer.IsClassEnable())
+                        if (CustomRoles.Devourer.HasEnabled())
                         {
                             bool targetDevoured = Devourer.HideNameOfTheDevoured(target.PlayerId);
                             if (targetDevoured && !CamouflageIsForMeeting)
@@ -1766,11 +1761,10 @@ public static class Utils
         }
 
 
-        if (Hawk.IsEnable) Hawk.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();
 
-        if (CustomRoles.CopyCat.IsClassEnable()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
+        if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
         
 
         if (Options.AirshipVariableElectrical.GetBool())

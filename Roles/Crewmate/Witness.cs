@@ -11,7 +11,7 @@ internal class Witness : RoleBase
     private const int Id = 10100;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Witness.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Witness.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem WitnessCD;

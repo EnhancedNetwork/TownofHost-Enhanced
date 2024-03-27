@@ -806,8 +806,8 @@ class MeetingHudStartPatch
         string MimicMsg = "";
         foreach (var pc in Main.AllPlayerControls)
         {
-            Main.PlayerStates.Do(x
-                => x.Value.RoleClass.OnMeetingHudStart(pc));
+            pc?.GetRoleClass()?.OnMeetingHudStart(pc);
+            Main.PlayerStates.Do(plr => plr.Value.RoleClass.OnOthersMeetingHudStart(pc));
 
             foreach (var csId in Cyber.CyberDead)
             {

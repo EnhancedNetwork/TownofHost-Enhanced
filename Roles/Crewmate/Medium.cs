@@ -182,7 +182,7 @@ internal class Medium : RoleBase
         ProgressText.Append(ColorString(TextColor71, $" <color=#ffffff>-</color> {Math.Round(ContactLimit[playerId], 1)}"));
         return ProgressText.ToString();
     }
-    public override void OnMeetingHudStart(PlayerControl pc)
+    public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
         //Self 
         if (ContactPlayer.ContainsValue(pc.PlayerId))

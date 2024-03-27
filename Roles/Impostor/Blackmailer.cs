@@ -76,7 +76,7 @@ internal class Blackmailer : RoleBase
         target ??= seer;
         return CheckBlackmaile(target) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), "╳") : string.Empty;
     }
-    public override void OnMeetingHudStart(PlayerControl pc)
+    public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
         if (CheckBlackmaile(pc))
         {

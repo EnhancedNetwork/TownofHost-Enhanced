@@ -223,7 +223,7 @@ internal class Chameleon : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (!CustomRoles.Chameleon.IsClassEnable()) return;
+        if (!CustomRoles.Chameleon.HasEnabled()) return;
         if (!pc.Is(CustomRoles.Chameleon) || !IsInvis(pc.PlayerId)) return;
 
         InvisTime.Remove(pc.PlayerId);

@@ -15,7 +15,7 @@ internal class Psychic : RoleBase
     private static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Psychic.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Psychic.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static OptionItem CanSeeNum;

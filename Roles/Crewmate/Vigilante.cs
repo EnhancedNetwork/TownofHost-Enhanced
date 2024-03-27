@@ -9,7 +9,7 @@ internal class Vigilante : RoleBase
     private const int Id = 11400;
     private static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Vigilante.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Vigilante.HasEnabled();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem VigilanteKillCooldown;

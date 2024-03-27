@@ -17,10 +17,14 @@ public static class CustomRolesHelper
     public static readonly CustomRoles[] AllRoles = EnumHelper.GetAllValues<CustomRoles>();
     public static readonly CustomRoleTypes[] AllRoleTypes = EnumHelper.GetAllValues<CustomRoleTypes>();
     public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
-        => role.IsVanilla() ? role : role.CreateRoleClass().ThisRoleBase; 
+    {
+        if (role.IsVanilla()) return role;
+        if (role.IsRoleClass() is not VanillaRole) return role.IsRoleClass().ThisRoleBase;
+        return role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate; 
+    }
     
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
-        => (role.CreateRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor() 
+        => (role.IsRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor() 
             ? RoleTypes.Impostor 
             : RoleTypes.GuardianAngel;
     
