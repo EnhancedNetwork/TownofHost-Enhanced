@@ -329,7 +329,7 @@ internal class RPCHandlerPatch
                 RPC.SetCustomRole(CustomRoleTargetId, role);
                 break;
             case CustomRPC.SyncRoleSkill:
-                RPC.SyncRoleSkillReader(reader);
+                RPC.SyncRoleSkillReader(reader, __instance);
                 break;
             case CustomRPC.SetBountyTarget:
                 BountyHunter.ReceiveRPC(reader);
@@ -517,7 +517,7 @@ internal class RPCHandlerPatch
                 Retributionist.ReceiveRPC(reader, __instance);
                 break;
             case CustomRPC.SetChameleonTimer:
-                Chameleon.ReceiveRPC(reader);
+                Main.RoleClass[CustomRoles.Chameleon].ReceiveRPC(reader, __instance);
                 break;
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
@@ -852,7 +852,7 @@ internal static class RPC
 
         if (PlayerControl.LocalPlayer.PlayerId == targetId) RemoveDisableDevicesPatch.UpdateDisableDevices();
     }
-    public static void SyncRoleSkillReader(MessageReader reader)
+    public static void SyncRoleSkillReader(MessageReader reader, PlayerControl pc)
     {
         CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
         Logger.Info($"Received Sync Role Skill RPC for role {role}", "SyncRoleSkillReader");
@@ -863,212 +863,8 @@ internal static class RPC
             case CustomRoles.Admirer:
                 Admirer.ReceiveRPC(reader, false);
                 break;
-            case CustomRoles.Coroner:
-                Coroner.ReceiveRPCLimit(reader);
-                break;
-            case CustomRoles.Chameleon:
-                Chameleon.ReceiveRPC(reader);
-                break;
-            case CustomRoles.ChiefOfPolice:
-                ChiefOfPolice.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Cleanser:
-                Cleanser.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Deceiver:
-                Deceiver.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Crusader:
-                Crusader.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Deputy:
-                Deputy.ReceiveRPC(reader);
-                break; 
-                //Waiting for fix
-            case CustomRoles.FortuneTeller:
-                FortuneTeller.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Medic:
-                Medic.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Medium:
-                Medium.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Monarch:
-                Monarch.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Oracle:
-                Oracle.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Mechanic:
-                Mechanic.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Sheriff:
-                Sheriff.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Spy:
-                Spy.ReceiveRPC(reader, isAbility: true);
-                break;
-            case CustomRoles.Swapper:
-                Swapper.ReceiveSkillRPC(reader);
-                break;
-            case CustomRoles.Knight:
-                Knight.ReceiveRPC(reader);
-                break;
-
-            //Impostors
-            case CustomRoles.Anonymous:
-                Anonymous.ReceiveRPC(reader);
-                break;
-            //case CustomRoles.Councillor:
-            //    break;
-            //Wait for bug fix
-            case CustomRoles.Eraser:
-                Eraser.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Gangster:
-                Gangster.ReceiveRPC(reader);
-                break;
-            //case CustomRoles.Instigator:
-            //    break;
-            //Wait for bug fix
-            case CustomRoles.Penguin:
-                Penguin.ReceiveRPC(reader);
-                break;
-            case CustomRoles.QuickShooter:
-                QuickShooter.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Stealth:
-                Stealth.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Swooper:
-                Swooper.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Wildling:
-                Wildling.ReceiveRPC(reader);
-                break;
-            //case CustomRoles.Witch:
-            //    break;
-            //Merge the two rpc into one
-
-            //Double
-            case CustomRoles.Mini:
-                Mini.ReceiveRPC(reader);
-                break;
-            // Nice mini and evil mini is handled together.
-
-            //Neutrals
-            case CustomRoles.Agitater:
-                Agitater.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Bandit:
-                Bandit.ReceiveRPC(reader);
-                break;
-            case CustomRoles.BloodKnight:
-                BloodKnight.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Collector:
-                Collector.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Doomsayer:
-                Doomsayer.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Doppelganger:
-                Doppelganger.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Demon:
-                Demon.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Huntsman:
-                Huntsman.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Imitator:
-                Imitator.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Jackal:
-                Jackal.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Lawyer:
-                Lawyer.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Pelican:
-                Pelican.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Pirate:
-                Pirate.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Pixie:
-                Pixie.ReceiveRPC(reader);
-                break;
-            case CustomRoles.PlagueBearer:
-                PlagueBearer.ReceiveRPC(reader);
-                break;
-            case CustomRoles.PlagueDoctor:
-                PlagueDoctor.ReceiveRPC(reader);
-                break;
-            case CustomRoles.PotionMaster:
-                PotionMaster.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Pursuer:
-                Pursuer.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Quizmaster:
-                Quizmaster.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Romantic:
-                Romantic.ReceiveRPC(reader);
-                break;
-            case CustomRoles.VengefulRomantic:
-                VengefulRomantic.ReceiveRPC(reader);
-                break;
-            case CustomRoles.SchrodingersCat:
-                SchrodingersCat.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Seeker:
-                Seeker.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Shroud:
-                Shroud.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Solsticer:
-                Solsticer.ReceiveRPC(reader);
-                break;
-            case CustomRoles.SoulCollector:
-                SoulCollector.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Spiritcaller:
-                Spiritcaller.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Cultist:
-                Cultist.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Taskinator:
-                Taskinator.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Follower:
-                Follower.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Virus:
-                Virus.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Wraith:
-                Wraith.ReceiveRPC(reader);
-                break;
-
-            // Ghosts
-            case CustomRoles.Hawk:
-                Hawk.ReceiveRPC(reader);
-                break;
-             case CustomRoles.Bloodmoon:
-                 Bloodmoon.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Warden:
-                Warden.ReceiveRPC(reader);
-                break;
-
-
             default:
-                Logger.Error($"Role {role} can not be handled!", "SyncRoleSkillReader");
+                role.IsRoleClass().ReceiveRPC(reader, pc);
                 break;
         }
     }

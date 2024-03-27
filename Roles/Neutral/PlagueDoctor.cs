@@ -126,7 +126,7 @@ internal class PlagueDoctor : RoleBase
         writer.Write(rate);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         var firstInfect = reader.ReadBoolean();
         var targetId = reader.ReadByte();

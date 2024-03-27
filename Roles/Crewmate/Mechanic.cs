@@ -175,7 +175,7 @@ internal class Mechanic : RoleBase
         writer.Write(UsedSkillCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();
         float count = reader.ReadSingle();

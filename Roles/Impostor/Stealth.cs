@@ -119,7 +119,7 @@ internal class Stealth : RoleBase
         writer.Write((byte?)roomType ?? byte.MaxValue);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         var roomId = reader.ReadByte();
         darkenedRoom = roomId == byte.MaxValue ? null : (SystemTypes)roomId;

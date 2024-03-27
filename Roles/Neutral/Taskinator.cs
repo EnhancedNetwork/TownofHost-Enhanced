@@ -60,7 +60,7 @@ internal class Taskinator : RoleBase
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte taskinatorID = reader.ReadByte();
         int taskInd = reader.ReadInt32();

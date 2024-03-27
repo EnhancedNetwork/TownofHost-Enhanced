@@ -237,7 +237,7 @@ internal class Solsticer : RoleBase
         writer.Write(playerid);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         Logger.Info("syncsolsticer", "solsticer");
         int AllCount = reader.ReadInt32();

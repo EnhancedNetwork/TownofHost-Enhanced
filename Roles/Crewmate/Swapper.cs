@@ -375,7 +375,7 @@ internal class Swapper : RoleBase
         byte PlayerId = reader.ReadByte();
         SwapMsg(pc, $"/sw {PlayerId}");
     }
-    public static void ReceiveSkillRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();
         int skillLimit = reader.ReadInt32();
