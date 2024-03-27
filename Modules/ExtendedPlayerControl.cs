@@ -390,7 +390,7 @@ static class ExtendedPlayerControl
     {
         if (!forUser)
         {
-        return GetRealName(player);
+            return GetRealName(player);
         }
         return $"{player?.Data?.PlayerName}" + (GameStates.IsInGame && Options.CurrentGameMode != CustomGameMode.FFA ? $"({player?.GetAllRoleName(forUser)})" : string.Empty);
     }

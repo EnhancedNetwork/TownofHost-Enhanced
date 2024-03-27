@@ -1,7 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -9,19 +8,20 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Spiritualist : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9600;
-    private static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Spiritualist.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem ShowGhostArrowEverySeconds;
     private static OptionItem ShowGhostArrowForSeconds;
 
     private static byte SpiritualistTarget = new();
-    private static Dictionary<byte, long> ShowGhostArrowUntil = [];
-    private static Dictionary<byte, long> LastGhostArrowShowTime = [];
+    private static readonly Dictionary<byte, long> ShowGhostArrowUntil = [];
+    private static readonly Dictionary<byte, long> LastGhostArrowShowTime = [];
 
     public static void SetupCustomOption()
     {
@@ -33,11 +33,10 @@ internal class Spiritualist : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
+        LastGhostArrowShowTime.Clear();
+        ShowGhostArrowUntil.Clear();
         SpiritualistTarget = new();
-        LastGhostArrowShowTime = [];
-        ShowGhostArrowUntil = [];
-        On = false;
     }
     public override void Add(byte playerId)
     {
@@ -45,7 +44,6 @@ internal class Spiritualist : RoleBase
         SpiritualistTarget = byte.MaxValue;
         LastGhostArrowShowTime.Add(playerId, 0);
         ShowGhostArrowUntil.Add(playerId, 0);
-        On = true;
     }
     public override void Remove(byte playerId)
     {

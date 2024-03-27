@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TOHE.Roles.Core;
 using AmongUs.GameOptions;
 using static TOHE.Options;
 
@@ -9,11 +8,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Reverie : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 11100;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Retributionist.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ReduceKillCooldown;
@@ -24,8 +25,7 @@ internal class Reverie : RoleBase
     private static OptionItem ResetCooldownMeeting;
     private static OptionItem ConvertedReverieRogue;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, float> NowCooldown;
+    private static readonly Dictionary<byte, float> NowCooldown = [];
 
     public static void SetupCustomOption()
     {
@@ -46,15 +46,13 @@ internal class Reverie : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        NowCooldown = [];
-        On = false;
+        playerIdList.Clear();
+        NowCooldown.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))

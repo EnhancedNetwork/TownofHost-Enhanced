@@ -1,7 +1,6 @@
 using Hazel;
 using System;
 using System.Collections.Generic;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;
@@ -10,20 +9,21 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Spy : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9700;
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Spy.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem SpyRedNameDur;
     private static OptionItem UseLimitOpt;
     private static OptionItem SpyAbilityUseGainWithEachTaskCompleted;
     private static OptionItem SpyInteractionBlocked;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, float> UseLimit = [];
-    private static Dictionary<byte, long> SpyRedNameList = [];
+    private static readonly Dictionary<byte, float> UseLimit = [];
+    private static readonly Dictionary<byte, long> SpyRedNameList = [];
     private static bool change = false;
 
     public static void SetupCustomOption()
@@ -40,17 +40,15 @@ internal class Spy : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        UseLimit = [];
-        SpyRedNameList = [];
-        On = false;
+        playerIdList.Clear();
+        UseLimit.Clear();
+        SpyRedNameList.Clear();
         change = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         UseLimit.Add(playerId, UseLimitOpt.GetInt());
-        On = true;
     }
     public override void Remove(byte playerId)
     {

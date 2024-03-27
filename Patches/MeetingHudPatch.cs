@@ -11,7 +11,6 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using UnityEngine.UI;
 using static TOHE.Translator;
 
 namespace TOHE;

@@ -7,12 +7,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Observer : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9000;
-    private static HashSet<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Observer.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     public static void SetupCustomOption()
     {
@@ -21,13 +22,11 @@ internal class Observer : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
     }
     public static void ActivateGuardAnimation(byte killerId, PlayerControl target, int colorId)
     {

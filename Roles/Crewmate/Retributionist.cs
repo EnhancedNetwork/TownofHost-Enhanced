@@ -16,17 +16,19 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Retributionist : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 11000;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Retributionist.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem RetributionistCanKillNum;
     private static OptionItem MinimumPlayersAliveToRetri;
     private static OptionItem CanOnlyRetributeWithTasksDone;
 
-    private static Dictionary<byte, int> RetributionistRevenged = [];
+    private static readonly Dictionary<byte, int> RetributionistRevenged = [];
 
     public static void SetupCustomOptions()
     {
@@ -43,12 +45,12 @@ internal class Retributionist : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        RetributionistRevenged = [];
+        playerIdList.Clear();
+        RetributionistRevenged.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
         RetributionistRevenged.Add(playerId, RetributionistCanKillNum.GetInt());
     }
     

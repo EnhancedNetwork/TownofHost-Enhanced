@@ -12,8 +12,6 @@ using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core.AssignManager;
-using TOHE.Roles._Ghosts_.Impostor;
-using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -60,7 +58,6 @@ class CheckProtectPatch
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
         var angel = __instance;
-        var getAngelRole = angel.GetCustomRole();
 
         if (!angel.GetRoleClass().OnCheckProtect(angel, target))
             return false;
@@ -1502,69 +1499,72 @@ class PlayerControlSetRolePatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType)
     {
         if (GameStates.IsHideNSeek) return true;
-        try
+        if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
+
+        var target = __instance;
+        var targetName = __instance.GetNameWithRole().RemoveHtmlTags();
+        
+        // Ghost assign
+        if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
         {
-            var target = __instance;
-            var targetName = __instance.GetNameWithRole().RemoveHtmlTags();
-            if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
-            if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
+            if (DidSetGhost.TryGetValue(target.PlayerId, out var isGhost) && isGhost) // Prevent double assignment if player gets killed as a ghost
+                return false;
+
+            try
             {
-                if (DidSetGhost.ContainsKey(target.PlayerId) && DidSetGhost[target.PlayerId]) // Prevent double assignment if player gets killed as a ghost
-                    return false;
-
                 GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
+            }
+            catch (Exception error)
+            {
+                Logger.Warn($"Error After RpcSetRole: {error}", "RpcSetRole.Prefix.GhostAssignPatch");
+            }
 
-                var targetIsKiller = target.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
+            var targetIsKiller = target.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
 
-                foreach (var seer in Main.AllPlayerControls)
-                {
-                    var self = seer.PlayerId == target.PlayerId;
-                    var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
-                    if (!ghostRoles.ContainsKey(seer))
-                        ghostRoles.Add(seer, roleType);
+            foreach (var seer in Main.AllPlayerControls)
+            {
+                var self = seer.PlayerId == target.PlayerId;
+                var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
+                if (!ghostRoles.ContainsKey(seer))
+                    ghostRoles.Add(seer, roleType);
 
-                    if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
-                    {
-                        ghostRoles[seer] = RoleTypes.GuardianAngel;
-                    }
-                    else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(CustomRoleTypes.Impostor)))
-                    {
-                        ghostRoles[seer] = RoleTypes.ImpostorGhost;
-                    }
-                    else
-                    {
-                        ghostRoles[seer] = RoleTypes.CrewmateGhost;
-                    }
-                }
                 if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
                 {
-                    roleType = RoleTypes.GuardianAngel;
-                    return true;
+                    ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
-                else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
+                else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(CustomRoleTypes.Impostor)))
                 {
-                    roleType = RoleTypes.CrewmateGhost;
-                    return true;
-                }
-                else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
-                {
-                    roleType = RoleTypes.ImpostorGhost;
-                    return true;
+                    ghostRoles[seer] = RoleTypes.ImpostorGhost;
                 }
                 else
                 {
-                    foreach ((var seer, var role) in ghostRoles) // Idk wtf this for tbh
-                    {
-                        Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
-                        target.RpcSetRoleDesync(role, seer.GetClientId());
-                    }
-                    return false;
+                    ghostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
-        }
-        catch (Exception error) 
-        { 
-            Logger.Warn($"Error After RpcSetRole: {error}", "RpcSetRole Prefix"); 
+            if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
+            {
+                roleType = RoleTypes.GuardianAngel;
+                return true;
+            }
+            else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
+            {
+                roleType = RoleTypes.CrewmateGhost;
+                return true;
+            }
+            else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
+            {
+                roleType = RoleTypes.ImpostorGhost;
+                return true;
+            }
+            else
+            {
+                foreach ((var seer, var role) in ghostRoles)
+                {
+                    Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
+                    target.RpcSetRoleDesync(role, seer.GetClientId());
+                }
+                return false;
+            }
         }
 
         return true;

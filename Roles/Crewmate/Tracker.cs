@@ -3,7 +3,6 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
-using TOHE.Roles.Core;
 using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -12,11 +11,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Tracker : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 10000;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Tracker.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem TrackLimitOpt;
     private static OptionItem OptionCanSeeLastRoomInMeeting;
@@ -26,10 +27,9 @@ internal class Tracker : RoleBase
 
     private static bool CanSeeLastRoomInMeeting;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, float> TrackLimit = [];
-    private static Dictionary<byte, List<byte>> TrackerTarget = [];
-    private static Dictionary<byte, float> TempTrackLimit = [];
+    private static readonly Dictionary<byte, float> TrackLimit = [];
+    private static readonly Dictionary<byte, List<byte>> TrackerTarget = [];
+    private static readonly Dictionary<byte, float> TempTrackLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -47,19 +47,17 @@ internal class Tracker : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        TrackLimit = [];
-        TrackerTarget = [];
+        playerIdList.Clear();
+        TrackLimit.Clear();
+        TrackerTarget.Clear();
         CanSeeLastRoomInMeeting = OptionCanSeeLastRoomInMeeting.GetBool();
-        TempTrackLimit = [];
-        On = false;
+        TempTrackLimit.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         TrackLimit.Add(playerId, TrackLimitOpt.GetInt());
         TrackerTarget.Add(playerId, []);
-        On = true;
     }
     public override void Remove(byte playerId)
     {

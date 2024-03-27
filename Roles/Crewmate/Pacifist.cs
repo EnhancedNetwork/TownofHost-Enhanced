@@ -5,7 +5,6 @@ using System.Text;
 using UnityEngine;
 using HarmonyLib;
 using AmongUs.GameOptions;
-using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using TOHE.Modules;
 using static TOHE.Options;
@@ -16,17 +15,19 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Pacifist : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9200;
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Pacifist.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem PacifistCooldown;
     private static OptionItem PacifistMaxOfUseage;
     private static OptionItem PacifistAbilityUseGainWithEachTaskCompleted;
 
-    private static Dictionary<byte, float> PacifistNumOfUsed = [];
+    private static readonly Dictionary<byte, float> PacifistNumOfUsed = [];
 
     public static void SetupCustomOptions()
     {
@@ -40,10 +41,12 @@ internal class Pacifist : RoleBase
     }
     public override void Init()
     {
-        PacifistNumOfUsed = [];
+        playerIdList.Clear();
+        PacifistNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         PacifistNumOfUsed.Add(playerId, PacifistMaxOfUseage.GetInt());
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)

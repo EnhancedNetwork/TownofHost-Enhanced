@@ -9,14 +9,15 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Snitch : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9500;
-    private static readonly List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Snitch.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Snitch);
+    private static readonly Color RoleColor = Utils.GetRoleColor(CustomRoles.Snitch);
 
     private static OptionItem OptionEnableTargetArrow;
     private static OptionItem OptionCanGetColoredArrow;
@@ -49,7 +50,6 @@ internal class Snitch : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        On = false;
 
         EnableTargetArrow = OptionEnableTargetArrow.GetBool();
         CanGetColoredArrow = OptionCanGetColoredArrow.GetBool();
@@ -67,7 +67,6 @@ internal class Snitch : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
 
         IsExposed[playerId] = false;
         IsComplete[playerId] = false;

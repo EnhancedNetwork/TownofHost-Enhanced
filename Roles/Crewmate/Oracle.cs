@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using UnityEngine;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -13,12 +12,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Oracle : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9100;
-
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Oracle.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem CheckLimitOpt;
     private static OptionItem HidesVote;
@@ -26,10 +26,9 @@ internal class Oracle : RoleBase
     private static OptionItem OracleAbilityUseGainWithEachTaskCompleted;
     private static OptionItem ChangeRecruitTeam;
 
-    private List<byte> playerIdList = [];
-    private List<byte> DidVote = [];
-    private static Dictionary<byte, float> CheckLimit = [];
-    private static Dictionary<byte, float> TempCheckLimit = [];
+    private readonly HashSet<byte> DidVote = [];
+    private static readonly Dictionary<byte, float> CheckLimit = [];
+    private static readonly Dictionary<byte, float> TempCheckLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -51,17 +50,15 @@ internal class Oracle : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        CheckLimit = [];
-        TempCheckLimit = [];
-        DidVote = [];
-        On = false;
+        playerIdList.Clear();
+        CheckLimit.Clear();
+        TempCheckLimit.Clear();
+        DidVote.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CheckLimit.TryAdd(playerId, CheckLimitOpt.GetInt());
-        On = true;
     }
     public override void Remove(byte playerId)
     {

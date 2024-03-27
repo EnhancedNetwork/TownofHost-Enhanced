@@ -11,9 +11,9 @@ internal class Transporter : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7400;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Transporter.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
@@ -29,11 +29,11 @@ internal class Transporter : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
     public override void OnTaskComplete(PlayerControl pc, int CompletedTasksCount, int totalTaskCount)
     {

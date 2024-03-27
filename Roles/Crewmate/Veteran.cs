@@ -3,7 +3,6 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
-using TOHE.Roles.Core;
 using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -13,19 +12,21 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Veteran : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 11350;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Veteran.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem VeteranSkillCooldown;
     private static OptionItem VeteranSkillDuration;
     private static OptionItem VeteranSkillMaxOfUseage;
     private static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
 
-    private static Dictionary<byte, long> VeteranInProtect = [];
-    private static Dictionary<byte, float> VeteranNumOfUsed = [];
+    private static readonly Dictionary<byte, long> VeteranInProtect = [];
+    private static readonly Dictionary<byte, float> VeteranNumOfUsed = [];
 
     public static void SetupCustomOptions()
     {
@@ -41,15 +42,14 @@ internal class Veteran : RoleBase
     }
     public override void Init()
     {
-        VeteranInProtect = [];
-        VeteranNumOfUsed = [];
-        On = false;
+        playerIdList.Clear();
+        VeteranInProtect.Clear();
+        VeteranNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
-
+        playerIdList.Add(playerId);
         VeteranNumOfUsed.Add(playerId, VeteranSkillMaxOfUseage.GetInt());
-        On = true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

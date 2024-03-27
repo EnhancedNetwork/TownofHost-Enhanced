@@ -6,16 +6,18 @@ namespace TOHE.Roles.Impostor;
 
 internal class CursedWolf : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 1100;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem GuardSpellTimes;
     private static OptionItem KillAttacker;
 
-    private static Dictionary<byte, int> SpellCount = [];
-
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    private static readonly Dictionary<byte, int> SpellCount = [];
 
     public static void SetupCustomOption()
     {
@@ -29,13 +31,13 @@ internal class CursedWolf : RoleBase
 
     public override void Init()
     {
-        SpellCount = [];
-        On = false;
+        playerIdList.Clear();
+        SpellCount.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         SpellCount[playerId] = GuardSpellTimes.GetInt();
-        On = true;
     }
 
     private static void SendRPC(byte playerId)

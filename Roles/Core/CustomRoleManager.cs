@@ -23,13 +23,16 @@ public static class CustomRoleManager
         {
             if (role.IsImpostor())
                 return "TOHE.Roles._Ghosts_.Impostor.";
+            
             if (role.IsCrewmate())
                 return "TOHE.Roles._Ghosts_.Crewmate.";
         }
         if (role is CustomRoles.Mini)
             return "TOHE.Roles.Double.";
-        if (role.IsImpostor())
+        
+        if (role.IsImpostor() || role is CustomRoles.Crewpostor or CustomRoles.Parasite)
             return "TOHE.Roles.Impostor.";
+        
         if (role.IsCrewmate())
             return "TOHE.Roles.Crewmate.";
 

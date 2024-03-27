@@ -7,7 +7,6 @@ using HarmonyLib;
 using Hazel;
 using UnityEngine;
 using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;

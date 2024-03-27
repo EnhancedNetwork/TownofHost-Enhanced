@@ -11,12 +11,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Psychic : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9400;
-    private static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Psychic.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem CanSeeNum;
     private static OptionItem Fresh;
@@ -25,7 +26,7 @@ internal class Psychic : RoleBase
     private static OptionItem NEshowEvil;
     private static OptionItem NCshowEvil;
 
-    private static List<byte> RedPlayer = [];
+    private static readonly HashSet<byte> RedPlayer = [];
 
     public static void SetupCustomOption()
     {
@@ -40,14 +41,12 @@ internal class Psychic : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        RedPlayer = [];
-        On = false;
+        playerIdList.Clear();
+        RedPlayer.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
     }
     private static void SendRPC()
     {
@@ -60,7 +59,8 @@ internal class Psychic : RoleBase
     public static void ReceiveRPC(MessageReader reader)
     {
         int count = reader.ReadInt32();
-        RedPlayer = [];
+        RedPlayer.Clear();
+
         for (int i = 0; i < count; i++)
             RedPlayer.Add(reader.ReadByte());
     }
@@ -102,7 +102,7 @@ internal class Psychic : RoleBase
 
         if (ENum < 1) goto EndOfSelect;
 
-        RedPlayer = [];
+        RedPlayer.Clear();
         for (int i = 0; i < ENum && BadList.Count >= 1; i++)
         {
             RedPlayer.Add(BadList[IRandom.Instance.Next(0, BadList.Count)]);

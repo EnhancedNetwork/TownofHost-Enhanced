@@ -11,7 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class EvilTracker : RoleBase
 {
     private const int Id = 1400;
-    private static List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     
     public static bool On;
     public override bool IsEnable => On;
@@ -27,9 +27,9 @@ internal class EvilTracker : RoleBase
     private static TargetMode CurrentTargetMode;
     private static bool CanSeeLastRoomInMeeting;
 
-    private static Dictionary<byte, byte> Target = [];
-    private static Dictionary<byte, bool> CanSetTarget = [];
-    private static Dictionary<byte, HashSet<byte>> ImpostorsId = [];
+    private static readonly Dictionary<byte, byte> Target = [];
+    private static readonly Dictionary<byte, bool> CanSetTarget = [];
+    private static readonly Dictionary<byte, HashSet<byte>> ImpostorsId = [];
 
     private enum TargetMode
     {
@@ -58,10 +58,10 @@ internal class EvilTracker : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        Target = [];
-        CanSetTarget = [];
-        ImpostorsId = [];
+        playerIdList.Clear();
+        Target.Clear();
+        CanSetTarget.Clear();
+        ImpostorsId.Clear();
         On = false;
 
         CanSeeKillFlash = OptionCanSeeKillFlash.GetBool();
@@ -98,7 +98,7 @@ internal class EvilTracker : RoleBase
         hud.AbilityButton.OverrideText(GetString("EvilTrackerChangeButtonText"));
     }
 
-    public static bool KillFlashCheck() => CanSeeKillFlash;
+    public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => CanSeeKillFlash;
 
     private static bool CanTarget(byte playerId)
         => !Main.PlayerStates[playerId].IsDead && CanSetTarget.TryGetValue(playerId, out var value) && value;
@@ -136,7 +136,7 @@ internal class EvilTracker : RoleBase
             SetTarget();
             Utils.MarkEveryoneDirtySettings();
         }
-        foreach (var playerId in playerIdList.ToArray())
+        foreach (var playerId in playerIdList)
         {
             var pc = Utils.GetPlayerById(playerId);
             var target = Utils.GetPlayerById(GetTargetId(playerId));
@@ -149,7 +149,7 @@ internal class EvilTracker : RoleBase
     private static void SetTarget(byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
         if (trackerId == byte.MaxValue) // Targets can be re-set
-            foreach (var playerId in playerIdList.ToArray())
+            foreach (var playerId in playerIdList)
                 CanSetTarget[playerId] = true;
         else if (targetId == byte.MaxValue) // Target deletion
             Target[trackerId] = byte.MaxValue;

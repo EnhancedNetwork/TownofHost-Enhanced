@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -10,11 +9,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Sheriff : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 11200;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Sheriff.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem MisfireKillsTarget;
@@ -36,9 +37,8 @@ internal class Sheriff : RoleBase
     private static OptionItem NonCrewCanKillImp;
     private static OptionItem NonCrewCanKillNeutral;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, int> ShotLimit = [];
-    private static Dictionary<byte, float> CurrentKillCooldown = [];
+    private static readonly Dictionary<byte, int> ShotLimit = [];
+    private static readonly Dictionary<byte, float> CurrentKillCooldown = [];
 
     private static readonly Dictionary<CustomRoles, OptionItem> KillTargetOptions = [];
 
@@ -76,16 +76,14 @@ internal class Sheriff : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        ShotLimit = [];
-        CurrentKillCooldown = [];
-        On = false;
+        playerIdList.Clear();
+        ShotLimit.Clear();
+        CurrentKillCooldown.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CurrentKillCooldown.Add(playerId, KillCooldown.GetFloat());
-        On = true;
 
         ShotLimit.TryAdd(playerId, ShotLimitOpt.GetInt());
         Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()} : limit: {ShotLimit[playerId]}", "Sheriff");

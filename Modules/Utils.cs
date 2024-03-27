@@ -17,8 +17,6 @@ using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles._Ghosts_.Impostor;
-using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -266,7 +264,6 @@ public static class Utils
 
         if (seer.GetRoleClass().KillFlashCheck(killer, target, seer)) return true;
         if (target.GetRoleClass().KillFlashCheck(killer, target, seer)) return true;
-        if (seer.Is(CustomRoles.EvilTracker)) return EvilTracker.KillFlashCheck();
         return false;
     }
     public static void KillFlash(this PlayerControl player)
@@ -524,14 +521,13 @@ public static class Utils
     {
         try
         {
-            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return string.Empty; //ホストがMODを入れていなければ未記入を返す
+            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return string.Empty;
             var taskState = pc.GetPlayerTaskState();
             var Comms = false;
             if (taskState.hasTasks)
             {
                 if (IsActive(SystemTypes.Comms)) Comms = true;
                 if (Camouflager.AbilityActivated) Comms = true;
-                //if (PlayerControl.LocalPlayer.myTasks.ToArray().Any(x => x.TaskType == TaskTypes.FixComms)) Comms = true;
             }
             return GetProgressText(pc.PlayerId, Comms);
         }
@@ -545,26 +541,27 @@ public static class Utils
     {
         try
         {
-            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return ""; //ホストがMODを入れていなければ未記入を返す
+            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return string.Empty;
             var ProgressText = new StringBuilder();
             var role = Main.PlayerStates[playerId].MainRole;
-            ProgressText.Append(playerId.GetRoleClassById()?.GetProgressText(playerId, comms));
-
-            switch (role)
+            
+            if (Options.CurrentGameMode == CustomGameMode.FFA && role == CustomRoles.Killer)
             {
-                case CustomRoles.Killer:
-                    ProgressText.Append(FFAManager.GetDisplayScore(playerId));
-                    break;
-                default:
-                    if (ProgressText.Length != 0) break;
+                ProgressText.Append(FFAManager.GetDisplayScore(playerId));
+            }
+            else
+            {
+                ProgressText.Append(playerId.GetRoleClassById()?.GetProgressText(playerId, comms));
 
+                if (ProgressText.Length == 0)
+                {
                     var taskState = Main.PlayerStates?[playerId].TaskState;
                     if (taskState.hasTasks)
                     {
                         Color TextColor;
                         var info = GetPlayerInfoById(playerId);
-                        var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(role).ShadeColor(0.5f); //タスク完了後の色
-                        var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white; //カウントされない人外は白色
+                        var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(role).ShadeColor(0.5f);
+                        var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white;
 
                         if (Workhorse.IsThisRole(playerId))
                             NonCompleteColor = Workhorse.RoleColor;
@@ -575,14 +572,14 @@ public static class Utils
 
                         TextColor = comms ? Color.gray : NormalColor;
                         string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
-                        ProgressText.Append(ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})"));
+                        ProgressText.Append(ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})"));
                     }
-                    break;
+                }
+                else
+                {
+                    ProgressText.Insert(0, " ");
+                }
             }
-            if (ProgressText.Length != 0)
-                ProgressText.Insert(0, " "); //空じゃなければ空白を追加
-            
-
             return ProgressText.ToString();
         }
         catch (Exception error)

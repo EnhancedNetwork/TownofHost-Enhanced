@@ -7,8 +7,6 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Core;
-using HarmonyLib;
 
 namespace TOHE;
 
@@ -18,8 +16,16 @@ public static class CustomRolesHelper
     public static readonly CustomRoleTypes[] AllRoleTypes = EnumHelper.GetAllValues<CustomRoleTypes>();
     public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
     {
+        // Vanilla roles
         if (role.IsVanilla()) return role;
+        if (role == CustomRoles.ShapeshifterTOHE) return CustomRoles.Shapeshifter;
+        if (role == CustomRoles.ScientistTOHE) return CustomRoles.Scientist;
+        if (role == CustomRoles.EngineerTOHE) return CustomRoles.Engineer;
+
+        // Role base
         if (role.IsRoleClass() is not VanillaRole) return role.IsRoleClass().ThisRoleBase;
+
+        // Defult
         return role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate; 
     }
     

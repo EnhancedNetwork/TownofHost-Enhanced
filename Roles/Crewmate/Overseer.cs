@@ -7,17 +7,18 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Overseer : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 12200;
-
-    public static bool On = false;
-    public override bool IsEnable => false;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("prophecies");
 
@@ -87,21 +88,21 @@ internal class Overseer : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         OverseerTimer.Clear();
         RandomRole.Clear();
         IsRevealed.Clear();
-        //CurrentRevealTarget = byte.MaxValue;
-        On = false;
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
+
         foreach (var ar in Main.AllPlayerControls)
         {
             IsRevealed.Add((playerId, ar.PlayerId), false);
         }
 
         RandomRole.Add(playerId, GetRandomCrewRoleString());
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))

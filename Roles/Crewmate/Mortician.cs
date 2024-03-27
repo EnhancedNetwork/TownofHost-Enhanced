@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -9,17 +10,18 @@ using static TOHE.Translator;
 namespace TOHE.Roles.Crewmate;
 internal class Mortician : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8900;
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Mortician.HasEnabled();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem ShowArrows;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, string> lastPlayerName = [];
-    private static Dictionary<byte, string> msgToSend = [];
+    private static readonly Dictionary<byte, string> lastPlayerName = [];
+    private static readonly Dictionary<byte, string> msgToSend = [];
 
     public static void SetupCustomOption()
     {
@@ -28,15 +30,13 @@ internal class Mortician : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        lastPlayerName = [];
-        msgToSend = [];
-        On = false;
+        playerIdList.Clear();
+        lastPlayerName.Clear();
+        msgToSend.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -128,5 +128,5 @@ internal class Mortician : RoleBase
         if (msgToSend.ContainsKey(pc.PlayerId))
             AddMsg(msgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mortician), GetString("MorticianCheckTitle")));
     }
-    public override void MeetingHudClear() => msgToSend = [];
+    public override void MeetingHudClear() => msgToSend.Clear();
 }

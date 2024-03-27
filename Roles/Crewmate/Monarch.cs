@@ -10,11 +10,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Monarch : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 12100;
-    private static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KnightCooldown;
     private static OptionItem KnightMax;
@@ -31,15 +33,13 @@ internal class Monarch : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         KnightLimit = new();
-        On = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         KnightLimit = KnightMax.GetInt();
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
