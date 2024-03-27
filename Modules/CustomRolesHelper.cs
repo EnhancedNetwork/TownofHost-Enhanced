@@ -25,7 +25,7 @@ public static class CustomRolesHelper
         // Role base
         if (role.IsRoleClass() is not VanillaRole) return role.IsRoleClass().ThisRoleBase;
 
-        // Defult
+        // Default
         return role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate; 
     }
     
