@@ -803,15 +803,14 @@ static class ExtendedPlayerControl
         else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor) && !subRole.IsEvilAddons()) return true;
 
-        else if (
-            (subRole.Is(CustomRoles.Madmate)
-                || subRole.Is(CustomRoles.Sidekick) 
-                || subRole.Is(CustomRoles.Recruit)
-                || subRole.Is(CustomRoles.Admired)
-                || subRole.Is(CustomRoles.Charmed)
-                || subRole.Is(CustomRoles.Infected)
-                || subRole.Is(CustomRoles.Contagious)
-                || subRole.Is(CustomRoles.Egoist)) 
+        else if ((subRole is CustomRoles.Madmate
+                or CustomRoles.Sidekick
+                or CustomRoles.Recruit
+                or CustomRoles.Admired
+                or CustomRoles.Charmed
+                or CustomRoles.Infected
+                or CustomRoles.Contagious
+                or CustomRoles.Egoist) 
             && KnowSubRoleTarget(seer, target))
             return true;
 
@@ -1005,7 +1004,6 @@ static class ExtendedPlayerControl
     public static bool Is(this PlayerControl target, CustomRoleTypes type) { return target.GetCustomRole().GetCustomRoleTypes() == type; }
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
-    public static bool Is(this CustomRoles trueRole, CustomRoles checkRole) { return trueRole == checkRole; }
     public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => target.GetCustomSubRoles().Count > 0 && target.GetCustomSubRoles().Any(predicate);
 
     public static bool IsAlive(this PlayerControl target)

@@ -135,7 +135,7 @@ class CheckMurderPatch
         }
 
         // Set kill cooldown for Chronomancer
-        if (killerRole.Is(CustomRoles.Chronomancer))
+        if (killerRole is CustomRoles.Chronomancer)
             Chronomancer.OnCheckMurder(killer);
 
         killer.ResetKillCooldown();

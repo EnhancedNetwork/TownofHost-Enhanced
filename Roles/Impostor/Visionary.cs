@@ -33,14 +33,14 @@ internal class Visionary : RoleBase
 
         foreach (var SubRole in target.GetCustomSubRoles())
         {
-            if (SubRole.Is(CustomRoles.Charmed)
-                || SubRole.Is(CustomRoles.Infected)
-                || SubRole.Is(CustomRoles.Contagious)
-                || SubRole.Is(CustomRoles.Egoist)
-                || SubRole.Is(CustomRoles.Recruit)
-                || SubRole.Is(CustomRoles.Soulless)
-                || SubRole.Is(CustomRoles.Refugee)
-                || SubRole.Is(CustomRoles.Admired))
+            if (SubRole is CustomRoles.Charmed
+                or CustomRoles.Infected
+                or CustomRoles.Contagious
+                or CustomRoles.Egoist
+                or CustomRoles.Recruit
+                or CustomRoles.Soulless
+                or CustomRoles.Refugee
+                or CustomRoles.Admired)
                 return Main.roleColors[CustomRoles.Knight];
         }
 

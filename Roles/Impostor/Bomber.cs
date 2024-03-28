@@ -99,11 +99,11 @@ internal class Bomber : RoleBase
             var pos = shapeshifter.transform.position;
             var dis = Vector2.Distance(pos, tg.transform.position);
             
-            if (playerRole.Is(CustomRoles.Bomber))
+            if (playerRole is CustomRoles.Bomber)
             {
                 if (dis > BomberRadius.GetFloat()) continue;
             }
-            else if (playerRole.Is(CustomRoles.Nuker))
+            else if (playerRole is CustomRoles.Nuker)
             {
                 if (dis > NukeRadius.GetFloat()) continue;
             }
@@ -114,7 +114,7 @@ internal class Bomber : RoleBase
         }
 
         var timer = shapeshiftIsHidden ? 0.3f : 1.5f;
-        if (BomberDiesInExplosion.GetBool() && playerRole.Is(CustomRoles.Bomber))
+        if (BomberDiesInExplosion.GetBool() && playerRole is CustomRoles.Bomber)
         {
             _ = new LateTask(() =>
             {

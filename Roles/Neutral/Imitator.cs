@@ -82,12 +82,12 @@ internal class Imitator : RoleBase
 
         var role = target.GetCustomRole();
 
-        if (role.Is(CustomRoles.Jackal)
-            || role.Is(CustomRoles.HexMaster)
-            || role.Is(CustomRoles.Poisoner) 
-            || role.Is(CustomRoles.Juggernaut) 
-            || role.Is(CustomRoles.BloodKnight)
-            || role.Is(CustomRoles.Sheriff))
+        if (role is CustomRoles.Jackal
+            or CustomRoles.HexMaster
+            or CustomRoles.Poisoner
+            or CustomRoles.Juggernaut 
+            or CustomRoles.BloodKnight
+            or CustomRoles.Sheriff)
         {
             RememberLimit[killer.PlayerId]--;
             SendRPC(killer.PlayerId);

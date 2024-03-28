@@ -1867,7 +1867,7 @@ public static class Utils
 
             CurrentСolor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
 
-            if (Main.PlayerStates.TryGetValue(id, out var ps) && ps.MainRole.Is(CustomRoles.Crewpostor))
+            if (Main.PlayerStates.TryGetValue(id, out var ps) && ps.MainRole is CustomRoles.Crewpostor)
                 CurrentСolor = Color.red;
 
             if (ps.SubRoles.Contains(CustomRoles.Workhorse))
