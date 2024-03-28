@@ -11,7 +11,7 @@ namespace TOHE.Roles.Neutral;
 
 internal class Poisoner : RoleBase
 {
-    private class PoisonedInfo(byte poisonerId, float killTimer) // Mf's before Dictionary(item1, item2) was discovered 💀
+    private class PoisonedInfo(byte poisonerId, float killTimer) 
     {
         public byte PoisonerId = poisonerId;
         public float KillTimer = killTimer;

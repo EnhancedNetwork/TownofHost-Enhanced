@@ -362,6 +362,18 @@ class CheckMurderPatch
         return true;
     }
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
+class CheckSuccessMurder
+{
+    public static void Postfix([HarmonyArgument(0)] PlayerControl target)
+    {
+        var killer = target.GetRealKiller();
+
+        if (!killer.RpcCheckAndMurder(target, check: true) && !killer.Is(CustomRoles.Pestilence)) // Probably can just cancel it here lol
+            Logger.Warn($" Killer: {killer.GetRealName} murdered {target.GetRealName()} while target was under protection", "RpcMurderPlayer");
+
+    }
+}
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
