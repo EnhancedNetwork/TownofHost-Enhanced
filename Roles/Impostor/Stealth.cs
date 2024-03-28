@@ -8,11 +8,13 @@ namespace TOHE.Roles.Impostor;
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Impostor/Stealth.cs
 internal class Stealth : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 27400;
-    private static List<byte> playerIdList = [];
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem optionExcludeImpostors;
     private static OptionItem optionDarkenDuration;
@@ -35,8 +37,7 @@ internal class Stealth : RoleBase
 
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -45,7 +46,6 @@ internal class Stealth : RoleBase
         darkenedPlayers = null;
 
         playerIdList.Add(playerId);
-        On = true;
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -74,7 +74,7 @@ internal class Stealth : RoleBase
         var roomArea = room.roomArea;
         var roomName = room.RoomId;
         RpcDarken(roomName);
-        return Main.AllAlivePlayerControls.Where(player => player != Utils.GetPlayerById(playerIdList[0]) && player.Collider.IsTouching(roomArea)).ToArray();
+        return Main.AllAlivePlayerControls.Where(player => player != Utils.GetPlayerById(playerIdList.First()) && player.Collider.IsTouching(roomArea)).ToArray();
     }
     /// <summary>Give the given player zero visibility for <see cref="darkenDuration"/> seconds.</summary>
     private static void DarkenPlayers(PlayerControl[] playersToDarken)
@@ -138,15 +138,15 @@ internal class Stealth : RoleBase
         }
         darkenTimer = darkenDuration;
         RpcDarken(null);
-        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerIdList[0]), SpecifyTarget: Utils.GetPlayerById(playerIdList[0]));
+        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerIdList.First()), SpecifyTarget: Utils.GetPlayerById(playerIdList.First()));
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         seen ??= seer;
-        var Player = Utils.GetPlayerById(playerIdList[0]);
+        var Player = Utils.GetPlayerById(playerIdList.First());
 
         // During the meeting, unless it's my suffix or it's dark everywhere, I won't show anything.
-        if (!On || isForMeeting || seer != Player || seen != Player || !darkenedRoom.HasValue)
+        if (!HasEnabled || isForMeeting || seer != Player || seen != Player || !darkenedRoom.HasValue)
         {
             return string.Empty;
         }

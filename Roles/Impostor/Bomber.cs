@@ -3,16 +3,21 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using AmongUs.GameOptions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Bomber : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 700;
 
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Bomb");
 
@@ -56,11 +61,11 @@ internal class Bomber : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        Playerids.Add(playerId);
     }
     public static bool CheckSpawnNuker()
     {

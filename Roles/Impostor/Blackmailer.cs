@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using static TOHE.MeetingHudStartPatch;
@@ -9,10 +10,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Blackmailer : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 24600;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem SkillCooldown;
 
@@ -27,11 +31,11 @@ internal class Blackmailer : RoleBase
     public override void Init()
     {
         ForBlackmailer = [];
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -67,7 +71,7 @@ internal class Blackmailer : RoleBase
     }
 
     private static void ClearBlackmaile() => ForBlackmailer.Clear();
-    public static bool CheckBlackmaile(PlayerControl player) => On && ForBlackmailer.Contains(player.PlayerId);
+    public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && ForBlackmailer.Contains(player.PlayerId);
 
     private string GetMarkOthers(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {

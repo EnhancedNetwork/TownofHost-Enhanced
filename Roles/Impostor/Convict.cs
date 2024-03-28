@@ -1,7 +1,7 @@
 ﻿
 namespace TOHE.Roles.Impostor;
 
-internal class Convict : RoleBase
+internal class Convict : RoleBase // Loonie ass role 💀💀💀
 {
     public static bool On;
     public override bool IsEnable => On;

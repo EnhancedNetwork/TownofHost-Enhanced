@@ -2,6 +2,7 @@
 using Hazel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Crewmate;
@@ -13,9 +14,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Councillor : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 1000;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem MurderLimitPerMeeting;
     private static OptionItem TryHideMsg;
@@ -25,7 +30,6 @@ internal class Councillor : RoleBase
     
     private static Dictionary<byte, int> MurderLimit = [];
 
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     public static void SetupCustomOption()
     {
@@ -42,12 +46,12 @@ internal class Councillor : RoleBase
     public override void Init()
     {
         MurderLimit = [];
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         MurderLimit.Add(playerId, MurderLimitPerMeeting.GetInt());
-        On = true;
+        PlayerIds.Add(playerId);
     }
     public override void AfterMeetingTasks()
     {

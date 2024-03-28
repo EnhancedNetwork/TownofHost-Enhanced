@@ -83,6 +83,7 @@ public static class GhostRoleAssign
             {
                 CrewCount++;
                 getCount[ChosenRole]--; // Only deduct if role has been set.
+                player.GetRoleClass().Remove(player.PlayerId);
                 player.RpcSetCustomRole(ChosenRole);
                 player.GetRoleClass().Add(player.PlayerId);
             }
@@ -102,6 +103,7 @@ public static class GhostRoleAssign
             {
                 ImpCount++;
                 getCount[ChosenRole]--;
+                player.GetRoleClass().Remove(player.PlayerId);
                 player.RpcSetCustomRole(ChosenRole);
                 player.GetRoleClass().Add(player.PlayerId);
             }

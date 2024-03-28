@@ -1847,6 +1847,12 @@ public static class Utils
         ProcessStartInfo psi = new("Explorer.exe") { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
         Process.Start(psi);
     }
+    /// <summary>
+    /// Return the first byte of a HashSet(Byte)
+    /// </summary>
+    public static byte First(this HashSet<byte> source)
+        => source.ToArray().First();
+    
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
         var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);

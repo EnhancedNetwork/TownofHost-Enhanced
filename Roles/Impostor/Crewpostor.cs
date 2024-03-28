@@ -9,10 +9,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Crewpostor : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 5800;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem CanKillAllies;
     private static OptionItem KnowsAllies;
@@ -41,12 +44,12 @@ internal class Crewpostor : RoleBase
     public override void Init()
     {
         TasksDone = [];
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         TasksDone[playerId] = 0;
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     private static void SendRPC(byte cpID, int tasksDone)

@@ -15,10 +15,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Puppeteer : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 4300;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem PuppeteerDoubleKills;
 
@@ -32,8 +35,8 @@ internal class Puppeteer : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        PuppeteerList = [];
+        PlayerIds.Clear();
+        PuppeteerList.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -41,7 +44,7 @@ internal class Puppeteer : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-        On = true;
+        PlayerIds.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {

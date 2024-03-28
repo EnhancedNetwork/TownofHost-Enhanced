@@ -1535,20 +1535,40 @@ public static class CustomRolesHelper
             _ => role.IsImpostor() ? RoleTypes.Impostor : RoleTypes.Crewmate,
         };
     public static bool IsDesyncRole(this CustomRoles role) => role.GetDYRole() != RoleTypes.GuardianAngel;
+    /// <summary>
+    /// Role is Madmate Or Impostor
+    /// </summary>
     public static bool IsImpostorTeam(this CustomRoles role) => role.IsImpostor() || role == CustomRoles.Madmate;
+    /// <summary>
+    /// Role Is Not Impostor nor Madmate Nor Neutral.
+    /// </summary>
     public static bool IsCrewmate(this CustomRoles role) => !role.IsImpostor() && !role.IsNeutral() && !role.IsMadmate();
-
-    public static bool IsImpostorTeamV2(this CustomRoles role) => role == CustomRoles.Rascal || role == CustomRoles.Madmate || (role.IsImpostorTeamV3() && role != CustomRoles.Trickster && !role.IsConverted());
-    public static bool IsNeutralTeamV2(this CustomRoles role) => (role.IsConverted() || role.IsNeutral()) && role != CustomRoles.Madmate;
+    /// <summary>
+    /// Role is Rascal or Madmate and not trickster.
+    /// </summary>
+    public static bool IsImpostorTeamV2(this CustomRoles role) => role == CustomRoles.Rascal || role == CustomRoles.Madmate || (role.IsImpostorTeamV3() && role != CustomRoles.Trickster && (!role.IsConverted() || role is CustomRoles.Madmate));
+    /// <summary>
+    /// Role Is Converting or neutral.
+    /// </summary>
+    public static bool IsNeutralTeamV2(this CustomRoles role) => (role.IsConverted() && role != CustomRoles.Madmate || role.IsNeutral()) && role != CustomRoles.Madmate;
+    /// <summary>
+    /// Role is not impostor nor rascal nor madmate nor converting nor neutral or role is trickster.
+    /// </summary>
     public static bool IsCrewmateTeamV2(this CustomRoles role) => !(role.IsImpostorTeamV2() || role.IsNeutralTeamV2()) || role == CustomRoles.Trickster;
 
+    /// <summary>
+    /// Role Changes the Crewmates Team, Including changing to Impostor.
+    /// </summary>
     public static bool IsConverted(this CustomRoles role)
     {
-        return (role is CustomRoles.Charmed ||
-                role is CustomRoles.Recruit ||
-                role is CustomRoles.Infected ||
-                role is CustomRoles.Contagious ||
-                role is CustomRoles.Lovers ||
+        return (role is CustomRoles.Charmed 
+                or CustomRoles.Recruit
+                or CustomRoles.Infected
+                or CustomRoles.Contagious
+                or CustomRoles.Soulless
+                or CustomRoles.Lovers 
+                or CustomRoles.Rogue
+                or CustomRoles.Madmate ||
                 (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool()));
     }
     public static bool IsEvilAddons(this CustomRoles role)

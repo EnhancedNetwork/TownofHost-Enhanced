@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -7,17 +8,18 @@ namespace TOHE.Roles.Impostor;
 
 internal class Mercenary : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2000;
-
-    public static bool On;
-    public override bool IsEnable => On;
+    public static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem TimeLimit;
 
-    public static List<byte> playerIdList = [];
-    private static Dictionary<byte, float> SuicideTimer = [];
+    private static readonly Dictionary<byte, float> SuicideTimer = [];
 
     private static float OptTimeLimit;
 
@@ -31,15 +33,13 @@ internal class Mercenary : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
-        SuicideTimer = [];
+        playerIdList.Clear();
+        SuicideTimer.Clear();
     }
     public override void Add(byte serial)
     {
         playerIdList.Add(serial);
         OptTimeLimit = TimeLimit.GetFloat();
-        On = true;
     }
 
     private static bool HasKilled(PlayerControl pc)

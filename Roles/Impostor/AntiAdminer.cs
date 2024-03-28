@@ -5,6 +5,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
+using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 
@@ -12,12 +13,13 @@ namespace TOHE.Roles.Impostor;
 // 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/AntiAdminer
 internal class AntiAdminer : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2800;
-    private static List<byte> playerIdList = [];
-
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly List<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem CanCheckCamera;
     public static bool IsAdminWatch;
@@ -32,17 +34,15 @@ internal class AntiAdminer : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
-        On = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
     }
     public override void Remove(byte playerId)
     {

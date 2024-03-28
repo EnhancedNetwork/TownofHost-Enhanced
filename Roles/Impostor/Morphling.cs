@@ -1,21 +1,24 @@
 using AmongUs.GameOptions;
 using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Morphling : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 3500;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //===========================SETUP================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem ShapeshiftCD;
     private static OptionItem ShapeshiftDur;
 
-    private static List<byte> playerIdList = [];
 
     public static void SetupCustomOption()
     {
@@ -29,13 +32,11 @@ internal class Morphling : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
     }
 
     public override bool CanUseKillButton(PlayerControl player)

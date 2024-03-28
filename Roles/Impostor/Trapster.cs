@@ -1,21 +1,25 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Trapster : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2600;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem TrapsterKillCooldown;
     private static OptionItem TrapConsecutiveBodies;
     private static OptionItem TrapTrapsterBody;
     private static OptionItem TrapConsecutiveTrapsterBodies;
 
-    private static List<byte> BoobyTrapBody = [];
-    private static Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
+    private static readonly List<byte> BoobyTrapBody = [];
+    private static readonly Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
 
     public static void SetupCustomOption()
     {
@@ -33,13 +37,13 @@ internal class Trapster : RoleBase
 
     public override void Init()
     {
-        BoobyTrapBody = [];
-        KillerOfBoobyTrapBody = [];
-        On = false;
+        BoobyTrapBody.Clear();
+        KillerOfBoobyTrapBody.Clear();
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        Playerids.Clear();
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TrapsterKillCooldown.GetFloat();

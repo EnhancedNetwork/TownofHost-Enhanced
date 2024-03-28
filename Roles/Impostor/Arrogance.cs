@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Arrogance : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 500;
-    public static List<byte> playerIdList = [];
-    public static bool On;
-    public override bool IsEnable => On;
+    public static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ReduceKillCooldown;
     private static OptionItem MinKillCooldown;
     public static OptionItem BardChance;
 
-    private static Dictionary<byte, float> NowCooldown = [];
+    private static readonly Dictionary<byte, float> NowCooldown = [];
 
     public static void SetupCustomOption()
     {
@@ -34,15 +37,13 @@ internal class Arrogance : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        NowCooldown = [];
-        On = false;
+        playerIdList.Clear();
+        NowCooldown.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
-        On = true;
     }
     public override void Remove(byte playerId)
     {

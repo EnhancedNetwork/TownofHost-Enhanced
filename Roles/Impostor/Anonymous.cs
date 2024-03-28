@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -10,19 +11,19 @@ namespace TOHE.Roles.Impostor;
 
 internal class Anonymous : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 5300;
-    private static List<byte> playerIdList = [];
-    
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
-
+    //==================================================================\\
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Hack");
 
     private static OptionItem HackLimitOpt;
     private static OptionItem KillCooldown;
 
-    private static Dictionary<byte, int> HackLimit = [];
+    private static readonly Dictionary<byte, int> HackLimit = [];
     private static List<byte> DeadBodyList = [];
 
     public static void SetupCustomOption()
@@ -35,16 +36,14 @@ internal class Anonymous : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        HackLimit = [];
-        DeadBodyList = [];
-        On = false;
+        playerIdList.Clear();
+        HackLimit.Clear();
+        DeadBodyList.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         HackLimit.TryAdd(playerId, HackLimitOpt.GetInt());
-        On = true;
     }
     public override void Remove(byte playerId)
     {

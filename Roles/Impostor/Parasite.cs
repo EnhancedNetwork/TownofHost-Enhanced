@@ -1,14 +1,19 @@
 ﻿
 using AmongUs.GameOptions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Parasite : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 5900;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem ParasiteCD;
 
@@ -21,11 +26,11 @@ internal class Parasite : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        Playerids.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);

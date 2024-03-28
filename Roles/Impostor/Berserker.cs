@@ -1,16 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using TOHE.Modules;
+using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Berserker : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 600;
 
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem BerserkerKillCooldown;
     private static OptionItem BerserkerMax;
@@ -26,7 +30,7 @@ internal class Berserker : RoleBase
     private static OptionItem BerserkerFourCanNotKill;
     private static OptionItem BerserkerImmortalLevel;
 
-    private static Dictionary<byte, int> BerserkerKillMax = [];
+    private static readonly Dictionary<byte, int> BerserkerKillMax = [];
 
     public static void SetupCustomOption()
     {
@@ -55,13 +59,13 @@ internal class Berserker : RoleBase
     }
     public override void Init()
     {
-        BerserkerKillMax = [];
-        On = false;
+        BerserkerKillMax.Clear();
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         BerserkerKillMax[playerId] = 0;
-        On = true;
+        PlayerIds.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

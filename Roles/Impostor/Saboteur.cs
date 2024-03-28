@@ -1,12 +1,18 @@
 ﻿
+using System.Collections.Generic;
+using System.Linq;
+
 namespace TOHE.Roles.Impostor;
 
 internal class Saboteur : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2300;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem SaboteurCD;
 
@@ -19,11 +25,11 @@ internal class Saboteur : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = SaboteurCD.GetFloat();

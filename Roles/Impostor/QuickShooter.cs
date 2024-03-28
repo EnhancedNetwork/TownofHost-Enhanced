@@ -2,22 +2,25 @@
 using Hazel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
 internal class QuickShooter : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2200;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem MeetingReserved;
     private static OptionItem ShapeshiftCooldown;
 
-    private static List<byte> playerIdList = [];
     private static Dictionary<byte, int> ShotLimit = [];
 
     private static bool Storaging = false;
@@ -34,16 +37,14 @@ internal class QuickShooter : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
-        ShotLimit = [];
+        playerIdList.Clear();
+        ShotLimit.Clear();
         Storaging = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         ShotLimit.TryAdd(playerId, 0);
-        On = true;
     }
 
     private static void SendRPC(byte playerId)

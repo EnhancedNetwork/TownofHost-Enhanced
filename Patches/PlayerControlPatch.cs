@@ -141,7 +141,7 @@ class CheckMurderPatch
         killer.ResetKillCooldown();
 
         // Replacement process when the actual killer and the KILLER are different
-        if (Sniper.On)
+        if (Sniper.HasEnabled)
         {
             Sniper.TryGetSniper(target.PlayerId, ref killer);
             

@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using Il2CppSystem.Text;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -10,13 +11,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class EvilTracker : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 1400;
     private static readonly HashSet<byte> playerIdList = [];
-    
-    public static bool On;
-    public override bool IsEnable => On;
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => (TargetMode)OptionTargetMode.GetValue() == TargetMode.Never ? CustomRoles.Impostor : CustomRoles.Shapeshifter;
-
+    //==================================================================\\
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Track");
 
     private static OptionItem OptionCanSeeKillFlash;
@@ -62,7 +63,6 @@ internal class EvilTracker : RoleBase
         Target.Clear();
         CanSetTarget.Clear();
         ImpostorsId.Clear();
-        On = false;
 
         CanSeeKillFlash = OptionCanSeeKillFlash.GetBool();
         CurrentTargetMode = (TargetMode)OptionTargetMode.GetValue();
@@ -75,7 +75,6 @@ internal class EvilTracker : RoleBase
         CanSetTarget.Add(playerId, CurrentTargetMode != TargetMode.Never);
 
         ImpostorsId[playerId] = [];
-        On = true;
 
         foreach (var target in Main.AllAlivePlayerControls)
         {

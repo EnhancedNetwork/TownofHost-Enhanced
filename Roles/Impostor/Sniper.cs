@@ -11,10 +11,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Sniper : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2400;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIdList = [];
+    public static bool HasEnabled => PlayerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem SniperBulletCount;
     private static OptionItem SniperPrecisionShooting;
@@ -23,14 +26,13 @@ internal class Sniper : RoleBase
     private static OptionItem CanKillWithBullets;
     private static OptionItem AlwaysShowShapeshiftAnimations;
 
-    private static List<byte> PlayerIdList = [];
-    private static Dictionary<byte, byte> snipeTarget = [];
-    private static Dictionary<byte, Vector3> snipeBasePosition = [];
-    private static Dictionary<byte, Vector3> LastPosition = [];
-    private static Dictionary<byte, int> bulletCount = [];
-    private static Dictionary<byte, List<byte>> shotNotify = [];
-    private static Dictionary<byte, bool> IsAim = [];
-    private static Dictionary<byte, float> AimTime = [];
+    private static readonly Dictionary<byte, byte> snipeTarget = [];
+    private static readonly Dictionary<byte, Vector3> snipeBasePosition = [];
+    private static readonly Dictionary<byte, Vector3> LastPosition = [];
+    private static readonly Dictionary<byte, int> bulletCount = [];
+    private static readonly Dictionary<byte, List<byte>> shotNotify = [];
+    private static readonly Dictionary<byte, bool> IsAim = [];
+    private static readonly Dictionary<byte, float> AimTime = [];
 
     private static bool meetingReset;
     private static int maxBulletCount;
@@ -53,19 +55,17 @@ internal class Sniper : RoleBase
     }
     public override void Init()
     {
-        On = false;
-
         Logger.Disable("Sniper");
 
-        PlayerIdList = [];
+        PlayerIdList.Clear();
 
-        snipeBasePosition = [];
-        LastPosition = [];
-        snipeTarget = [];
-        bulletCount = [];
-        shotNotify = [];
-        IsAim = [];
-        AimTime = [];
+        snipeBasePosition.Clear();
+        LastPosition.Clear();
+        snipeTarget.Clear();
+        bulletCount.Clear();
+        shotNotify.Clear();
+        IsAim.Clear();
+        AimTime.Clear();
         meetingReset = false;
     }
     public override void Add(byte playerId)
@@ -86,8 +86,6 @@ internal class Sniper : RoleBase
         shotNotify[playerId] = [];
         IsAim[playerId] = false;
         AimTime[playerId] = 0f;
-
-        On = true;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -293,7 +291,7 @@ internal class Sniper : RoleBase
     }
     public static void OnFixedUpdateGlobal(PlayerControl pc)
     {
-        if (!On || !IsThisRole(pc.PlayerId) || !pc.IsAlive()) return;
+        if (!HasEnabled || !IsThisRole(pc.PlayerId) || !pc.IsAlive()) return;
 
         if (!AimAssist) return;
 
@@ -345,7 +343,7 @@ internal class Sniper : RoleBase
     {
         if (isForMeeting) return string.Empty;
         seen ??= seer;
-        var sniper = Utils.GetPlayerById(PlayerIdList[0]);
+        var sniper = Utils.GetPlayerById(PlayerIdList.First());
         if (!(sniper == seer) || !(sniper == seen)) return string.Empty;
         
         var seerId = seer.PlayerId;

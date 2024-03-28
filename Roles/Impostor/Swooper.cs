@@ -11,16 +11,18 @@ namespace TOHE.Roles.Impostor;
 
 internal class Swooper : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 4700;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem SwooperCooldown;
     private static OptionItem SwooperDuration;
     private static OptionItem SwooperVentNormallyOnCooldown;
 
-    private static List<byte> playerIdList = [];
     private static Dictionary<byte, long> InvisTime = [];
     private static Dictionary<byte, long> lastTime = [];
     private static Dictionary<byte, int> ventedId = [];
@@ -38,17 +40,15 @@ internal class Swooper : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        InvisTime = [];
-        lastTime = [];
-        ventedId = [];
+        playerIdList.Clear();
+        InvisTime.Clear();
+        lastTime.Clear();
+        ventedId.Clear();
         lastFixedTime = 0;
-        On = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
     }
     private static void SendRPC(PlayerControl pc)
     {

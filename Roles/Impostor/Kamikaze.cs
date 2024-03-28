@@ -1,5 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -10,17 +11,20 @@ namespace TOHE.Roles.Impostor;
 
 internal class Kamikaze : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 26900;
 
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem OptMaxMarked;
 
-    private static Dictionary<byte, byte> KamikazedList = [];
-    private static Dictionary<byte, int> MarkedLim = [];
+    private static readonly Dictionary<byte, byte> KamikazedList = [];
+    private static readonly Dictionary<byte, int> MarkedLim = [];
 
     public static void SetupCustomOption()
     {
@@ -33,9 +37,8 @@ internal class Kamikaze : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        MarkedLim = [];
-        KamikazedList = [];
+        MarkedLim.Clear();
+        KamikazedList.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -45,7 +48,7 @@ internal class Kamikaze : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-        On = true;
+        Playerids.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {

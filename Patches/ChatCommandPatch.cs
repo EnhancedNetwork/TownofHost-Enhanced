@@ -46,7 +46,7 @@ internal class ChatCommands
         var cancelVal = "";
         Main.isChatCommand = true;
         Logger.Info(text, "SendChat");
-        if ((Options.NewHideMsg.GetBool() || Blackmailer.On) && AmongUsClient.Instance.AmHost) // Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId)) && PlayerControl.LocalPlayer.IsAlive())
+        if ((Options.NewHideMsg.GetBool() || Blackmailer.HasEnabled) && AmongUsClient.Instance.AmHost) // Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId)) && PlayerControl.LocalPlayer.IsAlive())
         {
             ChatManager.SendMessage(PlayerControl.LocalPlayer, text);
         }
@@ -1456,7 +1456,7 @@ internal class ChatCommands
     {
         canceled = false;
         if (!AmongUsClient.Instance.AmHost) return;
-        if ((Options.NewHideMsg.GetBool() || Blackmailer.On) && player.PlayerId != 0) // Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && PlayerControl.LocalPlayer.IsAlive() && player.PlayerId != 0)
+        if ((Options.NewHideMsg.GetBool() || Blackmailer.HasEnabled) && player.PlayerId != 0) // Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && PlayerControl.LocalPlayer.IsAlive() && player.PlayerId != 0)
         {
             ChatManager.SendMessage(player, text);
         }

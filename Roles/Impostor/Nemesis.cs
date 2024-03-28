@@ -15,10 +15,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Nemesis : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 3600;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => LegacyNemesis.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem NemesisCanKillNum;
     public static OptionItem LegacyNemesis;
@@ -45,11 +48,11 @@ internal class Nemesis : RoleBase
     public override void Init()
     {
         NemesisRevenged.Clear();
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -8,20 +9,22 @@ namespace TOHE.Roles.Impostor;
 
 internal class Mastermind : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 4100;
 
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem TimeLimit;
     private static OptionItem Delay;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, long> ManipulatedPlayers = [];
-    private static Dictionary<byte, long> ManipulateDelays = [];
-    private static Dictionary<byte, float> TempKCDs = [];
+    private static readonly Dictionary<byte, long> ManipulatedPlayers = [];
+    private static readonly Dictionary<byte, long> ManipulateDelays = [];
+    private static readonly Dictionary<byte, float> TempKCDs = [];
 
     private static float ManipulateCD;
 
@@ -38,11 +41,10 @@ internal class Mastermind : RoleBase
 
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
-        ManipulatedPlayers = [];
-        ManipulateDelays = [];
-        TempKCDs = [];
+        playerIdList.Clear();
+        ManipulatedPlayers.Clear();
+        ManipulateDelays.Clear();
+        TempKCDs.Clear();
     }
 
     public override void Add(byte playerId)
@@ -54,7 +56,6 @@ internal class Mastermind : RoleBase
         var pc = GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-        On = true;
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -136,7 +137,7 @@ internal class Mastermind : RoleBase
             if (pc.IsAlive())
             {
                 Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                pc.SetRealKiller(GetPlayerById(playerIdList[0]));
+                pc.SetRealKiller(GetPlayerById(playerIdList.First()));
                 pc.RpcMurderPlayerV3(pc);
             }
         }
@@ -152,7 +153,7 @@ internal class Mastermind : RoleBase
 
         ManipulatedPlayers.Remove(killer.PlayerId);
 
-        var mastermind = GetPlayerById(playerIdList[0]);
+        var mastermind = GetPlayerById(playerIdList.First());
         mastermind?.Notify(string.Format(GetString("ManipulatedKilled"), target.GetRealName()), 4f);
         mastermind?.SetKillCooldown(time: KillCooldown.GetFloat());
         killer.Notify(GetString("SurvivedManipulation"));

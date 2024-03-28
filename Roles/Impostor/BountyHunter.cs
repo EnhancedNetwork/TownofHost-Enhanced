@@ -11,11 +11,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class BountyHunter : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 800;
-    private static List<byte> playerIdList = [];
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Handoff");
 
@@ -30,7 +32,7 @@ internal class BountyHunter : RoleBase
     private static bool ShowTargetArrow;
 
     private static Dictionary<byte, byte> Targets = [];
-    public static Dictionary<byte, float> ChangeTimer = [];
+    public static readonly Dictionary<byte, float> ChangeTimer = [];
 
     public static void SetupCustomOption()
     {
@@ -45,16 +47,14 @@ internal class BountyHunter : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        On = false;
+        playerIdList.Clear();
 
-        Targets = [];
-        ChangeTimer = [];
+        Targets.Clear();
+        ChangeTimer.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
 
         TargetChangeTime = OptionTargetChangeTime.GetFloat();
         SuccessKillCooldown = OptionSuccessKillCooldown.GetFloat();

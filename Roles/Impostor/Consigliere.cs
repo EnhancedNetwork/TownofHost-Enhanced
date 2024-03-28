@@ -1,6 +1,7 @@
 using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
 
@@ -8,16 +9,19 @@ namespace TOHE.Roles.Impostor;
 
 internal class Consigliere : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 3100;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem DivinationMaxCount;
 
-    private static Dictionary<byte, int> DivinationCount = [];
-    private static Dictionary<byte, List<byte>> DivinationTarget = [];
+    private static readonly Dictionary<byte, int> DivinationCount = [];
+    private static readonly Dictionary<byte, List<byte>> DivinationTarget = [];
 
     public static void SetupCustomOption()
     {
@@ -29,15 +33,15 @@ internal class Consigliere : RoleBase
     }
     public override void Init()
     {
-        DivinationCount = [];
-        DivinationTarget = [];
-        On = false;
+        DivinationCount.Clear();
+        DivinationTarget.Clear();
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         DivinationCount.TryAdd(playerId, DivinationMaxCount.GetInt());
         DivinationTarget.TryAdd(playerId, []);
-        On = true;
+        PlayerIds.Add(playerId);
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
