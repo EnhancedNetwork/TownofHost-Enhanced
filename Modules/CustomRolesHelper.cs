@@ -7,7 +7,6 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.AddOns.Impostor;
-using Rewired;
 
 namespace TOHE;
 
