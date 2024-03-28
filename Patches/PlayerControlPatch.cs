@@ -362,18 +362,6 @@ class CheckMurderPatch
         return true;
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
-class CheckSuccessMurder
-{
-    public static void Postfix([HarmonyArgument(0)] PlayerControl target)
-    {
-        var killer = target.GetRealKiller();
-
-        if (!killer.RpcCheckAndMurder(target, check: true) && !killer.Is(CustomRoles.Pestilence)) // Probably can just cancel it here lol
-            Logger.Warn($" Killer: {killer.GetRealName} murdered {target.GetRealName()} while target was under protection", "RpcMurderPlayer");
-
-    }
-}
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
@@ -529,6 +517,11 @@ class RpcMurderPlayerPatch
         messageWriter.WriteNetObject(target);
         messageWriter.Write((int)murderResultFlags);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        var killer = target.GetRealKiller();
+
+        if (!killer.RpcCheckAndMurder(target, check: true) && !killer.Is(CustomRoles.Pestilence))
+            Logger.Warn($" Killer: {killer.GetRealName} murdered {target.GetRealName()} while target was under protection", "RpcMurderPlayer");
 
         return false;
         // There is no need to include DecisionByHost. DecisionByHost will make client check protection locally and cause confusion.
