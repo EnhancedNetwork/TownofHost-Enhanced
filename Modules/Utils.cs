@@ -311,6 +311,10 @@ public static class Utils
             return string.Empty;
 
         string mode = GetString($"Chance{role.GetMode()}").RemoveHtmlTags();
+
+        if (role.IsAdditionRole())
+            mode = GetString($"Chance{(Options.CustomAdtRoleSpawnRate.TryGetValue(role, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}").RemoveHtmlTags();
+
         return parentheses ? $"({mode})" : mode;
     }
     public static string GetDeathReason(PlayerState.DeathReason status)
@@ -1180,6 +1184,7 @@ public static class Utils
             string mode = GetString($"Chance{role.GetMode()}");
             if (role.IsEnable())
             {
+                if (role.IsAdditionRole()) mode = GetString($"Chance{(Options.CustomAdtRoleSpawnRate.TryGetValue(role, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}");
                 var roleDisplay = $"\n{GetRoleName(role)}: {mode} x{role.GetCount()}";
                 if (role.IsAdditionRole()) addonsb.Add(roleDisplay);
                 else if (role.IsCrewmate()) crewsb.Add(roleDisplay);

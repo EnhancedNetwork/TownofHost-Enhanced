@@ -1010,9 +1010,9 @@ static class ExtendedPlayerControl
             case CustomRoles.Admirer:
                 Admirer.SetKillCooldown(player.PlayerId);
                 break;
-        /*    case CustomRoles.Imitator:
+            case CustomRoles.Imitator:
                 Imitator.SetKillCooldown(player.PlayerId);
-                break; */
+                break;
             case CustomRoles.Infectious:
                 Infectious.SetKillCooldown(player.PlayerId);
                 break;
