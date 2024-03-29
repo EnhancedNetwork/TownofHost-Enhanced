@@ -16,6 +16,7 @@ internal class Taskinator : RoleBase
     public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
+    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     private static OptionItem TaskMarkPerRoundOpt;
 

@@ -92,7 +92,7 @@ public abstract class RoleBase
     // <summary>
     /// The role's tasks are needed for a task win
     /// </summary>
-    public virtual bool HasTasks(byte player, CustomRoles role) => role.IsCrewmate() && !role.IsTasklessCrewmate();
+    public virtual bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (ForRecompute ? !player.Object.IsAnySubRole(x => x.IsConverted()) : true);
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>

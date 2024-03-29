@@ -456,7 +456,7 @@ public static class Utils
         if (p.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
         var role = States.MainRole;
 
-        if (!States.RoleClass.HasTasks(p.PlayerId, role))
+        if (!States.RoleClass.HasTasks(p, role, ForRecompute))
             hasTasks = false;
 
         switch (role)
@@ -464,22 +464,10 @@ public static class Utils
             case CustomRoles.GM:
                 hasTasks = false;
                 break;
-            case CustomRoles.Workaholic:
-            case CustomRoles.Terrorist:
             case CustomRoles.Sunnyboy:
-            case CustomRoles.Convict:
-            case CustomRoles.Opportunist:
-            case CustomRoles.Taskinator:
-            case CustomRoles.Phantom:
                 if (ForRecompute)
                     hasTasks = false;
                     break;
-            case CustomRoles.Crewpostor:
-                if (ForRecompute && !p.IsDead)
-                    hasTasks = false;
-                if (p.IsDead)
-                    hasTasks = false;
-                break;
             default:
                 if (role.IsImpostor() || role.IsNK()) hasTasks = false;
                 break;
