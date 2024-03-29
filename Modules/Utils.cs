@@ -509,7 +509,6 @@ public static class Utils
         Main.RoleClass.Add(role, role.CreateRoleClass(IsToAccess: true));
         return Main.RoleClass[role];
     }
-    public static List<RoleBase> EnabledRoles => Main.RoleClass.Values.Where(x => x.IsEnable).ToList();
     
     public static string GetProgressText(PlayerControl pc)
     {

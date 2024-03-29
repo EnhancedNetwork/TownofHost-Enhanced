@@ -148,6 +148,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
     
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
+    public static List<RoleBase> EnabledRoles => RoleClass.Values.Where(x => x.IsEnable).ToList();
 
     public static readonly Dictionary<byte, int> GuesserGuessed = [];
     public static readonly Dictionary<byte, long> AllKillers = [];

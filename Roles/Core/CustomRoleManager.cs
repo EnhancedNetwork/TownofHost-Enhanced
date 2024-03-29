@@ -73,7 +73,7 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
-        return !Utils.EnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target));
+        return !Main.EnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target));
     }
 
     /// <summary>
