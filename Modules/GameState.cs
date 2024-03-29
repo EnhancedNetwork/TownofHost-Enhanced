@@ -159,7 +159,7 @@ public class PlayerState(byte playerId)
             SubRoles.Add(role);
         if (role.IsConverted())
         {
-            SubRoles.Where(AddON => AddON != role).Do(x => SubRoles.Remove(x));
+            SubRoles.Where(AddON => AddON != role && AddON.IsConverted()).Do(x => SubRoles.Remove(x));
             SubRoles.Remove(CustomRoles.Rogue);
             SubRoles.Remove(CustomRoles.Rascal);
             SubRoles.Remove(CustomRoles.Loyal);
