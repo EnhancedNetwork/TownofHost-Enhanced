@@ -61,8 +61,12 @@ public static class OptionShower
                     if (kvp.Value.GameMode is CustomGameMode.Standard or CustomGameMode.All && kvp.Value.GetBool()) //スタンダードか全てのゲームモードで表示する役職
                     {
                         string mode = kvp.Value.GetString();
-                        if (kvp.Key.IsAdditionRole())
-                            mode = GetString($"Chance{(Options.CustomAdtRoleSpawnRate.TryGetValue(kvp.Key, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}");
+                        if (kvp.Key.IsAdditionRole() && !(kvp.Key.Is(CustomRoles.LastImpostor) || kvp.Key.Is(CustomRoles.Workhorse)))
+                            {
+                                string chance = $"{(Options.CustomAdtRoleSpawnRate.TryGetValue(kvp.Key, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}";
+                                if (kvp.Key.Is(CustomRoles.Lovers)) chance = Options.LoverSpawnChances.GetInt().ToString();
+                                mode = GetString($"Chance{chance}");
+                            }
                         sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {mode}×{kvp.Key.GetCount()}\n"); 
                     }
                 pages.Add(sb.ToString() + "\n\n");

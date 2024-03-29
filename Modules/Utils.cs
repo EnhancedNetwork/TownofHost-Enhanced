@@ -312,9 +312,13 @@ public static class Utils
 
         string mode = GetString($"Chance{role.GetMode()}").RemoveHtmlTags();
 
-        if (role.IsAdditionRole())
-            mode = GetString($"Chance{(Options.CustomAdtRoleSpawnRate.TryGetValue(role, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}").RemoveHtmlTags();
-
+        if (role.IsAdditionRole() && !(role.Is(CustomRoles.LastImpostor) || role.Is(CustomRoles.Workhorse)))
+        {
+            string chance = $"{(Options.CustomAdtRoleSpawnRate.TryGetValue(role, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}";
+            if (role.Is(CustomRoles.Lovers)) chance = Options.LoverSpawnChances.GetInt().ToString();
+            mode = GetString($"Chance{chance}");
+        }
+        
         return parentheses ? $"({mode})" : mode;
     }
     public static string GetDeathReason(PlayerState.DeathReason status)
@@ -1184,7 +1188,12 @@ public static class Utils
             string mode = GetString($"Chance{role.GetMode()}");
             if (role.IsEnable())
             {
-                if (role.IsAdditionRole()) mode = GetString($"Chance{(Options.CustomAdtRoleSpawnRate.TryGetValue(role, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}");
+                if (role.IsAdditionRole() && !(role.Is(CustomRoles.LastImpostor) || role.Is(CustomRoles.Workhorse)))
+                {
+                    string chance = $"{(Options.CustomAdtRoleSpawnRate.TryGetValue(role, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}";
+                    if (role.Is(CustomRoles.Lovers)) chance = Options.LoverSpawnChances.GetInt().ToString();
+                    mode = GetString($"Chance{chance}");
+                }
                 var roleDisplay = $"\n{GetRoleName(role)}: {mode} x{role.GetCount()}";
                 if (role.IsAdditionRole()) addonsb.Add(roleDisplay);
                 else if (role.IsCrewmate()) crewsb.Add(roleDisplay);
