@@ -57,7 +57,8 @@ internal class Trapster : RoleBase
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
         var target  = deadBody?.Object;
-        
+        var Trapsters = Playerids.GetPlayerListByIds();
+
         // if trapster dead
         if (target.Is(CustomRoles.Trapster) && TrapTrapsterBody.GetBool() && !reporter.Is(CustomRoles.Pestilence))
         {
@@ -78,7 +79,8 @@ internal class Trapster : RoleBase
         }
 
         // if reporter try reported trap body
-        if (BoobyTrapBody.Contains(target.PlayerId) && reporter.IsAlive() && !reporter.Is(CustomRoles.Pestilence))
+        if (BoobyTrapBody.Contains(target.PlayerId) && reporter.IsAlive()
+            && !reporter.Is(CustomRoles.Pestilence) && Trapsters.All(Trapi => Trapi.RpcCheckAndMurder(reporter, true)))
         {
             var killerId = target.PlayerId;
             
