@@ -136,6 +136,7 @@ internal class Quizmaster : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (!killer.RpcCheckAndMurder(target, true)) return false;
         if (AlreadyMarked == false)
         {
             //allowedVenting = false;
