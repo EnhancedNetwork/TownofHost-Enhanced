@@ -97,7 +97,7 @@ internal class Seeker : RoleBase
 
         Targets[seekerId] = targetId;
     }
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (GetTarget(killer) == target.PlayerId)
         {//if the target is correct
