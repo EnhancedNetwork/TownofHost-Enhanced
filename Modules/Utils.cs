@@ -24,6 +24,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;
+using System.Threading.Channels;
 
 namespace TOHE;
 
@@ -311,12 +312,11 @@ public static class Utils
             return string.Empty;
 
         string mode = GetString($"Chance{role.GetMode()}").RemoveHtmlTags();
-
-        if (role.IsAdditionRole() && !(role.Is(CustomRoles.LastImpostor) || role.Is(CustomRoles.Workhorse)))
+        if (role.Is(CustomRoles.Lovers)) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
+        else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
         {
-            string chance = $"{(Options.CustomAdtRoleSpawnRate.TryGetValue(role, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}";
-            if (role.Is(CustomRoles.Lovers)) chance = Options.LoverSpawnChances.GetInt().ToString();
-            mode = GetString($"Chance{chance}");
+            mode = GetString($"Chance{Options.CustomAdtRoleSpawnRate[role].GetFloat()}");
+            
         }
         
         return parentheses ? $"({mode})" : mode;
@@ -1188,13 +1188,13 @@ public static class Utils
             string mode = GetString($"Chance{role.GetMode()}");
             if (role.IsEnable())
             {
-                if (role.IsAdditionRole() && !(role.Is(CustomRoles.LastImpostor) || role.Is(CustomRoles.Workhorse)))
+                if (role.Is(CustomRoles.Lovers)) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
+                else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
                 {
-                    string chance = $"{(Options.CustomAdtRoleSpawnRate.TryGetValue(role, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}";
-                    if (role.Is(CustomRoles.Lovers)) chance = Options.LoverSpawnChances.GetInt().ToString();
-                    mode = GetString($"Chance{chance}");
+                    mode = GetString($"Chance{Options.CustomAdtRoleSpawnRate[role].GetFloat()}");
+
                 }
-                var roleDisplay = $"\n{GetRoleName(role)}: {mode} x{role.GetCount()}";
+                var roleDisplay = $"{GetRoleName(role)}: {mode} x{role.GetCount()}";
                 if (role.IsAdditionRole()) addonsb.Add(roleDisplay);
                 else if (role.IsCrewmate()) crewsb.Add(roleDisplay);
                 else if (role.IsImpostor() || role.IsMadmate()) impsb.Add(roleDisplay);
@@ -1207,10 +1207,10 @@ public static class Utils
         neutralsb.Sort();
         addonsb.Sort();
         
-        SendMessage(string.Join("", impsb) + "\n.", PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
-        SendMessage(string.Join("", crewsb) + "\n.", PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
-        SendMessage(string.Join("", neutralsb) + "\n.", PlayerId, GetString("NeutralRoles"));
-        SendMessage(string.Join("", addonsb) + "\n.", PlayerId, GetString("AddonRoles"));
+        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
+        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
+        SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"));
+        SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"));
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
