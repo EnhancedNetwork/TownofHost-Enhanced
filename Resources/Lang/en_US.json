@@ -63,6 +63,7 @@
   "ShowOnlyEnabledRolesInGuesserUI": "Show Only Enabled Roles In Guesser UI",
   "CrewCanGuessCrew": "<color=#8cffff>Crewmates</color> Can Guess <color=#8cffff>Crewmate</color> Roles",
   "ImpCanGuessImp": "<color=#ff1919>Impostors</color> Can Guess <color=#ff1919>Impostor</color> Roles",
+  "GuessImmune": "Sorry, but target is immune to being guessed!",
 
 
   "GM": "Game Master",

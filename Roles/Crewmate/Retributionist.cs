@@ -166,6 +166,12 @@ internal class Retributionist : RoleBase
             else pc.ShowPopUp(GetString("GuessSolsticer"));
             return true;
         }
+        else if (!pc.RpcCheckAndMurder(target, true))
+        {
+            if (!isUI) SendMessage(GetString("GuessImmune"), pc.PlayerId);
+            else pc.ShowPopUp(GetString("GuessImmune"));
+            return true;
+        }
 
         Logger.Info($"{pc.GetNameWithRole()} 复仇了 {target.GetNameWithRole()}", "Retributionist");
 
