@@ -638,16 +638,6 @@ static class ExtendedPlayerControl
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void RpcMurderPlayerV3(this PlayerControl killer, PlayerControl target)
-    {
-        if (killer.PlayerId == target.PlayerId && killer.shapeshifting) 
-        {
-            _ = new LateTask(() => { killer.RpcMurderPlayer(target, true); }, 1.5f, "Shapeshifting Suicide Delay");
-            return;
-        }
-
-        killer.RpcMurderPlayer(target, true);
-    }
     public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
     {
         var RealKiller = target.GetRealKiller() ? target.GetRealKiller() : killer;

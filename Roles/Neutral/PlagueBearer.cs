@@ -138,15 +138,14 @@ internal class PlagueBearer : RoleBase
         var (countItem1, countItem2) = PlaguedPlayerCount(player.PlayerId);
         return countItem1 >= countItem2;
     }
-
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.GetCustomRole() == CustomRoles.Pestilence) return true;
 
         if (IsPlagued(killer.PlayerId, target.PlayerId))
         {
             killer.Notify(GetString("PlagueBearerAlreadyPlagued"));
-            return false;
+            return true;
         }
         PlaguedList[killer.PlayerId].Add(target.PlayerId);
         SendRPC(killer, target);
@@ -156,7 +155,11 @@ internal class PlagueBearer : RoleBase
         killer.SetKillCooldown();
 
         Logger.Info($"kill cooldown {PlagueBearerCD[killer.PlayerId]}", "PlagueBearer");
-        return false;
+        return true;
+    }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        return killer.Is(CustomRoles.Pestilence);
     }
 
     public override string GetProgressText(byte playerId, bool comms)

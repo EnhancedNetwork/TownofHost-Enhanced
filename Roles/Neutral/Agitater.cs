@@ -159,7 +159,7 @@ internal class Agitater : RoleBase
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);
                 var KillRange = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
-                if (min.Value <= KillRange && !player.inVent && !target.inVent)
+                if (min.Value <= KillRange && !player.inVent && !target.inVent && player.RpcCheckAndMurder(target, true))
                 {
                     PassBomb(player, target);
                 }
