@@ -78,8 +78,8 @@ internal class Jinx : RoleBase
        
         JinxSpellCount[target.PlayerId] -= 1;
         SendRPCJinxSpellCount(target.PlayerId);
-        
-        if (killAttacker.GetBool())
+
+        if (killAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
         {
             killer.SetRealKiller(target);
             Logger.Info($"{target.GetNameWithRole()} : {JinxSpellCount[target.PlayerId]}回目", "Jinx");
