@@ -139,7 +139,7 @@ internal class Taskinator : RoleBase
 
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                     player.SetRealKiller(taskinatorPC);
-                    player.RpcMurderPlayerV3(player);
+                    player.RpcMurderPlayer(player);
 
                     taskIndex[taskinatorId].Remove(task.Index);
                     SendRPC(taskinatorID : taskinatorId, taskIndex:task.Index, isKill : true);

@@ -90,7 +90,7 @@ internal class Necromancer : RoleBase
         }
         if (seconds <= 0 || GameStates.IsMeeting && player.IsAlive()) 
         { 
-            player.RpcMurderPlayerV3(player); 
+            player.RpcMurderPlayer(player); 
             player.SetRealKiller(killer);
             Killer = null; 
             return; 
@@ -116,7 +116,7 @@ internal class Necromancer : RoleBase
         }
         else
         {
-            killer.RpcMurderPlayerV3(killer);
+            killer.RpcMurderPlayer(killer);
             return false;
         }
     }

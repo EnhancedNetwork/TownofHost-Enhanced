@@ -185,7 +185,7 @@ internal class Retributionist : RoleBase
             }
             else
             {
-                target.RpcMurderPlayerV3(target);
+                target.RpcMurderPlayer(target);
                 NotifyRoles(NoCache: true);
             }
             target.SetRealKiller(pc);

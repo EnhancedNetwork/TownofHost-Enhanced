@@ -46,7 +46,7 @@ internal class KillingMachine : RoleBase
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        killer.RpcMurderPlayerV3(target);
+        killer.RpcMurderPlayer(target);
         killer.ResetKillCooldown();
         return false;
     }

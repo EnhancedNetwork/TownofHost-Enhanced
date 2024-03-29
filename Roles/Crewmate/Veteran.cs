@@ -69,14 +69,14 @@ internal class Veteran : RoleBase
                 if (!killer.Is(CustomRoles.Pestilence))
                 {
                     killer.SetRealKiller(target);
-                    target.RpcMurderPlayerV3(killer);
+                    target.RpcMurderPlayer(killer);
                     Logger.Info($"{target.GetRealName()} 老兵反弹击杀：{killer.GetRealName()}", "Veteran Kill");
                     return false;
                 }
                 if (killer.Is(CustomRoles.Pestilence))
                 {
                     target.SetRealKiller(killer);
-                    killer.RpcMurderPlayerV3(target);
+                    killer.RpcMurderPlayer(target);
                     Logger.Info($"{target.GetRealName()} 老兵反弹击杀：{target.GetRealName()}", "Pestilence Reflect");
                     return false;
                 }

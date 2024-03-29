@@ -76,7 +76,7 @@ internal class Terrorist : RoleBase
                     pc.SetRealKiller(terrorist.Object);
                     Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                     Main.PlayerStates[pc.PlayerId].SetDead();
-                    pc.RpcMurderPlayerV3(pc);
+                    pc.RpcMurderPlayer(pc);
                 }
             }
             if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))

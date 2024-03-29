@@ -84,7 +84,7 @@ internal class Jinx : RoleBase
             killer.SetRealKiller(target);
             Logger.Info($"{target.GetNameWithRole()} : {JinxSpellCount[target.PlayerId]}回目", "Jinx");
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
-            killer.RpcMurderPlayerV3(killer);
+            killer.RpcMurderPlayer(killer);
         }
         return false;
     }

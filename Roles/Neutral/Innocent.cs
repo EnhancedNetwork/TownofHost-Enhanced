@@ -36,7 +36,7 @@ internal class Innocent : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        target.RpcMurderPlayerV3(killer);
+        target.RpcMurderPlayer(killer);
         return false;
     }
 

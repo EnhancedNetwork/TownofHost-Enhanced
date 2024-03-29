@@ -96,7 +96,7 @@ internal class Demon : RoleBase
         if (PlayerHealth[target.PlayerId] - Damage.GetInt() < 1)
         {
             PlayerHealth.Remove(target.PlayerId);
-            killer.RpcMurderPlayerV3(target);
+            killer.RpcMurderPlayer(target);
             Utils.NotifyRoles(SpecifySeer: killer);
             return false;
         }

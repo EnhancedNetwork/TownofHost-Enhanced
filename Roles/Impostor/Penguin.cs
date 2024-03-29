@@ -114,7 +114,7 @@ internal class Penguin : RoleBase
             if (target != AbductVictim)
             {
                 // During an abduction, only the abductee can be killed.
-                killer?.RpcMurderPlayerV3(AbductVictim);
+                killer?.RpcMurderPlayer(AbductVictim);
                 killer?.ResetKillCooldown();
                 doKill = false;
             }
@@ -146,13 +146,13 @@ internal class Penguin : RoleBase
         // If you meet a meeting with time running out, kill it even if you're on a ladder.
         if (AbductVictim != null && AbductTimer <= 0f)
         {
-            Utils.GetPlayerById(playerIdList.First())?.RpcMurderPlayerV3(AbductVictim);
+            Utils.GetPlayerById(playerIdList.First())?.RpcMurderPlayer(AbductVictim);
         }
         if (MeetingKill)
         {
             if (!AmongUsClient.Instance.AmHost) return;
             if (AbductVictim == null) return;
-            Utils.GetPlayerById(playerIdList.First())?.RpcMurderPlayerV3(AbductVictim);
+            Utils.GetPlayerById(playerIdList.First())?.RpcMurderPlayer(AbductVictim);
             RemoveVictim();
         }
     }

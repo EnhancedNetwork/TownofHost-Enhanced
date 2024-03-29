@@ -65,7 +65,7 @@ internal class Trapster : RoleBase
 
             Main.PlayerStates[reporter.PlayerId].deathReason = PlayerState.DeathReason.Trap;
             reporter.SetRealKiller(target);
-            reporter.RpcMurderPlayerV3(reporter);
+            reporter.RpcMurderPlayer(reporter);
             
             RPC.PlaySoundRPC(killerId, Sounds.KillSound);
             
@@ -84,7 +84,7 @@ internal class Trapster : RoleBase
             
             Main.PlayerStates[reporter.PlayerId].deathReason = PlayerState.DeathReason.Trap;
             reporter.SetRealKiller(target);
-            reporter.RpcMurderPlayerV3(reporter);
+            reporter.RpcMurderPlayer(reporter);
             
             RPC.PlaySoundRPC(killerId, Sounds.KillSound);
             if (TrapConsecutiveBodies.GetBool())

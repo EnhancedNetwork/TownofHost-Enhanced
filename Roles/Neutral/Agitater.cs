@@ -82,7 +82,7 @@ internal class Agitater : RoleBase
         if (AgitaterAutoReportBait.GetBool() && target.Is(CustomRoles.Bait)) return true;
         if (target.Is(CustomRoles.Pestilence))
         {
-            target.RpcMurderPlayerV3(killer);
+            target.RpcMurderPlayer(killer);
             ResetBomb();
             return false;
         }
@@ -106,7 +106,7 @@ internal class Agitater : RoleBase
                 {
                     Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
                     pc.SetRealKiller(Utils.GetPlayerById(playerIdList[0]));
-                    pc.RpcMurderPlayerV3(pc);
+                    pc.RpcMurderPlayer(pc);
                     Logger.Info($"{killer.GetNameWithRole()}  bombed {pc.GetNameWithRole()} bomb cd complete", "Agitater");
                     ResetBomb();
                 }
@@ -179,7 +179,7 @@ internal class Agitater : RoleBase
 
         if (target.Is(CustomRoles.Pestilence))
         {
-            target.RpcMurderPlayerV3(player);
+            target.RpcMurderPlayer(player);
             ResetBomb();
             return;
         }

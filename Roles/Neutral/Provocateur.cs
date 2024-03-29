@@ -46,8 +46,8 @@ internal class Provocateur : RoleBase
             return false;
         }
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
-        killer.RpcMurderPlayerV3(target);
-        killer.RpcMurderPlayerV3(killer);
+        killer.RpcMurderPlayer(target);
+        killer.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
         Provoked.TryAdd(killer.PlayerId, target.PlayerId);
         return false;

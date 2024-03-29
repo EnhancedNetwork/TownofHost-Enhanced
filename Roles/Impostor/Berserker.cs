@@ -112,7 +112,7 @@ internal class Berserker : RoleBase
             target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
             
             Main.PlayerStates[target.PlayerId].SetDead();
-            target.RpcMurderPlayerV3(target);
+            target.RpcMurderPlayer(target);
             target.SetRealKiller(killer);
 
             killer.SetKillCooldownV2();
@@ -136,7 +136,7 @@ internal class Berserker : RoleBase
                 {
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                     player.SetRealKiller(killer);
-                    player.RpcMurderPlayerV3(player);
+                    player.RpcMurderPlayer(player);
                 }
             }
         }

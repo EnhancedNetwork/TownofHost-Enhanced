@@ -107,7 +107,7 @@ internal class Kamikaze : RoleBase
             } 
             else
             {
-                killer.RpcMurderPlayerV3(target);
+                killer.RpcMurderPlayer(target);
             }
         });
         
@@ -131,7 +131,7 @@ internal class Kamikaze : RoleBase
             {
                 Main.PlayerStates[kamikameha.PlayerId].deathReason = PlayerState.DeathReason.Targeted;
                 kamikameha.SetRealKiller(kami);
-                kamikameha.RpcMurderPlayerV3(kamikameha);
+                kamikameha.RpcMurderPlayer(kamikameha);
                 // Logger.Info($"{alivePlayer.GetNameWithRole()} is the killer of {kamikameha.GetNameWithRole()}", "Kamikaze"); -- Works fine
             }
 

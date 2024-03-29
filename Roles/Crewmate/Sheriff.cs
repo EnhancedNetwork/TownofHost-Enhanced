@@ -156,7 +156,7 @@ internal class Sheriff : RoleBase
             return true;
         }
         Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-        killer.RpcMurderPlayerV3(killer);
+        killer.RpcMurderPlayer(killer);
         return MisfireKillsTarget.GetBool();
     }
     public override string GetProgressText(byte playerId, bool computervirus)

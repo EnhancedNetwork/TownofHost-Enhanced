@@ -202,7 +202,7 @@ internal class Deathpact : RoleBase
         
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
         target.SetRealKiller(deathpact);
-        target.RpcMurderPlayerV3(target);
+        target.RpcMurderPlayer(target);
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)

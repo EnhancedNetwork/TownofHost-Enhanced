@@ -76,7 +76,7 @@ internal class Workaholic : RoleBase
                 Main.PlayerStates[pc.PlayerId].deathReason = pc.PlayerId == player.PlayerId ?
                     PlayerState.DeathReason.Overtired : PlayerState.DeathReason.Ashamed;
 
-                pc.RpcMurderPlayerV3(pc);
+                pc.RpcMurderPlayer(pc);
                 pc.SetRealKiller(player);
             }
         }

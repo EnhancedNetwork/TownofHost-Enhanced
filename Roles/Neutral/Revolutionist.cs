@@ -230,7 +230,7 @@ internal class Revolutionist : RoleBase
                     {
                         rv_target.SetRealKiller(player);
                         Main.PlayerStates[rvTargetId].deathReason = PlayerState.DeathReason.Sacrifice;
-                        player.RpcMurderPlayerV3(rv_target);
+                        player.RpcMurderPlayer(rv_target);
                         Main.PlayerStates[rvTargetId].SetDead();
                         Logger.Info($"Revolutionist: {player.GetNameWithRole()} killed by {rv_target.GetNameWithRole()}", "Revolutionist");
                     }
@@ -278,13 +278,13 @@ internal class Revolutionist : RoleBase
                         {
                             pc.Data.IsDead = true;
                             Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-                            pc.RpcMurderPlayerV3(pc);
+                            pc.RpcMurderPlayer(pc);
                             Main.PlayerStates[pc.PlayerId].SetDead();
                             NotifyRoles(SpecifySeer: pc);
                         }
                         player.Data.IsDead = true;
                         Main.PlayerStates[playerId].deathReason = PlayerState.DeathReason.Sacrifice;
-                        player.RpcMurderPlayerV3(player);
+                        player.RpcMurderPlayer(player);
                         Main.PlayerStates[playerId].SetDead();
                     }
                     else

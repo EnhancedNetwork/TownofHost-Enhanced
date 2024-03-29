@@ -96,12 +96,12 @@ internal class Hater : RoleBase
         {
             target.SetRealKiller(killer);
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-            killer.RpcMurderPlayerV3(target); // Murder the target only if the setting is on and the target can be killed
+            killer.RpcMurderPlayer(target); // Murder the target only if the setting is on and the target can be killed
 
         }
 
         Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-        killer.RpcMurderPlayerV3(killer);
+        killer.RpcMurderPlayer(killer);
         
         Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "FFF");
         return false;

@@ -136,7 +136,7 @@ internal class Crewpostor : RoleBase
                 else
                 {
                     target.SetRealKiller(player);
-                    player.RpcMurderPlayerV3(target);
+                    player.RpcMurderPlayer(target);
                     player.RpcGuardAndKill();
                     Logger.Info("lunge mode kill", "Crewpostor");
                 }
@@ -145,7 +145,7 @@ internal class Crewpostor : RoleBase
             else
             {
                 player.SetRealKiller(target);
-                target.RpcMurderPlayerV3(player);
+                target.RpcMurderPlayer(player);
                 player.RpcGuardAndKill();
                 Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Pestilence Reflect");
             }

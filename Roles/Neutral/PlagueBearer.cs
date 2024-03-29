@@ -181,7 +181,7 @@ internal class PlagueBearer : RoleBase
         if (!PestilenceList.Contains(target.PlayerId)) return false;
 
         killer.SetRealKiller(target);
-        target.RpcMurderPlayerV3(killer);
+        target.RpcMurderPlayer(killer);
         return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

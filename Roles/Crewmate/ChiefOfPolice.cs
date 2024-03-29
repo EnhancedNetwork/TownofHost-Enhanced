@@ -95,7 +95,7 @@ public static class ChiefOfPolice
         {
             //if (ChiefOfPoliceCountMode.GetInt() == 1)
             //{
-            //    killer.RpcMurderPlayerV3(killer);
+            //    killer.RpcMurderPlayer(killer);
             //    return true;
             //}
             //if (ChiefOfPoliceCountMode.GetInt() == 2)

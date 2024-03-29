@@ -42,7 +42,7 @@ internal class Scavenger : RoleBase
             () =>
             {
                 target.SetRealKiller(killer);
-                target.RpcMurderPlayerV3(target);
+                target.RpcMurderPlayer(target);
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), Translator.GetString("KilledByScavenger")), time: 8f);
             },
             0.5f, "Scavenger Kill");

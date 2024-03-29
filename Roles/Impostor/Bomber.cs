@@ -115,7 +115,7 @@ internal class Bomber : RoleBase
 
             Main.PlayerStates[tg.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
             tg.SetRealKiller(shapeshifter);
-            tg.RpcMurderPlayerV3(tg);
+            tg.RpcMurderPlayer(tg);
         }
 
         var timer = shapeshiftIsHidden ? 0.3f : 1.5f;
@@ -127,7 +127,7 @@ internal class Bomber : RoleBase
                 if (totalAlive > 0 && !GameStates.IsEnded)
                 {
                     Main.PlayerStates[shapeshifter.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                    shapeshifter.RpcMurderPlayerV3(shapeshifter);
+                    shapeshifter.RpcMurderPlayer(shapeshifter);
                 }
                 Utils.NotifyRoles();
             }, timer, $"{playerRole} was suicide");

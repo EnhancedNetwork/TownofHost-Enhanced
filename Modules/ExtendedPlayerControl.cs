@@ -640,17 +640,6 @@ static class ExtendedPlayerControl
     }
     public static void RpcMurderPlayerV3(this PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Pestilence) && killer != target) { killer.SetRealKiller(target); (killer, target) = (target, killer); Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; goto postPest; }
-        else if (target.Is(CustomRoles.Pestilence) && target.GetRealKiller() != null && target.GetRealKiller() != target) { var truekill = target.GetRealKiller(); (killer, target) = (target, truekill); Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; goto postPest; }
-        else if(target.Is(CustomRoles.Pestilence)) { return; }
-        postPest:
-
-        if (Solsticer.OnCheckRpcMurderv3(killer, target))
-            return;
-
-        if (target.Is(CustomRoles.Susceptible))
-            Susceptible.CallEnabledAndChange(target);
-
         if (killer.PlayerId == target.PlayerId && killer.shapeshifting)
         {
             _ = new LateTask(() => { killer.RpcMurderPlayer(target, true); }, 1.5f, "Shapeshifting Suicide Delay");
@@ -658,19 +647,6 @@ static class ExtendedPlayerControl
         }
 
         killer.RpcMurderPlayer(target, true);
-    }
-    public static void RpcMurderPlayerV2(this PlayerControl killer, PlayerControl target)
-    {
-        if (target == null) target = killer;
-        if (AmongUsClient.Instance.AmClient)
-        {
-            killer.MurderPlayer(target, ResultFlags);
-        }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
-        messageWriter.WriteNetObject(target);
-        messageWriter.Write((int)ResultFlags);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-        Utils.NotifyRoles();
     }
     public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
     {

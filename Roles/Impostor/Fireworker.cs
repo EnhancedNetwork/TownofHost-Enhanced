@@ -150,7 +150,7 @@ internal class Fireworker : RoleBase
                         {
                             Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                             player.SetRealKiller(shapeshifter);
-                            player.RpcMurderPlayerV3(player);
+                            player.RpcMurderPlayer(player);
                         }
                     }
                 }
@@ -160,7 +160,7 @@ internal class Fireworker : RoleBase
                     if (totalAlive != 1)
                     {
                         Main.PlayerStates[shapeshifterId].deathReason = PlayerState.DeathReason.Misfire;
-                        shapeshifter.RpcMurderPlayerV3(shapeshifter);
+                        shapeshifter.RpcMurderPlayer(shapeshifter);
                     }
                     shapeshifter.MarkDirtySettings();
                 }

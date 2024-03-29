@@ -119,7 +119,7 @@ internal class Mastermind : RoleBase
                 TempKCDs.Remove(x.Key);
                 player.SetRealKiller(mastermind);
                 Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                player.RpcMurderPlayerV3(player);
+                player.RpcMurderPlayer(player);
                 RPC.PlaySoundRPC(mastermind.PlayerId, Sounds.KillSound);
             }
 
@@ -138,7 +138,7 @@ internal class Mastermind : RoleBase
             {
                 Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
                 pc.SetRealKiller(GetPlayerById(playerIdList.First()));
-                pc.RpcMurderPlayerV3(pc);
+                pc.RpcMurderPlayer(pc);
             }
         }
         ManipulateDelays.Clear();
@@ -160,12 +160,12 @@ internal class Mastermind : RoleBase
 
         if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.Mastermind))
         {
-            target.RpcMurderPlayerV3(killer);
+            target.RpcMurderPlayer(killer);
             TempKCDs.Remove(killer.PlayerId);
             return false;
         }
 
-        killer.RpcMurderPlayerV3(target);
+        killer.RpcMurderPlayer(target);
 
         _ = new LateTask(() =>
         {

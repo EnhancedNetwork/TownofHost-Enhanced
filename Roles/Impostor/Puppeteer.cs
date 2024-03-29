@@ -137,7 +137,7 @@ internal class Puppeteer : RoleBase
                         var puppeteerId = PuppeteerList[puppet.PlayerId];
                         RPC.PlaySoundRPC(puppeteerId, Sounds.KillSound);
                         target.SetRealKiller(Utils.GetPlayerById(puppeteerId));
-                        puppet.RpcMurderPlayerV3(target);
+                        puppet.RpcMurderPlayer(target);
                         Utils.MarkEveryoneDirtySettings();
                         PuppeteerList.Remove(puppet.PlayerId);
                         SendRPC(byte.MaxValue, puppet.PlayerId, 2);
@@ -149,7 +149,7 @@ internal class Puppeteer : RoleBase
                             
                             Main.PlayerStates[puppet.PlayerId].deathReason = PlayerState.DeathReason.Drained;
                             puppet.SetRealKiller(Utils.GetPlayerById(puppeteerId));
-                            puppet.RpcMurderPlayerV3(puppet);
+                            puppet.RpcMurderPlayer(puppet);
                         }
                     }
                 }

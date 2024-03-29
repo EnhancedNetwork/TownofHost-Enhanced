@@ -132,7 +132,7 @@ internal class Deceiver : RoleBase
         if (killer == null) return false;
         
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-        target.RpcMurderPlayerV3(target);
+        target.RpcMurderPlayer(target);
         target.SetRealKiller(killer);
 
         Logger.Info($"The customer {target.GetRealName()} of {pc.GetRealName()}, a counterfeiter, commits suicide by using counterfeits", "Deceiver");

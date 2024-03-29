@@ -66,7 +66,7 @@ internal class Werewolf : RoleBase
                 {
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Mauled;
                     player.SetRealKiller(killer);
-                    player.RpcMurderPlayerV3(player);
+                    player.RpcMurderPlayer(player);
                 }
             }
         }, 0.1f, "Werewolf Maul Bug Fix");

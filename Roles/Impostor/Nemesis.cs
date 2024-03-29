@@ -168,7 +168,7 @@ internal class Nemesis : RoleBase
             }
             else
             {
-                target.RpcMurderPlayerV3(target);
+                target.RpcMurderPlayer(target);
                 Utils.NotifyRoles(NoCache: true);
             }
             target.SetRealKiller(pc);
