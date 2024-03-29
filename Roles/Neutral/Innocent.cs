@@ -34,7 +34,7 @@ internal class Innocent : RoleBase
         PlayerIds.Add(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         target.RpcMurderPlayer(killer);
         return false;
