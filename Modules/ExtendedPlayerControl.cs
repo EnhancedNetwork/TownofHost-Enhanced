@@ -638,6 +638,9 @@ static class ExtendedPlayerControl
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+    /// <summary>
+    /// ONLY to be used when killer surely may kill the target, please check with killer.RpcCheckAndMurder(target, check: true) for indirect kill.
+    /// </summary>
     public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
     {
         var RealKiller = target.GetRealKiller() ? target.GetRealKiller() : killer;
