@@ -148,7 +148,6 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
     
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
-    public static readonly List<RoleBase> EnabledRoles = [];
 
     public static readonly Dictionary<byte, int> GuesserGuessed = [];
     public static readonly Dictionary<byte, long> AllKillers = [];

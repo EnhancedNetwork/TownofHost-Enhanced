@@ -71,7 +71,6 @@ internal class ChangeRoleSettings
             Main.LastNotifyNames.Clear();
             Main.PlayerColors.Clear();
 
-            Main.EnabledRoles.Clear();
             Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;
@@ -404,7 +403,6 @@ internal class SelectRolesPatch
             {
                 if (pc.Data.Role.Role == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
 
-                Main.EnabledRoles.Add(pc.GetRoleClass());
                 pc.GetRoleClass()?.Add(pc.PlayerId);
 
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())
