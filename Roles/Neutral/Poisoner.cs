@@ -113,7 +113,7 @@ internal class Poisoner : RoleBase
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Poison;
             target.SetRealKiller(poisoner);
             target.RpcMurderPlayerV3(target);
-            Logger.Info($"Poisonerに噛まれている{target.name}を自爆させました。", "Poisoner");
+            Logger.Info($"{target.GetRealName()} Died by Poison", "Poisoner");
             if (!isButton && poisoner.IsAlive())
             {
                 RPC.PlaySoundRPC(poisoner.PlayerId, Sounds.KillSound);
@@ -125,7 +125,7 @@ internal class Poisoner : RoleBase
         }
         else
         {
-            Logger.Info("Poisonerに噛まれている" + target.name + "はすでに死んでいました。", "Poisoner");
+            Logger.Info($"{target.GetRealName()} was in an unkillable state, poison was canceled", "Poisoner");
         }
     }
     public override void OnReportDeadBody(PlayerControl sans, PlayerControl bateman)
