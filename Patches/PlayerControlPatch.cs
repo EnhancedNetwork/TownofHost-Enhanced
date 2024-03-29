@@ -519,6 +519,8 @@ class RpcMurderPlayerPatch
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
 
         var killer = target.GetRealKiller();
+        if (target.Is(CustomRoles.Susceptible))
+            Susceptible.CallEnabledAndChange(target);
 
         if (!killer.RpcCheckAndMurder(target, check: true) && !killer.Is(CustomRoles.Pestilence))
             Logger.Warn($" Killer: {killer.GetRealName} murdered {target.GetRealName()} while target was under protection", "RpcMurderPlayerPatch..Prefix");
