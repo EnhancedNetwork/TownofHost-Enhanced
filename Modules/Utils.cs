@@ -1382,6 +1382,10 @@ public static class Utils
     {
         return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId);
     }
+    public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
+    {
+        return PlayerIdList.Select(x => GetPlayerById(x)).ToList();
+    }
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();

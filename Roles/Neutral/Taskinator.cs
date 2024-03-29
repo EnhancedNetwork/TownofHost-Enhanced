@@ -113,6 +113,7 @@ internal class Taskinator : RoleBase
         if (player == null) return;
         if (!player.IsAlive()) return;
         byte playerId = player.PlayerId;
+        var Taskinators = playerIdList.GetPlayerListByIds();
         if (player.Is(CustomRoles.Taskinator))
         {
             if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
@@ -125,10 +126,10 @@ internal class Taskinator : RoleBase
             TaskMarkPerRound[playerId]++;
             if (!taskIndex.ContainsKey(playerId)) taskIndex[playerId] = [];
             taskIndex[playerId].Add(task.Index);
-            SendRPC(taskinatorID : playerId, taskIndex : task.Index);
+            SendRPC(taskinatorID: playerId, taskIndex: task.Index);
             player.Notify(GetString("TaskinatorBombPlanted"));
         }
-        else
+        else if (Taskinators.All(Inator => Inator.RpcCheckAndMurder(player, true)))
         {
             foreach (var taskinatorId in taskIndex.Keys)
             { 
