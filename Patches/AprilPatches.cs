@@ -149,27 +149,9 @@ public static class LongBoiPatches
     [HarmonyPrefix]
     public static bool CheckLongMode_Patch(HatManager __instance, out bool __result, ref string cosmeticID, ref bool ignoreLongMode)
     {
-        //Another really important runtime fix
-        if (!ignoreLongMode)
+        if (string.Equals("skin_rhm", cosmeticID))
         {
-            List<CosmeticData>.Enumerator enumerator = __instance.longModeBlackList.GetEnumerator();
-            try
-            {
-                while (enumerator.MoveNext())
-                {
-                    if (string.Equals(enumerator.Current.ProdId, cosmeticID))
-                    {
-                        __result = false;
-                        return false;
-                    }
-                }
-            }
-            finally
-            {
-                enumerator.Dispose();
-            }
-
-            __result = true;
+            __result = false;
             return false;
         }
         __result = true;
