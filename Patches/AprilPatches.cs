@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppSystem;
 using Il2CppSystem.Collections.Generic;
-using UnityEngine;
 using static CosmeticsLayer;
 
 namespace TOHE.Patches;
