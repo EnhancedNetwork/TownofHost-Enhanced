@@ -51,9 +51,9 @@ class PlayerControlOnEnablePatch
 
 class SetBodyTypePatch
 {
-    public static void Postfix(PlayerControl __instance, ref PlayerBodyTypes bodyType)
+    public static void Postfix(PlayerControl __instance)
     {
-        if (bodyType == PlayerBodyTypes.Normal)
+        if (__instance.BodyType == PlayerBodyTypes.Normal && (__instance.cosmetics != null && __instance.cosmetics.currentBodySprite != null))
         {
             __instance.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
         }
