@@ -149,6 +149,11 @@ public static class LongBoiPatches
     [HarmonyPrefix]
     public static bool CheckLongMode_Patch(HatManager __instance, out bool __result, ref string cosmeticID, ref bool ignoreLongMode)
     {
+        if (AprilFoolsMode.ShouldHorseAround() || AprilFoolsMode.ShouldLongAround())
+        {
+            __result = true;
+            return false;
+        }
         if (string.Equals("skin_rhm", cosmeticID))
         {
             __result = false;
