@@ -13,7 +13,7 @@ public static class ShouldShowTogglePatch
         __result = false;
     }
 }
-#region Horse Patches
+#region GameManager Patches
 [HarmonyPatch(typeof(NormalGameManager), nameof(NormalGameManager.GetBodyType))]
 public static class GetNormalBodyType_Patch
 {
