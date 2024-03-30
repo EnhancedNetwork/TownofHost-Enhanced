@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Profiling;
 using static TOHE.Options;
 using static TOHE.Translator;
 
