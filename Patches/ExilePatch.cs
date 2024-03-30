@@ -1,4 +1,5 @@
 ﻿using AmongUs.Data;
+using AmongUs.GameOptions;
 using HarmonyLib;
 using System.Linq;
 using TOHE.Roles.Crewmate;
@@ -248,6 +249,7 @@ class ExileControllerWrapUpPatch
             else if (player.GetCustomRole().IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()))
             {
                 player.ResetPlayerCam(1f);
+                player.RpcSetRole(RoleTypes.GuardianAngel);
             }
 
             // Check for remove pet
