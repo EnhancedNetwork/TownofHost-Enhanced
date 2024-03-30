@@ -1316,7 +1316,7 @@ internal class ChatCommands
             "倒霉" or "倒霉蛋" => GetString("Unlucky"),
             "虛無" or "无效投票" => GetString("VoidBallot"),
             "敏感" or "意识者" or "意识" => GetString("Aware"),
-            "嬌嫩" or "脆弱" => GetString("Fragile"),
+            "嬌嫩" or "脆弱" or "脆弱者" => GetString("Fragile"),
             "專業" or "双重猜测" => GetString("DoubleShot"),
             "流氓" => GetString("Rascal"),
             "無魂" or "没有灵魂" => GetString("Soulless"),
@@ -1328,8 +1328,8 @@ internal class ChatCommands
             "狼化" or "招募" or "狼化的" or "被招募的" => GetString("Recruit"),
             "被仰慕" or "仰慕" => GetString("Admired"),
             "發光" or "光辉" => GetString("Glow"),
-            "病態" or "患病" or "患病的" => GetString("Diseased"),
-            "健康" or "健康的" => GetString("Antidote"),
+            "病態" or "患病者" or "患病的" or "患病" => GetString("Diseased"),
+            "健康" or "健康的" or "健康者" => GetString("Antidote"),
             "固執者" or "固执者" or "固執" or "固执" => GetString("Stubborn"),
             "無影" or "迅捷" => GetString("Swift"),
             "反噬" or "食尸鬼" => GetString("Ghoul"),
@@ -1349,7 +1349,11 @@ internal class ChatCommands
             "狡猾" or "棘手者" or "棘手" => ("Tricky"),
             "彩虹" => GetString("Rainbow"),
             "疲勞者" or "疲劳者" or "疲勞" or "疲劳" => GetString("Tired"),
+            "雕像" = Getstring("Statue")
 
+            // 幽灵职业
+            // 内鬼
+            // 船员
             // 随机阵营职业
             "迷你船員" or "迷你船员" or "迷你" or "小孩" => GetString("Mini"),
             _ => text,
