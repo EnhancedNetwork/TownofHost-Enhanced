@@ -76,11 +76,11 @@ internal partial class Mayor : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
-    {
-        if (target == null)
-            MayorUsedButtonCount[reporter.PlayerId] += 1;
-    }
+    //public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    //{
+    //    if (target == null)
+    //        MayorUsedButtonCount[reporter.PlayerId] += 1;
+    //}
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.EngineerCooldown =
@@ -95,6 +95,7 @@ internal partial class Mayor : RoleBase
         {
             if (MayorUsedButtonCount.TryGetValue(pc.PlayerId, out var count) && count < MayorNumOfUseButton.GetInt())
             {
+                MayorUsedButtonCount[pc.PlayerId] += 1;
                 pc?.MyPhysics?.RpcBootFromVent(vent.Id);
                 pc?.NoCheckStartMeeting(pc?.Data);
             }
