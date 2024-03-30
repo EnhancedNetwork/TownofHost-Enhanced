@@ -49,17 +49,6 @@ class PlayerControlOnEnablePatch
     }
 }
 
-class SetBodyTypePatch
-{
-    public static void Postfix(PlayerControl __instance)
-    {
-        if (__instance.BodyType == PlayerBodyTypes.Normal && (__instance.cosmetics != null && __instance.cosmetics.currentBodySprite != null))
-        {
-            __instance.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
-        }
-    }
-}
-
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckProtect))]
 class CheckProtectPatch
 {
