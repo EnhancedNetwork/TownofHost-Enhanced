@@ -14,7 +14,8 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem DarkTheme;
     private static ClientOptionItem ShowTextOverlay;
     private static ClientOptionItem ModeForSmallScreen;
-    //private static ClientOptionItem HorseMode;
+    private static ClientOptionItem HorseMode;
+    private static ClientOptionItem LongMode;
     private static ClientOptionItem AutoMuteUs;
     private static ClientOptionItem ForceOwnLanguage;
     private static ClientOptionItem ForceOwnLanguageRoleName;
@@ -82,10 +83,34 @@ public static class OptionsMenuBehaviourStartPatch
         {
             ModeForSmallScreen = ClientOptionItem.Create("ModeForSmallScreen", Main.ModeForSmallScreen, __instance);
         }
-        //if (HorseMode == null || HorseMode.ToggleButton == null)
-        //{
-        //    HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance);
-        //}
+        if (HorseMode == null || HorseMode.ToggleButton == null)
+        {
+            HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance, SwitchHorseMode);
+            static void SwitchHorseMode()
+            {
+                Main.LongMode.Value = false;
+                HorseMode.UpdateToggle();
+                LongMode.UpdateToggle();
+                foreach (var pc in PlayerControl.AllPlayerControls)
+                {
+                    pc.MyPhysics.SetBodyType(pc.BodyType);
+                }
+            }
+        }
+        if (LongMode == null || LongMode.ToggleButton == null)
+        {
+            LongMode = ClientOptionItem.Create("LongMode", Main.LongMode, __instance, SwitchLongMode);
+            static void SwitchLongMode()
+            {
+                Main.HorseMode.Value = false;
+                HorseMode.UpdateToggle();
+                LongMode.UpdateToggle();
+                foreach (var pc in PlayerControl.AllPlayerControls)
+                {
+                    pc.MyPhysics.SetBodyType(pc.BodyType);
+                }
+            }
+        }
         if (AutoMuteUs == null || AutoMuteUs.ToggleButton == null)
         {
             AutoMuteUs = ClientOptionItem.Create("AutoMuteUs", Main.AutoMuteUs, __instance);
