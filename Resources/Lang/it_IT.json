@@ -1034,7 +1034,7 @@
   "Overlay.AllowConsole": "<size=50%>Console</size>",
   "DisableShieldAnimations": "Disattiva Animazioni Scudo Non Necessarie",
   "DisableKillAnimationOnGuess": "Disattiva le Animazioni delle Uccisioni dell'Indovinato",
-  "AbilityUseGainWithEachTaskCompleted": "<color=#00ffff>Numero di Usi abilità<color=#7FFFD2> guadagnati </color> con Ogni Incarico Completato</color>",
+  "AbilityUseGainWithEachTaskCompleted": "<color=#00ffff>Quantità utilizzo dell'abilità <color=#7FFFD2>ottenuta</color> con ciascun incarico completato</color>",
   "OutOfAbilityUsesDoMoreTasks": "<color=#ffff00>Hai finito gli usi dell'abilità! Completa gli incarichi per ottenerne altri!</color>",
   "AbilityUseLimit": "Limite iniziale di utilizzo delle abilità",
   "ShowArrows": "Ha frecce che puntano verso i cadaveri",

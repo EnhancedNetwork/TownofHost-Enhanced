@@ -198,6 +198,7 @@ public static class Options
     public static OptionItem AutoDisplayKillLog;
     public static OptionItem AutoDisplayLastRoles;
     public static OptionItem AutoDisplayLastResult;
+    public static OptionItem OldKillLog;
 
     public static OptionItem SuffixMode;
     public static OptionItem HideHostText;
@@ -1887,10 +1888,13 @@ public static class Options
         AutoDisplayKillLog = BooleanOptionItem.Create(60270, "AutoDisplayKillLog", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .HideInHnS();
+        OldKillLog = BooleanOptionItem.Create(60291, "RevertOldKillLog", false, TabGroup.SystemSettings, false)
+            .HideInHnS();
         AutoDisplayLastRoles = BooleanOptionItem.Create(60280, "AutoDisplayLastRoles", true, TabGroup.SystemSettings, false)
             .HideInHnS();
         AutoDisplayLastResult = BooleanOptionItem.Create(60290, "AutoDisplayLastResult", true, TabGroup.SystemSettings, false)
             .HideInHnS();
+        
         SuffixMode = StringOptionItem.Create(60300, "SuffixMode", suffixModes, 0, TabGroup.SystemSettings, true)
             .SetHeader(true);
         HideHostText = BooleanOptionItem.Create(60311, "HideHostText", false, TabGroup.SystemSettings, false);

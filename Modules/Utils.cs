@@ -13,17 +13,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using UnityEngine;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using UnityEngine;
-using static TOHE.Translator;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
+using static TOHE.Translator;
 
 
 namespace TOHE;
@@ -320,10 +320,13 @@ public static class Utils
             return string.Empty;
 
         string mode = GetString($"Chance{role.GetMode()}").RemoveHtmlTags();
-
-        if (role.IsAdditionRole())
-            mode = GetString($"Chance{(Options.CustomAdtRoleSpawnRate.TryGetValue(role, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}").RemoveHtmlTags();
-
+        if (role.Is(CustomRoles.Lovers)) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
+        else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
+        {
+            mode = GetString($"Chance{Options.CustomAdtRoleSpawnRate[role].GetFloat()}");
+            
+        }
+        
         return parentheses ? $"({mode})" : mode;
     }
     public static string GetDeathReason(PlayerState.DeathReason status)
@@ -720,8 +723,13 @@ public static class Utils
             string mode = GetString($"Chance{role.GetMode()}");
             if (role.IsEnable())
             {
-                if (role.IsAdditionRole()) mode = GetString($"Chance{(Options.CustomAdtRoleSpawnRate.TryGetValue(role, out IntegerOptionItem sc) ? sc.GetFloat() : 0)}");
-                var roleDisplay = $"\n{GetRoleName(role)}: {mode} x{role.GetCount()}";
+                if (role.Is(CustomRoles.Lovers)) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
+                else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
+                {
+                    mode = GetString($"Chance{Options.CustomAdtRoleSpawnRate[role].GetFloat()}");
+
+                }
+                var roleDisplay = $"{GetRoleName(role)}: {mode} x{role.GetCount()}";
                 if (role.IsAdditionRole()) addonsb.Add(roleDisplay);
                 else if (role.IsCrewmate()) crewsb.Add(roleDisplay);
                 else if (role.IsImpostor() || role.IsMadmate()) impsb.Add(roleDisplay);
@@ -734,10 +742,10 @@ public static class Utils
         neutralsb.Sort();
         addonsb.Sort();
         
-        SendMessage(string.Join("", impsb) + "\n.", PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
-        SendMessage(string.Join("", crewsb) + "\n.", PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
-        SendMessage(string.Join("", neutralsb) + "\n.", PlayerId, GetString("NeutralRoles"));
-        SendMessage(string.Join("", addonsb) + "\n.", PlayerId, GetString("AddonRoles"));
+        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
+        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
+        SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"));
+        SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"));
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
@@ -808,8 +816,9 @@ public static class Utils
                 break;
         }
         sb.Append("</size>");
-
-        SendMessage("\n", PlayerId, sb.ToString());
+        string lr = sb.ToString();
+        if (lr.Length > 1200) lr = lr.RemoveHtmlTags();
+        SendMessage("\n", PlayerId, lr);
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
     {
@@ -818,7 +827,12 @@ public static class Utils
             SendMessage(GetString("CantUse.killlog"), PlayerId);
             return;
         }
-        if (EndGamePatch.KillLog != "") SendMessage(EndGamePatch.KillLog, PlayerId);
+        if (EndGamePatch.KillLog != "") 
+        {
+            string kl = EndGamePatch.KillLog;
+            if (Options.OldKillLog.GetBool() || kl.Length > 1200) kl = kl.RemoveHtmlTags();
+            SendMessage(kl, PlayerId); 
+        }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
     {
