@@ -755,7 +755,7 @@ class MeetingHudStartPatch
                     Utils.ShowChildrenSettings(opt, ref sb, command: true);
                 
                 var txt = sb.ToString();
-                sb.Clear().Append(txt);
+                sb.Clear().Append(txt.RemoveHtmlTags());
                 
                 foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles.ToArray())
                     sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfoLong());
