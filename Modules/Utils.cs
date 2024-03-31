@@ -772,10 +772,10 @@ public static class Utils
             if (opt.Value.Name == "AirshipReactorTimeLimit" && !GameStates.AirshipIsActive) continue;
             if (deep > 0)
             {
-                sb.Append(string.Concat(Enumerable.Repeat("┃", Mathf.Max(deep - 1, 0))).RemoveHtmlTags());
-                sb.Append(opt.Index == option.Children.Count ? "┗ " : "┣ ".RemoveHtmlTags());
+                sb.Append(string.Concat(Enumerable.Repeat("┃", Mathf.Max(deep - 1, 0))));
+                sb.Append(opt.Index == option.Children.Count ? "┗ " : "┣ ");
             }
-            sb.Append(($"{opt.Value.GetName(true)}: {opt.Value.GetString()}\n").RemoveHtmlTags());
+            sb.Append($"{opt.Value.GetName(true)}: {opt.Value.GetString()}\n");
             if (opt.Value.GetBool()) ShowChildrenSettings(opt.Value, ref sb, deep + 1);
         }
     }
