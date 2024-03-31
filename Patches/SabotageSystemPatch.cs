@@ -1,6 +1,4 @@
-using HarmonyLib;
 using Hazel;
-using System.Linq;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;

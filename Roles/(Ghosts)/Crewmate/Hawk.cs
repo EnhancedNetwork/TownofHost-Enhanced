@@ -1,14 +1,10 @@
 ﻿using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static TOHE.PlayerState;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 

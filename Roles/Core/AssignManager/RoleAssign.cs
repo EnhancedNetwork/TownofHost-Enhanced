@@ -1,7 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using HarmonyLib;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;

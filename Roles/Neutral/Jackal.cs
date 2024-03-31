@@ -1,8 +1,5 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;

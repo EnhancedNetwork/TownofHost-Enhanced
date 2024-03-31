@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
-using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 

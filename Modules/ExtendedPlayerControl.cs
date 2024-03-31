@@ -2,8 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;

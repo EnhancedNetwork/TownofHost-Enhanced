@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace TOHE.Roles.AddOns.Common;
+﻿namespace TOHE.Roles.AddOns.Common;
 
 public static class Tiebreaker
 {

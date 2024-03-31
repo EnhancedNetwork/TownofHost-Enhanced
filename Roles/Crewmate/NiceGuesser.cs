@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;

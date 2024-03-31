@@ -1,6 +1,5 @@
 using Hazel;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;

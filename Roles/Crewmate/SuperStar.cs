@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using UnityEngine;
-using System.Collections.Generic;
+﻿using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;

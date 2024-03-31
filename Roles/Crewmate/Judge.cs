@@ -1,16 +1,13 @@
-﻿using HarmonyLib;
-using Hazel;
+﻿using Hazel;
 using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
-using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
 
-namespace TOHE.Roles.Crewmate; 
+namespace TOHE.Roles.Crewmate;
 
 internal class Judge : RoleBase
 {

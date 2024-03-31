@@ -1,15 +1,4 @@
-﻿using AmongUs.GameOptions;
-using HarmonyLib;
-using MonoMod.Cil;
-using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles._Ghosts_.Impostor;
-using TOHE.Roles._Ghosts_.Crewmate;
-using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Impostor;
-
-namespace TOHE.Roles.Core.AssignManager;
+﻿namespace TOHE.Roles.Core.AssignManager;
 
 public static class GhostRoleAssign
 {

@@ -1,5 +1,3 @@
-using HarmonyLib;
-
 namespace TOHE;
 
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnDisconnected))]

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace TOHE.Roles.Impostor;
+﻿namespace TOHE.Roles.Impostor;
 
 internal class Bard: RoleBase
 {

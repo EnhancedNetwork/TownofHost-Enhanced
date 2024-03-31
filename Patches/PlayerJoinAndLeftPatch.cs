@@ -1,10 +1,8 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
 using InnerNet;
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Patches;

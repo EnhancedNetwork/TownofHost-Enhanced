@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Hazel;
+﻿using Hazel;
 using AmongUs.GameOptions;
 using UnityEngine;
 using TOHE.Roles.Core;

@@ -1,10 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
-using HarmonyLib;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Utils;

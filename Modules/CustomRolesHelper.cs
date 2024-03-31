@@ -1,6 +1,4 @@
 using AmongUs.GameOptions;
-using System.Linq;
-using System.Collections.Generic;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
-using HarmonyLib;
 using AmongUs.GameOptions;
 using TOHE.Roles.Impostor;
 using TOHE.Modules;

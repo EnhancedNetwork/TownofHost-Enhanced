@@ -1,4 +1,3 @@
-using HarmonyLib;
 using Hazel;
 
 namespace TOHE;

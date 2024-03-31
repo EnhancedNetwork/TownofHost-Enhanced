@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using static TOHE.Options;
-using TOHE.Roles.Neutral;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
+﻿using static TOHE.Options;
 
 
 namespace TOHE.Roles.AddOns.Common;

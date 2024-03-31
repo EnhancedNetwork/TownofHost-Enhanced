@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-
-namespace TOHE.Patches;
+﻿namespace TOHE.Patches;
 
 //[HarmonyPatch(typeof(AprilFoolsMode), nameof(AprilFoolsMode.ShouldLongAround))]
 //class AprilFoolsModePatch

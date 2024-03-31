@@ -1,7 +1,5 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;

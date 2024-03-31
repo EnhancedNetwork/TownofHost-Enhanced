@@ -1,6 +1,4 @@
 ﻿using Hazel;
-using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
 using AmongUs.GameOptions;

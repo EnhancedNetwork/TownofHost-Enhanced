@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;

@@ -1,6 +1,4 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using static TOHE.Translator;
 using static TOHE.Options;

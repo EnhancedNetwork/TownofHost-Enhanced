@@ -1,7 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Core;

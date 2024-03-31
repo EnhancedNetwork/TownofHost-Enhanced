@@ -1,7 +1,5 @@
 ﻿
 using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 

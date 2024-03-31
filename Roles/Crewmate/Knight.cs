@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace TOHE.Roles.Crewmate;

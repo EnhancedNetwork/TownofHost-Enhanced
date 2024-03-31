@@ -3,8 +3,6 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 

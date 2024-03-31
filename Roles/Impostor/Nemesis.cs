@@ -1,9 +1,6 @@
 ﻿using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using TOHE.Modules;
 using TOHE.Roles.Double;
 using UnityEngine;

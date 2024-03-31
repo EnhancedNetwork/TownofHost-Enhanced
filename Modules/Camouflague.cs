@@ -1,5 +1,4 @@
 using AmongUs.Data;
-using System.Collections.Generic;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 

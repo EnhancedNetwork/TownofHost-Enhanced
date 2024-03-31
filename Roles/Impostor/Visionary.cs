@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace TOHE.Roles.Impostor;
+﻿namespace TOHE.Roles.Impostor;
 
 internal class Visionary : RoleBase
 {

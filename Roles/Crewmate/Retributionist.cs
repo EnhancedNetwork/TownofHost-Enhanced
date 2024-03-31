@@ -1,12 +1,8 @@
-﻿using HarmonyLib;
-using Hazel;
+﻿using Hazel;
 using System;
-using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.Double;
-using TOHE.Roles.Core;
 using UnityEngine;
-using System.Collections.Generic;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;

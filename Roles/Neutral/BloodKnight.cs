@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
 using System.Text;
 using static TOHE.Options;
 using static TOHE.Translator;

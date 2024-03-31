@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-using Hazel;
-using System.Collections.Generic;
+﻿using Hazel;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;

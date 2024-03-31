@@ -1,8 +1,6 @@
 ﻿using Hazel;
 using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Linq;
 using UnityEngine;
 using TOHE.Roles.Core;
 using static TOHE.Options;

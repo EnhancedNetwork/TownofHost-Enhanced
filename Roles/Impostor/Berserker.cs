@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using TOHE.Modules;
-using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 

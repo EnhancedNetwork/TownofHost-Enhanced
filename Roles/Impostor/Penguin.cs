@@ -1,10 +1,8 @@
 ﻿using Hazel;
 using AmongUs.GameOptions;
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
-using System.Linq;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Impostor/Penguin.cs
 namespace TOHE.Roles.Impostor;

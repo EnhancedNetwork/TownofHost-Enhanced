@@ -1,9 +1,6 @@
-using HarmonyLib;
 using Hazel;
 using TMPro;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;

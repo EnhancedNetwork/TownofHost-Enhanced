@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
 using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.Options;

@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
-using System.Collections.Generic;
 using UnityEngine;
 using TOHE.Modules;
 using static TOHE.Options;

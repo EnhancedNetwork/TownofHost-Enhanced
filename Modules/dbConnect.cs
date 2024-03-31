@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.IO;
 using System.Reflection;
-using static TOHE.Translator;
 using System.Threading.Tasks;
-using System.Linq;
 using AmongUs.Data;
+using static TOHE.Translator;
 
 namespace TOHE;
 

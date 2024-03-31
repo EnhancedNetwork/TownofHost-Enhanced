@@ -1,7 +1,5 @@
 using AmongUs.GameOptions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Core;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
@@ -10,7 +8,6 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Utils;
 using TOHE.Roles.Impostor;
-using HarmonyLib;
 
 namespace TOHE;
 

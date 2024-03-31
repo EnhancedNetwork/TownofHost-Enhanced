@@ -1,7 +1,5 @@
 ﻿using AmongUs.GameOptions;
-using Il2CppSystem.Collections.Generic;
 using TOHE.Modules;
-using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;

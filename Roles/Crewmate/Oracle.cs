@@ -1,7 +1,5 @@
 using Hazel;
 using Il2CppSystem.Text;
-using System.Collections.Generic;
-using System.Linq;
 using System;
 using UnityEngine;
 using static TOHE.Options;
