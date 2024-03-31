@@ -318,7 +318,7 @@ public static class Utils
         {
             if (!GetString($"{role}" + "InfoLong").Contains(GetString($"{role}")))
                 return GetString($"{role}" + "InfoLong").Replace($"{role}", GetString($"{role}"));
-            return GetString($"{role}" + "InfoLong").Replace($"{role}", $"{role}");
+            return GetString($"{role}" + "InfoLong");
         }
         return GetString($"{Prefix}{role}" + "Info");
     }
