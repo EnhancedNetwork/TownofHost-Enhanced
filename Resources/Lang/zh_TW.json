@@ -1559,7 +1559,7 @@
   "MarioVentNumWin": "獲勝所需的跳管次數",
   "CanCheckCamera": "可以監視到是否有人觀看監控",
   "ArroganceDefaultKillCooldown": "初始殺人冷卻時間",
-  "ArroganceReduceKillCooldown": "殺人成功減少的冷卻時間",
+  "ArroganceReduceKillCooldown": "減少的冷卻時間",
   "ArroganceMinKillCooldown": "殺人冷卻時間下限",
   "BomberRadius": "爆炸範圍 (5x能炸半個餐廳)",
   "NotifyGodAlive": "若神存活則在會議上通知所有人",
