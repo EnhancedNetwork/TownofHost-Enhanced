@@ -459,7 +459,7 @@ public static class Utils
         if (p.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
         var role = States.MainRole;
 
-        if (!States.RoleClass.HasTasks(p.PlayerId, role))
+        if (!States.RoleClass.HasTasks(p, role, ForRecompute))
             hasTasks = false;
 
         switch (role)
@@ -467,22 +467,10 @@ public static class Utils
             case CustomRoles.GM:
                 hasTasks = false;
                 break;
-            case CustomRoles.Workaholic:
-            case CustomRoles.Terrorist:
             case CustomRoles.Sunnyboy:
-            case CustomRoles.Convict:
-            case CustomRoles.Opportunist:
-            case CustomRoles.Taskinator:
-            case CustomRoles.Phantom:
                 if (ForRecompute)
                     hasTasks = false;
                     break;
-            case CustomRoles.Crewpostor:
-                if (ForRecompute && !p.IsDead)
-                    hasTasks = false;
-                if (p.IsDead)
-                    hasTasks = false;
-                break;
             default:
                 if (role.IsImpostor() || role.IsNK()) hasTasks = false;
                 break;
@@ -524,6 +512,7 @@ public static class Utils
         Main.RoleClass.Add(role, role.CreateRoleClass(IsToAccess: true));
         return Main.RoleClass[role];
     }
+    
     public static string GetProgressText(PlayerControl pc)
     {
         try
@@ -1408,6 +1397,10 @@ public static class Utils
     {
         return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId);
     }
+    public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
+    {
+        return PlayerIdList.ToList().Select(x => GetPlayerById(x)).ToList();
+    }
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
@@ -1861,6 +1854,12 @@ public static class Utils
         ProcessStartInfo psi = new("Explorer.exe") { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
         Process.Start(psi);
     }
+    /// <summary>
+    /// Return the first byte of a HashSet(Byte)
+    /// </summary>
+    public static byte First(this HashSet<byte> source)
+        => source.ToArray().First();
+    
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
         var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
@@ -1881,7 +1880,7 @@ public static class Utils
 
             CurrentСolor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
 
-            if (Main.PlayerStates.TryGetValue(id, out var ps) && ps.MainRole.Is(CustomRoles.Crewpostor))
+            if (Main.PlayerStates.TryGetValue(id, out var ps) && ps.MainRole is CustomRoles.Crewpostor)
                 CurrentСolor = Color.red;
 
             if (ps.SubRoles.Contains(CustomRoles.Workhorse))

@@ -3,16 +3,21 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using AmongUs.GameOptions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Bomber : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 700;
 
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Bomb");
 
@@ -56,11 +61,11 @@ internal class Bomber : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        Playerids.Add(playerId);
     }
     public static bool CheckSpawnNuker()
     {
@@ -99,22 +104,22 @@ internal class Bomber : RoleBase
             var pos = shapeshifter.transform.position;
             var dis = Vector2.Distance(pos, tg.transform.position);
             
-            if (playerRole.Is(CustomRoles.Bomber))
+            if (playerRole is CustomRoles.Bomber)
             {
                 if (dis > BomberRadius.GetFloat()) continue;
             }
-            else if (playerRole.Is(CustomRoles.Nuker))
+            else if (playerRole is CustomRoles.Nuker)
             {
                 if (dis > NukeRadius.GetFloat()) continue;
             }
 
             Main.PlayerStates[tg.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
             tg.SetRealKiller(shapeshifter);
-            tg.RpcMurderPlayerV3(tg);
+            tg.RpcMurderPlayer(tg);
         }
 
         var timer = shapeshiftIsHidden ? 0.3f : 1.5f;
-        if (BomberDiesInExplosion.GetBool() && playerRole.Is(CustomRoles.Bomber))
+        if (BomberDiesInExplosion.GetBool() && playerRole is CustomRoles.Bomber)
         {
             _ = new LateTask(() =>
             {
@@ -122,7 +127,7 @@ internal class Bomber : RoleBase
                 if (totalAlive > 0 && !GameStates.IsEnded)
                 {
                     Main.PlayerStates[shapeshifter.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                    shapeshifter.RpcMurderPlayerV3(shapeshifter);
+                    shapeshifter.RpcMurderPlayer(shapeshifter);
                 }
                 Utils.NotifyRoles();
             }, timer, $"{playerRole} was suicide");

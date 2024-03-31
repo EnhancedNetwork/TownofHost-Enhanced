@@ -104,96 +104,20 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
             }
         }
-        
+
+        if (player.GetCustomRole().GetCustomRoleTypes() is CustomRoleTypes.Impostor)
+        {
+            AURoleOptions.ShapeshifterCooldown = Options.DefaultShapeshiftCooldown.GetFloat();
+            opt.SetVision(true);
+        }
+
         if (role.IsGhostRole())
             AURoleOptions.GuardianAngelCooldown = Options.DefaultAngelCooldown.GetFloat();
-        else if (!role.IsGhostRole() || player.IsAnySubRole(x => x is CustomRoles.EvilSpirit)) 
-        {
-            switch (role.GetCustomRoleTypes())
-            {
-                case CustomRoleTypes.Impostor:
-                    AURoleOptions.ShapeshifterCooldown = Options.DefaultShapeshiftCooldown.GetFloat();
-                    AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
-                    opt.SetVision(true);
-                    break;
-                case CustomRoleTypes.Neutral:
-                    AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
-                    break;
-                case CustomRoleTypes.Crewmate:
-                    AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
-                    break;
-            }
-        }
 
-        player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
-
-        switch (role)
-        {
-            case CustomRoles.ShapeshifterTOHE:
-                AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
-                break;
-            case CustomRoles.ScientistTOHE:
-                AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
-                AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
-                break;
-            case CustomRoles.EngineerTOHE:
-                AURoleOptions.EngineerCooldown = 0f;
-                AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            default:
-                opt.SetVision(false);
-                break;
-        }
-
-        if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
-        if (Dazzler.On) Dazzler.SetDazzled(player, opt);
-        if (Deathpact.On) Deathpact.SetDeathpactVision(player, opt);
-        if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
-        if (Pitfall.On) Pitfall.SetPitfallTrapVision(opt, player);
-
-        // Add-ons
-        if (Bewilder.IsEnable) Bewilder.ApplyGameOptions(opt, player);
-        if (Ghoul.IsEnable) Ghoul.ApplyGameOptions(player);
-
-        var playerSubRoles = player.GetCustomSubRoles();
-
-        if (playerSubRoles.Any())
-            foreach (var subRole in playerSubRoles.ToArray())
-            {
-                switch (subRole)
-                {
-                    case CustomRoles.Watcher:
-                        Watcher.RevealVotes(opt);
-                        break;
-                    case CustomRoles.Flash:
-                        Flash.SetSpeed(player.PlayerId, false);
-                        break;
-                    case CustomRoles.Torch:
-                        Torch.ApplyGameOptions(opt);
-                        break;
-                    case CustomRoles.Tired:
-                        Tired.ApplyGameOptions(opt, player);
-                        break;
-                    case CustomRoles.Bewilder:
-                        Bewilder.ApplyVisionOptions(opt);
-                        break;
-                    case CustomRoles.Reach:
-                        Reach.ApplyGameOptions(opt);
-                        break;
-                    case CustomRoles.Madmate:
-                        Madmate.ApplyGameOptions(opt);
-                        break;
-                    case CustomRoles.Mare:
-                        Mare.ApplyGameOptions(player.PlayerId);
-                        break;
-                    //case CustomRoles.Sunglasses:
-                        //opt.SetVision(false);
-                        //opt.SetFloat(FloatOptionNames.CrewLightMod, Options.SunglassesVision.GetFloat());
-                        //opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.SunglassesVision.GetFloat());
-                        //break;
-                }
-            }
+        /*
+         * Builds Modified GameOptions
+         */
+        player.BuildCustomGameOptions(ref opt, role);
 
         AURoleOptions.EngineerCooldown = Mathf.Max(0.01f, AURoleOptions.EngineerCooldown);
 

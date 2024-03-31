@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
@@ -12,17 +13,19 @@ namespace TOHE.Roles.Impostor;
 
 internal class Ninja : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2100;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem MarkCooldown;
     private static OptionItem AssassinateCooldown;
     private static OptionItem CanKillAfterAssassinate;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, byte> MarkedPlayer = [];
+    private static readonly Dictionary<byte, byte> MarkedPlayer = [];
 
     public static void SetupCustomOption()
     {
@@ -35,14 +38,12 @@ internal class Ninja : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
-        MarkedPlayer = [];
+        playerIdList.Clear();
+        MarkedPlayer.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
     }
 
     private static void SendRPC(byte playerId)

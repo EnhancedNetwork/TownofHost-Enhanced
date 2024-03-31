@@ -80,7 +80,7 @@ internal class Chameleon : RoleBase
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte pid = reader.ReadByte();
         bool isLimit = reader.ReadBoolean();

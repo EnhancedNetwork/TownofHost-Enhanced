@@ -65,7 +65,7 @@ internal class Knight : RoleBase
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte KnightId = reader.ReadByte();
         if (!killed.Contains(KnightId))

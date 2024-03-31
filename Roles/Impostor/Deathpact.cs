@@ -14,10 +14,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Deathpact : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 1200;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem ShapeshiftCooldown;
@@ -29,9 +32,9 @@ internal class Deathpact : RoleBase
     private static OptionItem KillDeathpactPlayersOnMeeting;
     private static OptionItem PlayersInDeathpactCanCallMeeting;
 
-    private static List<byte> ActiveDeathpacts = [];
-    private static Dictionary<byte, List<PlayerControl>> PlayersInDeathpact = [];
-    private static Dictionary<byte, long> DeathpactTime = [];
+    private static readonly List<byte> ActiveDeathpacts = [];
+    private static readonly Dictionary<byte, List<PlayerControl>> PlayersInDeathpact = [];
+    private static readonly Dictionary<byte, long> DeathpactTime = [];
 
     public static void SetupCustomOption()
     {
@@ -54,16 +57,16 @@ internal class Deathpact : RoleBase
 
     public override void Init()
     {
-        PlayersInDeathpact = [];
-        DeathpactTime = [];
-        ActiveDeathpacts = [];
-        On = false;
+        PlayersInDeathpact.Clear();
+        DeathpactTime.Clear();
+        ActiveDeathpacts.Clear();
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
         PlayersInDeathpact.TryAdd(playerId, []);
         DeathpactTime.TryAdd(playerId, 0);
-        On = true;
+        Playerids.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -199,7 +202,7 @@ internal class Deathpact : RoleBase
         
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
         target.SetRealKiller(deathpact);
-        target.RpcMurderPlayerV3(target);
+        target.RpcMurderPlayer(target);
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)

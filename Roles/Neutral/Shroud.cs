@@ -58,7 +58,7 @@ internal class Shroud : RoleBase
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         var typeId = reader.ReadByte();
         var shroudId = reader.ReadByte();
@@ -137,7 +137,7 @@ internal class Shroud : RoleBase
                         RPC.PlaySoundRPC(shroudId, Sounds.KillSound);
                         target.SetRealKiller(Utils.GetPlayerById(shroudId));
                         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
-                        shroud.RpcMurderPlayerV3(target);
+                        shroud.RpcMurderPlayer(target);
                         Utils.MarkEveryoneDirtySettings();
                         ShroudList.Remove(shroud.PlayerId);
                         SendRPC(byte.MaxValue, shroud.PlayerId, 2);
@@ -164,7 +164,7 @@ internal class Shroud : RoleBase
             if (shrouded == null) continue;
 
             Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
-            shrouded.RpcMurderPlayerV3(shrouded);
+            shrouded.RpcMurderPlayer(shrouded);
 
             ShroudList.Remove(shrouded.PlayerId);
             SendRPC(byte.MaxValue, shrouded.PlayerId, 2);

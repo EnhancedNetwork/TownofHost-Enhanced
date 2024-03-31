@@ -99,7 +99,7 @@ internal class Infectious : RoleBase
 
         if (!CanBeBitten(target) && !target.Is(CustomRoles.Infected))
         {
-            killer.RpcMurderPlayerV3(target);
+            killer.RpcMurderPlayer(target);
         }
 
         if (BiteLimit < 0)
@@ -130,7 +130,7 @@ internal class Infectious : RoleBase
             //Logger.Warn("VALUE OF CHECK IS")
             if (check)
             {
-                killer.RpcMurderPlayerV3(target);
+                killer.RpcMurderPlayer(target);
                 return true;
             }
             else return false;
@@ -148,7 +148,7 @@ internal class Infectious : RoleBase
             foreach (var alivePlayer in Main.AllAlivePlayerControls.Where(pc => pc.Is(CustomRoles.Infected)))
             {
                 Main.PlayerStates[alivePlayer.PlayerId].deathReason = PlayerState.DeathReason.Infected;
-                alivePlayer.RpcMurderPlayerV3(alivePlayer);
+                alivePlayer.RpcMurderPlayer(alivePlayer);
             }
         }
     }

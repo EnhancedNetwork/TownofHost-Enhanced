@@ -63,7 +63,7 @@ internal class Crusader : RoleBase
         writer.Write(CrusaderLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -118,7 +118,7 @@ internal class Crusader : RoleBase
             if (killer.Is(CustomRoles.Pestilence))
             {
                 Main.PlayerStates[crusader.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
-                killer.RpcMurderPlayerV3(crusader);
+                killer.RpcMurderPlayer(crusader);
                 ForCrusade.Remove(target.PlayerId);
                 target.RpcGuardAndKill(killer);
 

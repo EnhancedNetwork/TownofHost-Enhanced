@@ -1,13 +1,18 @@
 ﻿using AmongUs.GameOptions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 
-internal class ShapeMaster : RoleBase
+internal class ShapeMaster : RoleBase // Should be deleted tbh, because it's litteraly vanilla shapeshifter
 {
+    //===========================SETUP================================\\
     private const int Id = 4500;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem ShapeMasterShapeshiftDuration;
 
@@ -20,11 +25,11 @@ internal class ShapeMaster : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        Playerids.Add     (playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

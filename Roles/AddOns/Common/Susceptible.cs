@@ -54,7 +54,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Spell:
-                    if (!Witch.On)
+                    if (!Witch.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -133,7 +133,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Bombed:
-                    if (!Bomber.On && !Burst.IsEnable && !Trapster.On && !Fireworker.On)
+                    if (!Bomber.HasEnabled && !Burst.IsEnable && !Trapster.HasEnabled && !Fireworker.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -166,7 +166,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Sniped:
-                    if (!Sniper.On)
+                    if (!Sniper.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -199,7 +199,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Quantization:
-                    if (!Lightning.On)
+                    if (!Lightning.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -254,7 +254,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.LossOfHead:
-                    if (!Hangman.On)
+                    if (!Hangman.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -265,7 +265,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Trialed:
-                    if (!Judge.HasEnabled && !Councillor.On)
+                    if (!Judge.HasEnabled && !Councillor.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

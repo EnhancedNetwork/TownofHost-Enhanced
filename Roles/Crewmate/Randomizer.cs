@@ -114,7 +114,7 @@ internal class Randomizer : RoleBase
                 {
                     Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
                     rp.SetRealKiller(target);
-                    rp.RpcMurderPlayerV3(rp);
+                    rp.RpcMurderPlayer(rp);
                 }
             }
         }

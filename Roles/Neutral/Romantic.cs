@@ -87,7 +87,7 @@ internal class Romantic : RoleBase
         writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Times = reader.ReadInt32();
@@ -317,7 +317,7 @@ internal class VengefulRomantic : RoleBase
         }
         else
         {
-            killer.RpcMurderPlayerV3(killer);
+            killer.RpcMurderPlayer(killer);
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
             return false;
         }
@@ -337,7 +337,7 @@ internal class VengefulRomantic : RoleBase
         writer.Write(VengefulTarget.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         byte Target = reader.ReadByte();

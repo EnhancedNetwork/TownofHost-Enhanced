@@ -119,7 +119,7 @@ internal class Undertaker : RoleBase
             target.RpcTeleport(MarkedLocation[killer.PlayerId]);
             
             target.SetRealKiller(killer);
-            target.RpcMurderPlayerV3(target);
+            target.RpcMurderPlayer(target);
 
             killer.SetKillCooldown();
             MarkedLocation[killer.PlayerId] = ExtendedPlayerControl.GetBlackRoomPosition();

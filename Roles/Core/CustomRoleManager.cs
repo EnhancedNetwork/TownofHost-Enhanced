@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Core;
@@ -70,19 +73,85 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
-        bool cancel = false;
-        foreach (var player in Main.AllAlivePlayerControls)
-        {
-            var playerRoleClass = player.GetRoleClass();
-            if (player == null || playerRoleClass == null) continue;
-
-            if (!playerRoleClass.CheckMurderOnOthersTarget(killer, target))
-            {
-                cancel = true;
-            }
-        }
-        return !cancel;
+        return !Main.EnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target));
     }
+
+    /// <summary>
+    /// Builds Modified GameOptions
+    /// </summary>
+    public static void BuildCustomGameOptions(this PlayerControl player, ref IGameOptions opt, CustomRoles role)
+    {
+        if (player.IsAnySubRole(x => x is CustomRoles.EvilSpirit))
+        {
+            AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+        }
+
+        player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
+
+        switch (role)
+        {
+            case CustomRoles.ShapeshifterTOHE:
+                AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
+                AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
+                break;
+            case CustomRoles.ScientistTOHE:
+                AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
+                AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
+                break;
+            case CustomRoles.EngineerTOHE:
+                AURoleOptions.EngineerCooldown = 0f;
+                AURoleOptions.EngineerInVentMaxTime = 0f;
+                break;
+            default:
+                opt.SetVision(false);
+                break;
+        }
+
+        if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
+        if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
+        if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
+        if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
+        if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
+
+        // Add-ons
+        if (Bewilder.IsEnable) Bewilder.ApplyGameOptions(opt, player);
+        if (Ghoul.IsEnable) Ghoul.ApplyGameOptions(player);
+
+        var playerSubRoles = player.GetCustomSubRoles();
+
+        if (playerSubRoles.Any())
+            foreach (var subRole in playerSubRoles.ToArray())
+            {
+                switch (subRole)
+                {
+                    case CustomRoles.Watcher:
+                        Watcher.RevealVotes(opt);
+                        break;
+                    case CustomRoles.Flash:
+                        Flash.SetSpeed(player.PlayerId, false);
+                        break;
+                    case CustomRoles.Torch:
+                        Torch.ApplyGameOptions(opt);
+                        break;
+                    case CustomRoles.Tired:
+                        Tired.ApplyGameOptions(opt, player);
+                        break;
+                    case CustomRoles.Bewilder:
+                        Bewilder.ApplyVisionOptions(opt);
+                        break;
+                    case CustomRoles.Reach:
+                        Reach.ApplyGameOptions(opt);
+                        break;
+                    case CustomRoles.Madmate:
+                        Madmate.ApplyGameOptions(opt);
+                        break;
+                    case CustomRoles.Mare:
+                        Mare.ApplyGameOptions(player.PlayerId);
+                        break;
+                }
+            }
+    }
+
     /// <summary>
     /// Check Murder as Killer in target
     /// </summary>

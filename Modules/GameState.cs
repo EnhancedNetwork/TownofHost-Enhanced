@@ -10,6 +10,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Utils;
 using TOHE.Roles.Impostor;
+using HarmonyLib;
 
 namespace TOHE;
 
@@ -156,6 +157,14 @@ public class PlayerState(byte playerId)
 
         if (!SubRoles.Contains(role))
             SubRoles.Add(role);
+        if (role.IsConverted())
+        {
+            SubRoles.Where(AddON => AddON != role && AddON.IsConverted()).Do(x => SubRoles.Remove(x));
+            SubRoles.Remove(CustomRoles.Rogue);
+            SubRoles.Remove(CustomRoles.Rascal);
+            SubRoles.Remove(CustomRoles.Loyal);
+            SubRoles.Remove(CustomRoles.Admired);
+        }
 
         switch (role)
         {
@@ -171,15 +180,6 @@ public class PlayerState(byte playerId)
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
 
             case CustomRoles.Charmed:
@@ -190,15 +190,6 @@ public class PlayerState(byte playerId)
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
 
             case CustomRoles.Recruit:
@@ -209,29 +200,10 @@ public class PlayerState(byte playerId)
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
 
             case CustomRoles.Infected:
                 countTypes = CountTypes.Infectious;
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
 
             case CustomRoles.Contagious:
@@ -242,28 +214,10 @@ public class PlayerState(byte playerId)
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
 
             case CustomRoles.Rogue:
                 countTypes = CountTypes.Rogue;
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
 
             // This exist as it would be possible for them to exist on the same player via Bandit
@@ -274,28 +228,10 @@ public class PlayerState(byte playerId)
 
             case CustomRoles.Admired:
                 countTypes = CountTypes.Crew;
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Rogue);
                 break;
 
             case CustomRoles.Soulless:
                 countTypes = CountTypes.OutOfGame;
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
         }
     }

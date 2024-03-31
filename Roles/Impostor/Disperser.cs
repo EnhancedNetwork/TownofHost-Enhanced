@@ -1,5 +1,7 @@
 ﻿using AmongUs.GameOptions;
+using Il2CppSystem.Collections.Generic;
 using TOHE.Modules;
+using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -8,10 +10,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Disperser : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 24400;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = new();
+    public static bool HasEnabled => PlayerIds.Count > 0;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem DisperserShapeshiftCooldown;
     private static OptionItem DisperserShapeshiftDuration;
@@ -27,11 +32,11 @@ internal class Disperser : RoleBase
 
     public override void Init()
     {
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

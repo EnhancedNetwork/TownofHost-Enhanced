@@ -196,7 +196,7 @@ internal class Captain : RoleBase
     }
     public override void OnPlayerExiled(PlayerControl captain, GameData.PlayerInfo exiled)
     {
-        if (exiled == null || !exiled.GetCustomRole().Is(CustomRoles.Captain)) return;
+        if (exiled == null || (exiled.GetCustomRole() is not CustomRoles.Captain)) return;
 
         byte playerId = exiled.PlayerId;
         if (playerId == byte.MaxValue) return;

@@ -123,7 +123,7 @@ internal class Sheriff : RoleBase
         writer.Write(ShotLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte SheriffId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -156,7 +156,7 @@ internal class Sheriff : RoleBase
             return true;
         }
         Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-        killer.RpcMurderPlayerV3(killer);
+        killer.RpcMurderPlayer(killer);
         return MisfireKillsTarget.GetBool();
     }
     public override string GetProgressText(byte playerId, bool computervirus)

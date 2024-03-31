@@ -10,12 +10,15 @@ namespace TOHE.Roles.Impostor;
 internal class Devourer : RoleBase
 {
     private readonly static GameData.PlayerOutfit ConsumedOutfit = new GameData.PlayerOutfit().Set("", 15, "", "", "visor_Crack", "", "");
-    private static Dictionary<byte, GameData.PlayerOutfit> OriginalPlayerSkins = [];
+    private static readonly Dictionary<byte, GameData.PlayerOutfit> OriginalPlayerSkins = [];
 
+    //===========================SETUP================================\\
     private const int Id = 5500;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ReduceKillCooldown;
@@ -23,8 +26,8 @@ internal class Devourer : RoleBase
     private static OptionItem ShapeshiftCooldown;
     private static OptionItem HideNameOfConsumedPlayer;
 
-    private static Dictionary<byte, float> NowCooldown = [];
-    private static Dictionary<byte, List<byte>> PlayerSkinsCosumed = [];
+    private static readonly Dictionary<byte, float> NowCooldown = [];
+    private static readonly Dictionary<byte, List<byte>> PlayerSkinsCosumed = [];
 
     public static void SetupCustomOption()
     {
@@ -41,16 +44,16 @@ internal class Devourer : RoleBase
     }
     public override void Init()
     {
-        PlayerSkinsCosumed = [];
-        OriginalPlayerSkins = [];
-        NowCooldown = [];
-        On = false;
+        PlayerSkinsCosumed.Clear();
+        OriginalPlayerSkins.Clear();
+        NowCooldown.Clear();
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         PlayerSkinsCosumed.TryAdd(playerId, []);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

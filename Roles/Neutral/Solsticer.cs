@@ -153,32 +153,6 @@ internal class Solsticer : RoleBase
         }
         return true; //should be patched before every others
     } //My idea is to encourage everyone to kill Solsticer and won't waste shoots on it, only resets cd.
-    public static bool OnCheckRpcMurderv3(PlayerControl killer, PlayerControl target)
-    {
-        if (!HasEnabled || !target.Is(CustomRoles.Solsticer)) return false;
-        if (!GameStates.IsMeeting)
-        {
-            if (target.PlayerId != killer.PlayerId)
-            {
-                killer.RpcTeleport(target.GetTruePosition());
-                killer.RpcGuardAndKill(target);
-                killer.SetKillCooldown(forceAnime: true);
-                killer.Notify(GetString("MurderSolsticer"));
-            }
-
-            target.RpcGuardAndKill();
-            patched = true;
-            ResetTasks(target);
-            target.MarkDirtySettings();
-
-            target.Notify(string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
-            if (SolsticerKnowKiller.GetBool())
-                MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
-            else MurderMessage = "";
-        }
-        //Solsticer wont die anyway.
-        return true;
-    }
     public override void AfterMeetingTasks()
     {
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Solsticer)).ToArray())
@@ -237,7 +211,7 @@ internal class Solsticer : RoleBase
         writer.Write(playerid);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         Logger.Info("syncsolsticer", "solsticer");
         int AllCount = reader.ReadInt32();

@@ -120,7 +120,7 @@ internal class Warlock : RoleBase
                     if (cp.RpcCheckAndMurder(targetw, true))
                     {
                         targetw.SetRealKiller(shapeshifter);
-                        cp.RpcMurderPlayerV3(targetw);
+                        cp.RpcMurderPlayer(targetw);
                         shapeshifter.RpcGuardAndKill(shapeshifter);
                         Logger.Info($"{targetw.GetNameWithRole()} was killed", "Warlock");
                         shapeshifter.Notify(Translator.GetString("WarlockControlKill"));

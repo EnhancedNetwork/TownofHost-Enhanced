@@ -17,6 +17,7 @@ internal class Workaholic : RoleBase
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     //==================================================================\\
+    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public static OptionItem WorkaholicCannotWinAtDeath;
     public static OptionItem WorkaholicVentCooldown;
@@ -75,7 +76,7 @@ internal class Workaholic : RoleBase
                 Main.PlayerStates[pc.PlayerId].deathReason = pc.PlayerId == player.PlayerId ?
                     PlayerState.DeathReason.Overtired : PlayerState.DeathReason.Ashamed;
 
-                pc.RpcMurderPlayerV3(pc);
+                pc.RpcMurderPlayer(pc);
                 pc.SetRealKiller(player);
             }
         }

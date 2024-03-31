@@ -92,7 +92,7 @@ internal class Reverie : RoleBase
         if (NowCooldown[killer.PlayerId] >= MaxKillCooldown.GetFloat() && MisfireSuicide.GetBool())
         {
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-            killer.RpcMurderPlayerV3(killer);
+            killer.RpcMurderPlayer(killer);
         }
         return true;
     }

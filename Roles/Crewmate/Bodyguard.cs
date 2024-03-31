@@ -35,7 +35,7 @@ internal class Bodyguard : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer.PlayerId == target.PlayerId || playerIdList.Count <= 0) return true;
+        if (killer?.PlayerId == target.PlayerId || playerIdList.Count <= 0) return true;
 
         foreach (var bodyguardId in playerIdList.ToArray())
         {

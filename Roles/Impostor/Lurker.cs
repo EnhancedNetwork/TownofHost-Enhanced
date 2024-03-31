@@ -1,20 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Lurker : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 1900;
 
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ReduceKillCooldown;
 
-    private static List<byte> playerIdList = [];
 
     public static void SetupCustomOption()
     {
@@ -26,13 +29,11 @@ internal class Lurker : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
     }
 
     public  override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DefaultKillCooldown.GetFloat();

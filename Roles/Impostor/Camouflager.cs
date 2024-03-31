@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Translator;
@@ -8,11 +9,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Camouflager : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2900;
-    public static bool On;
-    public override bool IsEnable => On;
+    public static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
-
+    //==================================================================\\
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Camo");
 
     private static OptionItem CamouflageCooldownOpt;
@@ -44,9 +47,9 @@ internal class Camouflager : RoleBase
     }
     public override void Init()
     {
-        Timer = [];
+        Timer.Clear();
         AbilityActivated = false;
-        On = false;
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -56,7 +59,7 @@ internal class Camouflager : RoleBase
         DisableReportWhenCamouflageIsActive = DisableReportWhenCamouflageIsActiveOpt.GetBool();
         
         ShapeshiftIsHidden = Options.DisableShapeshiftAnimations.GetBool();
-        On = true;
+        Playerids.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

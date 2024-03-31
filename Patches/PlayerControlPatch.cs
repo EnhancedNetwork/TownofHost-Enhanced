@@ -135,13 +135,13 @@ class CheckMurderPatch
         }
 
         // Set kill cooldown for Chronomancer
-        if (killerRole.Is(CustomRoles.Chronomancer))
+        if (killerRole is CustomRoles.Chronomancer)
             Chronomancer.OnCheckMurder(killer);
 
         killer.ResetKillCooldown();
 
         // Replacement process when the actual killer and the KILLER are different
-        if (Sniper.On)
+        if (Sniper.HasEnabled)
         {
             Sniper.TryGetSniper(target.PlayerId, ref killer);
             
@@ -517,6 +517,13 @@ class RpcMurderPlayerPatch
         messageWriter.WriteNetObject(target);
         messageWriter.Write((int)murderResultFlags);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        var killer = target.GetRealKiller();
+        if (target.Is(CustomRoles.Susceptible))
+            Susceptible.CallEnabledAndChange(target);
+
+        if (!killer.RpcCheckAndMurder(target, check: true) && !killer.Is(CustomRoles.Pestilence))
+            Logger.Warn($" Killer: {killer.GetRealName} murdered {target.GetRealName()} while target was under protection", "RpcMurderPlayerPatch..Prefix");
 
         return false;
         // There is no need to include DecisionByHost. DecisionByHost will make client check protection locally and cause confusion.
@@ -1485,8 +1492,7 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        Main.RoleClass.Values.Where(RoleBase => RoleBase.IsEnable)
-            .Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
+        Main.EnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
 
         __instance.RpcRemovePet();
     }
@@ -1575,6 +1581,7 @@ class PlayerControlSetRolePatch
 
         if (roleType == RoleTypes.GuardianAngel && !DidSetGhost.ContainsKey(__instance.PlayerId)) 
         {
+            Utils.NotifyRoles(SpecifyTarget: __instance, NoCache: true); //Update rolename for vanilla
             _ = new LateTask(() => { 
                 
                 __instance.RpcResetAbilityCooldown();

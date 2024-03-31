@@ -16,6 +16,7 @@ internal class Taskinator : RoleBase
     public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
+    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     private static OptionItem TaskMarkPerRoundOpt;
 
@@ -60,7 +61,7 @@ internal class Taskinator : RoleBase
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte taskinatorID = reader.ReadByte();
         int taskInd = reader.ReadInt32();
@@ -112,6 +113,7 @@ internal class Taskinator : RoleBase
         if (player == null) return;
         if (!player.IsAlive()) return;
         byte playerId = player.PlayerId;
+        var Taskinators = playerIdList.GetPlayerListByIds();
         if (player.Is(CustomRoles.Taskinator))
         {
             if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
@@ -124,10 +126,10 @@ internal class Taskinator : RoleBase
             TaskMarkPerRound[playerId]++;
             if (!taskIndex.ContainsKey(playerId)) taskIndex[playerId] = [];
             taskIndex[playerId].Add(task.Index);
-            SendRPC(taskinatorID : playerId, taskIndex : task.Index);
+            SendRPC(taskinatorID: playerId, taskIndex: task.Index);
             player.Notify(GetString("TaskinatorBombPlanted"));
         }
-        else
+        else if (Taskinators.All(Inator => Inator.RpcCheckAndMurder(player, true)))
         {
             foreach (var taskinatorId in taskIndex.Keys)
             { 
@@ -138,7 +140,7 @@ internal class Taskinator : RoleBase
 
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                     player.SetRealKiller(taskinatorPC);
-                    player.RpcMurderPlayerV3(player);
+                    player.RpcMurderPlayer(player);
 
                     taskIndex[taskinatorId].Remove(task.Index);
                     SendRPC(taskinatorID : taskinatorId, taskIndex:task.Index, isKill : true);

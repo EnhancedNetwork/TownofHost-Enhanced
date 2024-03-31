@@ -64,7 +64,7 @@ internal class Deceiver : RoleBase
         writer.Write(SeelLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -132,7 +132,7 @@ internal class Deceiver : RoleBase
         if (killer == null) return false;
         
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-        target.RpcMurderPlayerV3(target);
+        target.RpcMurderPlayer(target);
         target.SetRealKiller(killer);
 
         Logger.Info($"The customer {target.GetRealName()} of {pc.GetRealName()}, a counterfeiter, commits suicide by using counterfeits", "Deceiver");

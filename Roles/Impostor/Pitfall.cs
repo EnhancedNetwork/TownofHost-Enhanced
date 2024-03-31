@@ -11,10 +11,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Pitfall : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 5600;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem ShapeshiftCooldown;
     private static OptionItem MaxTrapCount;
@@ -25,7 +28,6 @@ internal class Pitfall : RoleBase
     private static OptionItem TrapCauseVision;
     private static OptionItem TrapCauseVisionTime;
 
-    private static HashSet<byte> playerIdList = [];
     private static List<PitfallTrap> Traps = [];
     private static List<byte> ReducedVisionPlayers = [];
 
@@ -55,8 +57,7 @@ internal class Pitfall : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
+        playerIdList.Clear();
         Traps = [];
         ReducedVisionPlayers = [];
         DefaultSpeed = new();
@@ -70,7 +71,6 @@ internal class Pitfall : RoleBase
 
         TrapMaxPlayerCount = TrapMaxPlayerCountOpt.GetFloat();
         TrapDuration = TrapDurationOpt.GetFloat();
-        On = true;
 
         if (AmongUsClient.Instance.AmHost)
         {

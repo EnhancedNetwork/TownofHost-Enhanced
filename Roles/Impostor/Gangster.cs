@@ -7,17 +7,19 @@ using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Gangster : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 3300;
-    private static List<byte> playerIdList = [];
-
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CanRecruit(player.PlayerId) ? CustomButton.Get("Sidekick") : null;
 
@@ -31,7 +33,7 @@ internal class Gangster : RoleBase
     public static OptionItem MarshallCanBeMadmate;
     public static OptionItem OverseerCanBeMadmate;
 
-    private static Dictionary<byte, int> RecruitLimit = [];
+    private static readonly Dictionary<byte, int> RecruitLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -51,15 +53,13 @@ internal class Gangster : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        RecruitLimit = [];
-        On = false;
+        playerIdList.Clear();
+        RecruitLimit.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         RecruitLimit.TryAdd(playerId, RecruitLimitOpt.GetInt());
-        On = true;
     }
     private static void SendRPC(byte playerId)
     {
@@ -69,7 +69,7 @@ internal class Gangster : RoleBase
         writer.Write(RecruitLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();

@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
 using InnerNet;
 using System.Collections.Generic;
 using TOHE.Roles.AddOns.Common;
@@ -77,7 +78,7 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
     { }
-    
+
     /// <summary>
     /// Player completes a task
     /// </summary>
@@ -91,7 +92,7 @@ public abstract class RoleBase
     // <summary>
     /// The role's tasks are needed for a task win
     /// </summary>
-    public virtual bool HasTasks(byte player, CustomRoles role) => role.IsCrewmate() && !role.IsTasklessCrewmate();
+    public virtual bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (ForRecompute ? !player.Object.IsAnySubRole(x => x.IsConverted()) : true);
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
@@ -312,4 +313,8 @@ public abstract class RoleBase
     public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
+    public virtual void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        Logger.Error($"Role {(CustomRoles)reader.ReadPackedInt32()} can not be handled!", "SyncRoleSkillReader");
+    }
 }

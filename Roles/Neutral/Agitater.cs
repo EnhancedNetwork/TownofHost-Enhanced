@@ -82,7 +82,7 @@ internal class Agitater : RoleBase
         if (AgitaterAutoReportBait.GetBool() && target.Is(CustomRoles.Bait)) return true;
         if (target.Is(CustomRoles.Pestilence))
         {
-            target.RpcMurderPlayerV3(killer);
+            target.RpcMurderPlayer(killer);
             ResetBomb();
             return false;
         }
@@ -106,7 +106,7 @@ internal class Agitater : RoleBase
                 {
                     Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
                     pc.SetRealKiller(Utils.GetPlayerById(playerIdList[0]));
-                    pc.RpcMurderPlayerV3(pc);
+                    pc.RpcMurderPlayer(pc);
                     Logger.Info($"{killer.GetNameWithRole()}  bombed {pc.GetNameWithRole()} bomb cd complete", "Agitater");
                     ResetBomb();
                 }
@@ -159,7 +159,7 @@ internal class Agitater : RoleBase
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);
                 var KillRange = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
-                if (min.Value <= KillRange && !player.inVent && !target.inVent)
+                if (min.Value <= KillRange && !player.inVent && !target.inVent && player.RpcCheckAndMurder(target, true))
                 {
                     PassBomb(player, target);
                 }
@@ -179,7 +179,7 @@ internal class Agitater : RoleBase
 
         if (target.Is(CustomRoles.Pestilence))
         {
-            target.RpcMurderPlayerV3(player);
+            target.RpcMurderPlayer(player);
             ResetBomb();
             return;
         }
@@ -205,7 +205,7 @@ internal class Agitater : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         CurrentBombedPlayer = reader.ReadByte();
         LastBombedPlayer = reader.ReadByte();

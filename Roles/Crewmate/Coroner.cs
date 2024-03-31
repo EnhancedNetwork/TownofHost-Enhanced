@@ -91,7 +91,7 @@ internal class Coroner : RoleBase
         if (operate != 2) writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPCLimit(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte pid = reader.ReadByte();
         int opt = reader.ReadInt32();

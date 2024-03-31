@@ -71,7 +71,7 @@ internal class Medium : RoleBase
         if (isUsed) writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte pid = reader.ReadByte();
         float limit = reader.ReadSingle();

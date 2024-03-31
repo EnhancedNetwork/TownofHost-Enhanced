@@ -10,18 +10,21 @@ namespace TOHE.Roles.Impostor;
 
 internal class RiftMaker : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 27200;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem SSCooldown;
     private static OptionItem KillCooldown;
     private static OptionItem TPCooldownOpt;
     private static OptionItem RiftRadius;
 
-    private static Dictionary<byte, List<Vector2>> MarkedLocation = [];
-    private static Dictionary<byte, long> LastTP = [];
+    private static readonly Dictionary<byte, List<Vector2>> MarkedLocation = [];
+    private static readonly Dictionary<byte, long> LastTP = [];
     private static float TPCooldown = new();
 
     public static void SetupCustomOption()
@@ -39,18 +42,18 @@ internal class RiftMaker : RoleBase
 
     public override void Init()
     {
-        On = false;
-        MarkedLocation = [];
-        LastTP = [];
+        Playerids.Clear();
+        MarkedLocation.Clear();
+        LastTP.Clear();
         TPCooldown = new();
     }
     public override void Add(byte playerId)
     {
-        MarkedLocation[playerId] = [];
+        MarkedLocation[playerId].Clear();
         var now = Utils.GetTimeStamp();
         LastTP[playerId] = now;
         TPCooldown = TPCooldownOpt.GetFloat();
-        On = true;
+        Playerids.Add(playerId);
     }
 
     private static void SendRPC(byte riftID, int operate)
