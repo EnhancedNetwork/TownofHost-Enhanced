@@ -411,9 +411,9 @@ internal class ChatCommands
                         var txt = sb.ToString();
                         sb.Clear().Append(txt.RemoveHtmlTags());
                         foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.ToArray())
-                            sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfo());
+                            sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfoLong());
                         if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                            sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + CustomRoles.Lovers.GetInfo());
+                            sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + CustomRoles.Lovers.GetInfoLong());
                         Utils.SendMessage(sb.ToString(), lp.PlayerId);
                     }
                     else
@@ -1434,7 +1434,7 @@ internal class ChatCommands
                     if (isUp) return;
                 }
                 var sb = new StringBuilder();
-                sb.Append(devMark + roleName + Utils.GetRoleMode(rl) + rl.GetInfo());
+                sb.Append(devMark + roleName + Utils.GetRoleMode(rl) + rl.GetInfoLong());
                 if (Options.CustomRoleSpawnChances.ContainsKey(rl))
                 {
                     Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[rl], ref sb, command: true);
@@ -1519,10 +1519,10 @@ internal class ChatCommands
 
                     foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
                     {
-                        sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfo());
+                        sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfoLong());
 
                         if (CustomRoles.Ntr.RoleExist() && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                            sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + CustomRoles.Lovers.GetInfo());
+                            sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + CustomRoles.Lovers.GetInfoLong());
                     }
                     Utils.SendMessage(sb.ToString(), player.PlayerId);
 

@@ -1596,7 +1596,7 @@ class PlayerControlSetRolePatch
                     var txt = sb.ToString();
                     sb.Clear().Append(txt.RemoveHtmlTags());
                     foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.ToArray())
-                        sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfo());
+                        sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfoLong());
                     var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
                     writer.StartMessage(__instance.GetClientId());
                     writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)

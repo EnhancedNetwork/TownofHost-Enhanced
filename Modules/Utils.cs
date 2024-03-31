@@ -303,24 +303,11 @@ public static class Utils
         }
         return;
     }
-    public static string GetInfo(this CustomRoles role, bool IsForLong = true)
+    public static string GetInfoLong(this CustomRoles role, bool IsForLong = true)
     {
-        var Prefix = "";
-        if (!IsForLong)
-            switch (role)
-            {
-                case CustomRoles.Nemesis:
-                    Prefix = Nemesis.CheckCanUseKillButton() ? "After" : "Before";
-                    break;
-            };
-
-        if (IsForLong)
-        {
-            if (!GetString($"{role}" + "InfoLong").Contains(GetString($"{role}")))
-                return GetString($"{role}" + "InfoLong").Replace($"{role}", GetString($"{role}"));
-            return GetString($"{role}" + "InfoLong");
-        }
-        return GetString($"{Prefix}{role}" + "Info");
+        if (!GetString($"{role}" + "InfoLong").Contains(GetString($"{role}")))
+            return GetString($"{role}" + "InfoLong").Replace($"{role}", GetString($"{role}"));
+        return GetString($"{role}" + "InfoLong");
     }
     public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool notShowAddOns = false)
     {
@@ -609,11 +596,11 @@ public static class Utils
         if (Options.SyncButtonMode.GetBool()) { SendMessage(GetString("SyncButtonModeInfo"), PlayerId); }
         if (Options.SabotageTimeControl.GetBool()) { SendMessage(GetString("SabotageTimeControlInfo"), PlayerId); }
         if (Options.RandomMapsMode.GetBool()) { SendMessage(GetString("RandomMapsModeInfo"), PlayerId); }
-        if (Main.EnableGM.Value) { SendMessage(GetRoleName(CustomRoles.GM) + GetInfo(CustomRoles.GM), PlayerId); }
+        if (Main.EnableGM.Value) { SendMessage(GetRoleName(CustomRoles.GM) + GetInfoLong(CustomRoles.GM), PlayerId); }
         
         foreach (var role in CustomRolesHelper.AllRoles)
         {
-            if (role.IsEnable() && !role.IsVanilla()) SendMessage(GetRoleName(role) + GetRoleMode(role) + GetInfo(role), PlayerId);
+            if (role.IsEnable() && !role.IsVanilla()) SendMessage(GetRoleName(role) + GetRoleMode(role) + GetInfoLong(role), PlayerId);
         }
 
         if (Options.NoGameEnd.GetBool()) { SendMessage(GetString("NoGameEndInfo"), PlayerId); }

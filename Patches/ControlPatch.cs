@@ -81,11 +81,11 @@ internal class ControllerManagerUpdatePatch
                     addDes = [];
                     foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed).ToArray())
                     {
-                        addDes.Add(GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfo());
+                        addDes.Add(GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfoLong());
                     }
                     if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
                     {
-                        addDes.Add(GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + CustomRoles.Lovers.GetInfo());
+                        addDes.Add(GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + CustomRoles.Lovers.GetInfoLong());
                     }
 
                     addonIndex++;

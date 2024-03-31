@@ -922,8 +922,18 @@ static class ExtendedPlayerControl
         var role = player.GetCustomRole();
         if (role is CustomRoles.Crewmate or CustomRoles.Impostor)
             InfoLong = false;
+        var text = role.ToString();
 
-        return !InfoLong ? role.GetInfo(false) : role.GetInfo();
+        var Prefix = "";
+        if (!InfoLong)
+            switch (role)
+            {
+                case CustomRoles.Nemesis:
+                    Prefix = Nemesis.CheckCanUseKillButton() ? "After" : "Before";
+                    break;
+            };
+        var Info = (role.IsVanilla() ? "Blurb" : "Info") + (InfoLong ? "Long" : "");
+        return !InfoLong ? GetString($"{Prefix}{text}{Info}") : role.GetInfoLong();
     }
     public static void SetRealKiller(this PlayerControl target, PlayerControl killer, bool NotOverRide = false)
     {

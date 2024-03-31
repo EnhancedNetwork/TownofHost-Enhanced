@@ -758,10 +758,10 @@ class MeetingHudStartPatch
                 sb.Clear().Append(txt);
                 
                 foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles.ToArray())
-                    sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfo());
+                    sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfoLong());
                 
                 if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                    sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + CustomRoles.Lovers.GetInfo());
+                    sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + CustomRoles.Lovers.GetInfoLong());
                 
                 AddMsg(sb.ToString(), pc.PlayerId);
             }
