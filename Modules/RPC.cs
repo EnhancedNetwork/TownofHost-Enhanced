@@ -496,7 +496,7 @@ internal class RPCHandlerPatch
                 NameNotifyManager.ReceiveRPC(reader);
                 break;
             case CustomRPC.Judge:
-                Judge.ReceiveRPC(reader, __instance);
+                Judge.ReceiveRPC_Custom(reader, __instance);
                 break;
             case CustomRPC.PresidentEnd:
                 President.ReceiveRPC(reader, __instance);
@@ -505,19 +505,19 @@ internal class RPCHandlerPatch
                 President.ReceiveRPC(reader, __instance, isEnd: false);
                 break;
             case CustomRPC.CouncillorJudge:
-                Councillor.ReceiveRPC(reader, __instance);
+                Councillor.ReceiveRPC_Custom(reader, __instance);
                 break;
             case CustomRPC.Guess:
                 GuessManager.ReceiveRPC(reader, __instance);
                 break;
             case CustomRPC.NemesisRevenge:
-                Nemesis.ReceiveRPC(reader, __instance);
+                Nemesis.ReceiveRPC_Custom(reader, __instance);
                 break;
             case CustomRPC.RetributionistRevenge:
-                Retributionist.ReceiveRPC(reader, __instance);
+                Retributionist.ReceiveRPC_Custom(reader, __instance);
                 break;
             case CustomRPC.SetChameleonTimer:
-                Main.RoleClass[CustomRoles.Chameleon].ReceiveRPC(reader, __instance);
+                Chameleon.ReceiveRPC_Custom(reader);
                 break;
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
@@ -857,15 +857,22 @@ internal static class RPC
         CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
         Logger.Info($"Received Sync Role Skill RPC for role {role}", "SyncRoleSkillReader");
 
-        switch (role)
+        try
         {
-            //Crew Roles
-            case CustomRoles.Admirer:
-                Admirer.ReceiveRPC(reader, false);
-                break;
-            default:
-                role.IsRoleClass().ReceiveRPC(reader, pc);
-                break;
+            switch (role)
+            {
+                //Crew Roles
+                case CustomRoles.Admirer:
+                    Admirer.ReceiveRPC(reader, false);
+                    break;
+                default:
+                    role.IsRoleClass().ReceiveRPC(reader, pc);
+                    break;
+            }
+        }
+        catch (Exception error)
+        {
+            Logger.Error($"Role {role} - error RPC:{error}", "SyncRoleSkillReader");
         }
     }
     public static void RpcDoSpell(byte targetId, byte killerId)

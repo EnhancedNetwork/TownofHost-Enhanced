@@ -210,7 +210,7 @@ internal class Retributionist : RoleBase
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
         int PlayerId = reader.ReadByte();
         RetributionistMsgCheck(pc, $"/ret {PlayerId}", true);

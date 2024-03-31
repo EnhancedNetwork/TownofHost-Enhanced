@@ -1492,7 +1492,7 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        Main.EnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
+        CustomRoleManager.AllEnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
 
         __instance.RpcRemovePet();
     }

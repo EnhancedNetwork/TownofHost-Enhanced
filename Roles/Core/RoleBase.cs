@@ -92,7 +92,7 @@ public abstract class RoleBase
     // <summary>
     /// The role's tasks are needed for a task win
     /// </summary>
-    public virtual bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (ForRecompute ? !player.Object.IsAnySubRole(x => x.IsConverted()) : true);
+    public virtual bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (!ForRecompute || !player.Object.IsAnySubRole(x => x.IsConverted()));
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
@@ -314,7 +314,5 @@ public abstract class RoleBase
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
     public virtual void ReceiveRPC(MessageReader reader, PlayerControl pc)
-    {
-        Logger.Error($"Role {(CustomRoles)reader.ReadPackedInt32()} can not be handled!", "SyncRoleSkillReader");
-    }
+    { }
 }

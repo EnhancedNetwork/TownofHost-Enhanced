@@ -320,7 +320,7 @@ public static class Utils
             return string.Empty;
 
         string mode = GetString($"Chance{role.GetMode()}").RemoveHtmlTags();
-        if (role.Is(CustomRoles.Lovers)) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
+        if (role is CustomRoles.Lovers) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
         else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
         {
             mode = GetString($"Chance{Options.CustomAdtRoleSpawnRate[role].GetFloat()}");
@@ -506,11 +506,11 @@ public static class Utils
     // Only to be used for accessing RoleClass, do not assign players from here.
     public static RoleBase IsRoleClass(this CustomRoles role)  
     {
-        if (Main.RoleClass.TryGetValue(role, out var RoleClass))
+        if (CustomRoleManager.RoleClass.TryGetValue(role, out var RoleClass))
             return RoleClass;
 
-        Main.RoleClass.Add(role, role.CreateRoleClass(IsToAccess: true));
-        return Main.RoleClass[role];
+        CustomRoleManager.RoleClass.Add(role, role.CreateRoleClass(IsToAccess: true));
+        return CustomRoleManager.RoleClass[role];
     }
     
     public static string GetProgressText(PlayerControl pc)
@@ -712,7 +712,7 @@ public static class Utils
             string mode = GetString($"Chance{role.GetMode()}");
             if (role.IsEnable())
             {
-                if (role.Is(CustomRoles.Lovers)) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
+                if (role is CustomRoles.Lovers) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
                 else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
                 {
                     mode = GetString($"Chance{Options.CustomAdtRoleSpawnRate[role].GetFloat()}");

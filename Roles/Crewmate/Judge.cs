@@ -269,7 +269,7 @@ internal class Judge : RoleBase
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
         int PlayerId = reader.ReadByte();
         TrialMsg(pc, $"/tl {PlayerId}", true);

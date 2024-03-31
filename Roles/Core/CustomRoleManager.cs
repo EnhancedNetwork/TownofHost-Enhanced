@@ -15,7 +15,8 @@ namespace TOHE.Roles.Core;
 
 public static class CustomRoleManager
 {
-    //public static Dictionary<byte, RoleBase> AllActiveRoles = new(15);
+    public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
+    public static List<RoleBase> AllEnabledRoles => RoleClass.Values.Where(x => x.IsEnable).ToList();
     public static bool HasEnabled(this CustomRoles role) => Utils.IsRoleClass(role).IsEnable;
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
@@ -73,7 +74,7 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
-        return !Main.EnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target));
+        return !AllEnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target));
     }
 
     /// <summary>
