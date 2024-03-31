@@ -1439,7 +1439,7 @@ internal class ChatCommands
                 {
                     Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[rl], ref sb, command: true);
                     var txt = sb.ToString();
-                    sb.Clear().Append(txt);
+                    sb.Clear().Append(txt.RemoveHtmlTags());
                 }
                 Utils.SendMessage(sb.ToString(), playerId);
                 return;
