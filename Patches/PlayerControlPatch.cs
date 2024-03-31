@@ -1594,9 +1594,9 @@ class PlayerControlSetRolePatch
                     if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
                         Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb, command: true);
                     var txt = sb.ToString();
-                    sb.Clear().Append(txt.RemoveHtmlTags());
+                    sb.Clear().Append(txt);
                     foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.ToArray())
-                        sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
+                        sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + subRole.GetInfo());
                     var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
                     writer.StartMessage(__instance.GetClientId());
                     writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)

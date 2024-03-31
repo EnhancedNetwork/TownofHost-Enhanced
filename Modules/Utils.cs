@@ -303,6 +303,25 @@ public static class Utils
         }
         return;
     }
+    public static string GetInfo(this CustomRoles role, bool IsForLong = true)
+    {
+        var Prefix = "";
+        if (!IsForLong)
+            switch (role)
+            {
+                case CustomRoles.Nemesis:
+                    Prefix = Nemesis.CheckCanUseKillButton() ? "After" : "Before";
+                    break;
+            };
+
+        if (IsForLong)
+        {
+            if (!GetString($"{role}" + "InfoLong").Contains(GetString($"{role}")))
+                return GetString($"{role}" + "InfoLong").Replace($"{role}", GetString($"{role}"));
+            return GetString($"{role}" + "InfoLong").Replace($"{role}", $"{role}");
+        }
+        return GetString($"{Prefix}{role}" + "Info");
+    }
     public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool notShowAddOns = false)
     {
         var TextData = GetRoleAndSubText(seerId, targetId, notShowAddOns);
@@ -590,11 +609,11 @@ public static class Utils
         if (Options.SyncButtonMode.GetBool()) { SendMessage(GetString("SyncButtonModeInfo"), PlayerId); }
         if (Options.SabotageTimeControl.GetBool()) { SendMessage(GetString("SabotageTimeControlInfo"), PlayerId); }
         if (Options.RandomMapsMode.GetBool()) { SendMessage(GetString("RandomMapsModeInfo"), PlayerId); }
-        if (Main.EnableGM.Value) { SendMessage(GetRoleName(CustomRoles.GM) + GetString("GMInfoLong"), PlayerId); }
+        if (Main.EnableGM.Value) { SendMessage(GetRoleName(CustomRoles.GM) + GetInfo(CustomRoles.GM), PlayerId); }
         
         foreach (var role in CustomRolesHelper.AllRoles)
         {
-            if (role.IsEnable() && !role.IsVanilla()) SendMessage(GetRoleName(role) + GetRoleMode(role) + GetString(Enum.GetName(typeof(CustomRoles), role) + "InfoLong"), PlayerId);
+            if (role.IsEnable() && !role.IsVanilla()) SendMessage(GetRoleName(role) + GetRoleMode(role) + GetInfo(role), PlayerId);
         }
 
         if (Options.NoGameEnd.GetBool()) { SendMessage(GetString("NoGameEndInfo"), PlayerId); }
@@ -753,10 +772,10 @@ public static class Utils
             if (opt.Value.Name == "AirshipReactorTimeLimit" && !GameStates.AirshipIsActive) continue;
             if (deep > 0)
             {
-                sb.Append(string.Concat(Enumerable.Repeat("┃", Mathf.Max(deep - 1, 0))));
-                sb.Append(opt.Index == option.Children.Count ? "┗ " : "┣ ");
+                sb.Append(string.Concat(Enumerable.Repeat("┃", Mathf.Max(deep - 1, 0))).RemoveHtmlTags());
+                sb.Append(opt.Index == option.Children.Count ? "┗ " : "┣ ".RemoveHtmlTags());
             }
-            sb.Append($"{opt.Value.GetName(true)}: {opt.Value.GetString()}\n");
+            sb.Append(($"{opt.Value.GetName(true)}: {opt.Value.GetString()}\n").RemoveHtmlTags());
             if (opt.Value.GetBool()) ShowChildrenSettings(opt.Value, ref sb, deep + 1);
         }
     }
