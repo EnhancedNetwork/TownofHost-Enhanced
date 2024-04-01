@@ -306,12 +306,12 @@ public static class Utils
     public static string GetRoleTitle(this CustomRoles role)
     {
         string HEX = GetRoleColorCode(role);
-        return $"<color={HEX}>{GetString($"{role}")}</color> {GetRoleMode(role)}";
+        return $"<color={HEX}>{GetString($"{role}").RemoveHtmlTags()}</color> {GetRoleMode(role)}";
     }
     public static string GetInfoLong(this CustomRoles role)
     {
         var InfoLong = GetString($"{role}" + "InfoLong");
-        var CustomName = GetString($"{role}");
+        var CustomName = GetString($"{role}").RemoveHtmlTags();
         string HEX = GetRoleColorCode(role);
 
         if (!InfoLong.Contains(CustomName))
@@ -323,7 +323,7 @@ public static class Utils
     public static string GetInfo(this CustomRoles role, string RoleText)
     {
         var ShortText = GetString(RoleText);
-        var CustomName = GetString($"{role}");
+        var CustomName = GetString($"{role}").RemoveHtmlTags();
 
         if (!ShortText.Contains(CustomName))
             return ShortText.Replace($"{role}", CustomName);
