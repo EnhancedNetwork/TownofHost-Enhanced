@@ -1194,6 +1194,7 @@
   "DisableTaskWin": "Disable Task Win",
   "HideGameSettings": "Hide Game Settings",
   "DIYGameSettings": "Enable only custom /n messages",
+  "Settings:":  "Settings:",
   "PlayerCanSetColor": "Players can use the /color command",
   "PlayerCanSetName": "Players can use the /rn command",
   "PlayerCanUseQuitCommand": "Players can use the /quit command to leave the lobby forever",

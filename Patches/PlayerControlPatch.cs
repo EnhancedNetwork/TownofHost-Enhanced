@@ -1589,14 +1589,15 @@ class PlayerControlSetRolePatch
                     var name = host.Data.PlayerName;
                     var lp = __instance;
                     var sb = new StringBuilder();
+                    var conf = new StringBuilder();
                     var role = __instance.GetCustomRole();
-                    sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + lp.GetRoleInfo(true));
+                    var rlHex = Utils.GetRoleColorCode(role);
+                    sb.Append(Utils.GetRoleTitle(role) + lp.GetRoleInfo(true));
                     if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                        Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb, command: true);
-                    var txt = sb.ToString();
-                    sb.Clear().Append(txt.RemoveHtmlTags());
-                    foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.ToArray())
-                        sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
+                        Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref conf);
+                    var cleared = conf.ToString();
+                    conf.Clear().Append($"<size={ChatCommands.Csize}>" + $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n" + cleared + "</size>");
+                    
                     var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
                     writer.StartMessage(__instance.GetClientId());
                     writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
@@ -1605,11 +1606,19 @@ class PlayerControlSetRolePatch
                     writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
                         .Write(sb.ToString())
                         .EndRpc();
-                    writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
-                        .Write(name)
-                        .EndRpc();
                     writer.EndMessage();
                     writer.SendMessage();
+
+                    var writer2 = CustomRpcSender.Create("SendGhostRoleConfig", SendOption.None);
+                    writer2.StartMessage(__instance.GetClientId());
+                    writer2.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
+                        .Write(conf.ToString())
+                        .EndRpc();
+                    writer2.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                        .Write(name)
+                        .EndRpc();
+                    writer2.EndMessage();
+                    writer2.SendMessage();
 
                     // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
 

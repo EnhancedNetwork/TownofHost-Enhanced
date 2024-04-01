@@ -303,6 +303,33 @@ public static class Utils
         }
         return;
     }
+    public static string GetRoleTitle(this CustomRoles role)
+    {
+        string HEX = GetRoleColorCode(role);
+        return $"<color={HEX}>{GetString($"{role}")}</color> {GetRoleMode(role)}";
+    }
+    public static string GetInfoLong(this CustomRoles role)
+    {
+        var InfoLong = GetString($"{role}" + "InfoLong");
+        var CustomName = GetString($"{role}");
+        string HEX = GetRoleColorCode(role);
+
+        if (!InfoLong.Contains(CustomName))
+            return InfoLong.Replace($"{role}", $"<color={HEX}>{CustomName}</color>");
+
+
+        return InfoLong.Replace($"{role}", $"<color={HEX}>{CustomName}</color>");
+    }
+    public static string GetInfo(this CustomRoles role, string RoleText)
+    {
+        var ShortText = GetString(RoleText);
+        var CustomName = GetString($"{role}");
+
+        if (!ShortText.Contains(CustomName))
+            return ShortText.Replace($"{role}", CustomName);
+
+        return ShortText;
+    }
     public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool notShowAddOns = false)
     {
         var TextData = GetRoleAndSubText(seerId, targetId, notShowAddOns);
@@ -317,7 +344,7 @@ public static class Utils
         if (Options.HideGameSettings.GetBool() && Main.AllPlayerControls.Length > 1)
             return string.Empty;
 
-        string mode = GetString($"Chance{role.GetMode()}").RemoveHtmlTags();
+        string mode = GetString($"Chance{role.GetMode()}");
         if (role is CustomRoles.Lovers) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
         else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
         {
@@ -590,11 +617,11 @@ public static class Utils
         if (Options.SyncButtonMode.GetBool()) { SendMessage(GetString("SyncButtonModeInfo"), PlayerId); }
         if (Options.SabotageTimeControl.GetBool()) { SendMessage(GetString("SabotageTimeControlInfo"), PlayerId); }
         if (Options.RandomMapsMode.GetBool()) { SendMessage(GetString("RandomMapsModeInfo"), PlayerId); }
-        if (Main.EnableGM.Value) { SendMessage(GetRoleName(CustomRoles.GM) + GetString("GMInfoLong"), PlayerId); }
+        if (Main.EnableGM.Value) { SendMessage(GetRoleName(CustomRoles.GM) + GetInfoLong(CustomRoles.GM), PlayerId); }
         
         foreach (var role in CustomRolesHelper.AllRoles)
         {
-            if (role.IsEnable() && !role.IsVanilla()) SendMessage(GetRoleName(role) + GetRoleMode(role) + GetString(Enum.GetName(typeof(CustomRoles), role) + "InfoLong"), PlayerId);
+            if (role.IsEnable() && !role.IsVanilla()) SendMessage(GetRoleName(role) + GetRoleMode(role) + GetInfoLong(role), PlayerId);
         }
 
         if (Options.NoGameEnd.GetBool()) { SendMessage(GetString("NoGameEndInfo"), PlayerId); }

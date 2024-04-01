@@ -749,21 +749,29 @@ class MeetingHudStartPatch
             {
                 var role = pc.GetCustomRole();
                 var sb = new StringBuilder();
-                sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + pc.GetRoleInfo(true));
-                
+                var Conf = new StringBuilder(); 
+                var Sub = new StringBuilder(); 
+                var rlHex = Utils.GetRoleColorCode(role);
+                //sb.Append(String.Format(GetString("PlayerNameForRoleInfo"), Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId]));
+                sb.Append(role.GetRoleTitle() + pc.GetRoleInfo(true));
                 if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                    Utils.ShowChildrenSettings(opt, ref sb, command: true);
-                
-                var txt = sb.ToString();
-                sb.Clear().Append(txt.RemoveHtmlTags());
-                
+                    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref Conf, command: true);
+                var cleared = Conf.ToString().Remove(0, 2);
+                Conf.Clear().Append($"<size={ChatCommands.Csize}>" + $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n" + cleared + "</size>");
+
                 foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles.ToArray())
-                    sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
-                
+                    Sub.Append($"\n\n" + $"<size={ChatCommands.Asize}>" + Utils.GetRoleTitle(subRole) + Utils.GetInfoLong(subRole) + "</size>");
                 if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                    sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
-                
+                    Sub.Append($"\n\n" + $"<size={ChatCommands.Asize}>" + Utils.GetRoleTitle(CustomRoles.Lovers) + Utils.GetInfoLong(CustomRoles.Lovers) + "</size>");
+
+                var ACleared = Sub.ToString().Remove(0, 2);
+                ACleared = ACleared.Length > 1200 ? ACleared.RemoveHtmlTags() : ACleared;
+                Sub.Clear().Append(ACleared);
+
                 AddMsg(sb.ToString(), pc.PlayerId);
+                AddMsg(Conf.ToString(), pc.PlayerId);
+                AddMsg(Sub.ToString(), pc.PlayerId);
+
             }
 
         if (msgToSend.Count >= 1)
