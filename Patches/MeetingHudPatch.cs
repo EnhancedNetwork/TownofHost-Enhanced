@@ -8,6 +8,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static Il2CppMono.Security.X509.X520;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -749,29 +750,33 @@ class MeetingHudStartPatch
             {
                 var role = pc.GetCustomRole();
                 var sb = new StringBuilder();
+                var title = new StringBuilder();
                 var Conf = new StringBuilder(); 
                 var Sub = new StringBuilder(); 
                 var rlHex = Utils.GetRoleColorCode(role);
-                //sb.Append(String.Format(GetString("PlayerNameForRoleInfo"), Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId]));
-                sb.Append(role.GetRoleTitle() + pc.GetRoleInfo(true));
+                title.Append($"<color=#ffffff>" + role.GetRoleTitle() + "</color>" + "\n");
+                sb.Append(pc.GetRoleInfo(true));
                 if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
                     Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref Conf);
                 var cleared = Conf.ToString();
                 var Setting = $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n";
-                Conf.Clear().Append($"<size={ChatCommands.Csize}>" + Setting + cleared + "</size>");
+                Conf.Clear().Append($"<color=#ffffff>" + $"<size={ChatCommands.Csize}>" + Setting + cleared + "</size>" + "</color>");
 
                 foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles.ToArray())
                     Sub.Append($"\n\n" + $"<size={ChatCommands.Asize}>" + Utils.GetRoleTitle(subRole) + Utils.GetInfoLong(subRole) + "</size>");
                 if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
                     Sub.Append($"\n\n" + $"<size={ChatCommands.Asize}>" + Utils.GetRoleTitle(CustomRoles.Lovers) + Utils.GetInfoLong(CustomRoles.Lovers) + "</size>");
 
-                var ACleared = Sub.ToString().Remove(0, 2);
-                ACleared = ACleared.Length > 1200 ? ACleared.RemoveHtmlTags() : ACleared;
-                Sub.Clear().Append(ACleared);
+                if (Sub.ToString() != string.Empty)
+                {
+                    var ACleared = Sub.ToString().Remove(0, 2);
+                    ACleared = ACleared != string.Empty ? (ACleared.Length > 1200 ? ACleared.RemoveHtmlTags() : ACleared) : ACleared;
+                    Sub.Clear().Append(ACleared);
+                }
 
-                AddMsg(sb.ToString(), pc.PlayerId);
-                AddMsg(Conf.ToString(), pc.PlayerId);
-                AddMsg(Sub.ToString(), pc.PlayerId);
+                AddMsg(sb.ToString(), pc.PlayerId, title.ToString());
+                AddMsg("", pc.PlayerId, Conf.ToString());
+                if (Sub.ToString() != string.Empty) AddMsg(Sub.ToString(), pc.PlayerId);
 
             }
 

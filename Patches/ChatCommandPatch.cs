@@ -11,6 +11,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static Il2CppMono.Security.X509.X520;
 using static TOHE.Translator;
 
 
@@ -26,7 +27,7 @@ internal class ChatCommands
 
     public const string Csize = "85%"; // CustomRole Settings Font-Size
     public const string Asize = "75%"; // All Appended Addons Font-Size
-
+    public const string DscSize = "85%"; // Role Description Size
 
     public static List<string> ChatHistory = [];
 
@@ -407,16 +408,19 @@ internal class ChatCommands
                     {
                         var lp = PlayerControl.LocalPlayer;
                         var sb = new StringBuilder();
+                        var title = new StringBuilder();
                         var Conf = new StringBuilder(); 
                         var Sub = new StringBuilder(); 
                         var rlHex = Utils.GetRoleColorCode(role);
                         //sb.Append(String.Format(GetString("PlayerNameForRoleInfo"), Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId]));
-                        sb.Append(role.GetRoleTitle() + lp.GetRoleInfo(true));
+                        title.Append($"<color=#ffffff>" + role.GetRoleTitle() + "</color>" + "\n");
+                        sb.Append(lp.GetRoleInfo(true));
+
                         if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
                             Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref Conf);
                         var cleared = Conf.ToString();
                         var Setting = $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n";
-                        Conf.Clear().Append($"<size={Csize}>" + Setting + cleared + "</size>");
+                        Conf.Clear().Append($"<color=#ffffff>" + $"<size={Csize}>" + Setting + cleared + "</size>" + "</color>");
 
 
                         foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.ToArray())
@@ -424,13 +428,16 @@ internal class ChatCommands
                         if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
                             Sub.Append($"\n\n" + $"<size={Asize}>" + Utils.GetRoleTitle(CustomRoles.Lovers) + Utils.GetInfoLong(CustomRoles.Lovers) + "</size>");
 
-                        var ACleared = Sub.ToString().Remove(0, 2);
-                        ACleared = ACleared.Length > 1200 ? ACleared.RemoveHtmlTags() : ACleared;
-                        Sub.Clear().Append(ACleared);
+                        if (Sub.ToString() != string.Empty)
+                        {
+                            var ACleared = Sub.ToString().Remove(0, 2);
+                            ACleared = ACleared.Length > 1200 ? ACleared.RemoveHtmlTags() : ACleared;
+                            Sub.Clear().Append(ACleared);
+                        }
 
-                        Utils.SendMessage(sb.ToString(), lp.PlayerId);
-                        Utils.SendMessage(Conf.ToString(), lp.PlayerId);
-                        Utils.SendMessage(Sub.ToString(), lp.PlayerId);
+                        Utils.SendMessage(sb.ToString(), lp.PlayerId, title.ToString());
+                        Utils.SendMessage("", lp.PlayerId, Conf.ToString());
+                        if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), lp.PlayerId);
                     }
                     else
                         Utils.SendMessage((PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + GetString("Message.CanNotUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
@@ -1457,19 +1464,21 @@ internal class ChatCommands
                     if (isUp) return;
                 }
                 var sb = new StringBuilder();
+                var title = new StringBuilder();
                 var Conf = new StringBuilder();
                 string rlHex = Utils.GetRoleColorCode(rl);
-                sb.Append(devMark + rl.GetRoleTitle() + Utils.GetInfoLong(rl));
+                title.Append(devMark + $"<color=#ffffff>" + rl.GetRoleTitle() + "</color>" + "\n");
+                sb.Append(Utils.GetInfoLong(rl) + "\n");
                 if (Options.CustomRoleSpawnChances.ContainsKey(rl))
                 {
                     Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[rl], ref Conf);
                     var cleared = Conf.ToString();
                     var Setting = $"<color={rlHex}>{GetString(rl.ToString())} {GetString("Settings:")}</color>\n";
-                    Conf.Clear().Append($"<size={Csize}>" + Setting + cleared + "</size>");
+                    Conf.Clear().Append($"<color=#ffffff>" + $"<size={Csize}>" + Setting + cleared + "</size>" + "</color>");
 
                 }
-                Utils.SendMessage(sb.ToString(), playerId);
-                Utils.SendMessage(Conf.ToString(), playerId);
+                Utils.SendMessage(sb.ToString(), playerId, title.ToString());
+                Utils.SendMessage("", playerId, Conf.ToString());
                 return;
             }
         }
@@ -1535,17 +1544,19 @@ internal class ChatCommands
                 if (GameStates.IsInGame)
                 {
                     var sb = new StringBuilder();
+                    var title = new StringBuilder();
                     var Conf = new StringBuilder(); 
                     var Sub = new StringBuilder();
                     var rlHex = Utils.GetRoleColorCode(role);
                     //sb.Append(String.Format(GetString("PlayerNameForRoleInfo"), Main.AllPlayerNames[player.PlayerId]));
-                    sb.Append(role.GetRoleTitle() + player.GetRoleInfo(true));
+                    title.Append($"<color=#ffffff>" + role.GetRoleTitle() + "</color>" + "\n");
+                    sb.Append(player.GetRoleInfo(true));
 
                     if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
                         Utils.ShowChildrenSettings(opt, ref Conf);
                     var cleared = Conf.ToString();
                     var Setting = $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n";
-                    Conf.Clear().Append($"<size={Csize}>" + Setting + cleared + "</size>");
+                    Conf.Clear().Append($"<color=#ffffff>" + $"<size={Csize}>" + Setting + cleared + "</size>" + "</Color>");
 
                     foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
                     {
@@ -1554,13 +1565,16 @@ internal class ChatCommands
                         if (CustomRoles.Ntr.RoleExist() && (role is not CustomRoles.GM and not CustomRoles.Ntr))
                             Sub.Append($"\n\n" + $"<size={Asize}>" + Utils.GetRoleTitle(CustomRoles.Lovers) + Utils.GetInfoLong(CustomRoles.Lovers) + "</size>");
                     }
-                    var ACleared = Sub.ToString().Remove(0, 2);
-                    ACleared = ACleared.Length > 1200 ? ACleared.RemoveHtmlTags() : ACleared;
-                    Sub.Clear().Append(ACleared);
+                    if (Sub.ToString() != string.Empty)
+                    {
+                        var ACleared = Sub.ToString().Remove(0, 2);
+                        ACleared = ACleared.Length > 1200 ? ACleared.RemoveHtmlTags() : ACleared;
+                        Sub.Clear().Append(ACleared);
+                    }
 
-                    Utils.SendMessage(sb.ToString(), player.PlayerId);
-                    Utils.SendMessage(Conf.ToString(), player.PlayerId);
-                    Utils.SendMessage(Sub.ToString(), player.PlayerId);
+                    Utils.SendMessage(sb.ToString(), player.PlayerId, title.ToString());
+                    Utils.SendMessage("", player.PlayerId, Conf.ToString());
+                    if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), player.PlayerId);
 
                     Logger.Info($"Command '/m' should be send message", "OnReceiveChat");
                 }
@@ -2470,6 +2484,7 @@ class ChatUpdatePatch
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
             player.SetName(name);
         }
+
 
         var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
         writer.StartMessage(clientId);
