@@ -311,22 +311,22 @@ public static class Utils
     public static string GetInfoLong(this CustomRoles role)
     {
         var InfoLong = GetString($"{role}" + "InfoLong");
-        var CustomName = GetString($"{role}").RemoveHtmlTags();
+        var CustomName = GetString($"{role}");
         string HEX = GetRoleColorCode(role);
 
-        if (!InfoLong.Contains(CustomName))
-            return InfoLong.Replace($"{role}", $"<color={HEX}>{CustomName}</color>");
+        //if (!InfoLong.Contains(CustomName)) Disabled until I figure out how to get realrolename
+        //    return InfoLong.Replace($"{role}", $"<color={HEX}>{CustomName}</color>");
 
 
-        return InfoLong.Replace($"{role}", $"<color={HEX}>{CustomName}</color>");
+        return InfoLong;/*.Replace($"{role}", $"<color={HEX}>{CustomName}</color>");*/
     }
     public static string GetInfo(this CustomRoles role, string RoleText)
     {
         var ShortText = GetString(RoleText);
         var CustomName = GetString($"{role}");
 
-        if (!ShortText.Contains(CustomName))
-            return ShortText.Replace($"{role}", CustomName);
+        //if (!ShortText.Contains(CustomName))
+        //    return ShortText.Replace($"{role}", CustomName);
 
         return ShortText;
     }
