@@ -2612,6 +2612,7 @@ public static class Options
         OptionSaver.Load();
         IsLoaded = true;
     }
+
     public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
         var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? EnumHelper.GetAllNames<RatesZeroOne>() : EnumHelper.GetAllNames<SpawnChance>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))

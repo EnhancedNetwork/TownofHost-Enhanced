@@ -755,8 +755,8 @@ class MeetingHudStartPatch
                 //sb.Append(String.Format(GetString("PlayerNameForRoleInfo"), Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId]));
                 sb.Append(role.GetRoleTitle() + pc.GetRoleInfo(true));
                 if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref Conf, command: true);
-                var cleared = Conf.ToString().Remove(0, 2);
+                    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref Conf);
+                var cleared = Conf.ToString();
                 Conf.Clear().Append($"<size={ChatCommands.Csize}>" + $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n" + cleared + "</size>");
 
                 foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles.ToArray())
