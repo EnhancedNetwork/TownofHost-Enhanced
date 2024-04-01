@@ -312,21 +312,23 @@ public static class Utils
     {
         var InfoLong = GetString($"{role}" + "InfoLong");
         var CustomName = GetString($"{role}");
+        ChatCommands.GetRoleByName(CustomName, out CustomRoles RealRole);
         string HEX = GetRoleColorCode(role);
 
-        //if (!InfoLong.Contains(CustomName)) Disabled until I figure out how to get realrolename
-        //    return InfoLong.Replace($"{role}", $"<color={HEX}>{CustomName}</color>");
+        if (!InfoLong.Contains(CustomName)) 
+            return InfoLong.Replace(RealRole.ToString(), $"<color={HEX}>{CustomName}</color>");
 
 
-        return InfoLong;/*.Replace($"{role}", $"<color={HEX}>{CustomName}</color>");*/
+        return InfoLong.Replace(RealRole.ToString(), $"<color={HEX}>{CustomName}</color>");
     }
     public static string GetInfo(this CustomRoles role, string RoleText)
     {
         var ShortText = GetString(RoleText);
         var CustomName = GetString($"{role}");
+        ChatCommands.GetRoleByName(CustomName, out CustomRoles RealRole);
 
-        //if (!ShortText.Contains(CustomName))
-        //    return ShortText.Replace($"{role}", CustomName);
+        if (!ShortText.Contains(CustomName))
+            return ShortText.Replace(RealRole.ToString(), CustomName);
 
         return ShortText;
     }
