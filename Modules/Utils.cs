@@ -323,7 +323,7 @@ public static class Utils
     public static string GetInfo(this CustomRoles role, string RoleText)
     {
         var ShortText = GetString(RoleText);
-        var CustomName = GetString($"{role}").RemoveHtmlTags();
+        var CustomName = GetString($"{role}");
 
         if (!ShortText.Contains(CustomName))
             return ShortText.Replace($"{role}", CustomName);
