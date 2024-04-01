@@ -4470,6 +4470,7 @@ class PlayerControlSetRolePatch
                 if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
                 {
                     roleType = RoleTypes.GuardianAngel;
+                    return true;
                 }
                 else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
                 {
