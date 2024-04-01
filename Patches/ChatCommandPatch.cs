@@ -415,7 +415,9 @@ internal class ChatCommands
                         if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
                             Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref Conf);
                         var cleared = Conf.ToString();
-                        Conf.Clear().Append($"<size={Csize}>" + $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n" + cleared + "</size>");
+                        var Setting = $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n";
+                        Conf.Clear().Append($"<size={Csize}>" + Setting + cleared + "</size>");
+
 
                         foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.ToArray())
                             Sub.Append($"\n\n" + $"<size={Asize}>" + Utils.GetRoleTitle(subRole) + Utils.GetInfoLong(subRole) + "</size>");
@@ -1462,7 +1464,9 @@ internal class ChatCommands
                 {
                     Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[rl], ref Conf);
                     var cleared = Conf.ToString();
-                    Conf.Clear().Append($"<size={Csize}>" + $"<color={rlHex}>{GetString(rl.ToString())} {GetString("Settings:")}</color>\n" + cleared + "</size>");
+                    var Setting = $"<color={rlHex}>{GetString(rl.ToString())} {GetString("Settings:")}</color>\n";
+                    Conf.Clear().Append($"<size={Csize}>" + Setting + cleared + "</size>");
+
                 }
                 Utils.SendMessage(sb.ToString(), playerId);
                 Utils.SendMessage(Conf.ToString(), playerId);
@@ -1540,7 +1544,8 @@ internal class ChatCommands
                     if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
                         Utils.ShowChildrenSettings(opt, ref Conf);
                     var cleared = Conf.ToString();
-                    Conf.Clear().Append($"<size={Csize}>" + $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n" + cleared + "</size>");
+                    var Setting = $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n";
+                    Conf.Clear().Append($"<size={Csize}>" + Setting + cleared + "</size>");
 
                     foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
                     {

@@ -1492,7 +1492,8 @@ public static class Options
         Pirate.SetupCustomOption();
 
         Provocateur.SetupCustomOptions();
-        
+
+        Revolutionist.SetupCustomOptions();
         
 
         /*
