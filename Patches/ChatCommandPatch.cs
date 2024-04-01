@@ -1347,14 +1347,14 @@ internal class ChatCommands
             "狡猾" or "棘手者" or "棘手" => ("Tricky"),
             "彩虹" => GetString("Rainbow"),
             "疲勞者" or "疲劳者" or "疲勞" or "疲劳" => GetString("Tired"),
-            "雕像" => Getstring("Statue"),
+            "雕像" => GetString("Statue"),
 
             // 幽靈職業 and 幽灵职业
             // 偽裝者 and 内鬼
-            "爪牙" => Getstring("Minion"),
+            "爪牙" => GetString("Minion"),
             "黑手黨" or "黑手党" or "黑手" => GetString("Nemesis"),
             // 船員 and 船员
-            "没有搜集的繁体中文" or "典狱长" => Getstring("Warden"),
+            "没有搜集的繁体中文" or "典狱长" => GetString("Warden"),
             "報應者" or "惩罚者" or "惩罚" or "报仇者" => GetString("Retributionist"),
 
             // 随机阵营职业
