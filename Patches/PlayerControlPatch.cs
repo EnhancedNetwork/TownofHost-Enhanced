@@ -16,6 +16,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using System.Collections.Generic;
 
 namespace TOHE;
 
@@ -1506,7 +1507,7 @@ class PlayerControlSetRolePatch
 
         var target = __instance;
         var targetName = __instance.GetNameWithRole().RemoveHtmlTags();
-        
+
         // Ghost assign
         if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
         {
@@ -1576,13 +1577,13 @@ class PlayerControlSetRolePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (roleType == RoleTypes.GuardianAngel && !DidSetGhost.ContainsKey(__instance.PlayerId)) 
+        if (roleType == RoleTypes.GuardianAngel && !DidSetGhost.ContainsKey(__instance.PlayerId))
         {
             Utils.NotifyRoles(SpecifyTarget: __instance, NoCache: true); //Update rolename for vanilla
-            _ = new LateTask(() => { 
-                
+            _ = new LateTask(() => {
+
                 __instance.RpcResetAbilityCooldown();
-                
+
                 if (Options.SendRoleDescriptionFirstMeeting.GetBool())
                 {
                     var host = PlayerControl.LocalPlayer;
@@ -1611,7 +1612,7 @@ class PlayerControlSetRolePatch
                     writer.EndMessage();
                     writer.SendMessage();
 
-                   // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
+                    // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
 
                 }
 
