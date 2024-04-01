@@ -826,7 +826,7 @@
   "MayorInfoLong": "(Crewmates):\nAs the Mayor, you have extra votes. As a setting, these votes can be hidden, you can vent to call a meeting at any time, and you are revealed as Mayor upon tasks completion.",
   "PsychicInfoLong": "(Crewmates):\nThe Psychic can see the names of several players highlighted in red during the meeting, at least one of them is evil. The Psychic will correctly see all Neutrals and Killing Crewmates displayed as red names when becoming a Madmate.",
   "MechanicInfoLong": "(Crewmates):\nThe Mechanic can use the vent at any time. They can also fix Reactors, O2, Communications by using only one side. Lights can be fixed by flicking only one switch. Opening a door will open all doors in the map.",
-  "SheriffInfoLong": "(Crewmates):\nSheriff has no task. The sheriff can kill the Impostor (according to the host settings, the sheriff can also kill neutrals). If the Sheriff tries to kill a crewmate, the Sheriff will kill himself. The sheriff can kill anyone when he becomes a madmate (also according to the host settings).",
+  "SheriffInfoLong": "(Crewmates):\nSheriff has no task. The Sheriff can kill the Impostor (according to the host settings, the Sheriff can also kill neutrals). If the Sheriff tries to kill a crewmate, the Sheriff will kill himself. The Sheriff can kill anyone when he becomes a madmate (also according to the host settings).",
   "VigilanteInfoLong": "(Crewmates):\nThe Vigilante is tasked with eliminating potential threats to the crew, but if they mistakenly kill an innocent crew member, they become a Madmate driven by guilt and remorse.\n\n Note: Gangster can not convert Vigilante into madmate.",
   "JailerInfoLong": "(Crewmates):\nAs the Jailer, use your kill button to lock a player in jail. During the next meeting, the jailed player cannot vote or be voted (vote count will be 0). The Jailer may choose to execute the prisoner by voting them. If the Jailer executes an innocent player, the Jailer loses the ability to execute for the rest of the game.\nIf the Jailer is evil, then they can execute anyone.\nThe Jailer has limited executions.\n\nNote : Jailed players cannot be guessed or judged and jailed players can only guess Jailer.",
   "SnitchInfoLong": "(Crewmates):\nAfter the Snitch completes all tasks, they can see Impostors names being displayed in red on meeting. When the Snitch has only one task left, the Impostors will see a 「★」 mark next to the name of themselves and the Snitch. When a Snitch becomes a Madmate, the 「★」 mark turns red.",
@@ -1515,7 +1515,7 @@
   "LawyerCanTargetCrewmate": "Can Target <color=#8cffff>Crewmates</color>",
   "LawyerCanTargetJester": "Can Target <color=#ec62a5>Jester</color>",
   "LawyerChangeRolesAfterTargetKilled": "When Target Dies, <color=#008080>Lawyer</color> becomes",
-  "LaywerShouldChangeRoleAfterTargetKilled": "Should Laywer Change Role when Target Dies",
+  "LaywerShouldChangeRoleAfterTargetKilled": "Should Lawyer Change Role when Target Dies",
   "LawyerTargetDeadInMeeting": "Your target was killed while meeting./nYour role may change depending on the settings.",
 
   "MercenaryLimit": "Time Until Suicide",
