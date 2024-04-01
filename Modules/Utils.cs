@@ -315,10 +315,6 @@ public static class Utils
         ChatCommands.GetRoleByName(CustomName, out CustomRoles RealRole);
         string HEX = GetRoleColorCode(role);
 
-        if (!InfoLong.Contains(CustomName)) 
-            return InfoLong.Replace(RealRole.ToString(), $"<color={HEX}>{CustomName}</color>");
-
-
         return InfoLong.Replace(RealRole.ToString(), $"<color={HEX}>{CustomName}</color>");
     }
     public static string GetInfo(this CustomRoles role, string RoleText)
