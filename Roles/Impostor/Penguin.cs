@@ -175,6 +175,26 @@ internal class Penguin : RoleBase
             stopCount = false;
         }
     }
+
+    public override void OnCoEnterVent(PlayerPhysics physics, int ventId)
+    {
+        if (AbductVictim != null)
+        {
+            physics.RpcBootFromVent(ventId);
+        }
+    }
+    public override bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId)
+    {
+        if (AbductVictim != null)
+        {
+            if (physics.myPlayer.PlayerId == AbductVictim.PlayerId)
+            {
+                physics.RpcBootFromVent(ventId);
+                return true;
+            }
+        }
+        return false;
+    }
     public override void OnFixedUpdate(PlayerControl penguin)
     {
         if (GameStates.IsMeeting) return;
