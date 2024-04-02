@@ -26,7 +26,6 @@ internal class ChatCommands
 
     public const string Csize = "85%"; // CustomRole Settings Font-Size
     public const string Asize = "75%"; // All Appended Addons Font-Size
-    public const string DscSize = "85%"; // Role Description Size
 
     public static List<string> ChatHistory = [];
 
