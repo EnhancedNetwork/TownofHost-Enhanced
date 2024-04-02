@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using MS.Internal.Xml.XPath;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -7,6 +8,7 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Core;
 
@@ -357,17 +359,7 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OthersCoEnterVent(PlayerPhysics physics, int ventId)
     {
-        foreach (var player in Main.AllAlivePlayerControls)
-        {
-            var playerRoleClass = player.GetRoleClass();
-            if (player == null || playerRoleClass == null) continue;
-
-            if (playerRoleClass.OnCoEnterVentOthers(physics, ventId))
-            {
-                return true;
-            }
-        }
-        return false;
+        return AllEnabledRoles.Any(RoleClass => RoleClass.OnCoEnterVentOthers(physics, ventId));
     }
 
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = [];
