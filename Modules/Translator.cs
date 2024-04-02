@@ -104,13 +104,14 @@ public static class Translator
         {
             if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
             {
+                if (!ActualRoleNames.ContainsKey(lang))
+                    ActualRoleNames.Add(lang, []);
                 foreach (var role in CustomRolesHelper.AllRoles)
                 {
-                    if (ActualRoleNames.ContainsKey(lang))
+                    if (ActualRoleNames[lang].ContainsKey(role))
                         ActualRoleNames[lang][role] = GetString($"{role}", lang);
                     else
                     {
-                        ActualRoleNames.Add(lang, []);
                         ActualRoleNames[lang].Add(role, GetString($"{role}", lang));
                     }
                 }
