@@ -114,7 +114,6 @@ public static class Translator
                         ActualRoleNames.Add(lang, []);
                         ActualRoleNames[lang].Add(role, GetString($"{role}", lang));
                     }
-                    Logger.Info($"Added {role}/{GetString($"{role}", lang)}", "Prefix Update translation");
                 }
                 LoadCustomTranslation($"{lang}.dat", lang);
             }
