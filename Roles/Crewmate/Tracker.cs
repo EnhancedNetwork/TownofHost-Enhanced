@@ -145,9 +145,11 @@ internal class Tracker : RoleBase
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return true;
-        TrackLimit[player.PlayerId] += TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPC(2, player.PlayerId);
+        if (player.IsAlive())
+        {
+            TrackLimit[player.PlayerId] += TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(2, player.PlayerId);
+        }
         return true;
     }
     private static string GetTargetArrow(PlayerControl seer, PlayerControl target)

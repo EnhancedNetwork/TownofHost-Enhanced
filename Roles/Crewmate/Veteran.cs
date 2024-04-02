@@ -57,8 +57,9 @@ internal class Veteran : RoleBase
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return true;
-        VeteranNumOfUsed[player.PlayerId] += VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (player.IsAlive())
+            VeteranNumOfUsed[player.PlayerId] += VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
+        
         return true;
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
