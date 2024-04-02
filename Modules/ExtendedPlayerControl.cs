@@ -934,7 +934,7 @@ static class ExtendedPlayerControl
                     break;
             };
         var Info = (role.IsVanilla() ? "Blurb" : "Info") + (InfoLong ? "Long" : "");
-        return !InfoLong ? role.GetInfo($"{Prefix}{text}{Info}") : role.GetInfoLong();
+        return !InfoLong ? GetString($"{Prefix}{text}{Info}") : role.GetInfoLong();
     }
     public static void SetRealKiller(this PlayerControl target, PlayerControl killer, bool NotOverRide = false)
     {

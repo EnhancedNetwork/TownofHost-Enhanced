@@ -308,25 +308,15 @@ public static class Utils
         string HEX = GetRoleColorCode(role);
         return $"<color={HEX}>{GetString($"{role}").RemoveHtmlTags()}</color> {GetRoleMode(role)}";
     }
-    public static string GetInfoLong(this CustomRoles role)
+    public static string GetInfoLong(this CustomRoles role) 
     {
         var InfoLong = GetString($"{role}" + "InfoLong");
         var CustomName = GetString($"{role}");
-        ChatCommands.GetRoleByName(CustomName, out CustomRoles RealRole);
-        string HEX = GetRoleColorCode(role);
-
-        return InfoLong.Replace(RealRole.ToString(), $"<color={HEX}>{CustomName}</color>");
-    }
-    public static string GetInfo(this CustomRoles role, string RoleText)
-    {
-        var ShortText = GetString(RoleText);
-        var CustomName = GetString($"{role}");
+        var ColorName = ColorString(GetRoleColor(role).ShadeColor(0.25f), CustomName);
+        
         ChatCommands.GetRoleByName(CustomName, out CustomRoles RealRole);
 
-        if (!ShortText.Contains(CustomName))
-            return ShortText.Replace(RealRole.ToString(), CustomName);
-
-        return ShortText;
+        return InfoLong.Replace(RealRole.ToString(), $"{ColorName}");
     }
     public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool notShowAddOns = false)
     {

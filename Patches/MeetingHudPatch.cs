@@ -749,13 +749,12 @@ class MeetingHudStartPatch
             foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.IsModClient()).ToArray())
             {
                 var role = pc.GetCustomRole();
-                var sb = new StringBuilder();
-                var title = new StringBuilder();
+                var Des = pc.GetRoleInfo(true);
+                var title = $"<color=#ffffff>" + role.GetRoleTitle() + "</color>\n";
                 var Conf = new StringBuilder(); 
                 var Sub = new StringBuilder(); 
                 var rlHex = Utils.GetRoleColorCode(role);
-                title.Append($"<color=#ffffff>" + role.GetRoleTitle() + "</color>" + "\n");
-                sb.Append(pc.GetRoleInfo(true));
+                var SubTitle = $"<color={rlHex}>" + GetString("YourAddon") + "</color>\n";
                 if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
                     Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref Conf);
                 var cleared = Conf.ToString();
@@ -774,9 +773,9 @@ class MeetingHudStartPatch
                     Sub.Clear().Append(ACleared);
                 }
 
-                AddMsg(sb.ToString(), pc.PlayerId, title.ToString());
+                AddMsg(Des, pc.PlayerId, title);
                 AddMsg("", pc.PlayerId, Conf.ToString());
-                if (Sub.ToString() != string.Empty) AddMsg(Sub.ToString(), pc.PlayerId);
+                if (Sub.ToString() != string.Empty) AddMsg(Sub.ToString(), pc.PlayerId, SubTitle);
 
             }
 
