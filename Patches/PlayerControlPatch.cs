@@ -1369,7 +1369,7 @@ class PlayerControlCompleteTaskPatch
 
         var player = __instance;
 
-        Logger.Info($"TaskComplete:{player.GetNameWithRole()}", "CompleteTask");
+        Logger.Info($"Task Complete: {player.GetNameWithRole()}", "CompleteTask.Prefix");
         var taskState = player.GetPlayerTaskState();
         taskState.Update(player);
 
