@@ -104,7 +104,6 @@ public static class Translator
         {
             if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
             {
-                UpdateCustomTranslation($"{lang}.dat"/*, lang*/);
                 foreach (var role in CustomRolesHelper.AllRoles)
                 {
                     if (ActualRoleNames.ContainsKey(lang))
@@ -115,6 +114,7 @@ public static class Translator
                         ActualRoleNames[lang].Add(role, GetString($"{role}", lang));
                     }
                 }
+                UpdateCustomTranslation($"{lang}.dat"/*, lang*/);
                 LoadCustomTranslation($"{lang}.dat", lang);
             }
         }
