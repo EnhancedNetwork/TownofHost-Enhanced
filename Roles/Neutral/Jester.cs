@@ -18,7 +18,7 @@ internal class Jester : RoleBase
     private static OptionItem JesterCanVent;
     private static OptionItem MeetingsNeededForJesterWin;
     private static OptionItem HideJesterVote;
-    private static OptionItem SunnyboyChance;
+    public static OptionItem SunnyboyChance;
 
     public static void SetupCustomOptions()
     {
@@ -48,21 +48,10 @@ internal class Jester : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        //Jester
         AURoleOptions.EngineerCooldown = 0f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
 
-        //SunnyBoy
-        AURoleOptions.ScientistCooldown = 0f;
-        AURoleOptions.ScientistBatteryCharge = 60f;
-        
-        if (Utils.GetPlayerById(playerId).Is(CustomRoles.Jester))
-            opt.SetVision(JesterHasImpostorVision.GetBool());
-    }
-    public static bool CheckSpawnSunnyboy()
-    {
-        var Rand = IRandom.Instance;
-        return Rand.Next(0, 100) < SunnyboyChance.GetInt();
+        opt.SetVision(JesterHasImpostorVision.GetBool());
     }
     public override bool HideVote(PlayerVoteArea votedPlayer) => HideJesterVote.GetBool();
     public override bool OnCheckStartMeeting(PlayerControl reporter) => JesterCanUseButton.GetBool();
