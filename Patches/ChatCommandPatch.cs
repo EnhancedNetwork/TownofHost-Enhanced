@@ -429,7 +429,7 @@ internal class ChatCommands
                         if (Sub.ToString() != string.Empty)
                         {
                             var ACleared = Sub.ToString().Remove(0, 2);
-                            ACleared = ACleared.Length > 1200 ? ACleared.RemoveHtmlTags() : ACleared;
+                            ACleared = ACleared.Length > 1200 ? $"<size={Asize}>" + ACleared.RemoveHtmlTags() + "</size>" : ACleared;
                             Sub.Clear().Append(ACleared);
                         }
 
@@ -1562,7 +1562,7 @@ internal class ChatCommands
                     if (Sub.ToString() != string.Empty)
                     {
                         var ACleared = Sub.ToString().Remove(0, 2);
-                        ACleared = ACleared.Length > 1200 ? ACleared.RemoveHtmlTags() : ACleared;
+                        ACleared = ACleared.Length > 1200 ? $"<size={Asize}>" + ACleared.RemoveHtmlTags()  + "</size>": ACleared;
                         Sub.Clear().Append(ACleared);
                     }
 

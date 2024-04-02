@@ -750,7 +750,7 @@ class MeetingHudStartPatch
             {
                 var role = pc.GetCustomRole();
                 var Des = pc.GetRoleInfo(true);
-                var title = $"<color=#ffffff>" + role.GetRoleTitle() + "</color>\n";
+                var title = $"<color=#ffffff>" + role.GetRoleTitle() + "</color>\n"; //Sets basic color to white, any sub <color=?????> override it, but this makes sure text isn't red as impostor.
                 var Conf = new StringBuilder(); 
                 var Sub = new StringBuilder(); 
                 var rlHex = Utils.GetRoleColorCode(role);
@@ -769,7 +769,7 @@ class MeetingHudStartPatch
                 if (Sub.ToString() != string.Empty)
                 {
                     var ACleared = Sub.ToString().Remove(0, 2);
-                    ACleared = ACleared != string.Empty ? (ACleared.Length > 1200 ? ACleared.RemoveHtmlTags() : ACleared) : ACleared;
+                    ACleared = ACleared.Length > 1200 ? $"<size={ChatCommands.Asize}>" + ACleared.RemoveHtmlTags() + "</size>": ACleared;
                     Sub.Clear().Append(ACleared);
                 }
 
