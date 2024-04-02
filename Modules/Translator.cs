@@ -30,7 +30,7 @@ public static class Translator
                 RealName = RoleString;
             else
             {
-                Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "Translator.GetActualRole");
+                Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "Translator.GetActualRoleName");
             }
             return;
         }
