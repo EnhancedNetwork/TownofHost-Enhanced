@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using static Il2CppSystem.Net.Http.Headers.Parser;
 
 namespace TOHE;
 
@@ -29,7 +30,7 @@ public static class Translator
                 RealName = RoleString;
             else
             {
-                Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "GetActualRole");
+                Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "Translator.GetActualRole");
             }
             return;
         }
@@ -107,13 +108,13 @@ public static class Translator
                 foreach (var role in CustomRolesHelper.AllRoles)
                 {
                     if (ActualRoleNames.ContainsKey(lang))
-                        ActualRoleNames[lang][role] = GetString($"{role}");
+                        ActualRoleNames[lang][role] = GetString($"{role}", lang);
                     else
                     {
                         ActualRoleNames.Add(lang, []);
-                        ActualRoleNames[lang].Add(role, GetString($"{role}"));
+                        ActualRoleNames[lang].Add(role, GetString($"{role}", lang));
                     }
-                    Logger.Info($"Added {role}/{GetString($"{role}")}", "Prefix Update translation");
+                    Logger.Info($"Added {role}/{GetString($"{role}", lang)}", "Prefix Update translation");
                 }
                 LoadCustomTranslation($"{lang}.dat", lang);
             }
