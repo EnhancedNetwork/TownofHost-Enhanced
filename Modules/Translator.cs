@@ -12,11 +12,31 @@ public static class Translator
 {
     public static Dictionary<string, Dictionary<int, string>> translateMaps;
     public const string LANGUAGE_FOLDER_NAME = "Language";
+    private static Dictionary<SupportedLangs, Dictionary<CustomRoles, string>> ActualRoleNames = [];
     public static void Init()
     {
         Logger.Info("Loading language files...", "Translator");
         LoadLangs();
         Logger.Info("Language file loaded successfully", "Translator");
+    }
+    public static void GetActualRoleName(this CustomRoles role, out string RealName)
+    {
+        var currentlang = TranslationController.Instance.currentLanguage.languageID;
+        RealName = "";
+        if (ActualRoleNames.TryGetValue(currentlang, out var RoleList))
+        {
+            if (RoleList.TryGetValue(role, out var RoleString))
+                RealName = RoleString;
+            else
+            {
+                Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "GetActualRole");
+            }
+            return;
+        }
+        else
+        {
+            RealName = GetString($"{role}");
+        }
     }
     public static void LoadLangs()
     {
@@ -84,6 +104,17 @@ public static class Translator
             if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
             {
                 UpdateCustomTranslation($"{lang}.dat"/*, lang*/);
+                foreach (var role in CustomRolesHelper.AllRoles)
+                {
+                    if (ActualRoleNames.ContainsKey(lang))
+                        ActualRoleNames[lang][role] = GetString($"{role}");
+                    else
+                    {
+                        ActualRoleNames.Add(lang, []);
+                        ActualRoleNames[lang].Add(role, GetString($"{role}"));
+                    }
+                    Logger.Info($"Added {role}/{GetString($"{role}")}", "Prefix Update translation");
+                }
                 LoadCustomTranslation($"{lang}.dat", lang);
             }
         }

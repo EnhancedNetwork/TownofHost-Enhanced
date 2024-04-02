@@ -1385,6 +1385,7 @@ internal class ChatCommands
     public static bool GetRoleByName(string name, out CustomRoles role)
     {
         role = new();
+
         if (name == "" || name == string.Empty) return false;
 
         if ((TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.SChinese) == SupportedLangs.SChinese)
@@ -1407,7 +1408,7 @@ internal class ChatCommands
             var roleName = GetString(rl.ToString()).ToLower().Trim().Replace(" ", "");
             string nameWithoutId = Regex.Replace(name.Replace(" ", ""), @"^\d+", "");
             if (nameWithoutId == roleName)
-            {          
+            {
                 role = rl;
                 return true;
             }

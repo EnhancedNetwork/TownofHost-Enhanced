@@ -314,9 +314,9 @@ public static class Utils
         var CustomName = GetString($"{role}");
         var ColorName = ColorString(GetRoleColor(role).ShadeColor(0.25f), CustomName);
         
-        ChatCommands.GetRoleByName(CustomName, out CustomRoles RealRole);
+        Translator.GetActualRoleName(role, out var RealRole);
 
-        return InfoLong.Replace(RealRole.ToString(), $"{ColorName}");
+        return InfoLong.Replace(RealRole, $"{ColorName}");
     }
     public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool notShowAddOns = false)
     {
