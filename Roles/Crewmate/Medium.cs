@@ -84,11 +84,14 @@ internal class Medium : RoleBase
             ContactPlayer.TryAdd(targetId, pid);
         }
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        ContactLimit[player.PlayerId] += MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPC(player.PlayerId);
+        if (player.IsAlive())
+        {
+            ContactLimit[player.PlayerId] += MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(player.PlayerId);
+        }
+        return true;
     }
     public override void OnReportDeadBody(PlayerControl reported, PlayerControl target)
     {

@@ -58,10 +58,12 @@ internal class TimeMaster : RoleBase
         AURoleOptions.EngineerCooldown = TimeMasterSkillCooldown.GetFloat();
         AURoleOptions.EngineerInVentMaxTime = 1;
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        TimeMasterNumOfUsed[player.PlayerId] += TimeMasterAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (player.IsAlive())
+            TimeMasterNumOfUsed[player.PlayerId] += TimeMasterAbilityUseGainWithEachTaskCompleted.GetFloat();
+
+        return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {

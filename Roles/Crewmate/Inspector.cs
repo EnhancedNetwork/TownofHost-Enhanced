@@ -109,11 +109,14 @@ internal class Inspector : RoleBase
     }
 
     public static bool CheckBaitCountType => InspectCheckBaitCountTypeOpt.GetBool();
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!pc.IsAlive()) return;
-        MaxCheckLimit[pc.PlayerId] += InspectAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPC(pc.PlayerId, 2);
+        if (player.IsAlive())
+        {
+            MaxCheckLimit[player.PlayerId] += InspectAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(player.PlayerId, 2);
+        }
+        return true;
     }
     public override void OnReportDeadBody(PlayerControl reported, PlayerControl target)
     {

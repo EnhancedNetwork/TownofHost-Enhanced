@@ -110,10 +110,12 @@ internal class Lighter : RoleBase
         ProgressText.Append(ColorString(TextColor141, $" <color=#ffffff>-</color> {Math.Round(LighterNumOfUsed[playerId], 1)})"));
         return ProgressText.ToString();
     }
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!pc.IsAlive()) return;
-        LighterNumOfUsed[pc.PlayerId] += LighterAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (player.IsAlive())
+            LighterNumOfUsed[player.PlayerId] += LighterAbilityUseGainWithEachTaskCompleted.GetFloat();
+
+        return true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

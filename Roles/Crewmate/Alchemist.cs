@@ -94,9 +94,9 @@ internal class Alchemist : RoleBase
         }
     }
 
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!pc.IsAlive()) return;
+        if (!player.IsAlive()) return true;
 
         var rand = IRandom.Instance;
         PotionID = (byte)rand.Next(1, 9);
@@ -104,34 +104,36 @@ internal class Alchemist : RoleBase
         switch (PotionID)
         {
             case 1: // Shield
-                pc.Notify(GetString("AlchemistGotShieldPotion"), 15f);
+                player.Notify(GetString("AlchemistGotShieldPotion"), 15f);
                 break;
             case 2: // Suicide
-                pc.Notify(GetString("AlchemistGotSuicidePotion"), 15f);
+                player.Notify(GetString("AlchemistGotSuicidePotion"), 15f);
                 break;
             case 3: // TP to random player
-                pc.Notify(GetString("AlchemistGotTPPotion"), 15f);
+                player.Notify(GetString("AlchemistGotTPPotion"), 15f);
                 break;
             case 4: // Speed
-                pc.Notify(GetString("AlchemistGotSpeedPotion"), 15f);
+                player.Notify(GetString("AlchemistGotSpeedPotion"), 15f);
                 break;
             case 5: // Quick fix next sabo
                 FixNextSabo = true;
                 PotionID = 10;
-                pc.Notify(GetString("AlchemistGotQFPotion"), 15f);
+                player.Notify(GetString("AlchemistGotQFPotion"), 15f);
                 break;
             case 6: // Bloodlust
-                pc.Notify(GetString("AlchemistGotBloodlustPotion"), 15f);
+                player.Notify(GetString("AlchemistGotBloodlustPotion"), 15f);
                 break;
             case 7: // Increased vision
-                pc.Notify(GetString("AlchemistGotSightPotion"), 15f);
+                player.Notify(GetString("AlchemistGotSightPotion"), 15f);
                 break;
             case 8:
-                pc.Notify(GetString("AlchemistGotInvisibility"), 15f);
+                player.Notify(GetString("AlchemistGotInvisibility"), 15f);
                 break;
             default: // just in case
                 break;
         }
+
+        return true;
     }
 
     private static void SendRPC(PlayerControl pc)

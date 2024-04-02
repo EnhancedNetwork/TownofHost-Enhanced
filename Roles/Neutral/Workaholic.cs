@@ -59,10 +59,10 @@ internal class Workaholic : RoleBase
         AURoleOptions.EngineerCooldown = WorkaholicVentCooldown.GetFloat();
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         var AllTasksCount = player.Data.Tasks.Count;
-        if (!((completedTaskCount + 1) >= AllTasksCount && !(WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()))) return;
+        if (!((completedTaskCount + 1) >= AllTasksCount && !(WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()))) return true;
 
         Logger.Info("The Workaholic task is done", "Workaholic");
 
@@ -85,6 +85,7 @@ internal class Workaholic : RoleBase
             CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
         }
 
+        return true;
     }
     public override void OnMeetingHudStart(PlayerControl player)
     {

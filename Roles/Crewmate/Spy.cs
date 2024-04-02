@@ -138,11 +138,14 @@ internal class Spy : RoleBase
         }
         if (change && GameStates.IsInTask) { NotifyRoles(SpecifySeer: pc, ForceLoop: true); }
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        UseLimit[player.PlayerId] += SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendAbilityRPC(player.PlayerId);
+        if (player.IsAlive())
+        {
+            UseLimit[player.PlayerId] += SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendAbilityRPC(player.PlayerId);
+        }
+        return true;
     }
     public override string GetProgressText(byte playerId, bool comms)
     {

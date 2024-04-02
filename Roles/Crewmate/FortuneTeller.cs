@@ -108,13 +108,14 @@ internal class FortuneTeller : RoleBase
     {
         return string.Join("\n", roles.Select(role => $"    ★ {GetRoleName(role)}"));
     }
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (pc.Is(CustomRoles.FortuneTeller) && pc.IsAlive())
+        if (player.Is(CustomRoles.FortuneTeller) && player.IsAlive())
         {
-            CheckLimit[pc.PlayerId] += AbilityUseGainWithEachTaskCompleted.GetFloat();
-            SendRPC(pc.PlayerId);
+            CheckLimit[player.PlayerId] += AbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(player.PlayerId);
         }
+        return true;
     }
     public override void OnVote(PlayerControl player, PlayerControl target)
     {

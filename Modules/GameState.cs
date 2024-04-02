@@ -343,23 +343,6 @@ public class TaskState
         this.hasTasks = false;
     }
 
-    public void Init(PlayerControl player)
-    {
-        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: InitTask", "TaskState.Init");
-
-        if (player == null || player.Data == null || player.Data.Tasks == null) return;
-
-        if (!Utils.HasTasks(player.Data, false))
-        {
-            AllTasksCount = 0;
-            return;
-        }
-
-        hasTasks = true;
-        AllTasksCount = player.Data.Tasks.Count;
-
-        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Init");
-    }
     public static string GetTaskState()
     {
         var playersWithTasks = Main.PlayerStates.Where(a => a.Value.TaskState.hasTasks).ToArray();
@@ -382,57 +365,38 @@ public class TaskState
 
         return $" <size={1.5}>" + ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})") + "</size>\r\n";
     }
+
+    public void Init(PlayerControl player)
+    {
+        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: InitTask", "TaskState.Init");
+
+        if (player == null || player.Data == null || player.Data.Tasks == null) return;
+
+        if (!HasTasks(player.Data, false))
+        {
+            AllTasksCount = 0;
+            return;
+        }
+
+        hasTasks = true;
+        AllTasksCount = player.Data.Tasks.Count;
+
+        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Init");
+    }
     public void Update(PlayerControl player)
     {
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: UpdateTask", "TaskState.Update");
-        GameData.Instance.RecomputeTaskCounts();
-        Logger.Info($"TotalTaskCounts = {GameData.Instance.CompletedTasks}/{GameData.Instance.TotalTasks}", "TaskState.Update");
 
         // If not initialized, initialize it
         if (AllTasksCount == -1) Init(player);
 
         if (!hasTasks) return;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            var playerSubRoles = player.GetCustomSubRoles();
-
-            player.GetRoleClass()?.OnTaskComplete(player, CompletedTasksCount, AllTasksCount);
-
-
-            // Add-Ons
-            if (playerSubRoles.Count > 0)
-            {
-                foreach (var subRole in playerSubRoles)
-                {
-                    switch (subRole)
-                    {
-                        case CustomRoles.Unlucky when player.IsAlive():
-                            Unlucky.SuicideRand(player);
-                            break;
-                        
-                        case CustomRoles.Tired when player.IsAlive():
-                             Tired.AfterActionTasks(player);
-                            break;
-
-                        case CustomRoles.Bloodlust when player.IsAlive():
-                            Bloodlust.OnTaskComplete(player);
-                            break;
-
-                        case CustomRoles.Ghoul when (CompletedTasksCount + 1) >= AllTasksCount:
-                            Ghoul.OnTaskComplete(player);
-                            break;
-                    }
-                }
-            }
-        }
-
         // if it's clear, it doesn't count
         if (CompletedTasksCount >= AllTasksCount) return;
 
         //Solsticer task state is updated by host rpc
         if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return;
-
 
         CompletedTasksCount++;
 

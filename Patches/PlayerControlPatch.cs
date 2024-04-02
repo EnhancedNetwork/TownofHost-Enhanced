@@ -1360,63 +1360,90 @@ class CoExitVentPatch
         player.GetRoleClass()?.OnExitVent(player, id);
     }
 }
-
-[HarmonyPatch(typeof(GameData), nameof(GameData.CompleteTask))]
-class GameDataCompleteTaskPatch
-{
-    public static void Postfix(PlayerControl pc)
-    {
-        if (GameStates.IsHideNSeek) return;
-
-        Logger.Info($"Task Complete: {pc.GetNameWithRole().RemoveHtmlTags()}", "CompleteTask");
-        Main.PlayerStates[pc.PlayerId].UpdateTask(pc);
-        Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
-        Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
-    }
-}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]
 class PlayerControlCompleteTaskPatch
 {
-    public static bool Prefix(PlayerControl __instance)
+    public static bool Prefix(PlayerControl __instance, object[] __args)
     {
         if (GameStates.IsHideNSeek) return false;
 
         var player = __instance;
 
-        if (Workhorse.OnAddTask(player))
-            return false;
+        Logger.Info($"TaskComplete:{player.GetNameWithRole()}", "CompleteTask");
+        var taskState = player.GetPlayerTaskState();
+        taskState.Update(player);
 
-        return true;
+        var ret = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            var roleClass = player.GetRoleClass();
+            // Check task complete for role
+            if (roleClass != null)
+            {
+                ret = roleClass.OnTaskComplete(player, taskState.CompletedTasksCount, taskState.AllTasksCount);
+            }
+
+            // Check others complete task
+            if (player != null && __args != null && __args.Length > 0)
+            {
+                int taskIndex = Convert.ToInt32(__args[0]);
+                var playerTask = player.myTasks[taskIndex];
+
+                CustomRoleManager.OthersCompleteThisTask(player, playerTask);
+            }
+
+            var playerSubRoles = player.GetCustomSubRoles();
+            
+            // Add-Ons
+            if (playerSubRoles.Any())
+            {
+                foreach (var subRole in playerSubRoles)
+                {
+                    switch (subRole)
+                    {
+                        case CustomRoles.Unlucky when player.IsAlive():
+                            Unlucky.SuicideRand(player);
+                            break;
+
+                        case CustomRoles.Tired when player.IsAlive():
+                            Tired.AfterActionTasks(player);
+                            break;
+
+                        case CustomRoles.Bloodlust when player.IsAlive():
+                            Bloodlust.OnTaskComplete(player);
+                            break;
+
+                        case CustomRoles.Ghoul when (taskState.CompletedTasksCount + 1) >= taskState.AllTasksCount:
+                            Ghoul.OnTaskComplete(player);
+                            break;
+
+                        case CustomRoles.Madmate when taskState.IsTaskFinished && player.Is(CustomRoles.Snitch):
+                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(CustomRoleTypes.Impostor)).ToArray())
+                            {
+                                NameColorManager.Add(impostor.PlayerId, player.PlayerId, "#ff1919");
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        // Add task for Workhorse
+        ret &= Workhorse.OnAddTask(player);
+
+        Utils.NotifyRoles(SpecifySeer: player, ForceLoop: true);
+        Utils.NotifyRoles(SpecifyTarget: player, ForceLoop: true);
+
+        return ret;
     }
-    public static void Postfix(PlayerControl __instance, object[] __args)
+    public static void Postfix()
     {
         if (GameStates.IsHideNSeek) return;
 
-        var pc = __instance;
-        Snitch.OnCompleteTask(pc);
-        if (pc != null && __args != null && __args.Length > 0)
-        {
-            int taskIndex = Convert.ToInt32(__args[0]);
-
-            var playerTask = pc.myTasks[taskIndex];
-            CustomRoleManager.OthersCompleteThisTask(pc, playerTask);
-        }
-        var isTaskFinish = pc.GetPlayerTaskState().IsTaskFinished;
-        if (isTaskFinish && pc.Is(CustomRoles.Snitch) && pc.Is(CustomRoles.Madmate))
-        {
-            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(CustomRoleTypes.Impostor)).ToArray())
-            {
-                NameColorManager.Add(impostor.PlayerId, pc.PlayerId, "#ff1919");
-            }
-            Utils.NotifyRoles(SpecifySeer: pc);
-        }
-        if ((isTaskFinish &&
-            pc.GetCustomRole() is CustomRoles.Doctor or CustomRoles.Sunnyboy) ||
-            pc.GetCustomRole() is CustomRoles.SpeedBooster)
-        {
-            //ライターもしくはスピードブースターもしくはドクターがいる試合のみタスク終了時にCustomSyncAllSettingsを実行する
-            Utils.MarkEveryoneDirtySettings();
-        }
+        // Temporarily placed until the treatment of attribute classes is determined
+        GameData.Instance.RecomputeTaskCounts();
+        Logger.Info($"TotalTaskCounts = {GameData.Instance.CompletedTasks}/{GameData.Instance.TotalTasks}", "CompleteTask.Postfix");
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ProtectPlayer))]

@@ -55,10 +55,11 @@ internal class Veteran : RoleBase
         AURoleOptions.EngineerCooldown = VeteranSkillCooldown.GetFloat();
         AURoleOptions.EngineerInVentMaxTime = 1;
     }
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!pc.IsAlive()) return;
-        VeteranNumOfUsed[pc.PlayerId] += VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (!player.IsAlive()) return true;
+        VeteranNumOfUsed[player.PlayerId] += VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
+        return true;
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {

@@ -93,7 +93,7 @@ internal class Captain : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public static void ReceiveRPCRevertAllSpeed(MessageReader reader)
+    public static void ReceiveRPCRevertAllSpeed()
     {
         OriginalSpeed.Clear();
     }
@@ -136,11 +136,11 @@ internal class Captain : RoleBase
 
     public static bool CrewCanFindCaptain() => OptionCrewCanFindCaptain.GetBool();
 
-    public override void OnTaskComplete(PlayerControl pc, int y, int z)
+    public override bool OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     {
-        if (pc == null || !pc.IsAlive()) return;
-        if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
-        if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return;
+        if (pc == null || !pc.IsAlive()) return true;
+        if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
+        if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return true;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
                                                            (x.GetCustomRole().IsImpostorTeamV3() ||
                                                            (CaptainCanTargetNB.GetBool() && x.GetCustomRole().IsNB()) ||
@@ -149,7 +149,7 @@ internal class Captain : RoleBase
                                                            (CaptainCanTargetNK.GetBool() && x.GetCustomRole().IsNeutralKillerTeam()))).ToList();
 
         Logger.Info($"Total Number of Potential Target {allTargets.Count}", "Total Captain Target");
-        if (allTargets.Count == 0) return;
+        if (allTargets.Count == 0) return true;
         var rand = IRandom.Instance;
         var targetPC = allTargets[rand.Next(allTargets.Count)];
         var target = targetPC.PlayerId;
@@ -167,6 +167,8 @@ internal class Captain : RoleBase
             OriginalSpeed.Remove(target);
             SendRPCRevertSpeed(target);
         }, OptionReducedSpeedTime.GetFloat(), "Captain Revert Speed");
+
+        return true;
     }
     private static CustomRoles? SelectRandomAddon(byte targetId)
     {

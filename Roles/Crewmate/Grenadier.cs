@@ -79,10 +79,12 @@ internal class Grenadier : RoleBase
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, GrenadierCauseVision.GetFloat());
         }
     }
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if(pc.IsAlive())
-            GrenadierNumOfUsed[pc.PlayerId] += GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (player.IsAlive())
+            GrenadierNumOfUsed[player.PlayerId] += GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
+
+        return true;
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {

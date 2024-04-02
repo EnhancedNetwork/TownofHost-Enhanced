@@ -39,6 +39,12 @@ internal class Doctor : RoleBase
         AURoleOptions.ScientistCooldown = 0f;
         AURoleOptions.ScientistBatteryCharge = TaskCompletedBatteryChargeOpt.GetFloat();
     }
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    {
+
+        return true;
+    }
+
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
         if (target.Is(CustomRoles.Doctor) && VisibleToEveryoneOpt.GetBool() && !target.IsEvilAddons())

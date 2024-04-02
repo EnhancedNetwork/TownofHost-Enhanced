@@ -142,11 +142,14 @@ internal class Coroner : RoleBase
         }
     }
 
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!pc.IsAlive()) return;
-        UseLimit[pc.PlayerId] += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPCLimit(pc.PlayerId, operate: 2);
+        if (player.IsAlive())
+        {
+            UseLimit[player.PlayerId] += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPCLimit(player.PlayerId, operate: 2);
+        }
+        return true;
     }
 
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)

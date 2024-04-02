@@ -49,10 +49,12 @@ internal class Bastion : RoleBase
         AURoleOptions.EngineerInVentMaxTime = 1;
         AURoleOptions.EngineerCooldown = BastionBombCooldown.GetFloat();
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        BastionNumberOfAbilityUses += BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (player.IsAlive())
+            BastionNumberOfAbilityUses += BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
+        
+        return true;
     }
     public override string GetProgressText(byte playerId, bool comms)
     {

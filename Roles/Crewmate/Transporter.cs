@@ -32,11 +32,11 @@ internal class Transporter : RoleBase
     {
         playerIdList.Add(playerId);
     }
-    public override void OnTaskComplete(PlayerControl pc, int CompletedTasksCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if ((CompletedTasksCount + 1) <= TransporterTeleportMax.GetInt())
+        if ((completedTaskCount + 1) <= TransporterTeleportMax.GetInt())
         {
-            Logger.Info($"Transporter: {pc.GetNameWithRole().RemoveHtmlTags()} completed the task", "Transporter");
+            Logger.Info($"Transporter: {player.GetNameWithRole().RemoveHtmlTags()} completed the task", "Transporter");
 
             var rd = IRandom.Instance;
             List<PlayerControl> AllAlivePlayer = Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()).ToList();
@@ -64,8 +64,10 @@ internal class Transporter : RoleBase
             }
             else
             {
-                pc.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), Translator.GetString("ErrorTeleport")));
+                player.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), Translator.GetString("ErrorTeleport")));
             }
         }
+
+        return true;
     }
 }

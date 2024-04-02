@@ -138,20 +138,20 @@ internal class Merchant : RoleBase
     {
         return !OnClientMurder(killer, target);
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
+        if (!player.IsAlive()) return true;
 
         if (addonsSold[player.PlayerId] >= OptionMaxSell.GetInt())
         {
-            return;
+            return true;
         }
 
         if (addons.Count == 0)
         {
             player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
             Logger.Info("No addons to sell.", "Merchant");
-            return;
+            return true;
         }
 
         var rd = IRandom.Instance;
@@ -200,7 +200,7 @@ internal class Merchant : RoleBase
             {
                 player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
                 Logger.Info("All Alive Player Count = 0", "Merchant");
-                return;
+                return true;
             }
 
             PlayerControl target = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
@@ -213,6 +213,8 @@ internal class Merchant : RoleBase
             
             addonsSold[player.PlayerId] += 1;
         }
+
+        return true;
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {

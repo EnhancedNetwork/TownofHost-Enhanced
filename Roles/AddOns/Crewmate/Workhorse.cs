@@ -50,30 +50,32 @@ public static class Workhorse
     private static bool IsAssignTarget(PlayerControl pc)
     {
         if (!pc.IsAlive() || IsThisRole(pc.PlayerId)) return false;
-        if (pc.Is(CustomRoles.LazyGuy)) return false;
-        if (pc.Is(CustomRoles.Lazy)) return false;
+        if (pc.Is(CustomRoles.Snitch) && !OptionSnitchCanBeWorkhorse.GetBool()) return false;
+        if (pc.Is(CustomRoles.LazyGuy) || pc.Is(CustomRoles.Lazy)) return false;
+
         var taskState = pc.GetPlayerTaskState();
         if (taskState.CompletedTasksCount + 1 < taskState.AllTasksCount) return false;
-        if (AssignOnlyToCrewmate) //クルーメイトのみ
+
+        if (AssignOnlyToCrewmate)
             return pc.Is(CustomRoleTypes.Crewmate);
-        return Utils.HasTasks(pc.Data) //タスクがある
-            && !OverrideTasksData.AllData.ContainsKey(pc.GetCustomRole()); //タスク上書きオプションが無い
+
+        return Utils.HasTasks(pc.Data) //Player has task
+            && !OverrideTasksData.AllData.ContainsKey(pc.GetCustomRole()); //Has the ability to overwrite tasks
     }
     public static bool OnAddTask(PlayerControl pc)
     {
         if (!CustomRoles.Workhorse.IsEnable() || playerIdList.Count >= CustomRoles.Workhorse.GetCount()) return false;
-        if (pc.Is(CustomRoles.Snitch) && !OptionSnitchCanBeWorkhorse.GetBool()) return false;
         if (!IsAssignTarget(pc)) return false;
 
         pc.RpcSetCustomRole(CustomRoles.Workhorse);
         var taskState = pc.GetPlayerTaskState();
         taskState.AllTasksCount += NumLongTasks + NumShortTasks;
-        taskState.CompletedTasksCount++; //今回の完了分加算
+        //taskState.CompletedTasksCount++; //Addition for this completion
 
         if (AmongUsClient.Instance.AmHost)
         {
             Add(pc.PlayerId);
-            GameData.Instance.RpcSetTasks(pc.PlayerId, Array.Empty<byte>()); //タスクを再配布
+            GameData.Instance.RpcSetTasks(pc.PlayerId, Array.Empty<byte>()); // Redistribute tasks
             pc.SyncSettings();
             Utils.NotifyRoles(SpecifySeer: pc);
         }

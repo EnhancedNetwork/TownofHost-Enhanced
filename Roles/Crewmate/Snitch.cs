@@ -141,10 +141,12 @@ internal class Snitch : RoleBase
         IsComplete[snitchId] = true;
     }
 
-    public static void OnCompleteTask(PlayerControl player)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!IsThisRole(player.PlayerId) || player.Is(CustomRoles.Madmate)) return;
+        if (!IsThisRole(player.PlayerId) || player.Is(CustomRoles.Madmate)) return true;
+        
         CheckTask(player);
+        return true;
     }
 
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)

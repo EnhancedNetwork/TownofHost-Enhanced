@@ -99,7 +99,7 @@ internal class Crewpostor : RoleBase
         => (AlliesKnowCrewpostor.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Crewpostor))
             || (KnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(CustomRoleTypes.Impostor));
 
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (TasksDone.ContainsKey(player.PlayerId))
             TasksDone[player.PlayerId]++;
@@ -148,5 +148,7 @@ internal class Crewpostor : RoleBase
                 Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Pestilence Reflect");
             }
         }
+
+        return true;
     }
 }

@@ -133,11 +133,14 @@ internal class Chameleon : RoleBase
             SendRPC(pc);
         }
     }
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!pc.IsAlive()) return;
-        UseLimit[pc.PlayerId] += ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPC(pc, isLimit: true);
+        if (player.IsAlive())
+        {
+            UseLimit[player.PlayerId] += ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(player, isLimit: true);
+        }
+        return true;
     }
     public override void OnFixedUpdateLowLoad(PlayerControl player)
     {

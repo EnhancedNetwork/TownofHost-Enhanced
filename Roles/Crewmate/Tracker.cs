@@ -143,11 +143,12 @@ internal class Tracker : RoleBase
             && TrackerTarget[seer.PlayerId].Contains(target.PlayerId)
             && target.IsAlive();
 
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
+        if (!player.IsAlive()) return true;
         TrackLimit[player.PlayerId] += TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
         SendRPC(2, player.PlayerId);
+        return true;
     }
     private static string GetTargetArrow(PlayerControl seer, PlayerControl target)
     {

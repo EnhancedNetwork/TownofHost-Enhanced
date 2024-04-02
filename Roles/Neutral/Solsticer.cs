@@ -78,10 +78,9 @@ internal class Solsticer : RoleBase
         AURoleOptions.EngineerInVentMaxTime = 0f;
         AURoleOptions.PlayerSpeedMod = !patched ? SolsticerSpeed.GetFloat() : 0.5f;
     } //Enabled Solsticer can vent
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (player == null || !player.Is(CustomRoles.Solsticer)) return;
+        if (player == null) return true;
         if (patched)
         {
             ResetTasks(player);
@@ -96,6 +95,8 @@ internal class Solsticer : RoleBase
         {
             ActiveWarning(player);
         }
+
+        return true;
     }
     private static string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {

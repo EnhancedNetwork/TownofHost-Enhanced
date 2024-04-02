@@ -80,8 +80,7 @@ public abstract class RoleBase
     /// <summary>
     /// Player completes a task
     /// </summary>
-    public virtual void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
-    { }
+    public virtual bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount) => true;
     /// <summary>
     /// Other player complete A Marked task
     /// </summary>
@@ -91,6 +90,7 @@ public abstract class RoleBase
     /// The role's tasks are needed for a task win
     /// </summary>
     public virtual bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (!ForRecompute || !player.Object.IsAnySubRole(x => x.IsConverted()));
+    
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>

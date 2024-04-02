@@ -348,7 +348,7 @@ internal class RPCHandlerPatch
                 Captain.ReceiveRPCRevertSpeed(reader);
                 break;
             case CustomRPC.RevertCaptainAllTargetSpeed:
-                Captain.ReceiveRPCRevertAllSpeed(reader);
+                Captain.ReceiveRPCRevertAllSpeed();
                 break;
             case CustomRPC.SetCaptainVotedTarget:
                 Captain.ReceiveRPCVoteAdd(reader);

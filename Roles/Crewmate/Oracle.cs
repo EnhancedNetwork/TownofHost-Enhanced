@@ -159,11 +159,14 @@ internal class Oracle : RoleBase
             SendMessage(GetString("OracleCheck") + "\n" + msg + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
         }
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        CheckLimit[player.PlayerId] += OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPC(player.PlayerId);
+        if (player.IsAlive())
+        {
+            CheckLimit[player.PlayerId] += OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(player.PlayerId);
+        }
+        return true;
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl tagret)
     {

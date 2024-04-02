@@ -202,11 +202,14 @@ internal class Mechanic : RoleBase
         ProgressText.Append(ColorString(TextColor101, $" <color=#ffffff>-</color> {Math.Round(SkillLimit.GetFloat() - UsedSkillCount[playerId], 1)}"));
         return ProgressText.ToString();
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        UsedSkillCount[player.PlayerId] -= SMAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPC(player.PlayerId);
+        if (player.IsAlive())
+        {
+            UsedSkillCount[player.PlayerId] -= SMAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(player.PlayerId);
+        }
+        return true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

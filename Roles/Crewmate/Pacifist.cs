@@ -80,10 +80,12 @@ internal class Pacifist : RoleBase
     public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
         => PacifistNumOfUsed.TryGetValue(physics.myPlayer.PlayerId, out var count) && count < 1;
 
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        PacifistNumOfUsed[player.PlayerId] += PacifistAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (player.IsAlive())
+            PacifistNumOfUsed[player.PlayerId] += PacifistAbilityUseGainWithEachTaskCompleted.GetFloat();
+        
+        return true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
