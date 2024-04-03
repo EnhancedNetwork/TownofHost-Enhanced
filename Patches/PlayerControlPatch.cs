@@ -4418,16 +4418,16 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        try
-        {
-            var DeathPlayer = __instance;
+        //try
+        //{
+        //    var DeathPlayer = __instance;
 
-            GhostRoleAssign.GhostAssignPatch(DeathPlayer);
-        }
-        catch (Exception error)
-        {
-            Logger.Error($"Error after Ghost assign: {error}", "DiePlayerPatch.GhostAssign");
-        }
+        //    GhostRoleAssign.GhostAssignPatch(DeathPlayer);
+        //}
+        //catch (Exception error)
+        //{
+        //    Logger.Error($"Error after Ghost assign: {error}", "DiePlayerPatch.GhostAssign");
+        //}
 
         __instance.RpcRemovePet();
     }
