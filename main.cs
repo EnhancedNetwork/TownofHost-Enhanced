@@ -461,6 +461,7 @@ public class Main : BasePlugin
         ExceptionMessage = "";
 
         LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
+        LoadRoleClasses();
 
         CustomWinnerHolder.Reset();
         Translator.Init();
@@ -469,7 +470,6 @@ public class Main : BasePlugin
         //SpamManager.Init();
         DevManager.Init();
         Cloud.Init();
-        LoadRoleClasses();
 
         IRandom.SetInstance(new NetRandomWrapper());
 
