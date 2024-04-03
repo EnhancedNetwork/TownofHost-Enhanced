@@ -31,12 +31,16 @@ public abstract class GameOptionsSender
     public virtual void SendGameOptions()
     {
         var opt = BuildGameOptions();
-        var currentGameMode = opt.GameMode;
+        var currentGameMode = opt.GameMode; //Remember the current game mode for further changes if necessary
 
+        //April fools mode toggled on by host
         if (AprilFoolsMode.IsAprilFoolsModeToggledOn)
         {
+            // if current game mode is classic 
             if (GameStates.IsNormalGame)
                 currentGameMode = GameModes.NormalFools;
+
+            // if current game mode is vanilla HideNSeek
             else if (GameStates.IsHideNSeek)
                 currentGameMode = GameModes.SeekFools;
         }
