@@ -16,35 +16,6 @@ using LibCpp2IL;
 namespace TOHE;
 
 // code credit https://github.com/Yumenopai/TownOfHost_Y
-/*
-public class ModNews
-{
-    public int Number;
-    public int BeforeNumber;
-    public string Title;
-    public string SubTitle;
-    public string ShortTitle;
-    public string Text;
-    public string Date;
-
-    public Announcement ToAnnouncement()
-    {
-        var result = new Announcement
-        {
-            Number = Number,
-            Title = Title,
-            SubTitle = SubTitle,
-            ShortTitle = ShortTitle,
-            Text = Text,
-            Language = (uint)DataManager.Settings.Language.CurrentLanguage,
-            Date = Date,
-            Id = "ModNews"
-        };
-
-        return result;
-    }
-}
-*/
 [HarmonyPatch]
 public class ModNews
 {
