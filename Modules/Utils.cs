@@ -333,7 +333,7 @@ public static class Utils
             return string.Empty;
 
         string mode = GetChance(role.GetMode());
-        if (role is CustomRoles.Lovers) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
+        if (role is CustomRoles.Lovers) mode = GetChance(Options.LoverSpawnChances.GetInt());
         else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
         {
             mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());
