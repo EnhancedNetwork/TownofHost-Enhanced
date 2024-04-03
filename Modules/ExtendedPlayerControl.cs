@@ -926,13 +926,9 @@ static class ExtendedPlayerControl
         var text = role.ToString();
 
         var Prefix = "";
-        if (!InfoLong)
-            switch (role)
-            {
-                case CustomRoles.Nemesis:
-                    Prefix = Nemesis.CheckCanUseKillButton() ? "After" : "Before";
-                    break;
-            };
+        if (!InfoLong && role == CustomRoles.Nemesis)
+            Prefix = Nemesis.CheckCanUseKillButton() ? "After" : "Before";
+            
         var Info = (role.IsVanilla() ? "Blurb" : "Info");
         return !InfoLong ? GetString($"{Prefix}{text}{Info}") : role.GetInfoLong();
     }
