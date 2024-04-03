@@ -21,7 +21,7 @@ public static class CustomRoleManager
 
     public static RoleBase CreateRoleClass(this CustomRoles role) 
     {
-        return (RoleBase)Activator.CreateInstance(role.GetRoleClass().GetType());
+        return (RoleBase)Activator.CreateInstance(role.GetRoleClass().GetType()); // Converts this.RoleBase back to its type and creates an unique one.
     }
 
     /// <summary>
