@@ -933,7 +933,7 @@ static class ExtendedPlayerControl
                     Prefix = Nemesis.CheckCanUseKillButton() ? "After" : "Before";
                     break;
             };
-        var Info = (role.IsVanilla() ? "Blurb" : "Info") + (InfoLong ? "Long" : "");
+        var Info = (role.IsVanilla() ? "Blurb" : "Info");
         return !InfoLong ? GetString($"{Prefix}{text}{Info}") : role.GetInfoLong();
     }
     public static void SetRealKiller(this PlayerControl target, PlayerControl killer, bool NotOverRide = false)
