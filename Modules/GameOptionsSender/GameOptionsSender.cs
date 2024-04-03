@@ -31,12 +31,21 @@ public abstract class GameOptionsSender
     public virtual void SendGameOptions()
     {
         var opt = BuildGameOptions();
+        var currentGameMode = opt.GameMode;
+
+        if (AprilFoolsMode.IsAprilFoolsModeToggledOn)
+        {
+            if (GameStates.IsNormalGame)
+                currentGameMode = GameModes.NormalFools;
+            else if (GameStates.IsHideNSeek)
+                currentGameMode = GameModes.SeekFools;
+        }
 
         // option => byte[]
         MessageWriter writer = MessageWriter.Get(SendOption.None);
         writer.Write(opt.Version);
         writer.StartMessage(0);
-        writer.Write((byte)opt.GameMode);
+        writer.Write((byte)currentGameMode);
         if (opt.TryCast<NormalGameOptionsV07>(out var normalOpt))
             NormalGameOptionsV07.Serialize(writer, normalOpt);
         else if (opt.TryCast<HideNSeekGameOptionsV07>(out var hnsOpt))
