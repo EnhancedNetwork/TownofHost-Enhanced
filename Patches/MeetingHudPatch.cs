@@ -749,7 +749,7 @@ class MeetingHudStartPatch
             {
                 var role = pc.GetCustomRole();
                 var Des = pc.GetRoleInfo(true);
-                var title = $"<color=#ffffff>" + role.GetRoleTitle() + "</color>\n"; //Sets basic color to white, any sub <color=?????> override it, but this makes sure text isn't red as impostor.
+                var title = $"<color=#ffffff>" + role.GetRoleTitle() + "</color>\n"; 
                 var Conf = new StringBuilder(); 
                 var Sub = new StringBuilder(); 
                 var rlHex = Utils.GetRoleColorCode(role);
