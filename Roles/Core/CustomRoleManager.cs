@@ -15,7 +15,7 @@ public static class CustomRoleManager
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
     public static RoleBase GetRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new VanillaRole(); // Main alr assigns it new vanilla if null, but incase it is addon somehow O-o
     public static List<RoleBase> AllEnabledRoles => RoleClass.Values.Where(x => x.IsEnable).ToList();
-    public static bool HasEnabled(this CustomRoles role) => RoleClass[role].IsEnable;
+    public static bool HasEnabled(this CustomRoles role) => role.GetRoleClass().IsEnable;
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
 
