@@ -8,6 +8,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 
@@ -294,6 +295,38 @@ public class Main : BasePlugin
             ExceptionMessageIsShown = false;
         }
     }
+    public static void LoadRoleClasses()
+    {
+        TOHE.Logger.Info("Loading All RoleClasses...", "LoadRoleClasses");
+        try
+        {
+            var RoleTypes = Assembly.GetAssembly(typeof(RoleBase))!
+                .GetTypes()
+                .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
+            foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
+            {
+                var RealRole = role switch // Switch role to FatherRole (Double Classes)
+                {
+                    CustomRoles.Vampiress => CustomRoles.Vampire,
+                    CustomRoles.Sunnyboy => CustomRoles.Jester,
+                    CustomRoles.Pestilence => CustomRoles.PlagueBearer,
+                    CustomRoles.Nuker => CustomRoles.Bomber,
+                    CustomRoles.NiceMini or CustomRoles.EvilMini => CustomRoles.Mini,
+                    _ => role
+                };
+                var RoleName = RealRole.ToString();
+                Type roleType = RoleTypes.FirstOrDefault(x => x.Name.Equals(RoleName, StringComparison.OrdinalIgnoreCase)) ?? typeof(VanillaRole);
+
+                CustomRoleManager.RoleClass.Add(role, (RoleBase)Activator.CreateInstance(roleType));
+            }
+
+            TOHE.Logger.Info("RoleClasses Loaded Successfully", "LoadRoleClasses");
+        }
+        catch (Exception err)
+        {
+            TOHE.Logger.Error($"Error at LoadRoleClasses: {err}", "LoadRoleClasses");
+        }
+    }
     static void UpdateCustomTranslation()
     {
         string path = @$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat";
@@ -436,6 +469,7 @@ public class Main : BasePlugin
         //SpamManager.Init();
         DevManager.Init();
         Cloud.Init();
+        LoadRoleClasses();
 
         IRandom.SetInstance(new NetRandomWrapper());
 

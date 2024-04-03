@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using Il2CppSystem.Text.Json;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -13,57 +14,15 @@ namespace TOHE.Roles.Core;
 public static class CustomRoleManager
 {
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
+    public static RoleBase GetRoleClass(this CustomRoles role) => RoleClass[role]; // Assigned in main, and already defaults to new vanilla role if null; Other-wise throw exception.
     public static List<RoleBase> AllEnabledRoles => RoleClass.Values.Where(x => x.IsEnable).ToList();
-    public static bool HasEnabled(this CustomRoles role) => Utils.IsRoleClass(role).IsEnable;
+    public static bool HasEnabled(this CustomRoles role) => RoleClass[role].IsEnable;
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
 
-    private static string GetNameSpace(CustomRoles role)
+    public static RoleBase CreateRoleClass(this CustomRoles role) 
     {
-        if (role.IsGhostRole())
-        {
-            if (role.IsImpostor())
-                return "TOHE.Roles._Ghosts_.Impostor.";
-            
-            if (role.IsCrewmate())
-                return "TOHE.Roles._Ghosts_.Crewmate.";
-        }
-        if (role is CustomRoles.Mini)
-            return "TOHE.Roles.Double.";
-        
-        if (role.IsImpostor() || role is CustomRoles.Crewpostor or CustomRoles.Parasite)
-            return "TOHE.Roles.Impostor.";
-        
-        if (role.IsCrewmate())
-            return "TOHE.Roles.Crewmate.";
-
-        else return "TOHE.Roles.Neutral.";
-    }
-    public static RoleBase CreateRoleClass(this CustomRoles role, bool IsToAccess = false) // CHATGPT COOKED 🔥🔥🗿☕
-    { 
-        role = role switch // Switch role to FatherRole (Double Classes)
-        {
-            CustomRoles.Vampiress => CustomRoles.Vampire,
-            CustomRoles.Sunnyboy => CustomRoles.Jester,
-            CustomRoles.Pestilence => CustomRoles.PlagueBearer,
-            CustomRoles.Nuker => CustomRoles.Bomber,
-            CustomRoles.NiceMini or CustomRoles.EvilMini => CustomRoles.Mini,
-            _ => role
-        };
-        if (!IsToAccess) Logger.Info($"Attempting to Create new {role}()", "CreateRoleClass");
-
-        string RoleNameSpace = GetNameSpace(role);
-        string className = $"{RoleNameSpace}" + role.ToString(); 
-        Type classType = Type.GetType(className);
-
-        if (classType == null || !typeof(RoleBase).IsAssignableFrom(classType))
-        {
-            if (!IsToAccess) Logger.Info("An unknown RoleType or RoleClass was given, assigning new VanillaRole()", "CreateRoleClass");
-            return new VanillaRole();
-        }
-
-        if (!IsToAccess) Logger.Info($"Succesfully Created new {role}()", "CreateRoleClass");
-        return (RoleBase)Activator.CreateInstance(classType);
+        return (RoleBase)Activator.CreateInstance(RoleClass[role].GetType());
     }
 
     /// <summary>

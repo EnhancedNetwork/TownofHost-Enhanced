@@ -502,14 +502,7 @@ public static class Utils
     }
 
     // Only to be used for accessing RoleClass, do not assign players from here.
-    public static RoleBase IsRoleClass(this CustomRoles role)  
-    {
-        if (CustomRoleManager.RoleClass.TryGetValue(role, out var RoleClass))
-            return RoleClass;
-
-        CustomRoleManager.RoleClass.Add(role, role.CreateRoleClass(IsToAccess: true));
-        return CustomRoleManager.RoleClass[role];
-    }
+    
     
     public static string GetProgressText(PlayerControl pc)
     {
