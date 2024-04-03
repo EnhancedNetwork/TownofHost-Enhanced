@@ -132,7 +132,7 @@ public class ModNews
                 var title = newsElement.GetProperty("Title").GetString();
                 var subTitle = newsElement.GetProperty("Subtitle").GetString();
                 var shortTitle = newsElement.GetProperty("Short").GetString();
-                var body = newsElement.GetProperty("Body").EnumerateArray().ToStringEnumerable();
+                var body = newsElement.GetProperty("Body").EnumerateArray().ToStringEnumerable().ToString();
                 var dateString = newsElement.GetProperty("Date").GetString();
                 // Create ModNews object
                 ModNews _ = new(number, title, subTitle, shortTitle, body, dateString);
