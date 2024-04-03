@@ -19,25 +19,6 @@ public static class Translator
         LoadLangs();
         Logger.Info("Language file loaded successfully", "Translator");
     }
-    public static void GetActualRoleName(this CustomRoles role, out string RealName)
-    {
-        var currentlang = TranslationController.Instance.currentLanguage.languageID;
-        RealName = "";
-        if (ActualRoleNames.TryGetValue(currentlang, out var RoleList))
-        {
-            if (RoleList.TryGetValue(role, out var RoleString))
-                RealName = RoleString;
-            else
-            {
-                Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "Translator.GetActualRoleName");
-            }
-            return;
-        }
-        else
-        {
-            RealName = GetString($"{role}");
-        }
-    }
     public static void LoadLangs()
     {
         try
@@ -189,7 +170,25 @@ public static class Translator
     //            LoadCustomTranslation($"{lang}.dat", (SupportedLangs)lang);
     //    }
     //}
-
+    public static void GetActualRoleName(this CustomRoles role, out string RealName)
+    {
+        var currentlang = TranslationController.Instance.currentLanguage.languageID;
+        RealName = "";
+        if (ActualRoleNames.TryGetValue(currentlang, out var RoleList))
+        {
+            if (RoleList.TryGetValue(role, out var RoleString))
+                RealName = RoleString;
+            else
+            {
+                Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "Translator.GetActualRoleName");
+            }
+            return;
+        }
+        else
+        {
+            RealName = GetString($"{role}");
+        }
+    }
     public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true, bool vanilla = false)
     {
         if (vanilla)
