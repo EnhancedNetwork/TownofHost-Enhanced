@@ -173,13 +173,13 @@ public static class Translator
     public static void GetActualRoleName(this CustomRoles role, out string RealName)
     {
         var currentlang = TranslationController.Instance.currentLanguage.languageID;
-        RealName = "";
         if (ActualRoleNames.TryGetValue(currentlang, out var RoleList))
         {
             if (RoleList.TryGetValue(role, out var RoleString))
                 RealName = RoleString;
             else
             {
+                RealName = GetString($"{role}");
                 Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "Translator.GetActualRoleName");
             }
             return;
