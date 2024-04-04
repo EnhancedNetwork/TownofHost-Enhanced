@@ -32,7 +32,7 @@ public abstract class GameOptionsSender
     {
         var opt = BuildGameOptions();
         var currentGameMode = AprilFoolsMode.IsAprilFoolsModeToggledOn //April fools mode toggled on by host
-            ? opt.AprilFoolsOnMode : opt.GameMode; //"RpcSyncSettings" does this automatically, but only for the hos
+            ? opt.AprilFoolsOnMode : opt.GameMode; //"RpcSyncSettings" does this automatically, but only for the host
 
         // option => byte[]
         MessageWriter writer = MessageWriter.Get(SendOption.None);
