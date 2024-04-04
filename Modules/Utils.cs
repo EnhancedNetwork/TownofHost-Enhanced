@@ -442,7 +442,8 @@ public static class Utils
     public static bool HasTasks(GameData.PlayerInfo p, bool ForRecompute = true)
     {
         if (GameStates.IsLobby) return false;
-        //Tasksがnullの場合があるのでその場合タスク無しとする
+
+        //Tasks may be null, in which case no task is assumed
         if (p.Tasks == null) return false;
         if (p.Role == null) return false;
 
@@ -450,11 +451,13 @@ public static class Utils
         var States = Main.PlayerStates[p.PlayerId];
         if (p.Disconnected) return false;
         if (p.Role.IsImpostor)
-            hasTasks = false; //タスクはCustomRoleを元に判定する
+            hasTasks = false; //Tasks are determined based on CustomRole
 
         if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
-
         if (p.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
+        
+        if (GameStates.IsHideNSeek) return hasTasks;
+
         var role = States.MainRole;
 
         if (!States.RoleClass.HasTasks(p, role, ForRecompute))

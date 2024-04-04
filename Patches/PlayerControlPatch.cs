@@ -1271,7 +1271,6 @@ class SetColorPatch
         return true;
     }
 }
-
 [HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
 class EnterVentPatch
 {
@@ -1365,7 +1364,7 @@ class PlayerControlCompleteTaskPatch
 {
     public static bool Prefix(PlayerControl __instance, object[] __args)
     {
-        if (GameStates.IsHideNSeek) return false;
+        if (GameStates.IsHideNSeek) return true;
 
         var player = __instance;
 
@@ -1516,7 +1515,10 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        CustomRoleManager.AllEnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
+        if (GameStates.IsNormalGame)
+        {
+            CustomRoleManager.AllEnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
+        }
 
         __instance.RpcRemovePet();
     }
