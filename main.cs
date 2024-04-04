@@ -308,7 +308,6 @@ public class Main : BasePlugin
                 var RealRole = role switch // Switch role to FatherRole (Double Classes)
                 {
                     CustomRoles.Vampiress => CustomRoles.Vampire,
-                    CustomRoles.Sunnyboy => CustomRoles.Jester,
                     CustomRoles.Pestilence => CustomRoles.PlagueBearer,
                     CustomRoles.Nuker => CustomRoles.Bomber,
                     CustomRoles.NiceMini or CustomRoles.EvilMini => CustomRoles.Mini,
