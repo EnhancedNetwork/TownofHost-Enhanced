@@ -24,7 +24,7 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// Make a bool and apply IsEnable => {Bool};
+    /// Make A HashSet(byte) PlayerIdList = []; and check PlayerIdList.Any();
     /// </summary>
     public abstract bool IsEnable { get; }
 
