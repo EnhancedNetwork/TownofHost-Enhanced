@@ -8,39 +8,11 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System.Text.Json;
 using UnityEngine;
 using UnityEngine.Networking;
+using LibCpp2IL;
 
 namespace TOHE;
 
 // code credit https://github.com/Yumenopai/TownOfHost_Y
-/*
-public class ModNews
-{
-    public int Number;
-    public int BeforeNumber;
-    public string Title;
-    public string SubTitle;
-    public string ShortTitle;
-    public string Text;
-    public string Date;
-
-    public Announcement ToAnnouncement()
-    {
-        var result = new Announcement
-        {
-            Number = Number,
-            Title = Title,
-            SubTitle = SubTitle,
-            ShortTitle = ShortTitle,
-            Text = Text,
-            Language = (uint)DataManager.Settings.Language.CurrentLanguage,
-            Date = Date,
-            Id = "ModNews"
-        };
-
-        return result;
-    }
-}
-*/
 [HarmonyPatch]
 public class ModNews
 {
@@ -127,7 +99,7 @@ public class ModNews
                 var title = newsElement.GetProperty("Title").GetString();
                 var subTitle = newsElement.GetProperty("Subtitle").GetString();
                 var shortTitle = newsElement.GetProperty("Short").GetString();
-                var body = newsElement.GetProperty("Body").GetString();
+                var body = newsElement.GetProperty("Body").EnumerateArray().ToStringEnumerable().ToString();
                 var dateString = newsElement.GetProperty("Date").GetString();
                 // Create ModNews object
                 ModNews _ = new(number, title, subTitle, shortTitle, body, dateString);

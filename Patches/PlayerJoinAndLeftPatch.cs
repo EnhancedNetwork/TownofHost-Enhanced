@@ -52,6 +52,7 @@ class OnGameJoinedPatch
 
             switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
             {
+                case GameModes.NormalFools:
                 case GameModes.Normal:
                     Logger.Info(" Is Normal Game", "Game Mode");
 
@@ -70,6 +71,7 @@ class OnGameJoinedPatch
                     }
                     break;
 
+                case GameModes.SeekFools:
                 case GameModes.HideNSeek:
                     Logger.Info(" Is Hide & Seek", "Game Mode");
 
