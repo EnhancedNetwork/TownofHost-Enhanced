@@ -19,7 +19,7 @@ public static class CustomRolesHelper
         if (role.IsVanilla()) return role;
 
         // Role base
-        if (role.GetRoleClass() is not VanillaRole) return role.GetRoleClass().ThisRoleBase;
+        if (role.GetStaticRoleClass() is not VanillaRole) return role.GetRoleClass().ThisRoleBase;
 
         //Default
         return role switch
@@ -32,7 +32,7 @@ public static class CustomRolesHelper
     }
     
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
-        => (role.GetRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor() 
+        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor() 
             ? RoleTypes.Impostor 
             : RoleTypes.GuardianAngel;
     
