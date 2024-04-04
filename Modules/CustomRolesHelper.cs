@@ -19,7 +19,7 @@ public static class CustomRolesHelper
         if (role.IsVanilla()) return role;
 
         // Role base
-        if (role.GetStaticRoleClass() is not VanillaRole) return role.GetRoleClass().ThisRoleBase;
+        if (role.GetStaticRoleClass() is not VanillaRole) return role.GetStaticRoleClass().ThisRoleBase;
 
         //Default
         return role switch
