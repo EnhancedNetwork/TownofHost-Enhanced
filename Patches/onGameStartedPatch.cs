@@ -156,7 +156,7 @@ internal class ChangeRoleSettings
             //Main.AllPlayerNames = [];
             RPC.SyncAllPlayerNames();
 
-            GhostRoleAssign.Init();
+            //GhostRoleAssign.Init();
 
             Camouflage.Init();
 
@@ -586,7 +586,7 @@ internal class SelectRolesPatch
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
             
-            GhostRoleAssign.Add();
+            //GhostRoleAssign.Add();
 
             foreach (var pc in Main.AllPlayerControls)
             {
