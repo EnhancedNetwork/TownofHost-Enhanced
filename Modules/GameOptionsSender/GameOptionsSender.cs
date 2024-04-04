@@ -36,12 +36,12 @@ public abstract class GameOptionsSender
         //April fools mode toggled on by host
         if (AprilFoolsMode.IsAprilFoolsModeToggledOn)
         {
-            // if current game mode is classic 
-            if (GameStates.IsNormalGame)
+            // if current game mode is classic
+            if (currentGameMode == GameModes.Normal)
                 currentGameMode = GameModes.NormalFools;
 
             // if current game mode is vanilla HideNSeek
-            else if (GameStates.IsHideNSeek)
+            else if (currentGameMode == GameModes.HideNSeek)
                 currentGameMode = GameModes.SeekFools;
         }
 
