@@ -342,7 +342,7 @@ public static class Utils
         
         return parentheses ? $"({mode})" : mode;
     }
-    private static string GetChance(float percent)
+    public static string GetChance(float percent)
     {
         return percent switch 
         {
@@ -684,7 +684,7 @@ public static class Utils
         foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
             if (!role.IsEnable()) continue;
-            string mode = GetString($"Chance{role.GetMode()}");
+            string mode = GetChance(role.GetMode());
             sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
             ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
@@ -715,7 +715,7 @@ public static class Utils
         foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
             if (!role.IsEnable()) continue;
-            string mode = GetString($"Chance{role.GetMode()}");
+            string mode = GetChance(role.GetMode());
             sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
             ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
@@ -750,13 +750,13 @@ public static class Utils
 
         foreach (var role in CustomRolesHelper.AllRoles)
         {
-            string mode = GetString($"Chance{role.GetMode()}");
+            string mode = GetChance(role.GetMode());
             if (role.IsEnable())
             {
-                if (role is CustomRoles.Lovers) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
+                if (role is CustomRoles.Lovers) mode = GetChance(Options.LoverSpawnChances.GetInt());
                 else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
                 {
-                    mode = GetString($"Chance{Options.CustomAdtRoleSpawnRate[role].GetFloat()}");
+                    mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());
 
                 }
                 var roleDisplay = $"{GetRoleName(role)}: {mode} x{role.GetCount()}";
