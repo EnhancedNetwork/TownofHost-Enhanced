@@ -501,9 +501,6 @@ public static class Utils
         return hasTasks;
     }
 
-    // Only to be used for accessing RoleClass, do not assign players from here.
-    
-    
     public static string GetProgressText(PlayerControl pc)
     {
         try
