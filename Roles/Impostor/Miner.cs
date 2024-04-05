@@ -45,9 +45,9 @@ internal class Miner : RoleBase
         hud.AbilityButton.OverrideText(Translator.GetString("MinerTeleButtonText"));
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         if (Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
         {
@@ -56,5 +56,7 @@ internal class Miner : RoleBase
             shapeshifter.RpcTeleport(lastVentPosition);
             shapeshifter.RPCPlayCustomSound("Teleport");
         }
+
+        return false;
     }
 }
