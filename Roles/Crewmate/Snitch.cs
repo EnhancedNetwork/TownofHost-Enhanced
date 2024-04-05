@@ -69,11 +69,8 @@ internal class Snitch : RoleBase
         IsExposed[playerId] = false;
         IsComplete[playerId] = false;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetWarningMark);
-            CustomRoleManager.SuffixOthers.Add(GetWarningArrow);
-        }
+        CustomRoleManager.MarkOthers.Add(GetWarningMark);
+        CustomRoleManager.SuffixOthers.Add(GetWarningArrow);
     }
     public override void Remove(byte playerId)
     {

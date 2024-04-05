@@ -85,10 +85,7 @@ internal class Sniper : RoleBase
         IsAim[playerId] = false;
         AimTime[playerId] = 0f;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-        }
+        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
 
     private static bool IsThisRole(byte playerId) => PlayerIdList.Contains(playerId);

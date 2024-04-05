@@ -253,7 +253,7 @@ internal class Glitch : RoleBase
             _ = new LateTask(() =>
             {
                 physics.myPlayer?.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchVent")));
-                physics.myPlayer?.MyPhysics?.RpcBootFromVent(ventId);
+                physics?.RpcBootFromVent(ventId);
             }, 0.5f, "Player Boot From Vent By Glith");
             return true;
         }
