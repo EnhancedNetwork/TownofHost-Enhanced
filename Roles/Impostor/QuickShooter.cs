@@ -19,7 +19,7 @@ internal class QuickShooter : RoleBase
     private static OptionItem MeetingReserved;
     private static OptionItem ShapeshiftCooldown;
 
-    private static Dictionary<byte, int> ShotLimit = [];
+    private static readonly Dictionary<byte, int> ShotLimit = [];
 
     private static bool Storaging = false;
 
@@ -73,15 +73,16 @@ internal class QuickShooter : RoleBase
         Storaging = false;
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         if (shapeshifter.killTimer == 0)
         {
             ShotLimit[shapeshifter.PlayerId]++;
             SendRPC(shapeshifter.PlayerId);
-            
+
+            resetCooldown = false;
             Storaging = true;
             shapeshifter.ResetKillCooldown();
             shapeshifter.SetKillCooldown();
@@ -89,6 +90,7 @@ internal class QuickShooter : RoleBase
             shapeshifter.Notify(Translator.GetString("QuickShooterStoraging"));
             Logger.Info($"{Utils.GetPlayerById(shapeshifter.PlayerId)?.GetNameWithRole()} : shot limit: {ShotLimit[shapeshifter.PlayerId]}", "QuickShooter");
         }
+        return false;
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
