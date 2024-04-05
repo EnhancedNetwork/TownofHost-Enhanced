@@ -179,18 +179,17 @@ public abstract class RoleBase
 
     /// <summary>
     /// Called when checking for shapeshift
-    /// Called only when you transform yourself
-    /// Can also be used to cut the transformation animation by manipulating animate
+    /// Also can be used not activate shapeshift animate
     /// </summary>
     /// <param name="target">Transformation target</param>
     /// <param name="animate">Whether to play the shapeshift animation</param>
     /// <returns>return false for cancel the shapeshift transformation</returns>.
-    public virtual bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool animate, bool shapeshifting) => true;
+    public virtual bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate) => true;
 
     /// <summary>
     /// Called after check shapeshift
     /// </summary>
-    public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool animate, bool shapeshifting)
+    public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     { }
 
     /// <summary>

@@ -1523,7 +1523,6 @@
   "FireworkerMaxCount": "Fireworker Count",
   "FireworkerRadius": "Firework Explosion Radius",
   "SniperCanKill": "<color=#ff1919>Sniper</color> can kill with bullets remaining",
-  "SniperAlwaysShowShapeshiftAnimations": "Always show <color=#ff1919>Shapeshift</color> animations",
   "SniperBulletCount": "Ammo",
   "SniperPrecisionShooting": "Precise Shooting",
   "SniperAimAssist": "Aim Assist",
@@ -1964,6 +1963,8 @@
   "DeputyHandcuffCDForTarget": "Kill Cooldown for handcuffed player",
 
   "RejectShapeshift.AbilityWasUsed": "Ability was used",
+  "ShowShapeshiftAnimations": "Show <color=#ff1919>Shapeshift</color> animations",
+
   "EscapisMtarkedPosition": "You marked self position",
 
   "InvestigateCooldown": "Investigate Cooldown",

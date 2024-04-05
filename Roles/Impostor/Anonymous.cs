@@ -88,7 +88,7 @@ internal class Anonymous : RoleBase
         if (target != null && !DeadBodyList.Contains(target.PlayerId))
             DeadBodyList.Add(target.PlayerId);
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl ssTarget, bool animate, bool shapeshifting)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl ssTarget, bool IsAnimate, bool shapeshifting)
     {
         if (!shapeshifting || !HackLimit.TryGetValue(shapeshifter.PlayerId, out var x) || x < 1 || ssTarget == null || ssTarget.Is(CustomRoles.LazyGuy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
         HackLimit[shapeshifter.PlayerId]--;

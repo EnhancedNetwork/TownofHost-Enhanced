@@ -503,7 +503,7 @@ class RpcMurderPlayerPatch
     public static bool Prefix(PlayerControl __instance, PlayerControl target, bool didSucceed)
     {
         if (!AmongUsClient.Instance.AmHost)
-            Logger.Error("Client is calling RpcMurderPlayer, are you Hacking?", "RpcMurderPlayerPatch..Prefix");
+            Logger.Error("Client is calling RpcMurderPlayer, are you Hacking?", "RpcMurderPlayerPatch.Prefix");
 
         MurderResultFlags murderResultFlags = didSucceed ? MurderResultFlags.Succeeded : MurderResultFlags.FailedError;
         if (AmongUsClient.Instance.AmClient)
@@ -531,12 +531,6 @@ public static class CheckShapeshiftPatch
 {
     private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.CheckShapeshift));
 
-    public static void RejectShapeshiftAndReset(this PlayerControl player, bool reset = true)
-    {
-        player.RpcRejectShapeshift();
-        if (reset) player.RpcResetAbilityCooldown();
-        Logger.Info($"Rejected {player.GetRealName()} shapeshift & " + (reset ? "Reset cooldown" : "Not Reset cooldown"), "RejectShapeshiftAndReset");
-    }
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
     {
         if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
@@ -550,21 +544,27 @@ public static class CheckShapeshiftPatch
             __instance.RpcRejectShapeshift();
             return false;
         }
+
         var shapeshifter = __instance;
-        var shapeshifting = shapeshifter.PlayerId != target.PlayerId;
+        bool resetCooldown = true;
+
+        logger.Info($"Self:{shapeshifter.PlayerId == target.PlayerId} - Is animate:{shouldAnimate} - In Meeting:{GameStates.IsMeeting}");
 
         var shapeshifterRoleClass = shapeshifter.GetRoleClass();
-        if (shapeshifterRoleClass?.OnCheckShapeshift(shapeshifter, target, ref shouldAnimate, shapeshifting) == false)
+        if (shapeshifterRoleClass?.OnCheckShapeshift(shapeshifter, target, ref resetCooldown, ref shouldAnimate) == false)
         {
             // role need specific reject shapeshift if player use desync shapeshift
             if (shapeshifterRoleClass.CanDesyncShapeshift)
             {
                 shapeshifter.RpcSpecificRejectShapeshift(target, shouldAnimate);
+                
+                if (resetCooldown)
+                    shapeshifter.RpcResetAbilityCooldown();
             }
             else
             {
                 // Global reject shapeshift
-                shapeshifter.RpcRejectShapeshift();
+                shapeshifter.RejectShapeshiftAndReset(resetCooldown);
             }
             return false;
         }
@@ -613,11 +613,17 @@ public static class CheckShapeshiftPatch
         }
         return true;
     }
+    public static void RejectShapeshiftAndReset(this PlayerControl player, bool reset = true)
+    {
+        player.RpcRejectShapeshift();
+        if (reset) player.RpcResetAbilityCooldown();
+        Logger.Info($"Rejected {player.GetRealName()} shapeshift & " + (reset ? "Reset cooldown" : "Not Reset cooldown"), "RejectShapeshiftAndReset");
+    }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]
 class ShapeshiftPatch
 {
-    public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
     {
         Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} => {target?.GetNameWithRole().RemoveHtmlTags()}", "ShapeshiftPatch");
 
@@ -637,8 +643,7 @@ class ShapeshiftPatch
         if (GameStates.IsHideNSeek) return;
         if (!shapeshifting) Camouflage.RpcSetSkin(__instance);
 
-        var shapeshiftIsHidden = false;
-        shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden);
+        shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, animate, shapeshifting);
 
         //Forced update and rewrite players name
         if (!shapeshifting && !shapeshifter.Is(CustomRoles.Glitch))
