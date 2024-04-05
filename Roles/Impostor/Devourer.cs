@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -23,9 +22,12 @@ internal class Devourer : RoleBase
     private static OptionItem MinKillCooldown;
     private static OptionItem ShapeshiftCooldown;
     private static OptionItem HideNameOfConsumedPlayer;
+    private static OptionItem ShowShapeshiftAnimationsOpt;
 
     private static readonly Dictionary<byte, float> NowCooldown = [];
     private static readonly Dictionary<byte, List<byte>> PlayerSkinsCosumed = [];
+
+    private static bool ShowShapeshiftAnimations = false;
 
     public static void SetupCustomOption()
     {
@@ -39,6 +41,7 @@ internal class Devourer : RoleBase
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 14, "DevourCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Devourer])
             .SetValueFormat(OptionFormat.Seconds);
         HideNameOfConsumedPlayer = BooleanOptionItem.Create(Id + 16, "DevourerHideNameConsumed", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Devourer]);
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 17, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Devourer]);
     }
     public override void Init()
     {
@@ -52,6 +55,8 @@ internal class Devourer : RoleBase
         PlayerSkinsCosumed.TryAdd(playerId, []);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
         PlayerIds.Add(playerId);
+
+        ShowShapeshiftAnimations = ShowShapeshiftAnimationsOpt.GetBool();
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -62,11 +67,21 @@ internal class Devourer : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
-        if (!shapeshifter.IsAlive() || Pelican.IsEaten(shapeshifter.PlayerId)) return;
+        if (ShowShapeshiftAnimations || shapeshifter.PlayerId == target.PlayerId) return true;
 
+        DoEatSkin(shapeshifter, target);
+        return false;
+    }
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    {
+        if (!shapeshifting) return;
+
+        DoEatSkin(shapeshifter, target);
+    }
+    private static void DoEatSkin(PlayerControl shapeshifter, PlayerControl target)
+    {
         if (!PlayerSkinsCosumed[shapeshifter.PlayerId].Contains(target.PlayerId))
         {
             if (!Camouflage.IsCamouflage)
@@ -89,7 +104,6 @@ internal class Devourer : RoleBase
     }
 
     public static bool HideNameOfTheDevoured(byte targetId) => HideNameOfConsumedPlayer.GetBool() && PlayerSkinsCosumed.Any(a => a.Value.Contains(targetId));
-
     private static void OnDevourerDied(PlayerControl devourer)
     {
         var devourerId = devourer.PlayerId;
