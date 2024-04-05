@@ -391,7 +391,7 @@ class MurderPlayerPatch
                 Logger.Info("The kill was cancelled by the server", "MurderPlayer Prefix");
         }
 
-        if (isSucceeded && AmongUsClient.Instance.AmHost)
+        if (isSucceeded && AmongUsClient.Instance.AmHost && GameStates.IsNormalGame)
         {
             if (target.shapeshifting)
             {
