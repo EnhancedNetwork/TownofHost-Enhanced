@@ -1,6 +1,6 @@
 ﻿using Hazel;
 
-namespace TOHE;
+namespace TOHE.Roles.Impostor;
 
 // Thanks： https://github.com/Yumenopai/TownOfHost_Y
 internal class Greedy : RoleBase
