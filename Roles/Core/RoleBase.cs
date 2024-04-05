@@ -138,7 +138,7 @@ public abstract class RoleBase
     /// <summary>
     /// When role the target requires a kill check
     /// </summary>
-    /// /// <returns>If the target doesn't require a kill cancel, always use "return true"</returns>
+    /// <returns>If the target doesn't require a kill cancel, always use "return true"</returns>
     public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => target != null && killer != null;
     /// <summary>
     /// When role the target requires a kill check
