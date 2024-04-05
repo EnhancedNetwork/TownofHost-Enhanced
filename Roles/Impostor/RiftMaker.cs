@@ -122,10 +122,9 @@ internal class RiftMaker : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     {
-        if (!shapeshifter.IsAlive()) return;
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (!shapeshifting) return;
 
         var shapeshifterId = shapeshifter.PlayerId;
         if (!MarkedLocation.ContainsKey(shapeshifterId)) MarkedLocation[shapeshifterId] = [];
