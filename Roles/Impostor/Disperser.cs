@@ -46,13 +46,11 @@ internal class Disperser : RoleBase
     {
         if (shapeshifter.PlayerId == target.PlayerId) return true;
         
-        foreach (var pc in PlayerControl.AllPlayerControls)
+        foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (!pc.CanBeTeleported())
             {
-                if (!pc.Is(CustomRoles.Disperser) && pc.IsAlive())
-                    pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), GetString("ErrorTeleport")));
-                
+                pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), GetString("ErrorTeleport")));
                 continue;
             }
 
