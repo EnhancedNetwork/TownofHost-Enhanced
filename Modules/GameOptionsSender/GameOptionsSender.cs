@@ -30,19 +30,8 @@ public abstract class GameOptionsSender
     public virtual void SendGameOptions()
     {
         var opt = BuildGameOptions();
-        var currentGameMode = opt.GameMode; //Remember the current game mode for further changes if necessary
-
-        //April fools mode toggled on by host
-        if (AprilFoolsMode.IsAprilFoolsModeToggledOn)
-        {
-            // if current game mode is classic
-            if (currentGameMode == GameModes.Normal)
-                currentGameMode = GameModes.NormalFools;
-
-            // if current game mode is vanilla HideNSeek
-            else if (currentGameMode == GameModes.HideNSeek)
-                currentGameMode = GameModes.SeekFools;
-        }
+        var currentGameMode = AprilFoolsMode.IsAprilFoolsModeToggledOn //April fools mode toggled on by host
+            ? opt.AprilFoolsOnMode : opt.GameMode; //Change game mode, same as well as in "RpcSyncSettings()"
 
         // option => byte[]
         MessageWriter writer = MessageWriter.Get(SendOption.None);
