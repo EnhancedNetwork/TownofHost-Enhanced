@@ -144,7 +144,6 @@ internal class Ninja : RoleBase
 
         var str = new StringBuilder();
         str.Append(GetString("NinjaModeDouble"));
-
         return str.ToString();
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerid)
