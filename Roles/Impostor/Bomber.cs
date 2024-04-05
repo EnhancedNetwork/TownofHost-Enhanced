@@ -1,8 +1,7 @@
-﻿using UnityEngine;
+﻿using AmongUs.GameOptions;
+using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Neutral;
-using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Impostor;
 
