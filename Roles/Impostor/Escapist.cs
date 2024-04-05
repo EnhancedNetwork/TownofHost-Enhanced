@@ -49,7 +49,7 @@ internal class Escapist : RoleBase
 
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (shapeshifter.PlayerId == target.PlayerId) return true;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         if (EscapeLocation.TryGetValue(shapeshifter.PlayerId, out var position))
         {

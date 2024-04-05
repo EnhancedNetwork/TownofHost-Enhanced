@@ -10,7 +10,7 @@ internal class Disperser : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 24400;
-    private static readonly HashSet<byte> PlayerIds = new();
+    private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
@@ -44,7 +44,7 @@ internal class Disperser : RoleBase
     }
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (shapeshifter.PlayerId == target.PlayerId) return true;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
         
         foreach (var pc in Main.AllAlivePlayerControls)
         {

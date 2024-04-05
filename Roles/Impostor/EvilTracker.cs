@@ -108,23 +108,19 @@ internal class EvilTracker : RoleBase
         && target.IsAlive() && seer != target
         && (target.Is(CustomRoleTypes.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden = false)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!CanTarget(shapeshifter.PlayerId) || (!shapeshifting && !shapeshiftIsHidden)) return;
-        if (target == null || target.Is(CustomRoleTypes.Impostor)) return;
+        if (target.Is(CustomRoleTypes.Impostor) || !CanTarget(shapeshifter.PlayerId)) return false;
 
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
 
-        if (shapeshiftIsHidden)
-        {
-            shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-            shapeshifter.SyncSettings();
-        }
-        else
-            shapeshifter.MarkDirtySettings();
+        shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+        shapeshifter.SyncSettings();
 
         Logger.Info($"{shapeshifter.GetNameWithRole()} target to {target.GetNameWithRole()}", "EvilTrackerTarget");
         Utils.NotifyRoles(SpecifySeer: shapeshifter, SpecifyTarget: target, ForceLoop: true);
+
+        return false;
     }
     public override void AfterMeetingTasks()
     {
