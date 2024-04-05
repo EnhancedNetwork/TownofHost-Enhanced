@@ -82,25 +82,6 @@ class CheckProtectPatch
         return true;
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckMurder))] // Local Side Click Kill Button
-class CmdCheckMurderPatch
-{
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
-    {
-        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CmdCheckMurder");
-
-        if (AmongUsClient.Instance.AmHost && GameStates.IsModHost)
-            __instance.CheckMurder(target);
-        else
-        {
-            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.CheckMurder, SendOption.Reliable, -1);
-            messageWriter.WriteNetObject(target);
-            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-        }
-
-        return false;
-    }
-}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))] // Upon Receive RPC / Local Host
 class CheckMurderPatch
 {
