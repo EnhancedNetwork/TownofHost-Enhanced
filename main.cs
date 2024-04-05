@@ -652,7 +652,7 @@ public enum CustomRoles
     Doomsayer,
     Doppelganger,
     Executioner,
-    Follower, //follower
+    Follower,
     Glitch,
     God,
     Hater,
@@ -690,19 +690,19 @@ public enum CustomRoles
     RuthlessRomantic,
     SchrodingersCat,
     Seeker,
-    SerialKiller, //serial killer
+    SerialKiller,
     Shaman,
     Shroud,
     Sidekick,
     Solsticer,
     SoulCollector,
     Spiritcaller,
-    Stalker, //stalker
+    Stalker,
     Sunnyboy,
     Taskinator,
     Terrorist,
     Traitor,
-    Vector,//vector
+    Vector,
     VengefulRomantic,
     Virus,
     Vulture,
@@ -726,7 +726,7 @@ public enum CustomRoles
     Admired,
     Antidote,
     Autopsy,
-    Avanger, //avenger
+    Avanger,
     Aware,
     Bait,
     Bewilder,
