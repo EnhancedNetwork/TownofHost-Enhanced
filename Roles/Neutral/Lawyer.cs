@@ -30,7 +30,6 @@ internal class Lawyer : RoleBase
         Role_Crewmate,
         Role_Jester,
         Role_Opportunist,
-        Role_Convict,
         Role_Celebrity,
         Role_Bodyguard,
         Role_Dictator,
@@ -42,7 +41,6 @@ internal class Lawyer : RoleBase
         CustomRoles.CrewmateTOHE,
         CustomRoles.Jester,
         CustomRoles.Opportunist,
-        CustomRoles.Convict,
         CustomRoles.Celebrity,
         CustomRoles.Bodyguard,
         CustomRoles.Dictator,
@@ -212,7 +210,7 @@ internal class Lawyer : RoleBase
         Target.Remove(lawyer.PlayerId);
         SendRPC(lawyer.PlayerId, SetTarget: false);
         var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), GetString(""));
-        text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
+        text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         lawyer.Notify(text);
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)

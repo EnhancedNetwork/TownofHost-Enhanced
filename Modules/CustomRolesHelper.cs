@@ -542,7 +542,6 @@ public static class CustomRolesHelper
             CustomRoles.SoulCollector or
             CustomRoles.Vulture or
             CustomRoles.Taskinator or
-            CustomRoles.Convict or
             CustomRoles.Necromancer or
             CustomRoles.Parasite or
             CustomRoles.Terrorist or
@@ -745,7 +744,6 @@ public static class CustomRolesHelper
     {
         return role is
             CustomRoles.Crewpostor or
-            CustomRoles.Convict or
             CustomRoles.Refugee or
             CustomRoles.Parasite;
     }
@@ -1706,8 +1704,7 @@ public static class CustomRolesHelper
            CustomRoles.Medusa => CountTypes.Medusa,
            CustomRoles.Refugee => CountTypes.Impostor,
            CustomRoles.Huntsman => CountTypes.Huntsman,
-           CustomRoles.Glitch => CountTypes.Glitch,
-           CustomRoles.Convict => CountTypes.Impostor,           
+           CustomRoles.Glitch => CountTypes.Glitch,       
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
            CustomRoles.SchrodingersCat => CountTypes.None,

@@ -492,7 +492,6 @@ public enum CustomRoles
     Chronomancer,
     Cleaner,
     Consigliere,
-    Convict,
     Councillor,
     Crewpostor,
     CursedWolf,

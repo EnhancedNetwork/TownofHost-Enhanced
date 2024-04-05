@@ -253,8 +253,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Medusa,
                 CustomRoles.Psychic],
                 
-                [CustomRoles.Convict,
-                CustomRoles.Executioner,
+                [CustomRoles.Executioner,
                 CustomRoles.Lawyer,
                 CustomRoles.Snitch,
                 CustomRoles.Disperser,
