@@ -173,9 +173,24 @@ public abstract class RoleBase
     public virtual bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
 
     /// <summary>
-    /// A generic method to do tasks for when a (CustomRole)player is shapeshifting.
+    /// Shapeshift animation only from itself
     /// </summary>
-    public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public virtual bool CanDesyncShapeshift => false;
+
+    /// <summary>
+    /// Called when checking for shapeshift
+    /// Called only when you transform yourself
+    /// Can also be used to cut the transformation animation by manipulating animate
+    /// </summary>
+    /// <param name="target">Transformation target</param>
+    /// <param name="animate">Whether to play the shapeshift animation</param>
+    /// <returns>return false for cancel the shapeshift transformation</returns>.
+    public virtual bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool animate, bool shapeshifting) => true;
+
+    /// <summary>
+    /// Called after check shapeshift
+    /// </summary>
+    public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool animate, bool shapeshifting)
     { }
 
     /// <summary>

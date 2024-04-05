@@ -88,26 +88,27 @@ internal class Anonymous : RoleBase
         if (target != null && !DeadBodyList.Contains(target.PlayerId))
             DeadBodyList.Add(target.PlayerId);
     }
-    public override void OnShapeshift(PlayerControl pc, PlayerControl ssTarget, bool shapeshifting, bool shapeshiftIsHidden)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl ssTarget, bool animate, bool shapeshifting)
     {
-        if (!shapeshifting || !HackLimit.TryGetValue(pc.PlayerId, out var x) || x < 1 || ssTarget == null || ssTarget.Is(CustomRoles.LazyGuy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
-        HackLimit[pc.PlayerId]--;
-        SendRPC(pc.PlayerId);
+        if (!shapeshifting || !HackLimit.TryGetValue(shapeshifter.PlayerId, out var x) || x < 1 || ssTarget == null || ssTarget.Is(CustomRoles.LazyGuy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
+        HackLimit[shapeshifter.PlayerId]--;
+        SendRPC(shapeshifter.PlayerId);
 
         var targetId = byte.MaxValue;
 
-        // 寻找骇客击杀的尸体
+        // Finding real killer
         foreach (var db in DeadBodyList)
         {
             var dp = Utils.GetPlayerById(db);
             if (dp == null || dp.GetRealKiller() == null) continue;
-            if (dp.GetRealKiller().PlayerId == pc.PlayerId) targetId = db;
+            if (dp.GetRealKiller().PlayerId == shapeshifter.PlayerId) targetId = db;
         }
 
-        // 未找到骇客击杀的尸体，寻找其他尸体
+        // No body found. Look for another body
         if (targetId == byte.MaxValue && DeadBodyList.Count > 0)
             targetId = DeadBodyList[IRandom.Instance.Next(0, DeadBodyList.Count)];
 
+        // Anonymous report Self
         if (targetId == byte.MaxValue)
             _ = new LateTask(() => ssTarget?.NoCheckStartMeeting(ssTarget?.Data), 0.15f, "Anonymous Hacking Report Self");
         else

@@ -83,9 +83,9 @@ internal class Bomber : RoleBase
         AURoleOptions.ShapeshifterCooldown = Utils.GetPlayerById(playerId).Is(CustomRoles.Bomber) ? BombCooldown.GetFloat() : NukeCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 2f;
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool animate, bool shapeshifting)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (!shapeshifting) return;
 
         var playerRole = shapeshifter.GetCustomRole();
 
@@ -116,9 +116,9 @@ internal class Bomber : RoleBase
             tg.RpcMurderPlayer(tg);
         }
 
-        var timer = shapeshiftIsHidden ? 0.3f : 1.5f;
         if (BomberDiesInExplosion.GetBool() && playerRole is CustomRoles.Bomber)
         {
+            var timer = /*shapeshiftIsHidden ? 0.3f :*/ 1.5f;
             _ = new LateTask(() =>
             {
                 var totalAlive = Main.AllAlivePlayerControls.Length;

@@ -277,6 +277,35 @@ static class ExtendedPlayerControl
         }
         player.ResetKillCooldown();
     }
+    public static void RpcSpecificShapeshift(this PlayerControl player, PlayerControl target, bool shouldAnimate)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (player.PlayerId == 0)
+        {
+            player.Shapeshift(target, shouldAnimate);
+            return;
+        }
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Shapeshift, SendOption.Reliable, player.GetClientId());
+        messageWriter.WriteNetObject(target);
+        messageWriter.Write(shouldAnimate);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
+    public static void RpcSpecificRejectShapeshift(this PlayerControl player, PlayerControl target, bool shouldAnimate)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        foreach (var seer in Main.AllPlayerControls)
+        {
+            if (seer != player)
+            {
+                MessageWriter msg = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.RejectShapeshift, SendOption.Reliable, seer.GetClientId());
+                AmongUsClient.Instance.FinishRpcImmediately(msg);
+            }
+            else
+            {
+                player.RpcSpecificShapeshift(target, shouldAnimate);
+            }
+        }
+    }
     public static void RpcSpecificMurderPlayer(this PlayerControl killer, PlayerControl target, PlayerControl seer)
     {
         if (seer.AmOwner)

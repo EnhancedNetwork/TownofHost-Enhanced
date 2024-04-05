@@ -527,8 +527,10 @@ class RpcMurderPlayerPatch
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckShapeshift))]
-public static class CheckShapeShiftPatch
+public static class CheckShapeshiftPatch
 {
+    private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.CheckShapeshift));
+
     public static void RejectShapeshiftAndReset(this PlayerControl player, bool reset = true)
     {
         player.RpcRejectShapeshift();
@@ -537,46 +539,79 @@ public static class CheckShapeShiftPatch
     }
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
     {
-        if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return true;
-        if (__instance.PlayerId == target.PlayerId) return true;
-        if (!Options.DisableShapeshiftAnimations.GetBool()) return true;
+        if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
+        {
+            return false;
+        }
 
+        // No called code if is invalid shapeshifting
+        if (!CheckInvalidShapeshifting(__instance, target, shouldAnimate))
+        {
+            __instance.RpcRejectShapeshift();
+            return false;
+        }
         var shapeshifter = __instance;
-        var role = shapeshifter.GetCustomRole();
+        var shapeshifting = shapeshifter.PlayerId != target.PlayerId;
 
-        // Always show
-        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman or CustomRoles.Morphling or CustomRoles.Glitch) return true;
-
-        // Check Sniper settings conditions
-        if (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations) return true;
-
-        Logger.Info($"{shapeshifter.GetRealName()} => {target.GetRealName()}, shouldAnimate = {shouldAnimate}", "Check ShapeShift");
-
-        if (role.GetVNRole() != CustomRoles.Shapeshifter)
+        var shapeshifterRoleClass = shapeshifter.GetRoleClass();
+        if (shapeshifterRoleClass?.OnCheckShapeshift(shapeshifter, target, ref shouldAnimate, shapeshifting) == false)
         {
-            shapeshifter.RejectShapeshiftAndReset();
-            Logger.Info($"Rejected bcz {shapeshifter.GetRealName()} is not shapeshifter in mod roles", "Check ShapeShift");
+            // role need specific reject shapeshift if player use desync shapeshift
+            if (shapeshifterRoleClass.CanDesyncShapeshift)
+            {
+                shapeshifter.RpcSpecificRejectShapeshift(target, shouldAnimate);
+            }
+            else
+            {
+                // Global reject shapeshift
+                shapeshifter.RpcRejectShapeshift();
+            }
             return false;
         }
 
-        if (Pelican.IsEaten(shapeshifter.PlayerId))
-        {
-            shapeshifter.RejectShapeshiftAndReset();
-            Logger.Info($"Rejected bcz {shapeshifter.GetRealName()} is eaten by Pelican", "Check ShapeShift");
-            return false;
-        }
-
-        if (!shapeshifter.IsAlive())
-        {
-            shapeshifter.RejectShapeshiftAndReset();
-            Logger.Info($"Rejected bcz {shapeshifter.GetRealName()} is dead", "Check ShapeShift");
-            return false;
-        }
-
-        bool shapeshiftIsHidden = true;
-        shapeshifter.RejectShapeshiftAndReset();
-        shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
+        shapeshifter.RpcShapeshift(target, shouldAnimate);
         return false;
+    }
+    private static bool CheckInvalidShapeshifting(PlayerControl instance, PlayerControl target, bool animate)
+    {
+        logger.Info($"Checking shapeshift {instance.GetNameWithRole()} -> {(target == null || target.Data == null ? "(null)" : target.GetNameWithRole().RemoveHtmlTags())}");
+
+        if (!target || target.Data == null)
+        {
+            logger.Info("Cancel shapeshifting because target is null");
+            return false;
+        }
+        if (!instance.IsAlive())
+        {
+            logger.Info("Shapeshifting canceled because shapeshifter is dead");
+            return false;
+        }
+        if (instance.Data.Role.Role != RoleTypes.Shapeshifter && instance.GetCustomRole().GetVNRole() != CustomRoles.Shapeshifter && !instance.Is(CustomRoles.Glitch))
+        {
+            logger.Info("Shapeshifting canceled because the shapeshifter is not a shapeshifter");
+            return false;
+        }
+        if (instance.Data.Disconnected)
+        {
+            logger.Info("Shapeshifting canceled because shapeshifter is disconnected");
+            return false;
+        }
+        if (target.IsMushroomMixupActive() && animate)
+        {
+            logger.Info("Shapeshifting canceled because mushroom mixup is active");
+            return false;
+        }
+        if (MeetingHud.Instance && animate)
+        {
+            logger.Info("Cancel shapeshifting in meeting");
+            return false;
+        }
+        if (Pelican.IsEaten(instance.PlayerId))
+        {
+            logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is eaten by Pelican");
+            return false;
+        }
+        return true;
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]
@@ -584,30 +619,14 @@ class ShapeshiftPatch
 {
     public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
-        var shapeshifter = __instance;
-
-        if (Options.DisableShapeshiftAnimations.GetBool())
-        {
-            var role = shapeshifter.GetCustomRole();
-
-            Logger.Info($"shapeshifter {__instance?.GetRealName()}:role: {role} => {target?.GetNameWithRole().RemoveHtmlTags()}", "ShapeshiftPatch.DisableShapeshiftAnimations");
-
-            // Check shapeshift
-            if (!(
-                (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman or CustomRoles.Morphling or CustomRoles.Glitch)
-                ||
-                (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations)
-                ))
-                return;
-        }
-
         Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} => {target?.GetNameWithRole().RemoveHtmlTags()}", "ShapeshiftPatch");
 
+        var shapeshifter = __instance;
         var shapeshifting = shapeshifter.PlayerId != target.PlayerId;
 
         if (Main.CheckShapeshift.TryGetValue(shapeshifter.PlayerId, out var last) && last == shapeshifting)
         {
-            Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} : Cancel Shapeshift.Prefix", "Shapeshift");
+            Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} : Cancel Shapeshift.Prefix", "ShapeshiftPatch");
             return;
         }
 
@@ -618,13 +637,10 @@ class ShapeshiftPatch
         if (GameStates.IsHideNSeek) return;
         if (!shapeshifting) Camouflage.RpcSetSkin(__instance);
 
-        if (!Pelican.IsEaten(shapeshifter.PlayerId))
-        {
-            var shapeshiftIsHidden = false;
-            shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden);
-        }
+        var shapeshiftIsHidden = false;
+        shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden);
 
-        //変身解除のタイミングがずれて名前が直せなかった時のために強制書き換え
+        //Forced update and rewrite players name
         if (!shapeshifting && !shapeshifter.Is(CustomRoles.Glitch))
         {
             _ = new LateTask(() =>

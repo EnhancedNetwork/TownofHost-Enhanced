@@ -56,7 +56,7 @@ internal class Camouflager : RoleBase
         CanUseCommsSabotage = CanUseCommsSabotagOpt.GetBool();
         DisableReportWhenCamouflageIsActive = DisableReportWhenCamouflageIsActiveOpt.GetBool();
         
-        ShapeshiftIsHidden = Options.DisableShapeshiftAnimations.GetBool();
+        ShapeshiftIsHidden = false;
         Playerids.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -71,15 +71,9 @@ internal class Camouflager : RoleBase
         else
             hud.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftTextBeforeDisguise"));
     }
-    public override void OnShapeshift(PlayerControl camouflager, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override void OnShapeshift(PlayerControl camouflager, PlayerControl target, bool animate, bool shapeshifting)
     {
-        if (AbilityActivated && shapeshiftIsHidden)
-        {
-            Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-            camouflager.RejectShapeshiftAndReset(reset: false);
-            return;
-        }
-        if (!shapeshifting && !shapeshiftIsHidden)
+        if (!shapeshifting)
         {
             ClearCamouflage();
             Timer = [];
@@ -89,22 +83,12 @@ internal class Camouflager : RoleBase
         AbilityActivated = true;
         
         var timer = 1.2f;
-        if (shapeshiftIsHidden)
-        {
-            timer = 0.1f;
-            camouflager.SyncSettings();
-        }
 
         _ = new LateTask(() =>
         {
             if (!Main.MeetingIsStarted && GameStates.IsInTask)
             {
                 Camouflage.CheckCamouflage();
-
-                if (camouflager != null && shapeshiftIsHidden)
-                {
-                    Timer.Add(camouflager.PlayerId, Utils.GetTimeStamp());
-                }
             }
         }, timer, "Camouflager Use Shapeshift");
     }

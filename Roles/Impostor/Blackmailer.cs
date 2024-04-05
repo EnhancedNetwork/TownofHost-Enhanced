@@ -35,19 +35,16 @@ internal class Blackmailer : RoleBase
     {
         PlayerIds.Add(playerId);
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-        }
+        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = SkillCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
-    public override void OnShapeshift(PlayerControl blackmailer, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override void OnShapeshift(PlayerControl blackmailer, PlayerControl target, bool animate, bool shapeshifting)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (!shapeshifting) return;
 
         if (!target.IsAlive())
         {
