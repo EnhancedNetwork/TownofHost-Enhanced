@@ -146,8 +146,8 @@ internal class Mastermind : RoleBase
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return false;
-        if (!PlayerIsManipulated(killer)) return true;
+        if (killer == null || target == null) return true;
+        if (!PlayerIsManipulated(killer)) return false;
 
         ManipulatedPlayers.Remove(killer.PlayerId);
 
@@ -160,7 +160,7 @@ internal class Mastermind : RoleBase
         {
             target.RpcMurderPlayer(killer);
             TempKCDs.Remove(killer.PlayerId);
-            return false;
+            return true;
         }
 
         killer.RpcMurderPlayer(target);
@@ -171,7 +171,7 @@ internal class Mastermind : RoleBase
             TempKCDs.Remove(killer.PlayerId);
         }, 0.1f, "Set KCD for Manipulated Kill");
 
-        return false;
+        return true;
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)

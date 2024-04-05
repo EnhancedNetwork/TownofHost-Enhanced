@@ -1,6 +1,5 @@
 ﻿using Hazel;
 using System;
-using TOHE.Roles.Core;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -189,7 +188,8 @@ internal class Benefactor : RoleBase
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (target == null || killer == null || !shieldedPlayers.ContainsKey(target.PlayerId)) return true;
+        if (target == null || killer == null) return true;
+        if (!shieldedPlayers.ContainsKey(target.PlayerId)) return false;
 
         if (ShieldIsOneTimeUse.GetBool())
         {
@@ -199,7 +199,7 @@ internal class Benefactor : RoleBase
         }
         killer.RpcGuardAndKill();
         killer.SetKillCooldown();
-        return false;
+        return true;
     }
 
     public override void OnFixedUpdateLowLoad(PlayerControl pc)

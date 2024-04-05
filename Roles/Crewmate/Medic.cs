@@ -173,8 +173,8 @@ internal class Medic : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return false;
-        if (!ProtectList.Contains(target.PlayerId)) return true;
+        if (killer == null || target == null) return true;
+        if (!ProtectList.Contains(target.PlayerId)) return false;
 
         SendRPCForProtectList();
 
@@ -213,7 +213,7 @@ internal class Medic : RoleBase
         }
 
         Logger.Info($"{target.GetNameWithRole()} : Shield Shatter from the Medic", "Medic");
-        return false;
+        return true;
     }
     public static void OnCheckMark()
     {

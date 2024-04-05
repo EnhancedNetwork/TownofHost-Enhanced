@@ -71,7 +71,7 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
-        return !AllEnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target));
+        return !AllEnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target) == true);
     }
 
     /// <summary>
@@ -161,14 +161,16 @@ public static class CustomRoleManager
         var killerSubRoles = killer.GetCustomSubRoles();
 
         // Forced check
-        if (!killerRoleClass.ForcedCheckMurderAsKiller(killer, target))
+        if (killerRoleClass.ForcedCheckMurderAsKiller(killer, target) == false)
         {
+            Logger.Info("Cancels because for killer no need kill target", "ForcedCheckMurderAsKiller");
             return false;
         }
 
         // Check in target
         if (!killer.RpcCheckAndMurder(target, true))
         {
+            Logger.Info("Cancels because target cancel kill", "OnCheckMurder.RpcCheckAndMurder");
             return false;
         }
 
@@ -211,6 +213,7 @@ public static class CustomRoleManager
         // Check murder as killer
         if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
         {
+            Logger.Info("Cancels because for killer no need kill target", "OnCheckMurderAsKiller");
             return false;
         }
 

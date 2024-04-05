@@ -52,10 +52,7 @@ internal class Witch : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetSpelledMark);
-        }
+        CustomRoleManager.MarkOthers.Add(GetSpelledMark);
     }
 
     private static void SendRPC(bool doSpell, byte witchId, byte target = 255)

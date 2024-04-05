@@ -127,7 +127,7 @@ internal class Deceiver : RoleBase
 
         var killer = Utils.GetPlayerById(cfId);
         var target = pc;
-        if (killer == null) return false;
+        if (killer == null) return true;
         
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
         target.RpcMurderPlayer(target);

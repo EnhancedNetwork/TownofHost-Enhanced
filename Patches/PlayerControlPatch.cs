@@ -295,8 +295,9 @@ class CheckMurderPatch
             return false;
 
         // Check murder on others targets
-        if (!CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target))
+        if (CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target) == false)
         {
+            Logger.Info("Cancels because for others target need cancel kill", "OnCheckMurderAsTargetOnOthers");
             return false;
         }
 
@@ -350,8 +351,9 @@ class CheckMurderPatch
             }
 
         // Check Murder as target
-        if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
+        if (targetRoleClass.OnCheckMurderAsTarget(killer, target) == false)
         {
+            Logger.Info("Cancels because for target need cancel kill", "OnCheckMurderAsTarget");
             return false;
         }
 

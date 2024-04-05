@@ -100,7 +100,7 @@ internal class Crusader : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (ForCrusade.Contains(target.PlayerId)) return true;
+        if (!ForCrusade.Contains(target.PlayerId)) return false;
 
         foreach (var crusader in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Crusader)).ToArray())
         {
@@ -110,7 +110,7 @@ internal class Crusader : RoleBase
                 crusader.RpcMurderPlayer(killer);
                 ForCrusade.Remove(target.PlayerId);
                 killer.RpcGuardAndKill(target);
-                return false;
+                return true;
             }
 
             if (killer.Is(CustomRoles.Pestilence))
@@ -120,11 +120,11 @@ internal class Crusader : RoleBase
                 ForCrusade.Remove(target.PlayerId);
                 target.RpcGuardAndKill(killer);
 
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {

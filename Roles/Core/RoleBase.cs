@@ -137,14 +137,14 @@ public abstract class RoleBase
     public virtual bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => target != null && killer != null;
     /// <summary>
     /// When role the target requires a kill check
-    /// If the target doesn't require a kill cancel, always use "return true"
     /// </summary>
+    /// /// <returns>If the target doesn't require a kill cancel, always use "return true"</returns>
     public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => target != null && killer != null;
     /// <summary>
     /// When role the target requires a kill check
-    /// If the target doesn't require a kill cancel, always use "return true"
     /// </summary>
-    public virtual bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target) => target != null && killer != null;
+    /// <returns>If the target needs to cancel kill, always use "return true"</returns>
+    public virtual bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target) => target == null || killer == null;
     /// <summary>
     ///  When role the killer requires a kill check
     /// </summary>
@@ -183,7 +183,7 @@ public abstract class RoleBase
     /// </summary>
     /// <param name="target">Transformation target</param>
     /// <param name="animate">Whether to play the shapeshift animation</param>
-    /// <returns>return false for cancel the shapeshift transformation</returns>.
+    /// <returns>return false for cancel the shapeshift transformation</returns>
     public virtual bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate) => true;
 
     /// <summary>
