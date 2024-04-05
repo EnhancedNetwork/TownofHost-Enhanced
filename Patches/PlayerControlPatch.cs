@@ -586,7 +586,7 @@ public static class CheckShapeshiftPatch
             logger.Info("Shapeshifting canceled because shapeshifter is dead");
             return false;
         }
-        if (instance.Data.Role.Role != RoleTypes.Shapeshifter && instance.GetCustomRole().GetVNRole() != CustomRoles.Shapeshifter && !instance.Is(CustomRoles.Glitch))
+        if (!instance.Is(CustomRoles.Glitch) && instance.Data.Role.Role != RoleTypes.Shapeshifter && instance.GetCustomRole().GetVNRole() != CustomRoles.Shapeshifter)
         {
             logger.Info("Shapeshifting canceled because the shapeshifter is not a shapeshifter");
             return false;
