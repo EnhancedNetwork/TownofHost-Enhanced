@@ -2,7 +2,7 @@
 using Hazel;
 using InnerNet;
 
-namespace TOHE;
+namespace TOHE.Roles.Neutral;
 
 // 来源：https://github.com/Yumenopai/TownOfHost_Y
 internal class Stalker : RoleBase
