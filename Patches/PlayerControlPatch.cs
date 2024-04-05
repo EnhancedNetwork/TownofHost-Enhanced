@@ -82,7 +82,7 @@ class CheckProtectPatch
         return true;
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))] // Upon Receive RPC / Local Host
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))]
 class CheckMurderPatch
 {
     public static Dictionary<byte, float> TimeSinceLastKill = [];
