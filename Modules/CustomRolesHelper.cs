@@ -576,7 +576,6 @@ public static class CustomRolesHelper
             CustomRoles.Traitor or
             CustomRoles.Revolutionist or
             CustomRoles.Hater or
-            CustomRoles.Konan or
             CustomRoles.Demon or
             CustomRoles.Maverick or
             CustomRoles.CursedSoul or
@@ -712,7 +711,6 @@ public static class CustomRolesHelper
             CustomRoles.Revolutionist or
             CustomRoles.Hater or
             CustomRoles.Traitor or
-            CustomRoles.Konan or
             CustomRoles.Demon or
             CustomRoles.Stalker or
             CustomRoles.Infectious or

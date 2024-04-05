@@ -665,7 +665,6 @@ public enum CustomRoles
     Jester,
     Jinx,
     Juggernaut,
-    Konan,
     Lawyer,
     Masochist,
     Maverick,
