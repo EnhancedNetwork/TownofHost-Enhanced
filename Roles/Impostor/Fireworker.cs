@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -89,6 +88,7 @@ internal class Fireworker : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterDuration = state[playerId] != FireworkerState.FireEnd ? 1f : 30f;
+        AURoleOptions.ShapeshifterLeaveSkin = true;
     }
 
     public override bool CanUseKillButton(PlayerControl pc)
@@ -107,11 +107,10 @@ internal class Fireworker : RoleBase
         return canUse;
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         Logger.Info($"Fireworker ShapeShift", "Fireworker");
-        if (!shapeshifting && !shapeshiftIsHidden) return;
-        if (shapeshifter == null || shapeshifter.Data.IsDead || Pelican.IsEaten(shapeshifter.PlayerId)) return;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         var shapeshifterId = shapeshifter.PlayerId;
         switch (state[shapeshifterId])
@@ -126,8 +125,7 @@ internal class Fireworker : RoleBase
                     ? Main.AliveImpostorCount <= 1 ? FireworkerState.ReadyFire : FireworkerState.WaitTime
                     : FireworkerState.SettingFireworker;
 
-                if (shapeshiftIsHidden)
-                    shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 break;
 
             case FireworkerState.ReadyFire:
@@ -164,12 +162,11 @@ internal class Fireworker : RoleBase
                 }
                 state[shapeshifterId] = FireworkerState.FireEnd;
                 break;
-
-            default:
-                break;
         }
         SendRPC(shapeshifterId);
         Utils.NotifyRoles(ForceLoop: true);
+
+        return false;
     }
 
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
