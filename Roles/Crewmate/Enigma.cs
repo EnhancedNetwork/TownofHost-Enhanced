@@ -354,8 +354,8 @@ internal class Enigma : RoleBase
             int end = length + rd.Next(2, 3);
 
             start = start < 0 ? 0 : start;
-            start = start >= 8 ? 6 : start;
-            end = end > 8 ? 8 : end;
+            start = start >= 10 ? 6 : start;
+            end = end > 10 ? 10 : end;
 
             return string.Format(GetString("EnigmaClueNameLength1"), start, end);
         }
@@ -366,8 +366,8 @@ internal class Enigma : RoleBase
             int end = length + rd.Next(1, 2);
 
             start = start < 0 ? 0 : start;
-            start = start >= 8 ? 7 : start;
-            end = end > 8 ? 8 : end;
+            start = start >= 10 ? 7 : start;
+            end = end > 10 ? 10 : end;
 
             return string.Format(GetString("EnigmaClueNameLength1"), start, end);
         }
