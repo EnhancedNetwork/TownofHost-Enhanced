@@ -46,12 +46,9 @@ internal class Twister : RoleBase
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = ShapeshiftDuration.GetFloat();
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl targetSS, bool shapeshifting, bool shapeshiftIsHidden)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl targetSS, bool IsAnimate, bool shapeshifting)
     {
-        changePositionPlayers = [];
-
-        if (!shapeshiftIsHidden)
-            changePositionPlayers.Add(shapeshifter.PlayerId);
+        changePositionPlayers = [shapeshifter.PlayerId];
 
         var rd = IRandom.Instance;
         foreach (var pc in Main.AllAlivePlayerControls)
