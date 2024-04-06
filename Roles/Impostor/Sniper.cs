@@ -195,8 +195,6 @@ internal class Sniper : RoleBase
     }
     public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool animate, bool shapeshifting)
     {
-        if (!shapeshifter.IsAlive()) return;
-
         var sniper = shapeshifter;
         var sniperId = sniper.PlayerId;
 
