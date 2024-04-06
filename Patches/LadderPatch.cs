@@ -62,7 +62,7 @@ public class FallFromLadder
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.ClimbLadder))]
 class LadderPatch
 {
-    public static void Postfix(PlayerPhysics __instance, Ladder source, byte climbLadderSid)
+    public static void Postfix(PlayerPhysics __instance, Ladder source)
     {
         FallFromLadder.OnClimbLadder(__instance, source);
     }

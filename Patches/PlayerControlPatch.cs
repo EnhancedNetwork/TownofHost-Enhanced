@@ -1264,17 +1264,6 @@ class PlayerStartPatch
         roleText.enabled = false;
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetColor))]
-class SetColorPatch
-{
-    public static bool IsAntiGlitchDisabled = false;
-    public static bool Prefix(PlayerControl __instance, int bodyColor)
-    {
-        //色変更バグ対策
-        if (!AmongUsClient.Instance.AmHost || __instance.CurrentOutfit.ColorId == bodyColor || IsAntiGlitchDisabled) return true;
-        return true;
-    }
-}
 [HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
 class EnterVentPatch
 {
