@@ -27,8 +27,6 @@ internal class Devourer : RoleBase
     private static readonly Dictionary<byte, float> NowCooldown = [];
     private static readonly Dictionary<byte, List<byte>> PlayerSkinsCosumed = [];
 
-    private static bool ShowShapeshiftAnimations = false;
-
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Devourer);
@@ -55,8 +53,6 @@ internal class Devourer : RoleBase
         PlayerSkinsCosumed.TryAdd(playerId, []);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
         PlayerIds.Add(playerId);
-
-        ShowShapeshiftAnimations = ShowShapeshiftAnimationsOpt.GetBool();
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -69,7 +65,7 @@ internal class Devourer : RoleBase
 
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (ShowShapeshiftAnimations || shapeshifter.PlayerId == target.PlayerId) return true;
+        if (ShowShapeshiftAnimationsOpt.GetBool() || shapeshifter.PlayerId == target.PlayerId) return true;
 
         DoEatSkin(shapeshifter, target);
         return false;

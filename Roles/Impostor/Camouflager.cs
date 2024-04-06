@@ -22,7 +22,6 @@ internal class Camouflager : RoleBase
     private static OptionItem ShowShapeshiftAnimationsOpt;
 
     public static bool AbilityActivated = false;
-    private static bool ShowShapeshiftAnimations = false;
     private static float CamouflageCooldown;
     private static float CamouflageDuration;
     private static bool CanUseCommsSabotage;
@@ -57,13 +56,12 @@ internal class Camouflager : RoleBase
         CamouflageDuration = CamouflageDurationOpt.GetFloat();
         CanUseCommsSabotage = CanUseCommsSabotagOpt.GetBool();
         DisableReportWhenCamouflageIsActive = DisableReportWhenCamouflageIsActiveOpt.GetBool();
-        ShowShapeshiftAnimations = ShowShapeshiftAnimationsOpt.GetBool();
 
         Playerids.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ShapeshifterCooldown = ShowShapeshiftAnimations && AbilityActivated ? CamouflageDuration : CamouflageCooldown;
+        AURoleOptions.ShapeshifterCooldown = ShowShapeshiftAnimationsOpt.GetBool() && AbilityActivated ? CamouflageDuration : CamouflageCooldown;
         AURoleOptions.ShapeshifterDuration = CamouflageDuration;
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Camo");
@@ -76,7 +74,7 @@ internal class Camouflager : RoleBase
     }
     public override bool OnCheckShapeshift(PlayerControl camouflager, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (ShowShapeshiftAnimations || camouflager.PlayerId == target.PlayerId) return true;
+        if (ShowShapeshiftAnimationsOpt.GetBool() || camouflager.PlayerId == target.PlayerId) return true;
 
         if (AbilityActivated)
         {
@@ -147,7 +145,7 @@ internal class Camouflager : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl camouflager)
     {
-        if (!ShowShapeshiftAnimations && !AbilityActivated) return;
+        if (!ShowShapeshiftAnimationsOpt.GetBool() && !AbilityActivated) return;
 
         if (camouflager == null || !camouflager.IsAlive())
         {

@@ -35,8 +35,6 @@ internal class Deathpact : RoleBase
     private static readonly Dictionary<byte, List<PlayerControl>> PlayersInDeathpact = [];
     private static readonly Dictionary<byte, long> DeathpactTime = [];
 
-    private static bool ShowShapeshiftAnimations = false;
-
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Deathpact);
@@ -72,8 +70,6 @@ internal class Deathpact : RoleBase
         PlayersInDeathpact.TryAdd(playerId, []);
         DeathpactTime.TryAdd(playerId, 0);
         Playerids.Add(playerId);
-
-        ShowShapeshiftAnimations = ShowShapeshiftAnimationsOpt.GetBool();
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -86,7 +82,7 @@ internal class Deathpact : RoleBase
 
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (ShowShapeshiftAnimations || shapeshifter.PlayerId == target.PlayerId) return true;
+        if (ShowShapeshiftAnimationsOpt.GetBool() || shapeshifter.PlayerId == target.PlayerId) return true;
 
         DoDeathpact(shapeshifter, target);
         return false;

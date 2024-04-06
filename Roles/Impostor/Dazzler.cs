@@ -25,8 +25,6 @@ internal class Dazzler : RoleBase
 
     private static Dictionary<byte, List<byte>> PlayersDazzled = [];
 
-    private static bool ShowShapeshiftAnimations = false;
-
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Dazzler);
@@ -54,8 +52,6 @@ internal class Dazzler : RoleBase
     {
         PlayersDazzled.TryAdd(playerId, []);
         PlayerIds.Add(playerId);
-
-        ShowShapeshiftAnimations = ShowShapeshiftAnimationsOpt.GetBool();
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -68,7 +64,7 @@ internal class Dazzler : RoleBase
 
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (ShowShapeshiftAnimations || shapeshifter.PlayerId == target.PlayerId) return true;
+        if (ShowShapeshiftAnimationsOpt.GetBool() || shapeshifter.PlayerId == target.PlayerId) return true;
 
         DoDazzled(shapeshifter, target);
         shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);

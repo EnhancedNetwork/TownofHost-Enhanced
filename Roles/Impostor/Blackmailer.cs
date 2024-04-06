@@ -21,8 +21,6 @@ internal class Blackmailer : RoleBase
 
     private static List<byte> ForBlackmailer = [];
 
-    private static bool ShowShapeshiftAnimations;
-
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Blackmailer);
@@ -38,7 +36,6 @@ internal class Blackmailer : RoleBase
     public override void Add(byte playerId)
     {
         PlayerIds.Add(playerId);
-        ShowShapeshiftAnimations = ShowShapeshiftAnimationsOpt.GetBool();
 
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
@@ -49,7 +46,7 @@ internal class Blackmailer : RoleBase
     }
     public override bool OnCheckShapeshift(PlayerControl blackmailer, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (ShowShapeshiftAnimations) return true;
+        if (ShowShapeshiftAnimationsOpt.GetBool() || blackmailer.PlayerId == target.PlayerId) return true;
 
         DoBlackmaile(blackmailer, target);
         blackmailer.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);

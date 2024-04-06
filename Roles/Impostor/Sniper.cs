@@ -38,7 +38,6 @@ internal class Sniper : RoleBase
     private static bool AimAssist;
     private static bool AimAssistOneshot;
     private static bool SniperCanUseKillButton;
-    private static bool ShowShapeshiftAnimations;
 
     public static void SetupCustomOption()
     {
@@ -75,7 +74,6 @@ internal class Sniper : RoleBase
         AimAssist = SniperAimAssist.GetBool();
         AimAssistOneshot = SniperAimAssistOnshot.GetBool();
         SniperCanUseKillButton = CanKillWithBullets.GetBool();
-        ShowShapeshiftAnimations = AlwaysShowShapeshiftAnimations.GetBool();
 
         snipeBasePosition[playerId] = new();
         LastPosition[playerId] = new();
@@ -119,7 +117,7 @@ internal class Sniper : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ShapeshifterCooldown = !ShowShapeshiftAnimations ? 1f : Options.DefaultShapeshiftCooldown.GetFloat();
+        AURoleOptions.ShapeshifterCooldown = !AlwaysShowShapeshiftAnimations.GetBool() ? 1f : Options.DefaultShapeshiftCooldown.GetFloat();
         //AURoleOptions.ShapeshifterDuration = 1f;
     }
     public override bool CanUseKillButton(PlayerControl pc)
