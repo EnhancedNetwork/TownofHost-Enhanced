@@ -59,6 +59,10 @@ internal class SoulCatcher : RoleBase
             shapeshifter.RPCPlayCustomSound("Teleport");
             target.RPCPlayCustomSound("Teleport");
         }
+        else
+        {
+            shapeshifter.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCatcher), Translator.GetString("ErrorTeleport")));
+        }
         return false;
     }
 }
