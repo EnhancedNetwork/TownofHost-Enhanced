@@ -15,7 +15,6 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ShowTextOverlay;
     private static ClientOptionItem ModeForSmallScreen;
     private static ClientOptionItem HorseMode;
-    private static ClientOptionItem LongMode;
     private static ClientOptionItem AutoMuteUs;
     private static ClientOptionItem ForceOwnLanguage;
     private static ClientOptionItem ForceOwnLanguageRoleName;
@@ -88,27 +87,7 @@ public static class OptionsMenuBehaviourStartPatch
             HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance, SwitchHorseMode);
             static void SwitchHorseMode()
             {
-                Main.LongMode.Value = false;
                 HorseMode.UpdateToggle();
-                LongMode.UpdateToggle();
-                foreach (var pc in PlayerControl.AllPlayerControls)
-                {
-                    pc.MyPhysics.SetBodyType(pc.BodyType);
-                    if (pc.BodyType == PlayerBodyTypes.Normal)
-                    {
-                        pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
-                    }
-                }
-            }
-        }
-        if (LongMode == null || LongMode.ToggleButton == null)
-        {
-            LongMode = ClientOptionItem.Create("LongMode", Main.LongMode, __instance, SwitchLongMode);
-            static void SwitchLongMode()
-            {
-                Main.HorseMode.Value = false;
-                HorseMode.UpdateToggle();
-                LongMode.UpdateToggle();
                 foreach (var pc in PlayerControl.AllPlayerControls)
                 {
                     pc.MyPhysics.SetBodyType(pc.BodyType);
