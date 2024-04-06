@@ -350,11 +350,11 @@ internal class Enigma : RoleBase
 
         private string GetStage1Clue(int length)
         {
-            int start = length - rd.Next(2, 3);
-            int end = length + rd.Next(2, 3);
+            int start = length - rd.Next(2, 4); // 2 or 3
+            int end = length + rd.Next(2, 4); // 2 or 3
 
             start = start < 0 ? 0 : start;
-            start = start >= 10 ? 6 : start;
+            start = start >= 10 ? 8 : start;
             end = end > 10 ? 10 : end;
 
             return string.Format(GetString("EnigmaClueNameLength1"), start, end);
@@ -362,11 +362,11 @@ internal class Enigma : RoleBase
 
         private string GetStage2Clue(int length)
         {
-            int start = length - rd.Next(1, 2);
-            int end = length + rd.Next(1, 2);
+            int start = length - rd.Next(1, 3); // 1 or 2
+            int end = length + rd.Next(1, 3); // 1 or 2
 
             start = start < 0 ? 0 : start;
-            start = start >= 10 ? 7 : start;
+            start = start >= 10 ? 9 : start;
             end = end > 10 ? 10 : end;
 
             return string.Format(GetString("EnigmaClueNameLength1"), start, end);
