@@ -48,6 +48,9 @@ internal class Twister : RoleBase
     }
     public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl targetSS, bool IsAnimate, bool shapeshifting)
     {
+        // When is force revert shapeshift
+        if (shapeshifter.PlayerId == targetSS.PlayerId && !IsAnimate) return;
+
         changePositionPlayers = [shapeshifter.PlayerId];
 
         var rd = IRandom.Instance;
