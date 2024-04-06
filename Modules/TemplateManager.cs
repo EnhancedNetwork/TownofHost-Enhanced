@@ -203,7 +203,6 @@ public static class TemplateManager
             title = Text.Substring(start, end);
             title = title.Replace("<title>", "");
             title = title.Replace("</title>", "");
-            Logger.Info($"The Captured title for {Text} was :\\n {title}", "Template.TryGetTitle");
             
         }
 
