@@ -9,6 +9,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using TOHE.Roles.Core;
+using TOHE.Roles.Double;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 
@@ -305,16 +307,14 @@ public class Main : BasePlugin
                 .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
             foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
             {
-                var RealRole = role switch // Switch role to FatherRole (Double Classes)
+                Type roleType = role switch // Switch role to FatherRole (Double Classes)
                 {
-                    CustomRoles.Vampiress => CustomRoles.Vampire,
-                    CustomRoles.Pestilence => CustomRoles.PlagueBearer,
-                    CustomRoles.Nuker => CustomRoles.Bomber,
-                    CustomRoles.NiceMini or CustomRoles.EvilMini => CustomRoles.Mini,
-                    _ => role
+                    CustomRoles.Vampiress => typeof(Vampire),
+                    CustomRoles.Pestilence => typeof(PlagueBearer),
+                    CustomRoles.Nuker => typeof(Bomber),
+                    CustomRoles.NiceMini or CustomRoles.EvilMini => typeof(Mini),
+                    _ => RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(VanillaRole),
                 };
-                var RoleName = RealRole.ToString();
-                Type roleType = RoleTypes.FirstOrDefault(x => x.Name.Equals(RoleName, StringComparison.OrdinalIgnoreCase)) ?? typeof(VanillaRole);
 
                 CustomRoleManager.RoleClass.Add(role, (RoleBase)Activator.CreateInstance(roleType));
             }
