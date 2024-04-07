@@ -588,17 +588,6 @@ static class ExtendedPlayerControl
             || sheriff.Is(CustomRoles.Contagious)
             || sheriff.Is(CustomRoles.Egoist);
     }
-    public static bool IsEvilAddons(this PlayerControl target)
-    {
-        return target.Is(CustomRoles.Madmate)
-            || target.Is(CustomRoles.Egoist)
-            || target.Is(CustomRoles.Charmed)
-            || target.Is(CustomRoles.Recruit)
-            || target.Is(CustomRoles.Infected)
-            || target.Is(CustomRoles.Contagious)
-            || target.Is(CustomRoles.Rascal)
-            || target.Is(CustomRoles.Soulless);
-    }
     public static bool ShouldBeDisplayed(this CustomRoles subRole)
     {
         return subRole is not 
@@ -611,47 +600,6 @@ static class ExtendedPlayerControl
             CustomRoles.Lovers and not
             CustomRoles.Infected and not
             CustomRoles.Contagious;
-    }
-    public static bool IsAmneCrew(this PlayerControl target)
-    {
-        return target.IsCrewVenter()
-                || target.GetCustomRole() is
-                CustomRoles.Sheriff or
-                CustomRoles.LazyGuy or
-                CustomRoles.SuperStar or
-                CustomRoles.Celebrity or
-                CustomRoles.Mayor or
-                CustomRoles.Paranoia or
-                CustomRoles.Paranoia or
-                CustomRoles.Dictator or
-                CustomRoles.NiceGuesser or
-                CustomRoles.Bodyguard or
-                CustomRoles.Observer or
-                CustomRoles.Retributionist or
-                CustomRoles.Lookout or
-                CustomRoles.Admirer or
-                CustomRoles.Cleanser or
-                CustomRoles.CopyCat or
-                CustomRoles.Deceiver or
-                CustomRoles.Crusader or
-                CustomRoles.Overseer or
-                CustomRoles.Jailer or
-                CustomRoles.Judge or
-                CustomRoles.Medic or
-                CustomRoles.Medium or
-                CustomRoles.Monarch or
-                CustomRoles.Telecommunication or
-                CustomRoles.Swapper or
-                CustomRoles.Mechanic;
-    }
-    public static bool IsCrewVenter(this PlayerControl target)
-    {
-        return target.Is(CustomRoles.EngineerTOHE)
-            || target.Is(CustomRoles.Mechanic)
-            || target.Is(CustomRoles.CopyCat)
-            || target.Is(CustomRoles.Telecommunication) && Telecommunication.CanUseVent()
-            || Knight.CheckCanUseVent(target)
-            || target.Is(CustomRoles.Nimble);
     }
     public static void RpcExileV2(this PlayerControl player)
     {
@@ -749,7 +697,6 @@ static class ExtendedPlayerControl
     public static bool IsNeutralEvil(this PlayerControl player) => player.GetCustomRole().IsNE();
     public static bool IsNeutralChaos(this PlayerControl player) => player.GetCustomRole().IsNC();
     public static bool IsNonNeutralKiller(this PlayerControl player) => player.GetCustomRole().IsNonNK();
-    public static bool IsSnitchTarget(this PlayerControl player) => player.GetCustomRole().IsSnitchTarget();
     
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl target)
         => (seer.Is(CustomRoles.Doctor) || seer.Is(CustomRoles.Autopsy)
