@@ -24,6 +24,8 @@ internal class ChatCommands
     private static readonly string sponsorTagsFiles = @"./TOHE-DATA/Tags/SPONSOR_TAGS";
     private static readonly string vipTagsFiles = @"./TOHE-DATA/Tags/VIP_TAGS";
 
+    public const string Csize = "85%"; // CustomRole Settings Font-Size
+    public const string Asize = "75%"; // All Appended Addons Font-Size
 
     public static List<string> ChatHistory = [];
 
@@ -403,18 +405,35 @@ internal class ChatCommands
                     if (GameStates.IsInGame)
                     {
                         var lp = PlayerControl.LocalPlayer;
-                        var sb = new StringBuilder();
-                        //sb.Append(String.Format(GetString("PlayerNameForRoleInfo"), Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId]));
-                        sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + lp.GetRoleInfo(true));
+                        var Des = lp.GetRoleInfo(true);
+                        var title = $"<color=#ffffff>" + role.GetRoleTitle() + "</color>\n";
+                        var Conf = new StringBuilder(); 
+                        var Sub = new StringBuilder(); 
+                        var rlHex = Utils.GetRoleColorCode(role);
+                        var SubTitle = $"<color={rlHex}>" + GetString("YourAddon") + "</color>\n";
+
                         if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                            Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb, command: true);
-                        var txt = sb.ToString();
-                        sb.Clear().Append(txt.RemoveHtmlTags());
+                            Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref Conf);
+                        var cleared = Conf.ToString();
+                        var Setting = $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n";
+                        Conf.Clear().Append($"<color=#ffffff>" + $"<size={Csize}>" + Setting + cleared + "</size>" + "</color>");
+
+
                         foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.ToArray())
-                            sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
+                            Sub.Append($"\n\n" + $"<size={Asize}>" + Utils.GetRoleTitle(subRole) + Utils.GetInfoLong(subRole) + "</size>");
                         if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                            sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
-                        Utils.SendMessage(sb.ToString(), lp.PlayerId);
+                            Sub.Append($"\n\n" + $"<size={Asize}>" + Utils.GetRoleTitle(CustomRoles.Lovers) + Utils.GetInfoLong(CustomRoles.Lovers) + "</size>");
+
+                        if (Sub.ToString() != string.Empty)
+                        {
+                            var ACleared = Sub.ToString().Remove(0, 2);
+                            ACleared = ACleared.Length > 1200 ? $"<size={Asize}>" + ACleared.RemoveHtmlTags() + "</size>" : ACleared;
+                            Sub.Clear().Append(ACleared);
+                        }
+
+                        Utils.SendMessage(Des, lp.PlayerId, title);
+                        Utils.SendMessage("", lp.PlayerId, Conf.ToString());
+                        if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), lp.PlayerId, SubTitle);
                     }
                     else
                         Utils.SendMessage((PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + GetString("Message.CanNotUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
@@ -1364,6 +1383,7 @@ internal class ChatCommands
     public static bool GetRoleByName(string name, out CustomRoles role)
     {
         role = new();
+
         if (name == "" || name == string.Empty) return false;
 
         if ((TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.SChinese) == SupportedLangs.SChinese)
@@ -1386,7 +1406,7 @@ internal class ChatCommands
             var roleName = GetString(rl.ToString()).ToLower().Trim().Replace(" ", "");
             string nameWithoutId = Regex.Replace(name.Replace(" ", ""), @"^\d+", "");
             if (nameWithoutId == roleName)
-            {          
+            {
                 role = rl;
                 return true;
             }
@@ -1440,15 +1460,20 @@ internal class ChatCommands
                     }
                     if (isUp) return;
                 }
-                var sb = new StringBuilder();
-                sb.Append(devMark + roleName + Utils.GetRoleMode(rl) + GetString($"{rl}InfoLong"));
+                var Des = rl.GetInfoLong();
+                var title = $"<color=#ffffff>" + rl.GetRoleTitle() + "</color>\n";
+                var Conf = new StringBuilder();
+                string rlHex = Utils.GetRoleColorCode(rl);
                 if (Options.CustomRoleSpawnChances.ContainsKey(rl))
                 {
-                    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[rl], ref sb, command: true);
-                    var txt = sb.ToString();
-                    sb.Clear().Append(txt.RemoveHtmlTags());
+                    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[rl], ref Conf);
+                    var cleared = Conf.ToString();
+                    var Setting = $"<color={rlHex}>{GetString(rl.ToString())} {GetString("Settings:")}</color>\n";
+                    Conf.Clear().Append($"<color=#ffffff>" + $"<size={Csize}>" + Setting + cleared + "</size>" + "</color>");
+
                 }
-                Utils.SendMessage(sb.ToString(), playerId);
+                Utils.SendMessage(Des, playerId, title);
+                Utils.SendMessage("", playerId, Conf.ToString());
                 return;
             }
         }
@@ -1513,25 +1538,36 @@ internal class ChatCommands
                 var role = player.GetCustomRole();
                 if (GameStates.IsInGame)
                 {
-                    var sb = new StringBuilder();
-                    //sb.Append(String.Format(GetString("PlayerNameForRoleInfo"), Main.AllPlayerNames[player.PlayerId]));
-                    sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + player.GetRoleInfo(true));
+                    var Des = player.GetRoleInfo(true);
+                    var title = $"<color=#ffffff>" + role.GetRoleTitle() + "</color>\n";
+                    var Conf = new StringBuilder(); 
+                    var Sub = new StringBuilder();
+                    var rlHex = Utils.GetRoleColorCode(role);
+                    var SubTitle = $"<color={rlHex}>" + GetString("YourAddon") + "</color>\n";
 
                     if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                        Utils.ShowChildrenSettings(opt, ref sb, command: true);
-
-                    var txt = sb.ToString();
-
-                    sb.Clear().Append(txt.RemoveHtmlTags());
+                        Utils.ShowChildrenSettings(opt, ref Conf);
+                    var cleared = Conf.ToString();
+                    var Setting = $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n";
+                    Conf.Clear().Append($"<color=#ffffff>" + $"<size={Csize}>" + Setting + cleared + "</size>" + "</Color>");
 
                     foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
                     {
-                        sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
+                        Sub.Append($"\n\n" + $"<size={Asize}>" + Utils.GetRoleTitle(subRole) + Utils.GetInfoLong(subRole) + "</size>");
 
                         if (CustomRoles.Ntr.RoleExist() && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                            sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
+                            Sub.Append($"\n\n" + $"<size={Asize}>" + Utils.GetRoleTitle(CustomRoles.Lovers) + Utils.GetInfoLong(CustomRoles.Lovers) + "</size>");
                     }
-                    Utils.SendMessage(sb.ToString(), player.PlayerId);
+                    if (Sub.ToString() != string.Empty)
+                    {
+                        var ACleared = Sub.ToString().Remove(0, 2);
+                        ACleared = ACleared.Length > 1200 ? $"<size={Asize}>" + ACleared.RemoveHtmlTags()  + "</size>": ACleared;
+                        Sub.Clear().Append(ACleared);
+                    }
+
+                    Utils.SendMessage(Des, player.PlayerId, title);
+                    Utils.SendMessage("", player.PlayerId, Conf.ToString());
+                    if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), player.PlayerId, SubTitle);
 
                     Logger.Info($"Command '/m' should be send message", "OnReceiveChat");
                 }
@@ -2441,6 +2477,7 @@ class ChatUpdatePatch
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
             player.SetName(name);
         }
+
 
         var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
         writer.StartMessage(clientId);

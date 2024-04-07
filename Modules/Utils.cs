@@ -303,6 +303,21 @@ public static class Utils
         }
         return;
     }
+    public static string GetRoleTitle(this CustomRoles role)
+    {
+        string ColorName = ColorString(GetRoleColor(role), GetString($"{role}"));
+        return $"{ColorName} {GetRoleMode(role)}";
+    }
+    public static string GetInfoLong(this CustomRoles role) 
+    {
+        var InfoLong = GetString($"{role}" + "InfoLong");
+        var CustomName = GetString($"{role}");
+        var ColorName = ColorString(GetRoleColor(role).ShadeColor(0.25f), CustomName);
+        
+        Translator.GetActualRoleName(role, out var RealRole);
+
+        return InfoLong.Replace(RealRole, $"{ColorName}");
+    }
     public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool notShowAddOns = false)
     {
         var TextData = GetRoleAndSubText(seerId, targetId, notShowAddOns);
@@ -317,15 +332,43 @@ public static class Utils
         if (Options.HideGameSettings.GetBool() && Main.AllPlayerControls.Length > 1)
             return string.Empty;
 
-        string mode = GetString($"Chance{role.GetMode()}").RemoveHtmlTags();
-        if (role is CustomRoles.Lovers) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
+        string mode = GetChance(role.GetMode());
+        if (role is CustomRoles.Lovers) mode = GetChance(Options.LoverSpawnChances.GetInt());
         else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
         {
-            mode = GetString($"Chance{Options.CustomAdtRoleSpawnRate[role].GetFloat()}");
+            mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());
             
         }
         
         return parentheses ? $"({mode})" : mode;
+    }
+    public static string GetChance(float percent)
+    {
+        return percent switch 
+        {
+            0 => "<color=#444444>0%</color>",
+            5 => "<color=#EE5015>5%</color>",
+            10 => "<color=#EC6817>10%</color>",
+            15 => "<color=#EC7B17>15%</color>",
+            20 => "<color=#EC8E17>20%</color>",
+            25 => "<color=#EC9817>25%</color>",
+            30 => "<color=#ECAF17>30%</color>",
+            35 => "<color=#ECC217>35%</color>",
+            40 => "<color=#ECD217>40%</color>",
+            45 => "<color=#ECE217>45%</color>",
+            50 => "<color=#DFEC17>50%</color>",
+            55 => "<color=#DCEC17>55%</color>",
+            60 => "<color=#C9EC17>60%</color>",
+            65 => "<color=#BFEC17>65%</color>",
+            70 => "<color=#ABEC17>70%</color>",
+            75 => "<color=#92EC17>75%</color>",
+            80 => "<color=#92EC17>80%</color>",
+            85 => "<color=#7BEC17>85%</color>",
+            90 => "<color=#6EEC17>90%</color>",
+            95 => "<color=#5EEC17>95%</color>",
+            100 => "<color=#51EC17>100%</color>",
+            _ => $"<color=#4287f5>{percent}%</color>"
+        };
     }
     public static string GetDeathReason(PlayerState.DeathReason status)
     {
@@ -382,13 +425,13 @@ public static class Utils
 
                         // colored add-ons
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
+                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"{subRole}")}) " : $"{GetString($"{subRole}")} ") + RoleText;
                     }
                     // default
                     else
                     {
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
+                            RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"{subRole}")}) " : $"{GetString($"{subRole}")} ") + RoleText;
                     }
                 }
 
@@ -644,7 +687,7 @@ public static class Utils
         foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
             if (!role.IsEnable()) continue;
-            string mode = GetString($"Chance{role.GetMode()}");
+            string mode = GetChance(role.GetMode());
             sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
             ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
@@ -675,7 +718,7 @@ public static class Utils
         foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
             if (!role.IsEnable()) continue;
-            string mode = GetString($"Chance{role.GetMode()}");
+            string mode = GetChance(role.GetMode());
             sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
             ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
@@ -710,13 +753,13 @@ public static class Utils
 
         foreach (var role in CustomRolesHelper.AllRoles)
         {
-            string mode = GetString($"Chance{role.GetMode()}");
+            string mode = GetChance(role.GetMode());
             if (role.IsEnable())
             {
-                if (role is CustomRoles.Lovers) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
+                if (role is CustomRoles.Lovers) mode = GetChance(Options.LoverSpawnChances.GetInt());
                 else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
                 {
-                    mode = GetString($"Chance{Options.CustomAdtRoleSpawnRate[role].GetFloat()}");
+                    mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());
 
                 }
                 var roleDisplay = $"{GetRoleName(role)}: {mode} x{role.GetCount()}";
