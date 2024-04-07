@@ -191,7 +191,7 @@ internal class ControllerManagerUpdatePatch
             if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !HudManager.Instance.Chat.IsOpenOrOpening)
             {
                 var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-                if (invalidColor.Length > 0)
+                if (invalidColor.Any())
                 {
                     GameStartManager.Instance.ResetStartState(); //Hope this works
                     Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));

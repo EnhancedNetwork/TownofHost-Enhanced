@@ -67,7 +67,7 @@ internal class Collector : RoleBase
     public static bool CollectorWin(bool check = true)
     {
         var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Collector) && x.IsAlive() && CollectDone(x)).ToArray();
-        if (pcArray.Length > 0)
+        if (pcArray.Any())
         {
             bool isWinConverted = false;
             foreach (var x in pcArray)

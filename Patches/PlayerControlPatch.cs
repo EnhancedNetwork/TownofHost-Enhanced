@@ -1377,7 +1377,7 @@ class PlayerControlCompleteTaskPatch
             }
 
             // Check others complete task
-            if (player != null && __args != null && __args.Length > 0)
+            if (player != null && __args != null && __args.Any())
             {
                 int taskIndex = Convert.ToInt32(__args[0]);
                 var playerTask = player.myTasks[taskIndex];

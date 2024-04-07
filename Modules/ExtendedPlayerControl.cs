@@ -544,7 +544,7 @@ static class ExtendedPlayerControl
 
         var playerSubRoles = player.GetCustomSubRoles().ToArray();
 
-        if (playerSubRoles.Length > 0)
+        if (playerSubRoles.Any())
             foreach (var subRole in playerSubRoles)
             {
                 switch (subRole)
