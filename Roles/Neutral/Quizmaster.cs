@@ -18,7 +18,7 @@ internal class Quizmaster : RoleBase
     //==================================================================\\
 
     private static OptionItem QuestionDifficulty;
-    public static OptionItem CanKillAfterMark;
+    public static OptionItem CanKillAfterMarkOpt;
     private static OptionItem CanVentAfterMark;
     private static OptionItem NumOfKillAfterMark;
     private static OptionItem CanGiveQuestionsAboutPastGames;
@@ -44,6 +44,7 @@ internal class Quizmaster : RoleBase
     public static int buttonMeeting = 0;
 
     public static bool InExperimental = true;
+    public static bool CanKillAfterMark = false;
 
     public static void SetupCustomOption()
     {
@@ -54,11 +55,11 @@ internal class Quizmaster : RoleBase
 
         CanVentAfterMark = BooleanOptionItem.Create(Id + 11, "QuizmasterSettings.CanVentAfterMark", true, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-        CanKillAfterMark = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
+        CanKillAfterMarkOpt = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         NumOfKillAfterMark = IntegerOptionItem.Create(Id + 13, "QuizmasterSettings.NumOfKillAfterMark", new(1, 15, 1), 1, tab, false)
             .SetValueFormat(OptionFormat.Players)
-            .SetParent(CanKillAfterMark);
+            .SetParent(CanKillAfterMarkOpt);
         CanGiveQuestionsAboutPastGames = BooleanOptionItem.Create(Id + 14, "QuizmasterSettings.CanGiveQuestionsAboutPastGames", false, tab, false)
            .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
     }
@@ -86,6 +87,8 @@ internal class Quizmaster : RoleBase
         diedThisRound = 0;
         meetingNum = 0;
         buttonMeeting = 0;
+
+        CanKillAfterMark = CanKillAfterMarkOpt.GetBool();
     }
     public override void Add(byte playerId)
     {
@@ -114,7 +117,7 @@ internal class Quizmaster : RoleBase
             AlreadyMarked = true;
             MarkedPlayer = targetId;
 
-            allowedKilling = CanKillAfterMark.GetBool();
+            allowedKilling = CanKillAfterMark;
         }
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
@@ -144,7 +147,7 @@ internal class Quizmaster : RoleBase
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
-            allowedKilling = CanKillAfterMark.GetBool();
+            allowedKilling = CanKillAfterMark;
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();

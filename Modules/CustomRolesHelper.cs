@@ -303,7 +303,7 @@ public static class CustomRolesHelper
     public static bool IsNK(this CustomRoles role)
     {
         if (role == CustomRoles.Arsonist && Arsonist.CanIgniteAnytime()) return true;
-        else if (role == CustomRoles.Quizmaster && Quizmaster.CanKillAfterMark.GetBool()) return true;
+        else if (role == CustomRoles.Quizmaster && Quizmaster.CanKillAfterMark) return true;
 
         return role is
             CustomRoles.Jackal or
@@ -344,7 +344,7 @@ public static class CustomRolesHelper
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
         if (role == CustomRoles.Arsonist && !Arsonist.CanIgniteAnytime()) return true;
-        else if (role == CustomRoles.Quizmaster && !Quizmaster.CanKillAfterMark.GetBool()) return true; 
+        else if (role == CustomRoles.Quizmaster && !Quizmaster.CanKillAfterMark) return true; 
 
         return role is
             CustomRoles.Amnesiac or

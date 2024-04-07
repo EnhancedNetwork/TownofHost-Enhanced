@@ -1326,7 +1326,6 @@ internal class ChatCommands
             "騎士" or "骑士" => GetString("Knighted"),
             "漠視" or "不受重视" or "被漠視的" => GetString("Unreportable"),
             "被傳染" or "传染性" => GetString("Contagious"),
-            "盜賊" or "盗贼" => GetString("Rogue"),
             "幸運" or "幸运加持" => GetString("Lucky"),
             "倒霉" or "倒霉蛋" => GetString("Unlucky"),
             "虛無" or "无效投票" => GetString("VoidBallot"),
