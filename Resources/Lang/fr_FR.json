@@ -3307,6 +3307,7 @@
   "HaterCanKillAdmired": "Peut Exécuter l'Admirateur",
   "AutoMuteUs": "Active-le si vous utilisez AutoMuteUs",
   "HorseMode": "Activer pour devenir un Cheval",
+  "LongMode": "Enable to have a long neck",
   "InfluencedChangeVote": "Oups ! Tu es influencé par les autres !\nTu ne peux pas contenir la peur d'avoir changé ton Vote pour {0} !",
   "FFA": "Chacun Pour Soi !",
   "ModeFFA": "Mode de Jeu : CPS",
