@@ -88,11 +88,12 @@ internal class PlagueDoctor : RoleBase
 
         playerIdList.Add(playerId);
 
+        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
+        CustomRoleManager.LowerOthers.Add(GetLowerTextOthers);
+
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateOthers.Add(OnCheckPlayerPosition);
-            CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-            CustomRoleManager.LowerOthers.Add(GetLowerTextOthers);
             CustomRoleManager.CheckDeadBodyOthers.Add(OnAnyMurder);
 
             if (!Main.ResetCamPlayerList.Contains(playerId))

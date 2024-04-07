@@ -47,8 +47,6 @@ public static class Tricky
             PlayerState.DeathReason.Sniped => (CustomRoles.Sniper.IsEnable()),
             PlayerState.DeathReason.Revenge => (CustomRoles.Avanger.IsEnable() || CustomRoles.Retributionist.IsEnable() 
                                 || CustomRoles.Nemesis.IsEnable() || CustomRoles.Randomizer.IsEnable()),
-            PlayerState.DeathReason.Gambled => (CustomRoles.EvilGuesser.IsEnable() || CustomRoles.NiceGuesser.IsEnable() 
-                                || GuesserMode.GetBool()),
             PlayerState.DeathReason.Quantization => (CustomRoles.Lightning.IsEnable()),
             //PlayerState.DeathReason.Overtired => (CustomRoles.Workaholic.IsEnable()),
             PlayerState.DeathReason.Ashamed => (CustomRoles.Workaholic.IsEnable()),
@@ -76,7 +74,7 @@ public static class Tricky
             PlayerState.DeathReason.Retribution => CustomRoles.Instigator.IsEnable(),
             PlayerState.DeathReason.WrongAnswer => CustomRoles.Quizmaster.IsEnable(),
             PlayerState.DeathReason.Disconnected or PlayerState.DeathReason.Overtired or PlayerState.DeathReason.etc 
-                                or PlayerState.DeathReason.Vote => false,
+                                or PlayerState.DeathReason.Vote or PlayerState.DeathReason.Gambled => false,
             PlayerState.DeathReason.Slice => CustomRoles.Hawk.IsEnable(),
             PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
             PlayerState.DeathReason.Kill => true,

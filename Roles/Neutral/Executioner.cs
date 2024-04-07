@@ -34,8 +34,7 @@ internal class Executioner : RoleBase
         Role_Mayor,
         Role_Doctor,
         Role_Jester,
-        Role_Opportunist,
-        Role_Convict
+        Role_Opportunist
     }
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
@@ -47,7 +46,6 @@ internal class Executioner : RoleBase
         CustomRoles.Doctor,
         CustomRoles.Jester,
         CustomRoles.Opportunist,
-        CustomRoles.Convict,
     ];
 
     public static void SetupCustomOption()

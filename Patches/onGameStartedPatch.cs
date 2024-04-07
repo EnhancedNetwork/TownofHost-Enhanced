@@ -100,7 +100,7 @@ internal class ChangeRoleSettings
             //Main.AllPlayerNames = [];
             RPC.SyncAllPlayerNames();
 
-            GhostRoleAssign.Init();
+            //GhostRoleAssign.Init();
 
             Camouflage.Init();
 
@@ -152,7 +152,7 @@ internal class ChangeRoleSettings
             }
 
             // Initialize all custom roles
-            foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
+            foreach (var role in EnumHelper.GetAllValues<CustomRoles>().Where(role => role < CustomRoles.NotAssigned).ToArray())
             {
                 var RoleClass = CustomRoleManager.GetStaticRoleClass(role);
                 RoleClass?.Init();
@@ -305,7 +305,6 @@ internal class SelectRolesPatch
 
                 EAC.LogAllRoles();
                 Utils.SyncAllSettings();
-                SetColorPatch.IsAntiGlitchDisabled = false;
 
                 return;
             }
@@ -512,7 +511,6 @@ internal class SelectRolesPatch
 
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
-            SetColorPatch.IsAntiGlitchDisabled = false;
 
             Logger.Msg("Ended", "AssignRoles");
         }
@@ -566,12 +564,9 @@ internal class SelectRolesPatch
     private static void AssignCustomRole(CustomRoles role, PlayerControl player)
     {
         if (player == null) return;
-        SetColorPatch.IsAntiGlitchDisabled = true;
 
         Main.PlayerStates[player.PlayerId].SetMainRole(role);
         Logger.Info($"Registered Role： {player?.Data?.PlayerName} => {role}", "AssignRoles");
-
-        SetColorPatch.IsAntiGlitchDisabled = false;
     }
     private static void ForceAssignRole(CustomRoles role, List<PlayerControl> AllPlayers, CustomRpcSender sender, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate, bool skip = false, int Count = -1)
     {

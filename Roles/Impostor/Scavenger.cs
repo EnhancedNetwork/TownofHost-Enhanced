@@ -39,13 +39,12 @@ internal class Scavenger : RoleBase
             {
                 target.SetRealKiller(killer);
                 target.RpcMurderPlayer(target);
+                RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), Translator.GetString("KilledByScavenger")), time: 8f);
             },
             0.5f, "Scavenger Kill");
         
         killer.SetKillCooldown();
-        RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-        
         return false;
     }
 

@@ -32,7 +32,7 @@ internal class Bodyguard : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer?.PlayerId == target.PlayerId || playerIdList.Count <= 0) return true;
+        if (killer?.PlayerId == target.PlayerId || playerIdList.Count <= 0) return false;
 
         foreach (var bodyguardId in playerIdList.ToArray())
         {
@@ -41,7 +41,7 @@ internal class Bodyguard : RoleBase
 
             var pos = target.transform.position;
             var dis = Vector2.Distance(pos, bodyguard.transform.position);
-            if (dis > ProtectRadiusOpt.GetFloat()) return true;
+            if (dis > ProtectRadiusOpt.GetFloat()) return false;
 
             if (bodyguard.Is(CustomRoles.Madmate) && killer.GetCustomRole().IsImpostorTeam())
             {
@@ -54,10 +54,10 @@ internal class Bodyguard : RoleBase
                 bodyguard.SetRealKiller(killer);
                 bodyguard.RpcMurderPlayer(bodyguard);
                 Logger.Info($"{bodyguard.GetRealName()} Stand up and die with the gangster {killer.GetRealName()}", "Bodyguard");
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 }

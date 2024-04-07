@@ -11,7 +11,7 @@ internal class Witch : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 2500;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -19,8 +19,8 @@ internal class Witch : RoleBase
 
     public static OptionItem ModeSwitchActionOpt;
 
-    private static Dictionary<byte, bool> SpellMode = [];
-    private static Dictionary<byte, List<byte>> SpelledPlayer = [];
+    private static readonly Dictionary<byte, bool> SpellMode = [];
+    private static readonly Dictionary<byte, HashSet<byte>> SpelledPlayer = [];
 
     private enum SwitchTrigger
     {
@@ -52,10 +52,7 @@ internal class Witch : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetSpelledMark);
-        }
+        CustomRoleManager.MarkOthers.Add(GetSpelledMark);
     }
 
     private static void SendRPC(bool doSpell, byte witchId, byte target = 255)

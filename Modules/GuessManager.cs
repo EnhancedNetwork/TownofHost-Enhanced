@@ -911,24 +911,17 @@ public static class GuessManager
             {
                 if (role is CustomRoles.GM
                     or CustomRoles.SpeedBooster
-                    //   or CustomRoles.Ritualist
                     or CustomRoles.Engineer
                     or CustomRoles.Crewmate
-                    //   or CustomRoles.Loyal
                     or CustomRoles.Oblivious
                     or CustomRoles.ChiefOfPolice
-                    or CustomRoles.Rogue
                     or CustomRoles.Scientist
                     or CustomRoles.Impostor
                     or CustomRoles.Shapeshifter
                     or CustomRoles.Flash
                     or CustomRoles.NotAssigned
-                    //     or CustomRoles.Marshall 
-                    //or CustomRoles.Paranoia 
                     or CustomRoles.SuperStar
-                    or CustomRoles.Konan
                     or CustomRoles.Oblivious
-                    //     or CustomRoles.Reflective
                     or CustomRoles.Solsticer
                     or CustomRoles.Killer
                     or CustomRoles.Mini
@@ -938,8 +931,6 @@ public static class GuessManager
                     or CustomRoles.Mare
                     or CustomRoles.Cyber
                     ) continue;
-
-                //if (Options.ShowOnlyEnabledRolesInGuesserUI.GetBool() && !(role.IsEnable() || role.RoleExist(countDead: true))) continue;
 
                 CreateRole(role);
             }

@@ -54,7 +54,7 @@ public static class Workhorse
         if (pc.Is(CustomRoles.LazyGuy) || pc.Is(CustomRoles.Lazy)) return false;
 
         var taskState = pc.GetPlayerTaskState();
-        if (taskState.CompletedTasksCount + 1 < taskState.AllTasksCount) return false;
+        if (taskState.CompletedTasksCount < taskState.AllTasksCount) return false;
 
         if (AssignOnlyToCrewmate)
             return pc.Is(CustomRoleTypes.Crewmate);
@@ -64,8 +64,8 @@ public static class Workhorse
     }
     public static bool OnAddTask(PlayerControl pc)
     {
-        if (!CustomRoles.Workhorse.IsEnable() || playerIdList.Count >= CustomRoles.Workhorse.GetCount()) return false;
-        if (!IsAssignTarget(pc)) return false;
+        if (!CustomRoles.Workhorse.IsEnable() || playerIdList.Count >= CustomRoles.Workhorse.GetCount()) return true;
+        if (!IsAssignTarget(pc)) return true;
 
         pc.RpcSetCustomRole(CustomRoles.Workhorse);
         var taskState = pc.GetPlayerTaskState();
@@ -80,6 +80,6 @@ public static class Workhorse
             Utils.NotifyRoles(SpecifySeer: pc);
         }
 
-        return true;
+        return false;
     }
 }

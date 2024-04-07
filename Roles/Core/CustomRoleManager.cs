@@ -29,7 +29,9 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
-        return !AllEnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target));
+        // return true when need to cancel the kill target
+        // "Any()" defines a function that returns true, and converts to false to cancel the kill
+        return !AllEnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target) == true);
     }
 
     /// <summary>
@@ -119,14 +121,16 @@ public static class CustomRoleManager
         var killerSubRoles = killer.GetCustomSubRoles();
 
         // Forced check
-        if (!killerRoleClass.ForcedCheckMurderAsKiller(killer, target))
+        if (killerRoleClass.ForcedCheckMurderAsKiller(killer, target) == false)
         {
+            Logger.Info("Cancels because for killer no need kill target", "ForcedCheckMurderAsKiller");
             return false;
         }
 
         // Check in target
         if (!killer.RpcCheckAndMurder(target, true))
         {
+            Logger.Info("Cancels because target cancel kill", "OnCheckMurder.RpcCheckAndMurder");
             return false;
         }
 
@@ -169,6 +173,7 @@ public static class CustomRoleManager
         // Check murder as killer
         if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
         {
+            Logger.Info("Cancels because for killer no need kill target", "OnCheckMurderAsKiller");
             return false;
         }
 
@@ -226,10 +231,6 @@ public static class CustomRoleManager
                         Oiiai.OnMurderPlayer(killer, target);
                         break;
 
-                    case CustomRoles.Tricky:
-                        Tricky.AfterPlayerDeathTasks(target);
-                        break;
-
                     case CustomRoles.EvilSpirit when !inMeeting && !isSuicide:
                         target.RpcSetRole(RoleTypes.GuardianAngel);
                         break;
@@ -248,6 +249,10 @@ public static class CustomRoleManager
                 {
                     case CustomRoles.TicketsStealer when !inMeeting && !isSuicide:
                         killer.Notify(string.Format(Translator.GetString("TicketsStealerGetTicket"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * Stealer.TicketsPerKill.GetFloat()).ToString("0.0#####")));
+                        break;
+
+                    case CustomRoles.Tricky:
+                        Tricky.AfterPlayerDeathTasks(target);
                         break;
                 }
             }

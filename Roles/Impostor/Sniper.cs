@@ -22,7 +22,7 @@ internal class Sniper : RoleBase
     private static OptionItem SniperAimAssist;
     private static OptionItem SniperAimAssistOnshot;
     private static OptionItem CanKillWithBullets;
-    private static OptionItem AlwaysShowShapeshiftAnimations;
+    //private static OptionItem AlwaysShowShapeshiftAnimations;
 
     private static readonly Dictionary<byte, byte> snipeTarget = [];
     private static readonly Dictionary<byte, Vector3> snipeBasePosition = [];
@@ -38,7 +38,6 @@ internal class Sniper : RoleBase
     private static bool AimAssist;
     private static bool AimAssistOneshot;
     private static bool SniperCanUseKillButton;
-    public static bool ShowShapeshiftAnimations;
 
     public static void SetupCustomOption()
     {
@@ -49,7 +48,7 @@ internal class Sniper : RoleBase
         SniperAimAssist = BooleanOptionItem.Create(Id + 12, "SniperAimAssist", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sniper]);
         SniperAimAssistOnshot = BooleanOptionItem.Create(Id + 13, "SniperAimAssistOneshot", false, TabGroup.ImpostorRoles, false).SetParent(SniperAimAssist);
         CanKillWithBullets = BooleanOptionItem.Create(Id + 14, "SniperCanKill", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sniper]);
-        AlwaysShowShapeshiftAnimations = BooleanOptionItem.Create(Id + 15, "SniperAlwaysShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sniper]);
+        //AlwaysShowShapeshiftAnimations = BooleanOptionItem.Create(Id + 15, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sniper]);
     }
     public override void Init()
     {
@@ -75,7 +74,6 @@ internal class Sniper : RoleBase
         AimAssist = SniperAimAssist.GetBool();
         AimAssistOneshot = SniperAimAssistOnshot.GetBool();
         SniperCanUseKillButton = CanKillWithBullets.GetBool();
-        ShowShapeshiftAnimations = AlwaysShowShapeshiftAnimations.GetBool();
 
         snipeBasePosition[playerId] = new();
         LastPosition[playerId] = new();
@@ -85,10 +83,7 @@ internal class Sniper : RoleBase
         IsAim[playerId] = false;
         AimTime[playerId] = 0f;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-        }
+        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
 
     private static bool IsThisRole(byte playerId) => PlayerIdList.Contains(playerId);
@@ -122,7 +117,7 @@ internal class Sniper : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ShapeshifterCooldown = !ShowShapeshiftAnimations && Options.DisableShapeshiftAnimations.GetBool() ? 1f : Options.DefaultShapeshiftCooldown.GetFloat();
+        AURoleOptions.ShapeshifterCooldown = /*!AlwaysShowShapeshiftAnimations.GetBool() ? 1f :*/ Options.DefaultShapeshiftCooldown.GetFloat();
         //AURoleOptions.ShapeshifterDuration = 1f;
     }
     public override bool CanUseKillButton(PlayerControl pc)
@@ -198,26 +193,18 @@ internal class Sniper : RoleBase
         return targets;
 
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool animate, bool shapeshifting)
     {
-        if (!shapeshifter.IsAlive()) return;
-
         var sniper = shapeshifter;
         var sniperId = sniper.PlayerId;
 
         if (bulletCount[sniperId] <= 0) return;
 
         // first shapeshift
-        if (shapeshifting || (shapeshiftIsHidden && IsAim.TryGetValue(sniperId, out var aim) && !aim))
+        if (shapeshifting)
         {
             //Aim開始
             meetingReset = false;
-
-            if (shapeshiftIsHidden)
-            {
-                sniper.SyncSettings();
-                sniper.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-            }
 
             //スナイプ地点の登録
             snipeBasePosition[sniperId] = sniper.transform.position;

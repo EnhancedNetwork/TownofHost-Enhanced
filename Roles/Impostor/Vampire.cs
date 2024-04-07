@@ -96,13 +96,14 @@ internal class Vampire : RoleBase
         var vampireID = vampire.PlayerId;
         List<byte> targetList = new(BittenPlayers.Where(b => b.Value.VampireId == vampireID).Select(b => b.Key));
 
-        for (var id = 0; id < targetList.Count; id++)
+        foreach (var targetId in targetList)
         {
-            var targetId = targetList[id];
             var bitten = BittenPlayers[targetId];
 
             if (bitten.KillTimer >= KillDelay)
             {
+                Logger.Info("KillTimer >= KillDelay", "Vampire");
+
                 var target = Utils.GetPlayerById(targetId);
                 KillBitten(vampire, target);
                 BittenPlayers.Remove(targetId);
@@ -114,9 +115,10 @@ internal class Vampire : RoleBase
             }
         }
     }
-    public static void KillBitten(PlayerControl vampire, PlayerControl target, bool isButton = false)
+    private static void KillBitten(PlayerControl vampire, PlayerControl target, bool isButton = false)
     {
-        if (vampire == null || target == null || target.Data.Disconnected) return;
+        if (target.Data.Disconnected) return;
+
         if (target.IsAlive())
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bite;

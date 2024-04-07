@@ -17,6 +17,7 @@ internal class Blackmailer : RoleBase
     //==================================================================\\
 
     private static OptionItem SkillCooldown;
+    private static OptionItem ShowShapeshiftAnimationsOpt;
 
     private static List<byte> ForBlackmailer = [];
 
@@ -25,6 +26,7 @@ internal class Blackmailer : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Blackmailer);
         SkillCooldown = FloatOptionItem.Create(Id + 2, "BlackmailerSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Blackmailer])
            .SetValueFormat(OptionFormat.Seconds);
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 3, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Blackmailer]);
     }
     public override void Init()
     {
@@ -35,28 +37,37 @@ internal class Blackmailer : RoleBase
     {
         PlayerIds.Add(playerId);
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-        }
+        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = SkillCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
-    public override void OnShapeshift(PlayerControl blackmailer, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl blackmailer, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (ShowShapeshiftAnimationsOpt.GetBool() || blackmailer.PlayerId == target.PlayerId) return true;
 
+        DoBlackmaile(blackmailer, target);
+        blackmailer.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+        return false;
+    }
+    public override void OnShapeshift(PlayerControl blackmailer, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    {
+        if (!shapeshifting) return;
+
+        DoBlackmaile(blackmailer, target);
+    }
+    private static void DoBlackmaile(PlayerControl blackmailer, PlayerControl target)
+    {
         if (!target.IsAlive())
         {
             blackmailer.Notify(Utils.ColorString(Utils.GetRoleColor(blackmailer.GetCustomRole()), GetString("NotAssassin")));
             return;
         }
 
+        ClearBlackmaile();
         ForBlackmailer.Add(target.PlayerId);
-        blackmailer.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
     }
 
     public override void AfterMeetingTasks()

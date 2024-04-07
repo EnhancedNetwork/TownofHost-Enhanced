@@ -88,11 +88,11 @@ internal class Warlock : RoleBase
         return false;
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     {
         if (CursedPlayers[shapeshifter.PlayerId] != null)
         {
-            if ((shapeshifting || shapeshiftIsHidden) && CursedPlayers[shapeshifter.PlayerId].IsAlive())
+            if (shapeshifting && CursedPlayers[shapeshifter.PlayerId].IsAlive())
             {
                 var cp = CursedPlayers[shapeshifter.PlayerId];
                 Vector2 cppos = cp.transform.position;

@@ -126,10 +126,11 @@ internal class Penguin : RoleBase
         return doKill;
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (shapeshiftIsHidden)
-            Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+        // not should shapeshifted
+        resetCooldown = false;
+        return false;
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

@@ -108,23 +108,19 @@ internal class EvilTracker : RoleBase
         && target.IsAlive() && seer != target
         && (target.Is(CustomRoleTypes.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden = false)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!CanTarget(shapeshifter.PlayerId) || (!shapeshifting && !shapeshiftIsHidden)) return;
-        if (target == null || target.Is(CustomRoleTypes.Impostor)) return;
+        if (target.Is(CustomRoleTypes.Impostor) || !CanTarget(shapeshifter.PlayerId)) return false;
 
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
 
-        if (shapeshiftIsHidden)
-        {
-            shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-            shapeshifter.SyncSettings();
-        }
-        else
-            shapeshifter.MarkDirtySettings();
+        shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+        shapeshifter.SyncSettings();
 
         Logger.Info($"{shapeshifter.GetNameWithRole()} target to {target.GetNameWithRole()}", "EvilTrackerTarget");
         Utils.NotifyRoles(SpecifySeer: shapeshifter, SpecifyTarget: target, ForceLoop: true);
+
+        return false;
     }
     public override void AfterMeetingTasks()
     {
@@ -191,8 +187,12 @@ internal class EvilTracker : RoleBase
 
         if (isForMeeting)
         {
-            var roomName = GetArrowAndLastRoom(seer, seen);
-            return roomName.Length == 0 ? string.Empty : $"<size=1.5>{roomName}</size>";
+            if (IsTrackTarget(seer, seen) && CanSeeLastRoomInMeeting)
+            {
+                var roomName = GetArrowAndLastRoom(seer, seen);
+                return roomName.Length == 0 ? string.Empty : $"<size=1.5>{roomName}</size>";
+            }
+            return string.Empty;
         }
         else
         {
@@ -202,10 +202,10 @@ internal class EvilTracker : RoleBase
 
     private static string GetTargetArrow(PlayerControl seer, PlayerControl target)
     {
-        if (!GameStates.IsInTask || !target.Is(CustomRoles.EvilTracker)) return "";
+        if (!GameStates.IsInTask || !target.Is(CustomRoles.EvilTracker)) return string.Empty;
 
         var trackerId = target.PlayerId;
-        if (seer.PlayerId != trackerId) return "";
+        if (seer.PlayerId != trackerId) return string.Empty;
 
         ImpostorsId[trackerId].RemoveWhere(id => Main.PlayerStates[id].IsDead);
 

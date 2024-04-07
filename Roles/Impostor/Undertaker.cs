@@ -9,7 +9,7 @@ internal class Undertaker : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 4900;
-    private static HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Count > 0;
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
@@ -19,7 +19,7 @@ internal class Undertaker : RoleBase
     private static OptionItem KillCooldown;
     private static OptionItem FreezeTime;
 
-    private static Dictionary<byte, Vector2> MarkedLocation = [];
+    private static readonly Dictionary<byte, Vector2> MarkedLocation = [];
     
     private static float DefaultSpeed = new();
 
@@ -36,9 +36,9 @@ internal class Undertaker : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
+        MarkedLocation.Clear();
         DefaultSpeed = new();
-        MarkedLocation = [];
     }
 
     public override void Add(byte playerId)
@@ -77,17 +77,16 @@ internal class Undertaker : RoleBase
             MarkedLocation.Add(PlayerId, ExtendedPlayerControl.GetBlackRoomPosition());
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!shapeshifter.IsAlive()) return;
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         var shapeshifterId = shapeshifter.PlayerId;
         MarkedLocation[shapeshifterId] = shapeshifter.GetCustomPosition();
         SendRPC(shapeshifterId);
-
-        if (shapeshiftIsHidden)
-            shapeshifter.Notify(Translator.GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+        
+        shapeshifter.Notify(Translator.GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+        return false;
     }
 
     private static void FreezeUndertaker(PlayerControl player)

@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
-using static TOHE.Options;
 using UnityEngine;
 using Hazel;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 

@@ -61,7 +61,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 PlayerShield.Remove(target.PlayerId);
         }
         public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
-            => !PlayerShield.ContainsKey(target.PlayerId);
+            => PlayerShield.ContainsKey(target.PlayerId);
         
         private static void OnOthersFixUpdate(PlayerControl player)
         {

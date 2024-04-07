@@ -82,9 +82,9 @@ internal class Pitfall : RoleBase
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         // Remove inactive traps so there is room for new traps
         Traps = Traps.Where(a => a.IsActive).ToList();
@@ -109,8 +109,9 @@ internal class Pitfall : RoleBase
             });
         }
 
-        if (shapeshiftIsHidden)
-            shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+        shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+
+        return false;
     }
 
     private void OnFixedUpdateOthers(PlayerControl player)

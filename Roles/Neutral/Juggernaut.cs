@@ -2,7 +2,7 @@
 using System;
 using static TOHE.Options;
 
-namespace TOHE;
+namespace TOHE.Roles.Neutral;
 
 internal class Juggernaut : RoleBase
 {

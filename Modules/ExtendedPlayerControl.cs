@@ -277,6 +277,35 @@ static class ExtendedPlayerControl
         }
         player.ResetKillCooldown();
     }
+    public static void RpcSpecificShapeshift(this PlayerControl player, PlayerControl target, bool shouldAnimate)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (player.PlayerId == 0)
+        {
+            player.Shapeshift(target, shouldAnimate);
+            return;
+        }
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Shapeshift, SendOption.Reliable, player.GetClientId());
+        messageWriter.WriteNetObject(target);
+        messageWriter.Write(shouldAnimate);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
+    public static void RpcSpecificRejectShapeshift(this PlayerControl player, PlayerControl target, bool shouldAnimate)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        foreach (var seer in Main.AllPlayerControls)
+        {
+            if (seer != player)
+            {
+                MessageWriter msg = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.RejectShapeshift, SendOption.Reliable, seer.GetClientId());
+                AmongUsClient.Instance.FinishRpcImmediately(msg);
+            }
+            else
+            {
+                player.RpcSpecificShapeshift(target, shouldAnimate);
+            }
+        }
+    }
     public static void RpcSpecificMurderPlayer(this PlayerControl killer, PlayerControl target, PlayerControl seer)
     {
         if (seer.AmOwner)
@@ -559,18 +588,6 @@ static class ExtendedPlayerControl
             || sheriff.Is(CustomRoles.Contagious)
             || sheriff.Is(CustomRoles.Egoist);
     }
-    public static bool IsEvilAddons(this PlayerControl target)
-    {
-        return target.Is(CustomRoles.Madmate)
-            || target.Is(CustomRoles.Egoist)
-            || target.Is(CustomRoles.Charmed)
-            || target.Is(CustomRoles.Recruit)
-            || target.Is(CustomRoles.Infected)
-            || target.Is(CustomRoles.Contagious)
-            || target.Is(CustomRoles.Rogue)
-            || target.Is(CustomRoles.Rascal)
-            || target.Is(CustomRoles.Soulless);
-    }
     public static bool ShouldBeDisplayed(this CustomRoles subRole)
     {
         return subRole is not 
@@ -583,47 +600,6 @@ static class ExtendedPlayerControl
             CustomRoles.Lovers and not
             CustomRoles.Infected and not
             CustomRoles.Contagious;
-    }
-    public static bool IsAmneCrew(this PlayerControl target)
-    {
-        return target.IsCrewVenter()
-                || target.GetCustomRole() is
-                CustomRoles.Sheriff or
-                CustomRoles.LazyGuy or
-                CustomRoles.SuperStar or
-                CustomRoles.Celebrity or
-                CustomRoles.Mayor or
-                CustomRoles.Paranoia or
-                CustomRoles.Paranoia or
-                CustomRoles.Dictator or
-                CustomRoles.NiceGuesser or
-                CustomRoles.Bodyguard or
-                CustomRoles.Observer or
-                CustomRoles.Retributionist or
-                CustomRoles.Lookout or
-                CustomRoles.Admirer or
-                CustomRoles.Cleanser or
-                CustomRoles.CopyCat or
-                CustomRoles.Deceiver or
-                CustomRoles.Crusader or
-                CustomRoles.Overseer or
-                CustomRoles.Jailer or
-                CustomRoles.Judge or
-                CustomRoles.Medic or
-                CustomRoles.Medium or
-                CustomRoles.Monarch or
-                CustomRoles.Telecommunication or
-                CustomRoles.Swapper or
-                CustomRoles.Mechanic;
-    }
-    public static bool IsCrewVenter(this PlayerControl target)
-    {
-        return target.Is(CustomRoles.EngineerTOHE)
-            || target.Is(CustomRoles.Mechanic)
-            || target.Is(CustomRoles.CopyCat)
-            || target.Is(CustomRoles.Telecommunication) && Telecommunication.CanUseVent()
-            || Knight.CheckCanUseVent(target)
-            || target.Is(CustomRoles.Nimble);
     }
     public static void RpcExileV2(this PlayerControl player)
     {
@@ -721,7 +697,6 @@ static class ExtendedPlayerControl
     public static bool IsNeutralEvil(this PlayerControl player) => player.GetCustomRole().IsNE();
     public static bool IsNeutralChaos(this PlayerControl player) => player.GetCustomRole().IsNC();
     public static bool IsNonNeutralKiller(this PlayerControl player) => player.GetCustomRole().IsNonNK();
-    public static bool IsSnitchTarget(this PlayerControl player) => player.GetCustomRole().IsSnitchTarget();
     
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl target)
         => (seer.Is(CustomRoles.Doctor) || seer.Is(CustomRoles.Autopsy)
@@ -770,7 +745,7 @@ static class ExtendedPlayerControl
         if (seer.PlayerId == target.PlayerId) return true;
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
-        else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor) && !subRole.IsEvilAddons()) return true;
+        else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor) && !subRole.IsBetrayalAddon()) return true;
 
         else if ((subRole is CustomRoles.Madmate
                 or CustomRoles.Sidekick
@@ -926,15 +901,11 @@ static class ExtendedPlayerControl
         var text = role.ToString();
 
         var Prefix = "";
-        if (!InfoLong)
-            switch (role)
-            {
-                case CustomRoles.Nemesis:
-                    Prefix = Nemesis.CheckCanUseKillButton() ? "After" : "Before";
-                    break;
-            };
-        var Info = (role.IsVanilla() ? "Blurb" : "Info") + (InfoLong ? "Long" : "");
-        return GetString($"{Prefix}{text}{Info}");
+        if (!InfoLong && role == CustomRoles.Nemesis)
+            Prefix = Nemesis.CheckCanUseKillButton() ? "After" : "Before";
+            
+        var Info = (role.IsVanilla() ? "Blurb" : "Info");
+        return !InfoLong ? GetString($"{Prefix}{text}{Info}") : role.GetInfoLong();
     }
     public static void SetRealKiller(this PlayerControl target, PlayerControl killer, bool NotOverRide = false)
     {

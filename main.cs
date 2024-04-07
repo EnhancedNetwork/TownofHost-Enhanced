@@ -39,13 +39,13 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0330.160.0600"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.6.0 Canary 6";
+    public const string PluginVersion = "2024.0406.160.9999"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.6.0";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = true; // ACTIVE - Latest: V1.6.0 Canary 5
-    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.2
+    public static readonly bool Canary = false; // ACTIVE - Latest: V1.6.0 Canary 6
+    public static readonly bool fullRelease = true; // INACTIVE - Latest: V1.6.0
     public static readonly bool devRelease = false; // INACTIVE - Latest: V1.6.0 Dev 7
 
     public static bool hasAccess = true;
@@ -525,7 +525,6 @@ public enum CustomRoles
     Chronomancer,
     Cleaner,
     Consigliere,
-    Convict,
     Councillor,
     Crewpostor,
     CursedWolf,
@@ -686,7 +685,7 @@ public enum CustomRoles
     Doomsayer,
     Doppelganger,
     Executioner,
-    Follower, //follower
+    Follower,
     Glitch,
     God,
     Hater,
@@ -699,7 +698,6 @@ public enum CustomRoles
     Jester,
     Jinx,
     Juggernaut,
-    Konan,
     Lawyer,
     Masochist,
     Maverick,
@@ -725,19 +723,19 @@ public enum CustomRoles
     RuthlessRomantic,
     SchrodingersCat,
     Seeker,
-    SerialKiller, //serial killer
+    SerialKiller,
     Shaman,
     Shroud,
     Sidekick,
     Solsticer,
     SoulCollector,
     Spiritcaller,
-    Stalker, //stalker
+    Stalker,
     Sunnyboy,
     Taskinator,
     Terrorist,
     Traitor,
-    Vector,//vector
+    Vector,
     VengefulRomantic,
     Virus,
     Vulture,
@@ -761,7 +759,7 @@ public enum CustomRoles
     Admired,
     Antidote,
     Autopsy,
-    Avanger, //avenger
+    Avanger,
     Aware,
     Bait,
     Bewilder,
@@ -810,7 +808,6 @@ public enum CustomRoles
     Reach,
     Rebound,
     Recruit,
-    Rogue,
     Schizophrenic,
     Seer,
     Silent,
@@ -876,7 +873,6 @@ public enum CustomWinner
     Juggernaut = CustomRoles.Juggernaut,
     Infectious = CustomRoles.Infectious,
     Virus = CustomRoles.Virus,
-    Rogue = CustomRoles.Rogue,
     Phantom = CustomRoles.Phantom,
     Jinx = CustomRoles.Jinx,
     CursedSoul = CustomRoles.CursedSoul,

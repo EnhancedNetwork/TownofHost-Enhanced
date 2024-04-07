@@ -129,8 +129,12 @@ internal class Tracker : RoleBase
 
         if (isForMeeting)
         {
-            var roomName = GetArrowAndLastRoom(seer, target);
-            return roomName.Length == 0 ? string.Empty : $"<size=1.5>{roomName}</size>";
+            if (IsTrackTarget(seer, target))
+            {
+                var roomName = GetArrowAndLastRoom(seer, target);
+                return roomName.Length == 0 ? string.Empty : $"<size=1.5>{roomName}</size>";
+            }
+            return string.Empty;
         }
         else
         {
@@ -138,7 +142,7 @@ internal class Tracker : RoleBase
         }
     }
 
-    public static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
+    private static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
             && TrackerTarget[seer.PlayerId].Contains(target.PlayerId)
             && target.IsAlive();

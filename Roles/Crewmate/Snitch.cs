@@ -69,11 +69,8 @@ internal class Snitch : RoleBase
         IsExposed[playerId] = false;
         IsComplete[playerId] = false;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetWarningMark);
-            CustomRoleManager.SuffixOthers.Add(GetWarningArrow);
-        }
+        CustomRoleManager.MarkOthers.Add(GetWarningMark);
+        CustomRoleManager.SuffixOthers.Add(GetWarningArrow);
     }
     public override void Remove(byte playerId)
     {
@@ -94,7 +91,7 @@ internal class Snitch : RoleBase
     }
     
     private static bool IsSnitchTarget(PlayerControl target)
-        => HasEnabled && (target.Is(CustomRoleTypes.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsSnitchTarget() && CanFindNeutralKiller) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
+        => HasEnabled && (target.Is(CustomRoleTypes.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsNeutralKiller() && CanFindNeutralKiller) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
     
     private static void CheckTask(PlayerControl snitch)
     {

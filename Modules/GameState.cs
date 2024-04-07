@@ -1,13 +1,12 @@
 using AmongUs.GameOptions;
 using System;
-using TOHE.Roles.Core;
-using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Neutral;
 using UnityEngine;
-using static TOHE.Utils;
+using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
+using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Impostor;
+using static TOHE.Utils;
 
 namespace TOHE;
 
@@ -115,10 +114,6 @@ public class PlayerState(byte playerId)
                 _ => throw new NotImplementedException()
             };
         }
-        if (pc.Is(CustomRoles.Rogue))
-        {
-            countTypes = CountTypes.Rogue;
-        }
         if (pc.Is(CustomRoles.Admired))
         {
             countTypes = CountTypes.Crew;
@@ -157,7 +152,6 @@ public class PlayerState(byte playerId)
         if (role.IsConverted())
         {
             SubRoles.Where(AddON => AddON != role && AddON.IsConverted()).Do(x => SubRoles.Remove(x));
-            SubRoles.Remove(CustomRoles.Rogue);
             SubRoles.Remove(CustomRoles.Rascal);
             SubRoles.Remove(CustomRoles.Loyal);
             SubRoles.Remove(CustomRoles.Admired);
@@ -213,10 +207,6 @@ public class PlayerState(byte playerId)
                 };
                 break;
 
-            case CustomRoles.Rogue:
-                countTypes = CountTypes.Rogue;
-                break;
-
             // This exist as it would be possible for them to exist on the same player via Bandit
             // But since Bandit can't vent without Nimble, allowing them to have Circumvent is pointless
             case CustomRoles.Nimble:
@@ -226,7 +216,6 @@ public class PlayerState(byte playerId)
             case CustomRoles.Admired:
                 countTypes = CountTypes.Crew;
                 SubRoles.Where(AddON => AddON != role && AddON.IsConverted()).Do(x => SubRoles.Remove(x));
-                SubRoles.Remove(CustomRoles.Rogue);
                 SubRoles.Remove(CustomRoles.Rascal);
                 SubRoles.Remove(CustomRoles.Loyal);
                 break;
@@ -428,8 +417,8 @@ public static class GameStates
     public static bool AlreadyDied = false;
     /**********Check Game Status***********/
     public static bool IsModHost => Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId);
-    public static bool IsNormalGame => GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.Normal;
-    public static bool IsHideNSeek => GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek;
+    public static bool IsNormalGame => GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.Normal or GameModes.NormalFools;
+    public static bool IsHideNSeek => GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.HideNSeek or GameModes.SeekFools;
     public static bool SkeldIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
     public static bool MiraHQIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Mira;
     public static bool PolusIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Polus;

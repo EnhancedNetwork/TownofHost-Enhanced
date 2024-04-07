@@ -43,10 +43,7 @@ internal class Lightning : RoleBase
     {
         playerIdList.Add(playerId);
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetMarkInGhostPlayer);
-        }
+        CustomRoleManager.MarkOthers.Add(GetMarkInGhostPlayer);
     }
     private static void SendRPC(byte playerId)
     {

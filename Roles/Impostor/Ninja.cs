@@ -1,8 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using System.Text;
 using TOHE.Modules;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -20,19 +19,20 @@ internal class Ninja : RoleBase
     //==================================================================\\
 
     private static OptionItem MarkCooldown;
-    private static OptionItem AssassinateCooldown;
-    private static OptionItem CanKillAfterAssassinate;
+    private static OptionItem AssassinateCooldownOpt;
+    private static OptionItem ShapeshiftDurationOpt;
 
     private static readonly Dictionary<byte, byte> MarkedPlayer = [];
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Ninja);
-        MarkCooldown = FloatOptionItem.Create(Id + 10, "NinjaMarkCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja])
+        MarkCooldown = FloatOptionItem.Create(Id + 10, "NinjaMarkCooldown", new(0f, 180f, 2.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja])
             .SetValueFormat(OptionFormat.Seconds);
-        AssassinateCooldown = FloatOptionItem.Create(Id + 11, "NinjaAssassinateCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja])
+        AssassinateCooldownOpt = FloatOptionItem.Create(Id + 11, "NinjaAssassinateCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja])
             .SetValueFormat(OptionFormat.Seconds);
-        CanKillAfterAssassinate = BooleanOptionItem.Create(Id + 12, "NinjaCanKillAfterAssassinate", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja]);
+        ShapeshiftDurationOpt = FloatOptionItem.Create(Id + 13, "ShapeshiftDuration", new(0f, 180f, 2.5f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja])
+            .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()
     {
@@ -42,6 +42,9 @@ internal class Ninja : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+
+        var pc = Utils.GetPlayerById(playerId);
+        pc.AddDoubleTrigger();
     }
 
     private static void SendRPC(byte playerId)
@@ -67,70 +70,81 @@ internal class Ninja : RoleBase
         => Main.AllPlayerKillCooldown[id] = Shapeshifting(id) ? DefaultKillCooldown : MarkCooldown.GetFloat();
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
-        => AURoleOptions.ShapeshifterCooldown = AssassinateCooldown.GetFloat();
-
-    private static bool CheckCanUseKillButton(PlayerControl pc)
     {
-        if (pc == null || !pc.IsAlive()) return false;
-        if (!CanKillAfterAssassinate.GetBool() && pc.shapeshifting) return false;
-        return true;
+        AURoleOptions.ShapeshifterCooldown = AssassinateCooldownOpt.GetFloat();
+        AURoleOptions.ShapeshifterDuration = ShapeshiftDurationOpt.GetFloat();
+        AURoleOptions.ShapeshifterLeaveSkin = false;
     }
-    public override bool CanUseKillButton(PlayerControl pc) => CheckCanUseKillButton(pc);
 
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (Shapeshifting(killer.PlayerId))
+        return killer.CheckDoubleTrigger(target,
+            () => 
+            {
+                MarkedPlayer.Remove(killer.PlayerId);
+                MarkedPlayer.Add(killer.PlayerId, target.PlayerId);
+                SendRPC(killer.PlayerId);
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown();
+                killer.SyncSettings();
+                killer.RPCPlayCustomSound("Clothe");
+            });
+    }
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    {
+        var selfShapeshift = shapeshifter.PlayerId == target.PlayerId;
+
+        // Not call code if is self revert shapeshift after meeting or when mushroom mixup was activated
+        if (selfShapeshift)
         {
-            return CheckCanUseKillButton(killer);
+            // When shapeshift duration is over
+            if (shouldAnimate && Shapeshifting(shapeshifter.PlayerId))
+            {
+                shouldAnimate = false;
+            }
+            return true;
         }
-        else
+
+        // Ninja not marked player
+        if (!MarkedPlayer.ContainsKey(shapeshifter.PlayerId))
         {
-            MarkedPlayer.Remove(killer.PlayerId);
-            MarkedPlayer.Add(killer.PlayerId, target.PlayerId);
-            SendRPC(killer.PlayerId);
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            killer.SyncSettings();
-            killer.RPCPlayCustomSound("Clothe");
+            resetCooldown = false;
             return false;
         }
-    }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
-    {
-        if (shapeshiftIsHidden && (!MarkedPlayer.ContainsKey(shapeshifter.PlayerId) || !shapeshifter.IsAlive() || Pelican.IsEaten(shapeshifter.PlayerId)))
-        {
-            shapeshifter.RejectShapeshiftAndReset(reset: false);
-            return;
-        }
-        if (!shapeshifter.IsAlive() || Pelican.IsEaten(shapeshifter.PlayerId)) return;
 
-        if (!shapeshifting || shapeshiftIsHidden)
-        {
-            shapeshifter.SetKillCooldown();
-            if (!shapeshiftIsHidden) return;
-        }
-
+        // Check and kill marked player
         if (MarkedPlayer.TryGetValue(shapeshifter.PlayerId, out var targetId))
         {
-            var timer = shapeshiftIsHidden ? 0.1f : 1.5f;
             var marketTarget = Utils.GetPlayerById(targetId);
             
             MarkedPlayer.Remove(shapeshifter.PlayerId);
             SendRPC(shapeshifter.PlayerId);
 
-            if (shapeshiftIsHidden)
-                shapeshifter.RejectShapeshiftAndReset();
-
-            _ = new LateTask(() =>
+            if (!(marketTarget == null || !marketTarget.IsAlive() || marketTarget.inVent || GameStates.IsMeeting))
             {
-                if (!(marketTarget == null || !marketTarget.IsAlive() || Pelican.IsEaten(marketTarget.PlayerId) || Medic.ProtectList.Contains(marketTarget.PlayerId) || marketTarget.inVent || !GameStates.IsInTask))
+                if (shapeshifter.RpcCheckAndMurder(marketTarget, check: true))
                 {
                     shapeshifter.RpcTeleport(marketTarget.GetCustomPosition());
                     shapeshifter.ResetKillCooldown();
-                    shapeshifter.RpcCheckAndMurder(marketTarget);
+                    shapeshifter.RpcMurderPlayer(marketTarget);
+                    shouldAnimate = false;
+
+                    Logger.Info("Was kill market target", "Ninja");
+
+                    return true;
                 }
-            }, timer, "Ninja Assassinate");
+            }
         }
+
+        return false;
+    }
+    public override string GetLowerText(PlayerControl witch, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (isForMeeting) return string.Empty;
+
+        var str = new StringBuilder();
+        str.Append(GetString("NinjaModeDouble"));
+        return str.ToString();
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerid)
     {
