@@ -109,7 +109,8 @@ public static class GhostRoleAssign
     }
     public static void Add()
     {
-        Options.CustomGhostRoleCounts.Keys.Do(ghostRole
-            => getCount.TryAdd(ghostRole, ghostRole.GetCount())); // Add new count Instance (Optionitem gets constantly refreshed)
+        if (Options.CustomGhostRoleCounts.Any())
+            Options.CustomGhostRoleCounts.Keys.Do(ghostRole
+                => getCount.TryAdd(ghostRole, ghostRole.GetCount())); // Add new count Instance (Optionitem gets constantly refreshed)
     }
 }
