@@ -15,7 +15,7 @@ internal class Alchemist : RoleBase
     //===========================SETUP================================\\
     private const int Id = 6400;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     //==================================================================\\
@@ -181,7 +181,7 @@ internal class Alchemist : RoleBase
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }
-            if (targetDistance.Count > 0)
+            if (targetDistance.Any())
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 PlayerControl target = Utils.GetPlayerById(min.Key);
@@ -245,7 +245,7 @@ internal class Alchemist : RoleBase
         lastFixedTime = new();
         BloodlustList.Clear();
 
-        if (InvisTime.Count > 0)
+        if (InvisTime.Any())
         {
             foreach (var alchemistId in playerIdList.ToArray())
             {

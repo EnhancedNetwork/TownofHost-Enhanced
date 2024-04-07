@@ -122,7 +122,7 @@ internal class Puppeteer : RoleBase
                 }
             }
 
-            if (targetDistance.Count > 0)
+            if (targetDistance.Any())
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);

@@ -8,7 +8,7 @@ internal class Seeker : RoleBase
     //===========================SETUP================================\\
     private const int Id = 14600;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -175,7 +175,7 @@ internal class Seeker : RoleBase
         if (cTargets.Count >= 2 && Targets.TryGetValue(player.PlayerId, out var nowTarget))
             cTargets.RemoveAll(x => x.PlayerId == nowTarget);
 
-        if (cTargets.Count <= 0)
+        if (!cTargets.Any())
         {
             Logger.Warn("Failed to specify target: Target candidate does not exist", "Seeker");
             return 0xff;

@@ -248,7 +248,7 @@ public class RoleAssign
             // Assign roles set to 100%
             if (readyImpNum < optImpNum)
             {
-                while (AlwaysImpRoles.Count > 0)
+                while (AlwaysImpRoles.Any())
                 {
                     var selected = AlwaysImpRoles[rd.Next(0, AlwaysImpRoles.Count)];
                     var info = ImpRoleCounts.FirstOrDefault(x => x.Role == selected);
@@ -270,7 +270,7 @@ public class RoleAssign
             // Assign other roles when needed
             if (readyRoleNum < playerCount && readyImpNum < optImpNum)
             {
-                while (ChanceImpRoles.Count > 0)
+                while (ChanceImpRoles.Any())
                 {
                     var selectesItem = rd.Next(0, ChanceImpRoles.Count);
                     var selected = ChanceImpRoles[selectesItem];
@@ -351,7 +351,7 @@ public class RoleAssign
                 // Assign roles set to 100%
                 if (readyNonNeutralKillingNum < optNonNeutralKillingNum)
                 {
-                    while (AlwaysNonNKRoles.Count > 0 && optNonNeutralKillingNum > 0)
+                    while (AlwaysNonNKRoles.Any() && optNonNeutralKillingNum > 0)
                     {
                         var selected = AlwaysNonNKRoles[rd.Next(0, AlwaysNonNKRoles.Count)];
                         var info = NonNKRoleCounts.FirstOrDefault(x => x.Role == selected);
@@ -373,7 +373,7 @@ public class RoleAssign
                 // Assign other roles when needed
                 if (readyRoleNum < playerCount && readyNonNeutralKillingNum < optNonNeutralKillingNum)
                 {
-                    while (ChanceNonNKRoles.Count > 0 && optNonNeutralKillingNum > 0)
+                    while (ChanceNonNKRoles.Any() && optNonNeutralKillingNum > 0)
                     {
                         var selectesItem = rd.Next(0, ChanceNonNKRoles.Count);
                         var selected = ChanceNonNKRoles[selectesItem];
@@ -452,7 +452,7 @@ public class RoleAssign
                 // Assign roles set to 100%
                 if (readyNeutralKillingNum < optNeutralKillingNum)
                 {
-                    while (AlwaysNKRoles.Count > 0 && optNeutralKillingNum > 0)
+                    while (AlwaysNKRoles.Any() && optNeutralKillingNum > 0)
                     {
                         var selected = AlwaysNKRoles[rd.Next(0, AlwaysNKRoles.Count)];
                         var info = NKRoleCounts.FirstOrDefault(x => x.Role == selected);
@@ -474,7 +474,7 @@ public class RoleAssign
                 // Assign other roles when needed
                 if (readyRoleNum < playerCount && readyNeutralKillingNum < optNeutralKillingNum)
                 {
-                    while (ChanceNKRoles.Count > 0 && optNeutralKillingNum > 0)
+                    while (ChanceNKRoles.Any() && optNeutralKillingNum > 0)
                     {
                         var selectesItem = rd.Next(0, ChanceNKRoles.Count);
                         var selected = ChanceNKRoles[selectesItem];
@@ -552,7 +552,7 @@ public class RoleAssign
             // Assign roles set to ALWAYS
             if (readyRoleNum < playerCount)
             {
-                while (AlwaysCrewRoles.Count > 0)
+                while (AlwaysCrewRoles.Any())
                 {
                     var selected = AlwaysCrewRoles[rd.Next(0, AlwaysCrewRoles.Count)];
                     var info = CrewRoleCounts.FirstOrDefault(x => x.Role == selected);
@@ -572,7 +572,7 @@ public class RoleAssign
             // Assign other roles when needed
             if (readyRoleNum < playerCount)
             {
-                while (ChanceCrewRoles.Count > 0)
+                while (ChanceCrewRoles.Any())
                 {
                     var selectesItem = rd.Next(0, ChanceCrewRoles.Count);
                     var selected = ChanceCrewRoles[selectesItem];
@@ -631,7 +631,7 @@ public class RoleAssign
 
         Logger.Info(string.Join(", ", FinalRolesList.Select(x => x.ToString())), "RoleResults");
 
-        while (AllPlayers.Count > 0 && FinalRolesList.Count > 0)
+        while (AllPlayers.Any() && FinalRolesList.Any())
         {
             var roleId = rd.Next(0, FinalRolesList.Count);
 
@@ -644,9 +644,9 @@ public class RoleAssign
             FinalRolesList.RemoveAt(roleId);
         }
 
-        if (AllPlayers.Count > 0)
+        if (AllPlayers.Any())
             Logger.Warn("Role assignment error: There are players who have not been assigned a role", "RoleAssign");
-        if (FinalRolesList.Count > 0)
+        if (FinalRolesList.Any())
             Logger.Warn("Team assignment error: There is an unassigned team", "RoleAssign");
         return;
 

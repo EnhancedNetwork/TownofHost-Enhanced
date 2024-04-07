@@ -235,8 +235,8 @@ public class dbConnect
     {
         // Simple Logic and Works
         bool apiTokenError = GetToken() is "" or null;
-        bool RoleTableError = userType.Count < 1;
-        bool EacListError = BanManager.EACDict.Count < 1;
+        bool RoleTableError = !userType.Any();
+        bool EacListError = !BanManager.EACDict.Any();
 
         return apiTokenError || RoleTableError || EacListError;
     }

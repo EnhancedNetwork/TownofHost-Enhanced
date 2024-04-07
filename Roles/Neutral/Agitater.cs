@@ -10,7 +10,7 @@ internal class Agitater : RoleBase
     //===========================SETUP================================\\
     private const int Id = 15800;
     private static readonly List<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -151,7 +151,7 @@ internal class Agitater : RoleBase
                 }
             }
 
-            if (targetDistance.Count > 0)
+            if (targetDistance.Any())
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);

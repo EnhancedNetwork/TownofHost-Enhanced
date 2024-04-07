@@ -944,7 +944,7 @@ static class ExtendedPlayerControl
     public static bool Is(this PlayerControl target, CustomRoleTypes type) { return target.GetCustomRole().GetCustomRoleTypes() == type; }
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
-    public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => target.GetCustomSubRoles().Count > 0 && target.GetCustomSubRoles().Any(predicate);
+    public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => target.GetCustomSubRoles().Any() && target.GetCustomSubRoles().Any(predicate);
 
     public static bool IsAlive(this PlayerControl target)
     {

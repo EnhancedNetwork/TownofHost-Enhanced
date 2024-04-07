@@ -195,7 +195,7 @@ class FixedUpdateInHidenSeekPatch
                 }
             }
 
-            if (KickPlayerPatch.AttemptedKickPlayerList.Count > 0)
+            if (KickPlayerPatch.AttemptedKickPlayerList.Any())
             {
                 foreach (var item in KickPlayerPatch.AttemptedKickPlayerList)
                 {

@@ -9,7 +9,7 @@ internal class Innocent : RoleBase
     //===========================SETUP================================\\
     private const int Id = 14300;
     private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Count > 0;
+    public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\

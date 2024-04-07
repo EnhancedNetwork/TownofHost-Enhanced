@@ -58,7 +58,7 @@ public static class Aware
         foreach (var pid in AwareInteracted.Keys.ToArray())
         {
             var Awarepc = Utils.GetPlayerById(pid);
-            if (AwareInteracted[pid].Count > 0 && Awarepc.IsAlive())
+            if (AwareInteracted[pid].Any() && Awarepc.IsAlive())
             {
                 string rolelist = "Someone";
                 _ = new LateTask(() =>

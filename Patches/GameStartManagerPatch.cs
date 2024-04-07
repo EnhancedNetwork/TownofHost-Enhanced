@@ -333,7 +333,7 @@ public class GameStartRandomMap
             if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
 
-        if (randomMaps.Count > 0)
+        if (randomMaps.Any())
         {
             var mapsId = randomMaps[rand.Next(randomMaps.Count)];
 

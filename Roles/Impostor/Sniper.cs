@@ -338,7 +338,7 @@ internal class Sniper : RoleBase
             //エイムアシスト中のスナイパー
             if (0.5f < AimTime[seerId] && (!AimAssistOneshot || AimTime[seerId] < 1.0f))
             {
-                if (GetSnipeTargets(Utils.GetPlayerById(seerId)).Count > 0)
+                if (GetSnipeTargets(Utils.GetPlayerById(seerId)).Any())
                 {
                     return $"<size=200%>{Utils.ColorString(Palette.ImpostorRed, "◎")}</size>";
                 }
@@ -355,7 +355,7 @@ internal class Sniper : RoleBase
         {
             //射撃音が聞こえるプレイヤー
             var snList = shotNotify[sniper];
-            if (snList.Count > 0 && snList.Contains(seer.PlayerId))
+            if (snList.Any() && snList.Contains(seer.PlayerId))
             {
                 return $"<size=200%>{Utils.ColorString(Palette.ImpostorRed, "!")}</size>";
             }

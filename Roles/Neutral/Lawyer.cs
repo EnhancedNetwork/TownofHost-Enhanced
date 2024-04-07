@@ -10,7 +10,7 @@ internal class Lawyer : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13100;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
@@ -90,7 +90,7 @@ internal class Lawyer : RoleBase
                 targetList.Add(target);
             }
 
-            if (targetList.Count < 1)
+            if (!targetList.Any())
             {
                 Logger.Info($"Wow, not target for lawyer to select! Changing lawyer role to other", "Lawyer");
                 if (ShouldChangeRoleAfterTargetDeath.GetBool())

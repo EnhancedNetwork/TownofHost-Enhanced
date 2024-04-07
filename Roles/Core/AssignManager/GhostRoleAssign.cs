@@ -23,7 +23,7 @@ public static class GhostRoleAssign
         var IsCrewmate = (getplrRole.IsCrewmate() || player.Is(CustomRoles.Admired)) && IsNeutralAllowed;
         var IsImpostor = getplrRole.IsImpostor() && IsNeutralAllowed;
 
-        if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole() || x == CustomRoles.Gravestone) || Options.CustomGhostRoleCounts.Count <= 0) return;
+        if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole() || x == CustomRoles.Gravestone) || !Options.CustomGhostRoleCounts.Any()) return;
 
         if (IsImpostor && ImpCount >= Options.MaxImpGhost.GetInt() || IsCrewmate && CrewCount >= Options.MaxCrewGhost.GetInt()) return;
 
@@ -61,7 +61,7 @@ public static class GhostRoleAssign
 
         if (IsCrewmate)
         {
-            if (HauntedList.Count > 0)
+            if (HauntedList.Any())
             {
                 var rnd = IRandom.Instance;
                 int randindx = rnd.Next(HauntedList.Count);
@@ -81,7 +81,7 @@ public static class GhostRoleAssign
 
         if (IsImpostor)
         {
-            if (ImpHauntedList.Count > 0)
+            if (ImpHauntedList.Any())
             {
                 var rnd = IRandom.Instance;
                 int randindx = rnd.Next(ImpHauntedList.Count);

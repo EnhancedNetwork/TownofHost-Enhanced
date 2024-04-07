@@ -121,7 +121,7 @@ internal class Lightning : RoleBase
     }
     public override void OnFixedUpdateLowLoad(PlayerControl lightning)
     {
-        if (GhostPlayer.Count <= 0) return;
+        if (!GhostPlayer.Any()) return;
 
         List<byte> deList = [];
         foreach (var ghost in GhostPlayer.ToArray())
@@ -148,7 +148,7 @@ internal class Lightning : RoleBase
                 break;
             }
         }
-        if (deList.Count > 0)
+        if (deList.Any())
         {
             GhostPlayer.RemoveAll(deList.Contains);
             foreach (var gs in deList.ToArray()) SendRPC(gs);

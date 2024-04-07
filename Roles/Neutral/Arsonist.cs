@@ -14,7 +14,7 @@ internal class Arsonist : RoleBase
     //===========================SETUP================================\\
     private const int id = 15900;
     private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled = PlayerIds.Count > 0;
+    public static bool HasEnabled = PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\

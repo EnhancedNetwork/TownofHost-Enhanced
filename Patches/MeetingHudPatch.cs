@@ -501,7 +501,7 @@ class CheckForEndVotingPatch
     }
     public static PlayerVoteArea GetPlayerVoteArea(byte playerId)
     {
-        if (MeetingHud.Instance == null || MeetingHud.Instance.playerStates.Count < 1) return null;
+        if (MeetingHud.Instance == null || !MeetingHud.Instance.playerStates.Any()) return null;
         //This function should only be used to get vote states after voting complete
 
         foreach (var pva in MeetingHud.Instance.playerStates)

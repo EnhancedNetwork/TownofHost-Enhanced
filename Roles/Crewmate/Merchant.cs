@@ -8,7 +8,7 @@ internal class Merchant : RoleBase
     //===========================SETUP================================\\
     private const int Id = 8800;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
@@ -176,7 +176,7 @@ internal class Merchant : RoleBase
                 )
             ).ToList();
 
-        if (AllAlivePlayer.Count > 0)
+        if (AllAlivePlayer.Any())
         {
             bool helpfulAddon = helpfulAddons.Contains(addon);
             bool harmfulAddon = !helpfulAddon;

@@ -210,7 +210,7 @@ internal class EvilTracker : RoleBase
         ImpostorsId[trackerId].RemoveWhere(id => Main.PlayerStates[id].IsDead);
 
         var sb = new StringBuilder(80);
-        if (ImpostorsId[trackerId].Count > 0)
+        if (ImpostorsId[trackerId].Any())
         {
             sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>");
             foreach (var impostorId in ImpostorsId[trackerId])

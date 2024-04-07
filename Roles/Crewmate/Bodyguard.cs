@@ -8,7 +8,7 @@ internal class Bodyguard : RoleBase
     //===========================SETUP================================\\
     private const int Id = 10300;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
@@ -32,7 +32,7 @@ internal class Bodyguard : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer?.PlayerId == target.PlayerId || playerIdList.Count <= 0) return false;
+        if (killer?.PlayerId == target.PlayerId || playerIdList.Any()) return false;
 
         foreach (var bodyguardId in playerIdList.ToArray())
         {

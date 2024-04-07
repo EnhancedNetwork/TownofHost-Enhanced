@@ -9,7 +9,7 @@ internal class Hater : RoleBase
     //===========================SETUP================================\\
     private const int Id = 12900;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\

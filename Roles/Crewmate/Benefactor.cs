@@ -9,7 +9,7 @@ internal class Benefactor : RoleBase
     //===========================SETUP================================\\
     private const int Id = 26400;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
@@ -132,7 +132,7 @@ internal class Benefactor : RoleBase
             if (taskIndex.ContainsKey(playerId)) taskIndex[playerId].Clear();
             SendRPC(type: 0, benefactorId: playerId); //clear taskindex
         }
-        if (shieldedPlayers.Count > 0)
+        if (shieldedPlayers.Any())
         {
             shieldedPlayers.Clear();
             SendRPC(type: 1); //clear all shielded players

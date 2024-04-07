@@ -13,7 +13,7 @@ internal class Shroud : RoleBase
     //===========================SETUP================================\\
     private const int Id = 18000;
     private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Count > 0;
+    public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -122,7 +122,7 @@ internal class Shroud : RoleBase
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }
-            if (targetDistance.Count > 0)
+            if (targetDistance.Any())
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);

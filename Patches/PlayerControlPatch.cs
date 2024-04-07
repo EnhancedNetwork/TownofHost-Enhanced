@@ -869,7 +869,7 @@ class FixedUpdateInNormalGamePatch
         if (__instance == null) return;
 
         byte id = __instance.PlayerId;
-        if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Count > 0)
+        if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
         {
             if(!Glitch.OnCheckFixedUpdateReport(__instance, id))
             { }
@@ -987,7 +987,7 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
 
-                if (KickPlayerPatch.AttemptedKickPlayerList.Count > 0)
+                if (KickPlayerPatch.AttemptedKickPlayerList.Any())
                 {
                     foreach (var item in KickPlayerPatch.AttemptedKickPlayerList)
                     {
@@ -1061,7 +1061,7 @@ class FixedUpdateInNormalGamePatch
             if (!player.Is(CustomRoleTypes.Impostor) && player.CanUseKillButton() && !player.Data.IsDead)
             {
                 var players = __instance.GetPlayersInAbilityRangeSorted(false);
-                PlayerControl closest = players.Count <= 0 ? null : players[0];
+                PlayerControl closest = !players.Any() ? null : players[0];
                 HudManager.Instance.KillButton.SetTarget(closest);
             }
         }

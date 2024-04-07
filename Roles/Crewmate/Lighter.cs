@@ -12,7 +12,7 @@ internal class Lighter : RoleBase
     //===========================SETUP================================\\
     private const int Id = 8400;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     //==================================================================\\
@@ -122,7 +122,7 @@ internal class Lighter : RoleBase
         AURoleOptions.EngineerInVentMaxTime = 1;
         AURoleOptions.EngineerCooldown = LighterSkillCooldown.GetFloat();
 
-        if (Timer.Count > 0)
+        if (Timer.Any())
         {
             opt.SetVision(false);
             if (IsActive(SystemTypes.Electrical)) opt.SetFloat(FloatOptionNames.CrewLightMod, LighterVisionOnLightsOut.GetFloat() * 5);

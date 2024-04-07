@@ -14,7 +14,7 @@ internal class Coroner : RoleBase
     //===========================SETUP================================\\
     private const int Id = 7700;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
@@ -247,7 +247,7 @@ internal class Coroner : RoleBase
         if (!seer.Is(CustomRoles.Coroner)) return "";
         if (target != null && seer.PlayerId != target.PlayerId) return "";
         if (GameStates.IsMeeting) return "";
-        if (CoronerTargets.ContainsKey(seer.PlayerId) && CoronerTargets[seer.PlayerId].Count > 0)
+        if (CoronerTargets.ContainsKey(seer.PlayerId) && CoronerTargets[seer.PlayerId].Any())
         {
             var arrows = "";
             foreach (var targetId in CoronerTargets[seer.PlayerId])

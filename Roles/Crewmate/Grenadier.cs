@@ -15,7 +15,7 @@ internal class Grenadier : RoleBase
     //===========================SETUP================================\\
     private const int Id = 8200;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     //==================================================================\\
@@ -68,11 +68,11 @@ internal class Grenadier : RoleBase
     public static void ApplyGameOptionsForOthers(IGameOptions opt, PlayerControl player)
     {
         // Grenadier or Mad Grenadier enter the vent
-        if ((GrenadierBlinding.Count > 0 &&
+        if ((GrenadierBlinding.Any() &&
             (player.GetCustomRole().IsImpostor() ||
             (player.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()))
             )
-            || (MadGrenadierBlinding.Count > 0 && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
+            || (MadGrenadierBlinding.Any() && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, GrenadierCauseVision.GetFloat());

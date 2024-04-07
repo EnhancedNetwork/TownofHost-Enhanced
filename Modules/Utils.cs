@@ -398,7 +398,7 @@ public static class Utils
 
         try
         {
-            if (targetSubRoles.Count > 0)
+            if (targetSubRoles.Any())
             {
                 var seer = GetPlayerById(seerId);
                 var target = GetPlayerById(targetId);

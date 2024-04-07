@@ -295,7 +295,7 @@ public static class CustomRoleManager
     {
         player.GetRoleClass()?.OnFixedUpdate(player);
 
-        if (OnFixedUpdateOthers.Count <= 0) return;
+        if (!OnFixedUpdateOthers.Any()) return;
         //Execute other viewpoint processing if any
         foreach (var onFixedUpdate in OnFixedUpdateOthers.ToArray())
         {

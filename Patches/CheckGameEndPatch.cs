@@ -33,7 +33,7 @@ class GameEndCheckerForNormal
         // FFA
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
-            if (CustomWinnerHolder.WinnerIds.Count > 0 || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
+            if (CustomWinnerHolder.WinnerIds.Any() || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
             {
                 ShipStatus.Instance.enabled = false;
                 StartEndGame(reason);
@@ -505,7 +505,7 @@ class GameEndCheckerForNormal
         // Delay to ensure that resuscitation is delivered after the ghost roll setting
         yield return new WaitForSeconds(EndGameDelay);
 
-        if (ReviveRequiredPlayerIds.Count > 0)
+        if (ReviveRequiredPlayerIds.Any())
         {
             // Resuscitation Resuscitate one person per transmission to prevent the packet from swelling up and dying
             for (int i = 0; i < ReviveRequiredPlayerIds.Count; i++)
@@ -647,7 +647,7 @@ class FFAGameEndPredicate : GameEndPredicate
     public override bool CheckForEndGame(out GameOverReason reason)
     {
         reason = GameOverReason.ImpostorByKill;
-        if (CustomWinnerHolder.WinnerIds.Count > 0) return false;
+        if (CustomWinnerHolder.WinnerIds.Any()) return false;
         if (CheckGameEndByLivingPlayers(out reason)) return true;
         return false;
     }
