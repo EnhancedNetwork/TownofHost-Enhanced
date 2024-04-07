@@ -27,7 +27,6 @@ public static class GhostRoleAssign
 
         if (IsImpostor && ImpCount >= Options.MaxImpGhost.GetInt() || IsCrewmate && CrewCount >= Options.MaxCrewGhost.GetInt()) return;
 
-
             GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
 
         HauntedList.Clear();
