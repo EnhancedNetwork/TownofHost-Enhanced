@@ -3307,6 +3307,7 @@
   "HaterCanKillAdmired": "Может убить поклонного",
   "AutoMuteUs": "Включите, если используете AutoMuteUs",
   "HorseMode": "Возможность стать лошадью",
+  "LongMode": "Enable to have a long neck",
   "InfluencedChangeVote": "Упс!\nТы видишь что остальные голосуют за {0}, и ты проголосовал за него!",
   "FFA": "Бесплатно Для Всех",
   "ModeFFA": "Режим игры: FFA",
