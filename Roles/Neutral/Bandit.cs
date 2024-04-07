@@ -113,7 +113,7 @@ internal class Bandit : RoleBase
                 role == CustomRoles.Lovers || // Causes issues involving Lovers Suicide
                 (role.IsImpOnlyAddon() && !CanStealImpOnlyAddon.GetBool()) ||
                 (role == CustomRoles.Nimble && CanVent.GetBool()) ||
-                (role.IsBetrayalAddon() && !CanStealBetrayalAddon.GetBool()))
+                ((role.IsBetrayalAddon() || role is CustomRoles.Lovers) && !CanStealBetrayalAddon.GetBool()))
             { 
                     Logger.Info($"Removed {role} from list of stealable addons", "Bandit");
                     AllSubRoles.Remove(role);

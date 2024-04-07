@@ -573,10 +573,6 @@ public static class CustomRolesHelper
     }
     public static bool IsBetrayalAddon(this CustomRoles role)
     {
-        return role.IsEvilAddons() || role is CustomRoles.Lovers;
-    }
-    public static bool IsEvilAddons(this CustomRoles role)
-    {
         return role is CustomRoles.Madmate
             or CustomRoles.Egoist
             or CustomRoles.Charmed
