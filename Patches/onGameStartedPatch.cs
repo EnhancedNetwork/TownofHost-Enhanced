@@ -154,7 +154,7 @@ internal class ChangeRoleSettings
             // Initialize all custom roles
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>().Where(role => role < CustomRoles.NotAssigned).ToArray())
             {
-                var RoleClass = Utils.IsRoleClass(role);
+                var RoleClass = CustomRoleManager.GetStaticRoleClass(role);
                 RoleClass?.Init();
             }
 

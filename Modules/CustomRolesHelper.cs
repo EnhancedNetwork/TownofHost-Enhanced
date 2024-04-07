@@ -4,6 +4,7 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using static TOHE.Roles.Core.CustomRoleManager;
 using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE;
@@ -18,7 +19,7 @@ public static class CustomRolesHelper
         if (role.IsVanilla()) return role;
 
         // Role base
-        if (role.IsRoleClass() is not VanillaRole) return role.IsRoleClass().ThisRoleBase;
+        if (role.GetStaticRoleClass() is not VanillaRole) return role.GetStaticRoleClass().ThisRoleBase;
 
         //Default
         return role switch
@@ -31,8 +32,8 @@ public static class CustomRolesHelper
     }
 
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
-        => (role.IsRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor()
-            ? RoleTypes.Impostor
+        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor() 
+            ? RoleTypes.Impostor 
             : RoleTypes.GuardianAngel;
 
 

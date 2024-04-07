@@ -8,6 +8,9 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using TOHE.Roles.Core;
+using TOHE.Roles.Double;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 
@@ -294,6 +297,35 @@ public class Main : BasePlugin
             ExceptionMessageIsShown = false;
         }
     }
+    public static void LoadRoleClasses()
+    {
+        TOHE.Logger.Info("Loading All RoleClasses...", "LoadRoleClasses");
+        try
+        {
+            var RoleTypes = Assembly.GetAssembly(typeof(RoleBase))!
+                .GetTypes()
+                .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
+            foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
+            {
+                Type roleType = role switch // Switch role to FatherRole (Double Classes)
+                {
+                    CustomRoles.Vampiress => typeof(Vampire),
+                    CustomRoles.Pestilence => typeof(PlagueBearer),
+                    CustomRoles.Nuker => typeof(Bomber),
+                    CustomRoles.NiceMini or CustomRoles.EvilMini => typeof(Mini),
+                    _ => RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(VanillaRole),
+                };
+
+                CustomRoleManager.RoleClass.Add(role, (RoleBase)Activator.CreateInstance(roleType));
+            }
+
+            TOHE.Logger.Info("RoleClasses Loaded Successfully", "LoadRoleClasses");
+        }
+        catch (Exception err)
+        {
+            TOHE.Logger.Error($"Error at LoadRoleClasses: {err}", "LoadRoleClasses");
+        }
+    }
     static void UpdateCustomTranslation()
     {
         string path = @$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat";
@@ -428,6 +460,7 @@ public class Main : BasePlugin
         ExceptionMessage = "";
 
         LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
+        LoadRoleClasses();
 
         CustomWinnerHolder.Reset();
         Translator.Init();
