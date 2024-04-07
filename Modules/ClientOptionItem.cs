@@ -93,7 +93,7 @@ public class ClientOptionItem
             passiveButton.OnClick = new();
             passiveButton.OnClick.AddListener(new Action(() =>
             {
-                config.Value = !config.Value;
+                if (config != null) config.Value = !config.Value;
                 UpdateToggle();
                 additionalOnClickAction?.Invoke();
             }));
@@ -115,7 +115,7 @@ public class ClientOptionItem
     {
         if (ToggleButton == null) return;
 
-        var color = Config.Value ? new Color32(255, 192, 203, byte.MaxValue) : new Color32(77, 77, 77, byte.MaxValue);
+        var color = (Config != null && Config.Value) ? new Color32(255, 192, 203, byte.MaxValue) : new Color32(77, 77, 77, byte.MaxValue);
         ToggleButton.Background.color = color;
         ToggleButton.Rollover?.ChangeOutColor(color);
     }
