@@ -14,7 +14,7 @@ internal class Godfather : RoleBase
 
     private static OptionItem GodfatherChangeOpt;
 
-    private static readonly List<byte> GodfatherTarget = [];
+    private static readonly HashSet<byte> GodfatherTarget = [];
 
     private enum GodfatherChangeMode
     {

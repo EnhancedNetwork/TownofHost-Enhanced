@@ -19,7 +19,8 @@ internal class Warden : RoleBase
     private static OptionItem AbilityCooldown;
     private static OptionItem IncreaseSpeed;
     private static OptionItem WardenCanAlertNum;
-    private static readonly List<byte> IsAffected = [];
+
+    private static readonly HashSet<byte> IsAffected = [];
     private static readonly Dictionary<byte, int> AbilityCount = [];
     public static void SetupCustomOptions()
     {

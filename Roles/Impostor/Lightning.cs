@@ -21,7 +21,7 @@ internal class Lightning : RoleBase
     private static OptionItem ConvertTime;
     private static OptionItem KillerConvertGhost;
 
-    private static List<byte> GhostPlayer = [];
+    private static readonly List<byte> GhostPlayer = [];
     private static readonly Dictionary<byte, PlayerControl> RealKiller = [];
 
     public static void SetupCustomOption()
@@ -58,7 +58,7 @@ internal class Lightning : RoleBase
         bool isGhost = reader.ReadBoolean();
         if (GhostId == byte.MaxValue)
         {
-            GhostPlayer = [];
+            GhostPlayer.Clear();
             return;
         }
         if (isGhost)
@@ -165,7 +165,7 @@ internal class Lightning : RoleBase
             gs.SetRealKiller(RealKiller[gs.PlayerId]);
             Logger.Info($"{gs.GetNameWithRole()} is quantum ghost - dead on start meeting", "Lightning");
         }
-        GhostPlayer = [];
+        GhostPlayer.Clear();
         SendRPC(byte.MaxValue);
         Utils.NotifyRoles();
     }

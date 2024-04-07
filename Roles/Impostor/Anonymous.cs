@@ -22,7 +22,7 @@ internal class Anonymous : RoleBase
     private static OptionItem KillCooldown;
 
     private static readonly Dictionary<byte, int> HackLimit = [];
-    private static List<byte> DeadBodyList = [];
+    private static readonly List<byte> DeadBodyList = [];
 
     public static void SetupCustomOption()
     {
@@ -80,7 +80,7 @@ internal class Anonymous : RoleBase
             hud.AbilityButton.SetUsesRemaining(x);
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => DeadBodyList = [];
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => DeadBodyList.Clear();
     public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         if (inMeeting || isSuicide) return;

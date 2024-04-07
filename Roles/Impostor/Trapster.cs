@@ -15,7 +15,7 @@ internal class Trapster : RoleBase
     private static OptionItem TrapTrapsterBody;
     private static OptionItem TrapConsecutiveTrapsterBodies;
 
-    private static readonly List<byte> BoobyTrapBody = [];
+    private static readonly HashSet<byte> BoobyTrapBody = [];
     private static readonly Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
 
     public static void SetupCustomOption()

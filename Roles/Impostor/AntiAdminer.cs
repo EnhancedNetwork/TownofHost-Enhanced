@@ -13,17 +13,18 @@ internal class AntiAdminer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 2800;
-    private static readonly List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
 
     private static OptionItem CanCheckCamera;
-    public static bool IsAdminWatch;
-    public static bool IsVitalWatch;
-    public static bool IsDoorLogWatch;
-    public static bool IsCameraWatch;
+
+    private static bool IsAdminWatch;
+    private static bool IsVitalWatch;
+    private static bool IsDoorLogWatch;
+    private static bool IsCameraWatch;
 
     public static void SetupCustomOption()
     {

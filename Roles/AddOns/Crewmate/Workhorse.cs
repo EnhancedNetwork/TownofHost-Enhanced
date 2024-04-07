@@ -7,7 +7,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 public static class Workhorse
 {
     private const int Id = 23730;
-    private static List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static Color RoleColor = Utils.GetRoleColor(CustomRoles.Workhorse);
@@ -33,7 +33,7 @@ public static class Workhorse
     }
     public static void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         IsEnable = false;
 
         AssignOnlyToCrewmate = OptionAssignOnlyToCrewmate.GetBool();

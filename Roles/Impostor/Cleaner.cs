@@ -17,7 +17,7 @@ internal class Cleaner : RoleBase
     private static OptionItem KillCooldown;
     private static OptionItem KillCooldownAfterCleaning;
 
-    private static List<byte> CleanerBodies = [];
+    private static readonly HashSet<byte> CleanerBodies = [];
 
     public static void SetupCustomOption()
     {
@@ -31,7 +31,7 @@ internal class Cleaner : RoleBase
     }
     public override void Init()
     {
-        CleanerBodies = [];
+        CleanerBodies.Clear();
         Playerids.Clear();
     }
     public override void Add(byte playerId)

@@ -31,8 +31,8 @@ internal class Deathpact : RoleBase
     private static OptionItem PlayersInDeathpactCanCallMeeting;
     private static OptionItem ShowShapeshiftAnimationsOpt;
 
-    private static readonly List<byte> ActiveDeathpacts = [];
-    private static readonly Dictionary<byte, List<PlayerControl>> PlayersInDeathpact = [];
+    private static readonly HashSet<byte> ActiveDeathpacts = [];
+    private static readonly Dictionary<byte, HashSet<PlayerControl>> PlayersInDeathpact = [];
     private static readonly Dictionary<byte, long> DeathpactTime = [];
 
     public static void SetupCustomOption()

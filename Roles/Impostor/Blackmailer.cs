@@ -19,7 +19,7 @@ internal class Blackmailer : RoleBase
     private static OptionItem SkillCooldown;
     private static OptionItem ShowShapeshiftAnimationsOpt;
 
-    private static List<byte> ForBlackmailer = [];
+    private static readonly HashSet<byte> ForBlackmailer = [];
 
     public static void SetupCustomOption()
     {
@@ -30,8 +30,8 @@ internal class Blackmailer : RoleBase
     }
     public override void Init()
     {
-        ForBlackmailer = [];
         PlayerIds.Clear();
+        ForBlackmailer.Clear();
     }
     public override void Add(byte playerId)
     {

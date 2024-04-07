@@ -26,8 +26,8 @@ internal class Pitfall : RoleBase
     private static OptionItem TrapCauseVision;
     private static OptionItem TrapCauseVisionTime;
 
-    private static List<PitfallTrap> Traps = [];
-    private static List<byte> ReducedVisionPlayers = [];
+    private static HashSet<PitfallTrap> Traps = [];
+    private static readonly HashSet<byte> ReducedVisionPlayers = [];
 
     private static float DefaultSpeed = new();
     public static float TrapMaxPlayerCount = new();
@@ -56,8 +56,8 @@ internal class Pitfall : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        Traps = [];
-        ReducedVisionPlayers = [];
+        Traps.Clear();
+        ReducedVisionPlayers.Clear();
         DefaultSpeed = new();
         TrapMaxPlayerCount = new();
         TrapDuration = new();
@@ -87,7 +87,7 @@ internal class Pitfall : RoleBase
         if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         // Remove inactive traps so there is room for new traps
-        Traps = Traps.Where(a => a.IsActive).ToList();
+        Traps = Traps.Where(a => a.IsActive).ToHashSet();
 
         Vector2 position = shapeshifter.transform.position;
         var playerTraps = Traps.Where(a => a.PitfallPlayerId == shapeshifter.PlayerId).ToArray();

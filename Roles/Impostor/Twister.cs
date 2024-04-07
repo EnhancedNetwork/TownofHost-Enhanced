@@ -20,7 +20,7 @@ internal class Twister : RoleBase
     private static OptionItem ShapeshiftDuration;
     private static OptionItem HideTwistedPlayerNames;
 
-    private static List<byte> changePositionPlayers = [];
+    private static HashSet<byte> changePositionPlayers = [];
 
     public static void SetupCustomOption()
     {
@@ -34,7 +34,7 @@ internal class Twister : RoleBase
     public override void Init()
     {
         PlayerIds.Clear();
-        changePositionPlayers = [];
+        changePositionPlayers.Clear();
     }
     public override void Add(byte playerId)
     {

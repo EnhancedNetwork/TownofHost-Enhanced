@@ -13,7 +13,7 @@ public static class Burst
     public static OptionItem NeutralCanBeBurst;
     private static OptionItem BurstKillDelay;
 
-    private static List<byte> BurstBodies = [];
+    private static readonly List<byte> BurstBodies = [];
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Burst, canSetNum: true);
@@ -26,7 +26,7 @@ public static class Burst
 
     public static void Init()
     {
-        BurstBodies = [];
+        BurstBodies.Clear();
         IsEnable = false;
     }
     public static void Add()
@@ -36,7 +36,7 @@ public static class Burst
 
     public static void AfterMeetingTasks()
     {
-        BurstBodies = [];
+        BurstBodies.Clear();
     }
 
     public static void AfterBurstDeadTasks(PlayerControl killer, PlayerControl target)
