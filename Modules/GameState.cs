@@ -114,10 +114,6 @@ public class PlayerState(byte playerId)
                 _ => throw new NotImplementedException()
             };
         }
-        if (pc.Is(CustomRoles.Rogue))
-        {
-            countTypes = CountTypes.Rogue;
-        }
         if (pc.Is(CustomRoles.Admired))
         {
             countTypes = CountTypes.Crew;
@@ -156,7 +152,6 @@ public class PlayerState(byte playerId)
         if (role.IsConverted())
         {
             SubRoles.Where(AddON => AddON != role && AddON.IsConverted()).Do(x => SubRoles.Remove(x));
-            SubRoles.Remove(CustomRoles.Rogue);
             SubRoles.Remove(CustomRoles.Rascal);
             SubRoles.Remove(CustomRoles.Loyal);
             SubRoles.Remove(CustomRoles.Admired);
@@ -212,10 +207,6 @@ public class PlayerState(byte playerId)
                 };
                 break;
 
-            case CustomRoles.Rogue:
-                countTypes = CountTypes.Rogue;
-                break;
-
             // This exist as it would be possible for them to exist on the same player via Bandit
             // But since Bandit can't vent without Nimble, allowing them to have Circumvent is pointless
             case CustomRoles.Nimble:
@@ -225,7 +216,6 @@ public class PlayerState(byte playerId)
             case CustomRoles.Admired:
                 countTypes = CountTypes.Crew;
                 SubRoles.Where(AddON => AddON != role && AddON.IsConverted()).Do(x => SubRoles.Remove(x));
-                SubRoles.Remove(CustomRoles.Rogue);
                 SubRoles.Remove(CustomRoles.Rascal);
                 SubRoles.Remove(CustomRoles.Loyal);
                 break;

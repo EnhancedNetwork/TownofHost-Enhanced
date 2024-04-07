@@ -596,7 +596,6 @@ static class ExtendedPlayerControl
             || target.Is(CustomRoles.Recruit)
             || target.Is(CustomRoles.Infected)
             || target.Is(CustomRoles.Contagious)
-            || target.Is(CustomRoles.Rogue)
             || target.Is(CustomRoles.Rascal)
             || target.Is(CustomRoles.Soulless);
     }

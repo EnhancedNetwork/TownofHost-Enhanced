@@ -90,7 +90,6 @@ public static class CustomRolesHelper
             CustomRoles.Tiebreaker or
             CustomRoles.Oblivious or
             CustomRoles.Bewilder or
-            //CustomRoles.Sunglasses or
             CustomRoles.Knighted or
             CustomRoles.Workhorse or
             CustomRoles.Fool or
@@ -106,7 +105,6 @@ public static class CustomRolesHelper
             CustomRoles.Loyal or
             CustomRoles.Egoist or
             CustomRoles.Recruit or
-            //CustomRoles.Glow or
             CustomRoles.TicketsStealer or
             CustomRoles.Tricky or
             CustomRoles.Schizophrenic or
@@ -118,15 +116,12 @@ public static class CustomRolesHelper
             CustomRoles.Rebound or
             CustomRoles.Mundane or
             CustomRoles.Lazy or
-            //     CustomRoles.Reflective or
             CustomRoles.Rascal or
             CustomRoles.Contagious or
             CustomRoles.Guesser or
-            CustomRoles.Rogue or
             CustomRoles.Unreportable or
             CustomRoles.Lucky or
             CustomRoles.Unlucky or
-            //      CustomRoles.Cyber or
             CustomRoles.DoubleShot or
             CustomRoles.Ghoul or
             CustomRoles.Bloodlust or
@@ -435,11 +430,6 @@ public static class CustomRolesHelper
             CustomRoles.Vigilante or
             CustomRoles.Jailer;
     }
-    public static bool IsMini(this CustomRoles role) // �Ƿ��ڹ�
-    {
-        return role is
-            CustomRoles.Mini;
-    }
     public static bool IsImpostor(this CustomRoles role) // IsImp
     {
         return role is
@@ -565,7 +555,6 @@ public static class CustomRolesHelper
             CustomRoles.Pirate or
             CustomRoles.Seeker or
             CustomRoles.Pixie or
-        //    CustomRoles.Sidekick or
             CustomRoles.Poisoner or
             CustomRoles.SerialKiller or
             CustomRoles.PotionMaster or
@@ -599,21 +588,6 @@ public static class CustomRolesHelper
             CustomRoles.SchrodingersCat or
             CustomRoles.Quizmaster;
     }
-/*    public static bool IsCoven(this CustomRoles role)
-    {
-        return role is
-            CustomRoles.Poisoner or
-            CustomRoles.HexMaster or
-            CustomRoles.Medusa or
-            CustomRoles.Wraith or
-            CustomRoles.Ritualist or
-            CustomRoles.Banshee or
-            CustomRoles.Sorcerer or
-            CustomRoles.Jinx or
-            CustomRoles.Necromancer or
-            CustomRoles.CovenLeader or
-            CustomRoles.PotionMaster;
-    } */
 
     public static bool IsAbleToBeSidekicked(this CustomRoles role)
     {
@@ -1508,13 +1482,6 @@ public static class CustomRolesHelper
                 break;
         }
 
-        // Code not used:
-        //if (role is CustomRoles.Reflective && ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeReflective.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeReflective.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeReflective.GetBool()))) return false;
-        //if (role is CustomRoles.Onbound && pc.Is(CustomRoles.Reflective)) return false;
-        //if (role is CustomRoles.Reflective && pc.Is(CustomRoles.Onbound)) return false;
-        //if (role is CustomRoles.Cyber && pc.Is(CustomRoles.Celebrity)) return false;
-        //if (role is CustomRoles.Ntr or CustomRoles.Watcher or CustomRoles.Flash or CustomRoles.Torch or CustomRoles.Seer or CustomRoles.Bait or CustomRoles.Burst) return false;
-
         return true;
     }
     public static RoleTypes GetRoleTypes(this CustomRoles role)
@@ -1561,7 +1528,6 @@ public static class CustomRolesHelper
                 or CustomRoles.Contagious
                 or CustomRoles.Soulless
                 or CustomRoles.Lovers 
-                or CustomRoles.Rogue
                 or CustomRoles.Madmate ||
                 (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool()));
     }
@@ -1573,7 +1539,6 @@ public static class CustomRolesHelper
             or CustomRoles.Recruit
             or CustomRoles.Infected
             or CustomRoles.Contagious
-            or CustomRoles.Rogue
             or CustomRoles.Rascal
             or CustomRoles.Soulless;
     }
@@ -1751,7 +1716,6 @@ public static class CustomRolesHelper
             CustomRoles.Juggernaut => CustomWinner.Juggernaut,
             CustomRoles.Infectious => CustomWinner.Infectious,
             CustomRoles.Virus => CustomWinner.Virus,
-            CustomRoles.Rogue => CustomWinner.Rogue,
             CustomRoles.Phantom => CustomWinner.Phantom,
             CustomRoles.Jinx => CustomWinner.Jinx,
             CustomRoles.CursedSoul => CustomWinner.CursedSoul,
@@ -1800,26 +1764,21 @@ public static class CustomRolesHelper
             CountTypes.Juggernaut => CustomRoles.Juggernaut,
             CountTypes.Jinx => CustomRoles.Jinx,
             CountTypes.Infectious => CustomRoles.Infectious,
-            //            CustomRoles.Crewpostor => CountTypes.Impostor,
             CountTypes.Pyromaniac => CustomRoles.Pyromaniac,
             CountTypes.Virus => CustomRoles.Virus,
             CountTypes.PotionMaster => CustomRoles.PotionMaster,
-
             CountTypes.Pickpocket => CustomRoles.Pickpocket,
             CountTypes.Traitor => CustomRoles.Traitor,
             CountTypes.Medusa => CustomRoles.Medusa,
-            //           CustomRoles.Refugee => CountTypes.Impostor,
             CountTypes.Huntsman => CustomRoles.Huntsman,
             CountTypes.Glitch => CustomRoles.Glitch,
             CountTypes.Stalker => CustomRoles.Stalker,
             CountTypes.Spiritcaller => CustomRoles.Spiritcaller,
             CountTypes.Arsonist => CustomRoles.Arsonist,
             CountTypes.RuthlessRomantic => CustomRoles.RuthlessRomantic,
-            //CountTypes.Impostor => CustomRoles.ImpostorTOHE,
-            //CountTypes.Crew => CustomRoles.CrewmateTOHE,
             _ => throw new System.NotImplementedException()
         };
-    public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Count > 0;
+    public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
 }
 public enum CustomRoleTypes
 {
@@ -1850,7 +1809,6 @@ public enum CountTypes
     Juggernaut,
     Infectious,
     Virus,
-    Rogue,
     Stalker,
     Jinx,
     PotionMaster,
@@ -1868,7 +1826,6 @@ public enum CountTypes
     Shroud,
     Werewolf,
     Agitater,
-    //Shade,
     RuthlessRomantic,
     Necromancer
 }
