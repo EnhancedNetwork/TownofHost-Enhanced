@@ -1,7 +1,5 @@
 ﻿using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using AmongUs.GameOptions;
 using TOHE.Roles.AddOns.Crewmate;
@@ -16,7 +14,7 @@ internal class Virus : RoleBase
     //===========================SETUP================================\\
     private const int Id = 18300;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -75,7 +73,7 @@ internal class Virus : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public override void OnMeetingHudStart(PlayerControl pc)
+    public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
         if (VirusNotify.ContainsKey(pc.PlayerId))
             AddMsg(VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
@@ -97,7 +95,7 @@ internal class Virus : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         InfectLimit = reader.ReadInt32();
     }

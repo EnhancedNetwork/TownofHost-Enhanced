@@ -1,21 +1,18 @@
-using System.Collections.Generic;
-using TOHE.Roles.Core;
-
 namespace TOHE.Roles.Crewmate;
 
 internal class TimeManager : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9800;
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.TimeManager.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     public static OptionItem IncreaseMeetingTime;
     public static OptionItem MeetingTimeLimit;
     public static OptionItem MadMinMeetingTimeLimit;
-
-    private static List<byte> playerIdList = [];
 
     public static void SetupCustomOption()
     {
@@ -30,13 +27,11 @@ internal class TimeManager : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
     }
     private static int AdditionalTime(byte id)
     {

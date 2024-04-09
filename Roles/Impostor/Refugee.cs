@@ -5,10 +5,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Refugee : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 60009;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem RefugeeKillCD;
 
@@ -21,11 +24,11 @@ internal class Refugee : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RefugeeKillCD.GetFloat();

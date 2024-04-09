@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;

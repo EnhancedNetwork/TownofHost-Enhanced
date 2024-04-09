@@ -1,9 +1,6 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
-using static TOHE.CustomRolesHelper;
 using TOHE.Roles.AddOns.Common;
 using static TOHE.Translator;
 
@@ -11,7 +8,7 @@ namespace TOHE.Roles.Neutral;
 
 internal class Poisoner : RoleBase
 {
-    private class PoisonedInfo(byte poisonerId, float killTimer) // Mf's before Dictionary(item1, item2) was discovered 💀
+    private class PoisonedInfo(byte poisonerId, float killTimer) 
     {
         public byte PoisonerId = poisonerId;
         public float KillTimer = killTimer;
@@ -19,7 +16,7 @@ internal class Poisoner : RoleBase
     //===========================SETUP================================\\
     private const int Id = 17500;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -112,8 +109,8 @@ internal class Poisoner : RoleBase
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Poison;
             target.SetRealKiller(poisoner);
-            target.RpcMurderPlayerV3(target);
-            Logger.Info($"Poisonerに噛まれている{target.name}を自爆させました。", "Poisoner");
+            target.RpcMurderPlayer(target);
+            Logger.Info($"{target.GetRealName()} Died by Poison", "Poisoner");
             if (!isButton && poisoner.IsAlive())
             {
                 RPC.PlaySoundRPC(poisoner.PlayerId, Sounds.KillSound);
@@ -125,7 +122,7 @@ internal class Poisoner : RoleBase
         }
         else
         {
-            Logger.Info("Poisonerに噛まれている" + target.name + "はすでに死んでいました。", "Poisoner");
+            Logger.Info($"{target.GetRealName()} was in an unkillable state, poison was canceled", "Poisoner");
         }
     }
     public override void OnReportDeadBody(PlayerControl sans, PlayerControl bateman)

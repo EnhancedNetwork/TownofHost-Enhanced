@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
@@ -31,12 +30,14 @@ public abstract class GameOptionsSender
     public virtual void SendGameOptions()
     {
         var opt = BuildGameOptions();
+        var currentGameMode = AprilFoolsMode.IsAprilFoolsModeToggledOn //April fools mode toggled on by host
+            ? opt.AprilFoolsOnMode : opt.GameMode; //Change game mode, same as well as in "RpcSyncSettings()"
 
         // option => byte[]
         MessageWriter writer = MessageWriter.Get(SendOption.None);
         writer.Write(opt.Version);
         writer.StartMessage(0);
-        writer.Write((byte)opt.GameMode);
+        writer.Write((byte)currentGameMode);
         if (opt.TryCast<NormalGameOptionsV07>(out var normalOpt))
             NormalGameOptionsV07.Serialize(writer, normalOpt);
         else if (opt.TryCast<HideNSeekGameOptionsV07>(out var hnsOpt))

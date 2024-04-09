@@ -4,10 +4,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Dictator : RoleBase
 {
-    public const int Id = 11600;
-    public bool On = false;
-    public override bool IsEnable => On;
+    //===========================SETUP================================\\
+    private const int Id = 11600;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     public static void SetupCustomOptions()
     {
@@ -16,11 +19,11 @@ internal class Dictator : RoleBase
 
     public override void Init()
     {
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
 
     public static bool CheckVotingForTarget(PlayerControl pc, PlayerVoteArea pva)

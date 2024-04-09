@@ -1,6 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -14,7 +12,7 @@ internal class Warlock : RoleBase
     //===========================SETUP================================\\
     private const int Id = 5100;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     //==================================================================\\
@@ -90,11 +88,11 @@ internal class Warlock : RoleBase
         return false;
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     {
         if (CursedPlayers[shapeshifter.PlayerId] != null)
         {
-            if ((shapeshifting || shapeshiftIsHidden) && CursedPlayers[shapeshifter.PlayerId].IsAlive())
+            if (shapeshifting && CursedPlayers[shapeshifter.PlayerId].IsAlive())
             {
                 var cp = CursedPlayers[shapeshifter.PlayerId];
                 Vector2 cppos = cp.transform.position;
@@ -120,7 +118,7 @@ internal class Warlock : RoleBase
                     if (cp.RpcCheckAndMurder(targetw, true))
                     {
                         targetw.SetRealKiller(shapeshifter);
-                        cp.RpcMurderPlayerV3(targetw);
+                        cp.RpcMurderPlayer(targetw);
                         shapeshifter.RpcGuardAndKill(shapeshifter);
                         Logger.Info($"{targetw.GetNameWithRole()} was killed", "Warlock");
                         shapeshifter.Notify(Translator.GetString("WarlockControlKill"));

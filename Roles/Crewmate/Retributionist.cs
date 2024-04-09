@@ -1,12 +1,8 @@
-﻿using HarmonyLib;
-using Hazel;
+﻿using Hazel;
 using System;
-using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.Double;
-using TOHE.Roles.Core;
 using UnityEngine;
-using System.Collections.Generic;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -16,17 +12,19 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Retributionist : RoleBase
 {
-    public const int Id = 11000;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Retributionist.IsClassEnable();
+    //===========================SETUP================================\\
+    private const int Id = 11000;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem RetributionistCanKillNum;
     private static OptionItem MinimumPlayersAliveToRetri;
     private static OptionItem CanOnlyRetributeWithTasksDone;
 
-    private static Dictionary<byte, int> RetributionistRevenged = [];
+    private static readonly Dictionary<byte, int> RetributionistRevenged = [];
 
     public static void SetupCustomOptions()
     {
@@ -43,12 +41,12 @@ internal class Retributionist : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        RetributionistRevenged = [];
+        playerIdList.Clear();
+        RetributionistRevenged.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
         RetributionistRevenged.Add(playerId, RetributionistCanKillNum.GetInt());
     }
     
@@ -164,6 +162,12 @@ internal class Retributionist : RoleBase
             else pc.ShowPopUp(GetString("GuessSolsticer"));
             return true;
         }
+        else if (!pc.RpcCheckAndMurder(target, true))
+        {
+            if (!isUI) SendMessage(GetString("GuessImmune"), pc.PlayerId);
+            else pc.ShowPopUp(GetString("GuessImmune"));
+            return true;
+        }
 
         Logger.Info($"{pc.GetNameWithRole()} 复仇了 {target.GetNameWithRole()}", "Retributionist");
 
@@ -183,7 +187,7 @@ internal class Retributionist : RoleBase
             }
             else
             {
-                target.RpcMurderPlayerV3(target);
+                target.RpcMurderPlayer(target);
                 NotifyRoles(NoCache: true);
             }
             target.SetRealKiller(pc);
@@ -202,7 +206,7 @@ internal class Retributionist : RoleBase
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
         int PlayerId = reader.ReadByte();
         RetributionistMsgCheck(pc, $"/ret {PlayerId}", true);

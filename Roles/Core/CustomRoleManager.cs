@@ -1,11 +1,10 @@
 ﻿using AmongUs.GameOptions;
-using HarmonyLib;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
@@ -13,56 +12,16 @@ namespace TOHE.Roles.Core;
 
 public static class CustomRoleManager
 {
-    //public static Dictionary<byte, RoleBase> AllActiveRoles = new(15);
-    public static bool IsClassEnable(this CustomRoles role) => Main.PlayerStates.Any(x => x.Value.MainRole == role && x.Value.RoleClass.IsEnable);
-
+    public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
+    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new VanillaRole(); 
+    public static List<RoleBase> AllEnabledRoles => RoleClass.Values.Where(x => x.IsEnable).ToList();
+    public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
 
-    private static string GetNameSpace(CustomRoles role)
+    public static RoleBase CreateRoleClass(this CustomRoles role) 
     {
-        if (role.IsGhostRole())
-        {
-            if (role.IsImpostor())
-                return "TOHE.Roles._Ghosts_.Impostor.";
-            if (role.IsCrewmate())
-                return "TOHE.Roles._Ghosts_.Crewmate.";
-        }
-        if (role is CustomRoles.Mini)
-            return "TOHE.Roles.Double.";
-        if (role.IsImpostor())
-            return "TOHE.Roles.Impostor.";
-        if (role.IsCrewmate())
-            return "TOHE.Roles.Crewmate.";
-
-        else return "TOHE.Roles.Neutral.";
-    }
-    public static RoleBase CreateRoleClass(this CustomRoles role) // CHATGPT COOKED 🔥🔥🗿☕
-    { 
-        role = role switch // Switch role to FatherRole (Double Classes)
-        {
-            CustomRoles.Vampiress => CustomRoles.Vampire,
-            CustomRoles.Sunnyboy => CustomRoles.Jester,
-            CustomRoles.Pestilence => CustomRoles.PlagueBearer,
-            CustomRoles.Nuker => CustomRoles.Bomber,
-            CustomRoles.NiceMini or CustomRoles.EvilMini => CustomRoles.Mini,
-            _ => role
-        };
-
-        Logger.Info($"Attempting to Create new {role}()", "CreateRoleClass");
-
-        string RoleNameSpace = GetNameSpace(role);
-        string className = $"{RoleNameSpace}" + role.ToString(); 
-        Type classType = Type.GetType(className);
-
-        if (classType == null || !typeof(RoleBase).IsAssignableFrom(classType))
-        {
-            Logger.Info("An unknown RoleType or RoleClass was given, assigning new VanillaRole()", "CreateRoleClass");
-            return new VanillaRole();
-        }
-
-        Logger.Info($"Succesfully Created new {role}()", "CreateRoleClass");
-        return (RoleBase)Activator.CreateInstance(classType);
+        return (RoleBase)Activator.CreateInstance(role.GetStaticRoleClass().GetType()); // Converts this.RoleBase back to its type and creates an unique one.
     }
 
     /// <summary>
@@ -70,19 +29,87 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
-        bool cancel = false;
-        foreach (var player in Main.PlayerStates.Values.ToArray())
-        {
-            var playerRoleClass = player.RoleClass;
-            if (player == null || playerRoleClass == null) continue;
-
-            if (!playerRoleClass.CheckMurderOnOthersTarget(killer, target))
-            {
-                cancel = true;
-            }
-        }
-        return !cancel;
+        // return true when need to cancel the kill target
+        // "Any()" defines a function that returns true, and converts to false to cancel the kill
+        return !AllEnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target) == true);
     }
+
+    /// <summary>
+    /// Builds Modified GameOptions
+    /// </summary>
+    public static void BuildCustomGameOptions(this PlayerControl player, ref IGameOptions opt, CustomRoles role)
+    {
+        if (player.IsAnySubRole(x => x is CustomRoles.EvilSpirit))
+        {
+            AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+        }
+
+        player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
+
+        switch (role)
+        {
+            case CustomRoles.ShapeshifterTOHE:
+                AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
+                AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
+                break;
+            case CustomRoles.ScientistTOHE:
+                AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
+                AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
+                break;
+            case CustomRoles.EngineerTOHE:
+                AURoleOptions.EngineerCooldown = 0f;
+                AURoleOptions.EngineerInVentMaxTime = 0f;
+                break;
+            default:
+                opt.SetVision(false);
+                break;
+        }
+
+        if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
+        if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
+        if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
+        if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
+        if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
+
+        // Add-ons
+        if (Bewilder.IsEnable) Bewilder.ApplyGameOptions(opt, player);
+        if (Ghoul.IsEnable) Ghoul.ApplyGameOptions(player);
+
+        var playerSubRoles = player.GetCustomSubRoles();
+
+        if (playerSubRoles.Any())
+            foreach (var subRole in playerSubRoles.ToArray())
+            {
+                switch (subRole)
+                {
+                    case CustomRoles.Watcher:
+                        Watcher.RevealVotes(opt);
+                        break;
+                    case CustomRoles.Flash:
+                        Flash.SetSpeed(player.PlayerId, false);
+                        break;
+                    case CustomRoles.Torch:
+                        Torch.ApplyGameOptions(opt);
+                        break;
+                    case CustomRoles.Tired:
+                        Tired.ApplyGameOptions(opt, player);
+                        break;
+                    case CustomRoles.Bewilder:
+                        Bewilder.ApplyVisionOptions(opt);
+                        break;
+                    case CustomRoles.Reach:
+                        Reach.ApplyGameOptions(opt);
+                        break;
+                    case CustomRoles.Madmate:
+                        Madmate.ApplyGameOptions(opt);
+                        break;
+                    case CustomRoles.Mare:
+                        Mare.ApplyGameOptions(player.PlayerId);
+                        break;
+                }
+            }
+    }
+
     /// <summary>
     /// Check Murder as Killer in target
     /// </summary>
@@ -94,14 +121,16 @@ public static class CustomRoleManager
         var killerSubRoles = killer.GetCustomSubRoles();
 
         // Forced check
-        if (!killerRoleClass.ForcedCheckMurderAsKiller(killer, target))
+        if (killerRoleClass.ForcedCheckMurderAsKiller(killer, target) == false)
         {
+            Logger.Info("Cancels because for killer no need kill target", "ForcedCheckMurderAsKiller");
             return false;
         }
 
         // Check in target
         if (!killer.RpcCheckAndMurder(target, true))
         {
+            Logger.Info("Cancels because target cancel kill", "OnCheckMurder.RpcCheckAndMurder");
             return false;
         }
 
@@ -144,6 +173,7 @@ public static class CustomRoleManager
         // Check murder as killer
         if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
         {
+            Logger.Info("Cancels because for killer no need kill target", "OnCheckMurderAsKiller");
             return false;
         }
 
@@ -201,10 +231,6 @@ public static class CustomRoleManager
                         Oiiai.OnMurderPlayer(killer, target);
                         break;
 
-                    case CustomRoles.Tricky:
-                        Tricky.AfterPlayerDeathTasks(target);
-                        break;
-
                     case CustomRoles.EvilSpirit when !inMeeting && !isSuicide:
                         target.RpcSetRole(RoleTypes.GuardianAngel);
                         break;
@@ -223,6 +249,10 @@ public static class CustomRoleManager
                 {
                     case CustomRoles.TicketsStealer when !inMeeting && !isSuicide:
                         killer.Notify(string.Format(Translator.GetString("TicketsStealerGetTicket"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * Stealer.TicketsPerKill.GetFloat()).ToString("0.0#####")));
+                        break;
+
+                    case CustomRoles.Tricky:
+                        Tricky.AfterPlayerDeathTasks(target);
                         break;
                 }
             }
@@ -265,7 +295,7 @@ public static class CustomRoleManager
     {
         player.GetRoleClass()?.OnFixedUpdate(player);
 
-        if (OnFixedUpdateOthers.Count <= 0) return;
+        if (!OnFixedUpdateOthers.Any()) return;
         //Execute other viewpoint processing if any
         foreach (var onFixedUpdate in OnFixedUpdateOthers.ToArray())
         {
@@ -290,17 +320,7 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OthersCoEnterVent(PlayerPhysics physics, int ventId)
     {
-        foreach (var player in Main.PlayerStates.Values.ToArray())
-        {
-            var playerRoleClass = player.RoleClass;
-            if (player == null || playerRoleClass == null) continue;
-
-            if (playerRoleClass.OnCoEnterVentOthers(physics, ventId))
-            {
-                return true;
-            }
-        }
-        return false;
+        return AllEnabledRoles.Any(RoleClass => RoleClass.OnCoEnterVentOthers(physics, ventId));
     }
 
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = [];
@@ -331,15 +351,29 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+
+    private static readonly List<string> SuffixWaitList = [];
     public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (!SuffixOthers.Any()) return string.Empty;
 
+        SuffixWaitList.Clear();
         var sb = new StringBuilder(100);
+        string Symbol;
         foreach (var suffix in SuffixOthers)
         {
-            sb.Append(suffix(seer, seen, isForMeeting));
+            Symbol = suffix(seer, seen, isForMeeting);
+            if (Symbol.Length == 1)
+                sb.Append(Symbol);
+            else
+                SuffixWaitList.Add(Symbol);
         }
+        if (SuffixWaitList.Any())
+        {
+            foreach (var LongText in SuffixWaitList)
+                sb.Append(LongText);
+        }
+
         return sb.ToString();
     }
 

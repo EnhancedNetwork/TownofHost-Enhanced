@@ -1,7 +1,4 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -12,7 +9,7 @@ internal class Innocent : RoleBase
     //===========================SETUP================================\\
     private const int Id = 14300;
     private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Count > 0;
+    public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -34,9 +31,9 @@ internal class Innocent : RoleBase
         PlayerIds.Add(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        target.RpcMurderPlayerV3(killer);
+        target.RpcMurderPlayer(killer);
         return false;
     }
 

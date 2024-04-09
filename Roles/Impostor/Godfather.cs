@@ -1,18 +1,20 @@
-﻿using System.Collections.Generic;
-using TOHE.Roles.Core;
+﻿using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Godfather : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 3400;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem GodfatherChangeOpt;
 
-    private static List<byte> GodfatherTarget = [];
+    private static readonly HashSet<byte> GodfatherTarget = [];
 
     private enum GodfatherChangeMode
     {
@@ -29,12 +31,12 @@ internal class Godfather : RoleBase
 
     public override void Init()
     {
-        On = false;
-        GodfatherTarget = [];
+        PlayerIds.Clear();
+        GodfatherTarget.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {

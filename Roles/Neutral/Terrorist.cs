@@ -1,6 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -15,6 +13,7 @@ internal class Terrorist : RoleBase
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     //==================================================================\\
+    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public static OptionItem CanTerroristSuicideWin;
     public static OptionItem TerroristCanGuess;
@@ -75,7 +74,7 @@ internal class Terrorist : RoleBase
                     pc.SetRealKiller(terrorist.Object);
                     Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                     Main.PlayerStates[pc.PlayerId].SetDead();
-                    pc.RpcMurderPlayerV3(pc);
+                    pc.RpcMurderPlayer(pc);
                 }
             }
             if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))

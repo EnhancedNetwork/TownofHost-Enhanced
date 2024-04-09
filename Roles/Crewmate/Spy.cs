@@ -1,7 +1,5 @@
 using Hazel;
 using System;
-using System.Collections.Generic;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;
@@ -10,20 +8,21 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Spy : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9700;
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Spy.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem SpyRedNameDur;
     private static OptionItem UseLimitOpt;
     private static OptionItem SpyAbilityUseGainWithEachTaskCompleted;
     private static OptionItem SpyInteractionBlocked;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, float> UseLimit = [];
-    private static Dictionary<byte, long> SpyRedNameList = [];
+    private static readonly Dictionary<byte, float> UseLimit = [];
+    private static readonly Dictionary<byte, long> SpyRedNameList = [];
     private static bool change = false;
 
     public static void SetupCustomOption()
@@ -40,17 +39,15 @@ internal class Spy : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        UseLimit = [];
-        SpyRedNameList = [];
-        On = false;
+        playerIdList.Clear();
+        UseLimit.Clear();
+        SpyRedNameList.Clear();
         change = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         UseLimit.Add(playerId, UseLimitOpt.GetInt());
-        On = true;
     }
     public override void Remove(byte playerId)
     {
@@ -141,11 +138,14 @@ internal class Spy : RoleBase
         }
         if (change && GameStates.IsInTask) { NotifyRoles(SpecifySeer: pc, ForceLoop: true); }
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        UseLimit[player.PlayerId] += SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendAbilityRPC(player.PlayerId);
+        if (player.IsAlive())
+        {
+            UseLimit[player.PlayerId] += SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendAbilityRPC(player.PlayerId);
+        }
+        return true;
     }
     public override string GetProgressText(byte playerId, bool comms)
     {

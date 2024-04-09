@@ -4,7 +4,7 @@ namespace TOHE;
 
 public class Xorshift(uint seed) : IRandom
 {
-    // 参考元
+    // Reference element
     public const string REFERENCE = "https://ja.wikipedia.org/wiki/Xorshift";
 
     private uint num = seed;

@@ -1,8 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -10,11 +7,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Sheriff : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 11200;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Sheriff.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem MisfireKillsTarget;
@@ -36,9 +35,8 @@ internal class Sheriff : RoleBase
     private static OptionItem NonCrewCanKillImp;
     private static OptionItem NonCrewCanKillNeutral;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, int> ShotLimit = [];
-    private static Dictionary<byte, float> CurrentKillCooldown = [];
+    private static readonly Dictionary<byte, int> ShotLimit = [];
+    private static readonly Dictionary<byte, float> CurrentKillCooldown = [];
 
     private static readonly Dictionary<CustomRoles, OptionItem> KillTargetOptions = [];
 
@@ -76,16 +74,14 @@ internal class Sheriff : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        ShotLimit = [];
-        CurrentKillCooldown = [];
-        On = false;
+        playerIdList.Clear();
+        ShotLimit.Clear();
+        CurrentKillCooldown.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CurrentKillCooldown.Add(playerId, KillCooldown.GetFloat());
-        On = true;
 
         ShotLimit.TryAdd(playerId, ShotLimitOpt.GetInt());
         Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()} : limit: {ShotLimit[playerId]}", "Sheriff");
@@ -103,7 +99,7 @@ internal class Sheriff : RoleBase
     }
     public static void SetUpNeutralOptions(int Id)
     {
-        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && x is not CustomRoles.Konan && x is not CustomRoles.Pestilence && x is not CustomRoles.Glitch).ToArray())
+        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && x is not CustomRoles.Pestilence && x is not CustomRoles.Glitch).ToArray())
         {
             SetUpKillTargetOption(neutral, Id, true, CanKillNeutralsMode);
             Id++;
@@ -125,7 +121,7 @@ internal class Sheriff : RoleBase
         writer.Write(ShotLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte SheriffId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -158,7 +154,7 @@ internal class Sheriff : RoleBase
             return true;
         }
         Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-        killer.RpcMurderPlayerV3(killer);
+        killer.RpcMurderPlayer(killer);
         return MisfireKillsTarget.GetBool();
     }
     public override string GetProgressText(byte playerId, bool computervirus)

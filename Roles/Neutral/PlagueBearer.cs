@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
 using TOHE.Roles.Impostor;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -13,7 +12,7 @@ internal class PlagueBearer : RoleBase
     //===========================SETUP================================\\
     private const int Id = 17600;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -99,7 +98,7 @@ internal class PlagueBearer : RoleBase
         }
         return false;
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlagueBearerId = reader.ReadByte();
         byte PlaguedId = reader.ReadByte();
@@ -138,15 +137,14 @@ internal class PlagueBearer : RoleBase
         var (countItem1, countItem2) = PlaguedPlayerCount(player.PlayerId);
         return countItem1 >= countItem2;
     }
-
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.GetCustomRole() == CustomRoles.Pestilence) return true;
 
         if (IsPlagued(killer.PlayerId, target.PlayerId))
         {
             killer.Notify(GetString("PlagueBearerAlreadyPlagued"));
-            return false;
+            return true;
         }
         PlaguedList[killer.PlayerId].Add(target.PlayerId);
         SendRPC(killer, target);
@@ -156,7 +154,11 @@ internal class PlagueBearer : RoleBase
         killer.SetKillCooldown();
 
         Logger.Info($"kill cooldown {PlagueBearerCD[killer.PlayerId]}", "PlagueBearer");
-        return false;
+        return true;
+    }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        return killer.Is(CustomRoles.Pestilence);
     }
 
     public override string GetProgressText(byte playerId, bool comms)
@@ -181,7 +183,7 @@ internal class PlagueBearer : RoleBase
         if (!PestilenceList.Contains(target.PlayerId)) return false;
 
         killer.SetRealKiller(target);
-        target.RpcMurderPlayerV3(killer);
+        target.RpcMurderPlayer(killer);
         return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

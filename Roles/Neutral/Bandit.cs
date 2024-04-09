@@ -1,7 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
@@ -13,7 +11,7 @@ internal class Bandit : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16000;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -83,7 +81,7 @@ internal class Bandit : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -115,7 +113,7 @@ internal class Bandit : RoleBase
                 role == CustomRoles.Lovers || // Causes issues involving Lovers Suicide
                 (role.IsImpOnlyAddon() && !CanStealImpOnlyAddon.GetBool()) ||
                 (role == CustomRoles.Nimble && CanVent.GetBool()) ||
-                (role.IsBetrayalAddon() && !CanStealBetrayalAddon.GetBool()))
+                ((role.IsBetrayalAddon() || role is CustomRoles.Lovers) && !CanStealBetrayalAddon.GetBool()))
             { 
                     Logger.Info($"Removed {role} from list of stealable addons", "Bandit");
                     AllSubRoles.Remove(role);

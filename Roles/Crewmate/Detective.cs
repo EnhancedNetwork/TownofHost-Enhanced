@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using static TOHE.Options;
+﻿using static TOHE.Options;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
 
@@ -7,14 +6,17 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Detective : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 7900;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem DetectiveCanknowKiller;
 
-    private static Dictionary<byte, string> DetectiveNotify = [];
+    private static readonly Dictionary<byte, string> DetectiveNotify = [];
 
     public static void SetupCustomOptions()
     {
@@ -25,13 +27,13 @@ internal class Detective : RoleBase
 
     public override void Init()
     {
-        DetectiveNotify = [];
-        On = false;
+        playerIdList.Clear();
+        DetectiveNotify.Clear();
     }
 
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
     public override void OnReportDeadBody(PlayerControl player, PlayerControl target)
     {
@@ -55,5 +57,5 @@ internal class Detective : RoleBase
         if (DetectiveNotify.ContainsKey(pc.PlayerId))
             AddMsg(DetectiveNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Detective), GetString("DetectiveNoticeTitle")));
     }
-    public override void MeetingHudClear() => DetectiveNotify = [];
+    public override void MeetingHudClear() => DetectiveNotify.Clear();
 }

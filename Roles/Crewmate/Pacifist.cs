@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
-using HarmonyLib;
 using AmongUs.GameOptions;
-using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using TOHE.Modules;
 using static TOHE.Options;
@@ -16,17 +12,19 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Pacifist : RoleBase
 {
-    public const int Id = 9200;
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Pacifist.IsClassEnable();
+    //===========================SETUP================================\\
+    private const int Id = 9200;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem PacifistCooldown;
     private static OptionItem PacifistMaxOfUseage;
     private static OptionItem PacifistAbilityUseGainWithEachTaskCompleted;
 
-    private static Dictionary<byte, float> PacifistNumOfUsed = [];
+    private static readonly Dictionary<byte, float> PacifistNumOfUsed = [];
 
     public static void SetupCustomOptions()
     {
@@ -40,10 +38,12 @@ internal class Pacifist : RoleBase
     }
     public override void Init()
     {
-        PacifistNumOfUsed = [];
+        playerIdList.Clear();
+        PacifistNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         PacifistNumOfUsed.Add(playerId, PacifistMaxOfUseage.GetInt());
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
@@ -80,10 +80,12 @@ internal class Pacifist : RoleBase
     public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
         => PacifistNumOfUsed.TryGetValue(physics.myPlayer.PlayerId, out var count) && count < 1;
 
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        PacifistNumOfUsed[player.PlayerId] += PacifistAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (player.IsAlive())
+            PacifistNumOfUsed[player.PlayerId] += PacifistAbilityUseGainWithEachTaskCompleted.GetFloat();
+        
+        return true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

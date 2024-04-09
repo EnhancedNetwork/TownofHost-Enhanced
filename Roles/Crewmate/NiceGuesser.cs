@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
@@ -9,7 +8,7 @@ internal class NiceGuesser : RoleBase
     //===========================SETUP================================\\
     private const int Id = 10900;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\

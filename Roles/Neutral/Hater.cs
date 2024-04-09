@@ -1,6 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -11,7 +9,7 @@ internal class Hater : RoleBase
     //===========================SETUP================================\\
     private const int Id = 12900;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -96,12 +94,12 @@ internal class Hater : RoleBase
         {
             target.SetRealKiller(killer);
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-            killer.RpcMurderPlayerV3(target); // Murder the target only if the setting is on and the target can be killed
+            killer.RpcMurderPlayer(target); // Murder the target only if the setting is on and the target can be killed
 
         }
 
         Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-        killer.RpcMurderPlayerV3(killer);
+        killer.RpcMurderPlayer(killer);
         
         Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "FFF");
         return false;

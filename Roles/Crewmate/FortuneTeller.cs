@@ -1,7 +1,5 @@
 ﻿using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
@@ -12,11 +10,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class FortuneTeller : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8000;
-    private static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem CheckLimitOpt;
     private static OptionItem AccurateCheckMode;
@@ -26,10 +26,10 @@ internal class FortuneTeller : RoleBase
     private static OptionItem RandomActiveRoles;
 
 
-    private static HashSet<byte> didVote = [];
-    private static Dictionary<byte, float> CheckLimit = [];
-    private static Dictionary<byte, float> TempCheckLimit = [];
-    private static Dictionary<byte, HashSet<byte>> targetList = [];
+    private static readonly HashSet<byte> didVote = [];
+    private static readonly Dictionary<byte, float> CheckLimit = [];
+    private static readonly Dictionary<byte, float> TempCheckLimit = [];
+    private static readonly Dictionary<byte, HashSet<byte>> targetList = [];
 
 
     public static void SetupCustomOption()
@@ -47,19 +47,17 @@ internal class FortuneTeller : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
-        CheckLimit = [];
-        TempCheckLimit = [];
-        targetList = [];
-        didVote = [];
+        playerIdList.Clear();
+        CheckLimit.Clear();
+        TempCheckLimit.Clear();
+        targetList.Clear();
+        didVote.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CheckLimit.TryAdd(playerId, CheckLimitOpt.GetInt());
         targetList[playerId] = [];
-        On = true;
     }
     public override void Remove(byte playerId)
     {
@@ -87,7 +85,7 @@ internal class FortuneTeller : RoleBase
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         bool isTemp = reader.ReadBoolean();
         byte playerId = reader.ReadByte();
@@ -110,13 +108,14 @@ internal class FortuneTeller : RoleBase
     {
         return string.Join("\n", roles.Select(role => $"    ★ {GetRoleName(role)}"));
     }
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (pc.Is(CustomRoles.FortuneTeller) && pc.IsAlive())
+        if (player.Is(CustomRoles.FortuneTeller) && player.IsAlive())
         {
-            CheckLimit[pc.PlayerId] += AbilityUseGainWithEachTaskCompleted.GetFloat();
-            SendRPC(pc.PlayerId);
+            CheckLimit[player.PlayerId] += AbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(player.PlayerId);
         }
+        return true;
     }
     public override void OnVote(PlayerControl player, PlayerControl target)
     {
@@ -254,8 +253,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Medusa,
                 CustomRoles.Psychic],
                 
-                [CustomRoles.Convict,
-                CustomRoles.Executioner,
+                [CustomRoles.Executioner,
                 CustomRoles.Lawyer,
                 CustomRoles.Snitch,
                 CustomRoles.Disperser,

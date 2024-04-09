@@ -1,6 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace TOHE.Roles.Neutral;
 
@@ -41,7 +39,7 @@ internal class SchrodingersCat : RoleBase
         writer.Write(teammate[catID]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte catID = reader.ReadByte();
         byte teammateID = reader.ReadByte();

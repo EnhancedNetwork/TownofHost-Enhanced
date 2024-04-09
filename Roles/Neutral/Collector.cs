@@ -1,6 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace TOHE.Roles.Neutral;
 
@@ -49,7 +47,7 @@ internal class Collector : RoleBase
         writer.Write(CollectVote[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Num = reader.ReadInt32();
@@ -69,7 +67,7 @@ internal class Collector : RoleBase
     public static bool CollectorWin(bool check = true)
     {
         var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Collector) && x.IsAlive() && CollectDone(x)).ToArray();
-        if (pcArray.Length > 0)
+        if (pcArray.Any())
         {
             bool isWinConverted = false;
             foreach (var x in pcArray)

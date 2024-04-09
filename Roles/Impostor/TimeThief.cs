@@ -1,22 +1,20 @@
-using System.Collections.Generic;
-using TOHE.Roles.Core;
-
 namespace TOHE.Roles.Impostor;
 
 internal class TimeThief : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 3700;
-    public static bool On;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.TimeThief.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem DecreaseMeetingTime;
     public static OptionItem LowerLimitVotingTime;
     private static OptionItem ReturnStolenTimeUponDeath;
 
-    private static List<byte> playerIdList = [];
 
     public static void SetupCustomOption()
     {
@@ -31,13 +29,11 @@ internal class TimeThief : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -57,6 +53,6 @@ internal class TimeThief : RoleBase
         return sec;
     }
 
-    public static string GetProgressText(byte playerId)
+    public override string GetProgressText(byte playerId, bool cooms)
         => StolenTime(playerId) > 0 ? Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), $"{-StolenTime(playerId)}s") : string.Empty;
 }

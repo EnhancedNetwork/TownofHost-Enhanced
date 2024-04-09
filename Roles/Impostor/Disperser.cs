@@ -8,10 +8,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Disperser : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 24400;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem DisperserShapeshiftCooldown;
     private static OptionItem DisperserShapeshiftDuration;
@@ -27,11 +30,11 @@ internal class Disperser : RoleBase
 
     public override void Init()
     {
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -39,23 +42,23 @@ internal class Disperser : RoleBase
         AURoleOptions.ShapeshifterCooldown = DisperserShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = DisperserShapeshiftDuration.GetFloat();
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
         
-        foreach (var pc in PlayerControl.AllPlayerControls)
+        foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if ((!shapeshiftIsHidden && shapeshifter.PlayerId == pc.PlayerId) || !pc.CanBeTeleported())
+            if (!pc.CanBeTeleported())
             {
-                if (!pc.Is(CustomRoles.Disperser) && pc.IsAlive())
-                    pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), GetString("ErrorTeleport")));
-                
+                pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), GetString("ErrorTeleport")));
                 continue;
             }
 
             pc.RPCPlayCustomSound("Teleport");
             pc.RpcRandomVentTeleport();
-            pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), string.Format(GetString("TeleportedInRndVentByDisperser"), pc.GetRealName())));
+            pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), GetString("TeleportedInRndVentByDisperser")));
         }
+
+        return false;
     }
 }

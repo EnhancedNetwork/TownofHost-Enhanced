@@ -5,10 +5,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Miner : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 4200;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem MinerSSDuration;
     private static OptionItem MinerSSCD;
@@ -25,11 +28,11 @@ internal class Miner : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -42,9 +45,9 @@ internal class Miner : RoleBase
         hud.AbilityButton.OverrideText(Translator.GetString("MinerTeleButtonText"));
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         if (Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
         {
@@ -53,5 +56,7 @@ internal class Miner : RoleBase
             shapeshifter.RpcTeleport(lastVentPosition);
             shapeshifter.RPCPlayCustomSound("Teleport");
         }
+
+        return false;
     }
 }

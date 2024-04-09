@@ -1,7 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Translator;
@@ -13,7 +11,7 @@ internal class Eraser : RoleBase
     //===========================SETUP================================\\
     private const int Id = 24200;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -56,7 +54,7 @@ internal class Eraser : RoleBase
         writer.Write(EraseLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();
         int limit = reader.ReadInt32();

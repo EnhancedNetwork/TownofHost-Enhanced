@@ -1,23 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Core;
-using static TOHE.Options;
+﻿using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Merchant : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8800;
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled = CustomRoles.Merchant.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
-    private static readonly List<byte> playerIdList = [];
     private static List<CustomRoles> addons = [];
-    private static Dictionary<byte, int> addonsSold = [];
-    private static Dictionary<byte, List<byte>> bribedKiller = [];
+    private static readonly Dictionary<byte, int> addonsSold = [];
+    private static readonly Dictionary<byte, HashSet<byte>> bribedKiller = [];
 
     private static readonly List<CustomRoles> helpfulAddons =
     [
@@ -99,11 +97,10 @@ internal class Merchant : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        On = false;
 
-        addons = [];
-        addonsSold = [];
-        bribedKiller = [];
+        addons.Clear();
+        addonsSold.Clear();
+        bribedKiller.Clear();
 
         if (OptionCanSellHelpful.GetBool())
         {
@@ -130,7 +127,6 @@ internal class Merchant : RoleBase
         playerIdList.Add(playerId);
         addonsSold.Add(playerId, 0);
         bribedKiller.Add(playerId, []);
-        On = true;
     }
     public override void Remove(byte playerId)
     {
@@ -142,20 +138,20 @@ internal class Merchant : RoleBase
     {
         return !OnClientMurder(killer, target);
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
+        if (!player.IsAlive()) return true;
 
         if (addonsSold[player.PlayerId] >= OptionMaxSell.GetInt())
         {
-            return;
+            return true;
         }
 
         if (addons.Count == 0)
         {
             player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
             Logger.Info("No addons to sell.", "Merchant");
-            return;
+            return true;
         }
 
         var rd = IRandom.Instance;
@@ -180,7 +176,7 @@ internal class Merchant : RoleBase
                 )
             ).ToList();
 
-        if (AllAlivePlayer.Count > 0)
+        if (AllAlivePlayer.Any())
         {
             bool helpfulAddon = helpfulAddons.Contains(addon);
             bool harmfulAddon = !helpfulAddon;
@@ -204,7 +200,7 @@ internal class Merchant : RoleBase
             {
                 player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
                 Logger.Info("All Alive Player Count = 0", "Merchant");
-                return;
+                return true;
             }
 
             PlayerControl target = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
@@ -217,6 +213,8 @@ internal class Merchant : RoleBase
             
             addonsSold[player.PlayerId] += 1;
         }
+
+        return true;
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {

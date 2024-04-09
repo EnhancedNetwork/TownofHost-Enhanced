@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -15,7 +14,7 @@ internal class Pelican : RoleBase
     //===========================SETUP================================\\
     private const int Id = 17300;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -72,7 +71,7 @@ internal class Pelican : RoleBase
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();
         if (playerId == byte.MaxValue)

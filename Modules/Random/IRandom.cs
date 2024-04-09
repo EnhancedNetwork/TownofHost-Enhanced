@@ -1,17 +1,16 @@
 using System;
-using System.Collections.Generic;
 
 namespace TOHE;
 
 public interface IRandom
 {
-    /// <summary>0以上maxValue未満の乱数を生成します。</summary>
+    /// <summary>Generates a random number between 0 and maxValue</summary>
     public int Next(int maxValue);
-    /// <summary>minValue以上maxValue未満の乱数を生成します。</summary>
+    /// <summary>Generates a random number between minValue and maxValue</summary>
     public int Next(int minValue, int maxValue);
 
     // == static ==
-    // IRandomを実装するクラスのリスト
+    // List of classes implementing IRandom
     public static Dictionary<int, Type> randomTypes = new()
     {
         { 0, typeof(NetRandomWrapper) }, //Default
@@ -32,12 +31,12 @@ public interface IRandom
     {
         if (randomTypes.TryGetValue(id, out var type))
         {
-            // 現在のインスタンスがnull または 現在のインスタンスの型が指定typeと一致しない
+            // Current instance is null or current instance type does not match specified type
             if (Instance == null || Instance.GetType() != type)
             {
                 Instance = Activator.CreateInstance(type) as IRandom ?? Instance;
             }
         }
-        else Logger.Warn($"無効なID: {id}", "IRandom.SetInstanceById");
+        else Logger.Warn($"Invalid ID: {id}", "IRandom.SetInstanceById");
     }
 }

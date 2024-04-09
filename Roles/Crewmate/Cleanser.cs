@@ -1,7 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -12,24 +9,21 @@ internal class Cleanser : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6600;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Cleanser.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-
     //==================================================================\\
-
-    private static Dictionary<byte,byte> CleanserTarget = [];
-    private static Dictionary<byte, int> CleanserUses = [];
-    private static List<byte> CleansedPlayers = [];
-
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, bool> DidVote = [];
 
     private static OptionItem CleanserUsesOpt;
     private static OptionItem CleansedCanGetAddon;
     private static OptionItem HidesVote;
     //private static OptionItem AbilityUseGainWithEachTaskCompleted;
+
+    private static readonly HashSet<byte> CleansedPlayers = [];
+    private static readonly Dictionary<byte,byte> CleanserTarget = [];
+    private static readonly Dictionary<byte, int> CleanserUses = [];
+    private static readonly Dictionary<byte, bool> DidVote = [];
 
     public static void SetupCustomOption()
     {
@@ -44,12 +38,11 @@ internal class Cleanser : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        CleanserTarget = [];
-        CleanserUses = [];
-        CleansedPlayers = [];
-        DidVote = [];
-        On = false;
+        playerIdList.Clear();
+        CleanserTarget.Clear();
+        CleanserUses.Clear();
+        CleansedPlayers.Clear();
+        DidVote.Clear();
     }
 
     public override void Add(byte playerId)
@@ -58,7 +51,6 @@ internal class Cleanser : RoleBase
         CleanserTarget.Add(playerId, byte.MaxValue);
         CleanserUses.Add(playerId, 0);
         DidVote.Add(playerId, false);
-        On = true;
     }
     public override void Remove(byte playerId)
     {
@@ -87,7 +79,7 @@ internal class Cleanser : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte CleanserId = reader.ReadByte();
         int Limit = reader.ReadInt32();

@@ -1,7 +1,5 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
@@ -14,10 +12,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Deathpact : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 1200;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem ShapeshiftCooldown;
@@ -28,10 +29,11 @@ internal class Deathpact : RoleBase
     private static OptionItem VisionWhileInPact;
     private static OptionItem KillDeathpactPlayersOnMeeting;
     private static OptionItem PlayersInDeathpactCanCallMeeting;
+    private static OptionItem ShowShapeshiftAnimationsOpt;
 
-    private static List<byte> ActiveDeathpacts = [];
-    private static Dictionary<byte, List<PlayerControl>> PlayersInDeathpact = [];
-    private static Dictionary<byte, long> DeathpactTime = [];
+    private static readonly HashSet<byte> ActiveDeathpacts = [];
+    private static readonly Dictionary<byte, HashSet<PlayerControl>> PlayersInDeathpact = [];
+    private static readonly Dictionary<byte, long> DeathpactTime = [];
 
     public static void SetupCustomOption()
     {
@@ -48,22 +50,26 @@ internal class Deathpact : RoleBase
         ReduceVisionWhileInPact = BooleanOptionItem.Create(Id + 16, "DeathpactReduceVisionWhileInPact", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
         VisionWhileInPact = FloatOptionItem.Create(Id + 17, "DeathpactVisionWhileInPact", new(0f, 5f, 0.05f), 0.65f, TabGroup.ImpostorRoles, false).SetParent(ReduceVisionWhileInPact)
             .SetValueFormat(OptionFormat.Multiplier);
-        KillDeathpactPlayersOnMeeting = BooleanOptionItem.Create(Id + 18, "DeathpactKillPlayersInDeathpactOnMeeting", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
-        PlayersInDeathpactCanCallMeeting = BooleanOptionItem.Create(Id + 19, "DeathpactPlayersInDeathpactCanCallMeeting", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
+        KillDeathpactPlayersOnMeeting = BooleanOptionItem.Create(Id + 18, "DeathpactKillPlayersInDeathpactOnMeeting", false, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
+        PlayersInDeathpactCanCallMeeting = BooleanOptionItem.Create(Id + 19, "DeathpactPlayersInDeathpactCanCallMeeting", true, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 20, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false)
+                .SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
     }
 
     public override void Init()
     {
-        PlayersInDeathpact = [];
-        DeathpactTime = [];
-        ActiveDeathpacts = [];
-        On = false;
+        PlayersInDeathpact.Clear();
+        DeathpactTime.Clear();
+        ActiveDeathpacts.Clear();
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
         PlayersInDeathpact.TryAdd(playerId, []);
         DeathpactTime.TryAdd(playerId, 0);
-        On = true;
+        Playerids.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -74,11 +80,21 @@ internal class Deathpact : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
-        if (!shapeshifter.IsAlive() || Pelican.IsEaten(shapeshifter.PlayerId)) return;
+        if (ShowShapeshiftAnimationsOpt.GetBool() || shapeshifter.PlayerId == target.PlayerId) return true;
 
+        DoDeathpact(shapeshifter, target);
+        return false;
+    }
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    {
+        if (!shapeshifting) return;
+
+        DoDeathpact(shapeshifter, target);
+    }
+    private static void DoDeathpact(PlayerControl shapeshifter, PlayerControl target)
+    {
         if (!target.IsAlive() || Pelican.IsEaten(target.PlayerId))
         {
             shapeshifter.Notify(GetString("DeathpactCouldNotAddTarget"));
@@ -117,7 +133,6 @@ internal class Deathpact : RoleBase
             }
         }
     }
-
     public static void SetDeathpactVision(PlayerControl player, IGameOptions opt)
     {
         if (!ReduceVisionWhileInPact.GetBool())
@@ -199,7 +214,7 @@ internal class Deathpact : RoleBase
         
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
         target.SetRealKiller(deathpact);
-        target.RpcMurderPlayerV3(target);
+        target.RpcMurderPlayer(target);
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)

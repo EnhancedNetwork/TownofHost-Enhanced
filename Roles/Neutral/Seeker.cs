@@ -1,6 +1,5 @@
 ﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
+using Sentry.Protocol;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
@@ -10,7 +9,7 @@ internal class Seeker : RoleBase
     //===========================SETUP================================\\
     private const int Id = 14600;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -79,7 +78,7 @@ internal class Seeker : RoleBase
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         bool setTarget = reader.ReadBoolean();
         byte seekerId = reader.ReadByte();
@@ -97,7 +96,7 @@ internal class Seeker : RoleBase
 
         Targets[seekerId] = targetId;
     }
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (GetTarget(killer) == target.PlayerId)
         {//if the target is correct
@@ -177,7 +176,7 @@ internal class Seeker : RoleBase
         if (cTargets.Count >= 2 && Targets.TryGetValue(player.PlayerId, out var nowTarget))
             cTargets.RemoveAll(x => x.PlayerId == nowTarget);
 
-        if (cTargets.Count <= 0)
+        if (!cTargets.Any())
         {
             Logger.Warn("Failed to specify target: Target candidate does not exist", "Seeker");
             return 0xff;
@@ -204,9 +203,10 @@ internal class Seeker : RoleBase
     {
         foreach (var id in playerIdList.ToArray())
         {
-            if (!Main.PlayerStates[id].IsDead)
+            var player = Utils.GetPlayerById(id);
+            if (player.IsAlive())
             {
-                FreezeSeeker(Utils.GetPlayerById(id));
+                FreezeSeeker(player);
             }
         }
     }
@@ -214,12 +214,12 @@ internal class Seeker : RoleBase
     {
         foreach (var id in playerIdList.ToArray())
         {
-            if (!Main.PlayerStates[id].IsDead)
+            var player = Utils.GetPlayerById(id);
+            if (player.IsAlive())
             {
-                var targetId = GetTarget(Utils.GetPlayerById(id));
-                Utils.GetPlayerById(id).Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
-                Utils.GetPlayerById(targetId).Notify(GetString("SeekerTargetNotify"));
-
+                var targetId = GetTarget(player);
+                player.Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
+                Utils.GetPlayerById(targetId)?.Notify(GetString("SeekerTargetNotify"));
             }
         }
     }

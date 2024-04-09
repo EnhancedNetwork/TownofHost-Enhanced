@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.IO;
 using System.Reflection;
-using static TOHE.Translator;
 using System.Threading.Tasks;
-using System.Linq;
 using AmongUs.Data;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -237,8 +235,8 @@ public class dbConnect
     {
         // Simple Logic and Works
         bool apiTokenError = GetToken() is "" or null;
-        bool RoleTableError = userType.Count < 1;
-        bool EacListError = BanManager.EACDict.Count < 1;
+        bool RoleTableError = !userType.Any();
+        bool EacListError = !BanManager.EACDict.Any();
 
         return apiTokenError || RoleTableError || EacListError;
     }

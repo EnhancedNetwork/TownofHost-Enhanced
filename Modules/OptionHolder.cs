@@ -1,6 +1,4 @@
-using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
@@ -190,7 +188,6 @@ public static class Options
     public static OptionItem EndWhenPlayerBug;
     public static OptionItem HideExileChat;
     public static OptionItem RemovePetsAtDeadPlayers;
-    public static OptionItem DisableShapeshiftAnimations;
 
     public static OptionItem CheatResponses;
     public static OptionItem NewHideMsg;
@@ -198,6 +195,7 @@ public static class Options
     public static OptionItem AutoDisplayKillLog;
     public static OptionItem AutoDisplayLastRoles;
     public static OptionItem AutoDisplayLastResult;
+    public static OptionItem OldKillLog;
 
     public static OptionItem SuffixMode;
     public static OptionItem HideHostText;
@@ -362,6 +360,10 @@ public static class Options
     public static OptionItem GhostCanSeeOtherRoles;
     public static OptionItem GhostCanSeeOtherVotes;
     public static OptionItem GhostCanSeeDeathReason;
+    public static OptionItem ConvertedCanBecomeGhost;
+    public static OptionItem MaxImpGhost;
+    public static OptionItem MaxCrewGhost;
+    public static OptionItem DefaultAngelCooldown;
 
 
     // ------------ Task Management Tab ------------
@@ -598,7 +600,7 @@ public static class Options
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
-        // You can use: 20906 (sunglasses), 22004 (Glow)
+        // 22004 (Glow)
 
 
         // Start Load Settings
@@ -1107,6 +1109,11 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds);
 
         /*
+         * Guardian Angel
+         */
+        GuardianAngelTOHE.SetupCustomOptions();
+
+        /*
          * BASIC ROLES
          */
         TextOptionItem.Create(10000007, "RoleType.CrewBasic", TabGroup.CrewmateRoles)
@@ -1484,7 +1491,8 @@ public static class Options
         Pirate.SetupCustomOption();
 
         Provocateur.SetupCustomOptions();
-        
+
+        Revolutionist.SetupCustomOptions();
         
 
         /*
@@ -1878,10 +1886,13 @@ public static class Options
         AutoDisplayKillLog = BooleanOptionItem.Create(60270, "AutoDisplayKillLog", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .HideInHnS();
+        OldKillLog = BooleanOptionItem.Create(60291, "RevertOldKillLog", false, TabGroup.SystemSettings, false)
+            .HideInHnS();
         AutoDisplayLastRoles = BooleanOptionItem.Create(60280, "AutoDisplayLastRoles", true, TabGroup.SystemSettings, false)
             .HideInHnS();
         AutoDisplayLastResult = BooleanOptionItem.Create(60290, "AutoDisplayLastResult", true, TabGroup.SystemSettings, false)
             .HideInHnS();
+        
         SuffixMode = StringOptionItem.Create(60300, "SuffixMode", suffixModes, 0, TabGroup.SystemSettings, true)
             .SetHeader(true);
         HideHostText = BooleanOptionItem.Create(60311, "HideHostText", false, TabGroup.SystemSettings, false);
@@ -2162,12 +2173,9 @@ public static class Options
             .SetColor(new Color32(255, 153, 153, byte.MaxValue))
             .HideInHnS();
 
-        DisableShapeshiftAnimations = BooleanOptionItem.Create(60559, "DisableShapeshiftAnimations", true, TabGroup.GameSettings, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetHeader(true)
-            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableShieldAnimations = BooleanOptionItem.Create(60560, "DisableShieldAnimations", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableKillAnimationOnGuess = BooleanOptionItem.Create(60561, "DisableKillAnimationOnGuess", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -2575,11 +2583,26 @@ public static class Options
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
         GhostCanSeeOtherVotes = BooleanOptionItem.Create(60820, "GhostCanSeeOtherVotes", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
         GhostCanSeeDeathReason = BooleanOptionItem.Create(60830, "GhostCanSeeDeathReason", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-           .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        #endregion 
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+        ConvertedCanBecomeGhost = BooleanOptionItem.Create(60840, "ConvertedCanBeGhostRole", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+        MaxImpGhost = IntegerOptionItem.Create(60850, "MaxImpGhostRole", new(0, 15, 1), 15, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Times)
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+        MaxCrewGhost = IntegerOptionItem.Create(60860, "MaxCrewGhostRole", new(0, 15, 1), 15, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Times)
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+        DefaultAngelCooldown = FloatOptionItem.Create(60870, "DefaultAngelCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Seconds)
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+        #endregion
 
 
         // End Load Settings

@@ -1,10 +1,5 @@
 ﻿using AmongUs.Data;
-using HarmonyLib;
-using System.Linq;
 using TOHE.Roles.Core;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
 namespace TOHE;
@@ -98,12 +93,6 @@ class ExileControllerWrapUpPatch
             if (player.GetCustomRole().IsImpostor() 
                 && !player.IsAlive() // if player is dead impostor
                 && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
-            {
-                player.ResetPlayerCam(1f);
-            }
-            // Reset camera for ghost roles
-            // Temporary fix black screens for vanilla
-            else if (player.GetCustomRole().IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()))
             {
                 player.ResetPlayerCam(1f);
             }

@@ -1,8 +1,5 @@
-using HarmonyLib;
 using Hazel;
 using InnerNet;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 
@@ -13,7 +10,7 @@ internal class Executioner : RoleBase
     //===========================SETUP================================\\
     private const int Id = 14200;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
@@ -37,8 +34,7 @@ internal class Executioner : RoleBase
         Role_Mayor,
         Role_Doctor,
         Role_Jester,
-        Role_Opportunist,
-        Role_Convict
+        Role_Opportunist
     }
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
@@ -50,7 +46,6 @@ internal class Executioner : RoleBase
         CustomRoles.Doctor,
         CustomRoles.Jester,
         CustomRoles.Opportunist,
-        CustomRoles.Convict,
     ];
 
     public static void SetupCustomOption()

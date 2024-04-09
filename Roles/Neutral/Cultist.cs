@@ -1,6 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -72,7 +70,7 @@ internal class Cultist : RoleBase
         writer.Write(CharmLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         CharmLimit = reader.ReadInt32();
     }

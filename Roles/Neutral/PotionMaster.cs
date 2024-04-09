@@ -1,7 +1,5 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
 
@@ -12,7 +10,7 @@ internal class PotionMaster : RoleBase
     //===========================SETUP================================\\
     private const int Id = 17700;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -64,7 +62,7 @@ internal class PotionMaster : RoleBase
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();
         {

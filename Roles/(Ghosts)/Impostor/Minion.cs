@@ -1,10 +1,18 @@
-﻿using static TOHE.Options;
+﻿using AmongUs.GameOptions;
+using static TOHE.Options;
 
 namespace TOHE.Roles._Ghosts_.Impostor;
 
-public static class Minion
+internal class Minion : RoleBase
 {
-    private const int Id = 27900; 
+
+    //===========================SETUP================================\\
+    private const int Id = 27900;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
+    //==================================================================\\
 
     public static OptionItem AbilityCooldown;
     public static OptionItem AbilityTime;
@@ -17,12 +25,20 @@ public static class Minion
         AbilityTime = FloatOptionItem.Create(Id + 11, "MinionAbilityTime", new(1f, 10f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void SetAbilityCooldown()
+    public override void Init()
+    {
+        Playerids.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        Playerids.Add(playerId);
+    }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.GuardianAngelCooldown = AbilityCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
-    public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         var ImpPVC = target.GetCustomRole().IsImpostor();
         if (!ImpPVC)

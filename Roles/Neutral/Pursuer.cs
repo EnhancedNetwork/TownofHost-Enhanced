@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
-using System.Collections.Generic;
 using TOHE.Modules;
 using static TOHE.Translator;
 
@@ -12,7 +11,7 @@ internal class Pursuer : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13400;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -56,7 +55,7 @@ internal class Pursuer : RoleBase
         writer.Write(SeelLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -127,7 +126,7 @@ internal class Pursuer : RoleBase
         
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
         target.SetRealKiller(killer);
-        target.RpcMurderPlayerV3(target);
+        target.RpcMurderPlayer(target);
         
         Logger.Info($"赝品商 {pc.GetRealName()} 的客户 {target.GetRealName()} 因使用赝品走火自杀", "Pursuer");
         return true;

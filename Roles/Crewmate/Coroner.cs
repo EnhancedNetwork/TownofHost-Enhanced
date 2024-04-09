@@ -1,6 +1,5 @@
 ﻿using Hazel;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using TOHE.Roles.Core;
@@ -12,15 +11,17 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Coroner : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 7700;
-    private static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
-    private static HashSet<byte> UnreportablePlayers = [];
-    private static Dictionary<byte, List<byte>> CoronerTargets = [];
-    private static Dictionary<byte, float> UseLimit = [];
+    private static readonly HashSet<byte> UnreportablePlayers = [];
+    private static readonly Dictionary<byte, HashSet<byte>> CoronerTargets = [];
+    private static readonly Dictionary<byte, float> UseLimit = [];
 
     private static OptionItem ArrowsPointingToDeadBody;
     private static OptionItem UseLimitOpt;
@@ -42,18 +43,16 @@ internal class Coroner : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
-        UseLimit = [];
-        UnreportablePlayers = [];
-        CoronerTargets = [];
+        playerIdList.Clear();
+        UseLimit.Clear();
+        UnreportablePlayers.Clear();
+        CoronerTargets.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         UseLimit.Add(playerId, UseLimitOpt.GetInt());
         CoronerTargets.Add(playerId, []);
-        On = true;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -90,7 +89,7 @@ internal class Coroner : RoleBase
         if (operate != 2) writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPCLimit(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte pid = reader.ReadByte();
         int opt = reader.ReadInt32();
@@ -143,11 +142,14 @@ internal class Coroner : RoleBase
         }
     }
 
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!pc.IsAlive()) return;
-        UseLimit[pc.PlayerId] += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPCLimit(pc.PlayerId, operate: 2);
+        if (player.IsAlive())
+        {
+            UseLimit[player.PlayerId] += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPCLimit(player.PlayerId, operate: 2);
+        }
+        return true;
     }
 
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
@@ -245,7 +247,7 @@ internal class Coroner : RoleBase
         if (!seer.Is(CustomRoles.Coroner)) return "";
         if (target != null && seer.PlayerId != target.PlayerId) return "";
         if (GameStates.IsMeeting) return "";
-        if (CoronerTargets.ContainsKey(seer.PlayerId) && CoronerTargets[seer.PlayerId].Count > 0)
+        if (CoronerTargets.ContainsKey(seer.PlayerId) && CoronerTargets[seer.PlayerId].Any())
         {
             var arrows = "";
             foreach (var targetId in CoronerTargets[seer.PlayerId])

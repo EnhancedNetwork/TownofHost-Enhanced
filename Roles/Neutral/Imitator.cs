@@ -1,5 +1,4 @@
 using Hazel;
-using System.Collections.Generic;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -11,7 +10,7 @@ internal class Imitator : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13000;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -60,7 +59,7 @@ internal class Imitator : RoleBase
         writer.Write(RememberLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -82,12 +81,12 @@ internal class Imitator : RoleBase
 
         var role = target.GetCustomRole();
 
-        if (role.Is(CustomRoles.Jackal)
-            || role.Is(CustomRoles.HexMaster)
-            || role.Is(CustomRoles.Poisoner) 
-            || role.Is(CustomRoles.Juggernaut) 
-            || role.Is(CustomRoles.BloodKnight)
-            || role.Is(CustomRoles.Sheriff))
+        if (role is CustomRoles.Jackal
+            or CustomRoles.HexMaster
+            or CustomRoles.Poisoner
+            or CustomRoles.Juggernaut 
+            or CustomRoles.BloodKnight
+            or CustomRoles.Sheriff)
         {
             RememberLimit[killer.PlayerId]--;
             SendRPC(killer.PlayerId);

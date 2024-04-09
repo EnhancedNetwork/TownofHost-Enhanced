@@ -1,5 +1,4 @@
 using AmongUs.Data;
-using System.Collections.Generic;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
@@ -136,7 +135,7 @@ public static class Camouflage
     }
     public static void CheckCamouflage()
     {
-        if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.On))) return;
+        if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.HasEnabled))) return;
 
         var oldIsCamouflage = IsCamouflage;
 
@@ -158,7 +157,7 @@ public static class Camouflage
     }
     public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false, bool GameEnd = false)
     {
-        if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.On))) return;
+        if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.HasEnabled))) return;
         if (target == null) return;
 
         var id = target.PlayerId;

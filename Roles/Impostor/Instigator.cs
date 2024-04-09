@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using static TOHE.Options;
+﻿using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Instigator : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 1700;
-
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem AbilityLimit;
@@ -18,7 +18,6 @@ internal class Instigator : RoleBase
 
     private static readonly IRandom rd = IRandom.Instance;
 
-    private static List<byte> playerIdList = [];
     private static Dictionary<int, int> AbilityUseCount = [];
 
     public static void SetupCustomOption()
@@ -33,15 +32,13 @@ internal class Instigator : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
+        playerIdList.Clear();
         AbilityUseCount = [];
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         AbilityUseCount.Add(playerId, 0);
-        On = true;
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();

@@ -1,8 +1,5 @@
 ﻿using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
@@ -16,7 +13,7 @@ internal class Wraith : RoleBase
     //===========================SETUP================================\\
     private const int Id = 18500;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -67,7 +64,7 @@ internal class Wraith : RoleBase
         writer.Write((lastTime.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         InvisTime.Clear();
         lastTime.Clear();

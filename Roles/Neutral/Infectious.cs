@@ -1,6 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Double;
 using UnityEngine;
 
@@ -14,7 +12,7 @@ internal class Infectious : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16600;
     private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Count > 0;
+    public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -99,7 +97,7 @@ internal class Infectious : RoleBase
 
         if (!CanBeBitten(target) && !target.Is(CustomRoles.Infected))
         {
-            killer.RpcMurderPlayerV3(target);
+            killer.RpcMurderPlayer(target);
         }
 
         if (BiteLimit < 0)
@@ -130,7 +128,7 @@ internal class Infectious : RoleBase
             //Logger.Warn("VALUE OF CHECK IS")
             if (check)
             {
-                killer.RpcMurderPlayerV3(target);
+                killer.RpcMurderPlayer(target);
                 return true;
             }
             else return false;
@@ -148,7 +146,7 @@ internal class Infectious : RoleBase
             foreach (var alivePlayer in Main.AllAlivePlayerControls.Where(pc => pc.Is(CustomRoles.Infected)))
             {
                 Main.PlayerStates[alivePlayer.PlayerId].deathReason = PlayerState.DeathReason.Infected;
-                alivePlayer.RpcMurderPlayerV3(alivePlayer);
+                alivePlayer.RpcMurderPlayer(alivePlayer);
             }
         }
     }

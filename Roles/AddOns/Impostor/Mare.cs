@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 //using System.Linq;
 using static TOHE.Options;
 
@@ -30,7 +29,7 @@ public static class Mare
     {
         playerIdList.Add(mare);
     }
-    public static bool IsEnable => playerIdList.Count > 0;
+    public static bool IsEnable => playerIdList.Any();
     
     public static float GetKillCooldown => Utils.IsActive(SystemTypes.Electrical) ? KillCooldownInLightsOut.GetFloat() : DefaultKillCooldown;
 

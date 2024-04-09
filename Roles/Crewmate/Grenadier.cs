@@ -1,10 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
-using HarmonyLib;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Utils;
@@ -15,14 +12,17 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Grenadier : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8200;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
-    private static Dictionary<byte, long> GrenadierBlinding = [];
-    private static Dictionary<byte, long> MadGrenadierBlinding = [];
-    private static Dictionary<byte, float> GrenadierNumOfUsed = [];
+    private static readonly Dictionary<byte, long> GrenadierBlinding = [];
+    private static readonly Dictionary<byte, long> MadGrenadierBlinding = [];
+    private static readonly Dictionary<byte, float> GrenadierNumOfUsed = [];
 
     private static OptionItem GrenadierSkillCooldown;
     private static OptionItem GrenadierSkillDuration;
@@ -49,16 +49,15 @@ internal class Grenadier : RoleBase
 
     public override void Init()
     {
-        GrenadierBlinding = [];
-        MadGrenadierBlinding = [];
-        GrenadierNumOfUsed = [];
-        On = false;
+        playerIdList.Clear();
+        GrenadierBlinding.Clear();
+        MadGrenadierBlinding.Clear();
+        GrenadierNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
-        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnGrenaderFixOthers);
         GrenadierNumOfUsed.Add(playerId, GrenadierSkillMaxOfUseage.GetInt());
-        On = true;
+        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnGrenaderFixOthers);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -69,21 +68,23 @@ internal class Grenadier : RoleBase
     public static void ApplyGameOptionsForOthers(IGameOptions opt, PlayerControl player)
     {
         // Grenadier or Mad Grenadier enter the vent
-        if ((GrenadierBlinding.Count > 0 &&
+        if ((GrenadierBlinding.Any() &&
             (player.GetCustomRole().IsImpostor() ||
             (player.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()))
             )
-            || (MadGrenadierBlinding.Count > 0 && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
+            || (MadGrenadierBlinding.Any() && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, GrenadierCauseVision.GetFloat());
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, GrenadierCauseVision.GetFloat());
         }
     }
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if(pc.IsAlive())
-            GrenadierNumOfUsed[pc.PlayerId] += GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (player.IsAlive())
+            GrenadierNumOfUsed[player.PlayerId] += GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
+
+        return true;
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {

@@ -1,21 +1,22 @@
-﻿using System.Collections.Generic;
-
-namespace TOHE.Roles.Impostor;
+﻿namespace TOHE.Roles.Impostor;
 
 internal class Trapster : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2600;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem TrapsterKillCooldown;
     private static OptionItem TrapConsecutiveBodies;
     private static OptionItem TrapTrapsterBody;
     private static OptionItem TrapConsecutiveTrapsterBodies;
 
-    private static List<byte> BoobyTrapBody = [];
-    private static Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
+    private static readonly HashSet<byte> BoobyTrapBody = [];
+    private static readonly Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
 
     public static void SetupCustomOption()
     {
@@ -33,13 +34,13 @@ internal class Trapster : RoleBase
 
     public override void Init()
     {
-        BoobyTrapBody = [];
-        KillerOfBoobyTrapBody = [];
-        On = false;
+        BoobyTrapBody.Clear();
+        KillerOfBoobyTrapBody.Clear();
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        Playerids.Clear();
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TrapsterKillCooldown.GetFloat();
@@ -53,7 +54,8 @@ internal class Trapster : RoleBase
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
         var target  = deadBody?.Object;
-        
+        var Trapsters = Playerids.GetPlayerListByIds();
+
         // if trapster dead
         if (target.Is(CustomRoles.Trapster) && TrapTrapsterBody.GetBool() && !reporter.Is(CustomRoles.Pestilence))
         {
@@ -61,7 +63,7 @@ internal class Trapster : RoleBase
 
             Main.PlayerStates[reporter.PlayerId].deathReason = PlayerState.DeathReason.Trap;
             reporter.SetRealKiller(target);
-            reporter.RpcMurderPlayerV3(reporter);
+            reporter.RpcMurderPlayer(reporter);
             
             RPC.PlaySoundRPC(killerId, Sounds.KillSound);
             
@@ -74,13 +76,14 @@ internal class Trapster : RoleBase
         }
 
         // if reporter try reported trap body
-        if (BoobyTrapBody.Contains(target.PlayerId) && reporter.IsAlive() && !reporter.Is(CustomRoles.Pestilence))
+        if (BoobyTrapBody.Contains(target.PlayerId) && reporter.IsAlive()
+            && !reporter.Is(CustomRoles.Pestilence) && Trapsters.All(Trapi => Trapi.RpcCheckAndMurder(reporter, true)))
         {
             var killerId = target.PlayerId;
             
             Main.PlayerStates[reporter.PlayerId].deathReason = PlayerState.DeathReason.Trap;
             reporter.SetRealKiller(target);
-            reporter.RpcMurderPlayerV3(reporter);
+            reporter.RpcMurderPlayer(reporter);
             
             RPC.PlaySoundRPC(killerId, Sounds.KillSound);
             if (TrapConsecutiveBodies.GetBool())

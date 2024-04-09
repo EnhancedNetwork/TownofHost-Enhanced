@@ -5,10 +5,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Guardian : RoleBase
 {
-    public const int Id = 11700;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    //===========================SETUP================================\\
+    private const int Id = 11700;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     public static void SetupCustomOptions()
     {
@@ -18,12 +21,12 @@ internal class Guardian : RoleBase
 
     public override void Init()
     {
-        On = false;
+        playerIdList.Clear();
     }
 
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
     public static bool CannotBeKilled(PlayerControl Guardian) => Guardian.Is(CustomRoles.Guardian) && Guardian.AllTasksCompleted();
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)

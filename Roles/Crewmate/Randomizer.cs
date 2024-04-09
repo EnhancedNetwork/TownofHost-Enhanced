@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -12,9 +10,9 @@ internal class Randomizer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7500;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Randomizer.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
@@ -36,11 +34,11 @@ internal class Randomizer : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
@@ -114,7 +112,7 @@ internal class Randomizer : RoleBase
                 {
                     Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
                     rp.SetRealKiller(target);
-                    rp.RpcMurderPlayerV3(rp);
+                    rp.RpcMurderPlayer(rp);
                 }
             }
         }

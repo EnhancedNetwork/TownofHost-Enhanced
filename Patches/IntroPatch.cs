@@ -1,8 +1,6 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using System;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -433,7 +431,7 @@ class BeginCrewmatePatch
     }
     public static AudioClip GetIntroSound(RoleTypes roleType)
     {
-        return RoleManager.Instance.AllRoles.Where((role) => role.Role == roleType).FirstOrDefault().IntroSound;
+        return RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == roleType)?.IntroSound;
     }
     private static async void StartFadeIntro(IntroCutscene __instance, Color start, Color end)
     {

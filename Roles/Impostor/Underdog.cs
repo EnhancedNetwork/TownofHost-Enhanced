@@ -2,10 +2,13 @@
 
 internal class Underdog : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2700;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem UnderdogMaximumPlayersNeededToKill;
     private static OptionItem UnderdogKillCooldown;
@@ -22,11 +25,11 @@ internal class Underdog : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override bool CanUseKillButton(PlayerControl pc) => Main.AllAlivePlayerControls.Length <= UnderdogMaximumPlayersNeededToKill.GetInt();

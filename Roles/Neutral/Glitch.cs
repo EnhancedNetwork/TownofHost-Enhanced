@@ -1,6 +1,4 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using static TOHE.Translator;
 using static TOHE.Options;
@@ -12,7 +10,7 @@ internal class Glitch : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16300;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -255,7 +253,7 @@ internal class Glitch : RoleBase
             _ = new LateTask(() =>
             {
                 physics.myPlayer?.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchVent")));
-                physics.myPlayer?.MyPhysics?.RpcBootFromVent(ventId);
+                physics?.RpcBootFromVent(ventId);
             }, 0.5f, "Player Boot From Vent By Glith");
             return true;
         }

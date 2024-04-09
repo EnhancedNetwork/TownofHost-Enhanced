@@ -1,6 +1,5 @@
 using Hazel;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using AmongUs.GameOptions;
@@ -10,12 +9,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Mechanic : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8500;
-    public static bool On = false;
-    public static List<byte> playerIdList = [];
-    public static Dictionary<byte, float> UsedSkillCount = [];
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem SkillLimit;
     private static OptionItem FixesDoors;
@@ -26,6 +26,8 @@ internal class Mechanic : RoleBase
     private static OptionItem SMAbilityUseGainWithEachTaskCompleted;
     private static OptionItem UsesUsedWhenFixingReactorOrO2;
     private static OptionItem UsesUsedWhenFixingLightsOrComms;
+
+    private static readonly Dictionary<byte, float> UsedSkillCount = [];
 
     private static bool DoorsProgressing = false;
 
@@ -51,15 +53,13 @@ internal class Mechanic : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        UsedSkillCount = [];
-        On = false;
+        playerIdList.Clear();
+        UsedSkillCount.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         UsedSkillCount.Add(playerId, 0);
-        On = true;
     }
     public override void Remove(byte playerId)
     {
@@ -174,7 +174,7 @@ internal class Mechanic : RoleBase
         writer.Write(UsedSkillCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();
         float count = reader.ReadSingle();
@@ -202,11 +202,14 @@ internal class Mechanic : RoleBase
         ProgressText.Append(ColorString(TextColor101, $" <color=#ffffff>-</color> {Math.Round(SkillLimit.GetFloat() - UsedSkillCount[playerId], 1)}"));
         return ProgressText.ToString();
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        UsedSkillCount[player.PlayerId] -= SMAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPC(player.PlayerId);
+        if (player.IsAlive())
+        {
+            UsedSkillCount[player.PlayerId] -= SMAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(player.PlayerId);
+        }
+        return true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

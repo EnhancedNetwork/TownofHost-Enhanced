@@ -1,49 +1,18 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using AmongUs.Data;
 using AmongUs.Data.Player;
 using Assets.InnerNet;
-using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System.Text.Json;
 using UnityEngine;
 using UnityEngine.Networking;
+using LibCpp2IL;
 
 namespace TOHE;
 
 // code credit https://github.com/Yumenopai/TownOfHost_Y
-/*
-public class ModNews
-{
-    public int Number;
-    public int BeforeNumber;
-    public string Title;
-    public string SubTitle;
-    public string ShortTitle;
-    public string Text;
-    public string Date;
-
-    public Announcement ToAnnouncement()
-    {
-        var result = new Announcement
-        {
-            Number = Number,
-            Title = Title,
-            SubTitle = SubTitle,
-            ShortTitle = ShortTitle,
-            Text = Text,
-            Language = (uint)DataManager.Settings.Language.CurrentLanguage,
-            Date = Date,
-            Id = "ModNews"
-        };
-
-        return result;
-    }
-}
-*/
 [HarmonyPatch]
 public class ModNews
 {
@@ -130,7 +99,7 @@ public class ModNews
                 var title = newsElement.GetProperty("Title").GetString();
                 var subTitle = newsElement.GetProperty("Subtitle").GetString();
                 var shortTitle = newsElement.GetProperty("Short").GetString();
-                var body = newsElement.GetProperty("Body").GetString();
+                var body = newsElement.GetProperty("Body").EnumerateArray().ToStringEnumerable().ToString();
                 var dateString = newsElement.GetProperty("Date").GetString();
                 // Create ModNews object
                 ModNews _ = new(number, title, subTitle, shortTitle, body, dateString);
@@ -146,7 +115,7 @@ public class ModNews
         Logger.Info("AllModNews:" + AllModNews.Count, "ModNews");
         AllModNews.Sort((a1, a2) => { return DateTime.Compare(DateTime.Parse(a2.Date), DateTime.Parse(a1.Date)); });
 
-        List<Announcement> FinalAllNews = new();
+        List<Announcement> FinalAllNews = [];
         AllModNews.Do(n => FinalAllNews.Add(n.ToAnnouncement()));
         foreach (var news in aRange)
         {

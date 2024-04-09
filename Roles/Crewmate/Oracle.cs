@@ -1,10 +1,7 @@
 using Hazel;
 using Il2CppSystem.Text;
-using System.Collections.Generic;
-using System.Linq;
 using System;
 using UnityEngine;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -13,12 +10,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Oracle : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9100;
-
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Oracle.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem CheckLimitOpt;
     private static OptionItem HidesVote;
@@ -26,10 +24,9 @@ internal class Oracle : RoleBase
     private static OptionItem OracleAbilityUseGainWithEachTaskCompleted;
     private static OptionItem ChangeRecruitTeam;
 
-    private List<byte> playerIdList = [];
-    private List<byte> DidVote = [];
-    private static Dictionary<byte, float> CheckLimit = [];
-    private static Dictionary<byte, float> TempCheckLimit = [];
+    private readonly HashSet<byte> DidVote = [];
+    private static readonly Dictionary<byte, float> CheckLimit = [];
+    private static readonly Dictionary<byte, float> TempCheckLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -51,17 +48,15 @@ internal class Oracle : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        CheckLimit = [];
-        TempCheckLimit = [];
-        DidVote = [];
-        On = false;
+        playerIdList.Clear();
+        CheckLimit.Clear();
+        TempCheckLimit.Clear();
+        DidVote.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CheckLimit.TryAdd(playerId, CheckLimitOpt.GetInt());
-        On = true;
     }
     public override void Remove(byte playerId)
     {
@@ -79,7 +74,7 @@ internal class Oracle : RoleBase
         else writer.Write(TempCheckLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte pid = reader.ReadByte();
         bool isTemp = reader.ReadBoolean();
@@ -164,11 +159,14 @@ internal class Oracle : RoleBase
             SendMessage(GetString("OracleCheck") + "\n" + msg + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
         }
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        CheckLimit[player.PlayerId] += OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPC(player.PlayerId);
+        if (player.IsAlive())
+        {
+            CheckLimit[player.PlayerId] += OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(player.PlayerId);
+        }
+        return true;
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl tagret)
     {

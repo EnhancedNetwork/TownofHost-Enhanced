@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using static TOHE.Options;
 
@@ -12,7 +11,7 @@ internal class Wildling : RoleBase
     //===========================SETUP================================\\
     private const int Id = 5200;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -52,7 +51,7 @@ internal class Wildling : RoleBase
         writer.Write(TimeStamp[playerId].ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         string Time = reader.ReadString();

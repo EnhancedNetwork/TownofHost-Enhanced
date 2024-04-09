@@ -1,8 +1,5 @@
-using HarmonyLib;
 using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
@@ -14,21 +11,23 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Swapper : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 12400;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem SwapMax;
     private static OptionItem CanSwapSelf;
     private static OptionItem OptCanStartMeeting;
     private static OptionItem TryHideMsg;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, byte> Vote = [];
-    private static Dictionary<byte, byte> VoteTwo = [];
-    private static Dictionary<byte, int> Swappermax = [];
-    private static List<byte> ResultSent = [];
+    private static readonly HashSet<byte> ResultSent = [];
+    private static readonly Dictionary<byte, byte> Vote = [];
+    private static readonly Dictionary<byte, byte> VoteTwo = [];
+    private static readonly Dictionary<byte, int> Swappermax = [];
 
     public static void SetupCustomOption()
     {
@@ -41,17 +40,15 @@ internal class Swapper : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        On = false;
-        Vote = [];
-        VoteTwo = [];
-        Swappermax = [];
-        ResultSent = [];
+        playerIdList.Clear();
+        Vote.Clear();
+        VoteTwo.Clear();
+        Swappermax.Clear();
+        ResultSent.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
         Swappermax.TryAdd(playerId, SwapMax.GetInt());
     }
     public override void Remove(byte playerId)
@@ -375,7 +372,7 @@ internal class Swapper : RoleBase
         byte PlayerId = reader.ReadByte();
         SwapMsg(pc, $"/sw {PlayerId}");
     }
-    public static void ReceiveSkillRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();
         int skillLimit = reader.ReadInt32();
@@ -424,7 +421,7 @@ internal class Swapper : RoleBase
 
                     MeetingHudStartPatch.msgToSend.Add((GetString("SwapHelp"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle"))));
                     SendSkillRPC(pc.PlayerId);
-                    ResultSent = [];
+                    ResultSent.Clear();
                 }
             }
         }

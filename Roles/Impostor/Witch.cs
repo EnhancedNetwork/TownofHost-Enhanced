@@ -1,6 +1,4 @@
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -11,16 +9,18 @@ namespace TOHE.Roles.Impostor;
 
 internal class Witch : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2500;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     public static OptionItem ModeSwitchActionOpt;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, bool> SpellMode = [];
-    private static Dictionary<byte, List<byte>> SpelledPlayer = [];
+    private static readonly Dictionary<byte, bool> SpellMode = [];
+    private static readonly Dictionary<byte, HashSet<byte>> SpelledPlayer = [];
 
     private enum SwitchTrigger
     {
@@ -38,10 +38,9 @@ internal class Witch : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        SpellMode = [];
-        SpelledPlayer = [];
-        On = false;
+        playerIdList.Clear();
+        SpellMode.Clear();
+        SpelledPlayer.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -49,15 +48,11 @@ internal class Witch : RoleBase
         SpellMode.Add(playerId, false);
         SpelledPlayer.Add(playerId, []);
         NowSwitchTrigger = (SwitchTrigger)ModeSwitchActionOpt.GetValue();
-        On = true;
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetSpelledMark);
-        }
+        CustomRoleManager.MarkOthers.Add(GetSpelledMark);
     }
 
     private static void SendRPC(bool doSpell, byte witchId, byte target = 255)
@@ -163,7 +158,7 @@ internal class Witch : RoleBase
     }
     public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (!On || deathReason != PlayerState.DeathReason.Vote) return;
+        if (!HasEnabled || deathReason != PlayerState.DeathReason.Vote) return;
 
         foreach (var id in exileIds)
         {

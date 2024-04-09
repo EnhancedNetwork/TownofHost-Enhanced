@@ -1,49 +1,82 @@
-﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 
-public static class Hawk
+internal class Hawk : RoleBase
 {
 
+    //===========================SETUP================================\\
     private const int Id = 28000;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
+
+    //==================================================================\\
     public static OptionItem KillCooldown;
     public static OptionItem HawkCanKillNum;
     public static OptionItem MinimumPlayersAliveToKill;
-    public static OptionItem OnlyKillAfterXKillerNoEject;
+    public static OptionItem MissChance;
+    public static OptionItem IncreaseByOneIfConvert;
     
-    public static Dictionary<byte, int> KillCount;
-    public static int KillersNoEjects;
-    public static int KeepCount;
-    public static int GetCount;
+    public static Dictionary<byte, int> KillCount = [];
+    public static Dictionary<byte, float> KillerChanceMiss = [];
+    public static int KeepCount = 0;
     public static void SetupCustomOptions()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Hawk);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 120f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
+        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 120f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Seconds);
-        HawkCanKillNum = IntegerOptionItem.Create(Id + 11, "HawkCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
+        HawkCanKillNum = IntegerOptionItem.Create(Id + 11, "HawkCanKillNum", new(1, 15, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Players);
-        MinimumPlayersAliveToKill = IntegerOptionItem.Create(Id + 12, "MinimumPlayersAliveToKill", new(0, 15, 1), 4, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
+        MissChance = FloatOptionItem.Create(Id + 12, "MissChance", new(0f, 97.5f, 2.5f), 85f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
+            .SetValueFormat(OptionFormat.Percent);
+        MinimumPlayersAliveToKill = IntegerOptionItem.Create(Id + 13, "MinimumPlayersAliveToKill", new(0, 15, 1), 4, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Players);
-        OnlyKillAfterXKillerNoEject = IntegerOptionItem.Create(Id + 13, "MinimumNoKillerEjectsToKill", new(0, 10, 1), 0, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
-            .SetValueFormat(OptionFormat.Players);
+        IncreaseByOneIfConvert = BooleanOptionItem.Create(Id + 14, "IncreaseByOneIfConvert", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk]);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        KillCount = [];
-        KillersNoEjects = 0;
         KeepCount = 0;
-        GetCount = 0;
+        KillerChanceMiss.Clear();
+        KillCount.Clear();
     }
-    public static void Add(byte PlayerId)
+    public override void Add(byte PlayerId)
     {
-        KillCount.TryAdd(PlayerId, HawkCanKillNum.GetInt());
+        KillCount.Add(PlayerId, HawkCanKillNum.GetInt());
+
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (pc.IsAnySubRole(x => x.IsConverted()))
+            {
+                KeepCount++;
+            }
+        }
+    }
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    {
+        int ThisCount = 0;
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (pc.IsAnySubRole(x => x.IsConverted()))
+            {
+                ThisCount++;
+            }
+        }
+        if (ThisCount > KeepCount && IncreaseByOneIfConvert.GetBool())
+        {
+            KeepCount++;
+            var hawk = PlayerIds.ToList().First();
+            KillCount[hawk] += ThisCount - KeepCount;
+        }
+
     }
     private static void SendRPC(byte playerId)
     {
@@ -53,64 +86,57 @@ public static class Hawk
         writer.Write(KillCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
         KillCount[PlayerId] = Limit;
     }
-    public static bool IsEnable => Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Hawk));
-    public static void OnReportDeadBody()
-    {
-        KeepCount = 0;
-        foreach (var KVC in Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.GetCustomRole().IsNK()))
-        {
-            KeepCount++;
-        }
-    }
-
-    public static void AfterMeetingTasks()
-    {
-        GetCount = 0;
-        foreach (var KVC in Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.GetCustomRole().IsNK()))
-        {
-            GetCount++;
-        }
-        
-        if (GetCount >= KeepCount)
-        {
-            KillersNoEjects++;
-        }
-    }
-
-    public static void SetKillCooldown()
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
-    public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
+        if (!KillerChanceMiss.ContainsKey(target.PlayerId))
+            KillerChanceMiss.Add(target.PlayerId, MissChance.GetFloat());
+
         if (CheckRetriConflicts(killer, target) && killer.RpcCheckAndMurder(target, true))
         {
             killer.RpcMurderPlayer(target);
             killer.RpcResetAbilityCooldown();
+            target.SetDeathReason(PlayerState.DeathReason.Slice);
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
         }
         else if (KillCount[killer.PlayerId] <= 0) killer.Notify(GetString("HawkKillMax"));
-        else if (KillersNoEjects < OnlyKillAfterXKillerNoEject.GetInt()) killer.Notify(GetString("HawkKillNoEject").Replace("{0}", OnlyKillAfterXKillerNoEject.GetInt().ToString()));
         else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkKillTooManyDead"));
+        else
+        {
+            killer.RpcResetAbilityCooldown();
+            KillCount[killer.PlayerId]--;
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Hawk), GetString("HawkMissed")));
+        }
+
+        Logger.Info($" {target.GetRealName()}'s DieChance is :{100f - KillerChanceMiss[target.PlayerId]}%", "Hawk");
+        KillerChanceMiss[target.PlayerId] -= KillerChanceMiss[target.PlayerId] <= 35 ? 0 : 35f;
         return false;
     }
 
     private static bool CheckRetriConflicts(PlayerControl killer, PlayerControl target)
     {
-        return target != null && KillersNoEjects >= OnlyKillAfterXKillerNoEject.GetInt()
-            && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
-            && KillCount[killer.PlayerId] > 0;
+        var rnd = IRandom.Instance;
+
+        return target != null && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
+            && KillCount[killer.PlayerId] > 0
+            && rnd.Next(100) >= KillerChanceMiss[target.PlayerId]
+            && !target.Is(CustomRoles.Pestilence)
+            && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18);
     }
     public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
-    public static string GetSnatchLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Hawk).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
+    public override string GetProgressText(byte playerId, bool coms) 
+        => ColorString(CanKill(playerId) ? GetRoleColor(CustomRoles.Hawk).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
 
 }
 

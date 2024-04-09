@@ -6,10 +6,14 @@ namespace TOHE.Roles.Impostor;
 
 internal class Hangman : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 24500;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+
+    //==================================================================\\
 
     private static OptionItem ShapeshiftCooldown;
     private static OptionItem ShapeshiftDuration;
@@ -24,11 +28,11 @@ internal class Hangman : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

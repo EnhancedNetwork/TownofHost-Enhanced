@@ -6,10 +6,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class SoulCatcher : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 4600;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem ShapeSoulCatcherShapeshiftDuration;
     private static OptionItem SoulCatcherShapeshiftCooldown;
@@ -26,11 +29,11 @@ internal class SoulCatcher : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -42,23 +45,24 @@ internal class SoulCatcher : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("SoulCatcherButtonText"));
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Teleport");
-    
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
-        var timer = shapeshiftIsHidden ? 0.2f : 1.5f;
-        _ = new LateTask(() =>
+        if (shapeshifter.CanBeTeleported() && target.CanBeTeleported())
         {
-            if (shapeshifter.CanBeTeleported() && target.CanBeTeleported())
-            {
-                var originPs = target.GetCustomPosition();
-                target.RpcTeleport(shapeshifter.GetCustomPosition());
-                shapeshifter.RpcTeleport(originPs);
+            var originPs = target.GetCustomPosition();
+            target.RpcTeleport(shapeshifter.GetCustomPosition());
+            shapeshifter.RpcTeleport(originPs);
 
-                shapeshifter.RPCPlayCustomSound("Teleport");
-                target.RPCPlayCustomSound("Teleport");
-            }
-        }, timer, "Soul Catcher teleport");
+            shapeshifter.RPCPlayCustomSound("Teleport");
+            target.RPCPlayCustomSound("Teleport");
+        }
+        else
+        {
+            shapeshifter.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCatcher), Translator.GetString("ErrorTeleport")));
+        }
+        return false;
     }
 }

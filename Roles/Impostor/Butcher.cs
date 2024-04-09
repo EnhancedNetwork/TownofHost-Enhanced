@@ -1,7 +1,4 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Core;
+﻿using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 
@@ -9,10 +6,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class Butcher : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 24300;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static Dictionary<byte, (int, int, Vector2)> MurderTargetLateTask = [];
     public static void SetupCustomOption()
@@ -22,11 +22,11 @@ internal class Butcher : RoleBase
     public override void Init()
     {
         MurderTargetLateTask = [];
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -99,7 +99,7 @@ internal class Butcher : RoleBase
 
                 Vector2 location = new(ops.x + ((float)(rd.Next(1, 200) - 100) / 100), ops.y + ((float)(rd.Next(1, 200) - 100) / 100));
                 target.RpcTeleport(location);
-                target.RpcMurderPlayerV3(target);
+                target.RpcMurderPlayer(target);
                 MurderTargetLateTask[target.PlayerId] = (0, MurderTargetLateTask[target.PlayerId].Item2 + 1, ops);
             }
             else MurderTargetLateTask.Remove(target.PlayerId);

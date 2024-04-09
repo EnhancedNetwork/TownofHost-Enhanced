@@ -1,7 +1,4 @@
-﻿using HarmonyLib;
-using Hazel;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Hazel;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -165,7 +162,7 @@ internal static class FFAManager
         try
         {
             int ms = KBScore[playerId];
-            int rank = 1 + KBScore.Values.Where(x => x > ms).Count();
+            int rank = 1 + KBScore.Values.Count(x => x > ms);
             rank += KBScore.Where(x => x.Value == ms).ToList().IndexOf(new(playerId, ms));
             return rank;
         }

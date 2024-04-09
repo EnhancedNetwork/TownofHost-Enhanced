@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Double;
+﻿using TOHE.Roles.Double;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -46,8 +44,8 @@ internal class Provocateur : RoleBase
             return false;
         }
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
-        killer.RpcMurderPlayerV3(target);
-        killer.RpcMurderPlayerV3(killer);
+        killer.RpcMurderPlayer(target);
+        killer.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
         Provoked.TryAdd(killer.PlayerId, target.PlayerId);
         return false;

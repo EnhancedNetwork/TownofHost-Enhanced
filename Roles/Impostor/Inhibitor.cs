@@ -1,12 +1,14 @@
-﻿
-namespace TOHE.Roles.Impostor;
+﻿namespace TOHE.Roles.Impostor;
 
 internal class Inhibitor : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 1600;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem InhibitorCD;
 
@@ -19,11 +21,11 @@ internal class Inhibitor : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = InhibitorCD.GetFloat();

@@ -1,6 +1,4 @@
-using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -12,7 +10,7 @@ internal class Lawyer : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13100;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
@@ -32,7 +30,6 @@ internal class Lawyer : RoleBase
         Role_Crewmate,
         Role_Jester,
         Role_Opportunist,
-        Role_Convict,
         Role_Celebrity,
         Role_Bodyguard,
         Role_Dictator,
@@ -44,7 +41,6 @@ internal class Lawyer : RoleBase
         CustomRoles.CrewmateTOHE,
         CustomRoles.Jester,
         CustomRoles.Opportunist,
-        CustomRoles.Convict,
         CustomRoles.Celebrity,
         CustomRoles.Bodyguard,
         CustomRoles.Dictator,
@@ -94,7 +90,7 @@ internal class Lawyer : RoleBase
                 targetList.Add(target);
             }
 
-            if (targetList.Count < 1)
+            if (!targetList.Any())
             {
                 Logger.Info($"Wow, not target for lawyer to select! Changing lawyer role to other", "Lawyer");
                 if (ShouldChangeRoleAfterTargetDeath.GetBool())
@@ -130,7 +126,7 @@ internal class Lawyer : RoleBase
 
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         bool SetTarget = reader.ReadBoolean();
         if (SetTarget)
@@ -214,7 +210,7 @@ internal class Lawyer : RoleBase
         Target.Remove(lawyer.PlayerId);
         SendRPC(lawyer.PlayerId, SetTarget: false);
         var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), GetString(""));
-        text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
+        text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         lawyer.Notify(text);
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)

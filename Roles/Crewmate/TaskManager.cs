@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using UnityEngine;
-using TOHE.Roles.Core;
 using static TOHE.Utils;
 using static TOHE.Options;
 
@@ -10,23 +9,23 @@ internal class TaskManager : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7200;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.TaskManager.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-
     //==================================================================\\
+
     public static void SetupCustomOptions()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.TaskManager);
     }
     public override void Init()
     {
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
     public override string GetProgressText(byte PlayerId, bool comms)
     {

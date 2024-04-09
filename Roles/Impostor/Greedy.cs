@@ -1,21 +1,22 @@
 ﻿using Hazel;
-using System.Collections.Generic;
 
-namespace TOHE;
+namespace TOHE.Roles.Impostor;
 
 // Thanks： https://github.com/Yumenopai/TownOfHost_Y
 internal class Greedy : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 1500;
-    public static List<byte> playerIdList = [];
-    public static bool On;
-    public override bool IsEnable => On;
+    public static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem OddKillCooldown;
     private static OptionItem EvenKillCooldown;
 
-    private static Dictionary<byte, bool> IsOdd = [];
+    private static readonly Dictionary<byte, bool> IsOdd = [];
 
     public static void SetupCustomOption()
     {
@@ -29,15 +30,13 @@ internal class Greedy : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
-        IsOdd = [];
+        playerIdList.Clear();
+        IsOdd.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         IsOdd.Add(playerId, true);
-        On = true;
     }
 
     private static void SendRPC(byte playerId)

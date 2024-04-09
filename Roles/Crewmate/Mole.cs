@@ -1,6 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Linq;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -11,11 +9,10 @@ internal class Mole : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 26000;
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Mole.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
-
     //==================================================================\\
 
     private static OptionItem VentCooldown;
@@ -28,13 +25,11 @@ internal class Mole : RoleBase
     }
     public override void Init()
     {
-        //playerIdList = [];
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-        //playerIdList.Add(playerId);
-        On = true;
+        playerIdList.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

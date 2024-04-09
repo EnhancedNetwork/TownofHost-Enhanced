@@ -1,8 +1,5 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -15,11 +12,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Alchemist : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 6400;
-
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem VentCooldown;
     private static OptionItem ShieldDuration;
@@ -29,10 +28,9 @@ internal class Alchemist : RoleBase
     private static OptionItem Speed;
     private static OptionItem InvisDuration;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, int> ventedId = [];
     private static Dictionary<byte, long> InvisTime = [];
-    public static Dictionary<byte, byte> BloodlustList = [];
+    private static readonly Dictionary<byte, int> ventedId = [];
+    public static readonly Dictionary<byte, byte> BloodlustList = [];
 
     private static byte PotionID = 10;
     private static string PlayerName = string.Empty;
@@ -62,21 +60,19 @@ internal class Alchemist : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        BloodlustList = [];
+        playerIdList.Clear();
+        BloodlustList.Clear();
         PotionID = 10;
         PlayerName = string.Empty;
-        ventedId = [];
-        InvisTime = [];
+        ventedId.Clear();
+        InvisTime.Clear();
         FixNextSabo = false;
         VisionPotionActive = false;
-        On = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         PlayerName = Utils.GetPlayerById(playerId).GetRealName();
-        On = true;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -98,9 +94,9 @@ internal class Alchemist : RoleBase
         }
     }
 
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!pc.IsAlive()) return;
+        if (!player.IsAlive()) return true;
 
         var rand = IRandom.Instance;
         PotionID = (byte)rand.Next(1, 9);
@@ -108,34 +104,36 @@ internal class Alchemist : RoleBase
         switch (PotionID)
         {
             case 1: // Shield
-                pc.Notify(GetString("AlchemistGotShieldPotion"), 15f);
+                player.Notify(GetString("AlchemistGotShieldPotion"), 15f);
                 break;
             case 2: // Suicide
-                pc.Notify(GetString("AlchemistGotSuicidePotion"), 15f);
+                player.Notify(GetString("AlchemistGotSuicidePotion"), 15f);
                 break;
             case 3: // TP to random player
-                pc.Notify(GetString("AlchemistGotTPPotion"), 15f);
+                player.Notify(GetString("AlchemistGotTPPotion"), 15f);
                 break;
             case 4: // Speed
-                pc.Notify(GetString("AlchemistGotSpeedPotion"), 15f);
+                player.Notify(GetString("AlchemistGotSpeedPotion"), 15f);
                 break;
             case 5: // Quick fix next sabo
                 FixNextSabo = true;
                 PotionID = 10;
-                pc.Notify(GetString("AlchemistGotQFPotion"), 15f);
+                player.Notify(GetString("AlchemistGotQFPotion"), 15f);
                 break;
             case 6: // Bloodlust
-                pc.Notify(GetString("AlchemistGotBloodlustPotion"), 15f);
+                player.Notify(GetString("AlchemistGotBloodlustPotion"), 15f);
                 break;
             case 7: // Increased vision
-                pc.Notify(GetString("AlchemistGotSightPotion"), 15f);
+                player.Notify(GetString("AlchemistGotSightPotion"), 15f);
                 break;
             case 8:
-                pc.Notify(GetString("AlchemistGotInvisibility"), 15f);
+                player.Notify(GetString("AlchemistGotInvisibility"), 15f);
                 break;
             default: // just in case
                 break;
         }
+
+        return true;
     }
 
     private static void SendRPC(PlayerControl pc)
@@ -147,7 +145,7 @@ internal class Alchemist : RoleBase
     }
     public static void ReceiveRPC(MessageReader reader)
     {
-        InvisTime = [];
+        InvisTime.Clear();
         long invis = long.Parse(reader.ReadString());
         if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
     }
@@ -183,7 +181,7 @@ internal class Alchemist : RoleBase
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }
-            if (targetDistance.Count > 0)
+            if (targetDistance.Any())
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 PlayerControl target = Utils.GetPlayerById(min.Key);
@@ -245,9 +243,9 @@ internal class Alchemist : RoleBase
     public static void OnReportDeadBodyGlobal()
     {
         lastFixedTime = new();
-        BloodlustList = [];
+        BloodlustList.Clear();
 
-        if (InvisTime.Count > 0)
+        if (InvisTime.Any())
         {
             foreach (var alchemistId in playerIdList.ToArray())
             {
@@ -260,8 +258,8 @@ internal class Alchemist : RoleBase
             }
         }
 
-        InvisTime = [];
-        ventedId = [];
+        InvisTime.Clear();
+        ventedId.Clear();
     }
 
     public override void OnEnterVent(PlayerControl player, Vent vent)

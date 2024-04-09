@@ -1,11 +1,10 @@
 ﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Recruit : RoleBase //Temporarily unused class
 {
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 

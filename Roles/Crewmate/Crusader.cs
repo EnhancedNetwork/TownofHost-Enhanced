@@ -1,8 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -10,12 +7,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Crusader : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 10400;
     private static readonly HashSet<byte> playerIdList = [];
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Crusader.IsClassEnable();
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem SkillLimitOpt;
     private static OptionItem SkillCooldown;
@@ -38,14 +36,12 @@ internal class Crusader : RoleBase
         ForCrusade.Clear();
         CrusaderLimit.Clear();
         CurrentKillCooldown.Clear();
-        On = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CrusaderLimit.Add(playerId, SkillLimitOpt.GetInt());
         CurrentKillCooldown.Add(playerId, SkillCooldown.GetFloat());
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -65,7 +61,7 @@ internal class Crusader : RoleBase
         writer.Write(CrusaderLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -104,7 +100,7 @@ internal class Crusader : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (ForCrusade.Contains(target.PlayerId)) return true;
+        if (!ForCrusade.Contains(target.PlayerId)) return false;
 
         foreach (var crusader in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Crusader)).ToArray())
         {
@@ -114,21 +110,21 @@ internal class Crusader : RoleBase
                 crusader.RpcMurderPlayer(killer);
                 ForCrusade.Remove(target.PlayerId);
                 killer.RpcGuardAndKill(target);
-                return false;
+                return true;
             }
 
             if (killer.Is(CustomRoles.Pestilence))
             {
                 Main.PlayerStates[crusader.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
-                killer.RpcMurderPlayerV3(crusader);
+                killer.RpcMurderPlayer(crusader);
                 ForCrusade.Remove(target.PlayerId);
                 target.RpcGuardAndKill(killer);
 
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {

@@ -1,8 +1,5 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
@@ -17,7 +14,7 @@ internal class HexMaster : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16400;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -63,10 +60,9 @@ internal class HexMaster : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-        if (!AmongUsClient.Instance.AmHost) return;
-
         CustomRoleManager.MarkOthers.Add(GetHexedMark);
 
+        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

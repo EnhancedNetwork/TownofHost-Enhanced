@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using UnityEngine;
-using TOHE.Roles.Core;
+﻿using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
@@ -11,9 +9,9 @@ internal class SuperStar : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7150;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.SuperStar.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
@@ -27,11 +25,11 @@ internal class SuperStar : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        playerIdList.Add(playerId);
     }
 
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)

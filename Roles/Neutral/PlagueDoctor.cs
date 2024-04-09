@@ -1,8 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -16,7 +14,7 @@ internal class PlagueDoctor : RoleBase
     //===========================SETUP================================\\
     private const int Id = 27600;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -90,11 +88,12 @@ internal class PlagueDoctor : RoleBase
 
         playerIdList.Add(playerId);
 
+        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
+        CustomRoleManager.LowerOthers.Add(GetLowerTextOthers);
+
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateOthers.Add(OnCheckPlayerPosition);
-            CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-            CustomRoleManager.LowerOthers.Add(GetLowerTextOthers);
             CustomRoleManager.CheckDeadBodyOthers.Add(OnAnyMurder);
 
             if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -126,7 +125,7 @@ internal class PlagueDoctor : RoleBase
         writer.Write(rate);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         var firstInfect = reader.ReadBoolean();
         var targetId = reader.ReadByte();
@@ -294,7 +293,7 @@ internal class PlagueDoctor : RoleBase
             {
                 if (player.Is(CustomRoles.PlagueDoctor)) continue;
                 Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Infected;
-                player.RpcMurderPlayerV3(player);
+                player.RpcMurderPlayer(player);
             }
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
             foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())

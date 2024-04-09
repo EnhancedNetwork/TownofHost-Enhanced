@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using TOHE.Roles.Neutral;
-
-namespace TOHE.Roles.AddOns.Common;
+﻿namespace TOHE.Roles.AddOns.Common;
 
 public static class Sleuth
 {

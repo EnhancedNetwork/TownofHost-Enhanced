@@ -1,8 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
-using System.Transactions;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 
@@ -12,21 +9,19 @@ internal class Investigator : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 24900;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.GuessMaster.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
     //==================================================================\\
 
     private static OptionItem InvestigateCooldown;
     private static OptionItem InvestigateMax;
     private static OptionItem InvestigateRoundMax;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, int> MaxInvestigateLimit = [];
-    private static Dictionary<byte, int> RoundInvestigateLimit = [];
-    private static Dictionary<byte, HashSet<byte>> InvestigatedList = [];
+    private static readonly Dictionary<byte, int> MaxInvestigateLimit = [];
+    private static readonly Dictionary<byte, int> RoundInvestigateLimit = [];
+    private static readonly Dictionary<byte, HashSet<byte>> InvestigatedList = [];
 
     public static void SetupCustomOption()
     {
@@ -41,11 +36,10 @@ internal class Investigator : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        InvestigatedList = [];
-        MaxInvestigateLimit = [];
-        RoundInvestigateLimit = [];
-        On = false;
+        playerIdList.Clear();
+        InvestigatedList.Clear();
+        MaxInvestigateLimit.Clear();
+        RoundInvestigateLimit.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -53,7 +47,6 @@ internal class Investigator : RoleBase
         MaxInvestigateLimit[playerId] = InvestigateMax.GetInt();
         RoundInvestigateLimit[playerId] = InvestigateRoundMax.GetInt();
         InvestigatedList[playerId] = [];
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))

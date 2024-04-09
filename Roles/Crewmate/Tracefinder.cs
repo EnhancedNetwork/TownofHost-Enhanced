@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System;
-using System.Collections.Generic;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -12,9 +11,9 @@ internal class Tracefinder : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7300;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Tracefinder.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     //==================================================================\\
 
@@ -23,7 +22,6 @@ internal class Tracefinder : RoleBase
     private static OptionItem ArrowDelayMin;
     private static OptionItem ArrowDelayMax;
 
-    private static List<byte> playerIdList = [];
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Tracefinder);
@@ -42,13 +40,11 @@ internal class Tracefinder : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        On = false;
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
 
         if (AmongUsClient.Instance.AmHost)
         {

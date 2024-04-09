@@ -1,4 +1,6 @@
 using System;
+using TOHE.Roles._Ghosts_.Crewmate;
+using TOHE.Roles._Ghosts_.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -52,7 +54,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Spell:
-                    if (!Witch.On)
+                    if (!Witch.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -131,7 +133,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Bombed:
-                    if (!Bomber.On && !Burst.IsEnable && !Trapster.On && !Fireworker.On)
+                    if (!Bomber.HasEnabled && !Burst.IsEnable && !Trapster.HasEnabled && !Fireworker.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -164,7 +166,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Sniped:
-                    if (!Sniper.On)
+                    if (!Sniper.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -197,7 +199,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Quantization:
-                    if (!Lightning.On)
+                    if (!Lightning.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -252,7 +254,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.LossOfHead:
-                    if (!Hangman.On)
+                    if (!Hangman.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -263,7 +265,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Trialed:
-                    if (!Judge.HasEnabled && !Councillor.On)
+                    if (!Judge.HasEnabled && !Councillor.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -319,6 +321,26 @@ public class Susceptible
 
                 case PlayerState.DeathReason.Mauled:
                     if (!Werewolf.HasEnabled)
+                    {
+                        Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+                    break;
+                case PlayerState.DeathReason.Slice:
+                    if (!Hawk.HasEnabled)
+                    {
+                        Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+                    break;
+                case PlayerState.DeathReason.BloodLet:
+                    if (!Bloodmoon.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

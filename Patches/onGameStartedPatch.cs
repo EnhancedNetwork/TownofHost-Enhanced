@@ -1,21 +1,14 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles._Ghosts_.Impostor;
-using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -64,6 +57,9 @@ internal class ChangeRoleSettings
             Main.ResetCamPlayerList.Clear();
             Main.clientIdList.Clear();
 
+            PlayerControlSetRolePatch.DidSetGhost.Clear();
+            PlayerControlSetRolePatch.ghostRoles.Clear();
+
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();
             Main.AllKillers.Clear();
@@ -109,7 +105,7 @@ internal class ChangeRoleSettings
             Camouflage.Init();
 
             var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-            if (invalidColor.Length > 0)
+            if (invalidColor.Any())
             {
                 var msg = GetString("Error.InvalidColor");
                 Logger.SendInGame(msg);
@@ -156,9 +152,10 @@ internal class ChangeRoleSettings
             }
 
             // Initialize all custom roles
-            foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
+            foreach (var role in EnumHelper.GetAllValues<CustomRoles>().Where(role => role < CustomRoles.NotAssigned).ToArray())
             {
-                role.CreateRoleClass()?.Init();
+                var RoleClass = CustomRoleManager.GetStaticRoleClass(role);
+                RoleClass?.Init();
             }
 
             LastImpostor.Init();
@@ -171,13 +168,10 @@ internal class ChangeRoleSettings
             Aware.Init();
             Sleuth.Init();
             Bait.Init();
-            Hawk.Init();
-            Bloodmoon.Init();
             Antidote.Init();
             Fool.Init();
             Burst.Init();
             DoubleShot.Init();
-            Warden.Init();
             Lucky.Init();
             Bewilder.Init();
             ChiefOfPolice.Init();
@@ -311,7 +305,6 @@ internal class SelectRolesPatch
 
                 EAC.LogAllRoles();
                 Utils.SyncAllSettings();
-                SetColorPatch.IsAntiGlitchDisabled = false;
 
                 return;
             }
@@ -467,7 +460,7 @@ internal class SelectRolesPatch
             //HudManager.Instance.Chat.SetVisible(true);
             
             List<PlayerControl> AllPlayers = [];
-            CustomRpcSender sender = CustomRpcSender.Create("SelectRoles Sender", SendOption.Reliable);
+            //CustomRpcSender sender = CustomRpcSender.Create("SelectRoles Sender", SendOption.Reliable);
             
             foreach (var pc in Main.AllPlayerControls)
                 pc.ResetKillCooldown();
@@ -518,7 +511,6 @@ internal class SelectRolesPatch
 
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
-            SetColorPatch.IsAntiGlitchDisabled = false;
 
             Logger.Msg("Ended", "AssignRoles");
         }
@@ -572,12 +564,9 @@ internal class SelectRolesPatch
     private static void AssignCustomRole(CustomRoles role, PlayerControl player)
     {
         if (player == null) return;
-        SetColorPatch.IsAntiGlitchDisabled = true;
 
         Main.PlayerStates[player.PlayerId].SetMainRole(role);
         Logger.Info($"Registered Role： {player?.Data?.PlayerName} => {role}", "AssignRoles");
-
-        SetColorPatch.IsAntiGlitchDisabled = false;
     }
     private static void ForceAssignRole(CustomRoles role, List<PlayerControl> AllPlayers, CustomRpcSender sender, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate, bool skip = false, int Count = -1)
     {
@@ -587,7 +576,7 @@ internal class SelectRolesPatch
             count = Count;
         for (var i = 0; i < count; i++)
         {
-            if (AllPlayers.Count <= 0) break;
+            if (!AllPlayers.Any()) break;
             var rand = IRandom.Instance;
             var player = AllPlayers[rand.Next(0, AllPlayers.Count)];
             AllPlayers.Remove(player);

@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
@@ -11,7 +10,7 @@ internal class Doomsayer : RoleBase
     //===========================SETUP================================\\
     private const int Id = 14100;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
@@ -90,7 +89,7 @@ internal class Doomsayer : RoleBase
         writer.Write(player.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte DoomsayerId = reader.ReadByte();
         GuessingToWin[DoomsayerId]++;

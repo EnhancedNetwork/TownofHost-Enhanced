@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -8,11 +6,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class CopyCat : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 11500;
-    public static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
+    public static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem CopyCrewVar;
@@ -31,16 +31,14 @@ internal class CopyCat : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         CurrentKillCooldown = new();
-        On = false;
     }
 
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CurrentKillCooldown = KillCooldown.GetFloat();
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -49,7 +47,6 @@ internal class CopyCat : RoleBase
     public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
     {
         playerIdList.Remove(playerId);
-        if (!playerIdList.Any()) On = false;
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
     public static bool NoHaveTask(byte playerId) => playerIdList.Contains(playerId);

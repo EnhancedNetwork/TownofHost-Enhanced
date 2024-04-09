@@ -1,22 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Core;
-using UnityEngine;
+﻿using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Bodyguard : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 10300;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Bodyguard.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem ProtectRadiusOpt;
-
-    private static HashSet<byte> playerList = [];
 
     public static void SetupCustomOptions()
     {
@@ -27,26 +24,24 @@ internal class Bodyguard : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerList = [];
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerList.Add(playerId);
-        On = true;
+        playerIdList.Add(playerId);
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer.PlayerId == target.PlayerId || playerList.Count <= 0) return true;
+        if (killer?.PlayerId == target.PlayerId || !playerIdList.Any()) return false;
 
-        foreach (var bodyguardId in playerList.ToArray())
+        foreach (var bodyguardId in playerIdList.ToArray())
         {
             var bodyguard = Utils.GetPlayerById(bodyguardId);
             if (bodyguard == null || !bodyguard.IsAlive()) continue;
 
             var pos = target.transform.position;
             var dis = Vector2.Distance(pos, bodyguard.transform.position);
-            if (dis > ProtectRadiusOpt.GetFloat()) return true;
+            if (dis > ProtectRadiusOpt.GetFloat()) return false;
 
             if (bodyguard.Is(CustomRoles.Madmate) && killer.GetCustomRole().IsImpostorTeam())
             {
@@ -59,10 +54,10 @@ internal class Bodyguard : RoleBase
                 bodyguard.SetRealKiller(killer);
                 bodyguard.RpcMurderPlayer(bodyguard);
                 Logger.Info($"{bodyguard.GetRealName()} Stand up and die with the gangster {killer.GetRealName()}", "Bodyguard");
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 }

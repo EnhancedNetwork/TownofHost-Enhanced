@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -9,14 +7,15 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Snitch : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9500;
-    private static readonly List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Snitch.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Snitch);
+    private static readonly Color RoleColor = Utils.GetRoleColor(CustomRoles.Snitch);
 
     private static OptionItem OptionEnableTargetArrow;
     private static OptionItem OptionCanGetColoredArrow;
@@ -49,7 +48,6 @@ internal class Snitch : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        On = false;
 
         EnableTargetArrow = OptionEnableTargetArrow.GetBool();
         CanGetColoredArrow = OptionCanGetColoredArrow.GetBool();
@@ -67,16 +65,12 @@ internal class Snitch : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
 
         IsExposed[playerId] = false;
         IsComplete[playerId] = false;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetWarningMark);
-            CustomRoleManager.SuffixOthers.Add(GetWarningArrow);
-        }
+        CustomRoleManager.MarkOthers.Add(GetWarningMark);
+        CustomRoleManager.SuffixOthers.Add(GetWarningArrow);
     }
     public override void Remove(byte playerId)
     {
@@ -97,7 +91,7 @@ internal class Snitch : RoleBase
     }
     
     private static bool IsSnitchTarget(PlayerControl target)
-        => HasEnabled && (target.Is(CustomRoleTypes.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsSnitchTarget() && CanFindNeutralKiller) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
+        => HasEnabled && (target.Is(CustomRoleTypes.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsNeutralKiller() && CanFindNeutralKiller) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
     
     private static void CheckTask(PlayerControl snitch)
     {
@@ -144,10 +138,12 @@ internal class Snitch : RoleBase
         IsComplete[snitchId] = true;
     }
 
-    public static void OnCompleteTask(PlayerControl player)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!IsThisRole(player.PlayerId) || player.Is(CustomRoles.Madmate)) return;
+        if (!IsThisRole(player.PlayerId) || player.Is(CustomRoles.Madmate)) return true;
+        
         CheckTask(player);
+        return true;
     }
 
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)

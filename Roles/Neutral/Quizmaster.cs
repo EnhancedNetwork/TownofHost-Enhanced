@@ -1,7 +1,5 @@
 ﻿using Hazel;
-using System.Collections.Generic;
 using System;
-using System.Linq;
 using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -14,13 +12,13 @@ internal class Quizmaster : RoleBase
     //===========================SETUP================================\\
     private const int Id = 27000;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
 
     private static OptionItem QuestionDifficulty;
-    public static OptionItem CanKillAfterMark;
+    public static OptionItem CanKillAfterMarkOpt;
     private static OptionItem CanVentAfterMark;
     private static OptionItem NumOfKillAfterMark;
     private static OptionItem CanGiveQuestionsAboutPastGames;
@@ -46,6 +44,7 @@ internal class Quizmaster : RoleBase
     public static int buttonMeeting = 0;
 
     public static bool InExperimental = true;
+    public static bool CanKillAfterMark = false;
 
     public static void SetupCustomOption()
     {
@@ -56,11 +55,11 @@ internal class Quizmaster : RoleBase
 
         CanVentAfterMark = BooleanOptionItem.Create(Id + 11, "QuizmasterSettings.CanVentAfterMark", true, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-        CanKillAfterMark = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
+        CanKillAfterMarkOpt = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         NumOfKillAfterMark = IntegerOptionItem.Create(Id + 13, "QuizmasterSettings.NumOfKillAfterMark", new(1, 15, 1), 1, tab, false)
             .SetValueFormat(OptionFormat.Players)
-            .SetParent(CanKillAfterMark);
+            .SetParent(CanKillAfterMarkOpt);
         CanGiveQuestionsAboutPastGames = BooleanOptionItem.Create(Id + 14, "QuizmasterSettings.CanGiveQuestionsAboutPastGames", false, tab, false)
            .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
     }
@@ -88,6 +87,8 @@ internal class Quizmaster : RoleBase
         diedThisRound = 0;
         meetingNum = 0;
         buttonMeeting = 0;
+
+        CanKillAfterMark = CanKillAfterMarkOpt.GetBool();
     }
     public override void Add(byte playerId)
     {
@@ -106,7 +107,7 @@ internal class Quizmaster : RoleBase
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte targetId = reader.ReadByte();
 
@@ -116,7 +117,7 @@ internal class Quizmaster : RoleBase
             AlreadyMarked = true;
             MarkedPlayer = targetId;
 
-            allowedKilling = CanKillAfterMark.GetBool();
+            allowedKilling = CanKillAfterMark;
         }
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
@@ -136,6 +137,7 @@ internal class Quizmaster : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (!killer.RpcCheckAndMurder(target, true)) return false;
         if (AlreadyMarked == false)
         {
             //allowedVenting = false;
@@ -145,7 +147,7 @@ internal class Quizmaster : RoleBase
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
-            allowedKilling = CanKillAfterMark.GetBool();
+            allowedKilling = CanKillAfterMark;
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
@@ -216,7 +218,7 @@ internal class Quizmaster : RoleBase
 
     private static void DoQuestion()
     {
-        Player = Utils.GetPlayerByRole(CustomRoles.Quizmaster);
+        Player = Utils.GetPlayerById(playerIdList.ToList().First());
         if (MarkedPlayer != byte.MaxValue)
         {
             CustomRoles randomRole = GetRandomRole([.. CustomRolesHelper.AllRoles], false);

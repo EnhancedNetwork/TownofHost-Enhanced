@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Core;
 using AmongUs.GameOptions;
 using static TOHE.Options;
 
@@ -9,11 +6,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Reverie : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 11100;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Retributionist.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ReduceKillCooldown;
@@ -24,17 +23,16 @@ internal class Reverie : RoleBase
     private static OptionItem ResetCooldownMeeting;
     private static OptionItem ConvertedReverieRogue;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, float> NowCooldown;
+    private static readonly Dictionary<byte, float> NowCooldown = [];
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Reverie);
-        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "ArroganceDefaultKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "Arrogance/Juggernaut___DefaultKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
-        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "ArroganceReduceKillCooldown", new(0f, 180f, 2.5f), 7.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "Arrogance/Juggernaut___ReduceKillCooldown", new(0f, 180f, 2.5f), 7.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
-        MinKillCooldown = FloatOptionItem.Create(Id + 12, "ArroganceMinKillCooldown", new(0f, 180f, 2.5f), 2.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        MinKillCooldown = FloatOptionItem.Create(Id + 12, "Arrogance/Juggernaut___MinKillCooldown", new(0f, 180f, 2.5f), 2.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
         IncreaseKillCooldown = FloatOptionItem.Create(Id + 13, "ReverieIncreaseKillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
@@ -46,15 +44,13 @@ internal class Reverie : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        NowCooldown = [];
-        On = false;
+        playerIdList.Clear();
+        NowCooldown.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -94,7 +90,7 @@ internal class Reverie : RoleBase
         if (NowCooldown[killer.PlayerId] >= MaxKillCooldown.GetFloat() && MisfireSuicide.GetBool())
         {
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-            killer.RpcMurderPlayerV3(killer);
+            killer.RpcMurderPlayer(killer);
         }
         return true;
     }

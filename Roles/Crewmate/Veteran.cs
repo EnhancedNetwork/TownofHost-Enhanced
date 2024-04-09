@@ -1,9 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
-using System.Collections.Generic;
 using UnityEngine;
-using TOHE.Roles.Core;
 using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -13,19 +11,21 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Veteran : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 11350;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Veteran.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem VeteranSkillCooldown;
     private static OptionItem VeteranSkillDuration;
     private static OptionItem VeteranSkillMaxOfUseage;
     private static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
 
-    private static Dictionary<byte, long> VeteranInProtect = [];
-    private static Dictionary<byte, float> VeteranNumOfUsed = [];
+    private static readonly Dictionary<byte, long> VeteranInProtect = [];
+    private static readonly Dictionary<byte, float> VeteranNumOfUsed = [];
 
     public static void SetupCustomOptions()
     {
@@ -41,25 +41,26 @@ internal class Veteran : RoleBase
     }
     public override void Init()
     {
-        VeteranInProtect = [];
-        VeteranNumOfUsed = [];
-        On = false;
+        playerIdList.Clear();
+        VeteranInProtect.Clear();
+        VeteranNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
-
+        playerIdList.Add(playerId);
         VeteranNumOfUsed.Add(playerId, VeteranSkillMaxOfUseage.GetInt());
-        On = true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.EngineerCooldown = VeteranSkillCooldown.GetFloat();
         AURoleOptions.EngineerInVentMaxTime = 1;
     }
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!pc.IsAlive()) return;
-        VeteranNumOfUsed[pc.PlayerId] += VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (player.IsAlive())
+            VeteranNumOfUsed[player.PlayerId] += VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
+        
+        return true;
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
@@ -69,14 +70,14 @@ internal class Veteran : RoleBase
                 if (!killer.Is(CustomRoles.Pestilence))
                 {
                     killer.SetRealKiller(target);
-                    target.RpcMurderPlayerV3(killer);
+                    target.RpcMurderPlayer(killer);
                     Logger.Info($"{target.GetRealName()} 老兵反弹击杀：{killer.GetRealName()}", "Veteran Kill");
                     return false;
                 }
                 if (killer.Is(CustomRoles.Pestilence))
                 {
                     target.SetRealKiller(killer);
-                    killer.RpcMurderPlayerV3(target);
+                    killer.RpcMurderPlayer(target);
                     Logger.Info($"{target.GetRealName()} 老兵反弹击杀：{target.GetRealName()}", "Pestilence Reflect");
                     return false;
                 }

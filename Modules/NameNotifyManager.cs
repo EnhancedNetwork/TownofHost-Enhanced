@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
 
 namespace TOHE;
 
@@ -27,7 +26,7 @@ public static class NameNotifyManager
     {
         if (!GameStates.IsInTask)
         {
-            if (Notice.Count > 0) Notice.Clear();
+            if (Notice.Any()) Notice.Clear();
             return;
         }
         if (Notice.ContainsKey(player.PlayerId) && Notice[player.PlayerId].Item2 < Utils.GetTimeStamp())

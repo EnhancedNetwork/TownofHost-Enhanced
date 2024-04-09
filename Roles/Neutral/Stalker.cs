@@ -1,9 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using System.Collections.Generic;
 
-namespace TOHE;
+namespace TOHE.Roles.Neutral;
 
 // 来源：https://github.com/Yumenopai/TownOfHost_Y
 internal class Stalker : RoleBase
@@ -11,7 +10,7 @@ internal class Stalker : RoleBase
     //===========================SETUP================================\\
     private const int Id = 18100;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\

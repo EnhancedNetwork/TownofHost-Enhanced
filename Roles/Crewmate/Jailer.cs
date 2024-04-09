@@ -1,7 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -10,13 +8,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Jailer : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 10600;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Jailer.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-
-    private static List<byte> playerIdList = [];
+    //==================================================================\\
 
     private static OptionItem JailCooldown;
     private static OptionItem MaxExecution;
@@ -27,10 +25,10 @@ internal class Jailer : RoleBase
     private static OptionItem CKCanBeExe;
     private static OptionItem NotifyJailedOnMeetingOpt;
 
-    private static Dictionary<byte, byte> JailerTarget = [];
-    private static Dictionary<byte, int> JailerExeLimit = [];
-    private static Dictionary<byte, bool> JailerHasExe = [];
-    private static Dictionary<byte, bool> JailerDidVote = [];
+    private static readonly Dictionary<byte, byte> JailerTarget = [];
+    private static readonly Dictionary<byte, int> JailerExeLimit = [];
+    private static readonly Dictionary<byte, bool> JailerHasExe = [];
+    private static readonly Dictionary<byte, bool> JailerDidVote = [];
 
     public static void SetupCustomOption()
     {
@@ -49,12 +47,11 @@ internal class Jailer : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
-        JailerExeLimit = [];
-        JailerTarget = [];
-        JailerHasExe = [];
-        JailerDidVote = [];
-        On = false;
+        playerIdList.Clear();
+        JailerExeLimit.Clear();
+        JailerTarget.Clear();
+        JailerHasExe.Clear();
+        JailerDidVote.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -63,7 +60,6 @@ internal class Jailer : RoleBase
         JailerTarget.Add(playerId, byte.MaxValue);
         JailerHasExe.Add(playerId, false);
         JailerDidVote.Add(playerId, false);
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))

@@ -1,9 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -12,11 +9,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class BountyHunter : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 800;
-    private static List<byte> playerIdList = [];
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Handoff");
 
@@ -31,7 +30,7 @@ internal class BountyHunter : RoleBase
     private static bool ShowTargetArrow;
 
     private static Dictionary<byte, byte> Targets = [];
-    public static Dictionary<byte, float> ChangeTimer = [];
+    public static readonly Dictionary<byte, float> ChangeTimer = [];
 
     public static void SetupCustomOption()
     {
@@ -46,16 +45,14 @@ internal class BountyHunter : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        On = false;
+        playerIdList.Clear();
 
-        Targets = [];
-        ChangeTimer = [];
+        Targets.Clear();
+        ChangeTimer.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
 
         TargetChangeTime = OptionTargetChangeTime.GetFloat();
         SuccessKillCooldown = OptionSuccessKillCooldown.GetFloat();
@@ -65,7 +62,7 @@ internal class BountyHunter : RoleBase
         if (AmongUsClient.Instance.AmHost)
         {
             ResetTarget(Utils.GetPlayerById(playerId));
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
+            //CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
         }
     }
     public override void Remove(byte playerId)
@@ -96,10 +93,11 @@ internal class BountyHunter : RoleBase
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (shapeshiftIsHidden)
-            Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+        // not should shapeshifted
+        resetCooldown = false;
+        return false;
     }
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -121,7 +119,7 @@ internal class BountyHunter : RoleBase
         return true;
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => ChangeTimer.Clear();
-    public static void OnFixedUpdateLowLoadOthers(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player)
     {
         if (!ChangeTimer.ContainsKey(player.PlayerId)) return;
 

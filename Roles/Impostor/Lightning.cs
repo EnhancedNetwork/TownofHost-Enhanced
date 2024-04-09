@@ -1,6 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
@@ -11,19 +9,20 @@ namespace TOHE.Roles.Impostor;
 
 internal class Lightning : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 24100;
-
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem ConvertTime;
     private static OptionItem KillerConvertGhost;
 
-    private static List<byte> playerIdList = [];
-    private static List<byte> GhostPlayer = [];
-    private static Dictionary<byte, PlayerControl> RealKiller = [];
+    private static readonly List<byte> GhostPlayer = [];
+    private static readonly Dictionary<byte, PlayerControl> RealKiller = [];
 
     public static void SetupCustomOption()
     {
@@ -36,20 +35,15 @@ internal class Lightning : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
-        GhostPlayer = [];
-        RealKiller = [];
+        playerIdList.Clear();
+        GhostPlayer.Clear();
+        RealKiller.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.MarkOthers.Add(GetMarkInGhostPlayer);
-        }
+        CustomRoleManager.MarkOthers.Add(GetMarkInGhostPlayer);
     }
     private static void SendRPC(byte playerId)
     {
@@ -64,7 +58,7 @@ internal class Lightning : RoleBase
         bool isGhost = reader.ReadBoolean();
         if (GhostId == byte.MaxValue)
         {
-            GhostPlayer = [];
+            GhostPlayer.Clear();
             return;
         }
         if (isGhost)
@@ -127,7 +121,7 @@ internal class Lightning : RoleBase
     }
     public override void OnFixedUpdateLowLoad(PlayerControl lightning)
     {
-        if (GhostPlayer.Count <= 0) return;
+        if (!GhostPlayer.Any()) return;
 
         List<byte> deList = [];
         foreach (var ghost in GhostPlayer.ToArray())
@@ -148,13 +142,13 @@ internal class Lightning : RoleBase
                 deList.Add(gs.PlayerId);
                 Main.PlayerStates[gs.PlayerId].deathReason = PlayerState.DeathReason.Quantization;
                 gs.SetRealKiller(RealKiller[gs.PlayerId]);
-                gs.RpcMurderPlayerV3(gs);
+                gs.RpcMurderPlayer(gs);
 
                 Logger.Info($"{gs.GetNameWithRole()} As a quantum ghost dying from a collision", "Lightning");
                 break;
             }
         }
-        if (deList.Count > 0)
+        if (deList.Any())
         {
             GhostPlayer.RemoveAll(deList.Contains);
             foreach (var gs in deList.ToArray()) SendRPC(gs);
@@ -171,7 +165,7 @@ internal class Lightning : RoleBase
             gs.SetRealKiller(RealKiller[gs.PlayerId]);
             Logger.Info($"{gs.GetNameWithRole()} is quantum ghost - dead on start meeting", "Lightning");
         }
-        GhostPlayer = [];
+        GhostPlayer.Clear();
         SendRPC(byte.MaxValue);
         Utils.NotifyRoles();
     }

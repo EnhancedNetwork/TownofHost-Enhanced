@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -11,14 +10,17 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Telecommunication : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 12500;
-    private static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem CanCheckCamera;
     private static OptionItem CanVent;
+    
     private static bool IsAdminWatch;
     private static bool IsVitalWatch;
     private static bool IsDoorLogWatch;
@@ -32,17 +34,15 @@ internal class Telecommunication : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
-        On = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
     }
     public override void Remove(byte playerId)
     {
@@ -142,7 +142,7 @@ internal class Telecommunication : RoleBase
 
         if (isChange)
         {
-            foreach (var pc in playerIdList.ToArray())
+            foreach (var pc in playerIdList)
             {
                 var antiAdminer = GetPlayerById(pc);
                 NotifyRoles(SpecifySeer: antiAdminer, ForceLoop: false);

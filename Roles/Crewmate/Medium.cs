@@ -1,7 +1,5 @@
 ﻿using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -13,19 +11,20 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Medium : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 8700;
-    public static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Medium.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem ContactLimitOpt;
     private static OptionItem OnlyReceiveMsgFromCrew;
     private static OptionItem MediumAbilityUseGainWithEachTaskCompleted;
 
-    private static Dictionary<byte, byte> ContactPlayer = [];
-    private static Dictionary<byte, float> ContactLimit = [];
+    private static readonly Dictionary<byte, byte> ContactPlayer = [];
+    private static readonly Dictionary<byte, float> ContactLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -41,16 +40,14 @@ internal class Medium : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        ContactPlayer = [];
-        ContactLimit = [];
-        On = false;
+        playerIdList.Clear();
+        ContactPlayer.Clear();
+        ContactLimit.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         ContactLimit.Add(playerId, ContactLimitOpt.GetInt());
-        On = true;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -72,7 +69,7 @@ internal class Medium : RoleBase
         if (isUsed) writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte pid = reader.ReadByte();
         float limit = reader.ReadSingle();
@@ -83,19 +80,22 @@ internal class Medium : RoleBase
         if (isUsed)
         {
             byte targetId = reader.ReadByte();
-            ContactPlayer = [];
+            ContactPlayer.Clear();
             ContactPlayer.TryAdd(targetId, pid);
         }
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        ContactLimit[player.PlayerId] += MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPC(player.PlayerId);
+        if (player.IsAlive())
+        {
+            ContactLimit[player.PlayerId] += MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(player.PlayerId);
+        }
+        return true;
     }
     public override void OnReportDeadBody(PlayerControl reported, PlayerControl target)
     {
-        ContactPlayer = [];
+        ContactPlayer.Clear();
         if (target == null) return;
 
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId) && x.PlayerId != target.PlayerId).ToArray())
@@ -183,7 +183,7 @@ internal class Medium : RoleBase
         ProgressText.Append(ColorString(TextColor71, $" <color=#ffffff>-</color> {Math.Round(ContactLimit[playerId], 1)}"));
         return ProgressText.ToString();
     }
-    public override void OnMeetingHudStart(PlayerControl pc)
+    public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
         //Self 
         if (ContactPlayer.ContainsValue(pc.PlayerId))

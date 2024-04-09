@@ -1,8 +1,4 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace TOHE.Roles.AddOns.Common;
+﻿namespace TOHE.Roles.AddOns.Common;
 
 public static class Influenced
 {

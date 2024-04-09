@@ -1,16 +1,16 @@
-using AmongUs.GameOptions; 
+using AmongUs.GameOptions;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
-using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using TOHE.Roles.Core;
+using TOHE.Roles.Double;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 
@@ -39,14 +39,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0324.160.0500"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.6.0 Canary 5";
+    public const string PluginVersion = "2024.0407.200.0010"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 dev 1";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = true; // ACTIVE - Latest: V1.6.0 Canary 5
-    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.2
-    public static readonly bool devRelease = false; // INACTIVE - Latest: V1.6.0 Dev 7
+    public static readonly bool Canary = false; // ACTIVE - Latest: V1.6.0 Canary 6
+    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
+    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 1
 
     public static bool hasAccess = true;
 
@@ -86,7 +86,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> DarkTheme { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
     public static ConfigEntry<bool> ModeForSmallScreen { get; private set; }
-    //public static ConfigEntry<bool> HorseMode { get; private set; }
+    public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> AutoMuteUs { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
@@ -297,6 +297,35 @@ public class Main : BasePlugin
             ExceptionMessageIsShown = false;
         }
     }
+    public static void LoadRoleClasses()
+    {
+        TOHE.Logger.Info("Loading All RoleClasses...", "LoadRoleClasses");
+        try
+        {
+            var RoleTypes = Assembly.GetAssembly(typeof(RoleBase))!
+                .GetTypes()
+                .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
+            foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
+            {
+                Type roleType = role switch // Switch role to FatherRole (Double Classes)
+                {
+                    CustomRoles.Vampiress => typeof(Vampire),
+                    CustomRoles.Pestilence => typeof(PlagueBearer),
+                    CustomRoles.Nuker => typeof(Bomber),
+                    CustomRoles.NiceMini or CustomRoles.EvilMini => typeof(Mini),
+                    _ => RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(VanillaRole),
+                };
+
+                CustomRoleManager.RoleClass.Add(role, (RoleBase)Activator.CreateInstance(roleType));
+            }
+
+            TOHE.Logger.Info("RoleClasses Loaded Successfully", "LoadRoleClasses");
+        }
+        catch (Exception err)
+        {
+            TOHE.Logger.Error($"Error at LoadRoleClasses: {err}", "LoadRoleClasses");
+        }
+    }
     static void UpdateCustomTranslation()
     {
         string path = @$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat";
@@ -366,7 +395,7 @@ public class Main : BasePlugin
         DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
         ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
-        //HorseMode = Config.Bind("Client Options", "HorseMode", false);
+        HorseMode = Config.Bind("Client Options", "HorseMode", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
@@ -431,6 +460,7 @@ public class Main : BasePlugin
         ExceptionMessage = "";
 
         LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
+        LoadRoleClasses();
 
         CustomWinnerHolder.Reset();
         Translator.Init();
@@ -495,7 +525,6 @@ public enum CustomRoles
     Chronomancer,
     Cleaner,
     Consigliere,
-    Convict,
     Councillor,
     Crewpostor,
     CursedWolf,
@@ -656,7 +685,7 @@ public enum CustomRoles
     Doomsayer,
     Doppelganger,
     Executioner,
-    Follower, //follower
+    Follower,
     Glitch,
     God,
     Hater,
@@ -669,7 +698,6 @@ public enum CustomRoles
     Jester,
     Jinx,
     Juggernaut,
-    Konan,
     Lawyer,
     Masochist,
     Maverick,
@@ -695,19 +723,19 @@ public enum CustomRoles
     RuthlessRomantic,
     SchrodingersCat,
     Seeker,
-    SerialKiller, //serial killer
+    SerialKiller,
     Shaman,
     Shroud,
     Sidekick,
     Solsticer,
     SoulCollector,
     Spiritcaller,
-    Stalker, //stalker
+    Stalker,
     Sunnyboy,
     Taskinator,
     Terrorist,
     Traitor,
-    Vector,//vector
+    Vector,
     VengefulRomantic,
     Virus,
     Vulture,
@@ -731,7 +759,7 @@ public enum CustomRoles
     Admired,
     Antidote,
     Autopsy,
-    Avanger, //avenger
+    Avanger,
     Aware,
     Bait,
     Bewilder,
@@ -780,7 +808,6 @@ public enum CustomRoles
     Reach,
     Rebound,
     Recruit,
-    Rogue,
     Schizophrenic,
     Seer,
     Silent,
@@ -846,7 +873,6 @@ public enum CustomWinner
     Juggernaut = CustomRoles.Juggernaut,
     Infectious = CustomRoles.Infectious,
     Virus = CustomRoles.Virus,
-    Rogue = CustomRoles.Rogue,
     Phantom = CustomRoles.Phantom,
     Jinx = CustomRoles.Jinx,
     CursedSoul = CustomRoles.CursedSoul,

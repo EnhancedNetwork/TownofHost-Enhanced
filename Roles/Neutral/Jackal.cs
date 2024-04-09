@@ -1,8 +1,5 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
@@ -18,7 +15,7 @@ internal class Jackal : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16700;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -114,7 +111,7 @@ internal class Jackal : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -276,23 +273,23 @@ internal class Jackal : RoleBase
         {
             // Jackal can kill Sidekick/Recruit
             if (killer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)))
-                return false;
+                return true;
 
             // Sidekick/Recruit can kill Jackal
             else if ((killer.Is(CustomRoles.Sidekick) || killer.Is(CustomRoles.Recruit)) && target.Is(CustomRoles.Jackal))
-                return false;
+                return true;
         }
 
         if (!SidekickCanKillSidekick.GetBool())
         {
             // Sidekick can kill Sidekick/Recruit
             if (killer.Is(CustomRoles.Sidekick) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)))
-                return false;
+                return true;
 
             // Recruit can kill Recruit/Sidekick
             if (killer.Is(CustomRoles.Recruit) && (target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick)))
-                return false;
+                return true;
         }
-        return true;
+        return false;
     }
 }

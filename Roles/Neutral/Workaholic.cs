@@ -1,6 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
@@ -17,6 +15,7 @@ internal class Workaholic : RoleBase
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     //==================================================================\\
+    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public static OptionItem WorkaholicCannotWinAtDeath;
     public static OptionItem WorkaholicVentCooldown;
@@ -60,10 +59,10 @@ internal class Workaholic : RoleBase
         AURoleOptions.EngineerCooldown = WorkaholicVentCooldown.GetFloat();
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         var AllTasksCount = player.Data.Tasks.Count;
-        if (!((completedTaskCount + 1) >= AllTasksCount && !(WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()))) return;
+        if (!((completedTaskCount + 1) >= AllTasksCount && !(WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()))) return true;
 
         Logger.Info("The Workaholic task is done", "Workaholic");
 
@@ -75,7 +74,7 @@ internal class Workaholic : RoleBase
                 Main.PlayerStates[pc.PlayerId].deathReason = pc.PlayerId == player.PlayerId ?
                     PlayerState.DeathReason.Overtired : PlayerState.DeathReason.Ashamed;
 
-                pc.RpcMurderPlayerV3(pc);
+                pc.RpcMurderPlayer(pc);
                 pc.SetRealKiller(player);
             }
         }
@@ -86,6 +85,7 @@ internal class Workaholic : RoleBase
             CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
         }
 
+        return true;
     }
     public override void OnMeetingHudStart(PlayerControl player)
     {

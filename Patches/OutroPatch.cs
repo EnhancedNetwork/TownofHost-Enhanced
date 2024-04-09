@@ -1,9 +1,6 @@
-using HarmonyLib;
 using Hazel;
 using TMPro;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
@@ -46,7 +43,7 @@ class EndGamePatch
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                 }
             }
-            if (GhostRoleAssign.GhostGetPreviousRole.Count > 0) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
+            if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
             // Seems to be a problem with Exiled() Patch. I plan to diligently attempt fixes in RoleBase PR.
         }
         catch(Exception e)
@@ -196,10 +193,6 @@ class SetEverythingUpPatch
             case CustomWinner.Impostor:
                 CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Impostor);
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Impostor);
-                break;
-            case CustomWinner.Rogue:
-                CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Rogue);
-                __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Rogue);
                 break;
             case CustomWinner.Egoist:
                 CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Egoist);

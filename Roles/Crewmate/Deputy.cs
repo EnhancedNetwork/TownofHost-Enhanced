@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -9,11 +8,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Deputy : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 7800;
-    public static bool On = false;
-    public override bool IsEnable => On;
-    private static List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem HandcuffCooldown;
     private static OptionItem HandcuffMax;
@@ -33,15 +34,13 @@ internal class Deputy : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         HandcuffLimit = new();
-        On = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         HandcuffLimit = HandcuffMax.GetInt();
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -59,7 +58,7 @@ internal class Deputy : RoleBase
         writer.Write(HandcuffLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         HandcuffLimit = reader.ReadInt32();
     }

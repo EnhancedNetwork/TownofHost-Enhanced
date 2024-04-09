@@ -1,5 +1,4 @@
 using Hazel;
-using System.Collections.Generic;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -12,7 +11,7 @@ internal class CursedSoul : RoleBase
     //===========================SETUP================================\\
     private const int Id = 14000;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\

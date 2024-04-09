@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static TOHE.Utils;
@@ -10,10 +9,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Lighter : RoleBase
 {
-    public const int Id = 8400;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    //===========================SETUP================================\\
+    private const int Id = 8400;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem LighterVisionNormal;
     private static OptionItem LighterVisionOnLightsOut;
@@ -22,8 +24,8 @@ internal class Lighter : RoleBase
     private static OptionItem LighterSkillMaxOfUseage;
     private static OptionItem LighterAbilityUseGainWithEachTaskCompleted;
 
-    private static Dictionary<byte, long> Timer = [];
-    private static Dictionary<byte, float> LighterNumOfUsed = [];
+    private static readonly Dictionary<byte, long> Timer = [];
+    private static readonly Dictionary<byte, float> LighterNumOfUsed = [];
 
     public static void SetupCustomOptions()
     {
@@ -43,15 +45,18 @@ internal class Lighter : RoleBase
     }
     public override void Init()
     {
-        Timer = [];
-        LighterNumOfUsed = [];
+        playerIdList.Clear();
+        Timer.Clear();
+        LighterNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         LighterNumOfUsed.Add(playerId, LighterSkillMaxOfUseage.GetInt());
     }
     public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
         LighterNumOfUsed.Remove(playerId);
     }
     public override void OnFixedUpdateLowLoad(PlayerControl pc)
@@ -105,17 +110,19 @@ internal class Lighter : RoleBase
         ProgressText.Append(ColorString(TextColor141, $" <color=#ffffff>-</color> {Math.Round(LighterNumOfUsed[playerId], 1)})"));
         return ProgressText.ToString();
     }
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!pc.IsAlive()) return;
-        LighterNumOfUsed[pc.PlayerId] += LighterAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (player.IsAlive())
+            LighterNumOfUsed[player.PlayerId] += LighterAbilityUseGainWithEachTaskCompleted.GetFloat();
+
+        return true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.EngineerInVentMaxTime = 1;
         AURoleOptions.EngineerCooldown = LighterSkillCooldown.GetFloat();
 
-        if (Timer.Count > 0)
+        if (Timer.Any())
         {
             opt.SetVision(false);
             if (IsActive(SystemTypes.Electrical)) opt.SetFloat(FloatOptionNames.CrewLightMod, LighterVisionOnLightsOut.GetFloat() * 5);

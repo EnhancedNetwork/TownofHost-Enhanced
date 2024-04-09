@@ -1,6 +1,5 @@
 ﻿using Hazel;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using TOHE.Roles.Core;
@@ -11,17 +10,20 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Keeper : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 26500;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem KeeperUsesOpt;
     private static OptionItem HidesVote;
 
-    private static List<byte> keeperTarget = [];
-    private static Dictionary<byte, int> keeperUses = [];
-    private static Dictionary<byte, bool> DidVote = [];
+    private static readonly HashSet<byte> keeperTarget = [];
+    private static readonly Dictionary<byte, int> keeperUses = [];
+    private static readonly Dictionary<byte, bool> DidVote = [];
 
     public static void SetupCustomOption()
     {
@@ -33,20 +35,21 @@ internal class Keeper : RoleBase
     }
     public override void Init()
     {
-        keeperTarget = [];
-        keeperUses = [];
-        DidVote = [];
-        On = false;
+        playerIdList.Clear();
+        keeperTarget.Clear();
+        keeperUses.Clear();
+        DidVote.Clear();
     }
 
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         DidVote.Add(playerId, false);
         keeperUses[playerId] = 0;
-        On = true;
     }
     public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
         DidVote.Remove(playerId);
         keeperUses.Remove(playerId);
     }
@@ -114,7 +117,7 @@ internal class Keeper : RoleBase
 
     public static bool OnVotes(PlayerControl voter, PlayerControl target)
     {
-        if (!CustomRoles.Keeper.IsClassEnable()) return true;
+        if (!CustomRoles.Keeper.HasEnabled()) return true;
         if (voter == null || target == null) return true;
         if (!voter.Is(CustomRoles.Keeper)) return true;
         if (DidVote[voter.PlayerId]) return true;

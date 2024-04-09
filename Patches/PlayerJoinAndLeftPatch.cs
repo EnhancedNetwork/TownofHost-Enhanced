@@ -1,10 +1,8 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
 using InnerNet;
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Patches;
@@ -54,6 +52,7 @@ class OnGameJoinedPatch
 
             switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
             {
+                case GameModes.NormalFools:
                 case GameModes.Normal:
                     Logger.Info(" Is Normal Game", "Game Mode");
 
@@ -72,6 +71,7 @@ class OnGameJoinedPatch
                     }
                     break;
 
+                case GameModes.SeekFools:
                 case GameModes.HideNSeek:
                     Logger.Info(" Is Hide & Seek", "Game Mode");
 

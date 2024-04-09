@@ -1,15 +1,16 @@
-using System.Collections.Generic;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Chronomancer : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 900;
-    private static List<byte> playerIdList = [];
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static Dictionary<byte, long> firstKill = [];
     private static Dictionary<byte, long> lastCooldownStart = [];
@@ -26,11 +27,10 @@ internal class Chronomancer : RoleBase
 
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         firstKill = [];
         lastCooldownStart = [];
         ChargedTime = [];
-        On = false;
     }
     public override void Add(byte playerId)
     {
@@ -39,7 +39,6 @@ internal class Chronomancer : RoleBase
         firstKill.Add(playerId, -1);
         ChargedTime.Add(playerId, 0);
         lastCooldownStart.Add(playerId, now);
-        On = true;
     }
 
     public override void SetKillCooldown(byte id) => OnSetKillCooldown(id);

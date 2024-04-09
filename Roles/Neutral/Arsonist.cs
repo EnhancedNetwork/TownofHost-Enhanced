@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
 using UnityEngine;
 using Hazel;
 using TOHE.Modules;
@@ -15,14 +14,14 @@ internal class Arsonist : RoleBase
     //===========================SETUP================================\\
     private const int id = 15900;
     private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled = PlayerIds.Count > 0;
+    public static bool HasEnabled = PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
 
     private static OptionItem ArsonistDouseTime;
     private static OptionItem ArsonistCooldown;
-    private static OptionItem ArsonistCanIgniteAnytime;
+    private static OptionItem ArsonistCanIgniteAnytimeOpt;
     private static OptionItem ArsonistMinPlayersToIgnite;
     private static OptionItem ArsonistMaxPlayersToIgnite;
 
@@ -30,6 +29,7 @@ internal class Arsonist : RoleBase
     private static readonly Dictionary<(byte, byte), bool> IsDoused = [];
 
     private static byte CurrentDousingTarget = byte.MaxValue;
+    private static bool ArsonistCanIgniteAnytime = false;
 
     public static void SetupCustomOptions()
     {
@@ -38,9 +38,9 @@ internal class Arsonist : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         ArsonistCooldown = FloatOptionItem.Create(id + 11, "Cooldown", new(0f, 180f, 1f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist])
             .SetValueFormat(OptionFormat.Seconds);
-        ArsonistCanIgniteAnytime = BooleanOptionItem.Create(id + 12, "ArsonistCanIgniteAnytime", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist]);
-        ArsonistMinPlayersToIgnite = IntegerOptionItem.Create(id + 13, "ArsonistMinPlayersToIgnite", new(1, 14, 1), 1, TabGroup.NeutralRoles, false).SetParent(ArsonistCanIgniteAnytime);
-        ArsonistMaxPlayersToIgnite = IntegerOptionItem.Create(id + 14, "ArsonistMaxPlayersToIgnite", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(ArsonistCanIgniteAnytime);
+        ArsonistCanIgniteAnytimeOpt = BooleanOptionItem.Create(id + 12, "ArsonistCanIgniteAnytime", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist]);
+        ArsonistMinPlayersToIgnite = IntegerOptionItem.Create(id + 13, "ArsonistMinPlayersToIgnite", new(1, 14, 1), 1, TabGroup.NeutralRoles, false).SetParent(ArsonistCanIgniteAnytimeOpt);
+        ArsonistMaxPlayersToIgnite = IntegerOptionItem.Create(id + 14, "ArsonistMaxPlayersToIgnite", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(ArsonistCanIgniteAnytimeOpt);
     }
     public override void Init()
     {
@@ -48,6 +48,7 @@ internal class Arsonist : RoleBase
         ArsonistTimer.Clear();
         IsDoused.Clear();
         CurrentDousingTarget = byte.MaxValue;
+        ArsonistCanIgniteAnytime = ArsonistCanIgniteAnytimeOpt.GetBool();
     }
     public override void Add(byte playerId)
     {
@@ -100,10 +101,10 @@ internal class Arsonist : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ArsonistCooldown.GetFloat();
     
     public override bool CanUseKillButton(PlayerControl pc)
-        => ArsonistCanIgniteAnytime.GetBool() ? GetDousedPlayerCount(pc.PlayerId).Item1 < ArsonistMaxPlayersToIgnite.GetInt() : !IsDouseDone(pc);
+        => ArsonistCanIgniteAnytime ? GetDousedPlayerCount(pc.PlayerId).Item1 < ArsonistMaxPlayersToIgnite.GetInt() : !IsDouseDone(pc);
     
     public override bool CanUseImpostorVentButton(PlayerControl pc)
-        => IsDouseDone(pc) || (ArsonistCanIgniteAnytime.GetBool() && (GetDousedPlayerCount(pc.PlayerId).Item1 >= ArsonistMinPlayersToIgnite.GetInt() || pc.inVent));
+        => IsDouseDone(pc) || (ArsonistCanIgniteAnytime && (GetDousedPlayerCount(pc.PlayerId).Item1 >= ArsonistMinPlayersToIgnite.GetInt() || pc.inVent));
     
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     
@@ -192,7 +193,7 @@ internal class Arsonist : RoleBase
     {
         var (doused, all) = GetDousedPlayerCount(playerId);
 
-        if (!ArsonistCanIgniteAnytime.GetBool())
+        if (!ArsonistCanIgniteAnytime)
             return ColorString(GetRoleColor(CustomRoles.Arsonist).ShadeColor(0.25f), $"({doused}/{all})");
         else
             return ColorString(GetRoleColor(CustomRoles.Arsonist).ShadeColor(0.25f), $"({doused}/{ArsonistMaxPlayersToIgnite.GetInt()})");
@@ -205,7 +206,7 @@ internal class Arsonist : RoleBase
     }
    
     public override Sprite ImpostorVentButtonSprite(PlayerControl player)
-        => (IsDouseDone(player) || (ArsonistCanIgniteAnytime.GetBool() && GetDousedPlayerCount(player.PlayerId).Item1 >= ArsonistMinPlayersToIgnite.GetInt())) ? CustomButton.Get("Ignite") : null;
+        => (IsDouseDone(player) || (ArsonistCanIgniteAnytime && GetDousedPlayerCount(player.PlayerId).Item1 >= ArsonistMinPlayersToIgnite.GetInt())) ? CustomButton.Get("Ignite") : null;
     
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Douse");
 
@@ -222,7 +223,7 @@ internal class Arsonist : RoleBase
                     {
                         pc.SetRealKiller(__instance.myPlayer);
                         Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Torched;
-                        pc.RpcMurderPlayerV3(pc);
+                        pc.RpcMurderPlayer(pc);
                     }
                 }
                 foreach (var pc in Main.AllPlayerControls) 
@@ -235,7 +236,7 @@ internal class Arsonist : RoleBase
                 }
                 return;
             }
-            else if (ArsonistCanIgniteAnytime.GetBool())
+            else if (ArsonistCanIgniteAnytime)
             {
                 var douseCount = GetDousedPlayerCount(__instance.myPlayer.PlayerId).Item1;
                 if (douseCount >= ArsonistMinPlayersToIgnite.GetInt()) // Don't check for max, since the player would not be able to ignite at all if they somehow get more players doused than the max
@@ -246,7 +247,7 @@ internal class Arsonist : RoleBase
                         if (!IsDousedPlayer(__instance.myPlayer, pc)) continue;
                         pc.KillFlash();
                         Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Torched;
-                        pc.RpcMurderPlayerV3(pc);
+                        pc.RpcMurderPlayer(pc);
                         pc.SetRealKiller(__instance.myPlayer);
                     }
                     if (Main.AllAlivePlayerControls.Length == 1)
@@ -263,7 +264,7 @@ internal class Arsonist : RoleBase
         }
     }
 
-    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytime.GetBool();
+    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytime;
 
     private static void ResetCurrentDousingTarget(byte arsonistId) => SendCurrentDousingTargetRPC(arsonistId, 255);
 

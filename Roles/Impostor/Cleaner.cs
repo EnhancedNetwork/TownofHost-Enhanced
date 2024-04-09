@@ -1,21 +1,23 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Cleaner : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 3000;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     public override Sprite ReportButtonSprite => CustomButton.Get("Clean");
 
     private static OptionItem KillCooldown;
     private static OptionItem KillCooldownAfterCleaning;
 
-    private static List<byte> CleanerBodies = [];
+    private static readonly HashSet<byte> CleanerBodies = [];
 
     public static void SetupCustomOption()
     {
@@ -29,12 +31,12 @@ internal class Cleaner : RoleBase
     }
     public override void Init()
     {
-        CleanerBodies = [];
-        On = false;
+        CleanerBodies.Clear();
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        Playerids.Add(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();

@@ -1,9 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
@@ -12,21 +10,23 @@ namespace TOHE.Roles.Crewmate;
 
 internal class TimeMaster : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 9900;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.TimeMaster.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    //==================================================================\\
 
     private static OptionItem TimeMasterSkillCooldown;
     private static OptionItem TimeMasterSkillDuration;
     private static OptionItem TimeMasterMaxUses;
     private static OptionItem TimeMasterAbilityUseGainWithEachTaskCompleted;
 
-    private static Dictionary<byte, Vector2> TimeMasterBackTrack = [];
-    private static Dictionary<byte, float> TimeMasterNumOfUsed = [];
-    private static Dictionary<byte, int> TimeMasterNum = [];
-    private static Dictionary<byte, long> TimeMasterInProtect = [];
+    private static readonly Dictionary<byte, Vector2> TimeMasterBackTrack = [];
+    private static readonly Dictionary<byte, float> TimeMasterNumOfUsed = [];
+    private static readonly Dictionary<byte, int> TimeMasterNum = [];
+    private static readonly Dictionary<byte, long> TimeMasterInProtect = [];
 
     public static void SetupCustomOptions()
     {
@@ -42,28 +42,28 @@ internal class TimeMaster : RoleBase
     }
     public override void Init()
     {
-        TimeMasterBackTrack = [];
-        TimeMasterNum = [];
-        TimeMasterNumOfUsed = [];
-        TimeMasterInProtect = [];
-        On = false;
+        TimeMasterBackTrack.Clear();
+        TimeMasterNum.Clear();
+        TimeMasterNumOfUsed.Clear();
+        TimeMasterInProtect.Clear();
     }
     public override void Add(byte playerId)
     {
         TimeMasterNum[playerId] = 0;
         TimeMasterNumOfUsed.Add(playerId, TimeMasterMaxUses.GetInt());
         TimeMasterNumOfUsed.Add(playerId, TimeMasterMaxUses.GetInt());
-        On = true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.EngineerCooldown = TimeMasterSkillCooldown.GetFloat();
         AURoleOptions.EngineerInVentMaxTime = 1;
     }
-    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive()) return;
-        TimeMasterNumOfUsed[player.PlayerId] += TimeMasterAbilityUseGainWithEachTaskCompleted.GetFloat();
+        if (player.IsAlive())
+            TimeMasterNumOfUsed[player.PlayerId] += TimeMasterAbilityUseGainWithEachTaskCompleted.GetFloat();
+
+        return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {

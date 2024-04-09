@@ -1,12 +1,14 @@
-﻿
-namespace TOHE.Roles.Impostor;
+﻿namespace TOHE.Roles.Impostor;
 
 internal class Scavenger : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 4400;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem ScavengerKillCooldown;
 
@@ -19,11 +21,11 @@ internal class Scavenger : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ScavengerKillCooldown.GetFloat();
@@ -36,14 +38,13 @@ internal class Scavenger : RoleBase
             () =>
             {
                 target.SetRealKiller(killer);
-                target.RpcMurderPlayerV3(target);
+                target.RpcMurderPlayer(target);
+                RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), Translator.GetString("KilledByScavenger")), time: 8f);
             },
             0.5f, "Scavenger Kill");
         
         killer.SetKillCooldown();
-        RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-        
         return false;
     }
 

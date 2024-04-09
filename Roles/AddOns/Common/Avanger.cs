@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using static TOHE.Options;
-using TOHE.Roles.Neutral;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
+﻿using static TOHE.Options;
 
 
 namespace TOHE.Roles.AddOns.Common;
@@ -27,7 +23,7 @@ public static class Avanger
     {
         var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && x.RpcCheckAndMurder(target, true)).ToList();
         
-        if (pcList.Count > 0)
+        if (pcList.Any())
         {
             PlayerControl rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
             Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;

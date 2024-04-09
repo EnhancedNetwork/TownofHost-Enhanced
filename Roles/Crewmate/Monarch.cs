@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -10,11 +9,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Monarch : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 12100;
-    private static List<byte> playerIdList = [];
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KnightCooldown;
     private static OptionItem KnightMax;
@@ -31,15 +32,13 @@ internal class Monarch : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         KnightLimit = new();
-        On = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         KnightLimit = KnightMax.GetInt();
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -56,7 +55,7 @@ internal class Monarch : RoleBase
         writer.Write(KnightLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         KnightLimit = reader.ReadInt32();
     }

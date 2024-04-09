@@ -1,7 +1,4 @@
-using HarmonyLib;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
@@ -11,7 +8,6 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using UnityEngine.UI;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -418,13 +414,13 @@ class CheckForEndVotingPatch
                 name = string.Format(GetString("PlayerExiled"), realName);
                 break;
             case 1:
-                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Parasite) || player.Is(CustomRoles.Crewpostor) || player.Is(CustomRoles.Refugee) || player.Is(CustomRoles.Convict)) 
+                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Parasite) || player.Is(CustomRoles.Crewpostor) || player.Is(CustomRoles.Refugee)) 
                     name = string.Format(GetString("BelongTo"), realName, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
                 else if (player.GetCustomRole().IsCrewmate())
                     name = string.Format(GetString("IsGood"), realName);
 
-                else if (player.GetCustomRole().IsNeutral() && !player.Is(CustomRoles.Parasite) && !player.Is(CustomRoles.Refugee) && !player.Is(CustomRoles.Crewpostor) && !player.Is(CustomRoles.Convict)) 
+                else if (player.GetCustomRole().IsNeutral() && !player.Is(CustomRoles.Parasite) && !player.Is(CustomRoles.Refugee) && !player.Is(CustomRoles.Crewpostor)) 
                     name = string.Format(GetString("BelongTo"), realName, Utils.ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
                 break;
@@ -505,7 +501,7 @@ class CheckForEndVotingPatch
     }
     public static PlayerVoteArea GetPlayerVoteArea(byte playerId)
     {
-        if (MeetingHud.Instance == null || MeetingHud.Instance.playerStates.Count < 1) return null;
+        if (MeetingHud.Instance == null || !MeetingHud.Instance.playerStates.Any()) return null;
         //This function should only be used to get vote states after voting complete
 
         foreach (var pva in MeetingHud.Instance.playerStates)
@@ -752,22 +748,34 @@ class MeetingHudStartPatch
             foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.IsModClient()).ToArray())
             {
                 var role = pc.GetCustomRole();
-                var sb = new StringBuilder();
-                sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + pc.GetRoleInfo(true));
-                
+                var Des = pc.GetRoleInfo(true);
+                var title = $"<color=#ffffff>" + role.GetRoleTitle() + "</color>\n"; 
+                var Conf = new StringBuilder(); 
+                var Sub = new StringBuilder(); 
+                var rlHex = Utils.GetRoleColorCode(role);
+                var SubTitle = $"<color={rlHex}>" + GetString("YourAddon") + "</color>\n";
                 if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                    Utils.ShowChildrenSettings(opt, ref sb, command: true);
-                
-                var txt = sb.ToString();
-                sb.Clear().Append(txt.RemoveHtmlTags());
-                
+                    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref Conf);
+                var cleared = Conf.ToString();
+                var Setting = $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n";
+                Conf.Clear().Append($"<color=#ffffff>" + $"<size={ChatCommands.Csize}>" + Setting + cleared + "</size>" + "</color>");
+
                 foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles.ToArray())
-                    sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
-                
+                    Sub.Append($"\n\n" + $"<size={ChatCommands.Asize}>" + Utils.GetRoleTitle(subRole) + Utils.GetInfoLong(subRole) + "</size>");
                 if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                    sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
-                
-                AddMsg(sb.ToString(), pc.PlayerId);
+                    Sub.Append($"\n\n" + $"<size={ChatCommands.Asize}>" + Utils.GetRoleTitle(CustomRoles.Lovers) + Utils.GetInfoLong(CustomRoles.Lovers) + "</size>");
+
+                if (Sub.ToString() != string.Empty)
+                {
+                    var ACleared = Sub.ToString().Remove(0, 2);
+                    ACleared = ACleared.Length > 1200 ? $"<size={ChatCommands.Asize}>" + ACleared.RemoveHtmlTags() + "</size>": ACleared;
+                    Sub.Clear().Append(ACleared);
+                }
+
+                AddMsg(Des, pc.PlayerId, title);
+                AddMsg("", pc.PlayerId, Conf.ToString());
+                if (Sub.ToString() != string.Empty) AddMsg(Sub.ToString(), pc.PlayerId, SubTitle);
+
             }
 
         if (msgToSend.Count >= 1)
@@ -806,8 +814,8 @@ class MeetingHudStartPatch
         string MimicMsg = "";
         foreach (var pc in Main.AllPlayerControls)
         {
-            Main.PlayerStates.Do(x
-                => x.Value.RoleClass.OnMeetingHudStart(pc));
+            pc?.GetRoleClass()?.OnMeetingHudStart(pc);
+            Main.PlayerStates.Do(plr => plr.Value.RoleClass.OnOthersMeetingHudStart(pc));
 
             foreach (var csId in Cyber.CyberDead)
             {

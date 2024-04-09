@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-using Hazel;
-using System.Collections.Generic;
+﻿using Hazel;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
@@ -15,7 +13,7 @@ internal class Romantic : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13500;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -87,7 +85,7 @@ internal class Romantic : RoleBase
         writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Times = reader.ReadInt32();
@@ -191,7 +189,7 @@ internal class Romantic : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
         => isPartnerProtected && BetPlayer.ContainsValue(target.PlayerId);
-    
+
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide) => isRomanticAlive = false;
     
     private static string TargetMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
@@ -280,7 +278,7 @@ internal class VengefulRomantic : RoleBase
 
     //===========================SETUP================================\\
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase; 
     //==================================================================\\
@@ -317,7 +315,7 @@ internal class VengefulRomantic : RoleBase
         }
         else
         {
-            killer.RpcMurderPlayerV3(killer);
+            killer.RpcMurderPlayer(killer);
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
             return false;
         }
@@ -337,7 +335,7 @@ internal class VengefulRomantic : RoleBase
         writer.Write(VengefulTarget.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         byte Target = reader.ReadByte();
@@ -354,7 +352,7 @@ internal class RuthlessRomantic : RoleBase
 
     //===========================SETUP================================\\
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
 

@@ -1,24 +1,25 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
 internal class QuickShooter : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 2200;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem MeetingReserved;
     private static OptionItem ShapeshiftCooldown;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, int> ShotLimit = [];
+    private static readonly Dictionary<byte, int> ShotLimit = [];
 
     private static bool Storaging = false;
 
@@ -34,16 +35,14 @@ internal class QuickShooter : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
-        ShotLimit = [];
+        playerIdList.Clear();
+        ShotLimit.Clear();
         Storaging = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         ShotLimit.TryAdd(playerId, 0);
-        On = true;
     }
 
     private static void SendRPC(byte playerId)
@@ -54,7 +53,7 @@ internal class QuickShooter : RoleBase
         writer.Write(ShotLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte QuickShooterId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -74,15 +73,16 @@ internal class QuickShooter : RoleBase
         Storaging = false;
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         if (shapeshifter.killTimer == 0)
         {
             ShotLimit[shapeshifter.PlayerId]++;
             SendRPC(shapeshifter.PlayerId);
-            
+
+            resetCooldown = false;
             Storaging = true;
             shapeshifter.ResetKillCooldown();
             shapeshifter.SetKillCooldown();
@@ -90,6 +90,7 @@ internal class QuickShooter : RoleBase
             shapeshifter.Notify(Translator.GetString("QuickShooterStoraging"));
             Logger.Info($"{Utils.GetPlayerById(shapeshifter.PlayerId)?.GetNameWithRole()} : shot limit: {ShotLimit[shapeshifter.PlayerId]}", "QuickShooter");
         }
+        return false;
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)

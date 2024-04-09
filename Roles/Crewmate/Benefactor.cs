@@ -1,19 +1,18 @@
 ﻿using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Core;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Benefactor : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 26400;
-
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem TaskMarkPerRoundOpt;
     private static OptionItem ShieldDuration;
@@ -21,7 +20,7 @@ internal class Benefactor : RoleBase
 
     private static int maxTasksMarkedPerRound = new();
 
-    private static readonly Dictionary<byte, List<int>> taskIndex = [];
+    private static readonly Dictionary<byte, HashSet<int>> taskIndex = [];
     private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
     private static readonly Dictionary<byte, long> shieldedPlayers = [];
 
@@ -41,13 +40,11 @@ internal class Benefactor : RoleBase
         taskIndex.Clear();
         shieldedPlayers.Clear();
         TaskMarkPerRound.Clear();
-        On = false;
         maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
     }
     public override void Add(byte playerId)
     {
         TaskMarkPerRound[playerId] = 0;
-        On = true;
     }
     public override void Remove(byte playerId)
     {
@@ -135,7 +132,7 @@ internal class Benefactor : RoleBase
             if (taskIndex.ContainsKey(playerId)) taskIndex[playerId].Clear();
             SendRPC(type: 0, benefactorId: playerId); //clear taskindex
         }
-        if (shieldedPlayers.Count > 0)
+        if (shieldedPlayers.Any())
         {
             shieldedPlayers.Clear();
             SendRPC(type: 1); //clear all shielded players
@@ -145,10 +142,13 @@ internal class Benefactor : RoleBase
     public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (!CustomRoles.Benefactor.IsClassEnable()) return;
+        
+        if (!HasEnabled) return;
         if (player == null) return;
         if (!player.IsAlive()) return;
+        
         byte playerId = player.PlayerId;
+        
         if (player.Is(CustomRoles.Benefactor))
         {
             if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
@@ -188,7 +188,8 @@ internal class Benefactor : RoleBase
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (target == null || killer == null || !shieldedPlayers.ContainsKey(target.PlayerId)) return true;
+        if (target == null || killer == null) return true;
+        if (!shieldedPlayers.ContainsKey(target.PlayerId)) return false;
 
         if (ShieldIsOneTimeUse.GetBool())
         {
@@ -198,7 +199,7 @@ internal class Benefactor : RoleBase
         }
         killer.RpcGuardAndKill();
         killer.SetKillCooldown();
-        return false;
+        return true;
     }
 
     public override void OnFixedUpdateLowLoad(PlayerControl pc)

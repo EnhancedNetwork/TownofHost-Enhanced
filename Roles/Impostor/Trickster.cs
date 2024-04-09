@@ -2,10 +2,13 @@
 
 internal class Trickster : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 4800;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     public static void SetupCustomOption()
     {
@@ -13,10 +16,10 @@ internal class Trickster : RoleBase
     }
     public override void Init()
     {
-        On = false;
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 }

@@ -1,4 +1,3 @@
-using HarmonyLib;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -103,7 +102,7 @@ public class ModUpdater
             else
             {
                 string publishedAt = data["published_at"]?.ToString();
-                DateTime? latestVersion = DateTime.TryParse(publishedAt, out DateTime parsedDate) ? parsedDate : (DateTime?)null;
+                DateTime? latestVersion = DateTime.TryParse(publishedAt, out DateTime parsedDate) ? parsedDate : null;
                 latestTitle = $"Day: {latestVersion?.Day} Month: {latestVersion?.Month} Year: {latestVersion?.Year}";
 
                 JArray assets = data["assets"].Cast<JArray>();

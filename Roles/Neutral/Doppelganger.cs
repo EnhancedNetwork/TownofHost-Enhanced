@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
 using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.Options;
@@ -11,7 +10,7 @@ internal class Doppelganger : RoleBase
     //===========================SETUP================================\\
     private const int Id = 25000;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -64,7 +63,7 @@ internal class Doppelganger : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -146,12 +145,8 @@ internal class Doppelganger : RoleBase
 
         TotalSteals[killer.PlayerId]++;
 
-        string kname;
-        if (killer.PlayerId == PlayerControl.LocalPlayer.PlayerId && Main.nickName.Length != 0) kname = Main.nickName;
-        else kname = killer.Data.PlayerName;
-        string tname;
-        if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId && Main.nickName.Length != 0) tname = Main.nickName;
-        else tname = target.Data.PlayerName;
+        string kname = killer.GetRealName();
+        string tname = target.GetRealName();
 
         var killerSkin = new GameData.PlayerOutfit()
             .Set(kname, killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);

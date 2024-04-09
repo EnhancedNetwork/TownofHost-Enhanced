@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppSystem.Text;
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -10,13 +9,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class EvilTracker : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 1400;
-    private static List<byte> playerIdList = [];
-    
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => (TargetMode)OptionTargetMode.GetValue() == TargetMode.Never ? CustomRoles.Impostor : CustomRoles.Shapeshifter;
-
+    //==================================================================\\
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Track");
 
     private static OptionItem OptionCanSeeKillFlash;
@@ -27,9 +26,9 @@ internal class EvilTracker : RoleBase
     private static TargetMode CurrentTargetMode;
     private static bool CanSeeLastRoomInMeeting;
 
-    private static Dictionary<byte, byte> Target = [];
-    private static Dictionary<byte, bool> CanSetTarget = [];
-    private static Dictionary<byte, HashSet<byte>> ImpostorsId = [];
+    private static readonly Dictionary<byte, byte> Target = [];
+    private static readonly Dictionary<byte, bool> CanSetTarget = [];
+    private static readonly Dictionary<byte, HashSet<byte>> ImpostorsId = [];
 
     private enum TargetMode
     {
@@ -58,11 +57,10 @@ internal class EvilTracker : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        Target = [];
-        CanSetTarget = [];
-        ImpostorsId = [];
-        On = false;
+        playerIdList.Clear();
+        Target.Clear();
+        CanSetTarget.Clear();
+        ImpostorsId.Clear();
 
         CanSeeKillFlash = OptionCanSeeKillFlash.GetBool();
         CurrentTargetMode = (TargetMode)OptionTargetMode.GetValue();
@@ -75,7 +73,6 @@ internal class EvilTracker : RoleBase
         CanSetTarget.Add(playerId, CurrentTargetMode != TargetMode.Never);
 
         ImpostorsId[playerId] = [];
-        On = true;
 
         foreach (var target in Main.AllAlivePlayerControls)
         {
@@ -98,7 +95,7 @@ internal class EvilTracker : RoleBase
         hud.AbilityButton.OverrideText(GetString("EvilTrackerChangeButtonText"));
     }
 
-    public static bool KillFlashCheck() => CanSeeKillFlash;
+    public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => CanSeeKillFlash;
 
     private static bool CanTarget(byte playerId)
         => !Main.PlayerStates[playerId].IsDead && CanSetTarget.TryGetValue(playerId, out var value) && value;
@@ -111,23 +108,19 @@ internal class EvilTracker : RoleBase
         && target.IsAlive() && seer != target
         && (target.Is(CustomRoleTypes.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden = false)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!CanTarget(shapeshifter.PlayerId) || (!shapeshifting && !shapeshiftIsHidden)) return;
-        if (target == null || target.Is(CustomRoleTypes.Impostor)) return;
+        if (target.Is(CustomRoleTypes.Impostor) || !CanTarget(shapeshifter.PlayerId)) return false;
 
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
 
-        if (shapeshiftIsHidden)
-        {
-            shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-            shapeshifter.SyncSettings();
-        }
-        else
-            shapeshifter.MarkDirtySettings();
+        shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+        shapeshifter.SyncSettings();
 
         Logger.Info($"{shapeshifter.GetNameWithRole()} target to {target.GetNameWithRole()}", "EvilTrackerTarget");
         Utils.NotifyRoles(SpecifySeer: shapeshifter, SpecifyTarget: target, ForceLoop: true);
+
+        return false;
     }
     public override void AfterMeetingTasks()
     {
@@ -136,7 +129,7 @@ internal class EvilTracker : RoleBase
             SetTarget();
             Utils.MarkEveryoneDirtySettings();
         }
-        foreach (var playerId in playerIdList.ToArray())
+        foreach (var playerId in playerIdList)
         {
             var pc = Utils.GetPlayerById(playerId);
             var target = Utils.GetPlayerById(GetTargetId(playerId));
@@ -149,7 +142,7 @@ internal class EvilTracker : RoleBase
     private static void SetTarget(byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
         if (trackerId == byte.MaxValue) // Targets can be re-set
-            foreach (var playerId in playerIdList.ToArray())
+            foreach (var playerId in playerIdList)
                 CanSetTarget[playerId] = true;
         else if (targetId == byte.MaxValue) // Target deletion
             Target[trackerId] = byte.MaxValue;
@@ -194,8 +187,12 @@ internal class EvilTracker : RoleBase
 
         if (isForMeeting)
         {
-            var roomName = GetArrowAndLastRoom(seer, seen);
-            return roomName.Length == 0 ? string.Empty : $"<size=1.5>{roomName}</size>";
+            if (IsTrackTarget(seer, seen) && CanSeeLastRoomInMeeting)
+            {
+                var roomName = GetArrowAndLastRoom(seer, seen);
+                return roomName.Length == 0 ? string.Empty : $"<size=1.5>{roomName}</size>";
+            }
+            return string.Empty;
         }
         else
         {
@@ -205,15 +202,15 @@ internal class EvilTracker : RoleBase
 
     private static string GetTargetArrow(PlayerControl seer, PlayerControl target)
     {
-        if (!GameStates.IsInTask || !target.Is(CustomRoles.EvilTracker)) return "";
+        if (!GameStates.IsInTask || !target.Is(CustomRoles.EvilTracker)) return string.Empty;
 
         var trackerId = target.PlayerId;
-        if (seer.PlayerId != trackerId) return "";
+        if (seer.PlayerId != trackerId) return string.Empty;
 
         ImpostorsId[trackerId].RemoveWhere(id => Main.PlayerStates[id].IsDead);
 
         var sb = new StringBuilder(80);
-        if (ImpostorsId[trackerId].Count > 0)
+        if (ImpostorsId[trackerId].Any())
         {
             sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>");
             foreach (var impostorId in ImpostorsId[trackerId])

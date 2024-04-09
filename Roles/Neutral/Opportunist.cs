@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using static TOHE.Options;
+﻿using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
@@ -8,10 +7,11 @@ internal class Opportunist : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13300;
     private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled = PlayerIds.Count > 0;
+    public static bool HasEnabled = PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
+    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     private static OptionItem OppoImmuneToAttacksWhenTasksDone;
 

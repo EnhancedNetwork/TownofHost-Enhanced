@@ -1,6 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Translator;
@@ -9,10 +7,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class President : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 12300;
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem PresidentAbilityUses;
     private static OptionItem PresidentCanBeGuessedAfterRevealing;
@@ -21,9 +22,9 @@ internal class President : RoleBase
     private static OptionItem MadmatesSeePresident;
     private static OptionItem ImpsSeePresident;
 
-    private static Dictionary<byte, int> EndLimit = [];
-    private static Dictionary<byte, int> RevealLimit = [];
-    private static Dictionary<byte, bool> CheckPresidentReveal = [];
+    private static readonly Dictionary<byte, int> EndLimit = [];
+    private static readonly Dictionary<byte, int> RevealLimit = [];
+    private static readonly Dictionary<byte, bool> CheckPresidentReveal = [];
 
     public static void SetupCustomOption()
     {
@@ -38,17 +39,17 @@ internal class President : RoleBase
     }
     public override void Init()
     {
-        CheckPresidentReveal = [];
-        EndLimit = [];
-        RevealLimit = [];
-        On = false;
+        playerIdList.Clear();
+        CheckPresidentReveal.Clear();
+        EndLimit.Clear();
+        RevealLimit.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         CheckPresidentReveal.Add(playerId, false);
         EndLimit.Add(playerId, PresidentAbilityUses.GetInt());
         RevealLimit.Add(playerId, 1);
-        On = true;
     }
     public override void Remove(byte playerId)
     {

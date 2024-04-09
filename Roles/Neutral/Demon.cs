@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -12,7 +11,7 @@ internal class Demon : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16200;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -79,7 +78,7 @@ internal class Demon : RoleBase
             writer.Write(PlayerHealth[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Health = reader.ReadInt32();
@@ -96,7 +95,7 @@ internal class Demon : RoleBase
         if (PlayerHealth[target.PlayerId] - Damage.GetInt() < 1)
         {
             PlayerHealth.Remove(target.PlayerId);
-            killer.RpcMurderPlayerV3(target);
+            killer.RpcMurderPlayer(target);
             Utils.NotifyRoles(SpecifySeer: killer);
             return false;
         }

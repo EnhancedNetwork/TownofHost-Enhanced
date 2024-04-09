@@ -1,7 +1,5 @@
 using Hazel;
 using System;
-using System.Collections.Generic;
-using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -10,9 +8,9 @@ internal class Mini : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7000;
-    private static bool On = false;
-    public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.NiceMini.IsClassEnable() || CustomRoles.EvilMini.IsClassEnable();
+    private static readonly HashSet<byte> playerIdList = [];
+    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => playerIdList.Any();
     public override CustomRoles ThisRoleBase => IsEvilMini ? CustomRoles.Impostor : CustomRoles.Crewmate;
     //==================================================================\\
 
@@ -25,7 +23,6 @@ internal class Mini : RoleBase
     private static OptionItem MinorCD;
     private static OptionItem MajorCD;
 
-    private static List<byte> playerIdList = [];
 
     public static int Age = new();
     private static bool IsEvilMini = false;
@@ -53,9 +50,8 @@ internal class Mini : RoleBase
     public override void Init()
     {
         GrowUpTime = 0;
-        playerIdList = [];
+        playerIdList.Clear();
         GrowUp = GrowUpDuration.GetInt() / 18;
-        On = false;
         Age = 0;
         misguessed = false;
 
@@ -65,7 +61,6 @@ internal class Mini : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -78,7 +73,7 @@ internal class Mini : RoleBase
         writer.Write(Age);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         Age = reader.ReadInt32();
     }

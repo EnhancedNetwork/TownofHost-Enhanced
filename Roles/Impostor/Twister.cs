@@ -1,6 +1,4 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -10,16 +8,19 @@ namespace TOHE.Roles.Impostor;
 
 internal class Twister : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 5700;
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem ShapeshiftCooldown;
     private static OptionItem ShapeshiftDuration;
     private static OptionItem HideTwistedPlayerNames;
 
-    private static List<byte> changePositionPlayers = [];
+    private static HashSet<byte> changePositionPlayers = [];
 
     public static void SetupCustomOption()
     {
@@ -32,12 +33,12 @@ internal class Twister : RoleBase
     }
     public override void Init()
     {
-        On = false;
-        changePositionPlayers = [];
+        PlayerIds.Clear();
+        changePositionPlayers.Clear();
     }
     public override void Add(byte playerId)
     {
-        On = true;
+        PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -45,12 +46,12 @@ internal class Twister : RoleBase
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = ShapeshiftDuration.GetFloat();
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl targetSS, bool shapeshifting, bool shapeshiftIsHidden)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl targetSS, bool IsAnimate, bool shapeshifting)
     {
-        changePositionPlayers = [];
+        // When is force revert shapeshift
+        if (shapeshifter.PlayerId == targetSS.PlayerId && !IsAnimate) return;
 
-        if (!shapeshiftIsHidden)
-            changePositionPlayers.Add(shapeshifter.PlayerId);
+        changePositionPlayers = [shapeshifter.PlayerId];
 
         var rd = IRandom.Instance;
         foreach (var pc in Main.AllAlivePlayerControls)

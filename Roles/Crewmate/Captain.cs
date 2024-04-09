@@ -1,6 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -9,11 +7,13 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Captain : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 26300;
-
-    public static bool On = false;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
 
     private static OptionItem OptionCrewCanFindCaptain;
     private static OptionItem OptionMadmateCanFindCaptain;
@@ -26,8 +26,8 @@ internal class Captain : RoleBase
     private static OptionItem CaptainCanTargetNE;
     private static OptionItem CaptainCanTargetNK;
 
-    private static Dictionary<byte, float> OriginalSpeed = [];
-    private static Dictionary<byte, List<byte>> CaptainVoteTargets = [];
+    private static readonly Dictionary<byte, float> OriginalSpeed = [];
+    private static readonly Dictionary<byte, List<byte>> CaptainVoteTargets = [];
 
     public static void SetupCustomOption()
     {
@@ -49,16 +49,14 @@ internal class Captain : RoleBase
 
     public override void Init()
     {
-        //playerIdList = [];
-        On = false;
-        OriginalSpeed = [];
-        CaptainVoteTargets = [];
+        playerIdList.Clear();
+        OriginalSpeed.Clear();
+        CaptainVoteTargets.Clear();
     }
 
     public override void Add(byte playerId)
     {
-        //playerIdList.Add(playerId);
-        On = true;
+        playerIdList.Add(playerId);
     }
     private static void SendRPCSetSpeed(byte targetId)
     {
@@ -95,7 +93,7 @@ internal class Captain : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public static void ReceiveRPCRevertAllSpeed(MessageReader reader)
+    public static void ReceiveRPCRevertAllSpeed()
     {
         OriginalSpeed.Clear();
     }
@@ -138,11 +136,11 @@ internal class Captain : RoleBase
 
     public static bool CrewCanFindCaptain() => OptionCrewCanFindCaptain.GetBool();
 
-    public override void OnTaskComplete(PlayerControl pc, int y, int z)
+    public override bool OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     {
-        if (pc == null || !pc.IsAlive()) return;
-        if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
-        if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return;
+        if (pc == null || !pc.IsAlive()) return true;
+        if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
+        if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return true;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
                                                            (x.GetCustomRole().IsImpostorTeamV3() ||
                                                            (CaptainCanTargetNB.GetBool() && x.GetCustomRole().IsNB()) ||
@@ -151,7 +149,7 @@ internal class Captain : RoleBase
                                                            (CaptainCanTargetNK.GetBool() && x.GetCustomRole().IsNeutralKillerTeam()))).ToList();
 
         Logger.Info($"Total Number of Potential Target {allTargets.Count}", "Total Captain Target");
-        if (allTargets.Count == 0) return;
+        if (allTargets.Count == 0) return true;
         var rand = IRandom.Instance;
         var targetPC = allTargets[rand.Next(allTargets.Count)];
         var target = targetPC.PlayerId;
@@ -169,6 +167,8 @@ internal class Captain : RoleBase
             OriginalSpeed.Remove(target);
             SendRPCRevertSpeed(target);
         }, OptionReducedSpeedTime.GetFloat(), "Captain Revert Speed");
+
+        return true;
     }
     private static CustomRoles? SelectRandomAddon(byte targetId)
     {
@@ -196,7 +196,7 @@ internal class Captain : RoleBase
     }
     public override void OnPlayerExiled(PlayerControl captain, GameData.PlayerInfo exiled)
     {
-        if (exiled == null || !exiled.GetCustomRole().Is(CustomRoles.Captain)) return;
+        if (exiled == null || (exiled.GetCustomRole() is not CustomRoles.Captain)) return;
 
         byte playerId = exiled.PlayerId;
         if (playerId == byte.MaxValue) return;

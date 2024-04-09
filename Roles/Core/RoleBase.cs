@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
 using InnerNet;
-using System.Collections.Generic;
-using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 
 namespace TOHE;
@@ -25,7 +24,7 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// Make a bool and apply IsEnable => {Bool};
+    /// Make A HashSet(byte) PlayerIdList = []; and check PlayerIdList.Any();
     /// </summary>
     public abstract bool IsEnable { get; }
 
@@ -77,12 +76,11 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
     { }
-    
+
     /// <summary>
     /// Player completes a task
     /// </summary>
-    public virtual void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
-    { }
+    public virtual bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount) => true;
     /// <summary>
     /// Other player complete A Marked task
     /// </summary>
@@ -91,12 +89,12 @@ public abstract class RoleBase
     // <summary>
     /// The role's tasks are needed for a task win
     /// </summary>
-    public virtual bool HasTasks(byte player, CustomRoles role) => role.IsCrewmate() && !role.IsTasklessCrewmate();
+    public virtual bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (!ForRecompute || !player.Object.IsAnySubRole(x => x.IsConverted()));
+    
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
-    public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
-    { }
+    public virtual bool OnCheckProtect(PlayerControl angel, PlayerControl target) => angel != null && target != null;
 
     /// <summary>
     /// A method for activating actions where the role starts playing an animation when entering a vent
@@ -139,14 +137,14 @@ public abstract class RoleBase
     public virtual bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => target != null && killer != null;
     /// <summary>
     /// When role the target requires a kill check
-    /// If the target doesn't require a kill cancel, always use "return true"
     /// </summary>
+    /// <returns>If the target doesn't require a kill cancel, always use "return true"</returns>
     public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => target != null && killer != null;
     /// <summary>
     /// When role the target requires a kill check
-    /// If the target doesn't require a kill cancel, always use "return true"
     /// </summary>
-    public virtual bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target) => target != null && killer != null;
+    /// <returns>If the target needs to cancel kill, always use "return true"</returns>
+    public virtual bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target) => target == null || killer == null;
     /// <summary>
     ///  When role the killer requires a kill check
     /// </summary>
@@ -164,14 +162,34 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// A method to always check the state when target has died (murder, exiled, execute etc..)
+    /// </summary>
+    public virtual void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+    { }
+
+    /// <summary>
     /// When the target role died and need run kill flash
     /// </summary>
     public virtual bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
 
     /// <summary>
-    /// A generic method to do tasks for when a (CustomRole)player is shapeshifting.
+    /// Shapeshift animation only from itself
     /// </summary>
-    public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    public virtual bool CanDesyncShapeshift => false;
+
+    /// <summary>
+    /// Called when checking for shapeshift
+    /// Also can be used not activate shapeshift animate
+    /// </summary>
+    /// <param name="target">Transformation target</param>
+    /// <param name="animate">Whether to play the shapeshift animation</param>
+    /// <returns>return false for cancel the shapeshift transformation</returns>
+    public virtual bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate) => true;
+
+    /// <summary>
+    /// Called after check shapeshift
+    /// </summary>
+    public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     { }
 
     /// <summary>
@@ -214,7 +232,12 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When the meeting hud is loaded
+    /// When the meeting hud is loaded for others
+    /// </summary>
+    public virtual void OnOthersMeetingHudStart(PlayerControl pc)
+    { }
+    /// <summary>
+    /// When the meeting hud is loaded 
     /// </summary>
     public virtual void OnMeetingHudStart(PlayerControl pc)
     { }
@@ -302,4 +325,6 @@ public abstract class RoleBase
     public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
+    public virtual void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    { }
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -8,20 +7,22 @@ namespace TOHE.Roles.Impostor;
 
 internal class Mastermind : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 4100;
 
-    public static bool On;
-    public override bool IsEnable => On;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem TimeLimit;
     private static OptionItem Delay;
 
-    private static List<byte> playerIdList = [];
-    private static Dictionary<byte, long> ManipulatedPlayers = [];
-    private static Dictionary<byte, long> ManipulateDelays = [];
-    private static Dictionary<byte, float> TempKCDs = [];
+    private static readonly Dictionary<byte, long> ManipulatedPlayers = [];
+    private static readonly Dictionary<byte, long> ManipulateDelays = [];
+    private static readonly Dictionary<byte, float> TempKCDs = [];
 
     private static float ManipulateCD;
 
@@ -38,11 +39,10 @@ internal class Mastermind : RoleBase
 
     public override void Init()
     {
-        On = false;
-        playerIdList = [];
-        ManipulatedPlayers = [];
-        ManipulateDelays = [];
-        TempKCDs = [];
+        playerIdList.Clear();
+        ManipulatedPlayers.Clear();
+        ManipulateDelays.Clear();
+        TempKCDs.Clear();
     }
 
     public override void Add(byte playerId)
@@ -54,7 +54,6 @@ internal class Mastermind : RoleBase
         var pc = GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-        On = true;
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -118,7 +117,7 @@ internal class Mastermind : RoleBase
                 TempKCDs.Remove(x.Key);
                 player.SetRealKiller(mastermind);
                 Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                player.RpcMurderPlayerV3(player);
+                player.RpcMurderPlayer(player);
                 RPC.PlaySoundRPC(mastermind.PlayerId, Sounds.KillSound);
             }
 
@@ -136,8 +135,8 @@ internal class Mastermind : RoleBase
             if (pc.IsAlive())
             {
                 Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                pc.SetRealKiller(GetPlayerById(playerIdList[0]));
-                pc.RpcMurderPlayerV3(pc);
+                pc.SetRealKiller(GetPlayerById(playerIdList.First()));
+                pc.RpcMurderPlayer(pc);
             }
         }
         ManipulateDelays.Clear();
@@ -147,24 +146,24 @@ internal class Mastermind : RoleBase
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return false;
-        if (!PlayerIsManipulated(killer)) return true;
+        if (killer == null || target == null) return true;
+        if (!PlayerIsManipulated(killer)) return false;
 
         ManipulatedPlayers.Remove(killer.PlayerId);
 
-        var mastermind = GetPlayerById(playerIdList[0]);
+        var mastermind = GetPlayerById(playerIdList.First());
         mastermind?.Notify(string.Format(GetString("ManipulatedKilled"), target.GetRealName()), 4f);
         mastermind?.SetKillCooldown(time: KillCooldown.GetFloat());
         killer.Notify(GetString("SurvivedManipulation"));
 
         if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.Mastermind))
         {
-            target.RpcMurderPlayerV3(killer);
+            target.RpcMurderPlayer(killer);
             TempKCDs.Remove(killer.PlayerId);
-            return false;
+            return true;
         }
 
-        killer.RpcMurderPlayerV3(target);
+        killer.RpcMurderPlayer(target);
 
         _ = new LateTask(() =>
         {
@@ -172,7 +171,7 @@ internal class Mastermind : RoleBase
             TempKCDs.Remove(killer.PlayerId);
         }, 0.1f, "Set KCD for Manipulated Kill");
 
-        return false;
+        return true;
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)

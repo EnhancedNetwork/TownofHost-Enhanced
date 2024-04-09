@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -10,7 +9,7 @@ internal class Necromancer : RoleBase
     //===========================SETUP================================\\
     private const int Id = 17100;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -90,7 +89,7 @@ internal class Necromancer : RoleBase
         }
         if (seconds <= 0 || GameStates.IsMeeting && player.IsAlive()) 
         { 
-            player.RpcMurderPlayerV3(player); 
+            player.RpcMurderPlayer(player); 
             player.SetRealKiller(killer);
             Killer = null; 
             return; 
@@ -116,7 +115,7 @@ internal class Necromancer : RoleBase
         }
         else
         {
-            killer.RpcMurderPlayerV3(killer);
+            killer.RpcMurderPlayer(killer);
             return false;
         }
     }

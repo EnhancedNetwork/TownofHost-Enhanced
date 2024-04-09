@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-
-namespace TOHE.Patches;
+﻿namespace TOHE.Patches;
 
 [HarmonyPatch(typeof(DeconSystem), nameof(DeconSystem.UpdateSystem))]
 public static class DeconSystemUpdateSystemPatch

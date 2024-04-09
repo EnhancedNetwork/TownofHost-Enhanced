@@ -1,8 +1,7 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
-using static TOHE.Options;
 using UnityEngine;
 using Hazel;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
@@ -11,7 +10,7 @@ internal class Jinx : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16800;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -78,13 +77,13 @@ internal class Jinx : RoleBase
        
         JinxSpellCount[target.PlayerId] -= 1;
         SendRPCJinxSpellCount(target.PlayerId);
-        
-        if (killAttacker.GetBool())
+
+        if (killAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
         {
             killer.SetRealKiller(target);
             Logger.Info($"{target.GetNameWithRole()} : {JinxSpellCount[target.PlayerId]}回目", "Jinx");
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
-            killer.RpcMurderPlayerV3(killer);
+            killer.RpcMurderPlayer(killer);
         }
         return false;
     }

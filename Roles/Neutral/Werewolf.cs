@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
 using TOHE.Roles.Double;
 using static TOHE.Options;
 using UnityEngine;
@@ -11,7 +10,7 @@ internal class Werewolf : RoleBase
     //===========================SETUP================================\\
     private const int Id = 18400;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Count > 0;
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
@@ -66,7 +65,7 @@ internal class Werewolf : RoleBase
                 {
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Mauled;
                     player.SetRealKiller(killer);
-                    player.RpcMurderPlayerV3(player);
+                    player.RpcMurderPlayer(player);
                 }
             }
         }, 0.1f, "Werewolf Maul Bug Fix");

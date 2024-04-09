@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
@@ -11,7 +10,7 @@ internal class Amnesiac : RoleBase
     //===========================SETUP================================\\
     private const int Id = 12700;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled = playerIdList.Count > 0;
+    public static bool HasEnabled = playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     //==================================================================\\
