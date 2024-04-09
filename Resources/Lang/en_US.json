@@ -1564,7 +1564,7 @@
   "BaitCanBeReportedUnderAllConditions": "Bait Can Be Reported even if meeting is disabled during comms sabotage",
   "DeceiverSkillCooldown": "Ability cooldown",
   "DeceiverSkillLimitTimes": "Max number of uses",
-  "DeceiverAbilityLost": "Deceiver looses ability if it deceives player without kill button",
+  "DeceiverAbilityLost": "Deceiver loses ability if it deceives player without kill button",
   "PursuerSkillCooldown": "Ability cooldown",
   "PursuerSkillLimitTimes": "Max number of uses",
   "AddictSuicideTimer": "Time Until Suicide",
