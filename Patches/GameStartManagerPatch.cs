@@ -111,8 +111,9 @@ public class GameStartManagerPatch
                 __instance.GameRoomNameCode.color = new(255, 255, 255, 255);
                 GameStartManagerStartPatch.HideName.enabled = false;
             }
-            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return; // Not host or no instance or LocalGame
+
             update = GameData.Instance.PlayerCount != __instance.LastPlayerCount;
+            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return; // Not host or no instance or LocalGame
 
             if (Main.AutoStart.Value)
             {
@@ -217,7 +218,7 @@ public class GameStartManagerPatch
             }
 
             // Lobby timer
-            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return;
+            if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return;
 
             if (update) currentText = __instance.PlayerCounter.text;
 
