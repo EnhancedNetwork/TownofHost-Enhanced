@@ -18,86 +18,89 @@ class AddTasksFromListPatch
         
         List<NormalPlayerTask> disabledTasks = [];
 
-        for (var i = 0; i < unusedTasks.Count; i++)
+        foreach (var task in unusedTasks)
         {
-            var task = unusedTasks[i];
-            if (task.TaskType == TaskTypes.SwipeCard && Options.DisableSwipeCard.GetBool()) disabledTasks.Add(task);//SwipeCard task
-            if (task.TaskType == TaskTypes.SubmitScan && Options.DisableSubmitScan.GetBool()) disabledTasks.Add(task);//SubmitScan tast
-            if (task.TaskType == TaskTypes.UnlockSafe && Options.DisableUnlockSafe.GetBool()) disabledTasks.Add(task);//UnlockSafe task
-            if (task.TaskType == TaskTypes.UploadData && Options.DisableUploadData.GetBool()) disabledTasks.Add(task);//UploadData task
-            if (task.TaskType == TaskTypes.StartReactor && Options.DisableStartReactor.GetBool()) disabledTasks.Add(task);//StartReactor task
-            if (task.TaskType == TaskTypes.ResetBreakers && Options.DisableResetBreaker.GetBool()) disabledTasks.Add(task);//ResetBreakers task
-            if (task.TaskType == TaskTypes.VentCleaning && Options.DisableCleanVent.GetBool()) disabledTasks.Add(task);//CleanVent task
-            if (task.TaskType == TaskTypes.CalibrateDistributor && Options.DisableCalibrateDistributor.GetBool()) disabledTasks.Add(task);//CalibrateDistributor task
-            if (task.TaskType == TaskTypes.ChartCourse && Options.DisableChartCourse.GetBool()) disabledTasks.Add(task);//ChartCourse task
-            if (task.TaskType == TaskTypes.StabilizeSteering && Options.DisableStabilizeSteering.GetBool()) disabledTasks.Add(task);//StabilizeSteering task
-            if (task.TaskType == TaskTypes.CleanO2Filter && Options.DisableCleanO2Filter.GetBool()) disabledTasks.Add(task);//CleanO2Filter task
-            if (task.TaskType == TaskTypes.UnlockManifolds && Options.DisableUnlockManifolds.GetBool()) disabledTasks.Add(task);//UnlockManifolds task
-            if (task.TaskType == TaskTypes.PrimeShields && Options.DisablePrimeShields.GetBool()) disabledTasks.Add(task);//PrimeShields task
-            if (task.TaskType == TaskTypes.MeasureWeather && Options.DisableMeasureWeather.GetBool()) disabledTasks.Add(task);//MeasureWeather task
-            if (task.TaskType == TaskTypes.BuyBeverage && Options.DisableBuyBeverage.GetBool()) disabledTasks.Add(task);//BuyBeverage task
-            if (task.TaskType == TaskTypes.AssembleArtifact && Options.DisableAssembleArtifact.GetBool()) disabledTasks.Add(task);//AssembleArtifact task
-            if (task.TaskType == TaskTypes.SortSamples && Options.DisableSortSamples.GetBool()) disabledTasks.Add(task);//SortSamples task
-            if (task.TaskType == TaskTypes.ProcessData && Options.DisableProcessData.GetBool()) disabledTasks.Add(task);//ProcessData task
-            if (task.TaskType == TaskTypes.RunDiagnostics && Options.DisableRunDiagnostics.GetBool()) disabledTasks.Add(task);//RunDiagnostics task
-            if (task.TaskType == TaskTypes.RepairDrill && Options.DisableRepairDrill.GetBool()) disabledTasks.Add(task);//RepairDrill task
-            if (task.TaskType == TaskTypes.AlignTelescope && Options.DisableAlignTelescope.GetBool()) disabledTasks.Add(task);//AlignTelescope task
-            if (task.TaskType == TaskTypes.RecordTemperature && Options.DisableRecordTemperature.GetBool()) disabledTasks.Add(task);//RecordTemperature task
-            if (task.TaskType == TaskTypes.FillCanisters && Options.DisableFillCanisters.GetBool()) disabledTasks.Add(task);//FillCanisters task
-            if (task.TaskType == TaskTypes.MonitorOxygen && Options.DisableMonitorTree.GetBool()) disabledTasks.Add(task);//MonitorTree task
-            if (task.TaskType == TaskTypes.StoreArtifacts && Options.DisableStoreArtifacts.GetBool()) disabledTasks.Add(task);//StoreArtifacts task
-            if (task.TaskType == TaskTypes.PutAwayPistols && Options.DisablePutAwayPistols.GetBool()) disabledTasks.Add(task);//PutAwayPistols task
-            if (task.TaskType == TaskTypes.PutAwayRifles && Options.DisablePutAwayRifles.GetBool()) disabledTasks.Add(task);//PutAwayRifles task
-            if (task.TaskType == TaskTypes.MakeBurger && Options.DisableMakeBurger.GetBool()) disabledTasks.Add(task);//MakeBurger task
-            if (task.TaskType == TaskTypes.CleanToilet && Options.DisableCleanToilet.GetBool()) disabledTasks.Add(task);//CleanToilet task
-            if (task.TaskType == TaskTypes.Decontaminate && Options.DisableDecontaminate.GetBool()) disabledTasks.Add(task);//Decontaminate task
-            if (task.TaskType == TaskTypes.SortRecords && Options.DisableSortRecords.GetBool()) disabledTasks.Add(task);//SortRecords task
-            if (task.TaskType == TaskTypes.FixShower && Options.DisableFixShower.GetBool()) disabledTasks.Add(task);//FixShower task
-            if (task.TaskType == TaskTypes.PickUpTowels && Options.DisablePickUpTowels.GetBool()) disabledTasks.Add(task);//PickUpTowels task
-            if (task.TaskType == TaskTypes.PolishRuby && Options.DisablePolishRuby.GetBool()) disabledTasks.Add(task);//PolishRuby task
-            if (task.TaskType == TaskTypes.DressMannequin && Options.DisableDressMannequin.GetBool()) disabledTasks.Add(task);//DressMannequin task
-            if (task.TaskType == TaskTypes.AlignEngineOutput && Options.DisableAlignEngineOutput.GetBool()) disabledTasks.Add(task);//AlignEngineOutput task
-            if (task.TaskType == TaskTypes.InspectSample && Options.DisableInspectSample.GetBool()) disabledTasks.Add(task);//InspectSample task
-            if (task.TaskType == TaskTypes.EmptyChute && Options.DisableEmptyChute.GetBool()) disabledTasks.Add(task);//EmptyChute task
-            if (task.TaskType == TaskTypes.ClearAsteroids && Options.DisableClearAsteroids.GetBool()) disabledTasks.Add(task);//ClearAsteroids task
-            if (task.TaskType == TaskTypes.WaterPlants && Options.DisableWaterPlants.GetBool()) disabledTasks.Add(task);//WaterPlants task
-            if (task.TaskType == TaskTypes.OpenWaterways && Options.DisableOpenWaterways.GetBool()) disabledTasks.Add(task);//OpenWaterways task
-            if (task.TaskType == TaskTypes.ReplaceWaterJug && Options.DisableReplaceWaterJug.GetBool()) disabledTasks.Add(task);//ReplaceWaterJug task
-            if (task.TaskType == TaskTypes.RebootWifi && Options.DisableRebootWifi.GetBool()) disabledTasks.Add(task);//RebootWifi task
-            if (task.TaskType == TaskTypes.DevelopPhotos && Options.DisableDevelopPhotos.GetBool()) disabledTasks.Add(task);//DevelopPhotos task
-            if (task.TaskType == TaskTypes.RewindTapes && Options.DisableRewindTapes.GetBool()) disabledTasks.Add(task);//RewindTapes task
-            if (task.TaskType == TaskTypes.StartFans && Options.DisableStartFans.GetBool()) disabledTasks.Add(task);//StartFans task
-            if (task.TaskType == TaskTypes.FixWiring && Options.DisableFixWiring.GetBool()) disabledTasks.Add(task);//FixWiring task (nightmare)
-            if (task.TaskType == TaskTypes.EnterIdCode && Options.DisableEnterIdCode.GetBool()) disabledTasks.Add(task);//EnterIdCode task
-            if (task.TaskType == TaskTypes.InsertKeys && Options.DisableInsertKeys.GetBool()) disabledTasks.Add(task);//InsertKeys task
-            if (task.TaskType == TaskTypes.ScanBoardingPass && Options.DisableScanBoardingPass.GetBool()) disabledTasks.Add(task);//ScanBoardingPass task
-            if (task.TaskType == TaskTypes.EmptyGarbage && Options.DisableEmptyGarbage.GetBool()) disabledTasks.Add(task);//EmptyGarbage task
-            if (task.TaskType == TaskTypes.FuelEngines && Options.DisableFuelEngines.GetBool()) disabledTasks.Add(task);//FuelEngines task
-            if (task.TaskType == TaskTypes.DivertPower && Options.DisableDivertPower.GetBool()) disabledTasks.Add(task);//DivertPower task v1.0a
-            if (task.TaskType == TaskTypes.FixWeatherNode && Options.DisableActivateWeatherNodes.GetBool()) disabledTasks.Add(task);//ActivateWeatherNodes task
-            if (task.TaskType == TaskTypes.RoastMarshmallow && Options.DisableRoastMarshmallow.GetBool()) disabledTasks.Add(task);//Roast Marshmallow
-            if (task.TaskType == TaskTypes.CollectSamples && Options.DisableCollectSamples.GetBool()) disabledTasks.Add(task);//Collect Samples
-            if (task.TaskType == TaskTypes.ReplaceParts && Options.DisableReplaceParts.GetBool()) disabledTasks.Add(task);//Replace Parts
-            if (task.TaskType == TaskTypes.CollectVegetables && Options.DisableCollectVegetables.GetBool()) disabledTasks.Add(task);//Collect Vegetables
-            if (task.TaskType == TaskTypes.MineOres && Options.DisableMineOres.GetBool()) disabledTasks.Add(task);//Mine Ores
-            if (task.TaskType == TaskTypes.ExtractFuel && Options.DisableExtractFuel.GetBool()) disabledTasks.Add(task);//Extract Fuel
-            if (task.TaskType == TaskTypes.CatchFish && Options.DisableCatchFish.GetBool()) disabledTasks.Add(task);//Catch Fish
-            if (task.TaskType == TaskTypes.PolishGem && Options.DisablePolishGem.GetBool()) disabledTasks.Add(task);//Polish Gem
-            if (task.TaskType == TaskTypes.HelpCritter && Options.DisableHelpCritter.GetBool()) disabledTasks.Add(task);//Help Critter
-            if (task.TaskType == TaskTypes.HoistSupplies && Options.DisableHoistSupplies.GetBool()) disabledTasks.Add(task);//Hoist Supplies
-            if (task.TaskType == TaskTypes.FixAntenna && Options.DisableFixAntenna.GetBool()) disabledTasks.Add(task);//Fix Antenna
-            if (task.TaskType == TaskTypes.BuildSandcastle && Options.DisableBuildSandcastle.GetBool()) disabledTasks.Add(task);//Build Sandcastle
-            if (task.TaskType == TaskTypes.CrankGenerator && Options.DisableCrankGenerator.GetBool()) disabledTasks.Add(task);//Crank Generator
-            if (task.TaskType == TaskTypes.MonitorMushroom && Options.DisableMonitorMushroom.GetBool()) disabledTasks.Add(task);//Monitor Mushroom
-            if (task.TaskType == TaskTypes.PlayVideogame && Options.DisablePlayVideoGame.GetBool()) disabledTasks.Add(task);//Play Video Game
-            if (task.TaskType == TaskTypes.TuneRadio && Options.DisableFindSignal.GetBool()) disabledTasks.Add(task);//Find Signal
-            if (task.TaskType == TaskTypes.TestFrisbee && Options.DisableThrowFisbee.GetBool()) disabledTasks.Add(task);//Throw Fisbee
-            if (task.TaskType == TaskTypes.LiftWeights && Options.DisableLiftWeights.GetBool()) disabledTasks.Add(task);//Lift Weights
-            if (task.TaskType == TaskTypes.CollectShells && Options.DisableCollectShells.GetBool()) disabledTasks.Add(task);//Collect Shells
+            switch (task.TaskType)
+            {
+                case TaskTypes.SwipeCard when Options.DisableSwipeCard.GetBool():
+                case TaskTypes.SubmitScan when Options.DisableSubmitScan.GetBool():
+                case TaskTypes.UnlockSafe when Options.DisableUnlockSafe.GetBool():
+                case TaskTypes.UploadData when Options.DisableUploadData.GetBool():
+                case TaskTypes.StartReactor when Options.DisableStartReactor.GetBool():
+                case TaskTypes.ResetBreakers when Options.DisableResetBreaker.GetBool():
+                case TaskTypes.VentCleaning when Options.DisableCleanVent.GetBool():
+                case TaskTypes.CalibrateDistributor when Options.DisableCalibrateDistributor.GetBool():
+                case TaskTypes.ChartCourse when Options.DisableChartCourse.GetBool():
+                case TaskTypes.StabilizeSteering when Options.DisableStabilizeSteering.GetBool():
+                case TaskTypes.CleanO2Filter when Options.DisableCleanO2Filter.GetBool():
+                case TaskTypes.UnlockManifolds when Options.DisableUnlockManifolds.GetBool():
+                case TaskTypes.PrimeShields when Options.DisablePrimeShields.GetBool():
+                case TaskTypes.MeasureWeather when Options.DisableMeasureWeather.GetBool():
+                case TaskTypes.BuyBeverage when Options.DisableBuyBeverage.GetBool():
+                case TaskTypes.AssembleArtifact when Options.DisableAssembleArtifact.GetBool():
+                case TaskTypes.ProcessData when Options.DisableProcessData.GetBool():
+                case TaskTypes.RunDiagnostics when Options.DisableRunDiagnostics.GetBool():
+                case TaskTypes.RepairDrill when Options.DisableRepairDrill.GetBool():
+                case TaskTypes.AlignTelescope when Options.DisableAlignTelescope.GetBool():
+                case TaskTypes.RecordTemperature when Options.DisableRecordTemperature.GetBool():
+                case TaskTypes.FillCanisters when Options.DisableFillCanisters.GetBool():
+                case TaskTypes.MonitorOxygen when Options.DisableMonitorTree.GetBool():
+                case TaskTypes.StoreArtifacts when Options.DisableStoreArtifacts.GetBool():
+                case TaskTypes.PutAwayPistols when Options.DisablePutAwayPistols.GetBool():
+                case TaskTypes.PutAwayRifles when Options.DisablePutAwayRifles.GetBool():
+                case TaskTypes.MakeBurger when Options.DisableMakeBurger.GetBool():
+                case TaskTypes.CleanToilet when Options.DisableCleanToilet.GetBool():
+                case TaskTypes.Decontaminate when Options.DisableDecontaminate.GetBool():
+                case TaskTypes.SortRecords when Options.DisableSortRecords.GetBool():
+                case TaskTypes.FixShower when Options.DisableFixShower.GetBool():
+                case TaskTypes.PickUpTowels when Options.DisablePickUpTowels.GetBool():
+                case TaskTypes.PolishRuby when Options.DisablePolishRuby.GetBool():
+                case TaskTypes.DressMannequin when Options.DisableDressMannequin.GetBool():
+                case TaskTypes.AlignEngineOutput when Options.DisableAlignEngineOutput.GetBool():
+                case TaskTypes.InspectSample when Options.DisableInspectSample.GetBool():
+                case TaskTypes.EmptyChute when Options.DisableEmptyChute.GetBool():
+                case TaskTypes.ClearAsteroids when Options.DisableClearAsteroids.GetBool():
+                case TaskTypes.WaterPlants when Options.DisableWaterPlants.GetBool():
+                case TaskTypes.OpenWaterways when Options.DisableOpenWaterways.GetBool():
+                case TaskTypes.ReplaceWaterJug when Options.DisableReplaceWaterJug.GetBool():
+                case TaskTypes.RebootWifi when Options.DisableRebootWifi.GetBool():
+                case TaskTypes.DevelopPhotos when Options.DisableDevelopPhotos.GetBool():
+                case TaskTypes.RewindTapes when Options.DisableRewindTapes.GetBool():
+                case TaskTypes.StartFans when Options.DisableStartFans.GetBool():
+                case TaskTypes.FixWiring when Options.DisableFixWiring.GetBool():
+                case TaskTypes.EnterIdCode when Options.DisableEnterIdCode.GetBool():
+                case TaskTypes.InsertKeys when Options.DisableInsertKeys.GetBool():
+                case TaskTypes.ScanBoardingPass when Options.DisableScanBoardingPass.GetBool():
+                case TaskTypes.EmptyGarbage when Options.DisableEmptyGarbage.GetBool():
+                case TaskTypes.FuelEngines when Options.DisableFuelEngines.GetBool():
+                case TaskTypes.DivertPower when Options.DisableDivertPower.GetBool():
+                case TaskTypes.FixWeatherNode when Options.DisableActivateWeatherNodes.GetBool(): // Activate Weather Nodes
+                case TaskTypes.RoastMarshmallow when Options.DisableRoastMarshmallow.GetBool():
+                case TaskTypes.CollectSamples when Options.DisableCollectSamples.GetBool():
+                case TaskTypes.ReplaceParts when Options.DisableReplaceParts.GetBool():
+                case TaskTypes.CollectVegetables when Options.DisableCollectVegetables.GetBool():
+                case TaskTypes.MineOres when Options.DisableMineOres.GetBool():
+                case TaskTypes.ExtractFuel when Options.DisableExtractFuel.GetBool():
+                case TaskTypes.CatchFish when Options.DisableCatchFish.GetBool():
+                case TaskTypes.PolishGem when Options.DisablePolishGem.GetBool():
+                case TaskTypes.HelpCritter when Options.DisableHelpCritter.GetBool():
+                case TaskTypes.HoistSupplies when Options.DisableHoistSupplies.GetBool():
+                case TaskTypes.FixAntenna when Options.DisableFixAntenna.GetBool():
+                case TaskTypes.BuildSandcastle when Options.DisableBuildSandcastle.GetBool():
+                case TaskTypes.CrankGenerator when Options.DisableCrankGenerator.GetBool():
+                case TaskTypes.MonitorMushroom when Options.DisableMonitorMushroom.GetBool():
+                case TaskTypes.PlayVideogame when Options.DisablePlayVideoGame.GetBool():
+                case TaskTypes.TuneRadio when Options.DisableFindSignal.GetBool(): // Find Signal
+                case TaskTypes.TestFrisbee when Options.DisableThrowFisbee.GetBool(): // Throw Fisbee
+                case TaskTypes.LiftWeights when Options.DisableLiftWeights.GetBool():
+                case TaskTypes.CollectShells when Options.DisableCollectShells.GetBool():
+                    disabledTasks.Add(task);
+                    break;
+            }
         }
         foreach (var task in disabledTasks.ToArray())
         {
-            Logger.Msg("Deletion: " + task.TaskType.ToString(), "Disable Tasks");
+            Logger.Msg($"Deletion: {task.TaskType}", "Disable Tasks");
             unusedTasks.Remove(task);
         }
     }
@@ -201,13 +204,13 @@ class RpcSetTasksPatch
         Il2CppSystem.Collections.Generic.List<NormalPlayerTask> LongTasks = new();
         foreach (var task in ShipStatus.Instance.LongTasks.ToArray())
             LongTasks.Add(task);
-        Shuffle<NormalPlayerTask>(LongTasks);
+        Shuffle(LongTasks);
 
         // List of short tasks that can be assigned
         Il2CppSystem.Collections.Generic.List<NormalPlayerTask> ShortTasks = new();
         foreach (var task in ShipStatus.Instance.ShortTasks.ToArray())
             ShortTasks.Add(task);
-        Shuffle<NormalPlayerTask>(ShortTasks);
+        Shuffle(ShortTasks);
 
         // Use the function to assign tasks that are actually used on the Among Us side
         ShipStatus.Instance.AddTasksFromList(
