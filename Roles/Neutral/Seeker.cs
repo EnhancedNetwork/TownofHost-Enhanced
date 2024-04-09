@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using Sentry.Protocol;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
@@ -202,9 +203,10 @@ internal class Seeker : RoleBase
     {
         foreach (var id in playerIdList.ToArray())
         {
-            if (!Main.PlayerStates[id].IsDead)
+            var player = Utils.GetPlayerById(id);
+            if (player.IsAlive())
             {
-                FreezeSeeker(Utils.GetPlayerById(id));
+                FreezeSeeker(player);
             }
         }
     }
@@ -212,12 +214,12 @@ internal class Seeker : RoleBase
     {
         foreach (var id in playerIdList.ToArray())
         {
-            if (!Main.PlayerStates[id].IsDead)
+            var player = Utils.GetPlayerById(id);
+            if (player.IsAlive())
             {
-                var targetId = GetTarget(Utils.GetPlayerById(id));
-                Utils.GetPlayerById(id).Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
-                Utils.GetPlayerById(targetId).Notify(GetString("SeekerTargetNotify"));
-
+                var targetId = GetTarget(player);
+                player.Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
+                Utils.GetPlayerById(targetId)?.Notify(GetString("SeekerTargetNotify"));
             }
         }
     }
