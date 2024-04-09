@@ -228,7 +228,8 @@ public class GameStartManagerPatch
             if (timer <= 60) suffix = Utils.ColorString(Color.red, suffix);
 
             __instance.PlayerCounter.text = currentText + suffix;
-            __instance.PlayerCounter.autoSizeTextContainer = true;
+            __instance.PlayerCounter.fontSize = 3f;
+            __instance.PlayerCounter.autoSizeTextContainer = false;
         }
         private static bool MatchVersions(int clientId, bool acceptVanilla = false)
         {

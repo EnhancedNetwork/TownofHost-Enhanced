@@ -37,7 +37,7 @@ class EndGamePatch
 
                 if (AmongUsClient.Instance.AmHost)
                 {
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, Hazel.SendOption.Reliable, -1);
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
                     writer.Write(pvc);
                     writer.WritePacked((int)prevrole);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
