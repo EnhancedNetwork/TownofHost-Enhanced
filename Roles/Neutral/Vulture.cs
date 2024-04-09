@@ -198,6 +198,8 @@ internal class Vulture : RoleBase
         foreach (var apc in playerIdList)
         {
             var player = GetPlayerById(apc);
+            if (player == null) continue;
+
             if (player.IsAlive())
             {
                 AbilityLeftInRound[apc] = MaxEaten.GetInt();
@@ -212,18 +214,17 @@ internal class Vulture : RoleBase
         foreach (var apc in playerIdList)
         {
             var player = GetPlayerById(apc);
-            if (player.IsAlive())
+            if (player == null) continue;
+
+            _ = new LateTask(() =>
             {
-                _ = new LateTask(() =>
+                if (GameStates.IsInTask && player.IsAlive())
                 {
-                    if (GameStates.IsInTask)
-                    {
-                        if (!DisableShieldAnimations.GetBool()) GetPlayerById(apc).RpcGuardAndKill(GetPlayerById(apc));
-                        GetPlayerById(apc).Notify(GetString("VultureCooldownUp"));
-                    }
-                    return;
-                }, VultureReportCD.GetFloat(), "Vulture Cooldown Up After Meeting");
-            }
+                    if (!DisableShieldAnimations.GetBool()) player.RpcGuardAndKill(GetPlayerById(apc));
+                    player.Notify(GetString("VultureCooldownUp"));
+                }
+                return;
+            }, VultureReportCD.GetFloat(), "Vulture Cooldown Up After Meeting");
             SendBodyRPC(player.PlayerId);
         }
     }
