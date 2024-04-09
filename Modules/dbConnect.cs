@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Text.Json;
 using System.IO;
 using System.Reflection;
 using static TOHE.Translator;
-using System.Threading.Tasks;
 using System.Linq;
 using AmongUs.Data;
+using IEnumerator = System.Collections.IEnumerator;
+using UnityEngine.Networking;
 
 namespace TOHE;
 
@@ -15,89 +15,53 @@ public class dbConnect
 {
     private static Dictionary<string, string> userType = [];
     public static bool InitOnce = false;
-    public static async void Init()
+    public static IEnumerator Init()
     {
         Logger.Info("Begin dbConnect Login flow", "dbConnect.init");
+
         if (!InitOnce)
         {
-            try
-            {
-                GetRoleTable();
-            }
-            catch (Exception Ex)
-            {
-                Logger.Error($"Error in fetching roletable {Ex}", "dbConnect.init");
-                goto firstFailure;
-            }
-            try
-            {
-                GetEACList();
-            }
-            catch (Exception Ex)
-            {
-                Logger.Error($"Error in fetching eaclist {Ex}", "dbConnect.init");
-                goto firstFailure;
-            }
-        }
-        else //init once, following will be async
-        {
-            try
-            {
-                await Task.Run(() => GetRoleTable());
-            }
-            catch (Exception Ex)
-            {
-                Logger.Error($"Error in fetching roletable {Ex}", "dbConnect.init");
-            }
-            try
-            {
-                await Task.Run(() => GetEACList());
-            }
-            catch (Exception Ex)
-            {
-                Logger.Error($"Error in fetching eaclist {Ex}", "dbConnect.init");
-            }
-        }
+            yield return GetRoleTable();
 
-        if (!ErrorExists())
-        {
-            if (!InitOnce)
+            if (GetToken() is "" or null)
             {
-                Logger.Info("Finished first init flow.", "dbConnect.init");
-                InitOnce = true;
+                HandleFailure("Api token is empty");
+                yield break;
             }
-            else
+
+            if (userType.Count < 1)
             {
-                Logger.Info("Finished Sync flow.", "dbConnect.init");
+                HandleFailure("Error in fetching roletable");
+                yield break;
+            }
+
+            yield return GetEACList();
+            if (BanManager.EACDict.Count < 1)
+            {
+                HandleFailure("Error in fetching eaclist");
+                yield break;
             }
         }
         else
         {
-            if (!InitOnce)
-            {
-                Logger.Error("first init flow failed by Logic!", "dbConnect.init");
-                InitOnce = false;
-                goto firstFailure;
-            }
-            else
-            {
-                Logger.Error("Sync flow failed by Logic!", "dbConnect.init");
-            }
+            yield return GetRoleTable();
+            yield return GetEACList();
         }
 
-        if (EOSManager.Instance.friendCode != null && EOSManager.Instance.friendCode != "")
+        if (!InitOnce)
         {
-            if (Main.devRelease && !CanAccessDev(EOSManager.Instance.friendCode))
-                Main.hasAccess = false;
+            Logger.Info("Finished first init flow.", "dbConnect.init");
+            InitOnce = true;
         }
         else
         {
-            DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.nullFriendCode"));
-            DestroyableSingleton<EOSManager>.Instance.loginFlowFinished = false;
+            Logger.Info("Finished Sync flow.", "dbConnect.init");
         }
-        return;
+    }
 
-    firstFailure:
+    static void HandleFailure(string errorMessage)
+    {
+        Logger.Error(errorMessage, "dbConnect.init");
         if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
             AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
 
@@ -105,6 +69,7 @@ public class dbConnect
         DataManager.Player.Save();
         DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
     }
+
     private static string GetToken()
     {
         string apiToken = "";
@@ -136,78 +101,66 @@ public class dbConnect
         }
         return apiToken;
     }
-    private static void GetRoleTable()
+    private static IEnumerator GetRoleTable()
     {
         var tempUserType = new Dictionary<string, string>(); // Create a temporary dictionary
         string apiToken = GetToken();
         if (apiToken == "")
         {
             Logger.Warn("Embedded resource not found.", "GetRoleTable.error");
-            return;
+            yield return null;
         }
 
-        using var httpClientHandler = new HttpClientHandler();
-        httpClientHandler.UseProxy = true;
-
-        using var httpClient = new HttpClient(httpClientHandler);
         string apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
         string endpoint = $"{apiUrl}/userInfo?token={apiToken}";
 
+        UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
+
+        yield return webRequest.SendWebRequest();
+
+        if (webRequest.result != UnityWebRequest.Result.Success)
+        {
+            Logger.Error($"Error in fetching the User List: {webRequest.error}", "GetRoleTable.error");
+            yield return null;
+        }
+
         try
         {
-            using var response = httpClient.GetAsync(endpoint).Result; // Move the using statement inside the try block
-            if (response.IsSuccessStatusCode)
+            var userList = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(webRequest.downloadHandler.text);
+            foreach (var user in userList)
             {
-                using var responseStream = response.Content.ReadAsStreamAsync().Result;
-                try
+                var userData = user;
+                if (!DevManager.IsDevUser(userData["friendcode"].ToString()))
                 {
-                    var userList = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
-                    foreach (var user in userList)
-                    {
-                        if (!DevManager.IsDevUser(user["friendcode"].ToString()))
-                        {
-                            DevManager.DevUserList.Add(new(
-                                code: user["friendcode"].ToString(),
-                                color: user["color"].ToString(),
-                                tag: ToAutoTranslate(user["overhead_tag"]),
-                                isUp: user["isUP"].GetInt32() == 1,
-                                isDev: user["isDev"].GetInt32() == 1,
-                                deBug: user["debug"].GetInt32() == 1,
-                                colorCmd: user["colorCmd"].GetInt32() == 1,
-                                upName: user["name"].ToString()));
-                        }
-                        tempUserType[user["friendcode"].ToString()] = user["type"].ToString(); // Store the data in the temporary dictionary
-                    }
-                    if (tempUserType.Count > 1)
-                        userType = tempUserType; // Replace userType with the temporary dictionary
-                    else if (!InitOnce)
-                    {
-                        Logger.Error($"Incoming RoleTable is null, cannot init!", "GetRoleTable.error");
-                    }
-                    return;
+                    DevManager.DevUserList.Add(new(
+                        code: userData["friendcode"].ToString(),
+                        color: userData["color"].ToString(),
+                        tag: ToAutoTranslate(userData["overhead_tag"]),
+                        isUp: userData["isUP"].GetInt32() == 1,
+                        isDev: userData["isDev"].GetInt32() == 1,
+                        deBug: userData["debug"].GetInt32() == 1,
+                        colorCmd: userData["colorCmd"].GetInt32() == 1,
+                        upName: userData["name"].ToString()));
                 }
-                catch (JsonException jsonEx)
-                {
-                    // If deserialization as a list fails, try deserializing as a single JSON object
-                    Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetRoleTable.error");
-                    return;
-                }
+                tempUserType[userData["friendcode"].ToString()] = userData["type"].ToString(); // Store the data in the temporary dictionary
             }
-            else
+            if (tempUserType.Count > 1)
+                userType = tempUserType; // Replace userType with the temporary dictionary
+            else if (!InitOnce)
             {
-                Logger.Error($"Error in fetching the User List, Success status code is false", "GetRoleTable.error");
-                Logger.Info($"{response}", "GetRoleTable.error");
-                return;
+                Logger.Error($"Incoming RoleTable is null, cannot init!", "GetRoleTable.error");
             }
-
-
         }
         catch (Exception ex)
         {
-            Logger.Error($"error: {ex}", "GetRoleTable.error");
-            return;
+            Logger.Error($"Error processing response: {ex.Message}", "GetRoleTable.error");
+        }
+        finally
+        {
+            webRequest.Dispose();
         }
     }
+
 
     public static string ToAutoTranslate(JsonElement tag)
     {
@@ -233,60 +186,43 @@ public class dbConnect
         return userType[friendcode] == "s_bo";
     }
 
-    public static bool ErrorExists()
-    {
-        // Simple Logic and Works
-        bool apiTokenError = GetToken() is "" or null;
-        bool RoleTableError = userType.Count < 1;
-        bool EacListError = BanManager.EACDict.Count < 1;
-
-        return apiTokenError || RoleTableError || EacListError;
-    }
-    private static void GetEACList()
+    private static IEnumerator GetEACList()
     {
         string apiToken = GetToken();
         if (apiToken == "")
         {
             Logger.Warn("Embedded resource not found.", "GetEACList.error");
-            return;
+            yield break;
         }
-        using var httpClientHandler = new HttpClientHandler();
-        httpClientHandler.UseProxy = true;
 
-        using var httpClient = new HttpClient(httpClientHandler);
         string apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
         string endpoint = $"{apiUrl}/eac?token={apiToken}";
 
+        UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
+
+        // Send the request
+        yield return webRequest.SendWebRequest();
+
+        // Check for errors
+        if (webRequest.result != UnityWebRequest.Result.Success)
+        {
+            Logger.Error($"Error in fetching the EAC List: {webRequest.error}", "GetEACList.error");
+            yield break;
+        }
+
         try
         {
-            using var response = httpClient.GetAsync(endpoint).Result; // Move the using statement inside the try block
-            if (response.IsSuccessStatusCode)
-            {
-                using var responseStream = response.Content.ReadAsStreamAsync().Result;
-                try
-                {
-                    List<Dictionary<string, JsonElement>> tempEACDict = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
-                    BanManager.EACDict = BanManager.EACDict.Concat(tempEACDict).ToList(); // Merge the temporary list with BanManager.EACDict
-                    return;
-                }
-                catch (JsonException jsonEx)
-                {
-                    // If deserialization as a list fails, try deserializing as a single JSON object
-                    Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList.error");
-                    return;
-                }
-            }
-            else
-            {
-                Logger.Error($"Error in fetching the User List, Success status code is false", "GetEACList.error");
-                Logger.Info($"{response}", "GetEACList.error");
-                return;
-            }
+            var tempEACDict = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(webRequest.downloadHandler.text);
+            BanManager.EACDict = BanManager.EACDict.Concat(tempEACDict).ToList(); // Merge the temporary list with BanManager.EACDict
         }
-        catch (Exception ex)
+        catch (JsonException jsonEx)
         {
-            Logger.Error($"error: {ex}", "GetEACList.error");
-            return;
+            // If deserialization fails
+            Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList.error");
+        }
+        finally
+        {
+            webRequest.Dispose();
         }
     }
 
