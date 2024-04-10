@@ -98,7 +98,7 @@ internal class Solsticer : RoleBase
 
         return true;
     }
-    private static string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
+    private string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {
         if (GameStates.IsMeeting || !warningActived) return "";
         if (seer.Is(CustomRoles.Solsticer)) return "";

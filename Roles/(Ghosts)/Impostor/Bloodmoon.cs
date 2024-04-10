@@ -85,7 +85,7 @@ internal class Bloodmoon : RoleBase
         return false;
     }
     private static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
-    public override string GetProgressText(byte playerId, bool cooms) => ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
+    public override string GetProgressText(byte playerId, bool cooms) => ColorString(CanKill(playerId) ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
     public override void OnOtherTargetsReducedToAtoms(PlayerControl target)
     {
         var targetid = target.PlayerId;
@@ -96,9 +96,9 @@ internal class Bloodmoon : RoleBase
         if (LastTime.ContainsKey(targetid))
             LastTime.Remove(targetid);
     }
-    private static string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting) 
+    private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting) 
     {
-        if (IsForMeeting || seer != player) return "";
+        if (IsForMeeting || seer != player) return string.Empty;
         var playerid = player.PlayerId;  
 
         if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= GetTimeStamp() && !IsForMeeting)
