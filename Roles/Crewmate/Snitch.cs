@@ -146,6 +146,12 @@ internal class Snitch : RoleBase
         return true;
     }
 
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        if (seen == null) return string.Empty;
+
+        return IsSnitchTarget(seen) && IsComplete[seer.PlayerId] ? Utils.ColorString(RoleColor, "⚠") : string.Empty;
+    }
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (!EnableTargetArrow || isForMeeting || seer.Is(CustomRoles.Madmate)) return string.Empty;
@@ -162,12 +168,10 @@ internal class Snitch : RoleBase
 
     private string GetWarningMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        target ??= seer;
-        if (target.Is(CustomRoles.Snitch)) return string.Empty;
+        if (target == null) return string.Empty;
 
         return IsSnitchTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "⚠") : string.Empty;
     }
-
     private string GetWarningArrow(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
