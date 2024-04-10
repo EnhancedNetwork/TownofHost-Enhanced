@@ -248,6 +248,8 @@ internal class Medic : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
+        if (target == null) return string.Empty;
+
         if ((WhoCanSeeProtectOpt.GetInt() is 0 or 1) && (InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId))
         {
             return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
