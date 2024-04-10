@@ -10,23 +10,21 @@ namespace TOHE.Roles._Ghosts_.Impostor;
 
 internal class Bloodmoon : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 28100;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
-
     //==================================================================\\
 
     public static OptionItem KillCooldown;
     public static OptionItem CanKillNum;
     private static OptionItem TimeTilDeath;
     
-    public static Dictionary<byte, int> KillCount = [];
-    public static Dictionary<byte, int> PlayerDie = [];
-    public static Dictionary<byte, long> LastTime = [];
+    public static readonly Dictionary<byte, int> KillCount = [];
+    public static readonly Dictionary<byte, int> PlayerDie = [];
+    public static readonly Dictionary<byte, long> LastTime = [];
     public static void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Bloodmoon);
