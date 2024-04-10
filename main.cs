@@ -368,6 +368,41 @@ public class Main : BasePlugin
             ExceptionMessageIsShown = false;
         }
     }
+<<<<<<< Updated upstream
+=======
+    public static void LoadRoleClasses()
+    {
+        TOHE.Logger.Info("Loading All RoleClasses...", "LoadRoleClasses");
+        try
+        {
+            var RoleTypes = Assembly.GetAssembly(typeof(RoleBase))!
+                .GetTypes()
+                .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
+            foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
+            {
+                Type roleType = role switch // Switch role to FatherRole (Double Classes)
+                {
+                    CustomRoles.Vampiress => typeof(Vampire),
+                    CustomRoles.Pestilence => typeof(PlagueBearer),
+                    CustomRoles.War => typeof(Berserker),
+                    CustomRoles.Death => typeof(SoulCollector),
+                    CustomRoles.Famine => typeof(Baker),
+                    CustomRoles.Nuker => typeof(Bomber),
+                    CustomRoles.NiceMini or CustomRoles.EvilMini => typeof(Mini),
+                    _ => RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(VanillaRole),
+                };
+
+                CustomRoleManager.RoleClass.Add(role, (RoleBase)Activator.CreateInstance(roleType));
+            }
+
+            TOHE.Logger.Info("RoleClasses Loaded Successfully", "LoadRoleClasses");
+        }
+        catch (Exception err)
+        {
+            TOHE.Logger.Error($"Error at LoadRoleClasses: {err}", "LoadRoleClasses");
+        }
+    }
+>>>>>>> Stashed changes
     static void UpdateCustomTranslation()
     {
         string path = @$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat";
@@ -708,6 +743,7 @@ public enum CustomRoles
     //Neutral
     Agitater,
     Amnesiac,
+    Apocalypse,
     Arsonist,
     Baker,
     Bandit,
@@ -717,12 +753,20 @@ public enum CustomRoles
     Succubus, //cultist
     CursedSoul,
     Death,
+<<<<<<< Updated upstream
     Gamer, //demon
+=======
+    Demon, 
+>>>>>>> Stashed changes
     Doomsayer,
     Doppelganger,
     Executioner,
     Famine,
+<<<<<<< Updated upstream
     Totocalcio, //follower
+=======
+    Follower,
+>>>>>>> Stashed changes
     Glitch,
     God,
     Hater,
@@ -937,15 +981,23 @@ public enum CustomWinner
     Medusa = CustomRoles.Medusa,
     Spiritcaller = CustomRoles.Spiritcaller,
     Glitch = CustomRoles.Glitch,
+<<<<<<< Updated upstream
     //Plaguebearer = CustomRoles.PlagueBearer,
     //Pestilence = CustomRoles.Pestilence,
+=======
+    /*Plaguebearer = CustomRoles.PlagueBearer,*/
+>>>>>>> Stashed changes
     PlagueDoctor = CustomRoles.PlagueDoctor,
     Masochist = CustomRoles.Masochist,
     Doomsayer = CustomRoles.Doomsayer,
     Shroud = CustomRoles.Shroud,
     Seeker = CustomRoles.Seeker,
+<<<<<<< Updated upstream
     //SoulCollector = CustomRoles.SoulCollector,
     //Death = CustomRoles.Death,
+=======
+    /*SoulCollector = CustomRoles.SoulCollector,*/
+>>>>>>> Stashed changes
     RuthlessRomantic = CustomRoles.RuthlessRomantic,
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,

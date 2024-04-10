@@ -360,8 +360,13 @@ public class PlayerState(byte playerId)
         Targeted,
         Retribution,
         WrongAnswer,
+<<<<<<< Updated upstream
         Armageddon,
         Starved,
+=======
+        Starved,
+        Armageddon,
+>>>>>>> Stashed changes
 
         //Please add all new roles with deathreason & new deathreason in Susceptible.CallEnabledAndChange
         etc = -1,

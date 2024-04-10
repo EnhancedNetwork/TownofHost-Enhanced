@@ -234,6 +234,13 @@
   "Rainbow": "#55FFCB",
   "Apocalypse": "#ff174f",
   "Berserker": "#FF0055",
+<<<<<<< Updated upstream
   "War": "#2B0804"
   "Statue": "#7E9C8A"
+=======
+  "War": "#2B0804",
+  "Statue": "#7E9C8A",
+  "Warden": "#588733",
+  "Hawk": "#606c80"
+>>>>>>> Stashed changes
 }

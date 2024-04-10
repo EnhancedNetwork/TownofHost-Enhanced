@@ -948,6 +948,10 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Players);
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
         NeutralRoleWinTogether = BooleanOptionItem.Create(60017, "NeutralRoleWinTogether", false, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -993,7 +997,10 @@ public static class Options
          */
         Arrogance.SetupCustomOption();
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
         /*
          * Bomber
@@ -1084,7 +1091,12 @@ public static class Options
         /*
          * Greedy
          */
+<<<<<<< Updated upstream
         Greedier.SetupCustomOption();
+=======
+        Greedy.SetupCustomOption();
+        
+>>>>>>> Stashed changes
 
         /*
          * Hangman
@@ -2098,6 +2110,7 @@ public static class Options
         */
         Solsticer.SetupCustomOption();
 
+<<<<<<< Updated upstream
         
         SetupRoleOptions(15400, TabGroup.NeutralRoles, CustomRoles.Terrorist);
         CanTerroristSuicideWin = BooleanOptionItem.Create(15402, "CanTerroristSuicideWin", false, TabGroup.NeutralRoles, false)
@@ -2113,6 +2126,11 @@ public static class Options
         MarioVentCD = FloatOptionItem.Create(15503, "VentCooldown", new(0f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mario])
             .SetValueFormat(OptionFormat.Seconds);
+=======
+        Terrorist.SetupCustomOptions();
+
+        Vector.SetupCustomOptions();
+>>>>>>> Stashed changes
         
         Vulture.SetupCustomOption();
         
@@ -2210,6 +2228,7 @@ public static class Options
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
         Baker.SetupCustomOption();
+<<<<<<< Updated upstream
         /*
  * Berserker
  */
@@ -2239,11 +2258,18 @@ public static class Options
         WarKillCooldown = FloatOptionItem.Create(614, "WarKillCooldown", new(0f, 150f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(BerserkerFourCanNotKill)
             .SetValueFormat(OptionFormat.Seconds);
 
+=======
+
+        Berserker.SetupCustomOption();
+>>>>>>> Stashed changes
 
         PlagueBearer.SetupCustomOption();
 
         SoulCollector.SetupCustomOption();
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
         #endregion
 
         #region Add-Ons Settings

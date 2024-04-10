@@ -415,7 +415,10 @@ static class CustomRolesHelper
             CustomRoles.Pestilence or
             CustomRoles.PlagueBearer or
             CustomRoles.Baker or
+<<<<<<< Updated upstream
             CustomRoles.Famine or
+=======
+>>>>>>> Stashed changes
             CustomRoles.Agitater or
             CustomRoles.Innocent or
             CustomRoles.Vulture or
@@ -479,6 +482,11 @@ static class CustomRolesHelper
             CustomRoles.Succubus;
     }
 
+<<<<<<< Updated upstream
+=======
+        return role.IsNK() || role.IsNonNK() || role.IsNA();
+    }
+>>>>>>> Stashed changes
     public static bool IsNK(this CustomRoles role)
     {
         if (role == CustomRoles.Arsonist && Options.ArsonistCanIgniteAnytime.GetBool()) return true;
@@ -518,6 +526,22 @@ static class CustomRolesHelper
             CustomRoles.Spiritcaller or
             CustomRoles.Agitater or
             CustomRoles.RuthlessRomantic;
+<<<<<<< Updated upstream
+=======
+    }
+    public static bool IsNA(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.PlagueBearer or
+            CustomRoles.Pestilence or
+            CustomRoles.SoulCollector or
+            CustomRoles.Death or
+            CustomRoles.Baker or
+            CustomRoles.Famine or
+            CustomRoles.Berserker or
+            CustomRoles.War;
+
+>>>>>>> Stashed changes
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
@@ -702,7 +726,12 @@ static class CustomRolesHelper
             CustomRoles.Warlock or
             CustomRoles.Undertaker or
             CustomRoles.RiftMaker or
+<<<<<<< Updated upstream
             CustomRoles.Assassin or
+=======
+            CustomRoles.Ninja or
+            CustomRoles.Bloodmoon or
+>>>>>>> Stashed changes
             CustomRoles.Anonymous or
             CustomRoles.Visionary or
             CustomRoles.Miner or
@@ -1996,17 +2025,28 @@ static class CustomRolesHelper
             CustomRoles.Pickpocket => CustomWinner.Pickpocket,
             CustomRoles.Traitor => CustomWinner.Traitor,
             CustomRoles.Vulture => CustomWinner.Vulture,
+<<<<<<< Updated upstream
             CustomRoles.Apocalypse => CustomWinner.Apocalypse,
             CustomRoles.Medusa => CustomWinner.Medusa,
             CustomRoles.Spiritcaller => CustomWinner.Spiritcaller,
             CustomRoles.Glitch => CustomWinner.Glitch,
             //CustomRoles.PlagueBearer => CustomWinner.Apocalypse,
+=======
+            CustomRoles.Medusa => CustomWinner.Medusa,
+            CustomRoles.Spiritcaller => CustomWinner.Spiritcaller,
+            CustomRoles.Glitch => CustomWinner.Glitch,
+            CustomRoles.Apocalypse => CustomWinner.Apocalypse,
+>>>>>>> Stashed changes
             CustomRoles.Masochist => CustomWinner.Masochist,
             CustomRoles.Doomsayer => CustomWinner.Doomsayer,
             CustomRoles.Shroud => CustomWinner.Shroud,
             CustomRoles.Seeker => CustomWinner.Seeker,
+<<<<<<< Updated upstream
             //CustomRoles.SoulCollector => CustomWinner.Apocalypse,
             //CustomRoles.Death => CustomWinner.Apocalypse,
+=======
+            CustomRoles.PlagueDoctor => CustomWinner.PlagueDoctor,
+>>>>>>> Stashed changes
             CustomRoles.RuthlessRomantic => CustomWinner.RuthlessRomantic,
             CustomRoles.Mini => CustomWinner.NiceMini,
             CustomRoles.Doppelganger => CustomWinner.Doppelganger,
@@ -2031,6 +2071,11 @@ static class CustomRolesHelper
             CountTypes.Shroud => CustomRoles.Shroud,
             CountTypes.Werewolf => CustomRoles.Werewolf,
             CountTypes.Wraith => CustomRoles.Wraith,
+<<<<<<< Updated upstream
+=======
+            /*CountTypes.Pestilence => CustomRoles.Pestilence,
+            CountTypes.PlagueBearer => CustomRoles.PlagueBearer,*/
+>>>>>>> Stashed changes
             CountTypes.Agitater => CustomRoles.Agitater,
             CountTypes.SerialKiller => CustomRoles.SerialKiller,
             CountTypes.Quizmaster => CustomRoles.Quizmaster,
@@ -2053,11 +2098,14 @@ static class CustomRolesHelper
             CountTypes.Arsonist => CustomRoles.Arsonist,
             CountTypes.RuthlessRomantic => CustomRoles.RuthlessRomantic,
             CountTypes.Apocalypse => CustomRoles.Apocalypse,
+<<<<<<< Updated upstream
             //CountTypes.Impostor => CustomRoles.ImpostorTOHE,
             //CountTypes.Crew => CustomRoles.CrewmateTOHE,
             //CountTypes.None => throw new System.NotImplementedException(),
             //CountTypes.Charmed => throw new System.NotImplementedException(),
             //CountTypes.Rogue => throw new System.NotImplementedException(),
+=======
+>>>>>>> Stashed changes
             _ => throw new System.NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Count > 0;
@@ -2101,6 +2149,10 @@ public enum CountTypes
     Spiritcaller,
     Apocalypse,
     Quizmaster,
+<<<<<<< Updated upstream
+=======
+    Apocalypse,
+>>>>>>> Stashed changes
     Glitch,
     Arsonist,
     Huntsman,

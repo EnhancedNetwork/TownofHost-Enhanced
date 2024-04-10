@@ -55,8 +55,22 @@ public static class PlagueBearer
             Main.ResetCamPlayerList.Add(playerId);
     }
 
+<<<<<<< Updated upstream
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PlagueBearerCD[id];
     public static void SetKillCooldownPestilence(byte id) => Main.AllPlayerKillCooldown[id] = PestilenceCDOpt.GetFloat();
+=======
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
+        => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
+
+    public override void SetKillCooldown(byte id)
+    {
+        if (!PestilenceList.Contains(id))
+            Main.AllPlayerKillCooldown[id] = PlagueBearerCD[id];
+        else
+            Main.AllPlayerKillCooldown[id] = PestilenceCDOpt.GetFloat();
+    }
+>>>>>>> Stashed changes
 
     public static bool IsPlagued(byte pc, byte target)
     {
@@ -115,7 +129,15 @@ public static class PlagueBearer
         killer.SetKillCooldown();
 
         Logger.Info($"kill cooldown {PlagueBearerCD[killer.PlayerId]}", "PlagueBearer");
+<<<<<<< Updated upstream
         return false;
+=======
+        return true;
+    }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        return killer.Is(CustomRoles.Pestilence) && !target.IsNeutralApocalypse();
+>>>>>>> Stashed changes
     }
 
     public static bool IsIndirectKill(PlayerControl killer)
