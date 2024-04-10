@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using System;
@@ -72,6 +73,7 @@ public class Main : BasePlugin
     public static bool ExceptionMessageIsShown = false;
     public static bool AlreadyShowMsgBox = false;
     public static string credentialsText;
+    public Coroutines coroutines;
     public static NormalGameOptionsV07 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
     public static HideNSeekGameOptionsV07 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
@@ -235,7 +237,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
     public static Dictionary<string, int> PlayerQuitTimes = [];
 
-    
 
     //public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     //public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
@@ -304,6 +305,25 @@ public class Main : BasePlugin
             TOHE.Logger.Error($"File not found：{filename}", "LoadCustomTranslation");
         }
     }
+
+    public void StartCoroutine(System.Collections.IEnumerator coroutine)
+    {
+        if (coroutine == null)
+        {
+            return;
+        }
+        coroutines.StartCoroutine(coroutine.WrapToIl2Cpp());
+    }
+
+    public void StopCoroutine(System.Collections.IEnumerator coroutine)
+    {
+        if (coroutine == null)
+        {
+            return;
+        }
+        coroutines.StopCoroutine(coroutine.WrapToIl2Cpp());
+    }
+
     public static void LoadRoleColors()
     {
         try
@@ -449,6 +469,7 @@ public class Main : BasePlugin
         AutoRehost = Config.Bind("Client Options", "AutoRehost", false);
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
+        coroutines = AddComponent<Coroutines>();
         TOHE.Logger.Enable();
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
@@ -996,4 +1017,7 @@ public enum TieMode
     Default,
     All,
     Random
+}
+public class Coroutines : MonoBehaviour
+{
 }
