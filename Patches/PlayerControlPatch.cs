@@ -1523,7 +1523,7 @@ class PlayerControlSetRolePatch
     public static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType)
     {
-        if (GameStates.IsHideNSeek) return true;
+        if (GameStates.IsHideNSeek || __instance == null) return true;
         if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
 
         var target = __instance;
@@ -1585,6 +1585,7 @@ class PlayerControlSetRolePatch
             {
                 foreach ((var seer, var role) in ghostRoles)
                 {
+                    if (seer == null) continue;
                     Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
                     target.RpcSetRoleDesync(role, seer.GetClientId());
                 }
