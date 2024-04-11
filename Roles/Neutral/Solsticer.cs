@@ -78,6 +78,9 @@ internal class Solsticer : RoleBase
         AURoleOptions.EngineerInVentMaxTime = 0f;
         AURoleOptions.PlayerSpeedMod = !patched ? SolsticerSpeed.GetFloat() : 0.5f;
     } //Enabled Solsticer can vent
+
+    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => true;
+
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player == null) return true;
@@ -129,7 +132,7 @@ internal class Solsticer : RoleBase
         {
             if (killer.Is(CustomRoles.Quizmaster))
             {
-                return false;
+                return true;
             }
             target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
             ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
@@ -149,7 +152,7 @@ internal class Solsticer : RoleBase
                 MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
             else MurderMessage = "";
         }
-        return true; //should be patched before every others
+        return false; //should be patched before every others
     } //My idea is to encourage everyone to kill Solsticer and won't waste shoots on it, only resets cd.
     public override void AfterMeetingTasks()
     {
