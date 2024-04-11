@@ -95,7 +95,7 @@ internal class Bloodmoon : RoleBase
     }
     private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting, bool isforhud = false) 
     {
-        var IsMeeting = GameStates.IsMeeting;
+        var IsMeeting = GameStates.IsMeeting || IsForMeeting;
         if (IsMeeting || seer != player || player == null) return string.Empty;
         var playerid = player.PlayerId;  
 
