@@ -96,7 +96,7 @@ internal class Bloodmoon : RoleBase
     private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting, bool isforhud = false) 
     {
         var IsMeeting = GameStates.IsMeeting;
-        if (IsMeeting || seer != player || player == null || isforhud) return string.Empty;
+        if (IsMeeting || seer != player || player == null) return string.Empty;
         var playerid = player.PlayerId;  
 
         if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= GetTimeStamp() && !IsMeeting)
