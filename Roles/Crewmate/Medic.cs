@@ -248,7 +248,7 @@ internal class Medic : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (target == null) return string.Empty;
+        target ??= seer;
 
         if ((WhoCanSeeProtectOpt.GetInt() is 0 or 1) && (InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId))
         {
@@ -257,8 +257,9 @@ internal class Medic : RoleBase
 
         return string.Empty;
     }
-    private static string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool isformeeting)
+    private string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool isformeeting)
     {
+        target ??= seer;
         if (!(InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId)) return string.Empty;
 
         if ((WhoCanSeeProtectOpt.GetInt() is 0 or 1) || (!seer.IsAlive() && !seer.Is(CustomRoles.Medic)))
