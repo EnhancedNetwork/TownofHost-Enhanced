@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -213,18 +212,18 @@ internal class Wraith : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.KillButton.OverrideText(GetString("KillButtonText"));
-        hud.ImpostorVentButton.OverrideText(GetString(Wraith.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "WraithRevertVentButtonText" : "WraithVentButtonText"));
+        hud.ImpostorVentButton.OverrideText(GetString(IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "WraithRevertVentButtonText" : "WraithVentButtonText"));
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (Medic.ProtectList.Contains(target.PlayerId)) return true;
-        if (target.Is(CustomRoles.Bait)) return true;
-        if (target.Is(CustomRoles.Pestilence)) return true;
+        if (!IsInvis(killer.PlayerId) || target.Is(CustomRoles.Bait)) return true;
 
-        if (!IsInvis(killer.PlayerId)) return true;
-        killer.SetKillCooldown();
-        target.RpcCheckAndMurder(target);
-        target.SetRealKiller(killer);
+        if (killer.RpcCheckAndMurder(target, check: true))
+        {
+            killer.SetKillCooldown();
+            target.RpcMurderPlayer(target);
+            target.SetRealKiller(killer);
+        }
         return false;
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("invisible");
