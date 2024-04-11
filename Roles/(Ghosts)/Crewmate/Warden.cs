@@ -8,7 +8,6 @@ namespace TOHE.Roles._Ghosts_.Crewmate;
 
 internal class Warden : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 27800;
     private static readonly HashSet<byte> PlayerIds = [];
@@ -16,6 +15,7 @@ internal class Warden : RoleBase
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
     //==================================================================\\
+
     private static OptionItem AbilityCooldown;
     private static OptionItem IncreaseSpeed;
     private static OptionItem WardenCanAlertNum;

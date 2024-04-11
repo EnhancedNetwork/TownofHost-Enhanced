@@ -2,8 +2,10 @@ using AmongUs.GameOptions;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -39,7 +41,7 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0407.200.0010"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginVersion = "2024.0410.200.0010"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "2.0.0 dev 1";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
@@ -72,6 +74,7 @@ public class Main : BasePlugin
     public static bool ExceptionMessageIsShown = false;
     public static bool AlreadyShowMsgBox = false;
     public static string credentialsText;
+    public Coroutines coroutines;
     public static NormalGameOptionsV07 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
     public static HideNSeekGameOptionsV07 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
@@ -182,7 +185,7 @@ public class Main : BasePlugin
 
     public static string OverrideWelcomeMsg = "";
     public static int HostClientId;
-    public static Dictionary<byte,List<int>> GuessNumber = [];
+    public static Dictionary<byte, List<int>> GuessNumber = [];
 
     public static List<string> TName_Snacks_CN = ["冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖"];
     public static List<string> TName_Snacks_EN = ["Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee"];
@@ -235,6 +238,25 @@ public class Main : BasePlugin
             TOHE.Logger.Error($"File not found：{filename}", "LoadCustomTranslation");
         }
     }
+
+    public void StartCoroutine(System.Collections.IEnumerator coroutine)
+    {
+        if (coroutine == null)
+        {
+            return;
+        }
+        coroutines.StartCoroutine(coroutine.WrapToIl2Cpp());
+    }
+
+    public void StopCoroutine(System.Collections.IEnumerator coroutine)
+    {
+        if (coroutine == null)
+        {
+            return;
+        }
+        coroutines.StopCoroutine(coroutine.WrapToIl2Cpp());
+    }
+
     public static void LoadRoleColors()
     {
         try
@@ -409,6 +431,7 @@ public class Main : BasePlugin
         AutoRehost = Config.Bind("Client Options", "AutoRehost", false);
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
+        coroutines = AddComponent<Coroutines>();
         TOHE.Logger.Enable();
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
@@ -947,4 +970,7 @@ public enum TieMode
     Default,
     All,
     Random
+}
+public class Coroutines : MonoBehaviour
+{
 }

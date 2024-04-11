@@ -135,7 +135,7 @@ internal class Demon : RoleBase
     {
         if (!seer.Is(CustomRoles.Demon) || !seer.IsAlive()) return string.Empty;
 
-        if (seer.PlayerId == target.PlayerId)
+        if (target != null && seer.PlayerId == target.PlayerId)
         {
             var GetValue = DemonHealth.TryGetValue(target.PlayerId, out var value);
             return GetValue && value > 0 ? Utils.ColorString(GetColor(value, true), $"【{value}/{SelfHealthMax.GetInt()}】") : string.Empty;

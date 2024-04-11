@@ -229,7 +229,7 @@ internal class Captain : RoleBase
     }
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && OptionCrewCanFindCaptain.GetBool()) &&
+        if (target != null && (target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && OptionCrewCanFindCaptain.GetBool()) &&
                                 (target.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) &&
                                 (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && OptionMadmateCanFindCaptain.GetBool())))
             return ColorString(GetRoleColor(CustomRoles.Captain), " ☆");

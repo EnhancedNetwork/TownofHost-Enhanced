@@ -10,23 +10,22 @@ namespace TOHE.Roles._Ghosts_.Crewmate;
 
 internal class Hawk : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 28000;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
-
     //==================================================================\\
+
     public static OptionItem KillCooldown;
     public static OptionItem HawkCanKillNum;
     public static OptionItem MinimumPlayersAliveToKill;
     public static OptionItem MissChance;
     public static OptionItem IncreaseByOneIfConvert;
     
-    public static Dictionary<byte, int> KillCount = [];
-    public static Dictionary<byte, float> KillerChanceMiss = [];
+    public static readonly Dictionary<byte, int> KillCount = [];
+    public static readonly Dictionary<byte, float> KillerChanceMiss = [];
     public static int KeepCount = 0;
     public static void SetupCustomOptions()
     {
