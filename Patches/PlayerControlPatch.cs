@@ -1585,7 +1585,7 @@ class PlayerControlSetRolePatch
             {
                 foreach ((var seer, var role) in ghostRoles)
                 {
-                    if (seer == null) continue;
+                    if (seer == null || target == null) continue;
                     Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
                     target.RpcSetRoleDesync(role, seer.GetClientId());
                 }
