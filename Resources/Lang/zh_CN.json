@@ -932,7 +932,7 @@
   "DoomsayerInfoLong": "(中立阵营):\n末日赌怪可以在会议期间猜测某个玩家的职业。如果是正确的，目标就会死亡，如果是错误的，就会自杀\n猜测指令为：/bt [玩家编号] [职业名]\n你可以在玩家名字前看到该玩家的编号，或者使用/id指令查看所有玩家的编号。",
   "ShroudInfoLong": "(中立阵营):\n裹尸布不能进行正常的击杀。而是对玩家使用击杀按钮进行保护，被保护的玩家名字旁边打上「◈」标记。被保护的玩家在遇到其他玩家就会击杀。如果被保护的玩家活到会议后，且会议结束时裹尸布还活着，被保护的玩家就会死亡",
   "WerewolfInfoLong": "(中立阵营):\n月下狼人可以在破坏灯光来进行击杀（不破坏灯光也可以击杀）。在破坏灯光时月下狼人的击杀冷却时间很短，且击杀时不会瞬移",
-  "ShamanInfoLong": "(Neutrals):\nAs the Shaman, you can use your kill button to select a voodoo doll once per round. If the kill button is used on you, the effect will be deflected onto the voodoo doll.\nIf you survive until the end, you win with the winning team.",
+  "ShamanInfoLong": "(中立阵营):\n萨满你可以使用击杀按钮选择一个巫毒娃娃，每回合一次。如果有人对萨满使用了技能，效果会被巫毒娃娃抵消。",
   "SeekerInfoLong": "(中立阵营):\n搜寻者使用击杀按钮标记目标。此外，在每次见面后和获得新目标后的 5 秒钟内，搜寻者将无法移动。搜寻者需要收集到由房主设定的一定数量的分数才能获胜",
   "PixieInfoLong": "(中立阵营):\n小精灵每轮使用击杀按钮可以标记多达 x 个目标。当会议开始时，小精灵的任务是将其中一个被标记的目标驱逐出去。如果没有驱逐成功，就会自杀，除非没有标记任何目标或所有目标都已死亡。会议结束后，所选目标重置为 0。如果成功，将获得一分。可以看到所有目标的彩色名称。\n当获得房主设定的一定分数时，小精灵将与获胜阵营一起获胜。",
   "SoulCollectorInfoLong": "(中立阵营):\n灵魂收集者投票预测玩家的死亡。如果预测正确，并且目标在下一轮死亡，你就可以收集他们的灵魂。你收集的灵魂数量可由房主设定，收集到一定数量的灵魂即可获胜。",
