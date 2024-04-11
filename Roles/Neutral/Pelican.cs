@@ -25,6 +25,7 @@ internal class Pelican : RoleBase
 
     private static readonly Dictionary<byte, List<byte>> eatenList = [];
     private static readonly Dictionary<byte, float> originalSpeed = [];
+    public static Dictionary<byte, Vector2> PelicanLastPosition = [];
 
     private static int Count = 0;
 
@@ -203,21 +204,25 @@ internal class Pelican : RoleBase
         }
         return false;
     }
-
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (killer.Is(CustomRoles.Scavenger)) PelicanLastPosition[target.PlayerId] = target.GetCustomPosition();
+        return true;
+    }
     public override void OnMurderPlayerAsTarget(PlayerControl SLAT, PlayerControl victim, bool inMeeting, bool isSuicide)
     {
         if (inMeeting) return;
 
         var pc = victim.PlayerId;
         if (!eatenList.ContainsKey(pc)) return;
-
+        var teleportPosition = (victim.GetCustomPosition() == GetBlackRoomPSForPelican()) ? PelicanLastPosition[pc] : victim.GetCustomPosition();
         foreach (var tar in eatenList[pc])
         {
             var target = Utils.GetPlayerById(tar);
             var player = Utils.GetPlayerById(pc);
             if (player == null || target == null) continue;
-
-            target.RpcTeleport(player.GetCustomPosition());
+            
+            target.RpcTeleport(teleportPosition);
 
             Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
             ReportDeadBodyPatch.CanReport[tar] = true;
