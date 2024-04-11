@@ -124,7 +124,7 @@ internal class Pirate : RoleBase
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Challenge");
     private static string GetPlunderedMark(PlayerControl seer, PlayerControl target, bool isMeeting = false)
     {
-        if (isMeeting && target.PlayerId == PirateTarget)
+        if (target != null && isMeeting && target.PlayerId == PirateTarget)
         {
             return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pirate), " ⦿");
         }

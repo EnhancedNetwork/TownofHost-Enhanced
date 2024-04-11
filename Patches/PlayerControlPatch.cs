@@ -1600,7 +1600,7 @@ class PlayerControlSetRolePatch
 
         if (roleType == RoleTypes.GuardianAngel && !DidSetGhost.ContainsKey(__instance.PlayerId))
         {
-            Utils.NotifyRoles(SpecifyTarget: __instance, NoCache: true); //Update rolename for vanilla
+            Utils.NotifyRoles(SpecifyTarget: __instance);
             _ = new LateTask(() => {
 
                 __instance.RpcResetAbilityCooldown();

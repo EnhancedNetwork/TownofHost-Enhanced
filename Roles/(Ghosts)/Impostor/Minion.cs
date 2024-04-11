@@ -5,7 +5,6 @@ namespace TOHE.Roles._Ghosts_.Impostor;
 
 internal class Minion : RoleBase
 {
-
     //===========================SETUP================================\\
     private const int Id = 27900;
     private static readonly HashSet<byte> Playerids = [];
