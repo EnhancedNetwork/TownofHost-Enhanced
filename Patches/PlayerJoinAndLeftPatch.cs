@@ -101,10 +101,9 @@ class OnGameJoinedPatch
         {
             try
             {
+                if (!GameStates.IsOnlineGame) return;
                 if (!GameStates.IsModHost)
-                {
                     RPC.RpcRequestRetryVersionCheck();
-                }
                 if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()) && GameStates.IsOnlineGame)
                 {
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
