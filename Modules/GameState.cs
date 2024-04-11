@@ -299,6 +299,8 @@ public class PlayerState(byte playerId)
         Slice,
         BloodLet,
         WrongAnswer,
+        Starved,
+        Armageddon,
 
         //Please add all new roles with deathreason & new deathreason in Susceptible.CallEnabledAndChange
         etc = -1,

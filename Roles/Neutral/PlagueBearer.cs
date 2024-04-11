@@ -65,6 +65,9 @@ internal class PlagueBearer : RoleBase
         else
             Main.AllPlayerKillCooldown[id] = PestilenceCDOpt.GetFloat();
     }
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
+        => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
 
     private static bool IsPlagued(byte pc, byte target)
     {
@@ -158,7 +161,7 @@ internal class PlagueBearer : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        return killer.Is(CustomRoles.Pestilence);
+        return killer.Is(CustomRoles.Pestilence) && !target.IsNeutralApocalypse();
     }
 
     public override string GetProgressText(byte playerId, bool comms)

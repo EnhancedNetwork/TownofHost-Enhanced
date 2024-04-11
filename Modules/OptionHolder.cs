@@ -478,6 +478,8 @@ public static class Options
     public static OptionItem NonNeutralKillingRolesMaxPlayer;
     public static OptionItem NeutralKillingRolesMinPlayer;
     public static OptionItem NeutralKillingRolesMaxPlayer;
+    public static OptionItem NeutralApocalypseRolesMinPlayer;
+    public static OptionItem NeutralApocalypseRolesMaxPlayer;
     public static OptionItem NeutralRoleWinTogether;
     public static OptionItem NeutralWinTogether;
 
@@ -666,6 +668,14 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Players);
 
+        NeutralApocalypseRolesMinPlayer = IntegerOptionItem.Create(60022, "NeutralApocalypseRolesMinPlayer", new(0, 4, 1), 0, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true)
+            .SetValueFormat(OptionFormat.Players);
+        NeutralApocalypseRolesMaxPlayer = IntegerOptionItem.Create(60023, "NeutralApocalypseRolesMaxPlayer", new(0, 4, 1), 0, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Players);
+
 
         NeutralRoleWinTogether = BooleanOptionItem.Create(60017, "NeutralRoleWinTogether", false, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -710,11 +720,6 @@ public static class Options
          * Arrogance
          */
         Arrogance.SetupCustomOption();
-
-        /*
-         * Berserker
-         */
-        Berserker.SetupCustomOption();
 
         /*
          * Bomber
@@ -1500,8 +1505,6 @@ public static class Options
         */
         Solsticer.SetupCustomOption();
 
-        SoulCollector.SetupCustomOption();
-
         Terrorist.SetupCustomOptions();
 
         Vector.SetupCustomOptions();
@@ -1550,8 +1553,6 @@ public static class Options
 
         Poisoner.SetupCustomOption();
 
-        PlagueBearer.SetupCustomOption();
-
         PlagueDoctor.SetupCustomOption();
 
         PotionMaster.SetupCustomOption();
@@ -1575,6 +1576,17 @@ public static class Options
 
         Wraith.SetupCustomOption();
 
+        TextOptionItem.Create(10000015, "RoleType.NeutralApocalypse", TabGroup.NeutralRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(127, 140, 141, byte.MaxValue));
+
+        Baker.SetupCustomOption();
+
+        Berserker.SetupCustomOption();
+
+        PlagueBearer.SetupCustomOption();
+
+        SoulCollector.SetupCustomOption();
         #endregion
 
         #region Add-Ons Settings

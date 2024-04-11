@@ -298,7 +298,7 @@ public static class CustomRolesHelper
             //FFA
             CustomRoles.Killer) return true;
 
-        return role.IsNK() || role.IsNonNK();
+        return role.IsNK() || role.IsNonNK() || role.IsNA();
     }
     public static bool IsNK(this CustomRoles role)
     {
@@ -336,10 +336,8 @@ public static class CustomRolesHelper
             CustomRoles.Virus or
             CustomRoles.BloodKnight or
             CustomRoles.Spiritcaller or
-            CustomRoles.PlagueBearer or
             CustomRoles.Agitater or
-            CustomRoles.RuthlessRomantic or
-            CustomRoles.Pestilence;
+            CustomRoles.RuthlessRomantic;
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
@@ -356,7 +354,6 @@ public static class CustomRolesHelper
             CustomRoles.Opportunist or
             CustomRoles.Pursuer or
             CustomRoles.Shaman or
-            CustomRoles.SoulCollector or
             CustomRoles.CursedSoul or
             CustomRoles.Doomsayer or
             CustomRoles.Executioner or
@@ -382,6 +379,26 @@ public static class CustomRolesHelper
             CustomRoles.VengefulRomantic or
             CustomRoles.SchrodingersCat or
             CustomRoles.Provocateur;
+    }
+    public static bool IsNA(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.PlagueBearer or
+            CustomRoles.Pestilence or
+            CustomRoles.Berserker or
+            CustomRoles.War or
+            CustomRoles.SoulCollector or
+            CustomRoles.Death or
+            CustomRoles.Baker or
+            CustomRoles.Famine;
+    }
+    public static bool IsTNA(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.Pestilence or
+            CustomRoles.War or
+            CustomRoles.Death or
+            CustomRoles.Famine;
     }
     public static bool IsNB(this CustomRoles role)
     {
@@ -451,7 +468,6 @@ public static class CustomRolesHelper
             CustomRoles.Undertaker or
             CustomRoles.RiftMaker or
             CustomRoles.Ninja or
-            CustomRoles.Berserker or
             CustomRoles.Bloodmoon or
             CustomRoles.Anonymous or
             CustomRoles.Visionary or
@@ -836,8 +852,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.CursedWolf)
                     || pc.Is(CustomRoles.Masochist)
-                    || pc.Is(CustomRoles.PlagueBearer)
-                    || pc.Is(CustomRoles.Pestilence))
+                    || pc.IsNeutralApocalypse())
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Fragile.CrewCanBeFragile.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Fragile.NeutralCanBeFragile.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Fragile.ImpCanBeFragile.GetBool()))
                     return false;
@@ -1392,8 +1407,8 @@ public static class CustomRolesHelper
            CustomRoles.Shroud => CountTypes.Shroud,
            CustomRoles.Werewolf => CountTypes.Werewolf,
            CustomRoles.Wraith => CountTypes.Wraith,
-           CustomRoles.Pestilence => CountTypes.Pestilence,
-           CustomRoles.PlagueBearer => CountTypes.PlagueBearer,
+           CustomRoles.Pestilence or CustomRoles.PlagueBearer or CustomRoles.SoulCollector or CustomRoles.Death or CustomRoles.Baker or CustomRoles.Famine or CustomRoles.Berserker or CustomRoles.War 
+           => CountTypes.Apocalypse,
            CustomRoles.Agitater => CountTypes.Agitater,
            CustomRoles.Parasite => CountTypes.Impostor,
            CustomRoles.SerialKiller => CountTypes.SerialKiller,
@@ -1467,11 +1482,10 @@ public static class CustomRolesHelper
             CustomRoles.Pickpocket => CustomWinner.Pickpocket,
             CustomRoles.Traitor => CustomWinner.Traitor,
             CustomRoles.Vulture => CustomWinner.Vulture,
-            CustomRoles.Pestilence => CustomWinner.Pestilence,
+            CustomRoles.Apocalypse => CustomWinner.Apocalypse,
             CustomRoles.Medusa => CustomWinner.Medusa,
             CustomRoles.Spiritcaller => CustomWinner.Spiritcaller,
             CustomRoles.Glitch => CustomWinner.Glitch,
-            CustomRoles.PlagueBearer => CustomWinner.Plaguebearer,
             CustomRoles.Masochist => CustomWinner.Masochist,
             CustomRoles.Doomsayer => CustomWinner.Doomsayer,
             CustomRoles.Shroud => CustomWinner.Shroud,
@@ -1500,8 +1514,7 @@ public static class CustomRolesHelper
             CountTypes.Shroud => CustomRoles.Shroud,
             CountTypes.Werewolf => CustomRoles.Werewolf,
             CountTypes.Wraith => CustomRoles.Wraith,
-            CountTypes.Pestilence => CustomRoles.Pestilence,
-            CountTypes.PlagueBearer => CustomRoles.PlagueBearer,
+            CountTypes.Apocalypse => CustomRoles.Apocalypse,
             CountTypes.Agitater => CustomRoles.Agitater,
             CountTypes.SerialKiller => CustomRoles.SerialKiller,
             CountTypes.Quizmaster => CustomRoles.Quizmaster,
@@ -1560,9 +1573,8 @@ public enum CountTypes
     Traitor,
     Medusa,
     Spiritcaller,
-    Pestilence,
     Quizmaster,
-    PlagueBearer,
+    Apocalypse,
     Glitch,
     Arsonist,
     Huntsman,
