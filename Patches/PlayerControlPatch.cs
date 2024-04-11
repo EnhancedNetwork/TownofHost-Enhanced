@@ -1597,66 +1597,73 @@ class PlayerControlSetRolePatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, bool __runOriginal)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || __instance == null) return;
 
-        if (roleType == RoleTypes.GuardianAngel && !DidSetGhost.ContainsKey(__instance.PlayerId))
+        try
         {
-            Utils.NotifyRoles(SpecifyTarget: __instance);
-            _ = new LateTask(() => {
+            if (roleType == RoleTypes.GuardianAngel && !DidSetGhost.ContainsKey(__instance.PlayerId))
+            {
+                Utils.NotifyRoles(SpecifyTarget: __instance);
+                _ = new LateTask(() => {
 
-                __instance.RpcResetAbilityCooldown();
+                    __instance.RpcResetAbilityCooldown();
 
-                if (Options.SendRoleDescriptionFirstMeeting.GetBool())
-                {
-                    var host = PlayerControl.LocalPlayer;
-                    var name = host.Data.PlayerName;
-                    var lp = __instance;
-                    var sb = new StringBuilder();
-                    var conf = new StringBuilder();
-                    var role = __instance.GetCustomRole();
-                    var rlHex = Utils.GetRoleColorCode(role);
-                    sb.Append(Utils.GetRoleTitle(role) + lp.GetRoleInfo(true));
-                    if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                        Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref conf);
-                    var cleared = conf.ToString();
-                    conf.Clear().Append($"<size={ChatCommands.Csize}>" + $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n" + cleared + "</size>");
-                    
-                    var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
-                    writer.StartMessage(__instance.GetClientId());
-                    writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
-                        .Write(Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")))
-                        .EndRpc();
-                    writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
-                        .Write(sb.ToString())
-                        .EndRpc();
-                    writer.EndMessage();
-                    writer.SendMessage();
+                    if (Options.SendRoleDescriptionFirstMeeting.GetBool())
+                    {
+                        var host = PlayerControl.LocalPlayer;
+                        var name = host.Data.PlayerName;
+                        var lp = __instance;
+                        var sb = new StringBuilder();
+                        var conf = new StringBuilder();
+                        var role = __instance.GetCustomRole();
+                        var rlHex = Utils.GetRoleColorCode(role);
+                        sb.Append(Utils.GetRoleTitle(role) + lp.GetRoleInfo(true));
+                        if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
+                            Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref conf);
+                        var cleared = conf.ToString();
+                        conf.Clear().Append($"<size={ChatCommands.Csize}>" + $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n" + cleared + "</size>");
 
-                    var writer2 = CustomRpcSender.Create("SendGhostRoleConfig", SendOption.None);
-                    writer2.StartMessage(__instance.GetClientId());
-                    writer2.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
-                        .Write(conf.ToString())
-                        .EndRpc();
-                    writer2.StartRpc(host.NetId, (byte)RpcCalls.SetName)
-                        .Write(name)
-                        .EndRpc();
-                    writer2.EndMessage();
-                    writer2.SendMessage();
+                        var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
+                        writer.StartMessage(__instance.GetClientId());
+                        writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                            .Write(Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")))
+                            .EndRpc();
+                        writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
+                            .Write(sb.ToString())
+                            .EndRpc();
+                        writer.EndMessage();
+                        writer.SendMessage();
 
-                    // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
+                        var writer2 = CustomRpcSender.Create("SendGhostRoleConfig", SendOption.None);
+                        writer2.StartMessage(__instance.GetClientId());
+                        writer2.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
+                            .Write(conf.ToString())
+                            .EndRpc();
+                        writer2.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                            .Write(name)
+                            .EndRpc();
+                        writer2.EndMessage();
+                        writer2.SendMessage();
 
-                }
+                        // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
 
-            }, 0.1f, "SetGuardianAngel");
+                    }
+
+                }, 0.1f, "SetGuardianAngel");
+            }
+
+            if (__runOriginal)
+            {
+                Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");
+
+                if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel)
+                    if (!DidSetGhost.ContainsKey(__instance.PlayerId))
+                        DidSetGhost.Add(__instance.PlayerId, true);
+            }
         }
-
-        if (__runOriginal)
+        catch (Exception e)
         {
-            Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");
-
-            if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel)
-                if (!DidSetGhost.ContainsKey(__instance.PlayerId))
-                    DidSetGhost.Add(__instance.PlayerId, true);
+            Logger.Error($"Role Type:{roleType} - Run Original:{__runOriginal} - Error: {e}", "RpcSetRole.Postfix");
         }
     }
 }
