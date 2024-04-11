@@ -2592,7 +2592,7 @@
   "MinimumPlayersAliveToKill": "Minimum Players Alive To Kill",
   "BloodMoonCanKillNum": "Max BloodLettings",
   "BloodMoonTimeTilDie": "Time Until Death",
-  "DeathTimer": "\nDeath In: {DeathTimer}s",
+  "DeathTimer": "Death In: {DeathTimer}s",
   "BerserkerKillCooldown": "Berserker kill cooldown",
   "BerserkerMax": "Max level that Berserker can reach",
   "BerserkerOneCanKillCooldown": "Unlock lower kill cooldown",
