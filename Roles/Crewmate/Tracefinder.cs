@@ -109,7 +109,7 @@ internal class Tracefinder : RoleBase
                 foreach (var pc in playerIdList)
                 {
                     var player = Utils.GetPlayerById(pc);
-                    if (player == null || !player.IsAlive()) continue;
+                    if (player == null || !player.IsAlive() || target == null) continue;
                     LocateArrow.Add(pc, target.transform.position);
                     SendRPC(pc, true, target.transform.position);
                     Utils.NotifyRoles(SpecifySeer: player);
