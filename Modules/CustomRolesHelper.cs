@@ -1192,7 +1192,8 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Swooper) 
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Tired)
-                    || pc.Is(CustomRoles.Statue))
+                    || pc.Is(CustomRoles.Statue)
+                    || pc.Is(CustomRoles.Seeker))
                     return false;
                 break;
 
