@@ -49,9 +49,8 @@ internal class TimeMaster : RoleBase
     }
     public override void Add(byte playerId)
     {
-        TimeMasterNum[playerId] = 0;
-        TimeMasterNumOfUsed.Add(playerId, TimeMasterMaxUses.GetInt());
-        TimeMasterNumOfUsed.Add(playerId, TimeMasterMaxUses.GetInt());
+        TimeMasterNum.TryAdd(playerId, 0);
+        TimeMasterNumOfUsed.TryAdd(playerId, TimeMasterMaxUses.GetInt());
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
