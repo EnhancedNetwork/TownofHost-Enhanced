@@ -42,6 +42,7 @@ internal class Pelican : RoleBase
         playerIdList.Clear();
         eatenList.Clear();
         originalSpeed.Clear();
+        PelicanLastPosition.Clear();
 
         Count = 0;
     }
@@ -206,7 +207,11 @@ internal class Pelican : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer.Is(CustomRoles.Scavenger)) PelicanLastPosition[target.PlayerId] = target.GetCustomPosition();
+
+        if (killer.Is(CustomRoles.Scavenger) || killer.Is(CustomRoles.Pelican))
+        {
+            PelicanLastPosition[target.PlayerId] = target.GetCustomPosition();
+        }
         return true;
     }
     public override void OnMurderPlayerAsTarget(PlayerControl SLAT, PlayerControl victim, bool inMeeting, bool isSuicide)
@@ -215,7 +220,12 @@ internal class Pelican : RoleBase
 
         var pc = victim.PlayerId;
         if (!eatenList.ContainsKey(pc)) return;
-        var teleportPosition = (victim.GetCustomPosition() == GetBlackRoomPSForPelican()) ? PelicanLastPosition[pc] : victim.GetCustomPosition();
+        Vector2 teleportPosition;
+        if ((victim.GetCustomPosition() == GetBlackRoomPSForPelican() || victim.GetCustomPosition() == ExtendedPlayerControl.GetBlackRoomPosition())
+            && PelicanLastPosition.ContainsKey(pc))
+            teleportPosition = PelicanLastPosition[pc];
+        else teleportPosition = victim.GetCustomPosition();
+
         foreach (var tar in eatenList[pc])
         {
             var target = Utils.GetPlayerById(tar);
