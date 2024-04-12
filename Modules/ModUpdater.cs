@@ -108,10 +108,9 @@ public class ModUpdater
             latestTitle = $"Day: {latestVersion?.Day} Month: {latestVersion?.Month} Year: {latestVersion?.Year}";
 
             JArray assets = data["assets"].Cast<JArray>();
-            string assetName = assets.ToString();
-
             for (int i = 0; i < assets.Count; i++)
             {
+                string assetName = assets[i]["name"].ToString();
                 if (assetName.ToLower() == "tohe.dll")
                 {
                     downloadUrl = assets[i]["browser_download_url"].ToString();
