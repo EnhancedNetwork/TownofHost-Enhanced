@@ -92,7 +92,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
                 angel.Notify(GetString("ChooseTarget"));
             }
-            else if (killer != byte.MaxValue && Target == byte.MaxValue)
+            else if (killer != byte.MaxValue && Target == byte.MaxValue && target.PlayerId != killer)
             {
                 Target = target.PlayerId;
                 PossessLimit--;
