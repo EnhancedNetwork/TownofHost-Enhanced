@@ -86,6 +86,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             if (target.PlayerId != killer && (Target == byte.MaxValue || Target == target.PlayerId))
             {
                 TargetArrow.Remove(killer, Target);
+                LastTime.Remove(target.PlayerId);
                 killer = target.PlayerId;
                 Target = byte.MaxValue;
 
