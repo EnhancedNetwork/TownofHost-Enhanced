@@ -27,8 +27,8 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         private static OptionItem PossessDur;
         private static OptionItem GhastlySpeed;
 
-        private int PossessLimit = MaxPossesions.GetInt();
-        private (byte, byte) killertarget = (byte.MaxValue, byte.MaxValue);
+        private static int PossessLimit = byte.MaxValue;
+        private static (byte, byte) killertarget = (byte.MaxValue, byte.MaxValue);
         private static readonly Dictionary<byte, long> LastTime = [];
 
         public static void SetupCustomOptions()
@@ -47,10 +47,13 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         {
             PlayerIds.Clear();
             LastTime.Clear();
+            killertarget = (byte.MaxValue, byte.MaxValue);
         }
         public override void Add(byte playerId)
         {
             PlayerIds.Add(playerId);
+            PossessLimit = MaxPossesions.GetInt();
+
             CustomRoleManager.LowerOthers.Add(OthersNameText);
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         }
