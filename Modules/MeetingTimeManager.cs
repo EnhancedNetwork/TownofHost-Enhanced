@@ -47,12 +47,12 @@ public class MeetingTimeManager
         int MeetingTimeMinTimeManager = 0;
         int MeetingTimeMax = 300;
 
-        if (TimeThief.IsEnable)
+        if (TimeThief.HasEnabled)
         {
             MeetingTimeMinTimeThief = TimeThief.LowerLimitVotingTime.GetInt();
             BonusMeetingTime += TimeThief.TotalDecreasedMeetingTime();
         }
-        if (TimeManager.IsEnable)
+        if (TimeManager.HasEnabled)
         {
             MeetingTimeMinTimeManager = TimeManager.MadMinMeetingTimeLimit.GetInt();
             MeetingTimeMax = TimeManager.MeetingTimeLimit.GetInt();
@@ -61,18 +61,18 @@ public class MeetingTimeManager
 
         int TotalMeetingTime = DiscussionTime + VotingTime;
        
-        if (TimeManager.IsEnable) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeManager, MeetingTimeMax) - TotalMeetingTime;
-        if (TimeThief.IsEnable) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeThief, MeetingTimeMax) - TotalMeetingTime;
-        if (!TimeManager.IsEnable && !TimeThief.IsEnable) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeThief, MeetingTimeMax) - TotalMeetingTime;
+        if (TimeManager.HasEnabled) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeManager, MeetingTimeMax) - TotalMeetingTime;
+        if (TimeThief.HasEnabled) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeThief, MeetingTimeMax) - TotalMeetingTime;
+        if (!TimeManager.HasEnabled && !TimeThief.HasEnabled) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeThief, MeetingTimeMax) - TotalMeetingTime;
 
         if (BonusMeetingTime >= 0)
-            VotingTime += BonusMeetingTime; //投票時間を延長
+            VotingTime += BonusMeetingTime; // Extended voting hours
         else
         {
-            DiscussionTime += BonusMeetingTime; //会議時間を優先的に短縮
-            if (DiscussionTime < 0) //会議時間だけでは賄えない場合
+            DiscussionTime += BonusMeetingTime; // Prioritize meeting time reduction
+            if (DiscussionTime < 0) // If meeting time alone is not sufficient to cover
             {
-                VotingTime += DiscussionTime; //足りない分投票時間を短縮
+                VotingTime += DiscussionTime; // Shorten voting time for missing
                 DiscussionTime = 0;
             }
         }

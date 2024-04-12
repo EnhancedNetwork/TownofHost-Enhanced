@@ -1,61 +1,83 @@
 ﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
-public static class Pixie
+internal class Pixie : RoleBase
 {
-    private static readonly int Id = 25900;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 25900;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
-    public static Dictionary<byte, HashSet<byte>> PixieTargets = [];
-    public static Dictionary<byte, int> PixiePoints = [];
+    private static OptionItem PixiePointsToWin;
+    private static OptionItem PixieMaxTargets;
+    private static OptionItem PixieMarkCD;
+    private static OptionItem PixieSuicideOpt;
 
-    public static OptionItem PixiePointsToWin;
-    public static OptionItem PixieMaxTargets;
-    public static OptionItem PixieMarkCD;
-    public static OptionItem PixieSuicideOpt;
+    private static readonly Dictionary<byte, HashSet<byte>> PixieTargets = [];
+    private static readonly Dictionary<byte, int> PixiePoints = [];
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pixie);
-        PixiePointsToWin = IntegerOptionItem.Create(Id + 10, "PixiePointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pixie])
+        PixiePointsToWin = IntegerOptionItem.Create(Id + 10, "PixiePointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pixie])
             .SetValueFormat(OptionFormat.Times);
-        PixieMaxTargets = IntegerOptionItem.Create(Id + 11, "MaxTargets", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pixie])
+        PixieMaxTargets = IntegerOptionItem.Create(Id + 11, "MaxTargets", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pixie])
             .SetValueFormat(OptionFormat.Players);
-        PixieMarkCD = FloatOptionItem.Create(Id + 12, "MarkCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pixie])
+        PixieMarkCD = FloatOptionItem.Create(Id + 12, "MarkCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pixie])
             .SetValueFormat(OptionFormat.Seconds);
-        PixieSuicideOpt = BooleanOptionItem.Create(Id + 13, "PixieSuicide", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pixie]);
+        PixieSuicideOpt = BooleanOptionItem.Create(Id + 13, "PixieSuicide", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pixie]);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        PixieTargets = [];
-        PixiePoints = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        PixieTargets.Clear();
+        PixiePoints.Clear();
     }
-    public static void Add(byte playerId)
+
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         PixieTargets[playerId] = [];
         PixiePoints.Add(playerId, 0);
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pixie).ShadeColor(0.25f), PixiePoints.TryGetValue(playerId, out var x) ? $"({x}/{PixiePointsToWin.GetInt()})" : "Invalid");
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PixieMarkCD.GetFloat();
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        PixieTargets.Remove(playerId);
+        PixiePoints.Remove(playerId);
+    }
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pixie).ShadeColor(0.25f), PixiePoints.TryGetValue(playerId, out var x) ? $"({x}/{PixiePointsToWin.GetInt()})" : "Invalid");
 
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PixieMarkCD.GetFloat();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseSabotage(PlayerControl pc) => false;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
+    
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        HudManager.Instance.KillButton.OverrideText(GetString("PixieButtonText"));
+    }
 
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+    {
+        string color = string.Empty;
+        if (seer.Is(CustomRoles.Pixie) && PixieTargets[seer.PlayerId].Contains(target.PlayerId)) color = Main.roleColors[CustomRoles.Pixie];
+        return color;
+    }
     public static void SendRPC(byte pixieId, bool operate, byte targetId = 0xff)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPixieTargets, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Pixie); //SetPixieTargets
         writer.Write(pixieId);
         writer.Write(operate);
         if (!operate) // false = 0
@@ -69,7 +91,7 @@ public static class Pixie
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte pixieId = reader.ReadByte();
         bool operate = reader.ReadBoolean();
@@ -88,9 +110,9 @@ public static class Pixie
         }
     }
 
-    public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return;
+        if (killer == null || target == null) return false;
         byte targetId = target.PlayerId;
         byte killerId = killer.PlayerId;
         if (!PixieTargets.ContainsKey(killerId)) PixieTargets[killerId] = [];
@@ -98,42 +120,41 @@ public static class Pixie
         {
             killer.Notify(GetString("PixieMaxTargetReached"));
             Logger.Info($"Max targets per round already reached, {PixieTargets[killerId].Count}/{PixieMaxTargets.GetInt()}", "Pixie");
-            return;
+            return false;
         }
-        if (PixieTargets[killerId].Contains(targetId)) 
+        if (PixieTargets[killerId].Contains(targetId))
         {
             killer.Notify(GetString("PixieTargetAlreadySelected"));
-            return;
+            return false;
         }
         PixieTargets[killerId].Add(targetId);
         SendRPC(killerId, false, targetId);
         Utils.NotifyRoles(SpecifySeer: killer, ForceLoop: true);
         if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
         SetKillCooldown(killer.PlayerId);
-        return;
+        return false;
     }
 
-    public static void CheckExileTarget(GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl pc, GameData.PlayerInfo exiled)
     {
-        if (!IsEnable) return;
-        foreach (var pixieId in PixieTargets.Keys.ToArray())
+        byte pixieId = pc.PlayerId;
+        if (PixieTargets.ContainsKey(pixieId))
         {
             if (exiled != null)
-            { 
-                var pc = Utils.GetPlayerById(pixieId);
-                if (PixieTargets[pixieId].Count == 0) continue;
+            {
+                if (PixieTargets[pixieId].Count == 0) return;
                 if (!PixiePoints.ContainsKey(pixieId)) PixiePoints[pixieId] = 0;
-                if (PixiePoints[pixieId] >= PixiePointsToWin.GetInt()) continue;
+                if (PixiePoints[pixieId] >= PixiePointsToWin.GetInt()) return;
 
                 if (PixieTargets[pixieId].Contains(exiled.PlayerId))
                 {
                     PixiePoints[pixieId]++;
                 }
-                else if (PixieSuicideOpt.GetBool() 
+                else if (PixieSuicideOpt.GetBool()
                     && PixieTargets[pixieId].Any(eid => Utils.GetPlayerById(eid)?.IsAlive() == true))
                 {
+                    pc.SetRealKiller(pc);
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pixieId);
-                    Utils.GetPlayerById(pixieId).SetRealKiller(Utils.GetPlayerById(pixieId));
                     Logger.Info($"{pc.GetNameWithRole()} committed suicide because target not exiled and target(s) were alive during ejection", "Pixie");
                 }
             }

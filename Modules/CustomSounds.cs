@@ -16,14 +16,14 @@ public static class CustomSoundsManager
             Play(sound);
             return;
         }
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayCustomSound, Hazel.SendOption.Reliable, pc.GetClientId());
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayCustomSound, SendOption.Reliable, pc.GetClientId());
         writer.Write(sound);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RPCPlayCustomSoundAll(string sound)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayCustomSound, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayCustomSound, SendOption.Reliable, -1);
         writer.Write(sound);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         Play(sound);
@@ -45,7 +45,7 @@ public static class CustomSoundsManager
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TOHE.Resources.Sounds." + sound + ".wav");
             if (stream == null)
             {
-                Logger.Warn($"声音文件缺失：{sound}", "CustomSounds");
+                Logger.Warn($"Sound file missing：{sound}", "CustomSounds");
                 return;
             }
             var fs = File.Create(path);
@@ -53,7 +53,7 @@ public static class CustomSoundsManager
             fs.Close();
         }
         StartPlay(path);
-        Logger.Msg($"播放声音：{sound}", "CustomSounds");
+        Logger.Msg($"play sound：{sound}", "CustomSounds");
     }
 
     [DllImport("winmm.dll")]

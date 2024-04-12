@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Flash
 {
-    private static readonly int Id = 26100;
+    private const int Id = 26100;
 
     private static OptionItem OptionSpeed;
 

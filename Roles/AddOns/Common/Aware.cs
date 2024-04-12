@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using static TOHE.Translator;
+﻿using static TOHE.Translator;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public static class Aware
 {
-    private static readonly int Id = 21600;
+    private const int Id = 21600;
     public static bool IsEnable = false;
 
     public static OptionItem ImpCanBeAware;
@@ -41,8 +39,8 @@ public static class Aware
     {
         switch (killerRole)
         {
-            case CustomRoles.EvilDiviner:
-            case CustomRoles.Farseer:
+            case CustomRoles.Consigliere:
+            case CustomRoles.Overseer:
                 if (!AwareInteracted.ContainsKey(target.PlayerId))
                 {
                     AwareInteracted.Add(target.PlayerId, []);
@@ -60,7 +58,7 @@ public static class Aware
         foreach (var pid in AwareInteracted.Keys.ToArray())
         {
             var Awarepc = Utils.GetPlayerById(pid);
-            if (AwareInteracted[pid].Count > 0 && Awarepc.IsAlive())
+            if (AwareInteracted[pid].Any() && Awarepc.IsAlive())
             {
                 string rolelist = "Someone";
                 _ = new LateTask(() =>
@@ -79,7 +77,7 @@ public static class Aware
     {
         switch (pc.GetCustomRole())
         {
-            case CustomRoles.Divinator:
+            case CustomRoles.FortuneTeller:
             case CustomRoles.Oracle:
                 if (!AwareInteracted.ContainsKey(pva.VotedFor)) AwareInteracted[pva.VotedFor] = [];
                 if (!AwareInteracted[pva.VotedFor].Contains(Utils.GetRoleName(pc.GetCustomRole())))

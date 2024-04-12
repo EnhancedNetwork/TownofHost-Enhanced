@@ -1,7 +1,4 @@
-using HarmonyLib;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,13 +30,13 @@ public class MainMenuManagerStartPatch
         if ((Ambience = GameObject.Find("Ambience")) != null)
         {
             // Show play button when mod is fully loaded
-            if (Options.IsLoaded && !__instance.playButton.enabled)
-                __instance.playButton.transform.gameObject.SetActive(true);
+            //if (Options.IsLoaded && !__instance.playButton.enabled)
+            //    __instance.playButton.transform.gameObject.SetActive(true);
 
-            else if (!Options.IsLoaded)
-                __instance.playButton?.transform.gameObject.SetActive(false);
+            //else if (!Options.IsLoaded)
+            //    __instance.playButton?.transform.gameObject.SetActive(false);
 
-            Logger.Msg($"Play button showed? : Options is loaded: {Options.IsLoaded} - check play button enabled {__instance.playButton.enabled}", "PlayButton");
+            //Logger.Msg($"Play button showed? : Options is loaded: {Options.IsLoaded} - check play button enabled {__instance.playButton.enabled}", "PlayButton");
 
             Ambience.SetActive(false);
         }
@@ -62,22 +59,22 @@ class MainMenuManagerLateUpdatePatch
         }
         lateUpdate = 0;
 
-        LoadingHint = new GameObject("LoadingHint");
+        //LoadingHint = new GameObject("LoadingHint");
 
-        if (!Options.IsLoaded)
-        {
-            LoadingHint.transform.position = Vector3.down;
-            var LoadingHintText = LoadingHint.AddComponent<TextMeshPro>();
-            LoadingHintText.text = GetString("SettingsAreLoading");
-            LoadingHintText.alignment = TextAlignmentOptions.Center;
-            LoadingHintText.fontSize = 3f;
-            LoadingHintText.transform.position = GameObject.Find("LOGO-AU").transform.position;
-            LoadingHintText.transform.position += new Vector3(-0.2f, -0.9f, 0f);
-            LoadingHintText.color = new Color32(0, 255, 8, byte.MaxValue); // new Color32(17, 255, 1, byte.MaxValue);
-        }
+        //if (!Options.IsLoaded)
+        //{
+        //    LoadingHint.transform.position = Vector3.down;
+        //    var LoadingHintText = LoadingHint.AddComponent<TextMeshPro>();
+        //    LoadingHintText.text = GetString("SettingsAreLoading");
+        //    LoadingHintText.alignment = TextAlignmentOptions.Center;
+        //    LoadingHintText.fontSize = 3f;
+        //    LoadingHintText.transform.position = GameObject.Find("LOGO-AU").transform.position;
+        //    LoadingHintText.transform.position += new Vector3(-0.2f, -0.9f, 0f);
+        //    LoadingHintText.color = new Color32(0, 255, 8, byte.MaxValue); // new Color32(17, 255, 1, byte.MaxValue);
+        //}
 
-        LoadingHint?.SetActive(!Options.IsLoaded);
-        __instance.playButton.transform.gameObject.SetActive(Options.IsLoaded);
+        //LoadingHint?.SetActive(!Options.IsLoaded);
+        //__instance.playButton.transform.gameObject.SetActive(Options.IsLoaded);
 
         var PlayOnlineButton = __instance.PlayOnlineButton;
         if (PlayOnlineButton != null)
