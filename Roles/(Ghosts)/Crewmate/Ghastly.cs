@@ -36,11 +36,11 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             PossessCooldown = FloatOptionItem.Create(Id + 10, "PossessCD", new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
                 .SetValueFormat(OptionFormat.Seconds);
             MaxPossesions = IntegerOptionItem.Create(Id + 11, "MaxPossessions", new(1, 99, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
-                .SetValueFormat(OptionFormat.Seconds);
+                .SetValueFormat(OptionFormat.Players);
             PossessDur = FloatOptionItem.Create(Id + 12, "PossessionDuration", new(2.5f, 120f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
                 .SetValueFormat(OptionFormat.Seconds);
-            GhastlySpeed = FloatOptionItem.Create(Id + 13, "GhastlySpeed", new(2.5f, 5f, 2.5f), 2.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
-                .SetValueFormat(OptionFormat.Seconds);
+            GhastlySpeed = FloatOptionItem.Create(Id + 13, "GhastlySpeed", new(2.5f, 5f, 0.5f), 2.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
+                .SetValueFormat(OptionFormat.Times);
         }
         public override void Init()
         {
