@@ -4,10 +4,11 @@ using System.Net.Http;
 using System.Reflection;
 using UnityEngine;
 using static TOHE.Translator;
-using Newtonsoft.Json.Linq;
 using UnityEngine.Networking;
 using IEnumerator = System.Collections.IEnumerator;
 using IEnumeratorG = System.Collections.Generic.IEnumerator<bool>;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace TOHE;
 
@@ -29,7 +30,6 @@ public class ModUpdater
     public static GenericPopup InfoPopup;
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPrefix]
-    [HarmonyPriority(Priority.VeryLow)]
     public static void Start_Prefix(/*MainMenuManager __instance*/)
     {
         if (isChecked) return;
@@ -93,15 +93,7 @@ public class ModUpdater
 
         string result = request.downloadHandler.text;
 
-        JObject data = null;
-        try
-        {
-            data = JObject.Parse(result);
-        }
-        catch (Exception e)
-        {
-            Main.Logger.LogError(e);
-        }
+        JObject data = JsonConvert.DeserializeObject<JObject>(result);
 
         if (beta)
         {
@@ -178,6 +170,22 @@ public class ModUpdater
         }
         return true;
     }
+    public static void StopDownload()
+    {
+        cachedfileStream.Dispose();
+        Main.Instance.StopAllCoroutines();
+        Main.Instance.StartCoroutine(DeleteFilesAfterCancel());
+    }
+    public static IEnumerator DeleteFilesAfterCancel()
+    {
+        ShowPopup(GetString("deletingFiles"), StringNames.None, false);
+        yield return new WaitForSeconds(2f);
+        InfoPopup.Close();
+        yield return new WaitForSeconds(0.3f);
+        DeleteOldFiles();
+        Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
+        yield break;
+    }
     public static void DeleteOldFiles()
     {
         string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -200,10 +208,12 @@ public class ModUpdater
         }
     }
     private static readonly object downloadLock = new();
+    private static FileStream cachedfileStream;
 
     private static IEnumerator DownloadDLL(string url)
     {
         var savePath = "BepInEx/plugins/TOHE.dll.temp";
+        Application.targetFrameRate = 2000;
 
         // Delete the temporary file if it exists
         DeleteOldFiles();
@@ -227,6 +237,7 @@ public class ModUpdater
         {
             using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
             {
+                cachedfileStream = fileStream;
                 byte[] buffer = new byte[1024];
                 long readLength = 0;
                 int length;
@@ -255,7 +266,7 @@ public class ModUpdater
     }
     private static void DownloadCallBack(ulong total, long downloaded, double progress)
     {
-        ShowPopup($"{GetString("updateInProgress")}\n{downloaded / (1024f * 1024f):F2}/{total / (1024f * 1024f):F2} MB ({progress}%)", StringNames.Cancel, true, Application.Quit);
+        ShowPopup($"{GetString("updateInProgress")}\n{downloaded / (1024f * 1024f):F2}/{total / (1024f * 1024f):F2} MB ({progress}%)", StringNames.Cancel, true, StopDownload);
     }
     private static void ShowPopup(string message, StringNames buttonText, bool showButton = false, Action onClick = null)
     {
