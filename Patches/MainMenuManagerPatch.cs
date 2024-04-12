@@ -50,7 +50,6 @@ class MainMenuManagerLateUpdatePatch
 {
     private static int lateUpdate = 590;
     private static GameObject LoadingHint;
-    public static PassiveButton updateButton;
 
     private static void Postfix(MainMenuManager __instance)
     {
@@ -92,20 +91,6 @@ class MainMenuManagerLateUpdatePatch
                 DisconnectPopup.Instance.ShowCustom(GetString("NoAccess"));
             }
         }
-
-        // update Button
-        if (updateButton == null)
-        {
-            updateButton = MainMenuManagerPatch.CreateButton(
-                "updateButton",
-                new(3.68f, -2.68f, 1f),
-                new(255, 165, 0, byte.MaxValue),
-                new(255, 200, 0, byte.MaxValue),
-                () => ModUpdater.StartUpdate(ModUpdater.downloadUrl),
-                GetString("update")); //"Update"
-            updateButton.transform.localScale = Vector3.one;
-        }
-        updateButton.gameObject.SetActive(ModUpdater.hasUpdate);
     }
 }
 [HarmonyPatch(typeof(MainMenuManager))]
