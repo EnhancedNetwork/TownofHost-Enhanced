@@ -3111,6 +3111,14 @@
   "VultureMaxEatenInOneRound": "Maximum eaten bodies possible per round",
   "VultureCooldownUp": "Eat Cooldown finished",
 
+  "PossessCD": "Possess Cooldown",
+  "MaxPossessions": "Max Possessions",
+  "PossessionDuration": "Possesion Duration",
+  "GhastlySpeed": "Ghastly Speed",
+  "CannotPossessTarget": "Couldn't Possess Target",
+  "ChooseTarget": "Choose Target",
+  "NoMorePossess": "You've ran out of possessions!'",
+
   "TasksMarkPerRound": "Number of tasks that can be marked in one round",
   "TaskinatorBombPlanted": "Bomb has been planted",
 

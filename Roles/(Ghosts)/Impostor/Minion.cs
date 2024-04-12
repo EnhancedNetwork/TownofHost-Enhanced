@@ -40,7 +40,7 @@ internal class Minion : RoleBase
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         var ImpPVC = target.GetCustomRole().IsImpostor();
-        if (!ImpPVC)
+        if (!ImpPVC || killer.IsAnySubRole(x => x.IsConverted()))
         {
             Main.PlayerStates[target.PlayerId].IsBlackOut = true;
             target.MarkDirtySettings();

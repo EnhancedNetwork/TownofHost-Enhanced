@@ -535,6 +535,7 @@ public enum CustomRoles
     ImpostorTOHE,
     ShapeshifterTOHE,
 
+
     // Impostor Ghost
     Bloodmoon,
     Minion,
@@ -626,6 +627,7 @@ public enum CustomRoles
     //Crewmate Ghost
     Hawk,
     Warden,
+    Ghastly,
 
     //Crewmate
     Addict,
