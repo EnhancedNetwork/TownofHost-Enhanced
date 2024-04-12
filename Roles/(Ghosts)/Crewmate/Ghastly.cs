@@ -27,8 +27,8 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         private static OptionItem PossessDur;
         private static OptionItem GhastlySpeed;
 
-        private int PossessLimit = byte.MaxValue;
-        private static (byte, byte) killertarget = (byte.MaxValue, byte.MaxValue);
+        private int PossessLimit = MaxPossesions.GetInt();
+        private (byte, byte) killertarget = (byte.MaxValue, byte.MaxValue);
         private static readonly Dictionary<byte, long> LastTime = [];
 
         public static void SetupCustomOptions()
@@ -46,8 +46,6 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         public override void Init()
         {
             PlayerIds.Clear();
-            PossessLimit = MaxPossesions.GetInt();
-            killertarget = (byte.MaxValue, byte.MaxValue);
             LastTime.Clear();
         }
         public override void Add(byte playerId)
@@ -165,6 +163,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
             return "";
         }
-        public override string GetProgressText(byte playerId, bool cooms) => ColorString(PossessLimit > 0  ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({PossessLimit})");
+        public override string GetProgressText(byte playerId, bool cooms) => ColorString(PossessLimit > 0 ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({PossessLimit})");
+        
     }
 }
