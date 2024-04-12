@@ -258,7 +258,7 @@ public static class CustomRoleManager
             }
 
         // Check dead body for others roles
-        CheckDeadBody(target, killer, inMeeting);
+        CheckDeadBody(killer, target, inMeeting);
 
         // Check Lovers Suicide
         FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
@@ -275,13 +275,13 @@ public static class CustomRoleManager
     /// <summary>
     /// If the role need check a present dead body
     /// </summary>
-    public static void CheckDeadBody(PlayerControl deadBody, PlayerControl killer, bool inMeeting)
+    public static void CheckDeadBody(PlayerControl killer, PlayerControl deadBody, bool inMeeting)
     {
         if (!CheckDeadBodyOthers.Any()) return;
         //Execute other viewpoint processing if any
         foreach (var checkDeadBodyOthers in CheckDeadBodyOthers.ToArray())
         {
-            checkDeadBodyOthers(deadBody, killer, inMeeting);
+            checkDeadBodyOthers(killer, deadBody, inMeeting);
         }
     }
 
