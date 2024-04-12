@@ -2257,6 +2257,7 @@
   "updateButton": "Update",
   "updatePleaseWait": "Please Wait...",
   "updateManually": "Update failed.\nPlease Update Manually.",
+  "updateInProgress": "Updating...",
   "updateRestart": "Update Finished!\nPlease restart the game.",
   "CanNotJoinPublicRoomNoLatest": "You can't join public rooms without the latest version.\nPlease update.",
   "ModBrokenMessage": "The MOD file is damaged.\nPlease reinstall.",
