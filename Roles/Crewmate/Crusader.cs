@@ -82,7 +82,7 @@ internal class Crusader : RoleBase
     
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (CrusaderLimit[killer.PlayerId] <= 0) return false;
+        if (ForCrusade.Contains(target.PlayerId) || CrusaderLimit[killer.PlayerId] <= 0) return false;
 
         ForCrusade.Remove(target.PlayerId);
         ForCrusade.Add(target.PlayerId);
