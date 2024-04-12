@@ -187,11 +187,13 @@ internal class Bandit : RoleBase
 
         if (killer.CheckDoubleTrigger(target, () => { StealAddon(killer, target, SelectedAddOn); }))
         {
+            // Double click
             killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
             return true;
         }
         else
         {
+            // Single click
             killCooldown[killer.PlayerId] = StealCooldown.GetFloat();
             return false;
         }
