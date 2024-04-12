@@ -83,7 +83,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             var killer = killertarget.Item1;
             var Target = killertarget.Item2;
 
-            if (target.PlayerId != killer)
+            if (target.PlayerId != killer && (Target != byte.MaxValue || Target == target.PlayerId))
             {
                 TargetArrow.Remove(killer, Target);
                 killer = target.PlayerId;
