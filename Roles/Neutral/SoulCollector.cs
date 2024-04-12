@@ -26,7 +26,7 @@ internal class SoulCollector : RoleBase
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.SoulCollector);
         SoulCollectorPointsOpt = IntegerOptionItem.Create(Id + 10, "SoulCollectorPointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector])
             .SetValueFormat(OptionFormat.Times);
-        CollectOwnSoulOpt = BooleanOptionItem.Create(Id + 11, "CollectOwnSoulOpt", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);
+        CollectOwnSoulOpt = BooleanOptionItem.Create(Id + 11, "SoulCollector_CollectOwnSoulOpt", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);
     }
     public override void Init()
     {
@@ -39,9 +39,9 @@ internal class SoulCollector : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        SoulCollectorTarget.Add(playerId, byte.MaxValue);
-        SoulCollectorPoints.Add(playerId, 0);
-        DidVote[playerId] = false;
+        SoulCollectorTarget.TryAdd(playerId, byte.MaxValue);
+        SoulCollectorPoints.TryAdd(playerId, 0);
+        DidVote.TryAdd(playerId, false);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
@@ -63,10 +63,12 @@ internal class SoulCollector : RoleBase
         byte SoulCollectorId = reader.ReadByte();
         int Limit = reader.ReadInt32();
         byte target = reader.ReadByte();
+
         if (SoulCollectorPoints.ContainsKey(SoulCollectorId))
             SoulCollectorPoints[SoulCollectorId] = Limit;
         else
             SoulCollectorPoints.Add(SoulCollectorId, 0);
+
         if (SoulCollectorTarget.ContainsKey(SoulCollectorId))
             SoulCollectorTarget[SoulCollectorId] = target;
         else
@@ -75,20 +77,21 @@ internal class SoulCollector : RoleBase
 
     public override void OnVote(PlayerControl voter, PlayerControl target)
     {
-        if (DidVote[voter.PlayerId]) return;
+        if (DidVote.TryGetValue(voter.PlayerId, out var voted) && voted) return;
         if (SoulCollectorTarget[voter.PlayerId] != byte.MaxValue) return;
+
         DidVote[voter.PlayerId] = true;
+        
         if (!CollectOwnSoulOpt.GetBool() && voter.PlayerId == target.PlayerId)
         {
             Utils.SendMessage(GetString("SoulCollectorSelfVote"), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
-            Logger.Info($"{voter.GetNameWithRole()} Self vote Not Allowed", "SoulCollector");
+            Logger.Info($"{voter.GetNameWithRole()} self vote not allowed", "SoulCollector");
             SoulCollectorTarget[voter.PlayerId] = byte.MaxValue;
-
             return;
         }
 
-
-        SoulCollectorTarget[voter.PlayerId] = target.PlayerId;
+        SoulCollectorTarget.Remove(voter.PlayerId);
+        SoulCollectorTarget.TryAdd(voter.PlayerId, target.PlayerId);
         Logger.Info($"{voter.GetNameWithRole()} predicted the death of {target.GetNameWithRole()}", "SoulCollector");
         Utils.SendMessage(string.Format(GetString("SoulCollectorTarget"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
         SendRPC(voter.PlayerId);
@@ -104,16 +107,16 @@ internal class SoulCollector : RoleBase
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
-        foreach (var playerId in SoulCollectorTarget.Keys.ToArray())
+        foreach (var (playerId, targetId) in SoulCollectorTarget)
         {
-            var targetId = SoulCollectorTarget[playerId];
             if (targetId == byte.MaxValue) continue;
 
-            if ((targetId == deadPlayer.PlayerId) && (Main.PlayerStates[targetId].deathReason != PlayerState.DeathReason.Disconnected))
+            if (targetId == deadPlayer.PlayerId && Main.PlayerStates[targetId].deathReason != PlayerState.DeathReason.Disconnected)
             {
                 SoulCollectorTarget[playerId] = byte.MaxValue;
                 SoulCollectorPoints[playerId]++;
                 SendRPC(playerId);
+                Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId), ForceLoop: false);
             }
             if (SoulCollectorPoints[playerId] >= SoulCollectorPointsOpt.GetInt())
             {
