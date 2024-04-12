@@ -34,7 +34,7 @@ public class ModUpdater
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.VeryLow)]
     public static void Start_Prefix(/*MainMenuManager __instance*/)
     {
-        SetUpdateButton(hasUpdate);
+        ResetUpdateButton();
         if (isChecked) return;
         //If we are not using it for now, just freaking disable it.
 
@@ -57,13 +57,10 @@ public class ModUpdater
             Logger.Info("forceupdate: " + forceUpdate, "CheckRelease");
             Logger.Info("downloadUrl: " + downloadUrl, "CheckRelease");
             Logger.Info("latestVersionl: " + latestVersion, "CheckRelease");
-            if (hasUpdate)
-            {
-                SetUpdateButton(true);
-            }
+            ResetUpdateButton();
         }
     }
-    public static void SetUpdateButton(bool active)
+    public static void ResetUpdateButton()
     {
         if (updateButton == null)
         {
@@ -76,7 +73,7 @@ public class ModUpdater
                 GetString("update"));
             updateButton.transform.localScale = Vector3.one;
         }
-        updateButton.gameObject.SetActive(active);
+        updateButton.gameObject.SetActive(hasUpdate);
     }
     public static string Get(string url)
     {
