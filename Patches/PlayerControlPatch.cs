@@ -107,7 +107,7 @@ class CheckMurderPatch
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
-        if (!CheckForInvalidMurdering(killer, target))
+        if (CheckForInvalidMurdering(killer, target) == false)
         {
             return false;
         }

@@ -74,8 +74,7 @@ internal class Crusader : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown[id] : 300f;
 
     public override bool CanUseKillButton(PlayerControl pc)
-        => !Main.PlayerStates[pc.PlayerId].IsDead
-        && (CrusaderLimit.TryGetValue(pc.PlayerId, out var x) ? x : 1) >= 1;
+        => (CrusaderLimit.TryGetValue(pc.PlayerId, out var x) ? x : 1) >= 1;
     
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     

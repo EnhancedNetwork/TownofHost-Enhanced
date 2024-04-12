@@ -44,7 +44,7 @@ internal class Undertaker : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        MarkedLocation[playerId] = ExtendedPlayerControl.GetBlackRoomPosition();
+        MarkedLocation.TryAdd(playerId, ExtendedPlayerControl.GetBlackRoomPosition());
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
     }
 
@@ -94,6 +94,7 @@ internal class Undertaker : RoleBase
         Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
         ReportDeadBodyPatch.CanReport[player.PlayerId] = false;
         player.MarkDirtySettings();
+
         _ = new LateTask(() =>
         {
             Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed;
@@ -102,23 +103,22 @@ internal class Undertaker : RoleBase
         }, FreezeTime.GetFloat(), "Freeze Undertaker");
     }
 
-    private static bool HasMarkedLoc(byte playerId) => MarkedLocation[playerId] != ExtendedPlayerControl.GetBlackRoomPosition();
+    private static bool HasMarkedLoc(byte playerId) => MarkedLocation.TryGetValue(playerId, out var pos) && pos != ExtendedPlayerControl.GetBlackRoomPosition();
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (!HasMarkedLoc(killer.PlayerId)) return true;
-
         if (target.Is(CustomRoles.Bait)) return true;
-        if (Guardian.CannotBeKilled(target)) return true;
 
         if (target.CanBeTeleported())
         {
-            target.RpcTeleport(MarkedLocation[killer.PlayerId]);
-            
-            target.SetRealKiller(killer);
-            target.RpcMurderPlayer(target);
-
+            var tempPos = MarkedLocation[killer.PlayerId];
+            target.RpcTeleport(tempPos);
             killer.SetKillCooldown();
+
+            target.RpcMurderPlayer(target);
+            target.SetRealKiller(killer);
+
             MarkedLocation[killer.PlayerId] = ExtendedPlayerControl.GetBlackRoomPosition();
             
             SendRPC(killer.PlayerId);

@@ -128,7 +128,7 @@ public static class CustomRoleManager
         }
 
         // Check in target
-        if (!killer.RpcCheckAndMurder(target, true))
+        if (killer.RpcCheckAndMurder(target, true) == false)
         {
             Logger.Info("Cancels because target cancel kill", "OnCheckMurder.RpcCheckAndMurder");
             return false;
