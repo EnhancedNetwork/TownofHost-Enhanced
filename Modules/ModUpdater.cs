@@ -5,10 +5,11 @@ using System.Net.Http;
 using System.Reflection;
 using UnityEngine;
 using static TOHE.Translator;
-using Newtonsoft.Json.Linq;
 using UnityEngine.Networking;
 using IEnumerator = System.Collections.IEnumerator;
 using IEnumeratorG = System.Collections.Generic.IEnumerator<bool>;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace TOHE;
 
@@ -30,7 +31,6 @@ public class ModUpdater
     public static GenericPopup InfoPopup;
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPrefix]
-    [HarmonyPriority(Priority.VeryLow)]
     public static void Start_Prefix(/*MainMenuManager __instance*/)
     {
         if (isChecked) return;
@@ -94,15 +94,7 @@ public class ModUpdater
 
         string result = request.downloadHandler.text;
 
-        JObject data = null;
-        try
-        {
-            data = JObject.Parse(result);
-        }
-        catch (Exception e)
-        {
-            Main.Logger.LogError(e);
-        }
+        JObject data = JsonConvert.DeserializeObject<JObject>(result);
 
         if (beta)
         {
