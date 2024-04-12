@@ -50,7 +50,7 @@ internal class CopyCat : RoleBase
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
     public static bool NoHaveTask(byte playerId) => playerIdList.Contains(playerId);
-
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => playerIdList.Contains(pc.PlayerId);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? CurrentKillCooldown : 300f;
     public static void UnAfterMeetingTasks()

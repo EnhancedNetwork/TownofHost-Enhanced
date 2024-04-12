@@ -2592,7 +2592,7 @@
   "MinimumPlayersAliveToKill": "Minimum Players Alive To Kill",
   "BloodMoonCanKillNum": "Max BloodLettings",
   "BloodMoonTimeTilDie": "Time Until Death",
-  "DeathTimer": "\nDeath In: {DeathTimer}s",
+  "DeathTimer": "Death In: {DeathTimer}s",
   "BerserkerKillCooldown": "Berserker kill cooldown",
   "BerserkerMax": "Max level that Berserker can reach",
   "BerserkerOneCanKillCooldown": "Unlock lower kill cooldown",
@@ -2741,8 +2741,8 @@
   "BanditMaxSteals": "Maximum Steals",
   "BanditCanStealBetrayalAddon": "Can Steal Betrayal Addons",
   "BanditCanStealImpOnlyAddon": "Can Steal <color=#ff1919>Impostor</color> Only Addons",
-  "NoStealableAddons": "Could not steal addon from the player",
-  "StealCooldown": "Steal cooldown",
+  "Bandit_NoStealableAddons": "Could not steal addon from the player",
+  "BanditStealCooldown": "Steal cooldown",
 
   "DoppelMaxSteals": "Maximum Steals",
 

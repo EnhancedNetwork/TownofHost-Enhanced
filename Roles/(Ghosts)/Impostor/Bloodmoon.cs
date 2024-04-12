@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
 using TOHE.Roles.Core;
 using UnityEngine;
+using Hazel;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -46,7 +46,7 @@ internal class Bloodmoon : RoleBase
     {
         KillCount.Add(PlayerId, CanKillNum.GetInt());
         PlayerIds.Add(PlayerId);
-        CustomRoleManager.SuffixOthers.Add(OthersNameText);
+        CustomRoleManager.LowerOthers.Add(OthersNameText);
 
     }
     private static void SendRPC(byte playerId)
@@ -94,12 +94,13 @@ internal class Bloodmoon : RoleBase
         if (LastTime.ContainsKey(targetid))
             LastTime.Remove(targetid);
     }
-    private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting) 
+    private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting, bool isforhud = false) 
     {
-        if (IsForMeeting || seer != player) return string.Empty;
+        var IsMeeting = GameStates.IsMeeting || IsForMeeting;
+        if (IsMeeting || seer != player || player == null) return string.Empty;
         var playerid = player.PlayerId;  
 
-        if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= GetTimeStamp() && !IsForMeeting)
+        if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= GetTimeStamp() && !IsMeeting)
         {
             LastTime[playerid] = GetTimeStamp();
             PlayerDie[playerid]--;

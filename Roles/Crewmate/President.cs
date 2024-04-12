@@ -233,10 +233,10 @@ internal class President : RoleBase
         return false;
     }
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-    => (seer.Is(CustomRoles.President) && target.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) && CheckPresidentReveal[seer.PlayerId] == true) ||
-        (seer.Is(CustomRoles.President) && target.Is(CustomRoles.Madmate) && MadmatesSeePresident.GetBool() && CheckPresidentReveal[seer.PlayerId] == true) ||
-        (seer.Is(CustomRoles.President) && target.GetCustomRole().IsNeutral() && NeutralsSeePresident.GetBool() && CheckPresidentReveal[seer.PlayerId] == true) ||
-        (seer.Is(CustomRoles.President) && target.GetCustomRole().IsImpostor() && ImpsSeePresident.GetBool() && CheckPresidentReveal[seer.PlayerId] == true);
+        => (target.Is(CustomRoles.President) && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) && CheckPresidentReveal[target.PlayerId] == true) ||
+            (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && MadmatesSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
+            (target.Is(CustomRoles.President) && seer.GetCustomRole().IsNeutral() && NeutralsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
+            (target.Is(CustomRoles.President) && seer.GetCustomRole().IsImpostor() && ImpsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true);
     
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
 }

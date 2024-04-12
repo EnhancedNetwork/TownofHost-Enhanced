@@ -103,6 +103,8 @@ internal class Tracefinder : RoleBase
         else delay = IRandom.Instance.Next((int)ArrowDelayMin.GetFloat(), (int)ArrowDelayMax.GetFloat() + 1);
         delay = Math.Max(delay, 0.15f);
 
+        var tempPositionTarget = target.transform.position;
+
         _ = new LateTask(() => {
             if (!GameStates.IsMeeting && GameStates.IsInTask)
             {
@@ -110,8 +112,8 @@ internal class Tracefinder : RoleBase
                 {
                     var player = Utils.GetPlayerById(pc);
                     if (player == null || !player.IsAlive()) continue;
-                    LocateArrow.Add(pc, target.transform.position);
-                    SendRPC(pc, true, target.transform.position);
+                    LocateArrow.Add(pc, tempPositionTarget);
+                    SendRPC(pc, true, tempPositionTarget);
                     Utils.NotifyRoles(SpecifySeer: player);
                 }
             }
