@@ -966,7 +966,7 @@
   "BardInfoLong": "(Impostors):\nWhen a bard is alive, the exile confirmation will display a sentence composed by the bard. Whenever the bard completes a creation, the bard's kill cooldown is permanently halved.",
   "NukerInfoLong": "(Impostors):\nAs the Nuker, you're a stronger Bomber.\n\nShapeshift to nuke everyone.",
   "WardenInfoLong": "(Crewmates [Ghost]):\nAs the Warden, alert someone of nearby danger, additionally giving them a temporary speed boost.",
-  "GhastlyInfoLong": "(Crewmates [Ghost]):\nAs the Ghastly, possess an unsuspecting person, thereafter choose a target for them, now they'll only be able to use their kill (or kill ability) on them untill you posses someone else or possess time runs out.",
+  "GhastlyInfoLong": "(Crewmates [Ghost]):\nAs the Ghastly, possess an unsuspecting person, thereafter choose a target for them, now they'll only be able to use their kill (or kill ability) on target untill you posses someone else or possess time runs out.",
   "MinionInfoLong": "(Impostor [Ghost]):\nAs the Minion, you can temporarily blind non-impostors.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
