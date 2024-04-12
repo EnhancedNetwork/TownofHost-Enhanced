@@ -116,6 +116,8 @@ public class ModUpdater
             latestTitle = $"Day: {latestVersion?.Day} Month: {latestVersion?.Month} Year: {latestVersion?.Year}";
 
             JArray assets = data["assets"].Cast<JArray>();
+            string assetName = assets.ToString();
+
             for (int i = 0; i < assets.Count; i++)
             {
                 if (assetName.ToLower() == "tohe.dll")
