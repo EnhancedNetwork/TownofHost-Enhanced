@@ -78,7 +78,7 @@
 >
 > - Ideas for some roles (such as Crusader)
 > 
-### :star: [TOHE+](https://github.com/Gurge44/TOHE_PLUS)
+### :star: [EHR (Formerly TOHE+)](https://github.com/Gurge44/EndlessHostRoles)
 >
 > - Provided roles: Pyromaniac, Necromancer, Head Hunter (Huntsman), Alchemist, and others
 > - Game Mode: FFA
@@ -88,7 +88,7 @@
 > - Some ideas to improve performance
 ### :star: [TOHEX](https://github.com/TOHEX-Official/TownOfHostEdited-Xi)
 >
-> - Provided role: Swapper, Berserker, Randomizer and Blackmailer
+> - Provided roles: Swapper, Berserker, Randomizer and Blackmailer
 > - Improve chat spam system (ChatManager.cs)
 ### :star: [Stellar Roles](https://github.com/Mr-Fluuff/StellarRolesAU)
 >
