@@ -28,7 +28,7 @@ internal class SoulCollector : RoleBase
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.SoulCollector, 1, zeroOne: false);
         SoulCollectorPointsOpt = IntegerOptionItem.Create(Id + 10, "SoulCollectorPointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector])
             .SetValueFormat(OptionFormat.Times);
-        CollectOwnSoulOpt = BooleanOptionItem.Create(Id + 11, "CollectOwnSoulOpt", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);
+        CollectOwnSoulOpt = BooleanOptionItem.Create(Id + 11, "SoulCollector_CollectOwnSoulOpt", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);
         CallMeetingIfDeath = BooleanOptionItem.Create(Id + 12, "CallMeetingIfDeath", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);
         /*GetPassiveSouls = BooleanOptionItem.Create(Id + 13, "GetPassiveSouls", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);*/
     }

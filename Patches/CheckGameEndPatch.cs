@@ -5,9 +5,9 @@ using Hazel;
 using UnityEngine;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Neutral;
-using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;
-using System.Threading.Channels;
+using TOHE.Roles.Core;
+using static TOHE.Translator;
 
 namespace TOHE;
 
