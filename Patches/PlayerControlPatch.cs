@@ -242,10 +242,9 @@ class CheckMurderPatch
         }
 
         var killerRole = killer.GetCustomRole();
-        var targetRole = target.GetCustomRole();
-        var targetSubRoles = target.GetCustomSubRoles();
 
         var targetRoleClass = target.GetRoleClass();
+        var targetSubRoles = target.GetCustomSubRoles();
 
         // Shield Player
         if (Main.ShieldPlayer != "" && Main.ShieldPlayer == target.GetClient().GetHashedPuid() && Utils.IsAllAlive)
