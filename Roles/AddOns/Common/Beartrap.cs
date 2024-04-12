@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Trapper
 {
-    private static readonly int Id = 18800;
+    private const int Id = 18800;
 
     public static OptionItem ImpCanBeTrapper;
     public static OptionItem CrewCanBeTrapper;

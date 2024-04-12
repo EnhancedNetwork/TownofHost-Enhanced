@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text.Json;
 
 namespace TOHE.Modules;
@@ -28,7 +26,7 @@ public static class OptionSaver
     {
         Dictionary<int, int> singleOptions = [];
         Dictionary<int, int[]> presetOptions = [];
-        foreach (var option in OptionItem.AllOptions.ToArray())
+        foreach (var option in OptionItem.AllOptions)
         {
             if (option.IsSingleValue)
             {

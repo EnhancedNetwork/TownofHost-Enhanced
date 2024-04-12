@@ -1,56 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AmongUs.GameOptions;
+using System;
 using static TOHE.Options;
 
-namespace TOHE;
+namespace TOHE.Roles.Neutral;
 
-public static class Juggernaut
+internal class Juggernaut : RoleBase
 {
-    private static readonly int Id = 16900;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 16900;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ReduceKillCooldown;
     private static OptionItem MinKillCooldown;
-    public static OptionItem HasImpostorVision;
-    public static OptionItem CanVent;
+    private static OptionItem HasImpostorVision;
+    private static OptionItem CanVent;
 
-    private static Dictionary<byte, float> NowCooldown = [];
+    private static readonly Dictionary<byte, float> NowCooldown = [];
 
     public static void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Juggernaut, 1, zeroOne: false);
-        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "ArroganceDefaultKillCooldown", new(0f, 180f, 2.5f), 65f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
+        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "Arrogance/Juggernaut___DefaultKillCooldown", new(0f, 180f, 2.5f), 65f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
             .SetValueFormat(OptionFormat.Seconds);
-        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "ArroganceReduceKillCooldown", new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
+        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "Arrogance/Juggernaut___ReduceKillCooldown", new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
             .SetValueFormat(OptionFormat.Seconds);
-        MinKillCooldown = FloatOptionItem.Create(Id + 12, "ArroganceMinKillCooldown", new(0f, 180f, 2.5f), 2.5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
+        MinKillCooldown = FloatOptionItem.Create(Id + 12, "Arrogance/Juggernaut___MinKillCooldown", new(0f, 180f, 2.5f), 2.5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut])
             .SetValueFormat(OptionFormat.Seconds);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut]);
         CanVent = BooleanOptionItem.Create(Id + 14, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Juggernaut]);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        NowCooldown = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        NowCooldown.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
-    public static void OnCheckMurder(PlayerControl killer)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         NowCooldown[killer.PlayerId] = Math.Clamp(NowCooldown[killer.PlayerId] - ReduceKillCooldown.GetFloat(), MinKillCooldown.GetFloat(), DefaultKillCooldown.GetFloat());
         killer.ResetKillCooldown();
         killer.SyncSettings();
+        return true;
     }
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(HasImpostorVision.GetBool());
 }

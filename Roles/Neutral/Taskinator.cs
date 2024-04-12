@@ -1,21 +1,27 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System;
-using System.Collections.Generic;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Taskinator
+internal class Taskinator : RoleBase
 {
-    private static readonly int Id = 13700;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 13700;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => false;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
+    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
-    public static Dictionary<byte, List<int>> taskIndex = [];
-    public static Dictionary<byte, int> TaskMarkPerRound = [];
+    private static OptionItem TaskMarkPerRoundOpt;
+
+    private static readonly Dictionary<byte, List<int>> taskIndex = [];
+    private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
+    
     private static int maxTasksMarkedPerRound = new();
-
-    public static OptionItem TaskMarkPerRoundOpt;
 
     public static void SetupCustomOption()
     {
@@ -25,25 +31,24 @@ public static class Taskinator
         Options.OverrideTasksData.Create(Id + 11, TabGroup.NeutralRoles, CustomRoles.Taskinator);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        taskIndex = [];
-        TaskMarkPerRound = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        taskIndex.Clear(); 
+        TaskMarkPerRound.Clear();
         maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         TaskMarkPerRound[playerId] = 0;
-        IsEnable = true;
     }
 
 
     private static void SendRPC(byte taskinatorID, int taskIndex = -1, bool isKill = false, bool clearAll = false)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.TaskinatorMarkedTask, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Taskinator); //TaskinatorMarkedTask
         writer.Write(taskinatorID);
         writer.Write(taskIndex);
         writer.Write(isKill);
@@ -54,7 +59,7 @@ public static class Taskinator
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte taskinatorID = reader.ReadByte();
         int taskInd = reader.ReadInt32();
@@ -77,7 +82,7 @@ public static class Taskinator
         if (clearAll && taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID].Clear(); 
     }
 
-    public static string GetProgressText(byte playerId)
+    public override string GetProgressText(byte playerId, bool cooms)
     {
         if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
         int markedTasks = TaskMarkPerRound[playerId];
@@ -85,7 +90,7 @@ public static class Taskinator
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $"({x})");
     }
 
-    public static void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
         foreach (var playerId in TaskMarkPerRound.Keys)
         {
@@ -94,14 +99,19 @@ public static class Taskinator
             SendRPC(playerId, clearAll: true);
         }
     }
-
-    public static void OnTasKComplete(PlayerControl player, PlayerTask task)
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerInVentMaxTime = 0f;
+    }
+    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if(!IsEnable) return;
+        if(!HasEnabled) return;
         if (player == null) return;
         if (!player.IsAlive()) return;
         byte playerId = player.PlayerId;
+        var Taskinators = playerIdList.GetPlayerListByIds();
         if (player.Is(CustomRoles.Taskinator))
         {
             if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
@@ -114,10 +124,10 @@ public static class Taskinator
             TaskMarkPerRound[playerId]++;
             if (!taskIndex.ContainsKey(playerId)) taskIndex[playerId] = [];
             taskIndex[playerId].Add(task.Index);
-            SendRPC(taskinatorID : playerId, taskIndex : task.Index);
+            SendRPC(taskinatorID: playerId, taskIndex: task.Index);
             player.Notify(GetString("TaskinatorBombPlanted"));
         }
-        else
+        else if (Taskinators.All(Inator => Inator.RpcCheckAndMurder(player, true)))
         {
             foreach (var taskinatorId in taskIndex.Keys)
             { 
@@ -128,7 +138,7 @@ public static class Taskinator
 
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                     player.SetRealKiller(taskinatorPC);
-                    player.RpcMurderPlayerV3(player);
+                    player.RpcMurderPlayer(player);
 
                     taskIndex[taskinatorId].Remove(task.Index);
                     SendRPC(taskinatorID : taskinatorId, taskIndex:task.Index, isKill : true);

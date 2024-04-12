@@ -1,35 +1,38 @@
 using System;
-using System.Collections.Generic;
+using AmongUs.GameOptions;
 using static TOHE.Options;
-using System.Linq;
 
-namespace TOHE;
+namespace TOHE.Roles.Crewmate;
 
-public static class Reverie
+internal class Reverie : RoleBase
 {
-    private static readonly int Id = 11100;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 11100;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
-    public static OptionItem DefaultKillCooldown;
-    public static OptionItem ReduceKillCooldown;
-    public static OptionItem IncreaseKillCooldown;
-    public static OptionItem MinKillCooldown;
-    public static OptionItem MaxKillCooldown;
-    public static OptionItem MisfireSuicide;
-    public static OptionItem ResetCooldownMeeting;
-    public static OptionItem ConvertedReverieRogue;
+    private static OptionItem DefaultKillCooldown;
+    private static OptionItem ReduceKillCooldown;
+    private static OptionItem IncreaseKillCooldown;
+    private static OptionItem MinKillCooldown;
+    private static OptionItem MaxKillCooldown;
+    private static OptionItem MisfireSuicide;
+    private static OptionItem ResetCooldownMeeting;
+    private static OptionItem ConvertedReverieRogue;
 
-    public static Dictionary<byte, float> NowCooldown;
+    private static readonly Dictionary<byte, float> NowCooldown = [];
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Reverie);
-        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "ArroganceDefaultKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "Arrogance/Juggernaut___DefaultKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
-        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "ArroganceReduceKillCooldown", new(0f, 180f, 2.5f), 7.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "Arrogance/Juggernaut___ReduceKillCooldown", new(0f, 180f, 2.5f), 7.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
-        MinKillCooldown = FloatOptionItem.Create(Id + 12, "ArroganceMinKillCooldown", new(0f, 180f, 2.5f), 2.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        MinKillCooldown = FloatOptionItem.Create(Id + 12, "Arrogance/Juggernaut___MinKillCooldown", new(0f, 180f, 2.5f), 2.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
         IncreaseKillCooldown = FloatOptionItem.Create(Id + 13, "ReverieIncreaseKillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
@@ -39,30 +42,28 @@ public static class Reverie
         ResetCooldownMeeting =  BooleanOptionItem.Create(Id + 16, "ReverieResetCooldownMeeting", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie]);
         ConvertedReverieRogue = BooleanOptionItem.Create(Id + 17, "ConvertedReverieKillAll", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie]);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        NowCooldown = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        NowCooldown.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         NowCooldown.Remove(playerId);
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl HES, PlayerControl HIM)
     {
-        foreach(var playerId in NowCooldown.Keys)
+        foreach (var playerId in NowCooldown.Keys)
         {
             if (ResetCooldownMeeting.GetBool())
             {
@@ -70,11 +71,15 @@ public static class Reverie
             }
         }
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
-    public static void OnCheckMurder(PlayerControl killer,PlayerControl target)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
+    public override bool CanUseSabotage(PlayerControl pc) => false;
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
+    public override bool OnCheckMurderAsKiller(PlayerControl killer,PlayerControl target)
     {
-        if (killer == null || target == null) return;
-        if (!IsEnable || !killer.Is(CustomRoles.Reverie)) return;
+        if (killer == null || target == null) return true;
+
         float kcd;
         if ((!target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Trickster)) || (ConvertedReverieRogue.GetBool() && killer.GetCustomSubRoles().Any(subrole => subrole.IsConverted() || subrole == CustomRoles.Madmate))) // if killed non crew or if converted
                 kcd = NowCooldown[killer.PlayerId] - ReduceKillCooldown.GetFloat();
@@ -85,7 +90,8 @@ public static class Reverie
         if (NowCooldown[killer.PlayerId] >= MaxKillCooldown.GetFloat() && MisfireSuicide.GetBool())
         {
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-            killer.RpcMurderPlayerV3(killer);
+            killer.RpcMurderPlayer(killer);
         }
+        return true;
     }
 }

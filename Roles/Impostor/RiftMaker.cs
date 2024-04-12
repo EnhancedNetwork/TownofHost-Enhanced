@@ -1,26 +1,31 @@
-﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class RiftMaker
+internal class RiftMaker : RoleBase
 {
-    private static readonly int Id = 27200;
-    //private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 27200;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
-    public static OptionItem SSCooldown;
-    public static OptionItem KillCooldown;
-    public static OptionItem TPCooldownOpt;
-    public static OptionItem RiftRadius;
+    private static OptionItem SSCooldown;
+    private static OptionItem KillCooldown;
+    private static OptionItem TPCooldownOpt;
+    private static OptionItem RiftRadius;
+    private static OptionItem ShowShapeshiftAnimationsOpt;
 
-    public static Dictionary<byte, List<Vector2>> MarkedLocation = [];
-    public static Dictionary<byte, long> LastTP = [];
+    private static readonly Dictionary<byte, List<Vector2>> MarkedLocation = [];
+    private static readonly Dictionary<byte, long> LastTP = [];
     private static float TPCooldown = new();
+
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.RiftMaker);
@@ -32,25 +37,26 @@ public static class RiftMaker
             .SetValueFormat(OptionFormat.Seconds);
         RiftRadius = FloatOptionItem.Create(Id + 13, "RiftRadius", new(0.5f, 2f, 0.5f), 1f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker])
             .SetValueFormat(OptionFormat.Multiplier);
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 14, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker]);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        IsEnable = false;
-        MarkedLocation = [];
-        LastTP = [];
+        Playerids.Clear();
+        MarkedLocation.Clear();
+        LastTP.Clear();
         TPCooldown = new();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
-        IsEnable = true;
-        MarkedLocation[playerId] = [];
+        MarkedLocation[playerId].Clear();
         var now = Utils.GetTimeStamp();
         LastTP[playerId] = now;
         TPCooldown = TPCooldownOpt.GetFloat();
+        Playerids.Add(playerId);
     }
 
-    public static void SendRPC(byte riftID, int operate)
+    private static void SendRPC(byte riftID, int operate)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RiftMakerSyncData, SendOption.Reliable, -1);
         writer.Write(operate);
@@ -110,72 +116,95 @@ public static class RiftMaker
         }
     }
 
-    public static void ApplyGameOptions()
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = SSCooldown.GetFloat();
         AURoleOptions.ShapeshifterLeaveSkin = true;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static void OnShapeshift(PlayerControl pc, bool IsShapeshifting)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!IsEnable || !pc.IsAlive() || !IsShapeshifting) return;
-        if (!pc.Is(CustomRoles.RiftMaker)) return;
-
-        if (!MarkedLocation.ContainsKey(pc.PlayerId)) MarkedLocation[pc.PlayerId] = [];
-
-        var currentPos = pc.GetCustomPosition();
-        var totalMarked = MarkedLocation[pc.PlayerId].Count;
-        if (totalMarked == 1 && Vector2.Distance(currentPos, MarkedLocation[pc.PlayerId][0]) <= 5f)
+        // Unshift
+        if (shapeshifter.PlayerId == target.PlayerId)
         {
-            pc.Notify(GetString("RiftsTooClose"));
-            return;
-        }
-        else if (totalMarked == 2 && Vector2.Distance(currentPos, MarkedLocation[pc.PlayerId][1]) <= 5f)
-        {
-            pc.Notify(GetString("RiftsTooClose"));
-            return;
+            // No animate unshift
+            if (shouldAnimate)
+            {
+                shouldAnimate = false;
+            }
+            return true;
         }
 
-        if (totalMarked >= 2) MarkedLocation[pc.PlayerId].RemoveAt(0);
+        // Always do animation shapeshift
+        if (ShowShapeshiftAnimationsOpt.GetBool()) return true;
 
-        MarkedLocation[pc.PlayerId].Add(pc.GetCustomPosition());
-        if (MarkedLocation[pc.PlayerId].Count == 2) LastTP[pc.PlayerId] = Utils.GetTimeStamp();
-        pc.Notify(GetString("RiftCreated"));
 
-        SendRPC(pc.PlayerId, 0);
+        DoRifts(shapeshifter, target);
+        return false;
+    }
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    {
+        if (!shapeshifting) return;
+
+        DoRifts(shapeshifter, target);
+    }
+
+    private static void DoRifts(PlayerControl shapeshifter, PlayerControl target)
+    {
+        var shapeshifterId = shapeshifter.PlayerId;
+        if (!MarkedLocation.ContainsKey(shapeshifterId)) MarkedLocation[shapeshifterId] = [];
+
+        var currentPos = shapeshifter.GetCustomPosition();
+        var totalMarked = MarkedLocation[shapeshifterId].Count;
+        if (totalMarked == 1 && Vector2.Distance(currentPos, MarkedLocation[shapeshifterId][0]) <= 5f)
+        {
+            shapeshifter.Notify(GetString("RiftsTooClose"));
+            return;
+        }
+        else if (totalMarked == 2 && Vector2.Distance(currentPos, MarkedLocation[shapeshifterId][1]) <= 5f)
+        {
+            shapeshifter.Notify(GetString("RiftsTooClose"));
+            return;
+        }
+
+        if (totalMarked >= 2) MarkedLocation[shapeshifterId].RemoveAt(0);
+
+        MarkedLocation[shapeshifterId].Add(shapeshifter.GetCustomPosition());
+        if (MarkedLocation[shapeshifterId].Count == 2) LastTP[shapeshifterId] = Utils.GetTimeStamp();
+        shapeshifter.Notify(GetString("RiftCreated"));
+
+        SendRPC(shapeshifterId, 0);
         //sendrpc for marked location and lasttp
     }
 
-    public static void OnVent(PlayerControl pc, int ventId)
+    public override void OnCoEnterVent(PlayerPhysics physics, int ventId)
     {
-        if (!IsEnable || pc == null) return;
-        if (!pc.Is(CustomRoles.RiftMaker)) return;
+        var player = physics.myPlayer;
+        if (player == null) return;
 
         _ = new LateTask(() =>
         {
-            pc.MyPhysics?.RpcBootFromVent(ventId);
+            physics?.RpcBootFromVent(ventId);
 
-            MarkedLocation[pc.PlayerId].Clear();
+            MarkedLocation[player.PlayerId].Clear();
             //send rpc for clearing markedlocation
-            SendRPC(pc.PlayerId, 1);
-            pc.Notify(GetString("RiftsDestroyed"));
+            SendRPC(player.PlayerId, 1);
+            player.Notify(GetString("RiftsDestroyed"));
 
         }, 0.5f, "RiftMakerOnVent");
-
     }
 
-
-    public static void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        if (!GameStates.IsInTask) return;
         if (player == null) return;
-        if (!player.Is(CustomRoles.RiftMaker)) return;
         if (Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;
+
         byte playerId = player.PlayerId;
         if (!MarkedLocation.ContainsKey(playerId)) MarkedLocation[playerId] = [];
         if (MarkedLocation[playerId].Count != 2) return;
+
         var now = Utils.GetTimeStamp();
         if (!LastTP.ContainsKey(playerId)) LastTP[playerId] = now;
         if (now - LastTP[playerId] <= TPCooldown) return;
@@ -200,7 +229,7 @@ public static class RiftMaker
         return;
     }
 
-    public static void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
         var now = Utils.GetTimeStamp();
         foreach (byte riftID in LastTP.Keys.ToArray())

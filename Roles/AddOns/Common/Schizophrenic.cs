@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Schizophrenic
 {
-    private static readonly int Id = 22400;
+    private const int Id = 22400;
 
     public static OptionItem CanBeImp;
     public static OptionItem CanBeCrew;

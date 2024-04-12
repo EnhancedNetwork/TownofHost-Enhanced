@@ -1,4 +1,3 @@
-using HarmonyLib;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -119,8 +118,6 @@ public class ModUpdater
             JArray assets = data["assets"].Cast<JArray>();
             for (int i = 0; i < assets.Count; i++)
             {
-                string assetName = assets[i]["name"].ToString();
-
                 if (assetName.ToLower() == "tohe.dll")
                 {
                     downloadUrl = assets[i]["browser_download_url"].ToString();

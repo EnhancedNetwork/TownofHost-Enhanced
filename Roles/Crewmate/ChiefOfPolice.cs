@@ -1,18 +1,20 @@
 using Hazel;
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+
+// Unused role
 public static class ChiefOfPolice
 {
-    private static readonly int Id = 12600;
+    private const int Id = 12600;
     private static List<byte> playerIdList = [];
     public static Dictionary<byte, int> PoliceLimit = [];
     public static bool IsEnable = false;
-    public static OptionItem SkillCooldown;
-    public static OptionItem CanImpostorAndNeutarl;
+
+    private static OptionItem SkillCooldown;
+    private static OptionItem CanImpostorAndNeutarl;
 
     public static void SetupCustomOption()
     {
@@ -57,8 +59,11 @@ public static class ChiefOfPolice
     public static bool CanUseKillButton(byte playerId)
         => !Main.PlayerStates[playerId].IsDead
         && (PoliceLimit.TryGetValue(playerId, out var x) ? x : 1) >= 1;
+
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? SkillCooldown.GetFloat() : 300f;
+
     public static string GetSkillLimit(byte playerId) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.ChiefOfPolice) : Color.gray, PoliceLimit.TryGetValue(playerId, out var policeLimit) ? $"({policeLimit})" : "Invalid");
+    
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         PoliceLimit[killer.PlayerId]--;
@@ -71,8 +76,8 @@ public static class ChiefOfPolice
             {
                 if (player.PlayerId == targetId)
                 {
-                    Sheriff.Add(player.PlayerId);
-                   Sheriff.Add(player.PlayerId);
+                   // Sheriff.Add(player.PlayerId);
+                  // Sheriff.Add(player.PlayerId);
                 }
             }
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("SheriffSuccessfullyRecruited")));
@@ -89,7 +94,7 @@ public static class ChiefOfPolice
         {
             //if (ChiefOfPoliceCountMode.GetInt() == 1)
             //{
-            //    killer.RpcMurderPlayerV3(killer);
+            //    killer.RpcMurderPlayer(killer);
             //    return true;
             //}
             //if (ChiefOfPoliceCountMode.GetInt() == 2)
@@ -103,5 +108,10 @@ public static class ChiefOfPolice
     public static bool CanBeSheriff(this PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() && pc.CanUseKillButton()) || pc.GetCustomRole().IsNeutral() && pc.CanUseKillButton() && CanImpostorAndNeutarl.GetBool()|| pc.GetCustomRole().IsImpostor() && CanImpostorAndNeutarl.GetBool();
+    }
+
+    public static void SetAbilityButtonText(HudManager hud/*, byte playerId*/)
+    {
+        hud.KillButton.OverrideText(GetString("ChiefOfPoliceKillButtonText"));
     }
 }

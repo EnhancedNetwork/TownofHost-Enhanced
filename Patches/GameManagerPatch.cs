@@ -1,4 +1,3 @@
-using HarmonyLib;
 using Hazel;
 
 namespace TOHE;
@@ -30,9 +29,9 @@ class GameManagerSerializeFix
 [HarmonyPatch(typeof(LogicOptions), nameof(LogicOptions.Serialize))]
 class LogicOptionsSerializePatch
 {
-    public static bool Prefix(LogicOptions __instance, ref bool __result, MessageWriter writer, bool initialState)
+    public static bool Prefix(ref bool __result, [HarmonyArgument(1)] bool initialState)
     {
-        // 初回以外はブロックし、CustomSyncSettingsでのみ同期する
+        // Block all but the first time and synchronize only with CustomSyncSettings
         if (!initialState)
         {
             __result = false;
