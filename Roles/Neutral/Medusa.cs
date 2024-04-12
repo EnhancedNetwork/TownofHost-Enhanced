@@ -1,23 +1,26 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
+using static TOHE.Translator;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Medusa
+internal class Medusa : RoleBase
 {
-    private static readonly int Id = 17000;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 17000;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
-    public static OptionItem KillCooldownAfterStoneGazing;
-    public static OptionItem CanVent;
+    private static OptionItem KillCooldownAfterStoneGazing;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
 
     public static void SetupCustomOption()
     {
-        //Medusaは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Medusa, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 12, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Medusa])
             .SetValueFormat(OptionFormat.Seconds);
@@ -26,26 +29,38 @@ public static class Medusa
         CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Medusa]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Medusa]);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        IsEnable = false;
+        playerIdList.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
-    public static void CanUseVent(PlayerControl player)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target, PlayerControl killer)
     {
-        bool Medusa_canUse = CanVent.GetBool();
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Medusa_canUse && !player.Data.IsDead);
-        player.Data.Role.CanVent = Medusa_canUse;
+        if (reporter.Is(CustomRoles.Medusa))
+        {
+            Main.UnreportableBodies.Add(target.PlayerId);
+            reporter.Notify(GetString("MedusaStoneBody"));
+
+            reporter.SetKillCooldownV3(KillCooldownAfterStoneGazing.GetFloat(), forceAnime: true);
+            Logger.Info($"{reporter.GetRealName()} stoned {target.PlayerName} body", "Medusa");
+            return false;
+        }
+        return true;
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.ReportButton.OverrideText(GetString("MedusaReportButtonText"));
     }
 }

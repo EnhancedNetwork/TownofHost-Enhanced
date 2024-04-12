@@ -1,15 +1,21 @@
+using AmongUs.GameOptions;
 using Hazel;
 using System;
-using System.Collections.Generic;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
-public static class Tracefinder
+
+internal class Tracefinder : RoleBase
 {
-    private static readonly int Id = 7300;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 7300;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
+    //==================================================================\\
 
     private static OptionItem VitalsDuration;
     private static OptionItem VitalsCooldown;
@@ -32,17 +38,20 @@ public static class Tracefinder
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracefinder])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        IsEnable = false;
+        playerIdList.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+        }
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
     }
@@ -59,7 +68,7 @@ public static class Tracefinder
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ApplyGameOptions()
+    public override void ApplyGameOptions(IGameOptions opt, byte playerid)
     {
         AURoleOptions.ScientistCooldown = VitalsCooldown.GetFloat();
         AURoleOptions.ScientistBatteryCharge = VitalsDuration.GetFloat();
@@ -73,7 +82,8 @@ public static class Tracefinder
         else
             LocateArrow.RemoveAllTarget(playerId);
     }
-    public static void OnReportDeadBody()
+
+    public override void OnReportDeadBody(PlayerControl GODZILLA_VS, PlayerControl KINGKONG)
     {
         foreach (var apc in playerIdList)
         {
@@ -82,26 +92,18 @@ public static class Tracefinder
         }
     }
 
-    public static void OnPlayerDead(PlayerControl target)
+    public static void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        if (inMeeting) return;
+
         var pos = target.GetCustomPosition();
-        float minDis = float.MaxValue;
-        string minName = "";
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            if (pc.PlayerId == target.PlayerId) continue;
-            var dis = Vector2.Distance(pc.GetCustomPosition(), pos);
-            if (dis < minDis && dis < 1.5f)
-            {
-                minDis = dis;
-                minName = pc.GetRealName();
-            }
-        }
 
         float delay;
         if (ArrowDelayMax.GetFloat() < ArrowDelayMin.GetFloat()) delay = 0f;
         else delay = IRandom.Instance.Next((int)ArrowDelayMin.GetFloat(), (int)ArrowDelayMax.GetFloat() + 1);
         delay = Math.Max(delay, 0.15f);
+
+        var tempPositionTarget = target.transform.position;
 
         _ = new LateTask(() => {
             if (!GameStates.IsMeeting && GameStates.IsInTask)
@@ -110,14 +112,14 @@ public static class Tracefinder
                 {
                     var player = Utils.GetPlayerById(pc);
                     if (player == null || !player.IsAlive()) continue;
-                    LocateArrow.Add(pc, target.transform.position);
-                    SendRPC(pc, true, target.transform.position);
+                    LocateArrow.Add(pc, tempPositionTarget);
+                    SendRPC(pc, true, tempPositionTarget);
                     Utils.NotifyRoles(SpecifySeer: player);
                 }
             }
         }, delay, "Get Arrow Tracefinder");
     }
-    public static string GetTargetArrow(PlayerControl seer, PlayerControl target = null)
+    public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (!seer.Is(CustomRoles.Tracefinder)) return "";
         if (target != null && seer.PlayerId != target.PlayerId) return "";

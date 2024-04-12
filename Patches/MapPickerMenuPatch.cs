@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace TOHE.Patches;
 
@@ -44,7 +42,7 @@ class CreateOptionsPickerPatch
         dleksMenuButtonCopy.position = new Vector3(dleksMenuButtonCopy.position.x, 2f * dleksMenuButtonCopy.position.y - polusMenuButton.transform.position.y, dleksMenuButtonCopy.position.z);
         fungleMenuButton.position = new Vector3(fungleMenuButton.position.x, dleksMenuButtonCopy.transform.position.y - 0.6f, fungleMenuButton.position.z);
 
-        __instance.MapMenu.MapButtons = CollectionExtensions.AddItem(__instance.MapMenu.MapButtons, dleksIconInMenuCopy).ToArray();
+        __instance.MapMenu.MapButtons = HarmonyLib.CollectionExtensions.AddItem(__instance.MapMenu.MapButtons, dleksIconInMenuCopy).ToArray();
 
         float xPos = -1f;
         for (int index = 0; index < 6; ++index)

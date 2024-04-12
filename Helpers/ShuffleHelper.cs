@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace TOHE.Modules;
+﻿namespace TOHE.Modules;
 
 public static class ShuffleListExtension
 {

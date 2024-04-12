@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using static TOHE.Options;
+﻿using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public static class Unlucky
 {
-    private static readonly int Id = 21000;
+    private const int Id = 21000;
 
     public static OptionItem UnluckyTaskSuicideChance;
     public static OptionItem UnluckyKillSuicideChance;
@@ -55,7 +54,7 @@ public static class Unlucky
         if (Ue.Next(1, 100) <= UnluckyTaskSuicideChance.GetInt())
         {
             Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-            victim.RpcMurderPlayerV3(victim);
+            victim.RpcMurderPlayer(victim);
             UnluckCheck[victim.PlayerId] = true;
         }
     }

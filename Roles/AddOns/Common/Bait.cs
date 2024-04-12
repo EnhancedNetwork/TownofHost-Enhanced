@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using TOHE.Modules;
 using static TOHE.Translator;
 using static TOHE.Options;
@@ -8,7 +7,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Bait
 {
-    private static readonly int Id = 18700;
+    private const int Id = 18700;
 
     public static OptionItem ImpCanBeBait;
     public static OptionItem CrewCanBeBait;
