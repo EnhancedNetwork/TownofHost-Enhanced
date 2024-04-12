@@ -40,7 +40,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 .SetValueFormat(OptionFormat.Players);
             PossessDur = FloatOptionItem.Create(Id + 12, "PossessionDuration", new(2.5f, 120f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
                 .SetValueFormat(OptionFormat.Seconds);
-            GhastlySpeed = FloatOptionItem.Create(Id + 13, "GhastlySpeed", new(2.5f, 5f, 0.5f), 2.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
+            GhastlySpeed = FloatOptionItem.Create(Id + 13, "GhastlySpeed", new(1.5f, 5f, 0.5f), 2f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
                 .SetValueFormat(OptionFormat.Times);
         }
         public override void Init()
