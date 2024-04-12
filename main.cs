@@ -535,7 +535,6 @@ public enum CustomRoles
     ImpostorTOHE,
     ShapeshifterTOHE,
 
-
     // Impostor Ghost
     Bloodmoon,
     Minion,
