@@ -41,7 +41,7 @@ internal class Bandit : RoleBase
         MaxSteals = IntegerOptionItem.Create(Id + 10, "BanditMaxSteals", new(1, 20, 1), 6, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         KillCooldownOpt = FloatOptionItem.Create(Id + 11, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
             .SetValueFormat(OptionFormat.Seconds);
-        StealCooldown = FloatOptionItem.Create(Id + 17, "StealCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
+        StealCooldown = FloatOptionItem.Create(Id + 17, "BanditStealCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
             .SetValueFormat(OptionFormat.Seconds);
         StealMode = StringOptionItem.Create(Id + 12, "BanditStealMode", EnumHelper.GetAllNames<BanditStealModeOpt>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanStealBetrayalAddon = BooleanOptionItem.Create(Id + 13, "BanditCanStealBetrayalAddon", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
@@ -167,15 +167,14 @@ internal class Bandit : RoleBase
         return;
     }
 
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    private static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (!HasEnabled) return true;
         bool flag = false;
         if (!target.HasSubRole() || target.Is(CustomRoles.Stubborn)) flag = true;
         var SelectedAddOn = SelectRandomAddon(target);
         if (SelectedAddOn == null || flag) // no stealable addons found on the target.
         {
-            killer.Notify(Translator.GetString("NoStealableAddons"));
+            killer.Notify(Translator.GetString("Bandit_NoStealableAddons"));
             return true;
         }
         if (TotalSteals[killer.PlayerId] >= MaxSteals.GetInt())
@@ -185,20 +184,16 @@ internal class Bandit : RoleBase
             return true;
         }
 
-        if (!killer.CheckDoubleTrigger(target, () => { StealAddon(killer, target, SelectedAddOn); }))
+        return killer.CheckDoubleTrigger(target, () => { StealAddon(killer, target, SelectedAddOn); });
+    }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        if (!OnCheckMurder(killer, target))
         {
             killCooldown[killer.PlayerId] = StealCooldown.GetFloat();
-            killer.ResetKillCooldown();
-            killer.SyncSettings();
             return false;
         }
-        else
-        {
-            killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
-            killer.ResetKillCooldown();
-            killer.SyncSettings();
-            return true;
-        }
+        return true;
     }
 
     public override void OnReportDeadBody(PlayerControl reportash, PlayerControl panagustava)
