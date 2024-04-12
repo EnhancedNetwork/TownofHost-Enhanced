@@ -45,6 +45,7 @@ enum CustomRPC
     CouncillorJudge,
     NemesisRevenge,
     RetributionistRevenge,
+    SetFriendCode,
 
     //Roles
     SetBountyTarget,
@@ -132,7 +133,7 @@ public enum Sounds
 internal class RPCHandlerPatch
 {
     public static bool TrustedRpc(byte id)
-    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.CouncillorJudge or CustomRPC.NemesisRevenge or CustomRPC.RetributionistRevenge or CustomRPC.Guess or CustomRPC.PresidentEnd or CustomRPC.SetSwapperVotes or CustomRPC.DumpLog;
+    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.CouncillorJudge or CustomRPC.NemesisRevenge or CustomRPC.RetributionistRevenge or CustomRPC.Guess or CustomRPC.PresidentEnd or CustomRPC.SetSwapperVotes or CustomRPC.DumpLog or CustomRPC.SetFriendCode;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -265,6 +266,10 @@ internal class RPCHandlerPatch
 
             case CustomRPC.RequestRetryVersionCheck:
                 RPC.RpcVersionCheck();
+                break;
+
+            case CustomRPC.SetFriendCode:
+                RPC.SetFriendCode(__instance, reader.ReadString());
                 break;
 
             case CustomRPC.SyncCustomSettings:
@@ -701,6 +706,20 @@ internal static class RPC
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         player.Exiled();
+    }
+    public static void RpcSetFriendCode(string fc)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetFriendCode, SendOption.None);
+        writer.Write(fc);
+        writer.EndMessage();
+        SetFriendCode(PlayerControl.LocalPlayer, fc);
+    }
+    public static void SetFriendCode(PlayerControl target, string fc)
+    {
+        if (GameStates.IsVanillaServer) return; //Anticheat
+        target.FriendCode = fc;
+        target.Data.FriendCode = fc;
+        target.GetClient().FriendCode = fc;
     }
     public static async void RpcVersionCheck()
     {

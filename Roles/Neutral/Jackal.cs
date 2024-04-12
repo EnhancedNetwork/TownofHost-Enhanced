@@ -3,7 +3,6 @@ using Hazel;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -159,14 +158,8 @@ internal class Jackal : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Jackal)) return true;
-
-        if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
-        {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
-            return false;
-        }
-        if (!CanRecruitSidekick.GetBool() || RecruitLimit[killer.PlayerId] < 1) return false;
+        if (target.Is(CustomRoles.Jackal)) return false;
+        if (!CanRecruitSidekick.GetBool() || RecruitLimit[killer.PlayerId] < 1) return true;
         
         if (SidekickAssignMode.GetValue() != 2)
         {
@@ -174,7 +167,6 @@ internal class Jackal : RoleBase
             {
                 RecruitLimit[killer.PlayerId]--;
                 SendRPC(killer.PlayerId);
-                //if (!AttendantCantRoles.GetBool() && Mini.Age == 18 || !AttendantCantRoles.GetBool() &&  Mini.Age != 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
                 
                 if (CopyCat.playerIdList.Contains(target.PlayerId))
                     target.GetRoleClass()?.Remove(target.PlayerId);
@@ -200,13 +192,13 @@ internal class Jackal : RoleBase
                 target.ResetKillCooldown();
                 target.SetKillCooldown();
 
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Sidekick.ToString(), "Assign " + CustomRoles.Sidekick.ToString());
+                Logger.Info($"Target: {target.GetRealName()} : {target.GetCustomRole()} => {CustomRoles.Sidekick}", "Assign Sidekick");
                 
                 if (RecruitLimit[killer.PlayerId] < 0)
                     HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
 
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Jackal");
-                return true;
+                Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{RecruitLimit[killer.PlayerId]}", "Jackal");
+                return false;
             }
         }
         if (SidekickAssignMode.GetValue() != 1)
@@ -233,21 +225,20 @@ internal class Jackal : RoleBase
                 target.ResetKillCooldown();
                 target.SetKillCooldown();
 
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Sidekick.ToString(), "Assign " + CustomRoles.Sidekick.ToString());
+                Logger.Info($"Target: {target.GetRealName()} = {target.GetCustomRole()} => {CustomRoles.Recruit}", "Assign Recruit");
                 
                 if (RecruitLimit[killer.PlayerId] < 0)
                     HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
 
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Jackal");
-                return true;
+                Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{RecruitLimit[killer.PlayerId]}", "Jackal");
+                return false;
             }
         }
         if (RecruitLimit[killer.PlayerId] < 0)
             HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
         
-        //killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterRecruitmentFailure")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Jackal");
-        return false;
+        Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{RecruitLimit[killer.PlayerId]}", "Jackal");
+        return true;
     }
 
     public static bool CanBeSidekick(PlayerControl pc)

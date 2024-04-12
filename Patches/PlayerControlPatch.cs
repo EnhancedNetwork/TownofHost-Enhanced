@@ -107,7 +107,7 @@ class CheckMurderPatch
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
-        if (!CheckForInvalidMurdering(killer, target))
+        if (CheckForInvalidMurdering(killer, target) == false)
         {
             return false;
         }
@@ -117,6 +117,7 @@ class CheckMurderPatch
             Chronomancer.OnCheckMurder(killer);
 
         killer.ResetKillCooldown();
+        Logger.Info($"Kill Cooldown Resets", "CheckMurder");
 
         // Replacement process when the actual killer and the KILLER are different
         if (Sniper.HasEnabled)
@@ -129,10 +130,15 @@ class CheckMurderPatch
             }
         }
 
+        Logger.Info($"Start: CustomRoleManager.OnCheckMurder", "CheckMurder");
+
         if (CustomRoleManager.OnCheckMurder(killer, target) == false)
         {
+            Logger.Info($"Canceled from CustomRoleManager.OnCheckMurder", "CheckMurder");
             return false;
         }
+
+        Logger.Info($"End: CustomRoleManager.OnCheckMurder", "CheckMurder");
 
         //== Kill target ==
         __instance.RpcMurderPlayer(target);
@@ -242,10 +248,9 @@ class CheckMurderPatch
         }
 
         var killerRole = killer.GetCustomRole();
-        var targetRole = target.GetCustomRole();
-        var targetSubRoles = target.GetCustomSubRoles();
 
         var targetRoleClass = target.GetRoleClass();
+        var targetSubRoles = target.GetCustomSubRoles();
 
         // Shield Player
         if (Main.ShieldPlayer != "" && Main.ShieldPlayer == target.GetClient().GetHashedPuid() && Utils.IsAllAlive)

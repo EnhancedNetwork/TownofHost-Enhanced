@@ -237,7 +237,7 @@ public class PlayerState(byte playerId)
         var callerMethod = caller.GetMethod();
         string callerMethodName = callerMethod.Name;
         string callerClassName = callerMethod.DeclaringType.FullName;
-        Logger.Msg($"Player was dead, activated from: {callerClassName}.{callerMethodName}", "PlayerState.SetDead()");
+        Logger.Msg($"Player {PlayerId} was dead, activated from: {callerClassName}.{callerMethodName}", "PlayerState.SetDead()");
 
         IsDead = true;
         if (AmongUsClient.Instance.AmHost)
@@ -432,6 +432,16 @@ public static class GameStates
     public static bool IsEnded => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Ended;
     public static bool IsNotJoined => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.NotJoined;
     public static bool IsOnlineGame => AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame;
+    public static bool IsVanillaServer
+    {
+        get
+        {
+            if (!IsOnlineGame) return false;
+
+            string region = ServerManager.Instance.CurrentRegion.Name;
+            return (region == "North America" || region == "Europe" || region == "Asia");
+        }
+    }
     public static bool IsLocalGame => AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;
     public static bool IsFreePlay => AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay;
     public static bool IsInTask => InGame && !MeetingHud.Instance;

@@ -2,6 +2,7 @@
 using Hazel;
 using TOHE.Roles.Core;
 using UnityEngine;
+using Hazel;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;

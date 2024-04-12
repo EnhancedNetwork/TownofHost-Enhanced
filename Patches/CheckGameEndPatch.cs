@@ -34,7 +34,7 @@ class GameEndCheckerForNormal
         // FFA
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
-            if (CustomWinnerHolder.WinnerIds.Any() || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
+            if (CustomWinnerHolder.WinnerIds.Count > 0 || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
             {
                 ShipStatus.Instance.enabled = false;
                 StartEndGame(reason);
@@ -194,7 +194,7 @@ class GameEndCheckerForNormal
                 {
                     var egoistCrewArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsCrewmate() && x.Is(CustomRoles.Egoist)).ToArray();
 
-                    if (egoistCrewArray.Any())
+                    if (egoistCrewArray.Length > 0)
                     {
                         reason = GameOverReason.ImpostorByKill;
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Egoist);
@@ -211,7 +211,7 @@ class GameEndCheckerForNormal
                 {
                     var egoistImpArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsImpostor() && x.Is(CustomRoles.Egoist)).ToArray();
 
-                    if (egoistImpArray.Any())
+                    if (egoistImpArray.Length > 0)
                     {
                         reason = GameOverReason.ImpostorByKill;
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Egoist);
@@ -474,10 +474,7 @@ class GameEndCheckerForNormal
     {
         if (Quizmaster.HasEnabled) Quizmaster.ResetMarkedPlayer();
 
-        foreach (var playerState in Main.PlayerStates.Values.ToArray())
-        {
-            playerState.RoleClass?.OnCoEndGame();
-        }
+        CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.OnCoEndGame());
 
         // Set ghost role
         List<byte> ReviveRequiredPlayerIds = [];
@@ -518,7 +515,7 @@ class GameEndCheckerForNormal
         // Delay to ensure that resuscitation is delivered after the ghost roll setting
         yield return new WaitForSeconds(EndGameDelay);
 
-        if (ReviveRequiredPlayerIds.Any())
+        if (ReviveRequiredPlayerIds.Count > 0)
         {
             // Resuscitation Resuscitate one person per transmission to prevent the packet from swelling up and dying
             for (int i = 0; i < ReviveRequiredPlayerIds.Count; i++)
@@ -560,7 +557,7 @@ class GameEndCheckerForNormal
         {
             reason = GameOverReason.ImpostorByKill;
 
-            if (Sunnyboy.CheckGameEnd()) return false;
+            if (Sunnyboy.HasEnabled && Sunnyboy.CheckGameEnd()) return false;
             var neutralRoleCounts = new Dictionary<CountTypes, int>();
             var allAlivePlayerList = Main.AllAlivePlayerControls.ToArray();
             int dual = 0, impCount = 0, crewCount = 0;
@@ -603,7 +600,7 @@ class GameEndCheckerForNormal
                 return true;
             }
 
-            else if (Main.AllAlivePlayerControls.Any() && Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) // if lover is alive lover wins
+            else if (Main.AllAlivePlayerControls.Length > 0 && Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) // if lover is alive lover wins
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Lovers);
@@ -660,7 +657,7 @@ class FFAGameEndPredicate : GameEndPredicate
     public override bool CheckForEndGame(out GameOverReason reason)
     {
         reason = GameOverReason.ImpostorByKill;
-        if (CustomWinnerHolder.WinnerIds.Any()) return false;
+        if (CustomWinnerHolder.WinnerIds.Count > 0) return false;
         if (CheckGameEndByLivingPlayers(out reason)) return true;
         return false;
     }
