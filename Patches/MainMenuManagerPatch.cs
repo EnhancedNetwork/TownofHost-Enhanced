@@ -46,7 +46,7 @@ public class MainMenuManagerStartPatch
 class MainMenuManagerLateUpdatePatch
 {
     private static int lateUpdate = 590;
-    //private static GameObject LoadingHint;
+    private static PassiveButton updateButton;
 
     private static void Postfix(MainMenuManager __instance)
     {
@@ -88,6 +88,20 @@ class MainMenuManagerLateUpdatePatch
                 DisconnectPopup.Instance.ShowCustom(GetString("NoAccess"));
             }
         }
+
+        // update Button
+        if (updateButton == null)
+        {
+            updateButton = MainMenuManagerPatch.CreateButton(
+                "updateButton",
+                new(3.68f, -2.68f, 1f),
+                new(255, 165, 0, byte.MaxValue),
+                new(255, 200, 0, byte.MaxValue),
+                () => ModUpdater.StartUpdate(ModUpdater.downloadUrl),
+                GetString("update")); //"Update"
+            updateButton.transform.localScale = Vector3.one;
+        }
+        updateButton.gameObject.SetActive(ModUpdater.hasUpdate);
     }
 }
 [HarmonyPatch(typeof(MainMenuManager))]
@@ -99,8 +113,6 @@ public static class MainMenuManagerPatch
     private static PassiveButton discordButton;
     private static PassiveButton websiteButton;
     //private static PassiveButton patreonButton;
-
-    public static PassiveButton updateButton;
 
     [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
     public static void StartPostfix(MainMenuManager __instance)
@@ -238,20 +250,6 @@ public static class MainMenuManagerPatch
         }
         kofiButton.gameObject.SetActive(Main.ShowKofiButton);
 
-        // update Button
-        if (updateButton == null)
-        {
-            updateButton = CreateButton(
-                "updateButton",
-                new(3.68f, -2.68f, 1f),
-                new(255, 165, 0, byte.MaxValue),
-                new(255, 200, 0, byte.MaxValue),
-                () => ModUpdater.StartUpdate(ModUpdater.downloadUrl, true),
-                GetString("update")); //"Update"
-            updateButton.transform.localScale = Vector3.one;
-        }
-        updateButton.gameObject.SetActive(ModUpdater.hasUpdate);
-
         // GitHub Button
         if (gitHubButton == null)
         {
@@ -300,7 +298,7 @@ public static class MainMenuManagerPatch
 
     }
 
-    private static PassiveButton CreateButton(string name, Vector3 localPosition, Color32 normalColor, Color32 hoverColor, Action action, string label, Vector2? scale = null)
+    public static PassiveButton CreateButton(string name, Vector3 localPosition, Color32 normalColor, Color32 hoverColor, Action action, string label, Vector2? scale = null)
     {
         var button = Object.Instantiate(template, MainMenuManagerStartPatch.ToheLogo.transform);
         button.name = name;

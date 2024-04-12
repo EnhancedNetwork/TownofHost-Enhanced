@@ -530,7 +530,7 @@ static class ExtendedPlayerControl
     }
     public static void ResetKillCooldown(this PlayerControl player)
     {
-        Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //Set default kill cooldown first
+        Main.AllPlayerKillCooldown[player.PlayerId] = Options.DefaultKillCooldown;
 
         // FFA
         if (player.Is(CustomRoles.Killer))
@@ -542,7 +542,7 @@ static class ExtendedPlayerControl
             player.GetRoleClass()?.SetKillCooldown(player.PlayerId);
         }
 
-        var playerSubRoles = player.GetCustomSubRoles().ToArray();
+        var playerSubRoles = player.GetCustomSubRoles();
 
         if (playerSubRoles.Any())
             foreach (var subRole in playerSubRoles)

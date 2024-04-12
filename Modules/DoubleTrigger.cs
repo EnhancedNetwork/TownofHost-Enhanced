@@ -26,7 +26,9 @@ static class DoubleTrigger
         return PlayerIdList.Contains(killer.PlayerId);
     }
 
-    /// false on first action, true on second action
+    /// <summary>
+    /// <returns>returns false on first action, returns true on second action</returns>
+    /// </summary>
     public static bool CheckDoubleTrigger(this PlayerControl killer, PlayerControl target, Action firstAction)
     {
         if (FirstTriggerTimer.ContainsKey(killer.PlayerId))
@@ -67,7 +69,7 @@ static class DoubleTrigger
         FirstTriggerTimer[playerId] -= Time.fixedDeltaTime;
         if (FirstTriggerTimer[playerId] <= 0)
         {
-            Logger.Info($"{player.name} DoSingleAction", "DoubleTrigger");
+            Logger.Info($"{player.name} Do single action", "DoubleTrigger");
             FirstTriggerAction[playerId]();
 
             FirstTriggerTimer.Remove(playerId);

@@ -167,10 +167,11 @@ internal class Bandit : RoleBase
         return;
     }
 
-    private static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         bool flag = false;
         if (!target.HasSubRole() || target.Is(CustomRoles.Stubborn)) flag = true;
+
         var SelectedAddOn = SelectRandomAddon(target);
         if (SelectedAddOn == null || flag) // no stealable addons found on the target.
         {
@@ -184,16 +185,18 @@ internal class Bandit : RoleBase
             return true;
         }
 
-        return killer.CheckDoubleTrigger(target, () => { StealAddon(killer, target, SelectedAddOn); });
-    }
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
-    {
-        if (!OnCheckMurder(killer, target))
+        if (killer.CheckDoubleTrigger(target, () => { StealAddon(killer, target, SelectedAddOn); }))
         {
+            // Double click
+            killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
+            return true;
+        }
+        else
+        {
+            // Single click
             killCooldown[killer.PlayerId] = StealCooldown.GetFloat();
             return false;
         }
-        return true;
     }
 
     public override void OnReportDeadBody(PlayerControl reportash, PlayerControl panagustava)
