@@ -111,6 +111,12 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
             return false;
         }
+        public override void OnFixedUpdate(PlayerControl pc)
+        {
+            var speed = Main.AllPlayerSpeed[pc.PlayerId];
+            if (speed != GhastlySpeed.GetFloat())
+                Main.AllPlayerSpeed[pc.PlayerId] = GhastlySpeed.GetFloat();
+        }
         public void OnFixUpdateOthers(PlayerControl player)
         {
             if (killertarget.Item1 == player.PlayerId 
