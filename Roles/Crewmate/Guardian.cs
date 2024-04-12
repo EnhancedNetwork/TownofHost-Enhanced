@@ -28,7 +28,7 @@ internal class Guardian : RoleBase
     {
         playerIdList.Add(playerId);
     }
-    public static bool CannotBeKilled(PlayerControl Guardian) => Guardian.Is(CustomRoles.Guardian) && Guardian.AllTasksCompleted();
+    public static bool CannotBeKilled(PlayerControl Guardian) => Guardian.Is(CustomRoles.Guardian) && Guardian.GetPlayerTaskState().IsTaskFinished;
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (CannotBeKilled(target))
