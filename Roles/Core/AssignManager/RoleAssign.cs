@@ -106,11 +106,11 @@ public class RoleAssign
             else Roles[RoleAssignType.Crewmate].Add(info);
         }
 
-        if (Roles[RoleAssignType.Impostor].Count == 0 && !SetRoles.Values.Any(x => x.IsImpostor()))
-        {
-            Roles[RoleAssignType.Impostor].Add(new(CustomRoles.ImpostorTOHE, 100, optImpNum));
-            Logger.Warn("Adding Vanilla Impostor", "CustomRoleSelector");
-        }
+        //if (Roles[RoleAssignType.Impostor].Count == 0 && !SetRoles.Values.Any(x => x.IsImpostor()))
+        //{
+        //    Roles[RoleAssignType.Impostor].Add(new(CustomRoles.ImpostorTOHE, 100, optImpNum));
+        //    Logger.Warn("Adding Vanilla Impostor", "CustomRoleSelector");
+        //}
 
         Logger.Info($"Number of NKs: {optNeutralKillingNum}, Number of NonNKs: {optNonNeutralKillingNum}", "NeutralNum");
         Logger.Msg("=====================================================", "AllActiveRoles");
