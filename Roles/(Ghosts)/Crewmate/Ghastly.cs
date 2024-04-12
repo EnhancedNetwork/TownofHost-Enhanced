@@ -101,6 +101,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 GetPlayerById(killer).Notify(GetString("YouvePosses"));
 
                 TargetArrow.Add(killer, Target);
+                angel.RpcGuardAndKill(target);
                 angel.RpcResetAbilityCooldown();
             }
             else if (target.PlayerId == killer)
