@@ -98,6 +98,8 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 SendRPC(PossessLimit);
                 LastTime.Add(killer, GetTimeStamp());
 
+                GetPlayerById(killer).Notify(GetString("YouvePosses"));
+
                 TargetArrow.Add(killer, Target);
                 angel.RpcResetAbilityCooldown();
             }
