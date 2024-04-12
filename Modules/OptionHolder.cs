@@ -39,7 +39,7 @@ public static class Options
     public static void WaitOptionsLoad_Postfix()
     {
         taskOptionsLoad.Wait();
-        Logger.Info("Mod option loading eng", "Load Options");
+        Logger.Msg("Mod option loading eng", "Load Options");
     }
 
     // Presets

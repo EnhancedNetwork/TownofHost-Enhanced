@@ -6,7 +6,6 @@ using UnityEngine;
 using static TOHE.Translator;
 using UnityEngine.Networking;
 using IEnumerator = System.Collections.IEnumerator;
-using IEnumeratorG = System.Collections.Generic.IEnumerator<bool>;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
@@ -23,15 +22,18 @@ public class ModUpdater
     public static bool forceUpdate = false;
     public static bool isBroken = false;
     public static bool isChecked = false;
+    public static bool isFail = false;
     public static DateTime? latestVersion = null;
     public static string latestTitle = null;
     public static string downloadUrl = null;
     public static string notice = null;
     public static GenericPopup InfoPopup;
+    public static PassiveButton updateButton;
 
-    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPrefix]
+    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.VeryLow)]
     public static void Start_Prefix(/*MainMenuManager __instance*/)
     {
+        ResetUpdateButton();
         if (isChecked) return;
         //If we are not using it for now, just freaking disable it.
 
@@ -49,13 +51,28 @@ public class ModUpdater
         if (!isChecked)
         {
             yield return CheckReleaseFromGithub(Main.BetaBuildURL.Value != "");
-            bool done = CheckReleaseFromGithub().Current;
-            Logger.Warn("Check for updated results: " + done, "CheckRelease");
+            Logger.Warn("Check for updated results: " + !isFail, "CheckRelease");
             Logger.Info("hasupdate: " + hasUpdate, "CheckRelease");
             Logger.Info("forceupdate: " + forceUpdate, "CheckRelease");
             Logger.Info("downloadUrl: " + downloadUrl, "CheckRelease");
             Logger.Info("latestVersionl: " + latestVersion, "CheckRelease");
+            ResetUpdateButton();
         }
+    }
+    public static void ResetUpdateButton()
+    {
+        if (updateButton == null)
+        {
+            updateButton = MainMenuManagerPatch.CreateButton(
+                "updateButton",
+                new(3.68f, -2.68f, 1f),
+                new(255, 165, 0, byte.MaxValue),
+                new(255, 200, 0, byte.MaxValue),
+                () => StartUpdate(downloadUrl),
+                GetString("update"));
+            updateButton.transform.localScale = Vector3.one;
+        }
+        updateButton.gameObject.SetActive(hasUpdate);
     }
     public static string Get(string url)
     {
@@ -75,20 +92,25 @@ public class ModUpdater
         }
         return result;
     }
-    public static IEnumeratorG CheckReleaseFromGithub(bool beta = false)
+    public static IEnumerator CheckReleaseFromGithub(bool beta = false)
     {
         Logger.Warn("Start checking for updates from Github", "CheckRelease");
         string url = URL_Github + "/releases/latest";
 
         UnityWebRequest request = UnityWebRequest.Get(url);
-        request.SetRequestHeader("User-Agent", "TOHE Updater");
+        request.timeout = 15;
+        request.SetRequestHeader("Connection", "Keep-Alive");
+        request.SetRequestHeader("User-Agent", "Mozilla/5.0");
+        request.chunkedTransfer = false;
 
-        yield return request.SendWebRequest().isDone;
+        yield return request.SendWebRequest();
+        yield return new WaitForSeconds(0.5f);
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Logger.Error($"Request failed: {request.error}", "CheckRelease");
-            yield return false;
+            Logger.Error($"Request failed: {request.error}: {request.result}", "CheckRelease");
+            isFail = true;
+            yield break;
         }
 
         string result = request.downloadHandler.text;
@@ -133,7 +155,8 @@ public class ModUpdater
         if (hasUpdate && (downloadUrl == null || downloadUrl == ""))
         {
             Logger.Error("Failed to get download address", "CheckRelease");
-            yield return false;
+            isFail = true;
+            yield break;
         }
 
         isChecked = true;
@@ -142,7 +165,8 @@ public class ModUpdater
         // Manually dispose of the UnityWebRequest instance
         request.Dispose();
 
-        yield return true;
+        isFail = false;
+        yield break;
     }
     public static void StartUpdate(string url)
     {
@@ -212,7 +236,7 @@ public class ModUpdater
     private static IEnumerator DownloadDLL(string url)
     {
         var savePath = "BepInEx/plugins/TOHE.dll.temp";
-        Application.targetFrameRate = 2000;
+        Application.targetFrameRate = -1;
 
         // Delete the temporary file if it exists
         DeleteOldFiles();
@@ -228,6 +252,7 @@ public class ModUpdater
         {
             Logger.Error($"File retrieval failed with status code: {request.responseCode}", "DownloadDLL", false);
             ShowPopup(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
+            Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
             yield break;
         }
 
@@ -258,7 +283,7 @@ public class ModUpdater
             }
         }
 
-        var fileName = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        var fileName = Assembly.GetExecutingAssembly().Location;
         File.Move(fileName, fileName + ".bak");
         File.Move(savePath, fileName);
         ShowPopup(GetString("updateRestart"), StringNames.Close, true, Application.Quit);
