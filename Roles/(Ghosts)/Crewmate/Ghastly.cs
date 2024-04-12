@@ -128,6 +128,19 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             }
 
         }
+        public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
+        {
+            var tuple = killertarget;
+            if (tuple.Item1 == killer.PlayerId && tuple.Item2 != byte.MaxValue)
+            {
+                if (tuple.Item2 != target.PlayerId)
+                {
+                    killer.Notify(GetString("NotUrTarget"));
+                    return true;
+                }
+            }
+            return false;
+        }
         private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting, bool isforhud = false)
         {
             var IsMeeting = GameStates.IsMeeting || IsForMeeting;
