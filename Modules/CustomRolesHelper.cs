@@ -59,6 +59,7 @@ public static class CustomRolesHelper
             CustomRoles.EvilSpirit or
             CustomRoles.Warden or
             CustomRoles.Hawk or
+            CustomRoles.Ghastly or
             CustomRoles.Bloodmoon or
             CustomRoles.Minion;
 
