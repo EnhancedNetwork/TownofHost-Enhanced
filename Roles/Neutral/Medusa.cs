@@ -46,14 +46,18 @@ internal class Medusa : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
-    public override bool OnCheckReportDeadBody(PlayerControl __instance, GameData.PlayerInfo target, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target, PlayerControl killer)
     {
-        Main.UnreportableBodies.Add(target.PlayerId);
-        __instance.Notify(GetString("MedusaStoneBody"));
+        if (reporter.Is(CustomRoles.Medusa))
+        {
+            Main.UnreportableBodies.Add(target.PlayerId);
+            reporter.Notify(GetString("MedusaStoneBody"));
 
-        __instance.SetKillCooldownV3(KillCooldownAfterStoneGazing.GetFloat(), forceAnime: true);
-        Logger.Info($"{__instance.GetRealName()} stoned {target.PlayerName} body", "Medusa");
-        return false;
+            reporter.SetKillCooldownV3(KillCooldownAfterStoneGazing.GetFloat(), forceAnime: true);
+            Logger.Info($"{reporter.GetRealName()} stoned {target.PlayerName} body", "Medusa");
+            return false;
+        }
+        return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
