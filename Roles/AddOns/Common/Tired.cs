@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -7,7 +6,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Tired
 {
-    private static readonly int Id = 27300;
+    private const int Id = 27300;
     private static Dictionary<byte, bool> playerIdList; // Target Action player for Vision
 
     public static OptionItem CanBeOnCrew;

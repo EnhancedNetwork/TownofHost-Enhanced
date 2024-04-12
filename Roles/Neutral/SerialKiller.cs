@@ -1,67 +1,50 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
-public static class SerialKiller
+internal class SerialKiller : RoleBase
 {
-    private static readonly int Id = 17900;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 17900;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
-    public static OptionItem KillCooldown;
-    public static OptionItem BloodlustKillCD;
-    public static OptionItem CanVent;
+    private static OptionItem KillCooldown;
+    private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
-    public static OptionItem HasSerialKillerBuddy;
-    public static OptionItem ChanceToSpawn;
-   // public static OptionItem ChanceToSpawnAnother;
-    public static OptionItem BloodlustPlayerCount;
-    public static OptionItem ReflectHarmfulInteractions;
+    private static OptionItem HasSerialKillerBuddy;
+    //private static OptionItem ChanceToSpawn;
 
     public static void SetupCustomOption()
     {
-        //SerialKillerは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.SerialKiller, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller])
             .SetValueFormat(OptionFormat.Seconds);
-    /*    BloodlustKillCD = FloatOptionItem.Create(Id + 12, "BloodlustKillCD", new(0f, 180f, 2.5f), 12.5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller])
-            .SetValueFormat(OptionFormat.Seconds); */
-    /*    BloodlustPlayerCount = IntegerOptionItem.Create(Id + 15, "BloodlustPlayerCount", new(0, 15, 1), 7, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller])
-            .SetValueFormat(OptionFormat.Players); */
         CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller]);
         HasSerialKillerBuddy = BooleanOptionItem.Create(Id + 16, "HasSerialKillerBuddy", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller]);
-        ChanceToSpawn = IntegerOptionItem.Create(Id + 14, "ChanceToSpawn", new(0, 100, 5), 100, TabGroup.NeutralRoles, false)
-            .SetParent(HasSerialKillerBuddy)
-            .SetValueFormat(OptionFormat.Percent);
-      /*  ChanceToSpawnAnother = IntegerOptionItem.Create(Id + 17, "ChanceToSpawnAnother", new(0, 100, 5), 30, TabGroup.NeutralRoles, false)
-            .SetParent(ChanceToSpawn)
-            .SetValueFormat(OptionFormat.Percent); */
-    //    ReflectHarmfulInteractions = BooleanOptionItem.Create(Id + 18, "ReflectHarmfulInteractions", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller]);
+        //ChanceToSpawn = IntegerOptionItem.Create(Id + 14, "ChanceToSpawn", new(0, 100, 5), 100, TabGroup.NeutralRoles, false)
+        //    .SetParent(HasSerialKillerBuddy)
+        //    .SetValueFormat(OptionFormat.Percent); 
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        IsEnable = false;
+        playerIdList.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
-    public static void CanUseVent(PlayerControl player)
-    {
-        bool NSerialKiller_canUse = CanVent.GetBool();
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(NSerialKiller_canUse && !player.Data.IsDead);
-        player.Data.Role.CanVent = NSerialKiller_canUse;
-    }
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 }

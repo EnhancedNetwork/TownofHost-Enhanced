@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using static TOHE.Options;
+﻿using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-public class Instigator
+internal class Instigator : RoleBase
 {
-    private static readonly int Id = 1700;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 1700;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem AbilityLimit;
@@ -28,24 +30,22 @@ public class Instigator
         KillsPerAbilityUse = IntegerOptionItem.Create(Id + 12, "InstigatorKillsPerAbilityUse", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])
             .SetValueFormat(OptionFormat.Times);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        IsEnable = false;
+        playerIdList.Clear();
         AbilityUseCount = [];
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
         AbilityUseCount.Add(playerId, 0);
     }
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static void OnPlayerExile(GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl instigator, GameData.PlayerInfo exiled)
     {
-        if (!IsEnable || !exiled.GetCustomRole().IsCrewmate()) return;
+        if (exiled == null || !exiled.GetCustomRole().IsCrewmate()) return;
 
         foreach (var player in playerIdList)
         {

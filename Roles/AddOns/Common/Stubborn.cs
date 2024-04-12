@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Stubborn
 {
-    private static readonly int Id = 22500;
+    private const int Id = 22500;
 
     public static OptionItem ImpCanBeStubborn;
     public static OptionItem CrewCanBeStubborn;

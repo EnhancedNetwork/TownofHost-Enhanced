@@ -1,24 +1,28 @@
 ﻿using Hazel;
-using System.Collections.Generic;
 using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
-public static class Doppelganger
+
+internal class Doppelganger : RoleBase
 {
-    private static readonly int Id = 25000;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 25000;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
-    public static OptionItem CanVent;
-    public static OptionItem HasImpostorVision;
-    public static OptionItem MaxSteals;
+    private static OptionItem CanVent;
+    private static OptionItem HasImpostorVision;
+    private static OptionItem MaxSteals;
 
-    public static Dictionary<byte, string> DoppelVictim = [];
-    public static Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
-    public static Dictionary<byte, int> TotalSteals = [];
+    public static readonly Dictionary<byte, string> DoppelVictim = [];
+    public static readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
+    private static readonly Dictionary<byte, int> TotalSteals = [];
 
 
     public static void SetupCustomOption()
@@ -31,18 +35,16 @@ public static class Doppelganger
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        DoppelVictim = [];
-        TotalSteals = [];
-        DoppelPresentSkin = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        DoppelVictim.Clear();
+        TotalSteals.Clear();
+        DoppelPresentSkin.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
         TotalSteals.Add(playerId, 0);
         if (playerId == PlayerControl.LocalPlayer.PlayerId && Main.nickName.Length != 0) DoppelVictim[playerId] = Main.nickName;
         else DoppelVictim[playerId] = Utils.GetPlayerById(playerId).Data.PlayerName;
@@ -54,13 +56,14 @@ public static class Doppelganger
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDoppelgangerStealLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Doppelganger);
         writer.Write(playerId);
         writer.Write(TotalSteals[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -70,20 +73,11 @@ public static class Doppelganger
             TotalSteals.Add(PlayerId, 0);
     }
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
-    //overloading
-    public static GameData.PlayerOutfit Set(this GameData.PlayerOutfit instance, string playerName, int colorId, string hatId, string skinId, string visorId, string petId, string nameplateId)
-    {
-        instance.PlayerName = playerName;
-        instance.ColorId = colorId;
-        instance.HatId = hatId;
-        instance.SkinId = skinId;
-        instance.VisorId = visorId;
-        instance.PetId = petId;
-        instance.NamePlateId = nameplateId;
-        return instance;
-    }
+    public static bool CheckDoppelVictim(byte playerId) => DoppelVictim.ContainsKey(playerId);
 
     public static void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit, uint level)
     {
@@ -125,6 +119,7 @@ public static class Doppelganger
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetNamePlateStr)
             .Write(newOutfit.NamePlateId)
             .EndRpc();
+        
         pc.SetLevel(level);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetLevel)
             .Write(level)
@@ -134,28 +129,24 @@ public static class Doppelganger
         DoppelPresentSkin[pc.PlayerId] = newOutfit;
     }
 
-    public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || !IsEnable || Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)) return;
+        if (killer == null || target == null || Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)) return true;
         if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out bool isShapeshifitng) && isShapeshifitng)
         {
             Logger.Info("Target was shapeshifting", "Doppelganger");
-            return; 
+            return true; 
         } 
         if (TotalSteals[killer.PlayerId] >= MaxSteals.GetInt())
         {
             TotalSteals[killer.PlayerId] = MaxSteals.GetInt();
-            return;
+            return true;
         }
 
         TotalSteals[killer.PlayerId]++;
 
-        string kname;
-        if (killer.PlayerId == PlayerControl.LocalPlayer.PlayerId && Main.nickName.Length != 0) kname = Main.nickName;
-        else kname = killer.Data.PlayerName;
-        string tname;
-        if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId && Main.nickName.Length != 0) tname = Main.nickName;
-        else tname = target.Data.PlayerName;
+        string kname = killer.GetRealName();
+        string tname = target.GetRealName();
 
         var killerSkin = new GameData.PlayerOutfit()
             .Set(kname, killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
@@ -178,8 +169,8 @@ public static class Doppelganger
         RPC.SyncAllPlayerNames();
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
-        return;
+        return true;
     }
 
-    public static string GetStealLimit(byte playerId) => Utils.ColorString(TotalSteals[playerId] < MaxSteals.GetInt() ? Utils.GetRoleColor(CustomRoles.Doppelganger).ShadeColor(0.25f) : Color.gray, TotalSteals.TryGetValue(playerId, out var stealLimit) ? $"({MaxSteals.GetInt() - stealLimit})" : "Invalid");
+    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(TotalSteals[playerId] < MaxSteals.GetInt() ? Utils.GetRoleColor(CustomRoles.Doppelganger).ShadeColor(0.25f) : Color.gray, TotalSteals.TryGetValue(playerId, out var stealLimit) ? $"({MaxSteals.GetInt() - stealLimit})" : "Invalid");
 }

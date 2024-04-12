@@ -1,8 +1,6 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using System;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -285,7 +283,7 @@ class BeginCrewmatePatch
        
         return true;
     }
-    public static void Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToDisplay)
+    public static void Postfix(IntroCutscene __instance)
     {
         //チーム表示変更
         CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
@@ -339,7 +337,7 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Engineer);
                 break;
 
-            case CustomRoles.SabotageMaster:
+            case CustomRoles.Mechanic:
             case CustomRoles.Provocateur:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.SabotageSound;
                 break;
@@ -359,7 +357,7 @@ class BeginCrewmatePatch
                 break;
             case CustomRoles.Sheriff:
             case CustomRoles.Veteran:
-            case CustomRoles.SwordsMan:
+            case CustomRoles.Knight:
             case CustomRoles.KillingMachine:
             case CustomRoles.Reverie:
             case CustomRoles.NiceGuesser:
@@ -433,7 +431,7 @@ class BeginCrewmatePatch
     }
     public static AudioClip GetIntroSound(RoleTypes roleType)
     {
-        return RoleManager.Instance.AllRoles.Where((role) => role.Role == roleType).FirstOrDefault().IntroSound;
+        return RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == roleType)?.IntroSound;
     }
     private static async void StartFadeIntro(IntroCutscene __instance, Color start, Color end)
     {
@@ -488,7 +486,7 @@ class BeginImpostorPatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
-        else if (role is CustomRoles.Vigilante or CustomRoles.Sheriff or CustomRoles.Jailer or CustomRoles.Investigator or CustomRoles.SwordsMan or CustomRoles.Medic or CustomRoles.Counterfeiter or CustomRoles.Witness or CustomRoles.Monarch or CustomRoles.Farseer or CustomRoles.Reverie or CustomRoles.Admirer or CustomRoles.Deputy or CustomRoles.Crusader or CustomRoles.CopyCat)
+        else if (role is CustomRoles.Vigilante or CustomRoles.Sheriff or CustomRoles.Jailer or CustomRoles.Investigator or CustomRoles.Knight or CustomRoles.Medic or CustomRoles.Deceiver or CustomRoles.Witness or CustomRoles.Monarch or CustomRoles.Overseer or CustomRoles.Reverie or CustomRoles.Admirer or CustomRoles.Deputy or CustomRoles.Crusader or CustomRoles.CopyCat)
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
@@ -500,7 +498,7 @@ class BeginImpostorPatch
             __instance.overlayHandle.color = Palette.CrewmateBlue;
             return false;
         }
-        else if (role is CustomRoles.Romantic or CustomRoles.Doppelganger or CustomRoles.Pyromaniac or CustomRoles.Huntsman or CustomRoles.RuthlessRomantic or CustomRoles.VengefulRomantic or CustomRoles.SerialKiller or CustomRoles.Jackal or CustomRoles.Seeker or CustomRoles.Pixie or CustomRoles.Agitater or CustomRoles.CursedSoul or CustomRoles.Pirate or CustomRoles.Amnesiac or CustomRoles.Arsonist or CustomRoles.Sidekick or CustomRoles.Innocent or CustomRoles.Pelican or CustomRoles.Pursuer or CustomRoles.Revolutionist or CustomRoles.Hater or CustomRoles.Gamer or CustomRoles.Glitch or CustomRoles.Juggernaut or CustomRoles.DarkHide or CustomRoles.Provocateur or CustomRoles.BloodKnight or CustomRoles.SerialKiller or CustomRoles.Werewolf or CustomRoles.Maverick or CustomRoles.Shroud or CustomRoles.Totocalcio or CustomRoles.Succubus or CustomRoles.Pelican or CustomRoles.Infectious or CustomRoles.Virus or CustomRoles.Pickpocket or CustomRoles.Traitor or CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Spiritcaller or CustomRoles.Necromancer or CustomRoles.Medusa or CustomRoles.HexMaster or CustomRoles.Wraith or CustomRoles.Jinx or CustomRoles.Poisoner or CustomRoles.PotionMaster) //or CustomRoles.Occultist 
+        else if (role is CustomRoles.Romantic or CustomRoles.Doppelganger or CustomRoles.Pyromaniac or CustomRoles.Huntsman or CustomRoles.RuthlessRomantic or CustomRoles.VengefulRomantic or CustomRoles.SerialKiller or CustomRoles.Jackal or CustomRoles.Seeker or CustomRoles.Pixie or CustomRoles.Agitater or CustomRoles.CursedSoul or CustomRoles.Pirate or CustomRoles.Amnesiac or CustomRoles.Arsonist or CustomRoles.Sidekick or CustomRoles.Innocent or CustomRoles.Pelican or CustomRoles.Pursuer or CustomRoles.Revolutionist or CustomRoles.Hater or CustomRoles.Demon or CustomRoles.Glitch or CustomRoles.Juggernaut or CustomRoles.Stalker or CustomRoles.Provocateur or CustomRoles.BloodKnight or CustomRoles.SerialKiller or CustomRoles.Werewolf or CustomRoles.Maverick or CustomRoles.Shroud or CustomRoles.Follower or CustomRoles.Cultist or CustomRoles.Pelican or CustomRoles.Infectious or CustomRoles.Virus or CustomRoles.Pickpocket or CustomRoles.Traitor or CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Spiritcaller or CustomRoles.Necromancer or CustomRoles.Medusa or CustomRoles.HexMaster or CustomRoles.Wraith or CustomRoles.Jinx or CustomRoles.Poisoner or CustomRoles.PotionMaster) //or CustomRoles.Occultist 
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
@@ -515,9 +513,9 @@ class BeginImpostorPatch
         BeginCrewmatePatch.Prefix(__instance, ref yourTeam);
         return true;
     }
-    public static void Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+    public static void Postfix(IntroCutscene __instance)
     {
-        BeginCrewmatePatch.Postfix(__instance, ref yourTeam);
+        BeginCrewmatePatch.Postfix(__instance);
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]

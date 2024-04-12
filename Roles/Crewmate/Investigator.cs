@@ -1,25 +1,27 @@
+using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Investigator
+internal class Investigator : RoleBase
 {
-    private static readonly int Id = 24900;
-    private static List<byte> playerIdList = [];
-    public static Dictionary<byte, HashSet<byte>> InvestigatedList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 24900;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    //==================================================================\\
 
+    private static OptionItem InvestigateCooldown;
+    private static OptionItem InvestigateMax;
+    private static OptionItem InvestigateRoundMax;
 
-    public static OptionItem InvestigateCooldown;
-    public static OptionItem InvestigateMax;
-    public static OptionItem InvestigateRoundMax;
-
-
-    private static Dictionary<byte, int> MaxInvestigateLimit = [];
-    private static Dictionary<byte, int> RoundInvestigateLimit = [];
+    private static readonly Dictionary<byte, int> MaxInvestigateLimit = [];
+    private static readonly Dictionary<byte, int> RoundInvestigateLimit = [];
+    private static readonly Dictionary<byte, HashSet<byte>> InvestigatedList = [];
 
     public static void SetupCustomOption()
     {
@@ -30,31 +32,27 @@ public static class Investigator
             .SetValueFormat(OptionFormat.Times);
         InvestigateRoundMax = IntegerOptionItem.Create(Id + 12, "InvestigateRoundMax", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator])
             .SetValueFormat(OptionFormat.Times);
-        //    CrewKillingShowAs = StringOptionItem.Create(Id + 12, "CrewKillingShowAs", ColorTypeText, 1, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
-        //    PassiveNeutralsShowAs = StringOptionItem.Create(Id + 13, "PassiveNeutralsShowAs", ColorTypeText, 2, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
-        //    NeutralKillingShowAs = StringOptionItem.Create(Id + 14, "NeutralKillingShowAs", ColorTypeText, 0, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
     }
-    public static void Init()
+
+    public override void Init()
     {
-        playerIdList = [];
-        InvestigatedList = [];
-        MaxInvestigateLimit = [];
-        RoundInvestigateLimit = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        InvestigatedList.Clear();
+        MaxInvestigateLimit.Clear();
+        RoundInvestigateLimit.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         MaxInvestigateLimit[playerId] = InvestigateMax.GetInt();
         RoundInvestigateLimit[playerId] = InvestigateRoundMax.GetInt();
         InvestigatedList[playerId] = [];
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         MaxInvestigateLimit.Remove(playerId);
@@ -102,31 +100,35 @@ public static class Investigator
             }
         }
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = InvestigateCooldown.GetFloat();
-    public static bool CanUseKillButton(PlayerControl player)
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        if (!player.Is(CustomRoles.Investigator) || player == null) return false;
+        opt.SetVision(false);
+    }
+
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = InvestigateCooldown.GetFloat();
+    public override bool CanUseKillButton(PlayerControl player)
+    {
+        if (player == null) return false;
         byte pid = player.PlayerId;
         if (!MaxInvestigateLimit.ContainsKey(pid)) MaxInvestigateLimit[pid] = InvestigateMax.GetInt();
         if (!RoundInvestigateLimit.ContainsKey(pid)) RoundInvestigateLimit[pid] = InvestigateRoundMax.GetInt();
         return !player.Data.IsDead && MaxInvestigateLimit[player.PlayerId] >= 1 && RoundInvestigateLimit[player.PlayerId] >= 1;
     }
-    public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return;
-        if (!killer.Is(CustomRoles.Investigator) || !IsEnable) return;
+        if (killer == null || target == null) return false;
 
         if (!MaxInvestigateLimit.ContainsKey(killer.PlayerId)) MaxInvestigateLimit[killer.PlayerId] = InvestigateMax.GetInt();
         if (!RoundInvestigateLimit.ContainsKey(killer.PlayerId)) RoundInvestigateLimit[killer.PlayerId] = InvestigateRoundMax.GetInt();
 
-        if (MaxInvestigateLimit[killer.PlayerId] < 1 || RoundInvestigateLimit[killer.PlayerId] < 1) return;
+        if (MaxInvestigateLimit[killer.PlayerId] < 1 || RoundInvestigateLimit[killer.PlayerId] < 1) return false;
 
         MaxInvestigateLimit[killer.PlayerId]--;
         RoundInvestigateLimit[killer.PlayerId]--;
         if (!InvestigatedList.ContainsKey(killer.PlayerId)) InvestigatedList[killer.PlayerId] = [];
         InvestigatedList[killer.PlayerId].Add(target.PlayerId);
-        //sendRPC for max, round and targetlist
-        //SendRPC();
+
         SendRPC(operate: 0, playerId: killer.PlayerId, targetId: target.PlayerId);
         Utils.NotifyRoles(SpecifySeer: killer, ForceLoop: true);
 
@@ -135,17 +137,19 @@ public static class Investigator
 
         if (!DisableShieldAnimations.GetBool())
             killer.RpcGuardAndKill(target);
+
+        return false;
     }
-    public static string InvestigatedColor(PlayerControl seer, PlayerControl target)
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
         if (seer == null || target == null) return string.Empty;
-        if (!seer.Is(CustomRoles.Investigator)) return string.Empty;
         if (!InvestigatedList.TryGetValue(seer.PlayerId, out var targetList)) return string.Empty;
         if (!targetList.Contains(target.PlayerId)) return string.Empty;
+
         if (ExtendedPlayerControl.HasKillButton(target) || CopyCat.playerIdList.Contains(target.PlayerId)) return "#FF1919";
         else return "#8CFFFF";
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         foreach (var playerid in RoundInvestigateLimit.Keys)
         {
@@ -154,5 +158,10 @@ public static class Investigator
         }
         SendRPC(1);
     }
-    public static string GetInvestigateLimit(byte playerId) => Utils.ColorString(MaxInvestigateLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Investigator).ShadeColor(0.25f) : Color.gray, $"({MaxInvestigateLimit[playerId]})");
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(MaxInvestigateLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Investigator).ShadeColor(0.25f) : Color.gray, $"({MaxInvestigateLimit[playerId]})");
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(Translator.GetString("InvestigatorButtonText")); ;
+    }
 }

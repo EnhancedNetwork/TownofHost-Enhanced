@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using static TOHE.Translator;
+﻿using static TOHE.Translator;
 
 namespace TOHE;
 

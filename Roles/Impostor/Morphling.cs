@@ -1,17 +1,21 @@
-using System.Collections.Generic;
+using AmongUs.GameOptions;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Morphling
+internal class Morphling : RoleBase
 {
-    private static readonly int Id = 3500;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 3500;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //===========================SETUP================================\\
 
-    public static OptionItem KillCooldown;
-    public static OptionItem ShapeshiftCD;
-    public static OptionItem ShapeshiftDur;
+    private static OptionItem KillCooldown;
+    private static OptionItem ShapeshiftCD;
+    private static OptionItem ShapeshiftDur;
 
 
     public static void SetupCustomOption()
@@ -24,31 +28,29 @@ public static class Morphling
         ShapeshiftDur = FloatOptionItem.Create(Id + 16, "ShapeshiftDuration", new(1f, 180f, 1f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Morphling])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        IsEnable = false;
+        playerIdList.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
     }
 
-    public static bool CanUseKillButton(byte playerId)
+    public override bool CanUseKillButton(PlayerControl player)
     {
-        var player = Utils.GetPlayerById(playerId);
-        if (player == null) return false;
+        if (player == null || !player.IsAlive()) return false;
 
-        Main.CheckShapeshift.TryGetValue(playerId, out var IsShapeshift);
+        Main.CheckShapeshift.TryGetValue(player.PlayerId, out var IsShapeshift);
 
-        return IsShapeshift && player.IsAlive();
+        return IsShapeshift;
     }
 
-    public static void ApplyGameOptions()
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCD.GetFloat();
         AURoleOptions.ShapeshifterDuration = ShapeshiftDur.GetFloat();
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 }

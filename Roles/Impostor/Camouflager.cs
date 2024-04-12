@@ -1,24 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using AmongUs.GameOptions;
+using TOHE.Roles.AddOns.Common;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Camouflager
+internal class Camouflager : RoleBase
 {
-    private static readonly int Id = 2900;
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 2900;
+    public static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    //==================================================================\\
 
     private static OptionItem CamouflageCooldownOpt;
     private static OptionItem CamouflageDurationOpt;
     private static OptionItem CanUseCommsSabotagOpt;
     private static OptionItem DisableReportWhenCamouflageIsActiveOpt;
+    private static OptionItem ShowShapeshiftAnimationsOpt;
 
     public static bool AbilityActivated = false;
-    public static bool ShapeshiftIsHidden = false;
     private static float CamouflageCooldown;
     private static float CamouflageDuration;
-    public static bool CanUseCommsSabotage;
-    public static bool DisableReportWhenCamouflageIsActive;
+    private static bool CanUseCommsSabotage;
+    private static bool DisableReportWhenCamouflageIsActive;
 
     private static Dictionary<byte, long> Timer = [];
 
@@ -33,81 +40,113 @@ public static class Camouflager
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Camouflager]);
         DisableReportWhenCamouflageIsActiveOpt = BooleanOptionItem.Create(Id + 8, "DisableReportWhenCamouflageIsActive", false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Camouflager]);
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 9, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Camouflager]);
 
     }
-    public static void Init()
+    public override void Init()
     {
-        Timer = [];
+        Timer.Clear();
         AbilityActivated = false;
-        IsEnable = false;
+        Playerids.Clear();
     }
-    public static void Add()
+    public override void Add(byte playerId)
     {
         CamouflageCooldown = CamouflageCooldownOpt.GetFloat();
         CamouflageDuration = CamouflageDurationOpt.GetFloat();
         CanUseCommsSabotage = CanUseCommsSabotagOpt.GetBool();
         DisableReportWhenCamouflageIsActive = DisableReportWhenCamouflageIsActiveOpt.GetBool();
-        
-        ShapeshiftIsHidden = Options.DisableShapeshiftAnimations.GetBool();
-        IsEnable = true;
+
+        Playerids.Add(playerId);
     }
-    public static void ApplyGameOptions()
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ShapeshifterCooldown = ShapeshiftIsHidden && AbilityActivated ? CamouflageDuration : CamouflageCooldown;
+        AURoleOptions.ShapeshifterCooldown = ShowShapeshiftAnimationsOpt.GetBool() && AbilityActivated ? CamouflageDuration : CamouflageCooldown;
         AURoleOptions.ShapeshifterDuration = CamouflageDuration;
     }
-    public static void SetAbilityButtonText(HudManager __instance)
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Camo");
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         if (AbilityActivated)
-            __instance.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftTextAfterDisguise"));
+            hud.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftTextAfterDisguise"));
         else
-            __instance.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftTextBeforeDisguise"));
-
-
-        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+            hud.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftTextBeforeDisguise"));
     }
-    public static void OnShapeshift(PlayerControl camouflager = null, bool shapeshiftIsHidden = false)
+    public override bool OnCheckShapeshift(PlayerControl camouflager, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        AbilityActivated = true;
-        
-        var timer = 1.2f;
-        if (shapeshiftIsHidden)
+        if (ShowShapeshiftAnimationsOpt.GetBool() || camouflager.PlayerId == target.PlayerId) return true;
+
+        if (AbilityActivated)
         {
-            timer = 0.1f;
-            camouflager.SyncSettings();
+            Logger.Info("Rejected bcz ability alredy activated", "Camouflager");
+            return false;
         }
+
+        if (!Main.MeetingIsStarted && GameStates.IsInTask)
+        {
+            AbilityActivated = true;
+            camouflager.SyncSettings();
+
+            Camouflage.CheckCamouflage();
+            Timer.Add(camouflager.PlayerId, Utils.GetTimeStamp());
+
+            Logger.Info("Camouflager use hidden shapeshift", "Camouflager");
+        }
+
+        return false;
+    }
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    {
+        if (!shapeshifting)
+        {
+            ClearCamouflage();
+            Timer = [];
+            return;
+        }
+
+        AbilityActivated = true;
+
+        var timer = 1.2f;
 
         _ = new LateTask(() =>
         {
             if (!Main.MeetingIsStarted && GameStates.IsInTask)
             {
                 Camouflage.CheckCamouflage();
-
-                if (camouflager != null && shapeshiftIsHidden)
-                {
-                    Timer.Add(camouflager.PlayerId, Utils.GetTimeStamp());
-                }
             }
         }, timer, "Camouflager Use Shapeshift");
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         ClearCamouflage();
         Timer = [];
     }
-    public static void IsDead()
+
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (GameStates.IsMeeting) return;
+        if (inMeeting || !AbilityActivated) return;
 
         ClearCamouflage();
     }
+
+    public static bool CantPressCommsSabotageButton(PlayerControl player) => player.Is(CustomRoles.Camouflager) && !CanUseCommsSabotage;
+
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    {
+        if (deadBody.Object.Is(CustomRoles.Bait) && Bait.BaitCanBeReportedUnderAllConditions.GetBool()) return true;
+
+        return DisableReportWhenCamouflageIsActive && AbilityActivated && !(Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool());
+    }
+
     private static void ClearCamouflage()
     {
         AbilityActivated = false;
         Camouflage.CheckCamouflage();
     }
-    public static void OnFixedUpdate(PlayerControl camouflager)
+    public override void OnFixedUpdate(PlayerControl camouflager)
     {
+        if (!ShowShapeshiftAnimationsOpt.GetBool() && !AbilityActivated) return;
+
         if (camouflager == null || !camouflager.IsAlive())
         {
             Timer.Remove(camouflager.PlayerId);

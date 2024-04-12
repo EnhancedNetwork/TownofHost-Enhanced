@@ -1,11 +1,10 @@
 ﻿using static TOHE.Options;
-using System.Collections.Generic;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public static class Diseased
 {
-    private static readonly int Id = 21800;
+    private const int Id = 21800;
     public static bool IsEnable = false;
 
     public static OptionItem ImpCanBeDiseased;

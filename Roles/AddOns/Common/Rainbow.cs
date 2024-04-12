@@ -1,4 +1,3 @@
-using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
@@ -6,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 // https://github.com/Yumenopai/TownOfHost_Y/blob/main/Roles/Crewmate/Y/Rainbow.cs
 public static class Rainbow
 {
-    private static readonly int Id = 27700;
+    private const int Id = 27700;
     public static OptionItem CrewCanBeRainbow;
     public static OptionItem ImpCanBeRainbow;
     public static OptionItem NeutralCanBeRainbow;
