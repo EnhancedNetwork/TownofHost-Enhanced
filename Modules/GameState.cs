@@ -237,7 +237,7 @@ public class PlayerState(byte playerId)
         var callerMethod = caller.GetMethod();
         string callerMethodName = callerMethod.Name;
         string callerClassName = callerMethod.DeclaringType.FullName;
-        Logger.Msg($"Player was dead, activated from: {callerClassName}.{callerMethodName}", "PlayerState.SetDead()");
+        Logger.Msg($"Player {PlayerId} was dead, activated from: {callerClassName}.{callerMethodName}", "PlayerState.SetDead()");
 
         IsDead = true;
         if (AmongUsClient.Instance.AmHost)
