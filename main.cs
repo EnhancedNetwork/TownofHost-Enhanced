@@ -324,6 +324,11 @@ public class Main : BasePlugin
         coroutines.StopCoroutine(coroutine.WrapToIl2Cpp());
     }
 
+    public void StopAllCoroutines()
+    {
+        coroutines.StopAllCoroutines();
+    }
+
     public static void LoadRoleColors()
     {
         try
