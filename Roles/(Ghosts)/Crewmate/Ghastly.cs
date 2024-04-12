@@ -115,7 +115,10 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         {
             var speed = Main.AllPlayerSpeed[pc.PlayerId];
             if (speed != GhastlySpeed.GetFloat())
+            {
                 Main.AllPlayerSpeed[pc.PlayerId] = GhastlySpeed.GetFloat();
+                pc.MarkDirtySettings();
+            }
         }
         public void OnFixUpdateOthers(PlayerControl player)
         {
