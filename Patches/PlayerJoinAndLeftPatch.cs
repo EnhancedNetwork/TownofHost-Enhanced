@@ -106,6 +106,7 @@ class OnGameJoinedPatch
                     SceneChanger.ChangeScene("MainMenu");
                     return;
                 }
+                RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
                 var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
                 var host = AmongUsClient.Instance.GetHost();
                 Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined");
