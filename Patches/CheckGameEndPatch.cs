@@ -5,8 +5,9 @@ using Hazel;
 using UnityEngine;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Neutral;
-using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Core;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -33,7 +34,7 @@ class GameEndCheckerForNormal
         // FFA
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
-            if (CustomWinnerHolder.WinnerIds.Count > 0|| CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
+            if (CustomWinnerHolder.WinnerIds.Count > 0 || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
             {
                 ShipStatus.Instance.enabled = false;
                 StartEndGame(reason);
@@ -461,10 +462,7 @@ class GameEndCheckerForNormal
     {
         if (Quizmaster.HasEnabled) Quizmaster.ResetMarkedPlayer();
 
-        foreach (var playerState in Main.PlayerStates.Values.ToArray())
-        {
-            playerState.RoleClass?.OnCoEndGame();
-        }
+        CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.OnCoEndGame());
 
         // Set ghost role
         List<byte> ReviveRequiredPlayerIds = [];
