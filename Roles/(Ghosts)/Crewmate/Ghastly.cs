@@ -7,6 +7,7 @@ using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using UnityEngine;
 
 namespace TOHE.Roles._Ghosts_.Crewmate
 {
@@ -164,5 +165,6 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
             return "";
         }
+        public override string GetProgressText(byte playerId, bool cooms) => ColorString(PossessLimit > 0  ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({PossessLimit})");
     }
 }
