@@ -144,14 +144,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Misfire:
-                    if (!ChiefOfPolice.IsEnable)
-                    {
-                        Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
-                    }
-                    else
-                    {
-                        goto default;
-                    }
+                    Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     break;
 
                 case PlayerState.DeathReason.Torched:

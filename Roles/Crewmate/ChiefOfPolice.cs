@@ -6,6 +6,7 @@ namespace TOHE.Roles.Crewmate;
 
 
 // Unused role
+/*
 public static class ChiefOfPolice
 {
     private const int Id = 12600;
@@ -16,7 +17,7 @@ public static class ChiefOfPolice
     private static OptionItem SkillCooldown;
     private static OptionItem CanImpostorAndNeutarl;
 
-    public override void SetupCustomOption()
+    public override void SetupCustomOptions()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.ChiefOfPolice);
         SkillCooldown = FloatOptionItem.Create(Id + 10, "ChiefOfPoliceSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.ChiefOfPolice])
@@ -110,8 +111,9 @@ public static class ChiefOfPolice
         return pc != null && (pc.GetCustomRole().IsCrewmate() && pc.CanUseKillButton()) || pc.GetCustomRole().IsNeutral() && pc.CanUseKillButton() && CanImpostorAndNeutarl.GetBool()|| pc.GetCustomRole().IsImpostor() && CanImpostorAndNeutarl.GetBool();
     }
 
-    public static void SetAbilityButtonText(HudManager hud/*, byte playerId*/)
+    public static void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.KillButton.OverrideText(GetString("ChiefOfPoliceKillButtonText"));
     }
 }
+*/

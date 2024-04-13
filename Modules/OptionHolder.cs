@@ -764,25 +764,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        /*
-         * Crewmate
-         */
-        CrewmateTOHE.SetupCustomOptions();
-
-        /*
-         * Engineer
-         */
-        EngineerTOHE.SetupCustomOptions();
-
-        /*
-         * Scientist
-         */
-        ScientistTOHE.SetupCustomOptions();
-
-        /*
-         * Guardian Angel
-         */
-        GuardianAngelTOHE.SetupCustomOptions();
+        CustomRoleManager.GetRolesByType(Custom_RoleType.CrewmateVanilla).ForEach(r => r.SetupCustomOption());
 
         /*
          * BASIC ROLES
@@ -791,76 +773,8 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        /*
-         * Addict
-         */
-        Addict.SetupCustomOption();
+        CustomRoleManager.GetRolesByType(Custom_RoleType.CrewmateBasic).ForEach(r => r.SetupCustomOption());
 
-        /*
-         * Alchemist
-         */
-        Alchemist.SetupCustomOption();
-
-        /*
-         * Celebrity
-         */
-        Celebrity.SetupCustomOptions();    
-
-        /*
-         * Cleanser
-         */
-        Cleanser.SetupCustomOption();
-
-        /*
-         * Doctor
-         */
-        Doctor.SetupCustomOptions();
-
-        /*
-         * Guess Master
-         */
-        GuessMaster.SetupCustomOption();
-
-        /*
-         * Lazy Guy
-         */
-        LazyGuy.SetupCustomOptions();
-
-        /*
-         * Mini
-         */
-        Mini.SetupCustomOption();
-
-        /*
-         * Mole
-         */
-        Mole.SetupCustomOption();
-
-        /*
-         * Superstar
-         */
-        SuperStar.SetupCustomOptions();
-
-        /*
-         * Task Manager
-         */
-        TaskManager.SetupCustomOptions();
-
-        /*
-         * Tracefinder
-         */
-        Tracefinder.SetupCustomOption();
-
-        /*
-         * Transporter
-         */
-        Transporter.SetupCustomOptions();
-
-        /*
-         * Randomizer
-         */
-        Randomizer.SetupCustomOptions();
-        
         /*
          * SUPPORT ROLES
          */
@@ -868,217 +782,25 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        /*
-         * Benefactor 
-         */
-        Benefactor.SetupCustomOption();
+        CustomRoleManager.GetRolesByType(Custom_RoleType.CrewmateSupport).ForEach(r => r.SetupCustomOption());
 
         /*
-         * Chameleon
+         * KILLING ROLES
          */
-        Chameleon.SetupCustomOption();
-
-        /*
-         * Coroner
-         */
-        Coroner.SetupCustomOption();
-
-        /*
-         * Deputy
-         */
-        Deputy.SetupCustomOption();
-
-        /*
-         * Detective
-         */
-        Detective.SetupCustomOptions();
-
-        /*
-         * Fortune Teller
-         */
-        FortuneTeller.SetupCustomOption();
-
-        /*
-         * Enigma
-         */
-        Enigma.SetupCustomOption();
-
-        /*
-         * Grenadier
-         */
-        Grenadier.SetupCustomOptions();
-
-        /*
-         * Inspector
-         */
-        Inspector.SetupCustomOption();
-
-        /*
-         * Investigator
-         */
-        Investigator.SetupCustomOption();
-
-        /*
-         *  Keeper
-         */
-        Keeper.SetupCustomOption();
-
-        /*
-         * Lighter
-         */
-        Lighter.SetupCustomOptions();
-
-        /*
-         * Mechanic
-         */
-        Mechanic.SetupCustomOption();
-
-        /*
-         * Medic
-         */
-        Medic.SetupCustomOption();
-
-        /*
-         * Medium
-         */
-        Medium.SetupCustomOption();
-
-        /*
-         * Merchant
-         */
-        Merchant.SetupCustomOption();
-
-        /*
-         * Mortician
-         */
-        Mortician.SetupCustomOption();
-
-        /*
-         * Observer
-         */
-        Observer.SetupCustomOption();
-
-        /*
-         * Oracle
-         */
-        Oracle.SetupCustomOption();
-
-        /*
-         * Pacifist
-         */
-        Pacifist.SetupCustomOptions();
-
-        /*SetupRoleOptions(9300, TabGroup.CrewmateRoles, CustomRoles.Paranoia);
-        ParanoiaNumOfUseButton = IntegerOptionItem.Create(9302, "ParanoiaNumOfUseButton", new(1, 20, 1), 3, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Paranoia])
-            .SetValueFormat(OptionFormat.Times);
-        ParanoiaVentCooldown = FloatOptionItem.Create(9303, "ParanoiaVentCooldown", new(0, 180, 1), 10, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Paranoia])
-            .SetValueFormat(OptionFormat.Seconds); */
-
-        /*
-         * Psychic
-         */
-        Psychic.SetupCustomOption();
-
-        /*
-         * Snitch
-         */
-        Snitch.SetupCustomOption();
-
-        /*
-         * Spiritualist
-         */
-        Spiritualist.SetupCustomOption();
-
-        /*
-         * Spy
-         */
-        Spy.SetupCustomOption();
-
-        /*
-         * Time Manager
-         */
-        TimeManager.SetupCustomOption();
-
-        /*
-         * Time Master
-         */
-        TimeMaster.SetupCustomOptions();
-
-        /*
-         * Tracker
-         */
-        Tracker.SetupCustomOption();
-
-        /*
-         * Witness
-         */
-        Witness.SetupCustomOptions();
-
-
         TextOptionItem.Create(10000009, "RoleType.CrewKilling", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        Bastion.SetupCustomOptions();
+        CustomRoleManager.GetRolesByType(Custom_RoleType.CrewmateKilling).ForEach(r => r.SetupCustomOption());
 
-        Bodyguard.SetupCustomOptions();
-        
-        Crusader.SetupCustomOption();
-        
-        Deceiver.SetupCustomOption();
-        
-        Jailer.SetupCustomOption();
-        
-        Judge.SetupCustomOption();
-        
-        Knight.SetupCustomOption();
-
-        NiceGuesser.SetupCustomOptions();
-
-        Retributionist.SetupCustomOptions();
-        
-        Reverie.SetupCustomOption();
-        
-        Sheriff.SetupCustomOption();
-
-        Veteran.SetupCustomOptions();
-
-        Vigilante.SetupCustomOptions();
-
+        /*
+         * POWER ROLES
+         */
         TextOptionItem.Create(10000010, "RoleType.CrewPower", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        Admirer.SetupCustomOption();
-
-        Captain.SetupCustomOption();
-
-        CopyCat.SetupCustomOption();
-
-        Dictator.SetupCustomOptions();
-
-        Guardian.SetupCustomOptions();
-
-        Lookout.SetupCustomOptions();
-
-        Marshall.SetupCustomOption();
-
-        Mayor.SetupCustomOptions();
-
-        Monarch.SetupCustomOption();
-        
-        Overseer.SetupCustomOption();
-        
-        President.SetupCustomOption();
-        
-        Swapper.SetupCustomOption();
-        
-        Telecommunication.SetupCustomOption();
-
-        //ChiefOfPolice.SetupCustomOption();
-
+        CustomRoleManager.GetRolesByType(Custom_RoleType.CrewmatePower).ForEach(r => r.SetupCustomOption());
 
         /*
          * Crewmate Ghost Roles
@@ -1087,9 +809,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        Warden.SetupCustomOptions();
-
-        Hawk.SetupCustomOptions();
+        CustomRoleManager.GetRolesByType(Custom_RoleType.CrewmateGhosts).ForEach(r => r.SetupCustomOption());
 
         #endregion
 
