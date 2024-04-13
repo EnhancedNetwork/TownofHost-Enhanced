@@ -827,7 +827,7 @@ public static class CustomRolesHelper
 
             case CustomRoles.Fragile:
                 if (pc.Is(CustomRoles.Lucky)
-                  //  || pc.Is(CustomRoles.Luckey)
+                    || pc.Is(CustomRoles.Veteran)
                     || pc.Is(CustomRoles.Guardian)
                     || pc.Is(CustomRoles.Medic)
                     || pc.Is(CustomRoles.Bomber)
