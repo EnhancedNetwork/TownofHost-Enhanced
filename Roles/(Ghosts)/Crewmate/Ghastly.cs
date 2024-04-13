@@ -34,11 +34,11 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         public static void SetupCustomOptions()
         {
             SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Ghastly);
-            PossessCooldown = FloatOptionItem.Create(Id + 10, "PossessCD", new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
+            PossessCooldown = FloatOptionItem.Create(Id + 10, "GhastlyPossessCD", new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
                 .SetValueFormat(OptionFormat.Seconds);
-            MaxPossesions = IntegerOptionItem.Create(Id + 11, "MaxPossessions", new(1, 99, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
+            MaxPossesions = IntegerOptionItem.Create(Id + 11, "GhastlyMaxPossessions", new(1, 99, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
                 .SetValueFormat(OptionFormat.Players);
-            PossessDur = FloatOptionItem.Create(Id + 12, "PossessionDuration", new(2.5f, 120f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
+            PossessDur = FloatOptionItem.Create(Id + 12, "GhastlyPossessionDuration", new(2.5f, 120f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
                 .SetValueFormat(OptionFormat.Seconds);
             GhastlySpeed = FloatOptionItem.Create(Id + 13, "GhastlySpeed", new(1.5f, 5f, 0.5f), 2f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
                 .SetValueFormat(OptionFormat.Multiplier);
@@ -79,7 +79,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         {
             if (PossessLimit <= 0)
             {
-                angel.Notify(GetString("NoMorePossess"));
+                angel.Notify(GetString("GhastlyNoMorePossess"));
                 return false;
             }
 
@@ -93,7 +93,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 killer = target.PlayerId;
                 Target = byte.MaxValue;
 
-                angel.Notify(GetString("ChooseTarget"));
+                angel.Notify(GetString("GhastlyChooseTarget"));
             }
             else if (killer != byte.MaxValue && Target == byte.MaxValue && target.PlayerId != killer)
             {
@@ -102,7 +102,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 SendRPC(PossessLimit);
                 LastTime.Add(killer, GetTimeStamp());
 
-                GetPlayerById(killer).Notify(GetString("YouvePosses"));
+                GetPlayerById(killer).Notify(GetString("GhastlyYouvePosses"));
 
                 TargetArrow.Add(killer, Target);
                 angel.RpcGuardAndKill(target);
@@ -110,7 +110,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             }
             else if (target.PlayerId == killer)
             {
-                angel.Notify(GetString("CannotPossessTarget"));
+                angel.Notify(GetString("GhastlyCannotPossessTarget"));
             }
 
             killertarget = (killer, Target);
@@ -144,7 +144,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             {
                 if (tuple.Item2 != target.PlayerId)
                 {
-                    killer.Notify(GetString("NotUrTarget"));
+                    killer.Notify(GetString("GhastlyNotUrTarget"));
                     return true;
                 }
             }
