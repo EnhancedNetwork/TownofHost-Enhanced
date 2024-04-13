@@ -16,12 +16,14 @@ public static class CustomRoleManager
     public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup(); 
     public static List<RoleBase> AllEnabledRoles => RoleClass.Values.Where(x => x.IsEnable).ToList();
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
-    public static List<RoleBase> GetRolesByType(Custom_RoleType type)
+    public static List<RoleBase> GetRolesByType(Custom_RoleType type, bool ignoreBlacklist = false)
     {
         List<RoleBase> roles = [];
         foreach (var role in RoleClass.Values)
         {
-            if (IsOptBlackListed(role.GetType())) continue;
+            if (!ignoreBlacklist)
+                if (IsOptBlackListed(role.GetType())) continue;
+
             if (role.ThisRoleType == type)
             {
                 roles.Add(role);
