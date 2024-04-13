@@ -691,11 +691,6 @@ public static class Options
         CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorKilling).ForEach(r => r.SetupCustomOption());
 
         /*
-         * Bomber
-         */
-        CustomRoles.Bomber.GetStaticRoleClass().SetupCustomOption();
-
-        /*
          * SUPPORT ROLES
          */
         TextOptionItem.Create(10000002, "RoleType.ImpSupport", TabGroup.ImpostorRoles)

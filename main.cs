@@ -336,7 +336,6 @@ public class Main : BasePlugin
             CustomRolesHelper.DuplicatedRoles = new Dictionary<CustomRoles, Type>
             {
                 { CustomRoles.Pestilence, typeof(PlagueBearer) },
-                { CustomRoles.Nuker, typeof(Bomber) },
                 { CustomRoles.NiceMini, typeof(Mini) },
                 { CustomRoles.EvilMini, typeof(Mini) }
             };
@@ -589,7 +588,6 @@ public enum CustomRoles
     Morphling,
     Nemesis,
     Ninja,
-    Nuker,
     Parasite,
     Penguin,
     Pitfall,

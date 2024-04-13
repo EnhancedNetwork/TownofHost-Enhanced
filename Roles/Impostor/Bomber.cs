@@ -24,14 +24,11 @@ internal class Bomber : RoleBase
     public static OptionItem BombCooldown;
     public static OptionItem ImpostorsSurviveBombs;
     public static OptionItem BomberDiesInExplosion;
-    public static OptionItem NukerChance;
-    public static OptionItem NukeRadius;
-    public static OptionItem NukeCooldown;
 
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Bomber);
-        BomberRadius = FloatOptionItem.Create(Id + 2, "BomberRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false)
+        BomberRadius = FloatOptionItem.Create(Id + 2, "BomberRadius", new(0.5f, 100f, 0.5f), 2f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Bomber])
             .SetValueFormat(OptionFormat.Multiplier);
         BomberCanKill = BooleanOptionItem.Create(Id + 3, "CanKill", false, TabGroup.ImpostorRoles, false)
@@ -46,15 +43,6 @@ internal class Bomber : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Bomber]);
         BomberDiesInExplosion = BooleanOptionItem.Create(Id + 7, "BomberDiesInExplosion", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Bomber]);
-        NukerChance = IntegerOptionItem.Create(Id + 8, "NukerChance", new(0, 100, 5), 0, TabGroup.ImpostorRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Bomber])
-            .SetValueFormat(OptionFormat.Percent);
-        NukeCooldown = FloatOptionItem.Create(Id + 9, "NukeCooldown", new(5f, 180f, 2.5f), 60f, TabGroup.ImpostorRoles, false)
-            .SetParent(NukerChance)
-            .SetValueFormat(OptionFormat.Seconds);
-        NukeRadius = FloatOptionItem.Create(Id + 10, "NukeRadius", new(1f, 100f, 1f), 25f, TabGroup.ImpostorRoles, false)
-            .SetParent(NukerChance)
-            .SetValueFormat(OptionFormat.Multiplier);
     }
     public override void Init()
     {
@@ -63,11 +51,6 @@ internal class Bomber : RoleBase
     public override void Add(byte playerId)
     {
         Playerids.Add(playerId);
-    }
-    public static bool CheckSpawnNuker()
-    {
-        var Rand = IRandom.Instance;
-        return Rand.Next(0, 100) < NukerChance.GetInt();
     }
     public override bool CanUseKillButton(PlayerControl pc) => BomberCanKill.GetBool() && pc.IsAlive();
     public override void SetKillCooldown(byte id)
@@ -79,7 +62,7 @@ internal class Bomber : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ShapeshifterCooldown = Utils.GetPlayerById(playerId).Is(CustomRoles.Bomber) ? BombCooldown.GetFloat() : NukeCooldown.GetFloat();
+        AURoleOptions.ShapeshifterCooldown = BombCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 2f;
     }
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl targetSS, ref bool resetCooldown, ref bool shouldAnimate)
@@ -100,15 +83,7 @@ internal class Bomber : RoleBase
 
             var pos = shapeshifter.transform.position;
             var dis = Vector2.Distance(pos, target.transform.position);
-            
-            if (playerRole is CustomRoles.Bomber)
-            {
-                if (dis > BomberRadius.GetFloat()) continue;
-            }
-            else if (playerRole is CustomRoles.Nuker)
-            {
-                if (dis > NukeRadius.GetFloat()) continue;
-            }
+            if (dis > BomberRadius.GetFloat()) continue;
 
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
             target.SetRealKiller(shapeshifter);

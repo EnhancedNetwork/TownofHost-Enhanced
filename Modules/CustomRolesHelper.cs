@@ -590,7 +590,6 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Guardian)
                     || pc.Is(CustomRoles.Medic)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.Jinx)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.CursedWolf)
@@ -786,7 +785,6 @@ public static class CustomRolesHelper
             case CustomRoles.TicketsStealer:
                 if (pc.Is(CustomRoles.Vindicator)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.VoidBallot))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
@@ -811,7 +809,6 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Arrogance)
                     || pc.Is(CustomRoles.LastImpostor)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.Trapster)
                     || pc.Is(CustomRoles.Onbound)
                     || pc.Is(CustomRoles.Rebound)
@@ -823,7 +820,6 @@ public static class CustomRolesHelper
 
             case CustomRoles.Swift:
                 if (pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.Trapster)
                     || pc.Is(CustomRoles.Kamikaze)
                     || pc.Is(CustomRoles.Swooper)
@@ -868,7 +864,6 @@ public static class CustomRolesHelper
             case CustomRoles.Clumsy:
                 if (pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.KillingMachine))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
