@@ -25,7 +25,7 @@ internal class Deceiver : RoleBase
     private static readonly Dictionary<byte, HashSet<byte>> clientList = [];
     private static readonly Dictionary<byte, int> SeelLimit = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Deceiver);
         DeceiverSkillCooldown = FloatOptionItem.Create(Id + 10, "DeceiverSkillCooldown", new(2.5f, 180f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Deceiver])

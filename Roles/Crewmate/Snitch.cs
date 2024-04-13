@@ -36,7 +36,7 @@ internal class Snitch : RoleBase
     private static readonly HashSet<byte> TargetList = [];
     private static readonly Dictionary<byte, Color> TargetColorlist = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Snitch);
         OptionEnableTargetArrow = BooleanOptionItem.Create(Id + 10, "SnitchEnableTargetArrow", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Snitch]);

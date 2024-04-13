@@ -18,7 +18,7 @@ internal class Doctor : RoleBase
     private static OptionItem TaskCompletedBatteryChargeOpt;
     private static OptionItem VisibleToEveryoneOpt;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Doctor);
         TaskCompletedBatteryChargeOpt = FloatOptionItem.Create(Id + 10, "DoctorTaskCompletedBatteryCharge", new(0f, 250f, 1f), 50f, TabGroup.CrewmateRoles, false)

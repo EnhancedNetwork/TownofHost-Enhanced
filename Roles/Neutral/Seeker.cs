@@ -23,7 +23,7 @@ internal class Seeker : RoleBase
     private static readonly Dictionary<byte, int> TotalPoints = [];
     private static readonly Dictionary<byte, float> DefaultSpeed = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Seeker);
         PointsToWin = IntegerOptionItem.Create(Id + 10, "SeekerPointsToWin", new(1, 20, 1), 5, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Seeker]);

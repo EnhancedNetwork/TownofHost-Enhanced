@@ -27,7 +27,7 @@ internal class Admirer : RoleBase
     private static readonly Dictionary<byte, int> AdmirerLimit = [];
     public static readonly Dictionary<byte, List<byte>> AdmiredList = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Admirer);
         AdmireCooldown = FloatOptionItem.Create(Id + 10, "AdmireCooldown", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer])

@@ -16,7 +16,7 @@ internal class Zombie : RoleBase
     private static OptionItem ZombieKillCooldown;
     private static OptionItem ZombieSpeedReduce;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Zombie);
         ZombieKillCooldown = FloatOptionItem.Create(Id + 3, "KillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.ImpostorRoles, false)

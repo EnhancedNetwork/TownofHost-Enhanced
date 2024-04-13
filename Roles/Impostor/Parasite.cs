@@ -16,7 +16,7 @@ internal class Parasite : RoleBase
 
     private static OptionItem ParasiteCD;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Parasite, zeroOne: false);
         ParasiteCD = FloatOptionItem.Create(Id + 2, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)

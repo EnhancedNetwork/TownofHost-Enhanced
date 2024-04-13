@@ -4,6 +4,7 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
+using MonoMod.Cil;
 using System;
 using System.IO;
 using System.Reflection;
@@ -332,16 +333,22 @@ public class Main : BasePlugin
                 .GetTypes()
                 .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
 
+            CustomRolesHelper.DuplicatedRoles = new Dictionary<CustomRoles, Type>
+            {
+                { CustomRoles.Vampiress, typeof(Vampire) },
+                { CustomRoles.Pestilence, typeof(PlagueBearer) },
+                { CustomRoles.Nuker, typeof(Bomber) },
+                { CustomRoles.NiceMini, typeof(Mini) },
+                { CustomRoles.EvilMini, typeof(Mini) }
+            };
+
+
             foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
             {
-                Type roleType = role switch // Switch role to FatherRole (Double Classes)
+                if (!CustomRolesHelper.DuplicatedRoles.TryGetValue(role, out Type roleType))
                 {
-                    CustomRoles.Vampiress => typeof(Vampire),
-                    CustomRoles.Pestilence => typeof(PlagueBearer),
-                    CustomRoles.Nuker => typeof(Bomber),
-                    CustomRoles.NiceMini or CustomRoles.EvilMini => typeof(Mini),
-                    _ => RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(DefaultSetup),
-                };
+                    roleType = RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(DefaultSetup);
+                }
 
                 CustomRoleManager.RoleClass.Add(role, (RoleBase)Activator.CreateInstance(roleType));
             }

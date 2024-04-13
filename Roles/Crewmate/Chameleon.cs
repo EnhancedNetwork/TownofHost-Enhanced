@@ -31,7 +31,7 @@ internal class Chameleon : RoleBase
     private static readonly Dictionary<byte, int> ventedId = [];
     private static readonly Dictionary<byte, float> UseLimit = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Chameleon);
         ChameleonCooldown = FloatOptionItem.Create(Id + 2, "ChameleonCooldown", new(1f, 60f, 1f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chameleon])

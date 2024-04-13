@@ -28,7 +28,7 @@ internal class Nemesis : RoleBase
 
     private static readonly Dictionary<byte, int> NemesisRevenged = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Nemesis);
         NemesisCanKillNum = IntegerOptionItem.Create(Id + 10, "NemesisCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false)

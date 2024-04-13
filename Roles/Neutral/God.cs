@@ -9,6 +9,7 @@ internal class God : RoleBase
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -16,7 +17,7 @@ internal class God : RoleBase
     public static OptionItem NotifyGodAlive;
     public static OptionItem CanGuess;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.God);
         NotifyGodAlive = BooleanOptionItem.Create(Id + 3, "NotifyGodAlive", true, TabGroup.OtherRoles, false)

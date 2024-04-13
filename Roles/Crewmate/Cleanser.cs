@@ -26,7 +26,7 @@ internal class Cleanser : RoleBase
     private static readonly Dictionary<byte, int> CleanserUses = [];
     private static readonly Dictionary<byte, bool> DidVote = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Cleanser);
         CleanserUsesOpt = IntegerOptionItem.Create(Id + 10, "MaxCleanserUses", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cleanser])

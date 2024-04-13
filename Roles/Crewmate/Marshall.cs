@@ -18,7 +18,7 @@ internal class Marshall : RoleBase
 
     private static readonly Color RoleColor = Utils.GetRoleColor(CustomRoles.Marshall);
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Marshall);
         OverrideTasksData.Create(Id + 10, TabGroup.CrewmateRoles, CustomRoles.Marshall);

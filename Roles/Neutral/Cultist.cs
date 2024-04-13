@@ -35,7 +35,7 @@ internal class Cultist : RoleBase
 
     private static int CharmLimit = new();
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Cultist, 1, zeroOne: false);
         CharmCooldown = FloatOptionItem.Create(Id + 10, "CultistCharmCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist])

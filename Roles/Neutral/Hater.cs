@@ -28,7 +28,7 @@ internal class Hater : RoleBase
 
     public static bool isWon = false; // There's already a playerIdList, so replaced this with a boolean value
     
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Hater, zeroOne: false);
         MisFireKillTarget = BooleanOptionItem.Create(Id + 11, "HaterMisFireKillTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hater]);

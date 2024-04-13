@@ -19,7 +19,7 @@ internal class Phantom : RoleBase
     public static OptionItem PhantomSnatchesWin;
     public static OptionItem PhantomCanGuess;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(14900, TabGroup.NeutralRoles, CustomRoles.Phantom);
         PhantomCanVent = BooleanOptionItem.Create(14902, "CanVent", false, TabGroup.NeutralRoles, false)

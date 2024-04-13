@@ -25,7 +25,7 @@ internal class Ninja : RoleBase
 
     private static readonly Dictionary<byte, byte> MarkedPlayer = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Ninja);
         MarkCooldown = FloatOptionItem.Create(Id + 10, "NinjaMarkCooldown", new(0f, 180f, 2.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja])

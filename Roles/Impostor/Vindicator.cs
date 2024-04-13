@@ -14,7 +14,7 @@ internal class Vindicator : RoleBase
     private static OptionItem VindicatorAdditionalVote;
     private static OptionItem VindicatorHideVote;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Vindicator);
         VindicatorAdditionalVote = IntegerOptionItem.Create(Id + 2, "MayorAdditionalVote", new(1, 20, 1), 3, TabGroup.ImpostorRoles, false)

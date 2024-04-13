@@ -36,7 +36,7 @@ internal class Doomsayer : RoleBase
     private static OptionItem DoomsayerTryHideMsg;
     private static OptionItem ImpostorVision;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Doomsayer);
         DoomsayerAmountOfGuessesToWin = IntegerOptionItem.Create(Id + 10, "DoomsayerAmountOfGuessesToWin", new(1, 10, 1), 3, TabGroup.NeutralRoles, false)

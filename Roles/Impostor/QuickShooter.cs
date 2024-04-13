@@ -24,7 +24,7 @@ internal class QuickShooter : RoleBase
 
     private static bool Storaging = false;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.QuickShooter);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 35f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.QuickShooter])
@@ -126,6 +126,6 @@ internal class QuickShooter : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.AbilityButton?.OverrideText(Translator.GetString("QuickShooterShapeshiftText"));
-        hud.AbilityButton?.SetUsesRemaining(ShotLimit.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var qx) ? qx : 0);
+        hud.AbilityButton?.SetUsesRemaining(ShotLimit.TryGetValue(playerId, out var qx) ? qx : 0);
     }
 }

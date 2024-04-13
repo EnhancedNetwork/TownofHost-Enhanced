@@ -174,7 +174,7 @@ internal class ChangeRoleSettings
             DoubleShot.Init();
             Lucky.Init();
             Bewilder.Init();
-            ChiefOfPolice.Init();
+            //ChiefOfPolice.Init();
             Cyber.Init();
             Oiiai.Init();
             Tired.Init();

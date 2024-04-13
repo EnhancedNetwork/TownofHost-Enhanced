@@ -14,6 +14,7 @@ internal class Quizmaster : RoleBase
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => CanKillsAfterMark() ? Custom_RoleType.NeutralKilling : Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -46,7 +47,7 @@ internal class Quizmaster : RoleBase
 
     public static bool CanKillAfterMark = false;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         TabGroup tab = TabGroup.OtherRoles;
 

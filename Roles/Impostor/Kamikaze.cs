@@ -22,10 +22,10 @@ internal class Kamikaze : RoleBase
     private static OptionItem KillCooldown;
     private static OptionItem OptMaxMarked;
 
-    private static readonly Dictionary<byte, byte> KamikazedList = [];
+    private static readonly Dictionary<byte, HashSet<byte>> KamikazedList = [];
     private static readonly Dictionary<byte, int> MarkedLim = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Kamikaze);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Kamikaze])
@@ -42,28 +42,24 @@ internal class Kamikaze : RoleBase
     public override void Add(byte playerId)
     {
         MarkedLim.Add(playerId, OptMaxMarked.GetInt());
+        KamikazedList[playerId] = [];
 
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
         Playerids.Add(playerId);
-
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(MurderKamikazedPlayers);
-        }
     }
 
-    private static void SendRPC(byte KamiId, byte targetId, bool checkMurder = false)
+    private static void SendRPC(byte KamiId, byte targetId = byte.MaxValue, bool checkMurder = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncKami, SendOption.Reliable, -1);
         writer.Write(checkMurder);
-        writer.Write(targetId);
-        
+        writer.Write(KamiId);
+
         if (checkMurder) 
         { 
-            writer.Write(KamiId);
+            writer.Write(targetId);
             writer.Write(MarkedLim[KamiId]);
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -71,16 +67,16 @@ internal class Kamikaze : RoleBase
     public static void ReceiveRPC(MessageReader reader)
     {
         var checkMurder = reader.ReadBoolean();
-        var targetId = reader.ReadByte();
+        var kamiId = reader.ReadByte();
         if (checkMurder)
         {
-            var KamiId = reader.ReadByte();
+            var targetId = reader.ReadByte();
             int Limit = reader.ReadInt32();
-
-            KamikazedList[targetId] = KamiId;
-            MarkedLim[KamiId] = Limit;
+            if (!KamikazedList.ContainsKey(kamiId)) KamikazedList[kamiId] = [];
+            KamikazedList[kamiId].Add(targetId);
+            MarkedLim[kamiId] = Limit;
         }
-        else KamikazedList.Remove(targetId);
+        else KamikazedList.Remove(kamiId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -97,12 +93,13 @@ internal class Kamikaze : RoleBase
         {
 
             if (MarkedLim[killer.PlayerId] > 0) 
-            { 
-                KamikazedList[target.PlayerId] = killer.PlayerId;
+            {
+                if (!KamikazedList.ContainsKey(killer.PlayerId)) KamikazedList[killer.PlayerId] = [];
+                KamikazedList[killer.PlayerId].Add(target.PlayerId);
                 killer.SetKillCooldown(KillCooldown.GetFloat());
                 Utils.NotifyRoles(SpecifySeer: killer);
                 MarkedLim[killer.PlayerId]--;
-                SendRPC(KamiId: killer.PlayerId, targetId: target.PlayerId, checkMurder: true) ;
+                SendRPC(KamiId: killer.PlayerId, targetId: target.PlayerId, checkMurder: true);
             } 
             else
             {
@@ -111,31 +108,45 @@ internal class Kamikaze : RoleBase
         });
         
     }
-
-    private void MurderKamikazedPlayers(PlayerControl kamikameha)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (!KamikazedList.ContainsKey(kamikameha.PlayerId)) return;
-
-        if (!kamikameha.IsAlive())
+        if (!KamikazedList.ContainsKey(target.PlayerId) || !KamikazedList[target.PlayerId].Any()) return;
+        foreach(var kamiTarget in KamikazedList[target.PlayerId])
         {
-            KamikazedList.Remove(kamikameha.PlayerId);
-            SendRPC(KamiId: byte.MaxValue, targetId: kamikameha.PlayerId, checkMurder: false); // to remove playerid
-            return;
+            PlayerControl pc = Utils.GetPlayerById(kamiTarget);
+            if (pc == null || !pc.IsAlive()) continue;
+            Main.PlayerStates[kamiTarget].deathReason = PlayerState.DeathReason.Targeted;
+            pc.SetRealKiller(target);
+            pc.RpcMurderPlayer(pc);
         }
-        var kami = Utils.GetPlayerById(KamikazedList[kamikameha.PlayerId]);
-        if (kami == null) return;
-        if (!kami.IsAlive())
-        {
-            if (kamikameha.IsAlive())
-            {
-                Main.PlayerStates[kamikameha.PlayerId].deathReason = PlayerState.DeathReason.Targeted;
-                kamikameha.SetRealKiller(kami);
-                kamikameha.RpcMurderPlayer(kamikameha);
-                // Logger.Info($"{alivePlayer.GetNameWithRole()} is the killer of {kamikameha.GetNameWithRole()}", "Kamikaze"); -- Works fine
-            }
-
-        }
+        KamikazedList.Remove(target.PlayerId);
+        SendRPC(KamiId: target.PlayerId, checkMurder: false);
     }
+
+    //private void MurderKamikazedPlayers(PlayerControl kamikameha)
+    //{
+    //    if (!KamikazedList.ContainsKey(kamikameha.PlayerId)) return;
+
+    //    if (!kamikameha.IsAlive())
+    //    {
+    //        KamikazedList.Remove(kamikameha.PlayerId);
+    //        SendRPC(KamiId: byte.MaxValue, targetId: kamikameha.PlayerId, checkMurder: false); // to remove playerid
+    //        return;
+    //    }
+    //    var kami = Utils.GetPlayerById(KamikazedList[kamikameha.PlayerId]);
+    //    if (kami == null) return;
+    //    if (!kami.IsAlive())
+    //    {
+    //        if (kamikameha.IsAlive())
+    //        {
+    //            Main.PlayerStates[kamikameha.PlayerId].deathReason = PlayerState.DeathReason.Targeted;
+    //            kamikameha.SetRealKiller(kami);
+    //            kamikameha.RpcMurderPlayer(kamikameha);
+    //            // Logger.Info($"{alivePlayer.GetNameWithRole()} is the killer of {kamikameha.GetNameWithRole()}", "Kamikaze"); -- Works fine
+    //        }
+
+    //    }
+    //}
 
     private static bool CanMark(byte id) => MarkedLim.TryGetValue(id, out var x) && x > 0;
     

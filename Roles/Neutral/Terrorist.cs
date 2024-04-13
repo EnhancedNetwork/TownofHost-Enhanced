@@ -19,7 +19,7 @@ internal class Terrorist : RoleBase
     public static OptionItem CanTerroristSuicideWin;
     public static OptionItem TerroristCanGuess;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
 
         SetupRoleOptions(15400, TabGroup.NeutralRoles, CustomRoles.Terrorist);

@@ -25,7 +25,7 @@ internal class Benefactor : RoleBase
     private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
     private static readonly Dictionary<byte, long> shieldedPlayers = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Benefactor);
         TaskMarkPerRoundOpt = IntegerOptionItem.Create(Id + 10, "TasksMarkPerRound", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Benefactor])

@@ -27,7 +27,7 @@ internal class Telecommunication : RoleBase
     private static bool IsDoorLogWatch;
     private static bool IsCameraWatch;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Telecommunication);
         CanCheckCamera = BooleanOptionItem.Create(Id + 10, "CanCheckCamera", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Telecommunication]);

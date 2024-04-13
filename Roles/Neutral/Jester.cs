@@ -21,7 +21,7 @@ internal class Jester : RoleBase
     private static OptionItem HideJesterVote;
     public static OptionItem SunnyboyChance;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Jester);
         JesterCanUseButton = BooleanOptionItem.Create(Id + 2, "JesterCanUseButton", false, TabGroup.NeutralRoles, false)

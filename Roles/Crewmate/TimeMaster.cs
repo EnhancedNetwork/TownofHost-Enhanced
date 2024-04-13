@@ -29,7 +29,7 @@ internal class TimeMaster : RoleBase
     private static readonly Dictionary<byte, int> TimeMasterNum = [];
     private static readonly Dictionary<byte, long> TimeMasterInProtect = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.TimeMaster);
         TimeMasterSkillCooldown = FloatOptionItem.Create(Id + 10, "TimeMasterSkillCooldown", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.TimeMaster])

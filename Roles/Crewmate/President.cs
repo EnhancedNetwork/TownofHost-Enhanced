@@ -27,7 +27,7 @@ internal class President : RoleBase
     private static readonly Dictionary<byte, int> RevealLimit = [];
     private static readonly Dictionary<byte, bool> CheckPresidentReveal = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.President);
         PresidentAbilityUses = IntegerOptionItem.Create(Id + 10, "PresidentAbilityUses", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President])
