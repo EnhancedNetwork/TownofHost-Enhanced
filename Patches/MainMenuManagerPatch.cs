@@ -46,7 +46,7 @@ public class MainMenuManagerStartPatch
 class MainMenuManagerLateUpdatePatch
 {
     private static int lateUpdate = 590;
-    private static GameObject LoadingHint;
+    //private static GameObject LoadingHint;
 
     private static void Postfix(MainMenuManager __instance)
     {
