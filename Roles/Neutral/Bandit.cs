@@ -176,12 +176,18 @@ internal class Bandit : RoleBase
         if (SelectedAddOn == null || flag) // no stealable addons found on the target.
         {
             killer.Notify(Translator.GetString("Bandit_NoStealableAddons"));
+            killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return true;
         }
         if (TotalSteals[killer.PlayerId] >= MaxSteals.GetInt())
         {
             Logger.Info("Max steals reached killing the player", "Bandit");
             TotalSteals[killer.PlayerId] = MaxSteals.GetInt();
+            killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return true;
         }
 
@@ -189,6 +195,8 @@ internal class Bandit : RoleBase
         {
             // Double click
             killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return true;
         }
         else
