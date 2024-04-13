@@ -1046,7 +1046,7 @@ class FixedUpdateInNormalGamePatch
                 if (GameStates.IsInGame && Main.RefixCooldownDelay <= 0)
                     foreach (var pc in Main.AllPlayerControls)
                     {
-                        if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja) || pc.Is(CustomRoles.Vampiress))
+                        if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Options.DefaultKillCooldown * 2;
                         
                         if (pc.Is(CustomRoles.Poisoner))

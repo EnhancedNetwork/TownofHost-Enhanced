@@ -403,7 +403,6 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.TimeThief,
                 CustomRoles.ShapeMaster,
                 CustomRoles.Werewolf,
-                CustomRoles.Vampiress,
                 CustomRoles.Sniper],
                 
                 [CustomRoles.Puppeteer,

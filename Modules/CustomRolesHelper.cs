@@ -808,7 +808,6 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Ludopath)
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Vampire)
-                    || pc.Is(CustomRoles.Vampiress)
                     || pc.Is(CustomRoles.Arrogance)
                     || pc.Is(CustomRoles.LastImpostor)
                     || pc.Is(CustomRoles.Bomber)
@@ -829,7 +828,6 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Kamikaze)
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Vampire)
-                    || pc.Is(CustomRoles.Vampiress)
                     || pc.Is(CustomRoles.Scavenger)
                     || pc.Is(CustomRoles.Puppeteer)
                     || pc.Is(CustomRoles.Mastermind)
@@ -856,7 +854,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Circumvent:
-                if (pc.GetCustomRole() is CustomRoles.Vampire or CustomRoles.Vampiress && !Vampire.CheckCanUseVent()
+                if (pc.GetCustomRole() is CustomRoles.Vampire && !Vampire.CheckCanUseVent()
                     || pc.Is(CustomRoles.Witch) && Witch.ModeSwitchActionOpt.GetValue() == 1
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Wildling)

@@ -127,7 +127,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
     const string LANGUAGE_FOLDER_NAME = "Language";
     
-    public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable() || CustomRoles.Vampiress.IsEnable();
+    public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
     public static GameData.PlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
@@ -335,7 +335,6 @@ public class Main : BasePlugin
 
             CustomRolesHelper.DuplicatedRoles = new Dictionary<CustomRoles, Type>
             {
-                { CustomRoles.Vampiress, typeof(Vampire) },
                 { CustomRoles.Pestilence, typeof(PlagueBearer) },
                 { CustomRoles.Nuker, typeof(Bomber) },
                 { CustomRoles.NiceMini, typeof(Mini) },
@@ -613,7 +612,6 @@ public enum CustomRoles
     Underdog,
     Undertaker,
     Vampire,
-    Vampiress,
     Vindicator,
     Visionary,
     Warlock,

@@ -714,11 +714,6 @@ public static class Options
         CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorConcealing).ForEach(r => r.SetupCustomOption());
 
         /*
-         * Vampire 
-         */
-        CustomRoles.Vampire.GetStaticRoleClass().SetupCustomOption();
-
-        /*
          * HINDERING ROLES
          */
         TextOptionItem.Create(10000004, "RoleType.ImpHindering", TabGroup.ImpostorRoles)
