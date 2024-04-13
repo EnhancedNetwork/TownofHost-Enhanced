@@ -633,7 +633,7 @@ public class RoleAssign
         // if roles are very few, add vanilla сrewmate roles
         if (AllPlayers.Count > FinalRolesList.Count)
         {
-            while (FinalRolesList.Count <= AllPlayers.Count)
+            while (FinalRolesList.Count < AllPlayers.Count)
             {
                 FinalRolesList.Add(CustomRoles.CrewmateTOHE);
             }
