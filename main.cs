@@ -345,12 +345,7 @@ public class Main : BasePlugin
 
             foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
             {
-                Type roleType;
-                if (CustomRolesHelper.DuplicatedRoles.ContainsKey(role))
-                {
-                    CustomRolesHelper.DuplicatedRoles.TryGetValue(role, out roleType);
-                }
-                else
+                if (!CustomRolesHelper.DuplicatedRoles.TryGetValue(role, out Type roleType))
                 {
                     roleType = RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(DefaultSetup);
                 }
