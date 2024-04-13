@@ -31,7 +31,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         private int PossessLimit = MaxPossesions != null ? MaxPossesions.GetInt() : byte.MaxValue;
         private (byte, byte) killertarget = (byte.MaxValue, byte.MaxValue);
         private static readonly Dictionary<byte, long> LastTime = [];
-        private static bool KillerIsChosen = false;
+        private bool KillerIsChosen = false;
 
         public override void SetupCustomOption()
         {
@@ -49,7 +49,6 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         {
             PlayerIds.Clear();
             LastTime.Clear();
-            KillerIsChosen = false;
         }
         public override void Add(byte playerId)
         {
@@ -59,11 +58,11 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         }
 
-        private static void SendRPC(int limit)
+        private void SendRPC()
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
             writer.WritePacked((int)CustomRoles.Ghastly);
-            writer.Write(limit);
+            writer.Write(PossessLimit);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
@@ -101,7 +100,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             {
                 Target = target.PlayerId;
                 PossessLimit--;
-                SendRPC(PossessLimit);
+                SendRPC();
                 LastTime.Add(killer, GetTimeStamp());
 
                 KillerIsChosen = false;
