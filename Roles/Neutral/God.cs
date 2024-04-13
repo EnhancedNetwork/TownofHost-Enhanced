@@ -51,6 +51,6 @@ internal class God : RoleBase
             AddMsg(Translator.GetString("GodNoticeAlive"), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.God), Translator.GetString("GodAliveTitle")));
     }
 
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => true;
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.God);
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => Main.roleColors[target.GetCustomRole()];
 }
