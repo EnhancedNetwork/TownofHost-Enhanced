@@ -7,12 +7,14 @@ using TOHE.Roles.Neutral;
 using static TOHE.Roles.Core.CustomRoleManager;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using System;
 
 namespace TOHE;
 
 public static class CustomRolesHelper
 {
     public static readonly CustomRoles[] AllRoles = EnumHelper.GetAllValues<CustomRoles>();
+    public static Dictionary<CustomRoles, Type> DuplicatedRoles;
     public static readonly Custom_Team[] AllRoleTypes = EnumHelper.GetAllValues<Custom_Team>();
     public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
     {

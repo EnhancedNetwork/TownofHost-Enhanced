@@ -12,7 +12,7 @@ internal class ImpostorTOHE : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorVanilla;
     //==================================================================\\
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.ImpostorTOHE);
     }
