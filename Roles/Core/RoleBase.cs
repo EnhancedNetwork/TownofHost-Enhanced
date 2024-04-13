@@ -8,7 +8,7 @@ namespace TOHE;
 
 public abstract class RoleBase
 {
-    public enum Attributes
+    public enum Attribute
     {
         //Impostor
         IsImpostor,
@@ -35,8 +35,7 @@ public abstract class RoleBase
 
 
     }
-    public virtual Func<Attributes[]> SetupSimpleAttributes => () => null;
-    //EXAMPLE: public override Func<Attributes[]> SetupSimpleAttributes => () => new Attributes[] { Attributes.IsTaskBasedCrewmate, Attributes.IsGhost };
+    public virtual Attribute SetAttribute => Attribute.Empty;
 
 
     /// <summary>
