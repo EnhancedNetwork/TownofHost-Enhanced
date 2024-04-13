@@ -88,7 +88,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             var killer = killertarget.Item1;
             var Target = killertarget.Item2;
 
-            if (!KillerIsChosen && (target.PlayerId != killer || Target == target.PlayerId))
+            if (!KillerIsChosen && target.PlayerId != killer)
             {
                 TargetArrow.Remove(killer, Target);
                 LastTime.Remove(killer);
