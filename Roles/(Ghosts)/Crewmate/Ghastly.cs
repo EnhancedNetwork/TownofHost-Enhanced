@@ -158,7 +158,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting, bool isforhud = false)
         {
             var IsMeeting = GameStates.IsMeeting || IsForMeeting;
-            if (IsMeeting) return "";
+            if (IsMeeting || seer != player) return "";
 
             var killer = killertarget.Item1;
             var target = killertarget.Item2;
