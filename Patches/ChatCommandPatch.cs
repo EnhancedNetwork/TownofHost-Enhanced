@@ -1,6 +1,5 @@
 using Assets.CoreScripts;
 using Hazel;
-using MS.Internal.Xml.XPath;
 using System;
 using System.IO;
 using System.Text;
