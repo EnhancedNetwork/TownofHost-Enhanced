@@ -1,5 +1,6 @@
 using Assets.CoreScripts;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using System;
 using System.IO;
 using System.Text;
@@ -697,9 +698,11 @@ internal class ChatCommands
                     {
                         player.Data.IsDead = true;
                         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.etc;
+                        player.SetRealKiller(PlayerControl.LocalPlayer);
                         Main.PlayerStates[player.PlayerId].SetDead();
                         player.RpcExileV2();
-                       
+                        MurderPlayerPatch.AfterPlayerDeathTasks(PlayerControl.LocalPlayer, player, GameStates.IsMeeting);
+
                         if (player.AmOwner) Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
                         else Utils.SendMessage(string.Format(GetString("Message.Executed"), player.Data.PlayerName));
                     }
