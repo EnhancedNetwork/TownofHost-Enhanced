@@ -27,7 +27,7 @@ internal class Vampire : RoleBase
     private static OptionItem CanVent;
     private static OptionItem VampiressChance;
 
-    private static float KillDelay;
+    private static float KillDelay = new();
     private static readonly Dictionary<byte, BittenInfo> BittenPlayers = [];
 
     public override void SetupCustomOption()

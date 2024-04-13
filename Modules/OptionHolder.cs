@@ -691,6 +691,11 @@ public static class Options
         CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorKilling).ForEach(r => r.SetupCustomOption());
 
         /*
+         * Bomber
+         */
+        CustomRoles.Bomber.GetStaticRoleClass().SetupCustomOption();
+
+        /*
          * SUPPORT ROLES
          */
         TextOptionItem.Create(10000002, "RoleType.ImpSupport", TabGroup.ImpostorRoles)
@@ -707,6 +712,11 @@ public static class Options
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorConcealing).ForEach(r => r.SetupCustomOption());
+
+        /*
+         * Vampire 
+         */
+        CustomRoles.Vampire.GetStaticRoleClass().SetupCustomOption();
 
         /*
          * HINDERING ROLES
@@ -825,6 +835,11 @@ public static class Options
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralKilling).ForEach(r => r.SetupCustomOption());
+
+        /*
+         * PlagueBearer 
+         */
+        CustomRoles.PlagueBearer.GetStaticRoleClass().SetupCustomOption();
 
         #endregion
 

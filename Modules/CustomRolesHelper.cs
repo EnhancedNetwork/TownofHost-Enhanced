@@ -266,10 +266,7 @@ public static class CustomRolesHelper
 
         return role is
             CustomRoles.Impostor or
-            CustomRoles.Shapeshifter or
-            CustomRoles.Crewmate or
-            CustomRoles.Engineer or
-            CustomRoles.Scientist;
+            CustomRoles.Shapeshifter;
     }
 
     public static bool IsAbleToBeSidekicked(this CustomRoles role) 

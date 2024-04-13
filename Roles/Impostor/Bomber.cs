@@ -9,7 +9,6 @@ internal class Bomber : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 700;
-
     private static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
     public override bool IsEnable => HasEnabled;
