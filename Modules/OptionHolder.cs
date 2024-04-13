@@ -757,6 +757,11 @@ public static class Options
         CustomRoleManager.GetRolesByType(Custom_RoleType.CrewmateBasic).ForEach(r => r.SetupCustomOption());
 
         /*
+         * MINI 
+         */
+        CustomRoles.Mini.GetStaticRoleClass().SetupCustomOption();
+
+        /*
          * SUPPORT ROLES
          */
         TextOptionItem.Create(10000008, "RoleType.CrewSupport", TabGroup.CrewmateRoles)
