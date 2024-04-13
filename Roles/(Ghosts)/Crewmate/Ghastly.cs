@@ -16,7 +16,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
         //===========================SETUP================================\\
         private const int Id = 22004;
-        private static HashSet<byte> PlayerIds = [];
+        private readonly static HashSet<byte> PlayerIds = [];
         public static bool HasEnabled => PlayerIds.Any();
         public override bool IsEnable => HasEnabled;
         public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
