@@ -16,7 +16,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
         //===========================SETUP================================\\
         private const int Id = 22004;
-        public static HashSet<byte> PlayerIds = [];
+        private static HashSet<byte> PlayerIds = [];
         public static bool HasEnabled => PlayerIds.Any();
         public override bool IsEnable => HasEnabled;
         public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
@@ -30,6 +30,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         private static int PossessLimit = byte.MaxValue;
         private static (byte, byte) killertarget = (byte.MaxValue, byte.MaxValue);
         private static readonly Dictionary<byte, long> LastTime = [];
+        private static bool KillerIsChosen = false;
 
         public static void SetupCustomOptions()
         {
@@ -48,6 +49,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             PlayerIds.Clear();
             LastTime.Clear();
             killertarget = (byte.MaxValue, byte.MaxValue);
+            KillerIsChosen = false;
         }
         public override void Add(byte playerId)
         {
@@ -86,22 +88,24 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             var killer = killertarget.Item1;
             var Target = killertarget.Item2;
 
-            if (target.PlayerId != killer && (Target == byte.MaxValue || Target == target.PlayerId))
+            if (!KillerIsChosen && (Target == byte.MaxValue || Target == target.PlayerId))
             {
                 TargetArrow.Remove(killer, Target);
                 LastTime.Remove(killer);
                 killer = target.PlayerId;
                 Target = byte.MaxValue;
+                KillerIsChosen = true;
 
                 angel.Notify(GetString("GhastlyChooseTarget"));
             }
-            else if (killer != byte.MaxValue && Target == byte.MaxValue && target.PlayerId != killer)
+            else if (KillerIsChosen && Target == byte.MaxValue && target.PlayerId != killer)
             {
                 Target = target.PlayerId;
                 PossessLimit--;
                 SendRPC(PossessLimit);
                 LastTime.Add(killer, GetTimeStamp());
 
+                KillerIsChosen = false;
                 GetPlayerById(killer).Notify(GetString("GhastlyYouvePosses"));
 
                 TargetArrow.Add(killer, Target);
@@ -133,6 +137,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             {
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(player.PlayerId);
+                KillerIsChosen = false;
                 killertarget = (byte.MaxValue, byte.MaxValue);
             }
 
