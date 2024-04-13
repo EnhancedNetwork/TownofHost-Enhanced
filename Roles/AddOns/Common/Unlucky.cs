@@ -65,19 +65,19 @@ public static class Unlucky
         switch (state)
         {
             case StateSuicide.TryKill:
-                shouldBeSuicide = random.Next(1, 100) <= UnluckyKillSuicideChance.GetInt();
+                shouldBeSuicide = random.Next(1, 101) <= UnluckyKillSuicideChance.GetInt();
                 break;
             case StateSuicide.CompleteTask:
-                shouldBeSuicide = random.Next(1, 100) <= UnluckyTaskSuicideChance.GetInt();
+                shouldBeSuicide = random.Next(1, 101) <= UnluckyTaskSuicideChance.GetInt();
                 break;
             case StateSuicide.EnterVent:
-                shouldBeSuicide = random.Next(1, 100) <= UnluckyVentSuicideChance.GetInt();
+                shouldBeSuicide = random.Next(1, 101) <= UnluckyVentSuicideChance.GetInt();
                 break;
             case StateSuicide.ReportDeadBody:
-                shouldBeSuicide = random.Next(1, 100) <= UnluckyReportSuicideChance.GetInt();
+                shouldBeSuicide = random.Next(1, 101) <= UnluckyReportSuicideChance.GetInt();
                 break;
             case StateSuicide.OpenDoor:
-                shouldBeSuicide = random.Next(1, 100) <= UnluckyOpenDoorSuicideChance.GetInt();
+                shouldBeSuicide = random.Next(1, 101) <= UnluckyOpenDoorSuicideChance.GetInt();
                 break;
         }
 
