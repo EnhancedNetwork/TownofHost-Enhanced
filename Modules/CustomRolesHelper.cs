@@ -1314,7 +1314,9 @@ public enum Custom_RoleType
     NeutralBenign,
     NeutralEvil,
     NeutralChaos,
-    NeutralKilling
+    NeutralKilling,
+
+    None
 }
 public enum CountTypes
 {
