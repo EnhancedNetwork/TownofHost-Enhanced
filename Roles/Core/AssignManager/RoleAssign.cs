@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TOHE.Modules;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -629,19 +630,25 @@ public class RoleAssign
                 FinalRolesList.Remove(CustomRoles.Lovers);
         }
 
-        Logger.Info(string.Join(", ", FinalRolesList.Select(x => x.ToString())), "RoleResults");
+        // Sort final roles list randomly
+        if (FinalRolesList.Count > 2)
+            FinalRolesList = FinalRolesList.Shuffle(rd).ToList();
+
+        Logger.Info(string.Join(", ", FinalRolesList.Select(x => x.ToString())), "RoleResults1");
 
         while (AllPlayers.Any() && FinalRolesList.Any())
         {
-            var roleId = rd.Next(0, FinalRolesList.Count);
+            // Select random role and player from list
+            var randomPlayer = AllPlayers[rd.Next(AllPlayers.Count)];
+            var assignedRole = FinalRolesList[rd.Next(FinalRolesList.Count)];
 
-            CustomRoles assignedRole = FinalRolesList[roleId];
+            // Assign random role for random player
+            RoleResult[randomPlayer] = assignedRole;
+            Logger.Info($"Player：{randomPlayer.GetRealName()} => {assignedRole}", "RoleAssign");
 
-            RoleResult[AllPlayers[0]] = assignedRole;
-            Logger.Info($"Player：{AllPlayers[0].GetRealName()} => {assignedRole}", "RoleAssign");
-
-            AllPlayers.RemoveAt(0);
-            FinalRolesList.RemoveAt(roleId);
+            // Remove random role and player from list
+            AllPlayers.Remove(randomPlayer);
+            FinalRolesList.Remove(assignedRole);
         }
 
         if (AllPlayers.Any())
