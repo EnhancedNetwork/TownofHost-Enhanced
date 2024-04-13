@@ -146,7 +146,7 @@ internal class Deceiver : RoleBase
                 if (target == null || !target.IsAlive()) continue;
                 var role = target.GetCustomRole();
                 if (
-                    (role.IsCrewmate() && !role.IsCK()) ||
+                    (role.IsCrewmate() && !role.IsCrewKiller()) ||
                     (role.IsNeutral() && !role.IsNK())
                     )
                 {

@@ -34,7 +34,6 @@ internal class Overseer : RoleBase
     private static readonly List<CustomRoles> randomRolesForTrickster =
     [
         CustomRoles.Snitch,
-        //CustomRoles.Luckey,
         CustomRoles.LazyGuy,
         CustomRoles.SuperStar,
         CustomRoles.Celebrity,

@@ -50,9 +50,9 @@ internal class Traitor : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        return !(target == killer || target.Is(CustomRoleTypes.Impostor));
+        return !(target == killer || target.Is(Custom_Team.Impostor));
     }
     
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
-        => seer.Is(CustomRoles.Traitor) && target.Is(CustomRoleTypes.Impostor);
+        => seer.Is(CustomRoles.Traitor) && target.Is(Custom_Team.Impostor);
 }

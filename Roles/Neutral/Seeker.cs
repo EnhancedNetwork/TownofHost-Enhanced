@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using Sentry.Protocol;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;

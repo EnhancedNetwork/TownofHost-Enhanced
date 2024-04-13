@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
 
 namespace TOHE.Roles.Impostor;

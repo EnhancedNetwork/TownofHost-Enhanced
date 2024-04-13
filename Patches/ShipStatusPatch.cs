@@ -44,18 +44,18 @@ public static class MessageReaderUpdateSystemPatch
             return false;
         }
 
-        return RepairSystemPatch.Prefix(__instance, systemType, player, amount);
+        return UpdateSystemPatch.Prefix(__instance, systemType, player, amount);
     }
     public static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
         if (systemType is SystemTypes.Ventilation) return;
         if (GameStates.IsHideNSeek) return;
 
-        RepairSystemPatch.Postfix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
+        UpdateSystemPatch.Postfix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
     }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(byte))]
-class RepairSystemPatch
+class UpdateSystemPatch
 {
     public static bool Prefix(ShipStatus __instance,
         [HarmonyArgument(0)] SystemTypes systemType,

@@ -177,9 +177,9 @@ internal class Jailer : RoleBase
     {
         return ((role.IsNB() && NBCanBeExe.GetBool()) ||
                 (role.IsNC() && NCCanBeExe.GetBool()) ||
-                (role.IsNE() && NCCanBeExe.GetBool()) ||
+                (role.IsNE() && NECanBeExe.GetBool()) ||
                 (role.IsNK() && NKCanBeExe.GetBool()) ||
-                (role.IsCK() && CKCanBeExe.GetBool()) ||
+                (role.IsCrewKiller() && CKCanBeExe.GetBool()) ||
                 (role.IsImpostorTeamV3()));
     }
 

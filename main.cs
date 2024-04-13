@@ -5,7 +5,6 @@ using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -298,9 +297,9 @@ public class Main : BasePlugin
 
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
             {
-                switch (role.GetCustomRoleTypes())
+                switch (role.GetCustomRoleTeam())
                 {
-                    case CustomRoleTypes.Impostor:
+                    case Custom_Team.Impostor:
                         roleColors.TryAdd(role, "#ff1919");
                         break;
                     default:
@@ -332,6 +331,7 @@ public class Main : BasePlugin
             var RoleTypes = Assembly.GetAssembly(typeof(RoleBase))!
                 .GetTypes()
                 .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
+
             foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
             {
                 Type roleType = role switch // Switch role to FatherRole (Double Classes)
@@ -487,8 +487,8 @@ public class Main : BasePlugin
         hasArgumentException = false;
         ExceptionMessage = "";
 
-        LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
         LoadRoleClasses();
+        LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
 
         CustomWinnerHolder.Reset();
         Translator.Init();

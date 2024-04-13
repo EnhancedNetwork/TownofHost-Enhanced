@@ -285,7 +285,7 @@ public static class GuessManager
                     if (role.IsAdditionRole() && !Options.CanGuessAddons.GetBool())
                     {
                         // Impostors Cant Guess Addons
-                        if (Options.ImpostorsCanGuess.GetBool() && pc.Is(CustomRoleTypes.Impostor) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
+                        if (Options.ImpostorsCanGuess.GetBool() && pc.Is(Custom_Team.Impostor) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
                         {
                             if (!isUI) Utils.SendMessage(GetString("GuessAdtRole"), pc.PlayerId);
                             else pc.ShowPopUp(GetString("GuessAdtRole"));
@@ -293,7 +293,7 @@ public static class GuessManager
                         }
 
                         // Crewmates Cant Guess Addons
-                        if (Options.CrewmatesCanGuess.GetBool() && pc.Is(CustomRoleTypes.Crewmate) && !(pc.Is(CustomRoles.NiceGuesser) || pc.Is(CustomRoles.Guesser)))
+                        if (Options.CrewmatesCanGuess.GetBool() && pc.Is(Custom_Team.Crewmate) && !(pc.Is(CustomRoles.NiceGuesser) || pc.Is(CustomRoles.Guesser)))
                         {
                             if (!isUI) Utils.SendMessage(GetString("GuessAdtRole"), pc.PlayerId);
                             else pc.ShowPopUp(GetString("GuessAdtRole"));
@@ -301,7 +301,7 @@ public static class GuessManager
                         }
 
                         // Neutrals Cant Guess Addons
-                        if ((Options.NeutralKillersCanGuess.GetBool() || Options.PassiveNeutralsCanGuess.GetBool()) && pc.Is(CustomRoleTypes.Neutral) && !(pc.Is(CustomRoles.Doomsayer) || pc.Is(CustomRoles.Guesser)))
+                        if ((Options.NeutralKillersCanGuess.GetBool() || Options.PassiveNeutralsCanGuess.GetBool()) && pc.Is(Custom_Team.Neutral) && !(pc.Is(CustomRoles.Doomsayer) || pc.Is(CustomRoles.Guesser)))
                         {
                             if (!isUI) Utils.SendMessage(GetString("GuessAdtRole"), pc.PlayerId);
                             else pc.ShowPopUp(GetString("GuessAdtRole"));
@@ -632,11 +632,11 @@ public static class GuessManager
     public static int Page;
     public static PassiveButton ExitButton;
     public static GameObject guesserUI;
-    private static Dictionary<CustomRoleTypes, List<Transform>> RoleButtons;
-    private static Dictionary<CustomRoleTypes, SpriteRenderer> RoleSelectButtons;
+    private static Dictionary<Custom_Team, List<Transform>> RoleButtons;
+    private static Dictionary<Custom_Team, SpriteRenderer> RoleSelectButtons;
     private static List<SpriteRenderer> PageButtons;
-    public static CustomRoleTypes currentTeamType;
-    static void GuesserSelectRole(CustomRoleTypes Role, bool SetPage = true)
+    public static Custom_Team currentTeamType;
+    static void GuesserSelectRole(Custom_Team Role, bool SetPage = true)
     {
         currentTeamType = Role;
         if (SetPage) Page = 1;
@@ -741,8 +741,8 @@ public static class GuessManager
                       PlayerControl.LocalPlayer.Is(CustomRoles.Doomsayer) ||
                       PlayerControl.LocalPlayer.Is(CustomRoles.Guesser)))
                 {
-                    if (!Options.CrewCanGuessCrew.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoleTypes.Crewmate) && TabId == 0) continue;
-                    if (!Options.ImpCanGuessImp.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoleTypes.Impostor) && TabId == 1) continue;
+                    if (!Options.CrewCanGuessCrew.GetBool() && PlayerControl.LocalPlayer.Is(Custom_Team.Crewmate) && TabId == 0) continue;
+                    if (!Options.ImpCanGuessImp.GetBool() && PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) && TabId == 1) continue;
                     if (!Options.CanGuessAddons.GetBool() && TabId == 3) continue;
                 }
 
@@ -753,25 +753,25 @@ public static class GuessManager
                 Transform TeambuttonMask = UnityEngine.Object.Instantiate(maskTemplate, TeambuttonParent);
                 TextMeshPro Teamlabel = UnityEngine.Object.Instantiate(textTemplate, Teambutton);
                 Teambutton.GetComponent<SpriteRenderer>().sprite = CustomButton.Get("GuessPlateWithKPD");
-                RoleSelectButtons.Add((CustomRoleTypes)TabId, Teambutton.GetComponent<SpriteRenderer>());
+                RoleSelectButtons.Add((Custom_Team)TabId, Teambutton.GetComponent<SpriteRenderer>());
                 TeambuttonParent.localPosition = new(-3.10f + (tabCount++ * 1.47f), 2.225f, -200);
                 TeambuttonParent.localScale = new(0.53f, 0.53f, 1f);
-                Teamlabel.color = (CustomRoleTypes)TabId switch
+                Teamlabel.color = (Custom_Team)TabId switch
                 {
-                    CustomRoleTypes.Crewmate => new Color32(140, 255, 255, byte.MaxValue),
-                    CustomRoleTypes.Impostor => new Color32(255, 25, 25, byte.MaxValue),
-                    CustomRoleTypes.Neutral => new Color32(127, 140, 141, byte.MaxValue),
-                    CustomRoleTypes.Addon => new Color32(255, 154, 206, byte.MaxValue),
+                    Custom_Team.Crewmate => new Color32(140, 255, 255, byte.MaxValue),
+                    Custom_Team.Impostor => new Color32(255, 25, 25, byte.MaxValue),
+                    Custom_Team.Neutral => new Color32(127, 140, 141, byte.MaxValue),
+                    Custom_Team.Addon => new Color32(255, 154, 206, byte.MaxValue),
                     _ => throw new NotImplementedException(),
                 };
-                Logger.Info(Teamlabel.color.ToString(), ((CustomRoleTypes)TabId).ToString());
-                Teamlabel.text = GetString("Type" + ((CustomRoleTypes)TabId).ToString());
+                Logger.Info(Teamlabel.color.ToString(), ((Custom_Team)TabId).ToString());
+                Teamlabel.text = GetString("Type" + ((Custom_Team)TabId).ToString());
                 Teamlabel.alignment = TextAlignmentOptions.Center;
                 Teamlabel.transform.localPosition = new Vector3(0, 0, Teamlabel.transform.localPosition.z);
                 Teamlabel.transform.localScale *= 1.6f;
                 Teamlabel.autoSizeTextContainer = true;
 
-                static void CreateTeamButton(Transform Teambutton, CustomRoleTypes type)
+                static void CreateTeamButton(Transform Teambutton, Custom_Team type)
                 {
                     Teambutton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                     {
@@ -779,7 +779,7 @@ public static class GuessManager
                         ReloadPage();
                     }));
                 }
-                if (PlayerControl.LocalPlayer.IsAlive()) CreateTeamButton(Teambutton, (CustomRoleTypes)TabId);
+                if (PlayerControl.LocalPlayer.IsAlive()) CreateTeamButton(Teambutton, (Custom_Team)TabId);
             }
             static void ReloadPage()
             {
@@ -936,7 +936,7 @@ public static class GuessManager
             }
             void CreateRole(CustomRoles role)
             {
-                if (40 <= i[(int)role.GetCustomRoleTypes()]) i[(int)role.GetCustomRoleTypes()] = 0;
+                if (40 <= i[(int)role.GetCustomRoleTeam()]) i[(int)role.GetCustomRoleTeam()] = 0;
                 Transform buttonParent = new GameObject().transform;
                 buttonParent.SetParent(container);
                 Transform button = UnityEngine.Object.Instantiate(buttonTemplate, buttonParent);
@@ -944,14 +944,14 @@ public static class GuessManager
                 Transform buttonMask = UnityEngine.Object.Instantiate(maskTemplate, buttonParent);
                 TextMeshPro label = UnityEngine.Object.Instantiate(textTemplate, button);
                 button.GetComponent<SpriteRenderer>().sprite = CustomButton.Get("GuessPlate");
-                if (!RoleButtons.ContainsKey(role.GetCustomRoleTypes()))
+                if (!RoleButtons.ContainsKey(role.GetCustomRoleTeam()))
                 {
-                    RoleButtons.Add(role.GetCustomRoleTypes(), []);
+                    RoleButtons.Add(role.GetCustomRoleTeam(), []);
                 }
-                RoleButtons[role.GetCustomRoleTypes()].Add(button);
+                RoleButtons[role.GetCustomRoleTeam()].Add(button);
                 buttons.Add(button);
-                int row = i[(int)role.GetCustomRoleTypes()] / 5;
-                int col = i[(int)role.GetCustomRoleTypes()] % 5;
+                int row = i[(int)role.GetCustomRoleTeam()] / 5;
+                int col = i[(int)role.GetCustomRoleTeam()] % 5;
                 buttonParent.localPosition = new Vector3(-3.47f + 1.75f * col, 1.5f - 0.45f * row, -200f);
                 buttonParent.localScale = new Vector3(0.55f, 0.55f, 1f);
                 label.text = GetString(role.ToString());
@@ -960,7 +960,7 @@ public static class GuessManager
                 label.transform.localPosition = new Vector3(0, 0, label.transform.localPosition.z);
                 label.transform.localScale *= 1.6f;
                 label.autoSizeTextContainer = true;
-                int copiedIndex = i[(int)role.GetCustomRoleTypes()];
+                int copiedIndex = i[(int)role.GetCustomRoleTeam()];
 
                 button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
                 if (PlayerControl.LocalPlayer.IsAlive()) button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
@@ -986,11 +986,11 @@ public static class GuessManager
 
                     }
                 }));
-                i[(int)role.GetCustomRoleTypes()]++;
+                i[(int)role.GetCustomRoleTeam()]++;
                 ind++;
             }
             container.transform.localScale *= 0.75f;
-            GuesserSelectRole(CustomRoleTypes.Crewmate);
+            GuesserSelectRole(Custom_Team.Crewmate);
             ReloadPage();
         }
         catch (Exception ex)

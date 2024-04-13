@@ -57,7 +57,7 @@ public static class Workhorse
         if (taskState.CompletedTasksCount < taskState.AllTasksCount) return false;
 
         if (AssignOnlyToCrewmate)
-            return pc.Is(CustomRoleTypes.Crewmate);
+            return pc.Is(Custom_Team.Crewmate);
 
         return Utils.HasTasks(pc.Data) //Player has task
             && !OverrideTasksData.AllData.ContainsKey(pc.GetCustomRole()); //Has the ability to overwrite tasks

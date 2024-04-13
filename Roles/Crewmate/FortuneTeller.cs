@@ -333,7 +333,6 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Gangster,
                 CustomRoles.Godfather,
                 CustomRoles.Glitch,
-                //CustomRoles.Luckey,
                 CustomRoles.Underdog],
                 
                 [CustomRoles.EvilGuesser,

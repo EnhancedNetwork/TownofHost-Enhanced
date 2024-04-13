@@ -129,7 +129,7 @@ public static class Options
         "CamouflageMode.TommyXL"
     ];
 
-    // 各役職の詳細設定
+
     //public static OptionItem EnableGM;
     public static float DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
     public static OptionItem GhostsDoTasks;
@@ -1156,14 +1156,6 @@ public static class Options
         LazyGuy.SetupCustomOptions();
 
         /*
-         * Luckey
-         */
-        //SetupRoleOptions(6900, TabGroup.CrewmateRoles, CustomRoles.Luckey);
-        //LuckeyProbability = IntegerOptionItem.Create(6902, "LuckeyProbability", new(0, 100, 5), 50, TabGroup.CrewmateRoles, false)
-        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Luckey])
-        //    .SetValueFormat(OptionFormat.Percent);
-
-        /*
          * Mini
          */
         Mini.SetupCustomOption();
@@ -1372,6 +1364,8 @@ public static class Options
         
         Knight.SetupCustomOption();
 
+        NiceGuesser.SetupCustomOptions();
+
         Retributionist.SetupCustomOptions();
         
         Reverie.SetupCustomOption();
@@ -1379,6 +1373,8 @@ public static class Options
         Sheriff.SetupCustomOption();
 
         Veteran.SetupCustomOptions();
+
+        Vigilante.SetupCustomOptions();
 
         TextOptionItem.Create(10000010, "RoleType.CrewPower", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)

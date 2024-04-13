@@ -127,20 +127,20 @@ internal class Mechanic : RoleBase
                 if (mapId == 2)
                 {
                     //Polus
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 71, 72);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 67, 68);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 64, 66);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 73, 74);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 71, 72);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 67, 68);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 64, 66);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 73, 74);
                 }
                 else if (mapId == 4)
                 {
                     //Airship
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 64, 67);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 71, 73);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 74, 75);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 76, 78);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 68, 70);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 83, 84);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 64, 67);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 71, 73);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 74, 75);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 76, 78);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 68, 70);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 83, 84);
                 }
                 DoorsProgressing = false;
                 break;

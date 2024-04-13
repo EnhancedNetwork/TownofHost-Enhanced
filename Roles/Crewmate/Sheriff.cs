@@ -191,10 +191,10 @@ internal class Sheriff : RoleBase
         {
             CustomRoles.Trickster => false,
             CustomRoles.Pestilence => true,
-            _ => cRole.GetCustomRoleTypes() switch
+            _ => cRole.GetCustomRoleTeam() switch
             {
-                CustomRoleTypes.Impostor => true,
-                CustomRoleTypes.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())),
+                Custom_Team.Impostor => true,
+                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())),
                 _ => CanKill,
             }
         };
