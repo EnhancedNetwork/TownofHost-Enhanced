@@ -13,6 +13,7 @@ internal class Taskinator : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
     public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 

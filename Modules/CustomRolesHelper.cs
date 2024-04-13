@@ -6,6 +6,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Roles.Core.CustomRoleManager;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -19,7 +20,7 @@ public static class CustomRolesHelper
         if (role.IsVanilla()) return role;
 
         // Role base
-        if (role.GetStaticRoleClass() is not VanillaRole) return role.GetStaticRoleClass().ThisRoleBase;
+        if (role.GetStaticRoleClass() is not DefaultSetup) return role.GetStaticRoleClass().ThisRoleBase;
 
         //Default
         return role switch
@@ -63,7 +64,14 @@ public static class CustomRolesHelper
             CustomRoles.Minion;
 
     }
-
+    public static bool IsExperimental(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.Disperser or
+            CustomRoles.Doppelganger or
+            CustomRoles.God or
+            CustomRoles.Quizmaster;
+    }
     // Add-ons
     public static bool IsAdditionRole(this CustomRoles role) => role > CustomRoles.NotAssigned;
 
@@ -197,20 +205,7 @@ public static class CustomRolesHelper
     }
     public static bool IsCrewKiller(this CustomRoles role)
     {
-        return role is
-            CustomRoles.Bastion or
-            CustomRoles.Bodyguard or
-            CustomRoles.Crusader or
-            CustomRoles.Deceiver or
-            CustomRoles.Jailer or
-            CustomRoles.Judge or
-            CustomRoles.Knight or
-            CustomRoles.NiceGuesser or
-            CustomRoles.Retributionist or
-            CustomRoles.Reverie or
-            CustomRoles.Sheriff or
-            CustomRoles.Veteran or
-            CustomRoles.Vigilante;
+        return role.GetStaticRoleClass().ThisRoleType is Custom_RoleType.CrewmateKilling;
     }
     public static bool IsCrewVenter(this PlayerControl target)
     {
@@ -231,212 +226,43 @@ public static class CustomRolesHelper
     }
     public static bool IsNK(this CustomRoles role)
     {
-        if (role == CustomRoles.Arsonist && Arsonist.CanIgniteAnytime()) return true;
-        else if (role == CustomRoles.Quizmaster && Quizmaster.CanKillAfterMark) return true;
-
-        return role is
-            CustomRoles.Jackal or
-            CustomRoles.Doppelganger or
-            CustomRoles.Bandit or
-            CustomRoles.Glitch or
-            CustomRoles.Sidekick or
-            CustomRoles.Huntsman or
-            CustomRoles.Infectious or
-            CustomRoles.Medusa or
-            CustomRoles.Pelican or
-            CustomRoles.Stalker or
-            CustomRoles.Juggernaut or
-            CustomRoles.Jinx or
-            CustomRoles.Poisoner or
-            CustomRoles.Wraith or
-            CustomRoles.HexMaster or
-            CustomRoles.Refugee or
-            CustomRoles.Parasite or
-            CustomRoles.PlagueDoctor or
-            CustomRoles.SerialKiller or
-            CustomRoles.Pyromaniac or
-            CustomRoles.Werewolf or
-            CustomRoles.PotionMaster or
-            CustomRoles.Demon or
-            CustomRoles.Pickpocket or
-            CustomRoles.Necromancer or
-            CustomRoles.Traitor or
-            CustomRoles.Shroud or
-            CustomRoles.Virus or
-            CustomRoles.BloodKnight or
-            CustomRoles.Spiritcaller or
-            CustomRoles.PlagueBearer or
-            CustomRoles.Agitater or
-            CustomRoles.RuthlessRomantic or
-            CustomRoles.Pestilence;
+        return role.GetStaticRoleClass().ThisRoleType is Custom_RoleType.NeutralKilling;
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
-        if (role == CustomRoles.Arsonist && !Arsonist.CanIgniteAnytime()) return true;
-        else if (role == CustomRoles.Quizmaster && !Quizmaster.CanKillAfterMark) return true; 
-
-        return role is
-            CustomRoles.Amnesiac or
-            CustomRoles.Follower or
-            CustomRoles.Hater or
-            CustomRoles.Lawyer or
-            CustomRoles.Imitator or
-            CustomRoles.Maverick or
-            CustomRoles.Opportunist or
-            CustomRoles.Pursuer or
-            CustomRoles.Shaman or
-            CustomRoles.SoulCollector or
-            CustomRoles.CursedSoul or
-            CustomRoles.Doomsayer or
-            CustomRoles.Executioner or
-            CustomRoles.Innocent or
-            CustomRoles.Jester or
-            CustomRoles.Sunnyboy or
-            CustomRoles.Masochist or
-            CustomRoles.Seeker or
-            CustomRoles.Pixie or
-            CustomRoles.Collector or
-            CustomRoles.Cultist or
-            CustomRoles.Phantom or
-            CustomRoles.Pirate or
-            CustomRoles.Terrorist or
-            CustomRoles.Vulture or
-            CustomRoles.Taskinator or
-            CustomRoles.Workaholic or
-            CustomRoles.Solsticer or
-            CustomRoles.God or
-            CustomRoles.Vector or
-            CustomRoles.Revolutionist or
-            CustomRoles.Romantic or
-            CustomRoles.VengefulRomantic or
-            CustomRoles.SchrodingersCat or
-            CustomRoles.Provocateur;
+        return role.IsNB() || role.IsNE() || role.IsNC();
     }
     public static bool IsNB(this CustomRoles role)
     {
-        return role is
-            CustomRoles.Amnesiac or
-            CustomRoles.Follower or
-            CustomRoles.Hater or
-            CustomRoles.Imitator or
-            CustomRoles.Lawyer or
-            CustomRoles.Maverick or
-            CustomRoles.Opportunist or
-            CustomRoles.Pursuer or
-            CustomRoles.Shaman or
-            CustomRoles.Taskinator or
-            CustomRoles.God or
-            CustomRoles.Romantic or
-            CustomRoles.VengefulRomantic or
-            CustomRoles.Pixie or
-            CustomRoles.SchrodingersCat or
-            CustomRoles.Sunnyboy;
+        return role.GetStaticRoleClass().ThisRoleType
+            is Custom_RoleType.NeutralBenign;
     }
     public static bool IsNE(this CustomRoles role)
     {
-        return role is
-            CustomRoles.CursedSoul or
-            CustomRoles.Doomsayer or
-            CustomRoles.Executioner or
-            CustomRoles.Innocent or
-            CustomRoles.Jester or
-            CustomRoles.Masochist or
-            CustomRoles.Seeker;
+        return role.GetStaticRoleClass().ThisRoleType
+            is Custom_RoleType.NeutralEvil;
     }
     public static bool IsNC(this CustomRoles role)
     {
-        return role is
-            CustomRoles.Collector or
-            CustomRoles.Cultist or
-            CustomRoles.Phantom or
-            CustomRoles.Vector or
-            CustomRoles.SoulCollector or
-            CustomRoles.Pirate or
-            CustomRoles.Terrorist or
-            CustomRoles.Vulture or
-            CustomRoles.Workaholic or
-            CustomRoles.Solsticer or
-            CustomRoles.Revolutionist or
-            CustomRoles.Provocateur;
+        return role.GetStaticRoleClass().ThisRoleType
+            is Custom_RoleType.NeutralChaos;
     }
     public static bool IsImpostor(this CustomRoles role) // IsImp
     {
+        if (role.GetStaticRoleClass().ThisRoleType is
+            Custom_RoleType.ImpostorVanilla or
+            Custom_RoleType.ImpostorKilling or
+            Custom_RoleType.ImpostorSupport or
+            Custom_RoleType.ImpostorConcealing or
+            Custom_RoleType.ImpostorHindering or
+            Custom_RoleType.ImpostorGhosts) return true;
+
         return role is
             CustomRoles.Impostor or
             CustomRoles.Shapeshifter or
-            CustomRoles.ShapeshifterTOHE or
-            CustomRoles.ImpostorTOHE or
-            CustomRoles.Consigliere or
-            CustomRoles.Wildling or
-            CustomRoles.Morphling or
-            CustomRoles.BountyHunter or
-            CustomRoles.Vampire or
-            CustomRoles.Vampiress or
-            CustomRoles.Witch or
-            CustomRoles.Vindicator or
-            CustomRoles.ShapeMaster or
-            CustomRoles.Zombie or
-            CustomRoles.Warlock or
-            CustomRoles.Undertaker or
-            CustomRoles.RiftMaker or
-            CustomRoles.Ninja or
-            CustomRoles.Berserker or
-            CustomRoles.Bloodmoon or
-            CustomRoles.Anonymous or
-            CustomRoles.Visionary or
-            CustomRoles.Miner or
-            CustomRoles.Escapist or
-            CustomRoles.Mercenary or
-            CustomRoles.Underdog or
-            CustomRoles.Inhibitor or
-            CustomRoles.Councillor or
-            CustomRoles.Saboteur or
-            CustomRoles.Puppeteer or
-            CustomRoles.TimeThief or
-            CustomRoles.Trickster or
-            CustomRoles.Nemesis or
-            CustomRoles.Mastermind or
-            CustomRoles.Chronomancer or
-            CustomRoles.Stealth or
-            CustomRoles.Penguin or
-            CustomRoles.KillingMachine or
-            CustomRoles.Fireworker or
-            CustomRoles.Sniper or
-            CustomRoles.EvilTracker or
-            CustomRoles.EvilGuesser or
-            CustomRoles.AntiAdminer or
-            CustomRoles.Arrogance or
-            CustomRoles.Bomber or
-            CustomRoles.Nuker or
-            CustomRoles.Kamikaze or
-            CustomRoles.Scavenger or
-            CustomRoles.Trapster or
-            CustomRoles.Gangster or
-            CustomRoles.Cleaner or
-            CustomRoles.Lightning or
-            CustomRoles.Greedy or
-            CustomRoles.Ludopath or
-            CustomRoles.Godfather or
-            CustomRoles.CursedWolf or
-            CustomRoles.SoulCatcher or
-            CustomRoles.QuickShooter or
-            CustomRoles.Eraser or
-            CustomRoles.Butcher or
-            CustomRoles.Hangman or
-            CustomRoles.Bard or
-            CustomRoles.Swooper or
-            CustomRoles.Disperser or
-            CustomRoles.Dazzler or
-            CustomRoles.Deathpact or
-            CustomRoles.Devourer or
-            CustomRoles.Camouflager or
-            CustomRoles.Twister or
-            CustomRoles.Lurker or
-            CustomRoles.EvilMini or
-            CustomRoles.Blackmailer or
-            CustomRoles.Pitfall or
-            CustomRoles.Instigator or
-            CustomRoles.Minion;
+            CustomRoles.Crewmate or
+            CustomRoles.Engineer or
+            CustomRoles.Scientist;
     }
 
     public static bool IsAbleToBeSidekicked(this CustomRoles role) 
@@ -452,10 +278,10 @@ public static class CustomRolesHelper
 
     public static bool IsMadmate(this CustomRoles role)
     {
+        if (role.GetStaticRoleClass().ThisRoleType is Custom_RoleType.Madmate) return true;
+
         return role is
-            CustomRoles.Crewpostor or
-            CustomRoles.Refugee or
-            CustomRoles.Parasite;
+            CustomRoles.Refugee;
     }
     /// <summary>
     /// Role Changes the Crewmates Team, Including changing to Impostor.
@@ -1255,7 +1081,7 @@ public static class CustomRolesHelper
     }
     public static Custom_RoleType GetCustomRoleType(this CustomRoles role)
     {
-        return Custom_RoleType.CrewmateVanilla; //role.GetStaticRoleClass().ThisRoleType;
+        return role.GetStaticRoleClass().ThisRoleType;
     }
     public static bool RoleExist(this CustomRoles role, bool countDead = false) => Main.AllPlayerControls.Any(x => x.Is(role) && (x.IsAlive() || countDead));
     public static int GetCount(this CustomRoles role)
@@ -1476,6 +1302,7 @@ public enum Custom_RoleType
 
     // Crewmate
     CrewmateVanilla,
+    CrewmateVanillaGhosts,
     CrewmateBasic,
     CrewmateSupport,
     CrewmateKilling,

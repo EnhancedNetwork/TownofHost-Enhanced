@@ -36,7 +36,7 @@ public abstract class RoleBase
     /// <summary>
     /// Defines the role type
     /// </summary>
-    //public abstract Custom_RoleType ThisRoleType { get; }
+    public abstract Custom_RoleType ThisRoleType { get; }
 
     /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.

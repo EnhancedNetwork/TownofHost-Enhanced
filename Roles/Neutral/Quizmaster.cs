@@ -15,6 +15,7 @@ internal class Quizmaster : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => CanKillsAfterMark() ? Custom_RoleType.NeutralKilling : Custom_RoleType.NeutralChaos;
     //==================================================================\\
 
     private static OptionItem QuestionDifficulty;
@@ -43,12 +44,11 @@ internal class Quizmaster : RoleBase
     public static int diedThisRound = 0;
     public static int buttonMeeting = 0;
 
-    public static bool InExperimental = true;
     public static bool CanKillAfterMark = false;
 
     public static void SetupCustomOption()
     {
-        TabGroup tab = InExperimental ? TabGroup.OtherRoles : TabGroup.NeutralRoles;
+        TabGroup tab = TabGroup.OtherRoles;
 
         SetupSingleRoleOptions(Id, tab, CustomRoles.Quizmaster, 1);
         QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.QuestionDifficulty", new(1, 4, 1), 1, tab, false).SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
@@ -120,6 +120,9 @@ internal class Quizmaster : RoleBase
             allowedKilling = CanKillAfterMark;
         }
     }
+
+    public static bool CanKillsAfterMark() => CanKillAfterMark;
+
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc)

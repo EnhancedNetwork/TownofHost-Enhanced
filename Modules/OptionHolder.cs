@@ -10,6 +10,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Vanilla;
 using UnityEngine;
 
 namespace TOHE;
@@ -486,14 +487,6 @@ public static class Options
     public static OptionItem AddBracketsToAddons;
     public static OptionItem NoLimitAddonsNumMax;
 
-    // Impostors role settings
-    public static OptionItem ShapeshiftCD;
-    public static OptionItem ShapeshiftDur;
-
-    // Crewmates role settings
-    public static OptionItem ScientistCD;
-    public static OptionItem ScientistDur;
-
     // Add-Ons settings 
     public static OptionItem LoverSpawnChances;
     public static OptionItem LoverKnowRoles;
@@ -690,16 +683,9 @@ public static class Options
             .SetHeader(true)
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
-        SetupRoleOptions(300, TabGroup.ImpostorRoles, CustomRoles.ImpostorTOHE);
+        ImpostorTOHE.SetupCustomOptions();
 
-        SetupRoleOptions(400, TabGroup.ImpostorRoles, CustomRoles.ShapeshifterTOHE);
-        ShapeshiftCD = FloatOptionItem.Create(402, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.ShapeshifterTOHE])
-            .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftDur = FloatOptionItem.Create(403, "ShapeshiftDuration", new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.ShapeshifterTOHE])
-            .SetValueFormat(OptionFormat.Seconds);
-
+        ShapeshifterTOHE.SetupCustomOptions();
 
         TextOptionItem.Create(10000001, "RoleType.ImpKilling", TabGroup.ImpostorRoles) // KILLING
             .SetGameMode(CustomGameMode.Standard)
@@ -797,6 +783,9 @@ public static class Options
          */
         Lurker.SetupCustomOption();
 
+        /*
+         * Mare
+         */
         // Mare.SetupCustomOption();
 
         /*
@@ -905,6 +894,7 @@ public static class Options
          * Nemesis
          */
         Nemesis.SetupCustomOptions();
+
         /*
          * Time Thief
          */
@@ -1086,27 +1076,21 @@ public static class Options
         TextOptionItem.Create(10000006, "RoleType.VanillaRoles", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
-        
+
         /*
          * Crewmate
          */
-        SetupRoleOptions(6000, TabGroup.CrewmateRoles, CustomRoles.CrewmateTOHE);
+        CrewmateTOHE.SetupCustomOptions();
 
         /*
          * Engineer
          */
-        SetupRoleOptions(6100, TabGroup.CrewmateRoles, CustomRoles.EngineerTOHE);
+        EngineerTOHE.SetupCustomOptions();
 
         /*
          * Scientist
          */
-        SetupRoleOptions(6200, TabGroup.CrewmateRoles, CustomRoles.ScientistTOHE);
-        ScientistCD = FloatOptionItem.Create(6202, "VitalsCooldown", new(1f, 250f, 1f), 3f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.ScientistTOHE])
-            .SetValueFormat(OptionFormat.Seconds);
-        ScientistDur = FloatOptionItem.Create(6203, "VitalsDuration", new(1f, 250f, 1f), 15f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.ScientistTOHE])
-            .SetValueFormat(OptionFormat.Seconds);
+        ScientistTOHE.SetupCustomOptions();
 
         /*
          * Guardian Angel
@@ -1489,11 +1473,7 @@ public static class Options
         Provocateur.SetupCustomOptions();
 
         Revolutionist.SetupCustomOptions();
-        
 
-        /*
-         * Solsticer
-        */
         Solsticer.SetupCustomOption();
 
         SoulCollector.SetupCustomOption();
@@ -1554,14 +1534,11 @@ public static class Options
 
         Pyromaniac.SetupCustomOption();
 
-        if (!Quizmaster.InExperimental)
-            Quizmaster.SetupCustomOption();
-
         SerialKiller.SetupCustomOption(); 
 
         Shroud.SetupCustomOption();
 
-        Stalker.SetupCustomOption(); // Stalker (TOHY)
+        Stalker.SetupCustomOption(); // from TOH-Y
 
         Traitor.SetupCustomOption();
 
@@ -1778,8 +1755,7 @@ public static class Options
 
         God.SetupCustomOption();
 
-        if (Quizmaster.InExperimental)
-            Quizmaster.SetupCustomOption();
+        Quizmaster.SetupCustomOption();
 
 
         // 副职

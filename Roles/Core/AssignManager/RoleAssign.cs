@@ -630,6 +630,15 @@ public class RoleAssign
                 FinalRolesList.Remove(CustomRoles.Lovers);
         }
 
+        // if roles are very few, add vanilla сrewmate roles
+        if (AllPlayers.Count > FinalRolesList.Count)
+        {
+            while (FinalRolesList.Count <= AllPlayers.Count)
+            {
+                FinalRolesList.Add(CustomRoles.CrewmateTOHE);
+            }
+        }
+
         Logger.Info(string.Join(", ", FinalRolesList.Select(x => x.ToString())), "RoleResults");
 
         while (AllPlayers.Any() && FinalRolesList.Any())

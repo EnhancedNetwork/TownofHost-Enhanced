@@ -17,6 +17,7 @@ internal class Arsonist : RoleBase
     public static bool HasEnabled = PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => CanIgniteAnytime(forLoadSettings: true) ? Custom_RoleType.NeutralKilling : Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
     private static OptionItem ArsonistDouseTime;
@@ -268,7 +269,7 @@ internal class Arsonist : RoleBase
         }
     }
 
-    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytime;
+    public static bool CanIgniteAnytime(bool forLoadSettings = false) => forLoadSettings || ArsonistCanIgniteAnytime;
 
     private static void ResetCurrentDousingTarget(byte arsonistId) => SendCurrentDousingTargetRPC(arsonistId, 255);
 

@@ -13,11 +13,11 @@ namespace TOHE.Roles.Core;
 public static class CustomRoleManager
 {
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
-    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new VanillaRole(); 
+    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup(); 
     public static List<RoleBase> AllEnabledRoles => RoleClass.Values.Where(x => x.IsEnable).ToList();
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
-    public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
+    public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new DefaultSetup();
 
     public static RoleBase CreateRoleClass(this CustomRoles role) 
     {
@@ -44,26 +44,11 @@ public static class CustomRoleManager
             AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
         }
 
+        // Set Impostor vision
+        opt.SetVision(false);
+
         player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
 
-        switch (role)
-        {
-            case CustomRoles.ShapeshifterTOHE:
-                AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
-                break;
-            case CustomRoles.ScientistTOHE:
-                AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
-                AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
-                break;
-            case CustomRoles.EngineerTOHE:
-                AURoleOptions.EngineerCooldown = 0f;
-                AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            default:
-                opt.SetVision(false);
-                break;
-        }
 
         if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
         if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);

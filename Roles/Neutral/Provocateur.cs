@@ -12,6 +12,7 @@ internal class Provocateur : RoleBase
     public static bool HasEnabled => Playerids.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
 
     private static OptionItem ProvKillCD;

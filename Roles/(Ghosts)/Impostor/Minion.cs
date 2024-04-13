@@ -11,6 +11,7 @@ internal class Minion : RoleBase
     public static bool HasEnabled => Playerids.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorGhosts;
     //==================================================================\\
 
     public static OptionItem AbilityCooldown;

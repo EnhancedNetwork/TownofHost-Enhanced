@@ -340,7 +340,7 @@ public class Main : BasePlugin
                     CustomRoles.Pestilence => typeof(PlagueBearer),
                     CustomRoles.Nuker => typeof(Bomber),
                     CustomRoles.NiceMini or CustomRoles.EvilMini => typeof(Mini),
-                    _ => RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(VanillaRole),
+                    _ => RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(DefaultSetup),
                 };
 
                 CustomRoleManager.RoleClass.Add(role, (RoleBase)Activator.CreateInstance(roleType));
