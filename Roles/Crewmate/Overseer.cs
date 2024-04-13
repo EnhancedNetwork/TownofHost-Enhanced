@@ -112,7 +112,7 @@ internal class Overseer : RoleBase
         OverseerTimer.Remove(playerId);
         RandomRole.Remove(playerId);
     }
-
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     // RPC broken (Loonie moment)
 
     //private static void SendCurrentRevealTargetRPC(byte overseertId, byte targetId)
