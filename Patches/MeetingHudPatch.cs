@@ -467,6 +467,7 @@ class CheckForEndVotingPatch
             Main.DoBlockNameChange = true;
             if (GameStates.IsInGame)
             {
+                GameData.Instance.UpdateName(exiledPlayer.PlayerId, name, false);
                 player.RpcSetName(name);
             }
         }, 3.0f, "Change Exiled Player Name");
@@ -482,6 +483,7 @@ class CheckForEndVotingPatch
             if (GameStates.IsInGame && player.Data.Disconnected)
             {
                 player.Data.PlayerName = realName;
+                GameData.Instance.UpdateName(exiledPlayer.PlayerId, realName, false);
                 //Await Next Send Data or Next Meeting
             }
         }, 11.5f, "Change Exiled Player Name Back");
