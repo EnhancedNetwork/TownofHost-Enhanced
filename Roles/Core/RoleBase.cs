@@ -60,6 +60,8 @@ public abstract class RoleBase
     public virtual void SetupCustomOption()
     { }
 
+    public virtual bool IsExperimental => false;
+
     /// <summary>
     /// A generic method to send a CustomRole's Gameoptions.
     /// </summary>

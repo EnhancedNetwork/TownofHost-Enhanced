@@ -67,6 +67,8 @@ public static class CustomRolesHelper
             CustomRoles.EvilSpirit;
 
     }
+    
+    /*
     public static bool IsExperimental(this CustomRoles role)
     {
         return role is
@@ -75,6 +77,8 @@ public static class CustomRolesHelper
             CustomRoles.God or
             CustomRoles.Quizmaster;
     }
+    */
+
     // Add-ons
     public static bool IsAdditionRole(this CustomRoles role) => role > CustomRoles.NotAssigned;
 
