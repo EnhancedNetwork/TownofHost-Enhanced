@@ -2618,7 +2618,7 @@
   "UnluckyKillSuicideChance": "Chance to suicide from killing",
   "UnluckyVentSuicideChance": "Chance to suicide from venting",
   "UnluckyReportSuicideChance": "Chance to suicide from reporting bodies",
-  "UnluckySabotageSuicideChance": "Chance to suicide from opening a door",
+  "UnluckyOpenDoorSuicideChance": "Chance to suicide from opening a door",
   "ImpCanBeVoidBallot": "<color=#ff1919>Impostors</color> can become <color=#FF3399>VoidBallot</color>",
   "CrewCanBeVoidBallot": "<color=#8cffff>Crewmates</color> can become <color=#FF3399>VoidBallot</color>",
   "NeutralCanBeVoidBallot": "<color=#7f8c8d>Neutrals</color> can become <color=#FF3399>VoidBallot</color>",

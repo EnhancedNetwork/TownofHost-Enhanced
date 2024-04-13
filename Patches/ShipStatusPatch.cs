@@ -88,7 +88,7 @@ class RepairSystemPatch
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
             && (systemType is SystemTypes.Doors))
         {
-            Unlucky.SuicideRand(player);
+            Unlucky.SuicideRand(player, Unlucky.StateSuicide.OpenDoor);
             if (Unlucky.UnluckCheck[player.PlayerId]) return false;
         }
 
