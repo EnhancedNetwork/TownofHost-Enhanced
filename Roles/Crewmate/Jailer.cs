@@ -72,6 +72,7 @@ internal class Jailer : RoleBase
         JailerHasExe.Remove(playerId);
         JailerDidVote.Remove(playerId);
     }
+    public override bool CanUseKillButton(PlayerControl pc) => true;
 
     public static bool IsTarget(byte playerId) => JailerTarget.ContainsValue(playerId);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? JailCooldown.GetFloat() : 300f;

@@ -43,6 +43,7 @@ internal class Witness : RoleBase
             CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
         }
     }
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = WitnessCD.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
 
