@@ -31,7 +31,7 @@ internal class Jailer : RoleBase
     private static readonly Dictionary<byte, bool> JailerHasExe = [];
     private static readonly Dictionary<byte, bool> JailerDidVote = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Jailer);
         JailCooldown = FloatOptionItem.Create(Id + 10, "JailerJailCooldown", new(0f, 999f, 1f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer])

@@ -27,7 +27,7 @@ internal class Bastion : RoleBase
     private static readonly HashSet<int> BombedVents = [];
     private static float BastionNumberOfAbilityUses = 0;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Bastion, 1);
         BombsClearAfterMeeting = BooleanOptionItem.Create(Id + 10, "BombsClearAfterMeeting", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bastion]);

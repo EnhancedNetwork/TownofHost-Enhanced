@@ -16,7 +16,7 @@ public static class ChiefOfPolice
     private static OptionItem SkillCooldown;
     private static OptionItem CanImpostorAndNeutarl;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.ChiefOfPolice);
         SkillCooldown = FloatOptionItem.Create(Id + 10, "ChiefOfPoliceSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.ChiefOfPolice])

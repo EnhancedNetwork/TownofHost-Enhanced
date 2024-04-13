@@ -26,7 +26,7 @@ internal class Spy : RoleBase
     private static readonly Dictionary<byte, long> SpyRedNameList = [];
     private static bool change = false;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Spy, 1);
         UseLimitOpt = IntegerOptionItem.Create(Id + 10, "AbilityUseLimit", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spy])

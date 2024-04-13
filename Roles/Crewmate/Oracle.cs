@@ -29,7 +29,7 @@ internal class Oracle : RoleBase
     private static readonly Dictionary<byte, float> CheckLimit = [];
     private static readonly Dictionary<byte, float> TempCheckLimit = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Oracle);
         CheckLimitOpt = IntegerOptionItem.Create(Id + 10, "OracleSkillLimit", new(0, 10, 1), 1, TabGroup.CrewmateRoles, false)

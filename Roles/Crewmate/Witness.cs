@@ -20,7 +20,7 @@ internal class Witness : RoleBase
     private static OptionItem WitnessCD;
     private static OptionItem WitnessTime;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Witness, 1);
         WitnessCD = FloatOptionItem.Create(Id + 10, "AbilityCD", new(0f, 60f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Witness])

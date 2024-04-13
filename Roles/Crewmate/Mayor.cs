@@ -26,7 +26,7 @@ internal partial class Mayor : RoleBase
 
     private static readonly Dictionary<byte, int> MayorUsedButtonCount = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mayor);
         MayorAdditionalVote = IntegerOptionItem.Create(Id + 10, "MayorAdditionalVote", new(1, 20, 1), 3, TabGroup.CrewmateRoles, false)

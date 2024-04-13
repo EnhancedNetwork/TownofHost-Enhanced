@@ -13,7 +13,7 @@ internal class Dictator : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Dictator);
     }

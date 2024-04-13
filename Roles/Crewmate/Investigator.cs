@@ -24,7 +24,7 @@ internal class Investigator : RoleBase
     private static readonly Dictionary<byte, int> RoundInvestigateLimit = [];
     private static readonly Dictionary<byte, HashSet<byte>> InvestigatedList = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Investigator, 1, zeroOne: false);
         InvestigateCooldown = FloatOptionItem.Create(Id + 10, "InvestigateCooldown", new(0f, 180f, 2.5f), 27.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator])

@@ -22,7 +22,7 @@ internal class Mortician : RoleBase
     private static readonly Dictionary<byte, string> lastPlayerName = [];
     private static readonly Dictionary<byte, string> msgToSend = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mortician);
         ShowArrows = BooleanOptionItem.Create(Id + 2, "ShowArrows", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mortician]);

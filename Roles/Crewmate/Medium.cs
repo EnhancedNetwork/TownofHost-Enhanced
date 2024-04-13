@@ -27,7 +27,7 @@ internal class Medium : RoleBase
     private static readonly Dictionary<byte, byte> ContactPlayer = [];
     private static readonly Dictionary<byte, float> ContactLimit = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Medium);
         ContactLimitOpt = IntegerOptionItem.Create(Id + 10, "MediumContactLimit", new(0, 15, 1), 1, TabGroup.CrewmateRoles, false)

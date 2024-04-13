@@ -19,7 +19,7 @@ internal class NiceGuesser : RoleBase
     private static OptionItem GGCanGuessAdt;
     private static OptionItem GGTryHideMsg;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.NiceGuesser);
         GGCanGuessTime = IntegerOptionItem.Create(Id + 10, "GuesserCanGuessTimes", new(1, 15, 1), 15, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])

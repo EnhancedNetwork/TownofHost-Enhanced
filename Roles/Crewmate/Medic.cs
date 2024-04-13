@@ -47,7 +47,7 @@ internal class Medic : RoleBase
         MedicShieldDeactivationIsVisible_DeactivationIsVisibleOFF
     }
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Medic);
         WhoCanSeeProtectOpt = StringOptionItem.Create(Id + 10, "MedicWhoCanSeeProtect", EnumHelper.GetAllNames<SelectOptions>(), 0, TabGroup.CrewmateRoles, false)

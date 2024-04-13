@@ -21,7 +21,7 @@ internal class Celebrity : RoleBase
 
     private static readonly HashSet<byte> CelebrityDead = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Celebrity);
         ImpKnowCelebrityDead = BooleanOptionItem.Create(Id + 10, "ImpKnowCelebrityDead", false, TabGroup.CrewmateRoles, false)

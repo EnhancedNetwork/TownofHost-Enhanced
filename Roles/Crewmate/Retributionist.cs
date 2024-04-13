@@ -27,7 +27,7 @@ internal class Retributionist : RoleBase
 
     private static readonly Dictionary<byte, int> RetributionistRevenged = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
         RetributionistCanKillNum = IntegerOptionItem.Create(Id + 10, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false)

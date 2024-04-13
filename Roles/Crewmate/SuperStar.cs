@@ -18,7 +18,7 @@ internal class SuperStar : RoleBase
 
     private static OptionItem EveryOneKnowSuperStar; // You should always have this enabled TBHHH 💀💀
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.SuperStar);
         EveryOneKnowSuperStar = BooleanOptionItem.Create(7152, "EveryOneKnowSuperStar", true, TabGroup.CrewmateRoles, false)
