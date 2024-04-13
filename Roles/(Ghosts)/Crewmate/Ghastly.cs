@@ -27,7 +27,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         private static OptionItem PossessDur;
         private static OptionItem GhastlySpeed;
 
-        private static int PossessLimit = byte.MaxValue;
+        private int PossessLimit = MaxPossesions != null ? MaxPossesions.GetInt() : byte.MaxValue;
         private static (byte, byte) killertarget = (byte.MaxValue, byte.MaxValue);
         private static readonly Dictionary<byte, long> LastTime = [];
         private static bool KillerIsChosen = false;
@@ -88,7 +88,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             var killer = killertarget.Item1;
             var Target = killertarget.Item2;
 
-            if (!KillerIsChosen && (Target == byte.MaxValue || Target == target.PlayerId))
+            if (!KillerIsChosen && (target.PlayerId != killer || Target == target.PlayerId))
             {
                 TargetArrow.Remove(killer, Target);
                 LastTime.Remove(killer);
