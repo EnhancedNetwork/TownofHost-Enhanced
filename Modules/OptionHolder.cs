@@ -796,7 +796,6 @@ public static class Options
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateGhosts).ForEach(r => r.SetupCustomOption());
 
-        Ghastly.SetupCustomOptions();
 
         #endregion
 

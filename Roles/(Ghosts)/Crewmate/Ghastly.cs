@@ -33,7 +33,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         private static readonly Dictionary<byte, long> LastTime = [];
         private static bool KillerIsChosen = false;
 
-        public static void SetupCustomOptions()
+        public override void SetupCustomOption()
         {
             SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Ghastly);
             PossessCooldown = FloatOptionItem.Create(Id + 10, "GhastlyPossessCD", new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
