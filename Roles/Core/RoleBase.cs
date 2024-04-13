@@ -1,12 +1,44 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using System;
 using UnityEngine;
 
 namespace TOHE;
 
 public abstract class RoleBase
 {
+    public enum Attributes
+    {
+        //Impostor
+        IsImpostor,
+        IsMadmate,
+
+        //Crewmate
+        IsCrewVenter,
+        IsTaskBasedCrewmate,
+        IsCrewKilling,
+
+        //Neutral,
+        IsNeutral,
+        IsNeutralKilling,
+        IsNotNeutralKilling,
+        IsNeutralBening, //Wins with "Anyone"
+        IsNeutralEvil,
+        IsNeutralChaos,
+
+        //Common
+        IsGhost,
+
+
+        Empty,
+
+
+    }
+    public virtual Func<Attributes[]> SetupSimpleAttributes => () => null;
+    //EXAMPLE: public override Func<Attributes[]> SetupSimpleAttributes => () => new Attributes[] { Attributes.IsTaskBasedCrewmate, Attributes.IsGhost };
+
+
     /// <summary>
     /// Variable resets when the game starts.
     /// </summary>
@@ -32,6 +64,7 @@ public abstract class RoleBase
     /// Used to Determine the CustomRole's BASE
     /// </summary>
     public abstract CustomRoles ThisRoleBase { get; }
+
 
     /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.

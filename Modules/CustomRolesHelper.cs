@@ -54,7 +54,8 @@ public static class CustomRolesHelper
     //This is a overall check for vanilla clients to see if they are imp basis 
     public static bool IsGhostRole(this CustomRoles role)
     {
-        return role is
+        return (role.GetStaticRoleClass().SetupSimpleAttributes() != null && role.GetStaticRoleClass().SetupSimpleAttributes().Contains(RoleBase.Attributes.IsGhost))
+            || role is
             CustomRoles.GuardianAngelTOHE or
             CustomRoles.EvilSpirit or
             CustomRoles.Warden or
@@ -247,7 +248,9 @@ public static class CustomRolesHelper
     }
     public static bool IsCrewVenter(this PlayerControl target)
     {
-        return target.Is(CustomRoles.EngineerTOHE)
+        var role = target.GetCustomRole();
+        return (role.GetStaticRoleClass().SetupSimpleAttributes() != null && role.GetStaticRoleClass().SetupSimpleAttributes().Contains(RoleBase.Attributes.IsNotNeutralKilling))
+            || target.Is(CustomRoles.EngineerTOHE)
             || target.Is(CustomRoles.Mechanic)
             || target.Is(CustomRoles.CopyCat)
             || target.Is(CustomRoles.Telecommunication) && Telecommunication.CanUseVent()
@@ -261,7 +264,8 @@ public static class CustomRolesHelper
     }
     public static bool IsTaskBasedCrewmate(this CustomRoles role)
     {
-        return role is
+        return (role.GetStaticRoleClass().SetupSimpleAttributes() != null && role.GetStaticRoleClass().SetupSimpleAttributes().Contains(RoleBase.Attributes.IsTaskBasedCrewmate))
+            || role is
             CustomRoles.Snitch or
             CustomRoles.FortuneTeller or
             CustomRoles.Marshall or
@@ -277,7 +281,8 @@ public static class CustomRolesHelper
     }
     public static bool IsCK(this CustomRoles role)
     {
-        return role is
+        return (role.GetStaticRoleClass().SetupSimpleAttributes() != null && role.GetStaticRoleClass().SetupSimpleAttributes().Contains(RoleBase.Attributes.IsCrewKilling))
+            || role is
             CustomRoles.Knight or
             CustomRoles.Veteran or
             CustomRoles.Judge or
@@ -305,7 +310,8 @@ public static class CustomRolesHelper
         if (role == CustomRoles.Arsonist && Arsonist.CanIgniteAnytime()) return true;
         else if (role == CustomRoles.Quizmaster && Quizmaster.CanKillAfterMark) return true;
 
-        return role is
+        return (role.GetStaticRoleClass().SetupSimpleAttributes() != null && role.GetStaticRoleClass().SetupSimpleAttributes().Contains(RoleBase.Attributes.IsNeutralKilling))
+            || role is
             CustomRoles.Jackal or
             CustomRoles.Doppelganger or
             CustomRoles.Bandit or
@@ -346,7 +352,8 @@ public static class CustomRolesHelper
         if (role == CustomRoles.Arsonist && !Arsonist.CanIgniteAnytime()) return true;
         else if (role == CustomRoles.Quizmaster && !Quizmaster.CanKillAfterMark) return true; 
 
-        return role is
+        return (role.GetStaticRoleClass().SetupSimpleAttributes() != null && role.GetStaticRoleClass().SetupSimpleAttributes().Contains(RoleBase.Attributes.IsNotNeutralKilling)) 
+            || role is
             CustomRoles.Amnesiac or
             CustomRoles.Follower or
             CustomRoles.Hater or
@@ -385,7 +392,8 @@ public static class CustomRolesHelper
     }
     public static bool IsNB(this CustomRoles role)
     {
-        return role is
+        return (role.GetStaticRoleClass().SetupSimpleAttributes() != null && role.GetStaticRoleClass().SetupSimpleAttributes().Contains(RoleBase.Attributes.IsNeutralBening))
+            || role is
             CustomRoles.Amnesiac or
             CustomRoles.Follower or
             CustomRoles.Hater or
@@ -405,7 +413,8 @@ public static class CustomRolesHelper
     }
     public static bool IsNE(this CustomRoles role)
     {
-        return role is
+        return (role.GetStaticRoleClass().SetupSimpleAttributes() != null && role.GetStaticRoleClass().SetupSimpleAttributes().Contains(RoleBase.Attributes.IsNeutralEvil))
+            || role is
             CustomRoles.CursedSoul or
             CustomRoles.Doomsayer or
             CustomRoles.Executioner or
@@ -416,7 +425,8 @@ public static class CustomRolesHelper
     }
     public static bool IsNC(this CustomRoles role)
     {
-        return role is
+        return (role.GetStaticRoleClass().SetupSimpleAttributes() != null && role.GetStaticRoleClass().SetupSimpleAttributes().Contains(RoleBase.Attributes.IsNeutralChaos))
+            || role is
             CustomRoles.Collector or
             CustomRoles.Cultist or
             CustomRoles.Phantom or
@@ -432,7 +442,8 @@ public static class CustomRolesHelper
     }
     public static bool IsImpostor(this CustomRoles role) // IsImp
     {
-        return role is
+        return (role.GetStaticRoleClass().SetupSimpleAttributes() != null && role.GetStaticRoleClass().SetupSimpleAttributes().Contains(RoleBase.Attributes.IsImpostor))
+            || role is
             CustomRoles.Impostor or
             CustomRoles.Shapeshifter or
             CustomRoles.ShapeshifterTOHE or

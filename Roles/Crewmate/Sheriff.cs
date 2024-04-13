@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using System;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -72,6 +73,7 @@ internal class Sheriff : RoleBase
         NonCrewCanKillCrew = BooleanOptionItem.Create(Id + 21, "SheriffMadCanKillCrew", true, TabGroup.CrewmateRoles, false).SetParent(SetNonCrewCanKill);
         NonCrewCanKillNeutral = BooleanOptionItem.Create(Id + 20, "SheriffMadCanKillNeutral", true, TabGroup.CrewmateRoles, false).SetParent(SetNonCrewCanKill);
     }
+    public override Func<Attributes[]> SetupSimpleAttributes => () => new Attributes[] { Attributes.IsCrewKilling };
     public override void Init()
     {
         playerIdList.Clear();
