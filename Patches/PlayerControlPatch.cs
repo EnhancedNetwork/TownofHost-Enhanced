@@ -749,13 +749,9 @@ class ReportDeadBodyPatch
 
                 if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
                 {
-                    var Ue = IRandom.Instance;
-                    if (Ue.Next(1, 100) <= Unlucky.UnluckyReportSuicideChance.GetInt())
-                    {
-                        Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                        __instance.RpcMurderPlayer(__instance);
-                        return false;
-                    }
+                    Unlucky.SuicideRand(__instance, Unlucky.StateSuicide.ReportDeadBody);
+                    if (Unlucky.UnluckCheck[__instance.PlayerId]) return false;
+                   
                 }
             }
 
@@ -1287,7 +1283,7 @@ class EnterVentPatch
 
         if (pc.Is(CustomRoles.Unlucky))
         {
-            Unlucky.SuicideRand(pc);
+            Unlucky.SuicideRand(pc, Unlucky.StateSuicide.EnterVent);
         }
     }
 }
@@ -1400,7 +1396,7 @@ class PlayerControlCompleteTaskPatch
                     switch (subRole)
                     {
                         case CustomRoles.Unlucky when player.IsAlive():
-                            Unlucky.SuicideRand(player);
+                            Unlucky.SuicideRand(player, Unlucky.StateSuicide.CompleteTask);
                             break;
 
                         case CustomRoles.Tired when player.IsAlive():
