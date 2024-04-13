@@ -55,13 +55,14 @@ public static class CustomRolesHelper
     //This is a overall check for vanilla clients to see if they are imp basis 
     public static bool IsGhostRole(this CustomRoles role)
     {
+        if (role.GetStaticRoleClass().ThisRoleType is
+            Custom_RoleType.CrewmateGhosts or
+            Custom_RoleType.CrewmateVanillaGhosts or
+            Custom_RoleType.ImpostorGhosts)
+            return true;
+
         return role is
-            CustomRoles.GuardianAngelTOHE or
-            CustomRoles.EvilSpirit or
-            CustomRoles.Warden or
-            CustomRoles.Hawk or
-            CustomRoles.Bloodmoon or
-            CustomRoles.Minion;
+            CustomRoles.EvilSpirit;
 
     }
     public static bool IsExperimental(this CustomRoles role)
