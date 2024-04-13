@@ -29,6 +29,10 @@ internal class Innocent : RoleBase
     public override void Add(byte playerId)
     {
         PlayerIds.Add(playerId);
+
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

@@ -482,28 +482,30 @@ public static class Utils
         return deathReason;
     }
 
-    public static bool HasTasks(GameData.PlayerInfo p, bool ForRecompute = true)
+    public static bool HasTasks(GameData.PlayerInfo playerData, bool ForRecompute = true)
     {
         if (GameStates.IsLobby) return false;
 
         //Tasks may be null, in which case no task is assumed
-        if (p.Tasks == null) return false;
-        if (p.Role == null) return false;
+        if (playerData.Tasks == null) return false;
+        if (playerData.Role == null) return false;
 
         var hasTasks = true;
-        var States = Main.PlayerStates[p.PlayerId];
-        if (p.Disconnected) return false;
-        if (p.Role.IsImpostor)
+        var States = Main.PlayerStates[playerData.PlayerId];
+
+        //
+        if (playerData.Disconnected) return false;
+        if (playerData.Role.IsImpostor)
             hasTasks = false; //Tasks are determined based on CustomRole
 
         if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
-        if (p.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
+        if (playerData.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
         
         if (GameStates.IsHideNSeek) return hasTasks;
 
         var role = States.MainRole;
 
-        if (!States.RoleClass.HasTasks(p, role, ForRecompute))
+        if (!States.RoleClass.HasTasks(playerData, role, ForRecompute))
             hasTasks = false;
 
         switch (role)
@@ -511,12 +513,10 @@ public static class Utils
             case CustomRoles.GM:
                 hasTasks = false;
                 break;
-            case CustomRoles.Sunnyboy:
-                if (ForRecompute)
-                    hasTasks = false;
-                    break;
             default:
-                if (role.IsImpostor() || role.IsNK()) hasTasks = false;
+                // player based on an impostor not should have tasks
+                if (States.RoleClass.ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter)
+                    hasTasks = false;
                 break;
         }
 
@@ -541,8 +541,8 @@ public static class Utils
 
             }
 
-        if (CopyCat.NoHaveTask(p.PlayerId)) hasTasks = false;
-        if (Main.TasklessCrewmate.Contains(p.PlayerId)) hasTasks = false;
+        if (CopyCat.NoHaveTask(playerData.PlayerId)) hasTasks = false;
+        if (Main.TasklessCrewmate.Contains(playerData.PlayerId)) hasTasks = false;
 
         return hasTasks;
     }
