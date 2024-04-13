@@ -26,7 +26,7 @@ internal class Puppeteer : RoleBase
 
     private static readonly Dictionary<byte, byte> PuppeteerList = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Puppeteer);
         PuppeteerDoubleKills = BooleanOptionItem.Create(Id + 12, "PuppeteerDoubleKills", false, TabGroup.ImpostorRoles, true)

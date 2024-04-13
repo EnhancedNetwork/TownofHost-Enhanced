@@ -20,7 +20,7 @@ internal class Disperser : RoleBase
     private static OptionItem DisperserShapeshiftCooldown;
     private static OptionItem DisperserShapeshiftDuration;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.Disperser);
         DisperserShapeshiftCooldown = FloatOptionItem.Create(Id + 5, "ShapeshiftCooldown", new(1f, 180f, 1f), 20f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Disperser])

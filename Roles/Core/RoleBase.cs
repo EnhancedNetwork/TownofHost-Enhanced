@@ -57,8 +57,8 @@ public abstract class RoleBase
     /// </summary>
     public virtual bool OnSabotage(PlayerControl pc) => pc != null;
 
-    //public virtual void SetupCustomOption()
-    //{ }
+    public virtual void SetupCustomOption()
+    { }
 
     /// <summary>
     /// A generic method to send a CustomRole's Gameoptions.

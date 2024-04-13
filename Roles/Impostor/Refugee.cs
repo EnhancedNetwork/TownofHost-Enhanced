@@ -16,7 +16,7 @@ internal class Refugee : RoleBase
 
     private static OptionItem RefugeeKillCD;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         RefugeeKillCD = FloatOptionItem.Create(Id, "RefugeeKillCD", new(0f, 180f, 2.5f), 22.5f, TabGroup.ImpostorRoles, false)
             .SetHeader(true)

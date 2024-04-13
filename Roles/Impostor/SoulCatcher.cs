@@ -18,7 +18,7 @@ internal class SoulCatcher : RoleBase
     private static OptionItem ShapeSoulCatcherShapeshiftDuration;
     private static OptionItem SoulCatcherShapeshiftCooldown;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.SoulCatcher);
         ShapeSoulCatcherShapeshiftDuration = FloatOptionItem.Create(Id + 2, "ShapeshiftDuration", new(2.5f, 180f, 2.5f), 300, TabGroup.ImpostorRoles, false)

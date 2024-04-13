@@ -22,7 +22,7 @@ internal class Escapist : RoleBase
 
     private static readonly Dictionary<byte, Vector2> EscapeLocation = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Escapist);
         ShapeshiftDuration = FloatOptionItem.Create(Id + 2, "ShapeshiftDuration", new(1f, 180f, 1f), 1, TabGroup.ImpostorRoles, false)

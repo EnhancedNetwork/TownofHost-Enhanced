@@ -19,7 +19,7 @@ internal class CursedWolf : RoleBase
 
     private static readonly Dictionary<byte, int> SpellCount = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.CursedWolf);
         GuardSpellTimes = IntegerOptionItem.Create(Id + 2, "CursedWolfGuardSpellTimes", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false)
