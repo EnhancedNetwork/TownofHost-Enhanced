@@ -630,14 +630,18 @@ public class RoleAssign
                 FinalRolesList.Remove(CustomRoles.Lovers);
         }
 
-        // Sort final roles list randomly
-        if (FinalRolesList.Count > 2)
-            FinalRolesList = FinalRolesList.Shuffle(rd).ToList();
-
-        Logger.Info(string.Join(", ", FinalRolesList.Select(x => x.ToString())), "RoleResults1");
+        Logger.Info(string.Join(", ", FinalRolesList.Select(x => x.ToString())), "RoleResults");
 
         while (AllPlayers.Any() && FinalRolesList.Any())
         {
+            // Shuffle all players list
+            if (AllPlayers.Count > 2)
+                AllPlayers = AllPlayers.Shuffle(rd).ToList();
+
+            // Shuffle final roles list
+            if (FinalRolesList.Count > 2)
+                FinalRolesList = FinalRolesList.Shuffle(rd).ToList();
+
             // Select random role and player from list
             var randomPlayer = AllPlayers[rd.Next(AllPlayers.Count)];
             var assignedRole = FinalRolesList[rd.Next(FinalRolesList.Count)];
