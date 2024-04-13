@@ -30,7 +30,7 @@ internal class Coroner : RoleBase
     private static OptionItem CoronerAbilityUseGainWithEachTaskCompleted;
     private static OptionItem InformKillerBeingTracked;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Coroner);
         ArrowsPointingToDeadBody = BooleanOptionItem.Create(Id + 10, "CoronerArrowsPointingToDeadBody", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Coroner]);

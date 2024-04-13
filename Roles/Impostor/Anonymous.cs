@@ -25,7 +25,7 @@ internal class Anonymous : RoleBase
     private static readonly Dictionary<byte, int> HackLimit = [];
     private static readonly List<byte> DeadBodyList = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Anonymous);
         KillCooldown = FloatOptionItem.Create(Id + 2, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Anonymous])

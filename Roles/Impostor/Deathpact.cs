@@ -36,7 +36,7 @@ internal class Deathpact : RoleBase
     private static readonly Dictionary<byte, HashSet<PlayerControl>> PlayersInDeathpact = [];
     private static readonly Dictionary<byte, long> DeathpactTime = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Deathpact);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])

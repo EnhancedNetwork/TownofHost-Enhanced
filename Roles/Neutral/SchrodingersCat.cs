@@ -15,7 +15,7 @@ internal class SchrodingersCat : RoleBase
 
     public static readonly Dictionary<byte, byte> teammate = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.SchrodingersCat);
     }

@@ -31,7 +31,7 @@ internal class Tracker : RoleBase
     private static readonly Dictionary<byte, List<byte>> TrackerTarget = [];
     private static readonly Dictionary<byte, float> TempTrackLimit = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Tracker);
         TrackLimitOpt = IntegerOptionItem.Create(Id + 5, "FortuneTellerSkillLimit", new(0, 20, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tracker])

@@ -20,7 +20,7 @@ internal class EvilGuesser : RoleBase
     //private static OptionItem EGCanGuessTaskDoneSnitch; Not used
     private static OptionItem EGTryHideMsg;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.EvilGuesser);
         EGCanGuessTime = IntegerOptionItem.Create(Id + 2, "GuesserCanGuessTimes", new(1, 15, 1), 15, TabGroup.ImpostorRoles, false)

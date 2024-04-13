@@ -30,7 +30,7 @@ internal class Swapper : RoleBase
     private static readonly Dictionary<byte, byte> VoteTwo = [];
     private static readonly Dictionary<byte, int> Swappermax = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Swapper);
         SwapMax = IntegerOptionItem.Create(Id + 3, "SwapperMax", new(1, 999, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper])

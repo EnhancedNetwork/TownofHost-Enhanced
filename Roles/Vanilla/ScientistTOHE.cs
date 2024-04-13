@@ -17,7 +17,7 @@ internal class ScientistTOHE : RoleBase
     private static OptionItem ScientistCD;
     private static OptionItem ScientistDur;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.ScientistTOHE);
         ScientistCD = FloatOptionItem.Create(Id + 2, "VitalsCooldown", new(1f, 250f, 1f), 3f, TabGroup.CrewmateRoles, false)

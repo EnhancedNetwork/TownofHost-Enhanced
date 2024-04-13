@@ -16,7 +16,7 @@ internal class Butcher : RoleBase
     //==================================================================\\
 
     private static Dictionary<byte, (int, int, Vector2)> MurderTargetLateTask = [];
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Butcher);
     }

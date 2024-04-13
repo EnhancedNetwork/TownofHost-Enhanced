@@ -30,7 +30,7 @@ internal class Captain : RoleBase
     private static readonly Dictionary<byte, float> OriginalSpeed = [];
     private static readonly Dictionary<byte, List<byte>> CaptainVoteTargets = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Captain);
         OptionCrewCanFindCaptain = BooleanOptionItem.Create(Id + 11, "CrewCanFindCaptain", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);

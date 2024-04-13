@@ -32,7 +32,7 @@ internal class Grenadier : RoleBase
     private static OptionItem GrenadierSkillMaxOfUseage;
     private static OptionItem GrenadierAbilityUseGainWithEachTaskCompleted;
 
-    public static void SetupCustomOptions() 
+    public override void SetupCustomOption() 
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Grenadier);
         GrenadierSkillCooldown = FloatOptionItem.Create(Id + 10, "GrenadierSkillCooldown", new(1f, 180f, 1f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])

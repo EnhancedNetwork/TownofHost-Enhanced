@@ -25,7 +25,7 @@ internal class Kamikaze : RoleBase
     private static readonly Dictionary<byte, HashSet<byte>> KamikazedList = [];
     private static readonly Dictionary<byte, int> MarkedLim = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Kamikaze);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Kamikaze])

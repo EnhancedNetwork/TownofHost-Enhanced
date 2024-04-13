@@ -14,7 +14,7 @@ internal class Underdog : RoleBase
     private static OptionItem UnderdogMaximumPlayersNeededToKill;
     private static OptionItem UnderdogKillCooldown;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(2700, TabGroup.ImpostorRoles, CustomRoles.Underdog);
         UnderdogMaximumPlayersNeededToKill = IntegerOptionItem.Create(Id + 2, "UnderdogMaximumPlayersNeededToKill", new(1, 15, 1), 5, TabGroup.ImpostorRoles, false)

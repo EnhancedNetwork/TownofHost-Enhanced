@@ -24,7 +24,7 @@ internal class Stealth : RoleBase
     private static PlayerControl[] darkenedPlayers;
     private static SystemTypes? darkenedRoom;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Stealth, 1);
         optionExcludeImpostors = BooleanOptionItem.Create(Id + 10, "StealthExcludeImpostors", false, TabGroup.ImpostorRoles, false)

@@ -20,7 +20,7 @@ internal class GuardianAngelTOHE : RoleBase
     private static OptionItem ImpVis;
 
     public static readonly Dictionary<byte, long> PlayerShield = [];
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.GuardianAngelTOHE);
         AbilityCooldown = FloatOptionItem.Create(Id + 10, "ProtectCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])

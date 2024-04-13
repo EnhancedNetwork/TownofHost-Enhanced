@@ -16,6 +16,44 @@ public static class CustomRoleManager
     public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup(); 
     public static List<RoleBase> AllEnabledRoles => RoleClass.Values.Where(x => x.IsEnable).ToList();
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
+    public static List<RoleBase> GetNormalOptions(Custom_RoleType type)
+    {
+        List<RoleBase> roles = [];
+        foreach (var role in RoleClass.Values)
+        {
+            if (IsOptBlackListed(role.GetType()) || role.IsExperimental) continue;
+
+            if (role.ThisRoleType == type)
+            {
+                roles.Add(role);
+            }
+        }
+        return roles;
+    }
+    public static List<RoleBase> GetExperimentalOptions(Custom_Team team)
+    {
+        List<RoleBase> roles = [];
+        switch (team)
+        {
+            case Custom_Team.Crewmate:
+                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCrewmate()).Select(r => r.Value).ToList();
+                break;
+
+            case Custom_Team.Impostor:
+                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsImpostorTeam()).Select(r => r.Value).ToList();
+                break;
+
+            case Custom_Team.Neutral:
+                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsNeutralTeamV2()).Select(r => r.Value).ToList();
+                break;
+
+            default:
+                Logger.Info("Unsupported team was sent.", "GetExperimentalOptions");
+                break;
+        }
+        return roles;
+    }
+    public static bool IsOptBlackListed(this Type role) => CustomRolesHelper.DuplicatedRoles.ContainsValue(role);
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new DefaultSetup();
 

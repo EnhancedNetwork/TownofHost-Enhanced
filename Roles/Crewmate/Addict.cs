@@ -25,7 +25,7 @@ internal class Addict : RoleBase
 
     private static float DefaultSpeed = new();
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Addict);
         VentCooldown = FloatOptionItem.Create(Id + 11, "VentCooldown", new(5f, 180f, 1f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Addict])

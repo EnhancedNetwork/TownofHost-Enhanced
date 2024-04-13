@@ -16,7 +16,7 @@ internal class Opportunist : RoleBase
 
     private static OptionItem OppoImmuneToAttacksWhenTasksDone;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(13300, TabGroup.NeutralRoles, CustomRoles.Opportunist);
         OppoImmuneToAttacksWhenTasksDone = BooleanOptionItem.Create(13302, "ImmuneToAttacksWhenTasksDone", false, TabGroup.NeutralRoles, false)

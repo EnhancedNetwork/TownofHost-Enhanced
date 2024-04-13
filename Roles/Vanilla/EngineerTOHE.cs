@@ -14,7 +14,7 @@ internal class EngineerTOHE : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
     //==================================================================\\
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.EngineerTOHE);
     }

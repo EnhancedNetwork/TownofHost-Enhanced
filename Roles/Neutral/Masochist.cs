@@ -19,7 +19,7 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
     
     private static readonly Dictionary<byte, int> MasochistMax = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Masochist);
         MasochistKillMax = IntegerOptionItem.Create(Id + 2, "MasochistKillMax", new(1, 30, 1), 5, TabGroup.NeutralRoles, false)

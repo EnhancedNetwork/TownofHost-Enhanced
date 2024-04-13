@@ -23,7 +23,7 @@ internal class Godfather : RoleBase
         GodfatherCount_Madmate
     }
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Godfather);
         GodfatherChangeOpt = StringOptionItem.Create(Id + 2, "GodfatherTargetCountMode", EnumHelper.GetAllNames<GodfatherChangeMode>(), 0, TabGroup.ImpostorRoles, false)
