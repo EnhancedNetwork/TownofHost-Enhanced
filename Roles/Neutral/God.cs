@@ -16,7 +16,7 @@ internal class God : RoleBase
     public static OptionItem NotifyGodAlive;
     public static OptionItem CanGuess;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.God);
         NotifyGodAlive = BooleanOptionItem.Create(Id + 3, "NotifyGodAlive", true, TabGroup.OtherRoles, false)

@@ -19,7 +19,7 @@ internal class Traitor : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem CanUsesSabotage;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         //Traitorは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Traitor, 1, zeroOne: false);

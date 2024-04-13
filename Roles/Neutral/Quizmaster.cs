@@ -46,7 +46,7 @@ internal class Quizmaster : RoleBase
 
     public static bool CanKillAfterMark = false;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         TabGroup tab = TabGroup.OtherRoles;
 

@@ -19,7 +19,7 @@ internal class Provocateur : RoleBase
 
     public static readonly Dictionary<byte, byte> Provoked = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Provocateur);
         ProvKillCD = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 100f, 2.5f), 15f, TabGroup.NeutralRoles, false)

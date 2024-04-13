@@ -22,7 +22,7 @@ internal class Vector : RoleBase
 
     private static readonly Dictionary<byte, int> VectorVentCount = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(15500, TabGroup.NeutralRoles, CustomRoles.Vector);
         VectorVentNumWin = IntegerOptionItem.Create(15502, "VectorVentNumWin", new(5, 500, 5), 40, TabGroup.NeutralRoles, false)

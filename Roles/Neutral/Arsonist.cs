@@ -32,7 +32,7 @@ internal class Arsonist : RoleBase
     private static byte CurrentDousingTarget = byte.MaxValue;
     private static bool ArsonistCanIgniteAnytime = false;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(id, TabGroup.NeutralRoles, CustomRoles.Arsonist);
         ArsonistDouseTime = FloatOptionItem.Create(id + 10, "ArsonistDouseTime", new(0f, 10f, 1f), 0f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist])

@@ -22,7 +22,7 @@ internal class SoulCollector : RoleBase
     private static readonly Dictionary<byte, int> SoulCollectorPoints = [];
     private static readonly Dictionary<byte, bool> DidVote = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.SoulCollector);
         SoulCollectorPointsOpt = IntegerOptionItem.Create(Id + 10, "SoulCollectorPointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector])

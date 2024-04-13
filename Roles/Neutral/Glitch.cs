@@ -36,7 +36,7 @@ internal class Glitch : RoleBase
 
     private static bool isShifted = false;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         //Glitchは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Glitch, 1, zeroOne: false);
