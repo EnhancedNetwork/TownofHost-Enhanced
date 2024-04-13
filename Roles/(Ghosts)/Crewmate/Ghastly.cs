@@ -28,7 +28,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         private static OptionItem GhastlySpeed;
 
         private int PossessLimit = MaxPossesions != null ? MaxPossesions.GetInt() : byte.MaxValue;
-        private static (byte, byte) killertarget = (byte.MaxValue, byte.MaxValue);
+        private (byte, byte) killertarget = (byte.MaxValue, byte.MaxValue);
         private static readonly Dictionary<byte, long> LastTime = [];
         private static bool KillerIsChosen = false;
 
@@ -48,13 +48,11 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         {
             PlayerIds.Clear();
             LastTime.Clear();
-            killertarget = (byte.MaxValue, byte.MaxValue);
             KillerIsChosen = false;
         }
         public override void Add(byte playerId)
         {
             PlayerIds.Add(playerId);
-            PossessLimit = MaxPossesions.GetInt();
 
             CustomRoleManager.LowerOthers.Add(OthersNameText);
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
@@ -111,6 +109,8 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 TargetArrow.Add(killer, Target);
                 angel.RpcGuardAndKill(target);
                 angel.RpcResetAbilityCooldown();
+
+                Logger.Info($" chosen {target.GetRealName()} for : {GetPlayerById(killer).GetRealName()}", "GhastlyTarget");
             }
             else if (target.PlayerId == killer)
             {
