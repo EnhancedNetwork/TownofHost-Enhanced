@@ -31,7 +31,6 @@ internal class Bomber : RoleBase
 
     public override void SetupCustomOption()
     {
-        //
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Bomber);
         BomberRadius = FloatOptionItem.Create(702, "BomberRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Bomber])
