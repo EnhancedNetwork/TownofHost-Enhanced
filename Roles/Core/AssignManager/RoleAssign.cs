@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TOHE.Modules;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -633,15 +634,25 @@ public class RoleAssign
 
         while (AllPlayers.Any() && FinalRolesList.Any())
         {
-            var roleId = rd.Next(0, FinalRolesList.Count);
+            // Shuffle all players list
+            if (AllPlayers.Count > 2)
+                AllPlayers = AllPlayers.Shuffle(rd).ToList();
 
-            CustomRoles assignedRole = FinalRolesList[roleId];
+            // Shuffle final roles list
+            if (FinalRolesList.Count > 2)
+                FinalRolesList = FinalRolesList.Shuffle(rd).ToList();
 
-            RoleResult[AllPlayers[0]] = assignedRole;
-            Logger.Info($"Player：{AllPlayers[0].GetRealName()} => {assignedRole}", "RoleAssign");
+            // Select random role and player from list
+            var randomPlayer = AllPlayers[rd.Next(AllPlayers.Count)];
+            var assignedRole = FinalRolesList[rd.Next(FinalRolesList.Count)];
 
-            AllPlayers.RemoveAt(0);
-            FinalRolesList.RemoveAt(roleId);
+            // Assign random role for random player
+            RoleResult[randomPlayer] = assignedRole;
+            Logger.Info($"Player：{randomPlayer.GetRealName()} => {assignedRole}", "RoleAssign");
+
+            // Remove random role and player from list
+            AllPlayers.Remove(randomPlayer);
+            FinalRolesList.Remove(assignedRole);
         }
 
         if (AllPlayers.Any())
