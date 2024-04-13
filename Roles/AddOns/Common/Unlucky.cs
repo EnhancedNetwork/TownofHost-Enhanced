@@ -15,7 +15,7 @@ public static class Unlucky
     public static OptionItem CrewCanBeUnlucky;
     public static OptionItem NeutralCanBeUnlucky;
 
-    public static readonly Dictionary<byte, bool> UnluckCheck;
+    public static readonly Dictionary<byte, bool> UnluckCheck = [];
 
     public enum StateSuicide
     {
