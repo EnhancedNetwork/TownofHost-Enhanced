@@ -5,7 +5,6 @@ using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -41,14 +40,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0410.200.0010"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 dev 1";
+    public const string PluginVersion = "2024.0413.200.0020"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 dev 2";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = false; // ACTIVE - Latest: V1.6.0 Canary 6
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
-    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 1
+    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 2
 
     public static bool hasAccess = true;
 
@@ -298,9 +297,9 @@ public class Main : BasePlugin
 
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
             {
-                switch (role.GetCustomRoleTypes())
+                switch (role.GetCustomRoleTeam())
                 {
-                    case CustomRoleTypes.Impostor:
+                    case Custom_Team.Impostor:
                         roleColors.TryAdd(role, "#ff1919");
                         break;
                     default:
@@ -332,6 +331,7 @@ public class Main : BasePlugin
             var RoleTypes = Assembly.GetAssembly(typeof(RoleBase))!
                 .GetTypes()
                 .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
+
             foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
             {
                 Type roleType = role switch // Switch role to FatherRole (Double Classes)
@@ -340,7 +340,7 @@ public class Main : BasePlugin
                     CustomRoles.Pestilence => typeof(PlagueBearer),
                     CustomRoles.Nuker => typeof(Bomber),
                     CustomRoles.NiceMini or CustomRoles.EvilMini => typeof(Mini),
-                    _ => RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(VanillaRole),
+                    _ => RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(DefaultSetup),
                 };
 
                 CustomRoleManager.RoleClass.Add(role, (RoleBase)Activator.CreateInstance(roleType));
@@ -487,8 +487,8 @@ public class Main : BasePlugin
         hasArgumentException = false;
         ExceptionMessage = "";
 
-        LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
         LoadRoleClasses();
+        LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
 
         CustomWinnerHolder.Reset();
         Translator.Init();

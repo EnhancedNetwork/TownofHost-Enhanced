@@ -13,11 +13,11 @@ namespace TOHE.Roles.Core;
 public static class CustomRoleManager
 {
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
-    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new VanillaRole(); 
+    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup(); 
     public static List<RoleBase> AllEnabledRoles => RoleClass.Values.Where(x => x.IsEnable).ToList();
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
-    public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
+    public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new DefaultSetup();
 
     public static RoleBase CreateRoleClass(this CustomRoles role) 
     {
@@ -44,26 +44,11 @@ public static class CustomRoleManager
             AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
         }
 
+        // Set Impostor vision
+        opt.SetVision(false);
+
         player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
 
-        switch (role)
-        {
-            case CustomRoles.ShapeshifterTOHE:
-                AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
-                break;
-            case CustomRoles.ScientistTOHE:
-                AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
-                AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
-                break;
-            case CustomRoles.EngineerTOHE:
-                AURoleOptions.EngineerCooldown = 0f;
-                AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            default:
-                opt.SetVision(false);
-                break;
-        }
 
         if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
         if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
@@ -139,7 +124,7 @@ public static class CustomRoleManager
             {
                 switch (killerSubRole)
                 {
-                    case CustomRoles.Madmate when target.Is(CustomRoleTypes.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
+                    case CustomRoles.Madmate when target.Is(Custom_Team.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
                     case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTargets:
                     case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
                         return false;
@@ -150,7 +135,7 @@ public static class CustomRoleManager
                         break;
 
                     case CustomRoles.Unlucky:
-                        Unlucky.SuicideRand(killer);
+                        Unlucky.SuicideRand(killer, Unlucky.StateSuicide.TryKill);
                         if (Unlucky.UnluckCheck[killer.PlayerId]) return false;
                         break;
 
@@ -327,6 +312,9 @@ public static class CustomRoleManager
     public static HashSet<Func<PlayerControl, PlayerControl, bool, bool, string>> LowerOthers = [];
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> SuffixOthers = [];
 
+    /// <summary>
+    /// If seer == seen then GetMarkOthers called from FixedUpadte or MeetingHud (for Host)
+    /// </summary>
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (!MarkOthers.Any()) return string.Empty;
@@ -339,6 +327,9 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+    /// <summary>
+    /// If seer == seen then GetMarkOthers called from FixedUpadte (for Host)
+    /// </summary>
     public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         if (!LowerOthers.Any()) return string.Empty;
@@ -351,6 +342,9 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+    /// <summary>
+    /// If seer == seen then GetMarkOthers called from FixedUpadte or MeetingHud (for Host)
+    /// </summary>
     public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (!SuffixOthers.Any()) return string.Empty;

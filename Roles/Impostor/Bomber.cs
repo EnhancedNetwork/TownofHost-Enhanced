@@ -14,6 +14,7 @@ internal class Bomber : RoleBase
     public static bool HasEnabled => Playerids.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Bomb");
@@ -96,7 +97,7 @@ internal class Bomber : RoleBase
             if (!target.IsModClient()) target.KillFlash();
             if (target.PlayerId == shapeshifter.PlayerId) continue;
 
-            if (!target.IsAlive() || Medic.ProtectList.Contains(target.PlayerId) || (target.Is(CustomRoleTypes.Impostor) && ImpostorsSurviveBombs.GetBool()) || target.inVent || target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.Solsticer)) continue;
+            if (!target.IsAlive() || Medic.ProtectList.Contains(target.PlayerId) || (target.Is(Custom_Team.Impostor) && ImpostorsSurviveBombs.GetBool()) || target.inVent || target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.Solsticer)) continue;
 
             var pos = shapeshifter.transform.position;
             var dis = Vector2.Distance(pos, target.transform.position);

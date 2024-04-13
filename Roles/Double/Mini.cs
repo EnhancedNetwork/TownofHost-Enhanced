@@ -12,6 +12,7 @@ internal class Mini : RoleBase
     public override bool IsEnable => HasEnabled;
     public static bool HasEnabled => playerIdList.Any();
     public override CustomRoles ThisRoleBase => IsEvilMini ? CustomRoles.Impostor : CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => IsEvilMini ? Custom_RoleType.ImpostorKilling : Custom_RoleType.CrewmateBasic;
     //==================================================================\\
 
     private static OptionItem GrowUpDuration;

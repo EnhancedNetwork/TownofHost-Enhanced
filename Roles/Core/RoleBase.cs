@@ -34,19 +34,24 @@ public abstract class RoleBase
     public abstract CustomRoles ThisRoleBase { get; }
 
     /// <summary>
+    /// Defines the role type
+    /// </summary>
+    public abstract Custom_RoleType ThisRoleType { get; }
+
+    /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.
     /// </summary>
-    public virtual bool CanUseKillButton(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor) && pc.IsAlive();
+    public virtual bool CanUseKillButton(PlayerControl pc) => pc.Is(Custom_Team.Impostor) && pc.IsAlive();
 
     /// <summary>
     /// A generic method to set if a impostor/SS base may vent.
     /// </summary>
-    public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor) && pc.IsAlive();
+    public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.Is(Custom_Team.Impostor) && pc.IsAlive();
 
     /// <summary>
     /// A generic method to set if the role can use sabotage.
     /// </summary>
-    public virtual bool CanUseSabotage(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor);
+    public virtual bool CanUseSabotage(PlayerControl pc) => pc.Is(Custom_Team.Impostor);
     /// <summary>
     /// When the player presses the sabotage button
     /// </summary>
@@ -86,7 +91,7 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
     { }
-    // <summary>
+    /// <summary>
     /// The role's tasks are needed for a task win
     /// </summary>
     public virtual bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (!ForRecompute || !player.Object.IsAnySubRole(x => x.IsConverted()));

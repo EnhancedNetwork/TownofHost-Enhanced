@@ -69,14 +69,14 @@ class GameEndCheckerForNormal
                 switch (CustomWinnerHolder.WinnerTeam)
                 {
                     case CustomWinner.Crewmate:
-                        if ((pc.Is(CustomRoleTypes.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
+                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
                             pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         {
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Impostor:
-                        if (((pc.Is(CustomRoleTypes.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)))
+                        if (((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)))
                             || pc.Is(CustomRoles.Madmate) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         {
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);

@@ -14,6 +14,7 @@ internal class Bandit : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
     private static OptionItem KillCooldownOpt;
@@ -167,33 +168,44 @@ internal class Bandit : RoleBase
         return;
     }
 
-    private static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         bool flag = false;
         if (!target.HasSubRole() || target.Is(CustomRoles.Stubborn)) flag = true;
+
         var SelectedAddOn = SelectRandomAddon(target);
         if (SelectedAddOn == null || flag) // no stealable addons found on the target.
         {
             killer.Notify(Translator.GetString("Bandit_NoStealableAddons"));
+            killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return true;
         }
         if (TotalSteals[killer.PlayerId] >= MaxSteals.GetInt())
         {
             Logger.Info("Max steals reached killing the player", "Bandit");
             TotalSteals[killer.PlayerId] = MaxSteals.GetInt();
+            killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return true;
         }
 
-        return killer.CheckDoubleTrigger(target, () => { StealAddon(killer, target, SelectedAddOn); });
-    }
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
-    {
-        if (!OnCheckMurder(killer, target))
+        if (killer.CheckDoubleTrigger(target, () => { StealAddon(killer, target, SelectedAddOn); }))
         {
+            // Double click
+            killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
+            return true;
+        }
+        else
+        {
+            // Single click
             killCooldown[killer.PlayerId] = StealCooldown.GetFloat();
             return false;
         }
-        return true;
     }
 
     public override void OnReportDeadBody(PlayerControl reportash, PlayerControl panagustava)

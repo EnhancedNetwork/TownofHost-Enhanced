@@ -19,11 +19,12 @@ internal class Puppeteer : RoleBase
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
 
     private static OptionItem PuppeteerDoubleKills;
 
-    private static Dictionary<byte, byte> PuppeteerList = [];
+    private static readonly Dictionary<byte, byte> PuppeteerList = [];
 
     public static void SetupCustomOption()
     {
@@ -115,7 +116,7 @@ internal class Puppeteer : RoleBase
 
             foreach (var target in Main.AllAlivePlayerControls)
             {
-                if (target.PlayerId != puppet.PlayerId && !(target.Is(CustomRoleTypes.Impostor) || target.Is(CustomRoles.Pestilence)))
+                if (target.PlayerId != puppet.PlayerId && !(target.Is(Custom_Team.Impostor) || target.Is(CustomRoles.Pestilence)))
                 {
                     dis = Vector2.Distance(puppeteerPos, target.transform.position);
                     targetDistance.Add(target.PlayerId, dis);

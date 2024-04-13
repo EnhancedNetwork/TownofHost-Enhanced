@@ -13,6 +13,7 @@ internal class Marshall : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
 
     private static readonly Color RoleColor = Utils.GetRoleColor(CustomRoles.Marshall);
@@ -36,7 +37,7 @@ internal class Marshall : RoleBase
 
         return pc.Is(CustomRoles.Marshall) && pc.GetPlayerTaskState().IsTaskFinished;
     }
-    private static bool IsMarshallTarget(PlayerControl seer) => CustomRoles.Marshall.HasEnabled() && seer.Is(CustomRoleTypes.Crewmate);
+    private static bool IsMarshallTarget(PlayerControl seer) => CustomRoles.Marshall.HasEnabled() && seer.Is(Custom_Team.Crewmate);
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         target ??= seer;
@@ -44,7 +45,7 @@ internal class Marshall : RoleBase
         return IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "★") : string.Empty;
     }
 
-    private static bool VisibleToCrewmate(PlayerControl seer, PlayerControl target) => target.GetPlayerTaskState().IsTaskFinished && target.Is(CustomRoles.Marshall) && seer.Is(CustomRoleTypes.Crewmate);
+    private static bool VisibleToCrewmate(PlayerControl seer, PlayerControl target) => target.GetPlayerTaskState().IsTaskFinished && target.Is(CustomRoles.Marshall) && seer.Is(Custom_Team.Crewmate);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => VisibleToCrewmate(seer, target);
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToCrewmate(seer, target);
     

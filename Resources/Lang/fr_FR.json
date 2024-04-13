@@ -2257,7 +2257,7 @@
   "JudgeCanTrialNeutralE": "Peut Juger un <color=#7f8c8d>Neutre</color> <color=#912900>Mauvais</color>",
   "JudgeCanTrialNeutralC": "Peut Juger les <color=#7f8c8d>Neutres</color> <color=#D4AF37>Perturbateurs</color>",
   "JudgeCanTrialSidekick": "Peut Juger les <color=#00b4eb>Acolytes</color>",
-  "JudgeCanTrialInfected": "Peut juger un <color=#7B8968>Infecté</color>",
+  "JudgeCanTrialInfected": "Peut Juger un <color=#7B8968>Infecté</color>",
   "JudgeCanTrialContagious": "Peut Juger les <color=#2E8B57>Contaminés</color>",
   "ActiveRolesList": "Liste des Rôles Actifs",
   "ForExample": "Exemple d'utilisation",

@@ -16,6 +16,7 @@ internal class Romantic : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
     private static readonly int MaxBetTimes = 1;
@@ -280,7 +281,8 @@ internal class VengefulRomantic : RoleBase
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase; 
+    public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
+    public override Custom_RoleType ThisRoleType => new Romantic().ThisRoleType;
     //==================================================================\\
 
     public static bool hasKilledKiller = false;
@@ -355,7 +357,7 @@ internal class RuthlessRomantic : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
-
+    public override Custom_RoleType ThisRoleType => new Romantic().ThisRoleType;
     //==================================================================\\
     public override void Init()
     {

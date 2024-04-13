@@ -14,6 +14,7 @@ internal class Jailer : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
     private static OptionItem JailCooldown;
@@ -72,6 +73,7 @@ internal class Jailer : RoleBase
         JailerHasExe.Remove(playerId);
         JailerDidVote.Remove(playerId);
     }
+    public override bool CanUseKillButton(PlayerControl pc) => true;
 
     public static bool IsTarget(byte playerId) => JailerTarget.ContainsValue(playerId);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? JailCooldown.GetFloat() : 300f;
@@ -176,9 +178,9 @@ internal class Jailer : RoleBase
     {
         return ((role.IsNB() && NBCanBeExe.GetBool()) ||
                 (role.IsNC() && NCCanBeExe.GetBool()) ||
-                (role.IsNE() && NCCanBeExe.GetBool()) ||
+                (role.IsNE() && NECanBeExe.GetBool()) ||
                 (role.IsNK() && NKCanBeExe.GetBool()) ||
-                (role.IsCK() && CKCanBeExe.GetBool()) ||
+                (role.IsCrewKiller() && CKCanBeExe.GetBool()) ||
                 (role.IsImpostorTeamV3()));
     }
 

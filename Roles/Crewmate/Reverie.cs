@@ -12,6 +12,7 @@ internal class Reverie : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
     private static OptionItem DefaultKillCooldown;
@@ -73,6 +74,7 @@ internal class Reverie : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
     public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseSabotage(PlayerControl pc) => false;
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
