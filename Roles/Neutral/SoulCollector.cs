@@ -16,7 +16,6 @@ internal class SoulCollector : RoleBase
 
     private static OptionItem SoulCollectorPointsOpt;
     private static OptionItem CollectOwnSoulOpt;
-    private static OptionItem CallMeetingIfDeath;
     private static OptionItem GetPassiveSouls;
 
     private static readonly Dictionary<byte, byte> SoulCollectorTarget = [];
@@ -29,8 +28,7 @@ internal class SoulCollector : RoleBase
         SoulCollectorPointsOpt = IntegerOptionItem.Create(Id + 10, "SoulCollectorPointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector])
             .SetValueFormat(OptionFormat.Times);
         CollectOwnSoulOpt = BooleanOptionItem.Create(Id + 11, "SoulCollector_CollectOwnSoulOpt", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);
-        CallMeetingIfDeath = BooleanOptionItem.Create(Id + 12, "CallMeetingIfDeath", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);
-        /*GetPassiveSouls = BooleanOptionItem.Create(Id + 13, "GetPassiveSouls", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);*/
+        GetPassiveSouls = BooleanOptionItem.Create(Id + 12, "GetPassiveSouls", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);
     }
     public override void Init()
     {
@@ -109,6 +107,11 @@ internal class SoulCollector : RoleBase
         {
             SoulCollectorTarget[playerId] = byte.MaxValue;
             DidVote[playerId] = false;
+            if (GetPassiveSouls.GetBool())
+            {
+                SoulCollectorPoints[playerId]++;
+                Utils.SendMessage(GetString("PassiveSoulGained"), playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
+            }
         }
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
@@ -160,7 +163,6 @@ internal class SoulCollector : RoleBase
         player.RpcSetCustomRole(CustomRoles.Death);
         player.Notify(GetString("SoulCollectorToDeath"));
         player.RpcGuardAndKill(player);
-        if (CallMeetingIfDeath.GetBool()) PlayerControl.LocalPlayer.NoCheckStartMeeting(null);
         KillIfNotEjected(player);
     }
 }
