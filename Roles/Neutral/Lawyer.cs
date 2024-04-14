@@ -175,6 +175,8 @@ internal class Lawyer : RoleBase
     }
     private static string LawyerMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {
+        if (seer == null || target == null) return "";
+
         if (!seer.Is(CustomRoles.Lawyer))
         {
             if (!TargetKnowsLawyer.GetBool()) return "";
