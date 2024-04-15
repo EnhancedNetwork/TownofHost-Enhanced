@@ -1,23 +1,27 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
-public static class Agitater
+internal class Agitater : RoleBase
 {
-    private static readonly int Id = 15800;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 15800;
+    private static readonly List<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    //==================================================================\\
 
-    public static OptionItem BombExplodeCooldown;
-    public static OptionItem PassCooldown;
-    public static OptionItem AgitaterCanGetBombed;
-    public static OptionItem AgiTaterBombCooldown;
-    public static OptionItem AgitaterAutoReportBait;
-    public static OptionItem HasImpostorVision;
+    private static OptionItem BombExplodeCooldown;
+    private static OptionItem PassCooldown;
+    private static OptionItem AgitaterCanGetBombed;
+    private static OptionItem AgiTaterBombCooldown;
+    private static OptionItem AgitaterAutoReportBait;
+    private static OptionItem HasImpostorVision;
 
     public static byte CurrentBombedPlayer = byte.MaxValue;
     public static byte LastBombedPlayer = byte.MaxValue;
@@ -26,7 +30,7 @@ public static class Agitater
     public static long AgitaterBombedTime = new();
 
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Agitater);
         AgiTaterBombCooldown = FloatOptionItem.Create(Id + 10, "AgitaterBombCooldown", new(10f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Agitater])
@@ -39,20 +43,19 @@ public static class Agitater
         AgitaterAutoReportBait = BooleanOptionItem.Create(Id + 14, "AgitaterAutoReportBait", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Agitater]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 15, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Agitater]);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
         CurrentBombedPlayer = byte.MaxValue;
         LastBombedPlayer = byte.MaxValue;
         AgitaterHasBombed = false;
         CurrentBombedPlayerTime = new();
-        IsEnable = false;
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -67,16 +70,17 @@ public static class Agitater
         AgitaterHasBombed = false;
         SendRPC(CurrentBombedPlayer, LastBombedPlayer);
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AgiTaterBombCooldown.GetFloat();
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
+    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AgiTaterBombCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (!IsEnable) return false;
+        if (!HasEnabled) return false;
         if (AgitaterAutoReportBait.GetBool() && target.Is(CustomRoles.Bait)) return true;
-        if (target.Is(CustomRoles.Pestilence) || (target.Is(CustomRoles.Veteran) && Main.VeteranInProtect.ContainsKey(target.PlayerId)))
+        if (target.Is(CustomRoles.Pestilence))
         {
-            target.RpcMurderPlayerV3(killer);
+            target.RpcMurderPlayer(killer);
             ResetBomb();
             return false;
         }
@@ -100,7 +104,7 @@ public static class Agitater
                 {
                     Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
                     pc.SetRealKiller(Utils.GetPlayerById(playerIdList[0]));
-                    pc.RpcMurderPlayerV3(pc);
+                    pc.RpcMurderPlayer(pc);
                     Logger.Info($"{killer.GetNameWithRole()}  bombed {pc.GetNameWithRole()} bomb cd complete", "Agitater");
                     ResetBomb();
                 }
@@ -110,7 +114,7 @@ public static class Agitater
         return false;
     }
 
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl reported, PlayerControl agitatergoatedrole)
     {
         if (CurrentBombedPlayer == byte.MaxValue) return;
         var target = Utils.GetPlayerById(CurrentBombedPlayer);
@@ -121,11 +125,11 @@ public static class Agitater
         Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
         Main.PlayerStates[CurrentBombedPlayer].SetDead();
         target.RpcExileV2();
-        Utils.AfterPlayerDeathTasks(target, true);
+        MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
         ResetBomb();
         Logger.Info($"{killer.GetRealName()} bombed {target.GetRealName()} on report", "Agitater");
     }
-    public static void OnFixedUpdate(PlayerControl player)
+    private static void OnFixedUpdateOthers(PlayerControl player)
     {
         if (!AgitaterHasBombed) return;
 
@@ -148,12 +152,12 @@ public static class Agitater
                 }
             }
 
-            if (targetDistance.Count > 0)
+            if (targetDistance.Any())
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);
                 var KillRange = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
-                if (min.Value <= KillRange && !player.inVent && !target.inVent)
+                if (min.Value <= KillRange && !player.inVent && !target.inVent && player.RpcCheckAndMurder(target, true))
                 {
                     PassBomb(player, target);
                 }
@@ -171,9 +175,9 @@ public static class Agitater
         if (!AgitaterCanGetBombed.GetBool() && target.Is(CustomRoles.Agitater)) return;
 
 
-        if (target.Is(CustomRoles.Pestilence) || (target.Is(CustomRoles.Veteran) && Main.VeteranInProtect.ContainsKey(target.PlayerId)))
+        if (target.Is(CustomRoles.Pestilence))
         {
-            target.RpcMurderPlayerV3(player);
+            target.RpcMurderPlayer(player);
             ResetBomb();
             return;
         }
@@ -192,15 +196,19 @@ public static class Agitater
 
     public static void SendRPC(byte newbomb, byte oldbomb)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RpcPassBomb, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Agitater);
         writer.Write(newbomb);
         writer.Write(oldbomb);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         CurrentBombedPlayer = reader.ReadByte();
         LastBombedPlayer = reader.ReadByte();
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+        => hud.KillButton.OverrideText(GetString("AgitaterKillButtonText"));
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("bombshell");
 }

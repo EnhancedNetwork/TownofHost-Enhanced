@@ -96,6 +96,9 @@
 ### :star: [Mini.RegionInstall](https://github.com/miniduikboot/Mini.RegionInstall)
 >
 > - Using Mini.RegionInstall to add modded server regions
+### :star: [CrowdedMod](https://github.com/CrowdedMods/CrowdedMod)
+>
+> - Provided feature: 100 players lobby
 
 ---
 

@@ -1,128 +1,58 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-
+using TOHE.Roles.Core;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Marshall
+internal class Marshall : RoleBase
 {
-    private static readonly int Id = 11900;
-    private static readonly List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 11900;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
+    //==================================================================\\
 
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Marshall);
+    private static readonly Color RoleColor = Utils.GetRoleColor(CustomRoles.Marshall);
 
-    public static OptionItem OptionMadmateCanFindMarshall;
-
-    public static bool MadmateCanFindMarshall = false;
-
-    private static readonly Dictionary<byte, bool> IsExposed = [];
-    private static readonly Dictionary<byte, bool> IsComplete = [];
-
-    private static readonly HashSet<byte> TargetList = [];
-    private static readonly Dictionary<byte, Color> TargetColorlist = [];
-
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Marshall);
-    //    OptionMadmateCanFindMarshall = BooleanOptionItem.Create(Id + 14, "MadmateCanFindMarshall", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Marshall]);
-        OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Marshall);
+        OverrideTasksData.Create(Id + 10, TabGroup.CrewmateRoles, CustomRoles.Marshall);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList.Clear();
-        IsEnable = false;
-
-        //MadmateCanFindMarshall = OptionMadmateCanFindMarshall.GetBool();
-
-        IsExposed.Clear();
-        IsComplete.Clear();
-
-        TargetList.Clear();
-        TargetColorlist.Clear();
     }
-
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
-
-        IsExposed[playerId] = false;
-        IsComplete[playerId] = false;
     }
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
     private static bool GetExpose(PlayerControl pc)
     {
-        if (!IsThisRole(pc.PlayerId) || !pc.IsAlive() || pc.Is(CustomRoles.Madmate)) return false;
+        if (!pc.IsAlive() || pc.Is(CustomRoles.Madmate)) return false;
 
-        var marshallId = pc.PlayerId;
-        return IsExposed[marshallId];
+        return pc.Is(CustomRoles.Marshall) && pc.GetPlayerTaskState().IsTaskFinished;
     }
-    private static bool IsMarshallTarget(PlayerControl target) => IsEnable && (target.Is(CustomRoleTypes.Crewmate) || (target.Is(CustomRoles.Madmate) && MadmateCanFindMarshall));
-    public static void CheckTask(PlayerControl marshall)
+    private static bool IsMarshallTarget(PlayerControl seer) => CustomRoles.Marshall.HasEnabled() && seer.Is(Custom_Team.Crewmate);
+    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (!marshall.IsAlive() || marshall.Is(CustomRoles.Madmate)) return;
+        target ??= seer;
 
-        var marshallId = marshall.PlayerId;
-        //var marshallTask = marshall.GetPlayerTaskState();
-
-        if (!IsExposed[marshallId])
-        {
-           // foreach (var target in Main.AllAlivePlayerControls)
-           // {
-           //     if (!IsMarshallTarget(target)) continue;
-
-           //     TargetArrow.Add(target.PlayerId, snitchId);
-           // }
-            IsExposed[marshallId] = true;
-        }
-
-    /*    if (IsComplete[marshallId] || !marshallTask.IsTaskFinished) return;
-
-        foreach (var target in Main.AllAlivePlayerControls)
-        {
-            if (!IsMarshallTarget(target)) continue;
-
-            var targetId = target.PlayerId;
-            NameColorManager.Add(marshallId, targetId);
-
-            
-            //ターゲットは共通なので2回登録する必要はない
-            if (!TargetList.Contains(targetId))
-            {
-                TargetList.Add(targetId);
-
-                
-            }
-        } */
-
-        NameNotifyManager.Notify(marshall, Translator.GetString("MarshallDoneTasks"));
-
-        IsComplete[marshallId] = true;
+        return IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "★") : string.Empty;
     }
 
-    public static string GetWarningMark(PlayerControl seer, PlayerControl target)
-        => IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "★") : "";
-
-    public static string GetWarningArrow(PlayerControl seer, PlayerControl target = null)
-    {
-        if (GameStates.IsMeeting || !IsMarshallTarget(seer)) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
-
-        var exposedMarshall = playerIdList.Where(s => !Main.PlayerStates[s].IsDead && IsExposed[s]);
-        if (!exposedMarshall.Any()) return "";
-
-        var warning = "★";
-        
-
-        return Utils.ColorString(RoleColor, warning);
-    }
+    private static bool VisibleToCrewmate(PlayerControl seer, PlayerControl target) => target.GetPlayerTaskState().IsTaskFinished && target.Is(CustomRoles.Marshall) && seer.Is(Custom_Team.Crewmate);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => VisibleToCrewmate(seer, target);
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToCrewmate(seer, target);
     
-    public static void OnCompleteTask(PlayerControl player)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if (!IsThisRole(player.PlayerId) /*|| player.Is(CustomRoles.Madmate)*/) return;
-        CheckTask(player);
+        if (!isUI) Utils.SendMessage(GetString("GuessMarshallTask"), pc.PlayerId);
+        else pc.ShowPopUp(GetString("GuessMarshallTask"));
+        return true;
     }
 }

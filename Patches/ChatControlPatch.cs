@@ -1,7 +1,5 @@
 using AmongUs.Data;
-using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace TOHE;
@@ -88,13 +86,13 @@ class ChatControllerUpdatePatch
             __instance.freeChatField.textArea.SetText("");
         }
 
-        if (Input.GetKeyDown(KeyCode.UpArrow) && ChatCommands.ChatHistory.Count > 0)
+        if (Input.GetKeyDown(KeyCode.UpArrow) && ChatCommands.ChatHistory.Any())
         {
             CurrentHistorySelection = Mathf.Clamp(--CurrentHistorySelection, 0, ChatCommands.ChatHistory.Count - 1);
             __instance.freeChatField.textArea.SetText(ChatCommands.ChatHistory[CurrentHistorySelection]);
         }
 
-        if (Input.GetKeyDown(KeyCode.DownArrow) && ChatCommands.ChatHistory.Count > 0)
+        if (Input.GetKeyDown(KeyCode.DownArrow) && ChatCommands.ChatHistory.Any())
         {
             CurrentHistorySelection++;
             if (CurrentHistorySelection < ChatCommands.ChatHistory.Count)

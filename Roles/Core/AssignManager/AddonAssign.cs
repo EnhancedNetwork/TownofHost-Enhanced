@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE.Roles.Core.AssignManager;
@@ -83,7 +81,7 @@ public static class AddonAssign
         Logger.Info($"Number enabled of add-ons (after priority): {addonsIsEnableList.Count}", "Check Add-ons Count");
 
         // Add addons randomly
-        while (addonsIsEnableList.Count > 0)
+        while (addonsIsEnableList.Any())
         {
             int randomItem = rd.Next(addonsIsEnableList.Count);
             var randomAddOn = addonsIsEnableList[randomItem];
@@ -118,7 +116,7 @@ public static class AddonAssign
         for (var i = 0; i < count; i++)
         {
             // if the number of all players is 0
-            if (allPlayers.Count <= 0) return;
+            if (!allPlayers.Any()) return;
 
             // Select player
             var player = allPlayers[IRandom.Instance.Next(allPlayers.Count)];
@@ -156,7 +154,6 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.Hater)
                 || pc.Is(CustomRoles.Sunnyboy)
                 || pc.Is(CustomRoles.Bomber)
-                || pc.Is(CustomRoles.Nuker)
                 || pc.Is(CustomRoles.Provocateur)
                 || pc.Is(CustomRoles.RuthlessRomantic)
                 || pc.Is(CustomRoles.Romantic)
