@@ -829,6 +829,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mastermind)
                     || pc.Is(CustomRoles.Warlock)
                     || pc.Is(CustomRoles.Witch)
+                    || pc.Is(CustomRoles.Penguin)
                     || pc.Is(CustomRoles.Nemesis)
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Clumsy)
