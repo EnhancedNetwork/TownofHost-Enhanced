@@ -26,9 +26,9 @@ public abstract class OptionItem
     // Nullable/Empty Variables
     public Color NameColor { get; protected set; }
     public OptionFormat ValueFormat { get; protected set; }
-    public CustomGameMode GameMode { get; protected set; }
     public CustomGameMode HideOptionInFFA { get; protected set; }
     public CustomGameMode HideOptionInHnS { get; protected set; }
+    public CustomGameMode GameMode { get; protected set; }
     public bool IsHeader { get; protected set; }
     public bool IsHidden { get; protected set; }
     public bool IsText { get; protected set; }

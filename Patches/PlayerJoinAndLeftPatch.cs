@@ -70,7 +70,7 @@ class OnGameJoinedPatch
                     if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
                     {
                         // Select standart
-                        Options.GameMode.SetValue(0);
+                        Options.CurrentGameMode = CustomGameMode.Standard;
                     }
                     break;
 
@@ -81,7 +81,7 @@ class OnGameJoinedPatch
                     if (Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA)
                     {
                         // Select HideNSeekTOHE
-                        Options.GameMode.SetValue(2);
+                        Options.CurrentGameMode = CustomGameMode.HidenSeekTOHE;
                     }
                     break;
 
