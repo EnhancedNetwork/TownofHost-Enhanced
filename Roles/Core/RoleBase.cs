@@ -326,8 +326,8 @@ public abstract class RoleBase
     // Add Mark/LowerText/Suffix for player
     // When using this code remember the seer can also see the target, therefore..
     //
-    // return string.empty if "seer != target" if only seer should have it
-    // or only run the code if "seer != target" if only the target should have it.
+    // return string.empty if "seer != seen" if only seer should have it
+    // otherwise make some list or byte or smt of sorts to only get the target.
     // not needed if both should have it.
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
