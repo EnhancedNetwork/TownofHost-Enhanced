@@ -321,8 +321,14 @@ public abstract class RoleBase
     /// Set PlayerName text for the role
     /// </summary>
     public virtual string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) => string.Empty;
-
+    //
+    //
     // Add Mark/LowerText/Suffix for player
+    // When using this code remember the seer can also see the target, therefore..
+    //
+    // return string.empty if "seer != target" if only seer should have it
+    // or only run the code if "seer != target" if only the target should have it.
+    // not needed if both should have it.
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
