@@ -144,7 +144,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Misfire:
-                    if (!ChiefOfPolice.IsEnable)
+                    if (!Sheriff.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

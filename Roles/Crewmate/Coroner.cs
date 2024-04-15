@@ -17,6 +17,7 @@ internal class Coroner : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static readonly HashSet<byte> UnreportablePlayers = [];
@@ -29,7 +30,7 @@ internal class Coroner : RoleBase
     private static OptionItem CoronerAbilityUseGainWithEachTaskCompleted;
     private static OptionItem InformKillerBeingTracked;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Coroner);
         ArrowsPointingToDeadBody = BooleanOptionItem.Create(Id + 10, "CoronerArrowsPointingToDeadBody", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Coroner]);

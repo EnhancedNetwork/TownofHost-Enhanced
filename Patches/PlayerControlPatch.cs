@@ -277,7 +277,7 @@ class CheckMurderPatch
         }
 
         // Impostors can kill Madmate
-        if (killer.Is(CustomRoleTypes.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
+        if (killer.Is(Custom_Team.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
 
         // Check murder on others targets
@@ -749,13 +749,9 @@ class ReportDeadBodyPatch
 
                 if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
                 {
-                    var Ue = IRandom.Instance;
-                    if (Ue.Next(1, 100) <= Unlucky.UnluckyReportSuicideChance.GetInt())
-                    {
-                        Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                        __instance.RpcMurderPlayer(__instance);
-                        return false;
-                    }
+                    Unlucky.SuicideRand(__instance, Unlucky.StateSuicide.ReportDeadBody);
+                    if (Unlucky.UnluckCheck[__instance.PlayerId]) return false;
+                   
                 }
             }
 
@@ -1050,7 +1046,7 @@ class FixedUpdateInNormalGamePatch
                 if (GameStates.IsInGame && Main.RefixCooldownDelay <= 0)
                     foreach (var pc in Main.AllPlayerControls)
                     {
-                        if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja) || pc.Is(CustomRoles.Vampiress))
+                        if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Options.DefaultKillCooldown * 2;
                         
                         if (pc.Is(CustomRoles.Poisoner))
@@ -1063,7 +1059,7 @@ class FixedUpdateInNormalGamePatch
         if (player.AmOwner && GameStates.IsInTask)
         {
             //Kill target override processing
-            if (!player.Is(CustomRoleTypes.Impostor) && player.CanUseKillButton() && !player.Data.IsDead)
+            if (!player.Is(Custom_Team.Impostor) && player.CanUseKillButton() && !player.Data.IsDead)
             {
                 var players = __instance.GetPlayersInAbilityRangeSorted(false);
                 PlayerControl closest = !players.Any() ? null : players[0];
@@ -1287,7 +1283,7 @@ class EnterVentPatch
 
         if (pc.Is(CustomRoles.Unlucky))
         {
-            Unlucky.SuicideRand(pc);
+            Unlucky.SuicideRand(pc, Unlucky.StateSuicide.EnterVent);
         }
     }
 }
@@ -1400,7 +1396,7 @@ class PlayerControlCompleteTaskPatch
                     switch (subRole)
                     {
                         case CustomRoles.Unlucky when player.IsAlive():
-                            Unlucky.SuicideRand(player);
+                            Unlucky.SuicideRand(player, Unlucky.StateSuicide.CompleteTask);
                             break;
 
                         case CustomRoles.Tired when player.IsAlive():
@@ -1416,7 +1412,7 @@ class PlayerControlCompleteTaskPatch
                             break;
 
                         case CustomRoles.Madmate when taskState.IsTaskFinished && player.Is(CustomRoles.Snitch):
-                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(CustomRoleTypes.Impostor)).ToArray())
+                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor)).ToArray())
                             {
                                 NameColorManager.Add(impostor.PlayerId, player.PlayerId, "#ff1919");
                             }
@@ -1471,7 +1467,7 @@ public static class PlayerControlMixupOutfitPatch
 
         // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
         if (PlayerControl.LocalPlayer.Data.Role.IsImpostor &&  // Impostor with vanilla
-            !PlayerControl.LocalPlayer.Is(CustomRoleTypes.Impostor) &&  // Not an Impostor
+            !PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) &&  // Not an Impostor
             Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId))  // Desync Impostor
         {
             // Hide names
@@ -1549,12 +1545,12 @@ class PlayerControlSetRolePatch
                 Logger.Warn($"Error After RpcSetRole: {error}", "RpcSetRole.Prefix.GhostAssignPatch");
             }
 
-            var targetIsKiller = target.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
+            var targetIsKiller = target.Is(Custom_Team.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
 
             foreach (var seer in Main.AllPlayerControls)
             {
                 var self = seer.PlayerId == target.PlayerId;
-                var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
+                var seerIsKiller = seer.Is(Custom_Team.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
                 if (!ghostRoles.ContainsKey(seer))
                     ghostRoles.Add(seer, roleType);
 
@@ -1562,7 +1558,7 @@ class PlayerControlSetRolePatch
                 {
                     ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
-                else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(CustomRoleTypes.Impostor)))
+                else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(Custom_Team.Impostor)))
                 {
                     ghostRoles[seer] = RoleTypes.ImpostorGhost;
                 }

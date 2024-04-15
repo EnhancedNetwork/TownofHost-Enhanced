@@ -16,6 +16,7 @@ internal class Medic : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem WhoCanSeeProtectOpt;
@@ -46,7 +47,7 @@ internal class Medic : RoleBase
         MedicShieldDeactivationIsVisible_DeactivationIsVisibleOFF
     }
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Medic);
         WhoCanSeeProtectOpt = StringOptionItem.Create(Id + 10, "MedicWhoCanSeeProtect", EnumHelper.GetAllNames<SelectOptions>(), 0, TabGroup.CrewmateRoles, false)
@@ -215,7 +216,7 @@ internal class Medic : RoleBase
         Logger.Info($"{target.GetNameWithRole()} : Shield Shatter from the Medic", "Medic");
         return true;
     }
-    public static void OnCheckMark()
+    public override void AfterMeetingTasks()
     {
         if (!ShieldDeactivatesWhenMedicDies.GetBool()) return;
 
@@ -248,25 +249,34 @@ internal class Medic : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        target ??= seer;
-
-        if ((WhoCanSeeProtectOpt.GetInt() is 0 or 1) && (InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId))
+        if (WhoCanSeeProtectOpt.GetInt() is 0 or 1)
         {
-            return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+            if (target == null && (InProtect(seer.PlayerId) || TempMarkProtected == seer.PlayerId))
+            {
+                return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+            }
+            else if (target != null && (InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId))
+            {
+                return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+            }
         }
-
         return string.Empty;
     }
     private string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool isformeeting)
     {
-        target ??= seer;
-        if (!(InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId)) return string.Empty;
-
-        if ((WhoCanSeeProtectOpt.GetInt() is 0 or 1) || (!seer.IsAlive() && !seer.Is(CustomRoles.Medic)))
+        if (!seer.Is(CustomRoles.Medic))
         {
-            return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+            // The seer sees protect on himself
+            if ((target == null || seer == target) && (InProtect(seer.PlayerId) || TempMarkProtected == seer.PlayerId) && (WhoCanSeeProtectOpt.GetInt() is 0 or 2))
+            {
+                return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+            }
+            else if (target != null && !seer.IsAlive() && (InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId))
+            {
+                // Dead players see protect
+                return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+            }
         }
-
         return string.Empty;
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)

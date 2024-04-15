@@ -13,8 +13,9 @@ internal class Amnesiac : RoleBase
     public static bool HasEnabled = playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
-    
+
     private static OptionItem IncompatibleNeutralMode;
 
     private enum AmnesiacIncompatibleNeutralModeSelect
@@ -26,7 +27,7 @@ internal class Amnesiac : RoleBase
         Role_Imitator,
     }
     
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Amnesiac);
         IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", EnumHelper.GetAllNames<AmnesiacIncompatibleNeutralModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);

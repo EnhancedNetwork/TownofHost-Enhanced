@@ -14,6 +14,7 @@ internal class Deceiver : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
     private static OptionItem DeceiverSkillCooldown;
@@ -24,7 +25,7 @@ internal class Deceiver : RoleBase
     private static readonly Dictionary<byte, HashSet<byte>> clientList = [];
     private static readonly Dictionary<byte, int> SeelLimit = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Deceiver);
         DeceiverSkillCooldown = FloatOptionItem.Create(Id + 10, "DeceiverSkillCooldown", new(2.5f, 180f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Deceiver])
@@ -146,7 +147,7 @@ internal class Deceiver : RoleBase
                 if (target == null || !target.IsAlive()) continue;
                 var role = target.GetCustomRole();
                 if (
-                    (role.IsCrewmate() && !role.IsCK()) ||
+                    (role.IsCrewmate() && !role.IsCrewKiller()) ||
                     (role.IsNeutral() && !role.IsNK())
                     )
                 {

@@ -16,6 +16,7 @@ internal class Bloodmoon : RoleBase
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorGhosts;
     //==================================================================\\
 
     public static OptionItem KillCooldown;
@@ -25,7 +26,7 @@ internal class Bloodmoon : RoleBase
     public static readonly Dictionary<byte, int> KillCount = [];
     public static readonly Dictionary<byte, int> PlayerDie = [];
     public static readonly Dictionary<byte, long> LastTime = [];
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Bloodmoon);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(2.5f, 120f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])

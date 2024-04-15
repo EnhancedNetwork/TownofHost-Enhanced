@@ -12,6 +12,7 @@ internal class Mini : RoleBase
     public override bool IsEnable => HasEnabled;
     public static bool HasEnabled => playerIdList.Any();
     public override CustomRoles ThisRoleBase => IsEvilMini ? CustomRoles.Impostor : CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => IsEvilMini ? Custom_RoleType.ImpostorKilling : Custom_RoleType.CrewmateBasic;
     //==================================================================\\
 
     private static OptionItem GrowUpDuration;
@@ -31,7 +32,7 @@ internal class Mini : RoleBase
     private static long LastFixedUpdate = new();
     private static bool misguessed = false;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mini, 1, zeroOne: false);
         GrowUpDuration = IntegerOptionItem.Create(Id + 100, "GrowUpDuration", new(200, 800, 25), 400, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mini])

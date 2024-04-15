@@ -12,12 +12,13 @@ internal class SoulCatcher : RoleBase
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
 
     private static OptionItem ShapeSoulCatcherShapeshiftDuration;
     private static OptionItem SoulCatcherShapeshiftCooldown;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.SoulCatcher);
         ShapeSoulCatcherShapeshiftDuration = FloatOptionItem.Create(Id + 2, "ShapeshiftDuration", new(2.5f, 180f, 2.5f), 300, TabGroup.ImpostorRoles, false)

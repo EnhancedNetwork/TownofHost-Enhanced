@@ -18,6 +18,7 @@ internal class Pacifist : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem PacifistCooldown;
@@ -26,7 +27,7 @@ internal class Pacifist : RoleBase
 
     private static readonly Dictionary<byte, float> PacifistNumOfUsed = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Pacifist);
         PacifistCooldown = FloatOptionItem.Create(Id + 10, "PacifistCooldown", new(1f, 180f, 1f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pacifist])

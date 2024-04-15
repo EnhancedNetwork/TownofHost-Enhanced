@@ -8,6 +8,7 @@ internal class Trapster : RoleBase
     public static bool HasEnabled => Playerids.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
     private static OptionItem TrapsterKillCooldown;
@@ -18,7 +19,7 @@ internal class Trapster : RoleBase
     private static readonly HashSet<byte> BoobyTrapBody = [];
     private static readonly Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Trapster);
         TrapsterKillCooldown = FloatOptionItem.Create(Id + 2, "KillCooldown", new(2.5f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)

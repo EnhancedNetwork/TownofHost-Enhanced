@@ -174,7 +174,7 @@ internal class ChangeRoleSettings
             DoubleShot.Init();
             Lucky.Init();
             Bewilder.Init();
-            ChiefOfPolice.Init();
+            //ChiefOfPolice.Init();
             Cyber.Init();
             Oiiai.Init();
             Tired.Init();
@@ -490,6 +490,11 @@ internal class SelectRolesPatch
                     break;
                 case CustomGameMode.FFA:
                     GameEndCheckerForNormal.SetPredicateToFFA();
+
+                    // Added players in reset cam   
+                    Main.ResetCamPlayerList.UnionWith(Main.AllPlayerControls
+                        .Where(pc => pc.GetCustomRole() is CustomRoles.Killer)
+                        .Select(pc => pc.PlayerId));
                     break;
             }
 
@@ -500,12 +505,6 @@ internal class SelectRolesPatch
                     new PlayerGameOptionsSender(pc)
                 );
             }
-
-            // Added players with positions that have not yet been classified to the list of players requiring ResetCam   
-            Main.ResetCamPlayerList.UnionWith(Main.AllPlayerControls
-                .Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Innocent or CustomRoles.Killer)
-                .Select(p => p.PlayerId)
-                .ToArray());
 
             EAC.LogAllRoles();
 

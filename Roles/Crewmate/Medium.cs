@@ -17,6 +17,7 @@ internal class Medium : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem ContactLimitOpt;
@@ -26,7 +27,7 @@ internal class Medium : RoleBase
     private static readonly Dictionary<byte, byte> ContactPlayer = [];
     private static readonly Dictionary<byte, float> ContactLimit = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Medium);
         ContactLimitOpt = IntegerOptionItem.Create(Id + 10, "MediumContactLimit", new(0, 15, 1), 1, TabGroup.CrewmateRoles, false)

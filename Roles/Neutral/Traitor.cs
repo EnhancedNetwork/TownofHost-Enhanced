@@ -11,6 +11,7 @@ internal class Traitor : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
     private static OptionItem KillCooldown;
@@ -18,7 +19,7 @@ internal class Traitor : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem CanUsesSabotage;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         //Traitorは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Traitor, 1, zeroOne: false);
@@ -50,9 +51,9 @@ internal class Traitor : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        return !(target == killer || target.Is(CustomRoleTypes.Impostor));
+        return !(target == killer || target.Is(Custom_Team.Impostor));
     }
     
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
-        => seer.Is(CustomRoles.Traitor) && target.Is(CustomRoleTypes.Impostor);
+        => seer.Is(CustomRoles.Traitor) && target.Is(Custom_Team.Impostor);
 }

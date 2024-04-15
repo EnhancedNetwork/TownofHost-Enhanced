@@ -11,6 +11,7 @@ internal class Greedy : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
     private static OptionItem OddKillCooldown;
@@ -18,7 +19,7 @@ internal class Greedy : RoleBase
 
     private static readonly Dictionary<byte, bool> IsOdd = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Greedy);
         OddKillCooldown = FloatOptionItem.Create(Id + 10, "GreedyOddKillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false)

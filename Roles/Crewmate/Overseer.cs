@@ -17,6 +17,7 @@ internal class Overseer : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
 
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("prophecies");
@@ -34,7 +35,6 @@ internal class Overseer : RoleBase
     private static readonly List<CustomRoles> randomRolesForTrickster =
     [
         CustomRoles.Snitch,
-        //CustomRoles.Luckey,
         CustomRoles.LazyGuy,
         CustomRoles.SuperStar,
         CustomRoles.Celebrity,
@@ -75,7 +75,7 @@ internal class Overseer : RoleBase
         CustomRoles.Tracker,
     ];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Overseer);
         OverseerCooldown = FloatOptionItem.Create(Id + 10, "OverseerRevealCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Overseer])
