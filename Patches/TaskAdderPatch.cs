@@ -1,4 +1,6 @@
 using AmongUs.GameOptions;
+using HarmonyLib;
+using System.Linq;
 using UnityEngine;
 
 namespace TOHE;
@@ -44,7 +46,7 @@ class ShowFolderPatch
                 cRole == CustomRoles.Shapeshifter
                 ) continue;*/
 
-                TaskAddButton button = Object.Instantiate(__instance.RoleButton);
+                TaskAddButton button = UnityEngine.Object.Instantiate<TaskAddButton>(__instance.RoleButton);
                 button.Text.text = Utils.GetRoleName(cRole);
                 __instance.AddFileAsChild(CustomRolesFolder, button, ref xCursor, ref yCursor, ref maxHeight);
                 var roleBehaviour = new RoleBehaviour

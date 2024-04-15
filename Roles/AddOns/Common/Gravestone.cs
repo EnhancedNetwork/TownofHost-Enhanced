@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Gravestone
 {
-    private const int Id = 22100;
+    private static readonly int Id = 22100;
     
     public static OptionItem ImpCanBeGravestone;
     public static OptionItem CrewCanBeGravestone;

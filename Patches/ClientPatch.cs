@@ -1,4 +1,6 @@
+using HarmonyLib;
 using InnerNet;
+using System.Collections.Generic;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;

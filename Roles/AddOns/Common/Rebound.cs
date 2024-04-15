@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Rebound
 {
-    private const int Id = 22300;
+    private static readonly int Id = 22300;
 
     public static OptionItem ImpCanBeRebound;
     public static OptionItem CrewCanBeRebound;

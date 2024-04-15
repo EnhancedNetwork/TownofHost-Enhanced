@@ -1,4 +1,6 @@
-﻿namespace TOHE.Patches;
+﻿using HarmonyLib;
+
+namespace TOHE.Patches;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Patches/ActionButtonPatch.cs
 

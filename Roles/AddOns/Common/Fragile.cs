@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Fragile
 {
-    private const int Id = 20600;
+    private static readonly int Id = 20600;
 
     public static OptionItem ImpCanBeFragile;
     public static OptionItem CrewCanBeFragile;
@@ -29,19 +29,18 @@ public static class Fragile
     public static bool KillFragile(PlayerControl killer, PlayerControl target)
     {
         var killerRole = killer.GetCustomRole();
-        if (killer.RpcCheckAndMurder(target, true) 
-            && ((killerRole.IsImpostorTeamV3() && ImpCanKillFragile.GetBool())
+        if ((killerRole.IsImpostorTeamV3() && ImpCanKillFragile.GetBool())
             || (killerRole.IsNeutral() && NeutralCanKillFragile.GetBool())
-            || (killerRole.IsCrewmate() && CrewCanKillFragile.GetBool())))
+            || (killerRole.IsCrewmate() && CrewCanKillFragile.GetBool()))
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
             if (FragileKillerLunge.GetBool())
             {
-                killer.RpcMurderPlayer(target);
+                killer.RpcMurderPlayerV3(target);
             }
             else
             {
-                target.RpcMurderPlayer(target);
+                target.RpcMurderPlayerV3(target);
             }
             target.SetRealKiller(killer);
             killer.ResetKillCooldown();

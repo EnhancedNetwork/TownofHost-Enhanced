@@ -1,48 +1,38 @@
 ﻿using Hazel;
-using TOHE.Roles.Core;
+using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
-using static TOHE.MeetingHudStartPatch;
-using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
-internal class Mortician : RoleBase
+public static class Mortician
 {
-    //===========================SETUP================================\\
-    private const int Id = 8900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
-    //==================================================================\\
+    private static readonly int Id = 8900;
+    private static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
 
     private static OptionItem ShowArrows;
 
-    private static readonly Dictionary<byte, string> lastPlayerName = [];
-    private static readonly Dictionary<byte, string> msgToSend = [];
+    private static Dictionary<byte, string> lastPlayerName = [];
+    public static Dictionary<byte, string> msgToSend = [];
 
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mortician);
         ShowArrows = BooleanOptionItem.Create(Id + 2, "ShowArrows", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mortician]);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
-        lastPlayerName.Clear();
-        msgToSend.Clear();
+        playerIdList = [];
+        lastPlayerName = [];
+        msgToSend = [];
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
-        }
+        IsEnable = true;
     }
-    public override void Remove(byte playerId)
+    public static void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
     }
@@ -69,10 +59,8 @@ internal class Mortician : RoleBase
         else
             LocateArrow.RemoveAllTarget(playerId);
     }
-    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public static void OnPlayerDead(PlayerControl target)
     {
-        if (inMeeting) return;
-
         Vector2 pos = target.transform.position;
         float minDis = float.MaxValue;
         string minName = "";
@@ -96,7 +84,7 @@ internal class Mortician : RoleBase
             SendRPC(pc, true, target.transform.position);
         }
     }
-    public override void OnReportDeadBody(PlayerControl pc, PlayerControl target)
+    public static void OnReportDeadBody(PlayerControl pc, GameData.PlayerInfo target)
     {
         foreach (var apc in playerIdList.ToArray())
         {
@@ -106,13 +94,11 @@ internal class Mortician : RoleBase
 
         if (!pc.Is(CustomRoles.Mortician) || target == null || pc.PlayerId == target.PlayerId) return;
         lastPlayerName.TryGetValue(target.PlayerId, out var name);
-        if (name == "") msgToSend.Add(pc.PlayerId, string.Format(GetString("MorticianGetNoInfo"), target.GetRealName()));
-        else msgToSend.Add(pc.PlayerId, string.Format(GetString("MorticianGetInfo"), target.GetRealName(), name));
+        if (name == "") msgToSend.Add(pc.PlayerId, string.Format(Translator.GetString("MorticianGetNoInfo"), target.PlayerName));
+        else msgToSend.Add(pc.PlayerId, string.Format(Translator.GetString("MorticianGetInfo"), target.PlayerName, name));
     }
-    public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public static string GetTargetArrow(PlayerControl seer, PlayerControl target = null)
     {
-        if (isForMeeting) return string.Empty;
-
         if (ShowArrows.GetBool())
         {
             if (!seer.Is(CustomRoles.Mortician)) return "";
@@ -122,10 +108,4 @@ internal class Mortician : RoleBase
         }
         else return "";
     }
-    public override void OnMeetingHudStart(PlayerControl pc)
-    {
-        if (msgToSend.ContainsKey(pc.PlayerId))
-            AddMsg(msgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mortician), GetString("MorticianCheckTitle")));
-    }
-    public override void MeetingHudClear() => msgToSend.Clear();
 }

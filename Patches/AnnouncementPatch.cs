@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using AmongUs.Data;
 using AmongUs.Data.Player;
 using Assets.InnerNet;
+using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System.Text.Json;
@@ -115,7 +118,7 @@ public class ModNews
         Logger.Info("AllModNews:" + AllModNews.Count, "ModNews");
         AllModNews.Sort((a1, a2) => { return DateTime.Compare(DateTime.Parse(a2.Date), DateTime.Parse(a1.Date)); });
 
-        List<Announcement> FinalAllNews = [];
+        List<Announcement> FinalAllNews = new();
         AllModNews.Do(n => FinalAllNews.Add(n.ToAnnouncement()));
         foreach (var news in aRange)
         {

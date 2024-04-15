@@ -1,51 +1,50 @@
 using Hazel;
-using TOHE.Roles.Core;
+using System.Collections.Generic;
+
+using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-internal class Imitator : RoleBase
+public static class Imitator
 {
-    //===========================SETUP================================\\
-    private const int Id = 13000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
-    //==================================================================\\
+    private static readonly int Id = 13000;
+    private static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
 
-    private static OptionItem RememberCooldown;
-    private static OptionItem IncompatibleNeutralMode;
+    public static OptionItem RememberCooldown;
+    public static OptionItem RefugeeKillCD;
+    public static OptionItem IncompatibleNeutralMode;
+    public static readonly string[] ImitatorIncompatibleNeutralMode =
+    [
+        "Role.Imitator",
+        "Role.Pursuer",
+        "Role.Follower",
+        "Role.Maverick",
+        "Role.Amnesiac",
+    ];
 
-    private static readonly Dictionary<byte, int> RememberLimit = [];
+    private static Dictionary<byte, int> RememberLimit = [];
 
-    private enum ImitatorIncompatibleNeutralModeSelect
-    {
-        Role_Imitator,
-        Role_Pursuer,
-        Role_Follower,
-        Role_Maverick,
-        Role_Amnesiac
-    }
-
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Imitator);
         RememberCooldown = FloatOptionItem.Create(Id + 10, "RememberCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator])
                 .SetValueFormat(OptionFormat.Seconds);
-        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", EnumHelper.GetAllNames<ImitatorIncompatibleNeutralModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
+        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", ImitatorIncompatibleNeutralMode, 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
-        RememberLimit.Clear();
+        playerIdList = [];
+        RememberLimit = [];
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         RememberLimit.Add(playerId, 1);
+        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -54,13 +53,12 @@ internal class Imitator : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Imitator);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRememberLimit, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(RememberLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
@@ -74,25 +72,47 @@ internal class Imitator : RoleBase
             RememberLimit[playerId] = Limit;
         }
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberLimit[id] >= 1 ? RememberCooldown.GetFloat() : 300f;
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (!RememberLimit.TryGetValue(player.PlayerId, out var x) || x > 0);
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberLimit[id] >= 1 ? RememberCooldown.GetFloat() : 300f;
+    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (!RememberLimit.TryGetValue(player.PlayerId, out var x) || x > 0);
+    public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (RememberLimit[killer.PlayerId] < 1) return true;
+        if (RememberLimit[killer.PlayerId] < 1) return;
 
         var role = target.GetCustomRole();
 
-        if (role is CustomRoles.Jackal
-            or CustomRoles.HexMaster
-            or CustomRoles.Poisoner
-            or CustomRoles.Juggernaut 
-            or CustomRoles.BloodKnight
-            or CustomRoles.Sheriff)
+        if (role.Is(CustomRoles.Jackal)
+            || role.Is(CustomRoles.HexMaster)
+            || role.Is(CustomRoles.Poisoner) 
+            || role.Is(CustomRoles.Juggernaut) 
+            || role.Is(CustomRoles.BloodKnight)
+            || role.Is(CustomRoles.Sheriff))
         {
             RememberLimit[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
             killer.RpcSetCustomRole(role);
-            killer.GetRoleClass().Add(killer.PlayerId);
+
+            //Do those trash add check here
+            switch (role)
+            {
+                case CustomRoles.Jackal:
+                    Jackal.Add(killer.PlayerId);
+                    break;
+                case CustomRoles.HexMaster:
+                    HexMaster.Add(killer.PlayerId);
+                    break;
+                case CustomRoles.Poisoner:
+                    Poisoner.Add(killer.PlayerId);
+                    break;
+                case CustomRoles.Juggernaut:
+                    Juggernaut.Add(killer.PlayerId);
+                    break;
+                case CustomRoles.BloodKnight:
+                    BloodKnight.Add(killer.PlayerId);
+                    break;
+                case CustomRoles.Sheriff:
+                    Sheriff.Add(killer.PlayerId);
+                    break;
+            }
 
             if (role.IsCrewmate())
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
@@ -114,22 +134,22 @@ internal class Imitator : RoleBase
                 case 1:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedPursuer")));
                     killer.RpcSetCustomRole(CustomRoles.Pursuer);
-                    killer.GetRoleClass().Add(killer.PlayerId);
+                    Pursuer.Add(killer.PlayerId);
                     break;
                 case 2:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedFollower")));
-                    killer.RpcSetCustomRole(CustomRoles.Follower);
-                    killer.GetRoleClass().Add(killer.PlayerId);
+                    killer.RpcSetCustomRole(CustomRoles.Totocalcio);
+                    Totocalcio.Add(killer.PlayerId);
                     break;
                 case 3:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedMaverick")));
                     killer.RpcSetCustomRole(CustomRoles.Maverick);
-                    killer.GetRoleClass().Add(killer.PlayerId);
+                    Maverick.Add(killer.PlayerId);
                     break;
-                case 4: //....................................................................................x100
+                case 4:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedAmnesiac")));
                     killer.RpcSetCustomRole(CustomRoles.Amnesiac);
-                    killer.GetRoleClass().Add(killer.PlayerId);
+                    Amnesiac.Add(killer.PlayerId);
                     break;
             }
 
@@ -139,7 +159,7 @@ internal class Imitator : RoleBase
             RememberLimit[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Sheriff);
-            killer.GetRoleClass().Add(killer.PlayerId);
+            Sheriff.Add(killer.PlayerId);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }
@@ -170,11 +190,34 @@ internal class Imitator : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
         }
 
-        return true;
+        return;
     }
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    //public static string GetRememberLimit() => Utils.ColorString(RememberLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Imitator) : Color.gray, $"({RememberLimit})");
+    public static bool KnowRole(PlayerControl player, PlayerControl target)
     {
-        hud.KillButton.OverrideText(GetString("ImitatorKillButtonText"));
+        if (!playerIdList.Contains(player.PlayerId)) return false; //Add this next time you copy paste
+
+        if (player.Is(CustomRoles.Infectious) && target.Is(CustomRoles.Infectious)) return true;
+        if (player.Is(CustomRoles.Glitch) && target.Is(CustomRoles.Glitch)) return true;
+        if (player.Is(CustomRoles.Wraith) && target.Is(CustomRoles.Wraith)) return true;
+        if (player.Is(CustomRoles.Medusa) && target.Is(CustomRoles.Medusa)) return true;
+        if (player.Is(CustomRoles.Pelican) && target.Is(CustomRoles.Pelican)) return true;
+        if (player.Is(CustomRoles.Refugee) && target.Is(CustomRoles.Refugee)) return true;
+        if (player.Is(CustomRoles.Parasite) && target.Is(CustomRoles.Parasite)) return true;
+        if (player.Is(CustomRoles.SerialKiller) && target.Is(CustomRoles.SerialKiller)) return true;
+        if (player.Is(CustomRoles.Pickpocket) && target.Is(CustomRoles.Pickpocket)) return true;
+        if (player.Is(CustomRoles.Traitor) && target.Is(CustomRoles.Traitor)) return true;
+        if (player.Is(CustomRoles.Virus) && target.Is(CustomRoles.Virus)) return true;
+        if (player.Is(CustomRoles.Spiritcaller) && target.Is(CustomRoles.Spiritcaller)) return true;
+        if (player.Is(CustomRoles.Succubus) && target.Is(CustomRoles.Succubus)) return true;
+        if (player.Is(CustomRoles.Poisoner) && target.Is(CustomRoles.Poisoner)) return true;
+        if (player.Is(CustomRoles.Shroud) && target.Is(CustomRoles.Shroud)) return true;
+        if (player.Is(CustomRoles.Refugee) && target.Is(CustomRoles.Refugee)) return true;
+        if (player.Is(CustomRoles.Werewolf) && target.Is(CustomRoles.Werewolf)) return true;
+        //if (player.Is(CustomRoles.Occultist) && target.Is(CustomRoles.Occultist)) return true;
+        if (player.Is(CustomRoles.Refugee) && target.Is(CustomRoleTypes.Impostor)) return true;
+        if (player.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Refugee)) return true;
+        return false;
     }
 
 }

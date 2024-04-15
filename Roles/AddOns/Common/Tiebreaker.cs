@@ -1,8 +1,10 @@
-﻿namespace TOHE.Roles.AddOns.Common;
+﻿using System.Collections.Generic;
+
+namespace TOHE.Roles.AddOns.Common;
 
 public static class Tiebreaker
 {
-    private const int Id = 20200;
+    private static readonly int Id = 20200;
 
     public static OptionItem ImpCanBeTiebreaker;
     public static OptionItem CrewCanBeTiebreaker;

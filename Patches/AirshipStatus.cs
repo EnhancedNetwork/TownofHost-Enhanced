@@ -1,3 +1,5 @@
+using HarmonyLib;
+
 namespace TOHE;
 
 //参考元:https://github.com/yukieiji/ExtremeRoles/blob/master/ExtremeRoles/Patches/AirshipStatusPatch.cs

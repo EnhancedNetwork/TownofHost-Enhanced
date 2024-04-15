@@ -1,61 +1,60 @@
 using Hazel;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TOHE.Modules;
-using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-internal class Witch : RoleBase
+public static class Witch
 {
-    //===========================SETUP================================\\
-    private const int Id = 2500;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
-    //==================================================================\\
-
-    public static OptionItem ModeSwitchActionOpt;
-
-    private static readonly Dictionary<byte, bool> SpellMode = [];
-    private static readonly Dictionary<byte, HashSet<byte>> SpelledPlayer = [];
-
-    private enum SwitchTrigger
+    public enum SwitchTrigger
     {
-        TriggerKill,
-        TriggerVent,
-        TriggerDouble,
+        Kill,
+        Vent,
+        DoubleTrigger,
     };
-    private static SwitchTrigger NowSwitchTrigger;
+    public static readonly string[] SwitchTriggerText =
+    [
+        "TriggerKill", "TriggerVent","TriggerDouble"
+    ];
 
-    public override void SetupCustomOption()
+    private static readonly int Id = 2500;
+    public static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
+
+    public static Dictionary<byte, bool> SpellMode = [];
+    public static Dictionary<byte, List<byte>> SpelledPlayer = [];
+
+    public static OptionItem ModeSwitchAction;
+    public static SwitchTrigger NowSwitchTrigger;
+    public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Witch);
-        ModeSwitchActionOpt = StringOptionItem.Create(Id + 10, "WitchModeSwitchAction", EnumHelper.GetAllNames<SwitchTrigger>(), 2, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Witch]);
+        ModeSwitchAction = StringOptionItem.Create(Id + 10, "WitchModeSwitchAction", SwitchTriggerText, 2, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Witch]);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
-        SpellMode.Clear();
-        SpelledPlayer.Clear();
+        playerIdList = [];
+        SpellMode = [];
+        SpelledPlayer = [];
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         SpellMode.Add(playerId, false);
         SpelledPlayer.Add(playerId, []);
-        NowSwitchTrigger = (SwitchTrigger)ModeSwitchActionOpt.GetValue();
+        NowSwitchTrigger = (SwitchTrigger)ModeSwitchAction.GetValue();
+        IsEnable = true;
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-        CustomRoleManager.MarkOthers.Add(GetSpelledMark);
     }
-
     private static void SendRPC(bool doSpell, byte witchId, byte target = 255)
     {
         if (doSpell)
@@ -74,6 +73,7 @@ internal class Witch : RoleBase
 
         }
     }
+
     public static void ReceiveRPC(MessageReader reader, bool doSpell)
     {
         if (doSpell)
@@ -95,16 +95,19 @@ internal class Witch : RoleBase
             SpellMode[playerId] = reader.ReadBoolean();
         }
     }
-
-    private static void SwitchSpellMode(byte playerId, bool kill)
+    public static bool IsSpellMode(byte playerId)
+    {
+        return SpellMode.ContainsKey(playerId) && SpellMode[playerId];
+    }
+    public static void SwitchSpellMode(byte playerId, bool kill)
     {
         bool needSwitch = false;
         switch (NowSwitchTrigger)
         {
-            case SwitchTrigger.TriggerKill:
+            case SwitchTrigger.Kill:
                 needSwitch = kill;
                 break;
-            case SwitchTrigger.TriggerVent:
+            case SwitchTrigger.Vent:
                 needSwitch = !kill;
                 break;
         }
@@ -115,12 +118,19 @@ internal class Witch : RoleBase
             Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
         }
     }
+    public static bool HaveSpelledPlayer()
+    {
+        foreach (var witch in playerIdList)
+        {
+            if (SpelledPlayer[witch].Count != 0) return true;
+        }
+        return false;
 
-    private static bool IsSpellMode(byte playerId) => SpellMode.TryGetValue(playerId, out var isSpellMode) && isSpellMode;
+    }
 
     private static bool IsSpelled(byte target) => SpelledPlayer.Any(x => x.Value.Contains(target));
 
-    private static void SetSpelled(PlayerControl killer, PlayerControl target)
+    public static void SetSpelled(PlayerControl killer, PlayerControl target)
     {
         if (!IsSpelled(target.PlayerId))
         {
@@ -131,7 +141,7 @@ internal class Witch : RoleBase
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
         }
     }
-    private static void RemoveSpelledPlayer()
+    public static void RemoveSpelledPlayer()
     {
         foreach (var witch in playerIdList)
         {
@@ -139,28 +149,31 @@ internal class Witch : RoleBase
             SendRPC(true, witch);
         }
     }
-
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (NowSwitchTrigger == SwitchTrigger.TriggerDouble)
+        if (target.Is(CustomRoles.Pestilence)) return true;
+        if (Medic.ProtectList.Contains(target.PlayerId)) return false;
+
+        if (NowSwitchTrigger == SwitchTrigger.DoubleTrigger)
         {
             return killer.CheckDoubleTrigger(target, () => { SetSpelled(killer, target); });
         }
-
         if (!IsSpellMode(killer.PlayerId))
         {
             SwitchSpellMode(killer.PlayerId, true);
+            //キルモードなら通常処理に戻る
             return true;
         }
         SetSpelled(killer, target);
-        SwitchSpellMode(killer.PlayerId, true);
 
+        //スペルに失敗してもスイッチ判定
+        SwitchSpellMode(killer.PlayerId, true);
+        //キル処理終了させる
         return false;
     }
     public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (!HasEnabled || deathReason != PlayerState.DeathReason.Vote) return;
-
+        if (!IsEnable || deathReason != PlayerState.DeathReason.Vote) return;
         foreach (var id in exileIds)
         {
             if (SpelledPlayer.ContainsKey(id))
@@ -186,37 +199,23 @@ internal class Witch : RoleBase
                 Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
             }
         }
-        
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Spell, [.. spelledIdList]);
         RemoveSpelledPlayer();
     }
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public static string GetSpelledMark(byte target, bool isMeeting)
     {
-        RemoveSpelledPlayer();
-    }
-    public override void OnEnterVent(PlayerControl pc, Vent vent)
-    {
-        if (NowSwitchTrigger is SwitchTrigger.TriggerVent)
-        {
-            SwitchSpellMode(pc.PlayerId, false);
-        }
-    }
-    private string GetSpelledMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-    {
-        seen ??= seer;
-
-        if (isForMeeting && IsSpelled(seen.PlayerId))
+        if (IsSpelled(target) && isMeeting)
         {
             return Utils.ColorString(Palette.ImpostorRed, "†");
         }
-        return string.Empty;
+        return "";
     }
-    public override string GetLowerText(PlayerControl witch, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    public static string GetSpellModeText(PlayerControl witch, bool hud, bool isMeeting = false)
     {
-        if (witch == null || isForMeeting) return string.Empty;
+        if (witch == null || isMeeting) return "";
 
         var str = new StringBuilder();
-        if (isForHud)
+        if (hud)
         {
             str.Append($"{GetString("WitchCurrentMode")}: ");
         }
@@ -224,7 +223,7 @@ internal class Witch : RoleBase
         {
             str.Append($"{GetString("Mode")}: ");
         }
-        if (NowSwitchTrigger == SwitchTrigger.TriggerDouble)
+        if (NowSwitchTrigger == SwitchTrigger.DoubleTrigger)
         {
             str.Append(GetString("WitchModeDouble"));
         }
@@ -234,15 +233,28 @@ internal class Witch : RoleBase
         }
         return str.ToString();
     }
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    public static void GetAbilityButtonText(HudManager hud)
     {
-        if (IsSpellMode(playerId) && NowSwitchTrigger != SwitchTrigger.TriggerDouble)
+        if (IsSpellMode(PlayerControl.LocalPlayer.PlayerId) && NowSwitchTrigger != SwitchTrigger.DoubleTrigger)
         {
             hud.KillButton.OverrideText(GetString("WitchSpellButtonText"));
         }
         else
         {
             hud.KillButton.OverrideText(GetString("KillButtonText"));
+        }
+    }
+
+    public static void OnEnterVent(PlayerControl pc)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (!IsEnable) return;
+        if (playerIdList.Contains(pc.PlayerId))
+        {
+            if (NowSwitchTrigger is SwitchTrigger.Vent)
+            {
+                SwitchSpellMode(pc.PlayerId, false);
+            }
         }
     }
 }

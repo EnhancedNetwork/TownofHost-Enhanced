@@ -1,7 +1,10 @@
 using AmongUs.Data;
+using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -149,19 +152,7 @@ public static class TemplateManager
                 HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
             else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, replay: true);
         }
-        else foreach (string x in sendList.ToArray())
-            {
-                var title = TryGetTitle(x, out var HasTitle);
-                var rmv = x;
-                if (HasTitle)
-                {
-                    rmv = title != "" ? x.Remove(x.IndexOf("<title>"), x.IndexOf("</title>")) : "";
-                    rmv = rmv.Replace("<title>", "");
-                    rmv = rmv.Replace("</title>", "");
-                }
-
-                Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, replay: true);
-            }
+        else foreach (string x in sendList.ToArray()) Utils.SendMessage(ApplyReplaceDictionary(x), playerId, replay:true);
     }
 
     private static string ApplyReplaceDictionary(string text)
@@ -189,24 +180,5 @@ public static class TemplateManager
             //Logger.Exception(ex, "TemplateManager.ApplyReplaceDictionary");
             return text;
         }
-    }
-    private static string TryGetTitle(string Text, out bool Contains)
-    {
-        int start = Text.IndexOf("<title>");
-        int end = Text.IndexOf("</title>");
-        var contains = start != -1 && end != -1 && start < end;
-        Contains = contains;
-        string title = "";
-
-        if (contains)
-        {
-            title = Text.Substring(start, end);
-            title = title.Replace("<title>", "");
-            title = title.Replace("</title>", "");
-            
-        }
-
-
-        return title;
     }
 }

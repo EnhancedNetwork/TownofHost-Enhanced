@@ -1,27 +1,18 @@
-﻿using AmongUs.GameOptions;
-using TOHE.Modules;
+﻿using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
-internal class Disperser : RoleBase
+public static class Disperser
 {
-    //===========================SETUP================================\\
-    private const int Id = 24400;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    public override bool IsEnable => HasEnabled;
-    public override bool IsExperimental => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
-    //==================================================================\\
+    private static readonly int Id = 24400;
 
     private static OptionItem DisperserShapeshiftCooldown;
     private static OptionItem DisperserShapeshiftDuration;
 
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.Disperser);
         DisperserShapeshiftCooldown = FloatOptionItem.Create(Id + 5, "ShapeshiftCooldown", new(1f, 180f, 1f), 20f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Disperser])
@@ -29,38 +20,26 @@ internal class Disperser : RoleBase
         DisperserShapeshiftDuration = FloatOptionItem.Create(Id + 7, "ShapeshiftDuration", new(1f, 60f, 1f), 15f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Disperser])
             .SetValueFormat(OptionFormat.Seconds);
     }
-
-    public override void Init()
-    {
-        PlayerIds.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        PlayerIds.Add(playerId);
-    }
-
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    public static void ApplyGameOptions()
     {
         AURoleOptions.ShapeshifterCooldown = DisperserShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = DisperserShapeshiftDuration.GetFloat();
     }
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public static void DispersePlayers(PlayerControl shapeshifter, bool shapeshiftIsHidden = false)
     {
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
-        
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in PlayerControl.AllPlayerControls)
         {
-            if (!pc.CanBeTeleported())
+            if ((!shapeshiftIsHidden && shapeshifter.PlayerId == pc.PlayerId) || !pc.CanBeTeleported())
             {
-                pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), GetString("ErrorTeleport")));
+                if (!pc.Is(CustomRoles.Disperser) && pc.IsAlive())
+                    pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), GetString("ErrorTeleport")));
+                
                 continue;
             }
 
             pc.RPCPlayCustomSound("Teleport");
             pc.RpcRandomVentTeleport();
-            pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), GetString("TeleportedInRndVentByDisperser")));
+            pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), string.Format(GetString("TeleportedInRndVentByDisperser"), pc.GetRealName())));
         }
-
-        return false;
     }
 }

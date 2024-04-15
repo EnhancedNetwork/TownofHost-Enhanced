@@ -1,41 +1,33 @@
 ﻿using Hazel;
+using System.Collections.Generic;
 using System;
+using System.Linq;
 using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
-internal class Quizmaster : RoleBase
+public class Quizmaster
 {
-    //===========================SETUP================================\\
-    private const int Id = 27000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override bool IsExperimental => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => CanKillsAfterMark() ? Custom_RoleType.NeutralKilling : Custom_RoleType.NeutralChaos;
-    //==================================================================\\
-
-    private static OptionItem QuestionDifficulty;
-    public static OptionItem CanKillAfterMarkOpt;
-    private static OptionItem CanVentAfterMark;
-    private static OptionItem NumOfKillAfterMark;
-    private static OptionItem CanGiveQuestionsAboutPastGames;
-
-    private static QuizQuestionBase Question = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", HasAnswersTranslation = false, HasQuestionTranslation = false };
-    private static QuizQuestionBase previousQuestion = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", HasAnswersTranslation = false, HasQuestionTranslation = false };
-
-    private static PlayerControl Player;
+    private static readonly int Id = 27000;
+    //public static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
+    public static PlayerControl Player;
+    public static OptionItem QuestionDifficulty;
+    public static OptionItem CanKillAfterMark;
+    public static OptionItem CanVentAfterMark;
+    public static OptionItem NumOfKillAfterMark;
+    public static OptionItem CanGiveQuestionsAboutPastGames;
+    public static QuizQuestionBase Question = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", HasAnswersTranslation = false, HasQuestionTranslation = false };
+    public static QuizQuestionBase previousQuestion = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", HasAnswersTranslation = false, HasQuestionTranslation = false };
     public static Sabotages lastSabotage = Sabotages.None;
     public static Sabotages firstSabotageOfRound = Sabotages.None;
-    //private static int killsForRound = 0;
-    private static bool allowedKilling = false;
-    //private static bool allowedVenting = true;
-    private static bool AlreadyMarked = false;
-    private static byte MarkedPlayer = byte.MaxValue;
+    public static int killsForRound = 0;
+    public static bool allowedKilling = false;
+    //public static bool allowedVenting = true;
+    public static bool AlreadyMarked = false;
+    public static byte MarkedPlayer = byte.MaxValue;
     public static string lastExiledColor = "None";
     public static string lastReportedColor = "None";
     public static string thisReportedColor = "None";
@@ -45,31 +37,30 @@ internal class Quizmaster : RoleBase
     public static int diedThisRound = 0;
     public static int buttonMeeting = 0;
 
-    public static bool CanKillAfterMark = false;
-
-    public override void SetupCustomOption()
+    public static bool InExperimental = true;
+    public static void SetupCustomOption()
     {
-        TabGroup tab = TabGroup.OtherRoles;
+        TabGroup tab = InExperimental ? TabGroup.OtherRoles : TabGroup.NeutralRoles;
 
         SetupSingleRoleOptions(Id, tab, CustomRoles.Quizmaster, 1);
         QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.QuestionDifficulty", new(1, 4, 1), 1, tab, false).SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
 
         CanVentAfterMark = BooleanOptionItem.Create(Id + 11, "QuizmasterSettings.CanVentAfterMark", true, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-        CanKillAfterMarkOpt = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
+        CanKillAfterMark = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         NumOfKillAfterMark = IntegerOptionItem.Create(Id + 13, "QuizmasterSettings.NumOfKillAfterMark", new(1, 15, 1), 1, tab, false)
             .SetValueFormat(OptionFormat.Players)
-            .SetParent(CanKillAfterMarkOpt);
+            .SetParent(CanKillAfterMark);
         CanGiveQuestionsAboutPastGames = BooleanOptionItem.Create(Id + 14, "QuizmasterSettings.CanGiveQuestionsAboutPastGames", false, tab, false)
            .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
+        //playerIdList = new();
         Player = null;
         firstSabotageOfRound = Sabotages.None;
-        //killsForRound = 0;
+        killsForRound = 0;
         allowedKilling = false;
         //allowedVenting = true;
         AlreadyMarked = false;
@@ -88,27 +79,21 @@ internal class Quizmaster : RoleBase
         diedThisRound = 0;
         meetingNum = 0;
         buttonMeeting = 0;
-
-        CanKillAfterMark = CanKillAfterMarkOpt.GetBool();
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        //playerIdList.Add(playerId);
         MarkedPlayer = byte.MaxValue;
-
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
-        }
+        IsEnable = true;
     }
     private static void SendRPC(byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Quizmaster);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.QuizmasterMarkPlayer, SendOption.Reliable, -1);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte targetId = reader.ReadByte();
 
@@ -118,15 +103,18 @@ internal class Quizmaster : RoleBase
             AlreadyMarked = true;
             MarkedPlayer = targetId;
 
-            allowedKilling = CanKillAfterMark;
+            allowedKilling = CanKillAfterMark.GetBool();
         }
     }
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
+    public static bool CanUseKillButton(PlayerControl pc)
+    {
+        if (pc == null || !pc.IsAlive()) return false;
 
-    public static bool CanKillsAfterMark() => CanKillAfterMark;
+        return true;
+    }
 
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
-    public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc)
+    public static bool CanUseVentButton(PlayerControl pc)
     {
         if (pc == null || !pc.IsAlive()) return false;
        
@@ -139,9 +127,8 @@ internal class Quizmaster : RoleBase
         return canVent;
     }
 
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (!killer.RpcCheckAndMurder(target, true)) return false;
         if (AlreadyMarked == false)
         {
             //allowedVenting = false;
@@ -151,7 +138,7 @@ internal class Quizmaster : RoleBase
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
-            allowedKilling = CanKillAfterMark;
+            allowedKilling = CanKillAfterMark.GetBool();
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
@@ -163,7 +150,7 @@ internal class Quizmaster : RoleBase
         return allowedKilling && AlreadyMarked;
     }
 
-    private static QuizQuestionBase GetRandomQuestion(List<QuizQuestionBase> qt)
+    static QuizQuestionBase GetRandomQuestion(List<QuizQuestionBase> qt)
     {
         List<QuizQuestionBase> questions = qt.Where(a => a.Stage <= QuestionDifficulty.GetInt()).ToList();
         var rnd = IRandom.Instance;
@@ -172,14 +159,15 @@ internal class Quizmaster : RoleBase
         {
             question = questions[rnd.Next(0, questions.Count)];
         }
-        question ??= new PlrColorQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion };
+        if (question == null)
+            question = new PlrColorQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion };
 
         previousQuestion = question;
         question.FixUnsetAnswers();
         return question;
     }
 
-    private static CustomRoles GetRandomRole(List<CustomRoles> roles, bool AllowAddons)
+    static CustomRoles GetRandomRole(List<CustomRoles> roles, bool AllowAddons)
     {
         var rnd = IRandom.Instance;
         CustomRoles chosenRole = roles[rnd.Next(0, roles.Count)];
@@ -193,6 +181,7 @@ internal class Quizmaster : RoleBase
                 }
                 else
                 {
+                    s = -1;
                     break;
                 }
             }
@@ -200,29 +189,30 @@ internal class Quizmaster : RoleBase
         return chosenRole;
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public static void OnButtonPress(PlayerControl player)
     {
-        if (reporter == null) return;
+        if (player == null) return;
 
-        if (target == null)
-        {
-            buttonMeeting++;
-            lastButtonPressedColor = thisButtonPressedColor;
-            thisButtonPressedColor = reporter.Data.GetPlayerColorString();
-        }
-        else
-        {
-            var targetInfo = target.Data;
-            lastReportedColor = thisReportedColor;
-            thisReportedColor = targetInfo.GetPlayerColorString();
-        }
+        buttonMeeting++;
+        meetingNum++;
+        lastButtonPressedColor = thisButtonPressedColor;
+        thisButtonPressedColor = player.Data.GetPlayerColorString();
+        DoQuestion();
+    }
+
+    public static void OnReportDeadBody(GameData.PlayerInfo targetInfo)
+    {
+        if (targetInfo == null) return;
+
+        lastReportedColor = thisReportedColor;
+        thisReportedColor = targetInfo.GetPlayerColorString();
         meetingNum++;
         DoQuestion();
     }
 
-    private static void DoQuestion()
+    public static void DoQuestion()
     {
-        Player = Utils.GetPlayerById(playerIdList.ToList().First());
+        Player = Utils.GetPlayerByRole(CustomRoles.Quizmaster);
         if (MarkedPlayer != byte.MaxValue)
         {
             CustomRoles randomRole = GetRandomRole([.. CustomRolesHelper.AllRoles], false);
@@ -237,7 +227,7 @@ internal class Quizmaster : RoleBase
 
                 new CountQuestion { Stage = 2, Question = "MeetingPassed", QuizmasterQuestionType = QuizmasterQuestionType.MeetingCountQuestion },
                 new SetAnswersQuestion { Stage = 2, Question = "HowManyFactions", Answer = "Three", PossibleAnswers = { "One", "Two", "Three", "Four", "Five" }, QuizmasterQuestionType = QuizmasterQuestionType.FactionQuestion },
-                new SetAnswersQuestion { Stage = 2, Question = GetString("BasisOfRole").Replace("{QMROLE}", randomRoleWithAddon.ToString()), HasQuestionTranslation = false, Answer = CustomRolesHelper.GetCustomRoleTeam(randomRoleWithAddon).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral", "Addon" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleBasisQuestion },
+                new SetAnswersQuestion { Stage = 2, Question = GetString("BasisOfRole").Replace("{QMROLE}", randomRoleWithAddon.ToString()), HasQuestionTranslation = false, Answer = CustomRolesHelper.GetCustomRoleTypes(randomRoleWithAddon).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral", "Addon" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleBasisQuestion },
                 new SetAnswersQuestion { Stage = 2, Question = GetString("FactionOfRole").Replace("{QMROLE}", randomRole.ToString()), HasQuestionTranslation = false, Answer = CustomRolesHelper.GetRoleTypes(randomRole).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleFactionQuestion },
 
                 new SetAnswersQuestion { Stage = 3, Question = "FactionRemovedName", Answer = "Coven", PossibleAnswers = { "Sabotuer", "Sorcerers", "Coven", "Killer" }, QuizmasterQuestionType = QuizmasterQuestionType.RemovedFactionQuestion },
@@ -252,7 +242,6 @@ internal class Quizmaster : RoleBase
             ];
             
             Question = GetRandomQuestion(Questions);
-            
             _ = new LateTask(() =>
             {
                 ShowQuestion(Main.AllPlayerControls[MarkedPlayer]);
@@ -264,22 +253,19 @@ internal class Quizmaster : RoleBase
                         Utils.SendMessage(GetString("QuizmasterChat.MarkedPublic").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer).GetRealName()), plr.PlayerId, GetString("QuizmasterChat.Title"));
                     }
                 }
-            }, 7f, "Quizmaster Chat Notice");
+            }, 6.1f, "Quizmaster Chat Notice");
         }
     }
 
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public static void OnPlayerExile(GameData.PlayerInfo exiled)
     {
-        ResetMarkedPlayer(false);
-
-        if (exiled == null) return;
         lastExiledColor = exiled.GetPlayerColorString();
     }
 
-    public override void AfterMeetingTasks()
+    public static void OnMeetingEnd() /* NEW ROUND START */
     {
         firstSabotageOfRound = Sabotages.None;
-        //killsForRound = 0;
+        killsForRound = 0;
         //allowedVenting = true;
         allowedKilling = false;
         diedThisRound = 0;
@@ -296,19 +282,23 @@ internal class Quizmaster : RoleBase
         MarkedPlayer = byte.MaxValue;
     }
 
-    private void OnPlayerDead(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public static void OnPlayerDead(PlayerControl target)
     {
-        if (inMeeting) return;
-
         diedThisRound++;
         if (target.PlayerId == MarkedPlayer) ResetMarkedPlayer(false);
     }
 
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
-            => hud.KillButton.OverrideText(GetString(allowedKilling ? "KillButtonText" : "QuizmasterKillButtonText"));
+    public static void SetKillButtonText(HudManager instance)
+    {
+        if (allowedKilling)
+            instance.KillButton.OverrideText(GetString("KillButtonText"));
+        else
+            instance.KillButton.OverrideText(GetString("QuizmasterKillButtonText"));
+    }
 
-    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-            => (seer != null && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : "";
+    public static string TargetMark(PlayerControl seer, PlayerControl target)
+        => (seer != null && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : "";
+
     public static void OnSabotageCall(SystemTypes systemType)
     {
         if (!Main.MeetingIsStarted
@@ -347,7 +337,7 @@ internal class Quizmaster : RoleBase
         }
     }
 
-    private static void KillPlayer(PlayerControl plrToKill)
+    public static void KillPlayer(PlayerControl plrToKill)
     {
         plrToKill.Data.IsDead = true;
         Main.PlayerStates[plrToKill.PlayerId].deathReason = PlayerState.DeathReason.WrongAnswer;
@@ -356,7 +346,7 @@ internal class Quizmaster : RoleBase
         ResetMarkedPlayer(true);
     }
 
-    private static void RightAnswer(PlayerControl target)
+    public static void RightAnswer(PlayerControl target)
     {
         lastReportedColor = thisReportedColor;
         foreach (var plr in Main.AllPlayerControls)
@@ -371,7 +361,7 @@ internal class Quizmaster : RoleBase
         ResetMarkedPlayer(true);
     }
 
-    private static void WrongAnswer(PlayerControl target, string wrongAnswer, string rightAnswer)
+    public static void WrongAnswer(PlayerControl target, string wrongAnswer, string rightAnswer)
     {
         lastReportedColor = thisReportedColor;
         KillPlayer(target);
@@ -426,6 +416,11 @@ internal class Quizmaster : RoleBase
             Utils.SendMessage(GetString("QuizmasterChat.MarkedBy").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMQUESTION}", Question.HasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), MarkedPlayer, GetString("QuizmasterChat.Title"));
             Utils.SendMessage(GetString("QuizmasterChat.Answers").Replace("{QMA}", Question.HasAnswersTranslation ? GetString(Question.Answers[0], showInvalid: Question.ShowInvalid) : Question.Answers[0]).Replace("{QMB}", Question.HasAnswersTranslation ? GetString(Question.Answers[1], showInvalid: Question.ShowInvalid) : Question.Answers[1]).Replace("{QMC}", Question.HasAnswersTranslation ? GetString(Question.Answers[2], showInvalid: Question.ShowInvalid) : Question.Answers[2]), MarkedPlayer, GetString("QuizmasterChat.Title"));
         }
+    }
+
+    public static void OnVotedOut()
+    {
+        ResetMarkedPlayer(false);
     }
 }
 

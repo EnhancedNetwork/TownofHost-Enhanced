@@ -1,30 +1,22 @@
-﻿using static TOHE.Options;
+﻿using System.Collections.Generic;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public static class Unlucky
 {
-    private const int Id = 21000;
+    private static readonly int Id = 21000;
 
-    private static OptionItem UnluckyTaskSuicideChance;
-    private static OptionItem UnluckyKillSuicideChance;
-    private static OptionItem UnluckyVentSuicideChance;
-    private static OptionItem UnluckyReportSuicideChance;
-    private static OptionItem UnluckyOpenDoorSuicideChance;
+    public static OptionItem UnluckyTaskSuicideChance;
+    public static OptionItem UnluckyKillSuicideChance;
+    public static OptionItem UnluckyVentSuicideChance;
+    public static OptionItem UnluckyReportSuicideChance;
+    public static OptionItem UnluckySabotageSuicideChance;
     public static OptionItem ImpCanBeUnlucky;
     public static OptionItem CrewCanBeUnlucky;
     public static OptionItem NeutralCanBeUnlucky;
 
-    public static readonly Dictionary<byte, bool> UnluckCheck = [];
-
-    public enum StateSuicide
-    {
-        TryKill,
-        CompleteTask,
-        EnterVent,
-        ReportDeadBody,
-        OpenDoor
-    }
+    public static Dictionary<byte, bool> UnluckCheck;
 
     public static void SetupCustomOptions()
     {
@@ -37,7 +29,7 @@ public static class Unlucky
             .SetValueFormat(OptionFormat.Percent);
         UnluckyReportSuicideChance = IntegerOptionItem.Create(Id + 13, "UnluckyReportSuicideChance", new(0, 100, 1), 1, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
             .SetValueFormat(OptionFormat.Percent);
-        UnluckyOpenDoorSuicideChance = IntegerOptionItem.Create(Id + 14, "UnluckyOpenDoorSuicideChance", new(0, 100, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
+        UnluckySabotageSuicideChance = IntegerOptionItem.Create(Id + 14, "UnluckySabotageSuicideChance", new(0, 100, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
             .SetValueFormat(OptionFormat.Percent);
         ImpCanBeUnlucky = BooleanOptionItem.Create(Id + 15, "ImpCanBeUnlucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
         CrewCanBeUnlucky = BooleanOptionItem.Create(Id + 16, "CrewCanBeUnlucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
@@ -46,7 +38,7 @@ public static class Unlucky
     
     public static void Init()
     {
-        UnluckCheck.Clear();
+        UnluckCheck = [];
     }
     public static void Add(byte PlayerId)
     {
@@ -57,34 +49,13 @@ public static class Unlucky
         UnluckCheck.Remove(player);
     }
 
-    public static void SuicideRand(PlayerControl victim, StateSuicide state)
+    public static void SuicideRand(PlayerControl victim)
     {
-        var random = IRandom.Instance;
-        var shouldBeSuicide = false;
-
-        switch (state)
-        {
-            case StateSuicide.TryKill:
-                shouldBeSuicide = random.Next(1, 101) <= UnluckyKillSuicideChance.GetInt();
-                break;
-            case StateSuicide.CompleteTask:
-                shouldBeSuicide = random.Next(1, 101) <= UnluckyTaskSuicideChance.GetInt();
-                break;
-            case StateSuicide.EnterVent:
-                shouldBeSuicide = random.Next(1, 101) <= UnluckyVentSuicideChance.GetInt();
-                break;
-            case StateSuicide.ReportDeadBody:
-                shouldBeSuicide = random.Next(1, 101) <= UnluckyReportSuicideChance.GetInt();
-                break;
-            case StateSuicide.OpenDoor:
-                shouldBeSuicide = random.Next(1, 101) <= UnluckyOpenDoorSuicideChance.GetInt();
-                break;
-        }
-
-        if (shouldBeSuicide)
+        var Ue = IRandom.Instance;
+        if (Ue.Next(1, 100) <= UnluckyTaskSuicideChance.GetInt())
         {
             Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-            victim.RpcMurderPlayer(victim);
+            victim.RpcMurderPlayerV3(victim);
             UnluckCheck[victim.PlayerId] = true;
         }
     }

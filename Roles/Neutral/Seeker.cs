@@ -1,49 +1,47 @@
 ﻿using Hazel;
+using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
-
-internal class Seeker : RoleBase
+public static class Seeker
 {
-    //===========================SETUP================================\\
-    private const int Id = 14600;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
-    //==================================================================\\
+    private static readonly int Id = 14600;
+    private static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
 
-    private static OptionItem PointsToWin;
+    public static OptionItem PointsToWin;
     private static OptionItem TagCooldownOpt;
 
-    private static int PointsToWinOpt;
+    public static int PointsToWinOpt;
 
-    private static readonly Dictionary<byte, byte> Targets = [];
-    private static readonly Dictionary<byte, int> TotalPoints = [];
-    private static readonly Dictionary<byte, float> DefaultSpeed = [];
+    public static Dictionary<byte, byte> Targets = [];
+    public static Dictionary<byte, int> TotalPoints = [];
+    private static float DefaultSpeed = new();
 
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Seeker);
         PointsToWin = IntegerOptionItem.Create(Id + 10, "SeekerPointsToWin", new(1, 20, 1), 5, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Seeker]);
         TagCooldownOpt = FloatOptionItem.Create(Id + 11, "SeekerTagCooldown", new(0f, 180f, 2.5f), 12.5f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Seeker])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
-        Targets.Clear();
-        TotalPoints.Clear();
-        DefaultSpeed.Clear();
+        playerIdList = [];
+        Targets = [];
+        TotalPoints = [];
+        DefaultSpeed = new();
+        IsEnable = false;
     }
 
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        IsEnable = true;
 
         TotalPoints.Add(playerId, 0);
-        DefaultSpeed[playerId] = Main.AllPlayerSpeed[playerId];
+        DefaultSpeed = Main.AllPlayerSpeed[playerId];
         PointsToWinOpt = PointsToWin.GetInt();
 
         if (AmongUsClient.Instance.AmHost)
@@ -56,31 +54,26 @@ internal class Seeker : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TagCooldownOpt.GetFloat();
-    
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TagCooldownOpt.GetFloat();
+
     private static void SendRPC(byte seekerId, byte targetId = 0xff, bool setTarget = true)
     {
         MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Seeker); // SetSeekerTarget
-        writer.Write(setTarget);
-
-
-        if (!setTarget) // Sync seeker points
+        if (!setTarget)
         {
+            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSeekerPoints, SendOption.Reliable, -1);
             writer.Write(seekerId);
             writer.Write(TotalPoints[seekerId]);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            return;
         }
-        else // Set target
-        {
-            writer.Write(seekerId);
-            writer.Write(targetId);
-        }
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSeekerTarget, SendOption.Reliable, -1);
+        writer.Write(seekerId);
+        writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    public static void ReceiveRPC(MessageReader reader, bool setTarget = true)
     {
-        bool setTarget = reader.ReadBoolean();
         byte seekerId = reader.ReadByte();
         if (!setTarget)
         {
@@ -96,10 +89,10 @@ internal class Seeker : RoleBase
 
         Targets[seekerId] = targetId;
     }
-    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (GetTarget(killer) == target.PlayerId)
-        {//if the target is correct
+        {//ターゲットをキルした場合
             TotalPoints[killer.PlayerId] += 1;
             ResetTarget(killer);
         }
@@ -107,21 +100,20 @@ internal class Seeker : RoleBase
         {
             TotalPoints[killer.PlayerId] -= 1;
         }
+        killer.SyncSettings();  //IDK WHAT DOES THIS DO!!
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill();
         SetKillCooldown(killer.PlayerId);
-        killer.SyncSettings();
         SendRPC(killer.PlayerId, setTarget: false);
-        return false;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public static void OnReportDeadBody()
     {
         foreach (var playerId in playerIdList)
         {
-            Main.AllPlayerSpeed[playerId] = DefaultSpeed[playerId];
+            Main.AllPlayerSpeed[playerId] = DefaultSpeed;
         }
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public static void OnFixedUpdate(PlayerControl player)
     {
         if (player == null) return;
         var targetId = GetTarget(player);
@@ -144,28 +136,28 @@ internal class Seeker : RoleBase
             }
         }
     }
-    private static byte GetTarget(PlayerControl player)
+    public static byte GetTarget(PlayerControl player)
     {
-        if (player == null || Targets == null) return 0xff;
+        if (player == null) return 0xff;
+        Targets ??= [];
 
         if (!Targets.TryGetValue(player.PlayerId, out var targetId))
             targetId = ResetTarget(player);
-        
         return targetId;
     }
-    private static void FreezeSeeker(PlayerControl player)
+    public static void FreezeSeeker(PlayerControl player)
     {
         Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
         ReportDeadBodyPatch.CanReport[player.PlayerId] = false;
         player.MarkDirtySettings();
         _ = new LateTask(() =>
         {
-            Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed[player.PlayerId];
+            Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed;
             ReportDeadBodyPatch.CanReport[player.PlayerId] = true;
-            player.MarkDirtySettings();
+            player.MarkDirtySettings(); // dont know what the hell is this
         }, 5f, "Freeze Seeker");
     }
-    private static byte ResetTarget(PlayerControl player)
+    public static byte ResetTarget(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return 0xff;
 
@@ -176,7 +168,7 @@ internal class Seeker : RoleBase
         if (cTargets.Count >= 2 && Targets.TryGetValue(player.PlayerId, out var nowTarget))
             cTargets.RemoveAll(x => x.PlayerId == nowTarget);
 
-        if (!cTargets.Any())
+        if (cTargets.Count <= 0)
         {
             Logger.Warn("Failed to specify target: Target candidate does not exist", "Seeker");
             return 0xff;
@@ -195,31 +187,29 @@ internal class Seeker : RoleBase
         FreezeSeeker(player);
         return targetId;
     }
-    public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => Targets.ContainsValue(target.PlayerId) ? Main.roleColors[CustomRoles.Seeker] : "";
-    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({TotalPoints[PlayerId]}/{PointsToWin.GetInt()})");
-
-    public override void AfterMeetingTasks()
+    public static void AfterMeetingTasks(bool notifyPlayer = false)
     {
-        foreach (var id in playerIdList.ToArray())
+        if (notifyPlayer)
         {
-            var player = Utils.GetPlayerById(id);
-            if (player.IsAlive())
+            foreach (var id in playerIdList.ToArray())
             {
-                FreezeSeeker(player);
+                if (!Main.PlayerStates[id].IsDead)
+                {
+                    var targetId = GetTarget(Utils.GetPlayerById(id));
+                    Utils.GetPlayerById(id).Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
+                    Utils.GetPlayerById(targetId).Notify(GetString("SeekerTargetNotify"));
+
+                }
             }
         }
-    }
-    public override void NotifyAfterMeeting()
-    {
-        foreach (var id in playerIdList.ToArray())
+        else
         {
-            var player = Utils.GetPlayerById(id);
-            if (player.IsAlive())
+            foreach (var id in playerIdList.ToArray())
             {
-                var targetId = GetTarget(player);
-                player.Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
-                Utils.GetPlayerById(targetId)?.Notify(GetString("SeekerTargetNotify"));
+                if (!Main.PlayerStates[id].IsDead)
+                {
+                    FreezeSeeker(Utils.GetPlayerById(id));
+                }
             }
         }
     }

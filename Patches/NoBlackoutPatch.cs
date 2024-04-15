@@ -1,3 +1,5 @@
+using HarmonyLib;
+
 namespace TOHE;
 
 [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.IsGameOverDueToDeath))]

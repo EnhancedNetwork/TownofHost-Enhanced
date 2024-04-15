@@ -1,58 +1,49 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Translator;
 
-namespace TOHE.Roles.Crewmate;
-
-internal class Mole : RoleBase
+namespace TOHE.Roles.Crewmate
 {
-    //===========================SETUP================================\\
-    private const int Id = 26000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
-    //==================================================================\\
+    public static class Mole
+    {
+        private static readonly int Id = 26000;
+        //private static List<byte> playerIdList = [];
+        public static bool IsEnable = false;
 
-    private static OptionItem VentCooldown;
+        public static OptionItem VentCooldown;
 
-    public override void SetupCustomOption()
-    {
-        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mole);
-        VentCooldown = FloatOptionItem.Create(Id + 11, "MoleVentCooldown", new(5f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mole])
-            .SetValueFormat(OptionFormat.Seconds);
-    }
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
-    {
-        AURoleOptions.EngineerCooldown = VentCooldown.GetFloat();
-        AURoleOptions.EngineerInVentMaxTime = 1;
-    }
-    public override void OnExitVent(PlayerControl pc, int ventId)
-    {
-        float delay = Utils.GetActiveMapId() != 5 ? 0.1f : 0.4f;
-
-        _ = new LateTask(() =>
+        public static void SetupCustomOption()
         {
-            var vents = Object.FindObjectsOfType<Vent>().Where(x => x.Id != ventId).ToArray();
-            var rand = IRandom.Instance;
-            var vent = vents[rand.Next(0, vents.Length)];
+            SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mole);
+            VentCooldown = FloatOptionItem.Create(Id + 11, "MoleVentCooldown", new(5f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mole])
+                .SetValueFormat(OptionFormat.Seconds);
+        }
+        public static void Init()
+        {
+            //playerIdList = [];
+            IsEnable = false;
+        }
+        public static void Add(byte playerId)
+        {
+            //playerIdList.Add(playerId);
+            IsEnable = true;
+        }
 
-            Logger.Info($" {vent.transform.position}", "Mole vent teleport");
-            pc.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));
-        }, delay, "Mole On Exit Vent");
-    }
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
-    {
-        hud.AbilityButton.OverrideText(GetString("MoleVentButtonText"));
+        public static void OnExitVent(PlayerControl pc, int id)
+        {
+            float delay = Utils.GetActiveMapId() != 5? 0.1f : 0.4f;
+            if (!pc.Is(CustomRoles.Mole)) return;
+
+            _ = new LateTask(() =>
+            {
+                var vents = Object.FindObjectsOfType<Vent>().Where(x => x.Id != id).ToArray();
+                var rand = IRandom.Instance;
+                var vent = vents[rand.Next(0, vents.Length)];
+
+                Logger.Info($" {vent.transform.position}", "Mole vent teleport");
+                pc.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));
+            }, delay, "Mole On Exit Vent");
+        }
     }
 }

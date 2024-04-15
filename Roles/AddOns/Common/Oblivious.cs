@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Oblivious
 {
-    private const int Id = 20700;
+    private static readonly int Id = 20700;
 
     public static OptionItem ImpCanBeOblivious;
     public static OptionItem CrewCanBeOblivious;

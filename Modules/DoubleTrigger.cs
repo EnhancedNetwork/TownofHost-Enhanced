@@ -1,21 +1,22 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TOHE;
 
 static class DoubleTrigger
 {
-    public static readonly HashSet<byte> PlayerIdList = [];
+    public static List<byte> PlayerIdList = [];
 
-    public static readonly Dictionary<byte, float> FirstTriggerTimer = [];
-    public static readonly Dictionary<byte, byte> FirstTriggerTarget = [];
-    public static readonly Dictionary<byte, Action> FirstTriggerAction = [];
+    public static Dictionary<byte, float> FirstTriggerTimer = [];
+    public static Dictionary<byte, byte> FirstTriggerTarget = [];
+    public static Dictionary<byte, Action> FirstTriggerAction = [];
 
     public static void Init()
     {
-        PlayerIdList.Clear();
-        FirstTriggerTimer.Clear();
-        FirstTriggerAction.Clear();
+        PlayerIdList = [];
+        FirstTriggerTimer = [];
+        FirstTriggerAction = [];
     }
     public static void AddDoubleTrigger(this PlayerControl killer)
     {
@@ -26,9 +27,7 @@ static class DoubleTrigger
         return PlayerIdList.Contains(killer.PlayerId);
     }
 
-    /// <summary>
-    /// <returns>returns false on first action, returns true on second action</returns>
-    /// </summary>
+    /// false on first action, true on second action
     public static bool CheckDoubleTrigger(this PlayerControl killer, PlayerControl target, Action firstAction)
     {
         if (FirstTriggerTimer.ContainsKey(killer.PlayerId))
@@ -69,7 +68,7 @@ static class DoubleTrigger
         FirstTriggerTimer[playerId] -= Time.fixedDeltaTime;
         if (FirstTriggerTimer[playerId] <= 0)
         {
-            Logger.Info($"{player.name} Do single action", "DoubleTrigger");
+            Logger.Info($"{player.name} DoSingleAction", "DoubleTrigger");
             FirstTriggerAction[playerId]();
 
             FirstTriggerTimer.Remove(playerId);

@@ -1,24 +1,21 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-internal class Huntsman : RoleBase
+public static class Huntsman
 {
-    //===========================SETUP================================\\
-    private const int Id = 16500;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
-    //==================================================================\\
+    private static readonly int Id = 16500;
+    public static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
 
     private static OptionItem KillCooldown;
-    private static OptionItem CanVent;
+    public static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
     private static OptionItem SuccessKillCooldown;
     private static OptionItem FailureKillCooldown;
@@ -26,10 +23,10 @@ internal class Huntsman : RoleBase
     private static OptionItem MinKCD;
     private static OptionItem MaxKCD;
 
-    private static readonly HashSet<byte> Targets = [];
-    private static float KCD = 25;
+    public static List<byte> Targets = [];
+    public static float KCD = 25;
 
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Huntsman, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Huntsman])
@@ -48,14 +45,16 @@ internal class Huntsman : RoleBase
         MinKCD = FloatOptionItem.Create(Id + 17, "HHMinKCD", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Huntsman])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
-        Targets.Clear();
+        playerIdList = [];
+        Targets = [];
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        IsEnable = true;
 
         _ = new LateTask(() =>
         {
@@ -68,11 +67,32 @@ internal class Huntsman : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-
+    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
+    public static void OnReportDeadBody()
+    {
+        ResetTargets(isStartedGame: false);
+    }
+    public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
+    {
+        float tempkcd = KCD;
+        if (Targets.Contains(target.PlayerId)) Math.Clamp(KCD -= SuccessKillCooldown.GetFloat(), MinKCD.GetFloat(), MaxKCD.GetFloat());
+        else Math.Clamp(KCD += FailureKillCooldown.GetFloat(), MinKCD.GetFloat(), MaxKCD.GetFloat());
+        if (KCD != tempkcd)
+        {
+            killer.ResetKillCooldown();
+            killer.SyncSettings();
+        }
+    }
+    public static string GetHudText(PlayerControl player)
+    {
+        var targetId = player.PlayerId;
+        string output = string.Empty;
+        for (int i = 0; i < Targets.Count; i++) { byte playerId = Targets[i]; if (i != 0) output += ", "; output += Utils.GetPlayerById(playerId).GetRealName(); }
+        return targetId != 0xff ? GetString("Targets") + $"<b><color=#ff1919>{output}</color></b>" : string.Empty;
+    }
     public static void SendRPC(bool isSetTarget, byte targetId = byte.MaxValue)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Huntsman);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncHuntsmanTarget, SendOption.Reliable, -1);
         writer.Write(isSetTarget);
         if (isSetTarget)
         {
@@ -80,7 +100,7 @@ internal class Huntsman : RoleBase
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    public static void ReceiveRPC(MessageReader reader)
     {
         bool isSetTarget = reader.ReadBoolean();
         if (!isSetTarget)
@@ -91,44 +111,7 @@ internal class Huntsman : RoleBase
         byte targetId = reader.ReadByte();
         Targets.Add(targetId);
     }
-
-    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-    public override void OnReportDeadBody(PlayerControl Ronaldo, PlayerControl IsTheGoat)
-    {
-        ResetTargets(isStartedGame: false);
-    }
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
-    {
-        float tempkcd = KCD;
-        if (Targets.Contains(target.PlayerId)) Math.Clamp(KCD -= SuccessKillCooldown.GetFloat(), MinKCD.GetFloat(), MaxKCD.GetFloat());
-        else Math.Clamp(KCD += FailureKillCooldown.GetFloat(), MinKCD.GetFloat(), MaxKCD.GetFloat());
-        if (KCD != tempkcd)
-        {
-            killer.ResetKillCooldown();
-            killer.SyncSettings();
-        }
-        return true;
-    }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KCD;
-    public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-
-    public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
-    {
-        if (isForMeeting) return string.Empty;
-
-        var targetId = player.PlayerId;
-        string output = string.Empty;
-        byte item = 0;
-        foreach (var playerId in Targets)
-        {
-            if (item != 0) output += ", ";
-            output += Utils.GetPlayerById(playerId).GetRealName();
-            item++;
-        }
-        return targetId != 0xff ? GetString("Targets") + $"<b><color=#ff1919>{output}</color></b>" : string.Empty;
-    }
-    private static void ResetTargets(bool isStartedGame = false)
+    public static void ResetTargets(bool isStartedGame = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
@@ -160,7 +143,4 @@ internal class Huntsman : RoleBase
         if (isStartedGame)
             Utils.NotifyRoles(ForceLoop: true);
     }
-
-    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-        => Targets.Contains(target.PlayerId) ? "6e5524" : string.Empty;
 }

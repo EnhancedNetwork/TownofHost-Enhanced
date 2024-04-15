@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Mundane
 {
-    private const int Id = 26700;
+    private static readonly int Id = 26700;
 
     public static OptionItem CanBeOnCrew;
     public static OptionItem CanBeOnNeutral;

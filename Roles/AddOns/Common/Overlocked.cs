@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Overclocked
 {
-    private const int Id = 19800;
+    private static readonly int Id = 19800;
 
     public static OptionItem OverclockedReduction;
 

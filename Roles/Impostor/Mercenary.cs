@@ -1,28 +1,23 @@
-using AmongUs.GameOptions;
+using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-internal class Mercenary : RoleBase
+public static class Mercenary
 {
-    //===========================SETUP================================\\
-    private const int Id = 2000;
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
-    //==================================================================\\
+    private static readonly int Id = 2000;
+    public static List<byte> playerIdList = [];
+
+    public static bool IsEnable = false;
+    private static float OptTimeLimit;
 
     private static OptionItem KillCooldown;
     private static OptionItem TimeLimit;
 
-    private static readonly Dictionary<byte, float> SuicideTimer = [];
+    private static Dictionary<byte, float> SuicideTimer = [];
 
-    private static float OptTimeLimit;
-
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Mercenary);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mercenary])
@@ -30,51 +25,42 @@ internal class Mercenary : RoleBase
         TimeLimit = FloatOptionItem.Create(Id + 11, "MercenaryLimit", new(5f, 180f, 5f), 60f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mercenary])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
-        SuicideTimer.Clear();
+        playerIdList = [];
+        SuicideTimer = [];
+        IsEnable = false;
     }
-    public override void Add(byte serial)
+    public static void Add(byte serial)
     {
         playerIdList.Add(serial);
+        IsEnable = true;
         OptTimeLimit = TimeLimit.GetFloat();
     }
-
-    private static bool HasKilled(PlayerControl pc)
-        => pc != null && pc.Is(CustomRoles.Mercenary) && pc.IsAlive() && Main.PlayerStates[pc.PlayerId].GetKillCount(true) > 0;
-
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    public static void ApplyKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public static void ApplyGameOptions(PlayerControl pc)
     {
-        AURoleOptions.ShapeshifterCooldown = HasKilled(Utils.GetPlayerById(playerId)) ? OptTimeLimit : 255f;
+        AURoleOptions.ShapeshifterCooldown = HasKilled(pc) ? OptTimeLimit : 255f;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
-
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    ///<summary>
+    ///シリアルキラー＋生存＋一人以上キルしている
+    ///</summary>
+    public static bool HasKilled(PlayerControl pc)
+        => pc != null && pc.Is(CustomRoles.Mercenary) && pc.IsAlive() && Main.PlayerStates[pc.PlayerId].GetKillCount(true) > 0;
+    public static void OnCheckMurder(PlayerControl killer, bool CanMurder = true)
     {
-        // not should shapeshifted
-        resetCooldown = false;
-        return false;
-    }
-
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
-    {
+        if (!killer.Is(CustomRoles.Mercenary)) return;
+        
         SuicideTimer.Remove(killer.PlayerId);
-        killer.MarkDirtySettings();
-
-        return true;
+        if (CanMurder)
+            killer.MarkDirtySettings();
     }
-
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public static void OnReportDeadBody()
     {
-        ClearSuicideTimer();
+        SuicideTimer.Clear();
     }
-
-    public static void ClearSuicideTimer() => SuicideTimer.Clear();
-
-    public override void OnFixedUpdate(PlayerControl player)
+    public static void OnFixedUpdate(PlayerControl player)
     {
         if (!HasKilled(player))
         {
@@ -90,7 +76,7 @@ internal class Mercenary : RoleBase
         else if (timer >= OptTimeLimit)
         {
             Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-            player.RpcMurderPlayer(player);
+            player.RpcMurderPlayerV3(player);
             SuicideTimer.Remove(player.PlayerId);
         }
         else
@@ -98,22 +84,19 @@ internal class Mercenary : RoleBase
             SuicideTimer[player.PlayerId] += Time.fixedDeltaTime;
         }
     }
-
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    public static void GetAbilityButtonText(HudManager __instance, PlayerControl pc)
     {
-        hud.AbilityButton.OverrideText(GetString("MercenarySuicideButtonText"));
+        __instance.AbilityButton.ToggleVisible(pc.IsAlive() && HasKilled(pc));
+        __instance.AbilityButton.OverrideText(GetString("MercenarySuicideButtonText"));
     }
-
-    public override void AfterMeetingTasks()
+    public static void AfterMeetingTasks()
     {
         foreach (var id in playerIdList)
         {
-            var pc = Utils.GetPlayerById(id);
-            
-            if (pc != null && pc.IsAlive())
+            if (!Main.PlayerStates[id].IsDead)
             {
-                pc.RpcResetAbilityCooldown();
-                
+                var pc = Utils.GetPlayerById(id);
+                pc?.RpcResetAbilityCooldown();
                 if (HasKilled(pc))
                     SuicideTimer[id] = 0f;
             }

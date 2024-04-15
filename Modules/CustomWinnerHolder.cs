@@ -1,4 +1,5 @@
 using Hazel;
+using System.Collections.Generic;
 
 namespace TOHE;
 
@@ -66,7 +67,7 @@ public static class CustomWinnerHolder
                     ResetAndSetWinner(CustomWinner.Jackal); 
                     return true;
                 case CustomRoles.Charmed:
-                    ResetAndSetWinner(CustomWinner.Cultist); 
+                    ResetAndSetWinner(CustomWinner.Succubus); 
                     return true;
                 case CustomRoles.Infectious:
                     ResetAndSetWinner(CustomWinner.Infectious); 

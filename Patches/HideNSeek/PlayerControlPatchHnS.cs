@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TOHE.Modules;
 using static TOHE.Translator;
@@ -58,8 +60,8 @@ class MurderPlayerInHidenSeekPatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsNormalGame) return;
-        if (!target.Data.IsDead) return;
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (!target.Data.IsDead || GameStates.IsNormalGame) return;
 
         PlayerControl killer = __instance;
 
@@ -195,7 +197,7 @@ class FixedUpdateInHidenSeekPatch
                 }
             }
 
-            if (KickPlayerPatch.AttemptedKickPlayerList.Any())
+            if (KickPlayerPatch.AttemptedKickPlayerList.Count > 0)
             {
                 foreach (var item in KickPlayerPatch.AttemptedKickPlayerList)
                 {

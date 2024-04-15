@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Egoist
 {
-    private const int Id = 23500;
+    private static readonly int Id = 23500;
 
     public static OptionItem CrewCanBeEgoist;
     public static OptionItem ImpCanBeEgoist;

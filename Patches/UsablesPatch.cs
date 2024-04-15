@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using HarmonyLib;
 using UnityEngine;
 
 namespace TOHE;
@@ -6,7 +7,7 @@ namespace TOHE;
 [HarmonyPatch(typeof(Console), nameof(Console.CanUse))]
 class CanUsePatch
 {
-    public static bool Prefix(Console __instance, [HarmonyArgument(0)] GameData.PlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse)
+    public static bool Prefix(ref float __result, Console __instance, [HarmonyArgument(0)] GameData.PlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse)
     {
         canUse = couldUse = false;
         // Even if you return this one with false, anything usable (buttons, etc.) other than tasks (including sabots) will remain usable.

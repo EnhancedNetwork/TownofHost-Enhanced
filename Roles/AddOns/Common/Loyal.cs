@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Loyal
 {
-    private const int Id = 19400;
+    private static readonly int Id = 19400;
 
     public static OptionItem ImpCanBeLoyal;
     public static OptionItem CrewCanBeLoyal;

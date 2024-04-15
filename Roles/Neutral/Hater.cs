@@ -1,34 +1,30 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
-using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-internal class Hater : RoleBase
+public static class Hater
 {
-    //===========================SETUP================================\\
-    private const int Id = 12900;
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => false;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
-    //==================================================================\\
+    private static readonly int Id = 12900;
+    public static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
 
-    private static OptionItem ChooseConverted;
-    private static OptionItem MisFireKillTarget;
-    private static OptionItem CanKillLovers;
-    private static OptionItem CanKillMadmate;
-    private static OptionItem CanKillCharmed;
-    private static OptionItem CanKillAdmired;
-    private static OptionItem CanKillSidekicks;
-    private static OptionItem CanKillEgoists;
-    private static OptionItem CanKillInfected;
-    private static OptionItem CanKillContagious;
+    public static OptionItem CanVent;
+    public static OptionItem ChooseConverted;
+    public static OptionItem MisFireKillTarget;
+
+    public static OptionItem CanKillLovers;
+    public static OptionItem CanKillMadmate;
+    public static OptionItem CanKillCharmed;
+    public static OptionItem CanKillAdmired;
+    public static OptionItem CanKillSidekicks;
+    public static OptionItem CanKillEgoists;
+    public static OptionItem CanKillInfected;
+    public static OptionItem CanKillContagious;
 
     public static bool isWon = false; // There's already a playerIdList, so replaced this with a boolean value
-    
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Hater, zeroOne: false);
         MisFireKillTarget = BooleanOptionItem.Create(Id + 11, "HaterMisFireKillTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hater]);
@@ -43,22 +39,24 @@ internal class Hater : RoleBase
         CanKillAdmired = BooleanOptionItem.Create(Id + 20, "HaterCanKillAdmired", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
     }
 
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
+        playerIdList = [];
+        IsEnable = false;
         isWon = false;
     }
 
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
         if (killer.PlayerId == target.PlayerId) return true;  // Return true to allow suicides
@@ -74,7 +72,7 @@ internal class Hater : RoleBase
             }
             else if (
                 ((target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Gangster)) && CanKillMadmate.GetBool())
-                || ((target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Cultist)) && CanKillCharmed.GetBool())
+                || ((target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Succubus)) && CanKillCharmed.GetBool())
                 || ((target.Is(CustomRoles.Lovers) || target.Is(CustomRoles.Ntr)) && CanKillLovers.GetBool())
                 || ((target.Is(CustomRoles.Romantic) || target.Is(CustomRoles.RuthlessRomantic) || target.Is(CustomRoles.VengefulRomantic)
                     || Romantic.BetPlayer.ContainsValue(target.PlayerId)) && CanKillLovers.GetBool())
@@ -94,29 +92,25 @@ internal class Hater : RoleBase
         if (MisFireKillTarget.GetBool() && killer.RpcCheckAndMurder(target, true)) // RpcCheckAndMurder checks if the target can be murdered or not (checks for shields and other stuff); the 'true' parameter indicates that we just want a check, and not murder yet.
         {
             target.SetRealKiller(killer);
+            target.Data.IsDead = true;
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-            killer.RpcMurderPlayer(target); // Murder the target only if the setting is on and the target can be killed
+            killer.RpcMurderPlayerV3(target); // Murder the target only if the setting is on and the target can be killed
 
         }
-
+        killer.Data.IsDead = true;
         Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-        killer.RpcMurderPlayer(killer);
-        
+        killer.RpcMurderPlayerV3(killer);
+        Main.PlayerStates[killer.PlayerId].SetDead();
         Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "FFF");
         return false;
     }
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
-    {
-        hud.KillButton.OverrideText(GetString("HaterButtonText"));
-    }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 1f;
+
     private static bool IsConvertedMainRole(CustomRoles role)
     {
         return role switch  // Use the switch expression whenever possible instead of the switch statement to improve performance
         {
             CustomRoles.Gangster or
-            CustomRoles.Cultist or
+            CustomRoles.Succubus or
             CustomRoles.Romantic or
             CustomRoles.RuthlessRomantic or
             CustomRoles.VengefulRomantic or

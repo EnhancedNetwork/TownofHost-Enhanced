@@ -1,7 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Options;
@@ -9,65 +10,61 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-internal class HexMaster : RoleBase
+public static class HexMaster
 {
-    //===========================SETUP================================\\
-    private const int Id = 16400;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
-    //==================================================================\\
-
-    private static OptionItem ModeSwitchAction;
-    private static OptionItem HexesLookLikeSpells;
-    private static OptionItem HasImpostorVision;
-
-    private static readonly Dictionary<byte, bool> HexMode = [];
-    private static readonly Dictionary<byte, List<byte>> HexedPlayer = [];
-
-    private static readonly Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
-    private static readonly Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
-
-    private enum SwitchTrigger
+    public enum SwitchTrigger
     {
-        TriggerKill,
-        TriggerVent,
-        TriggerDouble,
+        Kill,
+        Vent,
+        DoubleTrigger,
     };
-    private static SwitchTrigger NowSwitchTrigger;
+    public static readonly string[] SwitchTriggerText =
+    [
+        "TriggerKill", "TriggerVent","TriggerDouble"
+    ];
 
-    public override void SetupCustomOption()
+    private static readonly int Id = 16400;
+    private static Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
+    private static Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
+
+    public static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
+
+    public static Dictionary<byte, bool> HexMode = [];
+    public static Dictionary<byte, List<byte>> HexedPlayer = [];
+
+    public static OptionItem ModeSwitchAction;
+    public static OptionItem HexesLookLikeSpells;
+    public static OptionItem HasImpostorVision;
+    public static SwitchTrigger NowSwitchTrigger;
+    public static void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.HexMaster, 1, zeroOne: false);        
-        ModeSwitchAction = StringOptionItem.Create(Id + 10, "WitchModeSwitchAction", EnumHelper.GetAllNames<SwitchTrigger>(), 2, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
+        ModeSwitchAction = StringOptionItem.Create(Id + 10, "WitchModeSwitchAction", SwitchTriggerText, 2, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
         HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells",  false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 12, "ImpostorVision",  true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
-        HexMode.Clear();
-        HexedPlayer.Clear();
+        playerIdList = [];
+        HexMode = [];
+        HexedPlayer = [];
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        IsEnable = true;
         HexMode.Add(playerId, false);
         HexedPlayer.Add(playerId, []);
         NowSwitchTrigger = (SwitchTrigger)ModeSwitchAction.GetValue();
-
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
-
-        CustomRoleManager.MarkOthers.Add(GetHexedMark);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-
     private static void SendRPC(bool doHex, byte hexId, byte target = 255)
     {
         if (doHex)
@@ -86,6 +83,8 @@ internal class HexMaster : RoleBase
 
         }
     }
+    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
+
     public static void ReceiveRPC(MessageReader reader, bool doHex)
     {
         if (doHex)
@@ -107,25 +106,19 @@ internal class HexMaster : RoleBase
             HexMode[playerId] = reader.ReadBoolean();
         }
     }
-
-    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-
-    public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
-
-    private static bool IsHexMode(byte playerId)
+    public static bool IsHexMode(byte playerId)
     {
         return HexMode.ContainsKey(playerId) && HexMode[playerId];
     }
-    private static void SwitchHexMode(byte playerId, bool kill)
+    public static void SwitchHexMode(byte playerId, bool kill)
     {
         bool needSwitch = false;
         switch (NowSwitchTrigger)
         {
-            case SwitchTrigger.TriggerKill:
+            case SwitchTrigger.Kill:
                 needSwitch = kill;
                 break;
-            case SwitchTrigger.TriggerVent:
+            case SwitchTrigger.Vent:
                 needSwitch = !kill;
                 break;
         }
@@ -136,7 +129,16 @@ internal class HexMaster : RoleBase
             Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
         }
     }
-    private static bool IsHexed(byte target)
+    public static bool HaveHexedPlayer()
+    {
+        foreach (var hexmaster in playerIdList)
+        {
+            if (HexedPlayer[hexmaster].Count != 0) return true;
+        }
+        return false;
+
+    }
+    public static bool IsHexed(byte target)
     {
         foreach (var hexmaster in playerIdList)
         {
@@ -144,7 +146,7 @@ internal class HexMaster : RoleBase
         }
         return false;
     }
-    private static void SetHexed(PlayerControl killer, PlayerControl target)
+    public static void SetHexed(PlayerControl killer, PlayerControl target)
     {
         if (!IsHexed(target.PlayerId))
         {
@@ -154,7 +156,7 @@ internal class HexMaster : RoleBase
             killer.SetKillCooldown();
         }
     }
-    public override void AfterMeetingTasks()
+    public static void RemoveHexedPlayer()
     {
         foreach (var hexmaster in playerIdList)
         {
@@ -162,12 +164,13 @@ internal class HexMaster : RoleBase
             SendRPC(true, hexmaster);
         }
     }
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (Medic.ProtectList.Contains(target.PlayerId)) return false;
         if (target.Is(CustomRoles.Pestilence)) return false;
+        if (target.Is(CustomRoles.HexMaster)) return false;
 
-        if (NowSwitchTrigger == SwitchTrigger.TriggerDouble)
+        if (NowSwitchTrigger == SwitchTrigger.DoubleTrigger)
         {
             return killer.CheckDoubleTrigger(target, () => { SetHexed(killer, target); });
         }
@@ -186,7 +189,7 @@ internal class HexMaster : RoleBase
     }
     public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (!HasEnabled || deathReason != PlayerState.DeathReason.Vote) return;
+        if (!IsEnable || deathReason != PlayerState.DeathReason.Vote) return;
         foreach (var id in exileIds)
         {
             if (HexedPlayer.ContainsKey(id))
@@ -215,72 +218,37 @@ internal class HexMaster : RoleBase
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Hex, [.. hexedIdList]);
         RemoveHexedPlayer();
     }
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public static string GetHexedMark(byte target, bool isMeeting)
     {
-        RemoveHexedPlayer();
-    }
-    private static void RemoveHexedPlayer()
-    {
-        foreach (var hexmaster in playerIdList)
-        {
-            HexedPlayer[hexmaster].Clear();
-            SendRPC(true, hexmaster);
-        }
-    }
-    public override void OnEnterVent(PlayerControl pc, Vent vent)
-    {
-        if (NowSwitchTrigger is SwitchTrigger.TriggerVent)
-        {
-            SwitchHexMode(pc.PlayerId, false);
-        }
-    }
-    private string GetHexedMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-    {
-        target ??= seer;
-
-        if (isForMeeting && IsHexed(target.PlayerId))
+        
+        if (isMeeting && IsHexed(target))
         {
             if (!HexesLookLikeSpells.GetBool())
             {
-                return Utils.ColorString(RoleColorHex, "乂");
+            return Utils.ColorString(RoleColorHex, "乂");
             }
-            else
+            if (HexesLookLikeSpells.GetBool())
             {
-                return Utils.ColorString(RoleColorSpell, "†");
+            return Utils.ColorString(RoleColorSpell, "†");
             }
         }
-        return string.Empty;
+        return "";
+        
     }
-    public override string GetSuffix(PlayerControl hexmaster, PlayerControl seen = null, bool isMeeting = false)
+    public static string GetHexModeText(PlayerControl hexmaster, bool hud, bool isMeeting = false)
     {
         if (hexmaster == null || isMeeting) return "";
 
         var str = new StringBuilder();
-        if (!isMeeting)
+        if (hud)
         {
-            
-            str.Append($"{GetString("Mode")}:");
-            if (NowSwitchTrigger == SwitchTrigger.TriggerDouble)
-            {
-                str.Append(GetString("HexMasterModeDouble"));
-            }
-            else
-            {
-                str.Append(IsHexMode(hexmaster.PlayerId) ? GetString("HexMasterModeHex") : GetString("HexMasterModeKill"));
-            }
-
-            return str.ToString();
+            str.Append(GetString("WitchCurrentMode"));
         }
-        return "";
-    }
-
-    public override string GetLowerText(PlayerControl hexmaster, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
-    {
-        if (hexmaster == null) return "";
-
-        var str = new StringBuilder();
-        str.Append(GetString("WitchCurrentMode"));
-        if (NowSwitchTrigger == SwitchTrigger.TriggerDouble)
+        else
+        {
+            str.Append($"{GetString("Mode")}:");
+        }
+        if (NowSwitchTrigger == SwitchTrigger.DoubleTrigger)
         {
             str.Append(GetString("HexMasterModeDouble"));
         }
@@ -288,19 +256,30 @@ internal class HexMaster : RoleBase
         {
             str.Append(IsHexMode(hexmaster.PlayerId) ? GetString("HexMasterModeHex") : GetString("HexMasterModeKill"));
         }
-
         return str.ToString();
     }
-    
-    public override void SetAbilityButtonText(HudManager hud, byte playerid)
+    public static void GetAbilityButtonText(HudManager hud)
     {
-        if (IsHexMode(playerid) && NowSwitchTrigger != SwitchTrigger.TriggerDouble)
+        if (IsHexMode(PlayerControl.LocalPlayer.PlayerId) && NowSwitchTrigger != SwitchTrigger.DoubleTrigger)
         {
             hud.KillButton.OverrideText($"{GetString("HexButtonText")}");
         }
         else
         {
             hud.KillButton.OverrideText($"{GetString("KillButtonText")}");
+        }
+    }
+
+    public static void OnEnterVent(PlayerControl pc)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (!IsEnable) return;
+        if (playerIdList.Contains(pc.PlayerId))
+        {
+            if (NowSwitchTrigger is SwitchTrigger.Vent)
+            {
+                SwitchHexMode(pc.PlayerId, false);
+            }
         }
     }
 }

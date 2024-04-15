@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -9,48 +10,40 @@ namespace TOHE.Roles.Impostor;
 
 // 参考 : https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Mode/SuperHostRoles/BlockTool.cs
 // 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/AntiAdminer
-internal class AntiAdminer : RoleBase
+internal class AntiAdminer
 {
-    //===========================SETUP================================\\
-    private const int Id = 2800;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
-    //==================================================================\\
+    private static readonly int Id = 2800;
+    private static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
 
     private static OptionItem CanCheckCamera;
+    public static bool IsAdminWatch;
+    public static bool IsVitalWatch;
+    public static bool IsDoorLogWatch;
+    public static bool IsCameraWatch;
 
-    private static bool IsAdminWatch;
-    private static bool IsVitalWatch;
-    private static bool IsDoorLogWatch;
-    private static bool IsCameraWatch;
-
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.AntiAdminer);
         CanCheckCamera = BooleanOptionItem.Create(Id + 10, "CanCheckCamera", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.AntiAdminer]);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
+        playerIdList = [];
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-    }
-    public override void Remove(byte playerId)
-    {
-        playerIdList.Remove(playerId);
+        IsEnable = true;
     }
 
     private static int Count = 0;
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public static void FixedUpdate()
     {
         Count--; if (Count > 0) return; Count = 5;
 
@@ -143,10 +136,8 @@ internal class AntiAdminer : RoleBase
             }
         }
     }
-    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public static string GetSuffix()
     {
-        if (isForMeeting) return "";
-
         StringBuilder sb = new();
         if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("AdminWarning")));
         if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("VitalsWarning")));

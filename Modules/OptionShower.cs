@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using static TOHE.Translator;
@@ -41,8 +43,6 @@ public static class OptionShower
                 GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10) + "\n\n"
             ];
 
-        // Mod Settings
-        sb.Append($"{Options.GameMode.GetName()}: {Options.GameMode.GetString()}\n\n");
         if (Options.HideGameSettings.GetBool() && !AmongUsClient.Instance.AmHost)
         {
             sb.Append($"<color=#ff0000>{GetString("Message.HideGameSettings")}</color>");
@@ -59,10 +59,10 @@ public static class OptionShower
                     if (kvp.Value.GameMode is CustomGameMode.Standard or CustomGameMode.All && kvp.Value.GetBool()) //スタンダードか全てのゲームモードで表示する役職
                     {
                         string mode = kvp.Value.GetString();
-                        if (kvp.Key is CustomRoles.Lovers) mode = Utils.GetChance(Options.LoverSpawnChances.GetInt());
+                        if (kvp.Key.Is(CustomRoles.Lovers)) mode = GetString($"Chance{Options.LoverSpawnChances.GetInt()}");
                         else if (kvp.Key.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(kvp.Key))
                         {
-                            mode = Utils.GetChance(Options.CustomAdtRoleSpawnRate[kvp.Key].GetFloat());
+                            mode = GetString($"Chance{Options.CustomAdtRoleSpawnRate[kvp.Key].GetFloat()}");
 
                         }
                         sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {mode}×{kvp.Key.GetCount()}\n"); 

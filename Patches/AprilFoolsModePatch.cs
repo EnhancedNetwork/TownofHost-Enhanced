@@ -1,4 +1,5 @@
-﻿using Il2CppSystem;
+﻿using HarmonyLib;
+using Il2CppSystem;
 using static CosmeticsLayer;
 
 namespace TOHE.Patches;

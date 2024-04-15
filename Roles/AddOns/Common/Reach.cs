@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Reach
 {
-    private const int Id = 23700;
+    private static readonly int Id = 23700;
 
     public static CustomRoles IsReach = CustomRoles.Reach; // Used to find "references" of this addon.
     

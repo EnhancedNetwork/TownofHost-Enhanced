@@ -1,11 +1,12 @@
 ﻿using AmongUs.GameOptions;
+using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public static class Bewilder
 {
-    private const int Id = 18900;
+    private static readonly int Id = 18900;
 
     private static OptionItem BewilderVision;
     public static OptionItem ImpCanBeBewilder;

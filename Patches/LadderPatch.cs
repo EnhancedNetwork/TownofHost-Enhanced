@@ -1,3 +1,5 @@
+using HarmonyLib;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TOHE;
@@ -54,6 +56,7 @@ public class FallFromLadder
                     player.NetTransform.SnapTo(targetPos);
                     player.MurderPlayer(player, ExtendedPlayerControl.ResultFlags);
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Fall;
+                    Main.PlayerStates[player.PlayerId].SetDead();
                 }, 0.05f, "Ladder Fall Task");
             }
         }
@@ -62,7 +65,7 @@ public class FallFromLadder
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.ClimbLadder))]
 class LadderPatch
 {
-    public static void Postfix(PlayerPhysics __instance, Ladder source)
+    public static void Postfix(PlayerPhysics __instance, Ladder source, byte climbLadderSid)
     {
         FallFromLadder.OnClimbLadder(__instance, source);
     }

@@ -1,84 +1,75 @@
+using HarmonyLib;
 using Hazel;
-using InnerNet;
-using TOHE.Roles.Core;
+using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
-internal class Executioner : RoleBase
+public static class Executioner
 {
-    //===========================SETUP================================\\
-    private const int Id = 14200;
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
-    //==================================================================\\
+    private static readonly int Id = 14200;
+    public static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
+    public static byte WinnerID;
 
     private static OptionItem CanTargetImpostor;
     private static OptionItem CanTargetNeutralKiller;
     private static OptionItem CanTargetNeutralBenign;
     private static OptionItem CanTargetNeutralEvil;
     private static OptionItem CanTargetNeutralChaos;
-    private static OptionItem KnowTargetRole;
-    private static OptionItem ChangeRolesAfterTargetKilled;
+    public static OptionItem KnowTargetRole;
+    public static OptionItem ChangeRolesAfterTargetKilled;
 
-    public static readonly Dictionary<byte, byte> Target = [];
-    
-    private enum ChangeRolesSelect
-    {
-        Role_Crewmate,
-        Role_Celebrity,
-        Role_Bodyguard,
-        Role_Dictator,
-        Role_Mayor,
-        Role_Doctor,
-        Role_Jester,
-        Role_Opportunist
-    }
+    public static Dictionary<byte, byte> Target = [];
+    public static readonly string[] ChangeRoles =
+    [
+        "Role.Crewmate",
+        "Role.Celebrity",
+        "Role.Bodyguard",
+        "Role.Dictator",
+        "Role.Mayor",
+        "Role.Doctor",
+        "Role.Jester",
+        "Role.Opportunist",
+        "Role.Convict",
+    ];
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
-        CustomRoles.CrewmateTOHE,
-        CustomRoles.Celebrity,
-        CustomRoles.Bodyguard,
-        CustomRoles.Dictator,
-        CustomRoles.Mayor,
-        CustomRoles.Doctor,
-        CustomRoles.Jester,
-        CustomRoles.Opportunist,
+        CustomRoles.CrewmateTOHE, CustomRoles.CyberStar, CustomRoles.Bodyguard, CustomRoles.Dictator, CustomRoles.Mayor, CustomRoles.Doctor, CustomRoles.Jester, CustomRoles.Opportunist, CustomRoles.Convict,
     ];
 
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Executioner);
         CanTargetImpostor = BooleanOptionItem.Create(Id + 10, "ExecutionerCanTargetImpostor", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         CanTargetNeutralKiller = BooleanOptionItem.Create(Id + 12, "ExecutionerCanTargetNeutralKiller", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        CanTargetNeutralBenign = BooleanOptionItem.Create(Id + 14, "ExecutionerCanTargetNeutralBenign", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        CanTargetNeutralEvil = BooleanOptionItem.Create(Id + 15, "ExecutionerCanTargetNeutralEvil", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        CanTargetNeutralChaos = BooleanOptionItem.Create(Id + 16, "ExecutionerCanTargetNeutralChaos", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        CanTargetNeutralBenign = BooleanOptionItem.Create(Id + 14, "CanTargetNeutralBenign", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        CanTargetNeutralEvil = BooleanOptionItem.Create(Id + 15, "CanTargetNeutralEvil", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        CanTargetNeutralChaos = BooleanOptionItem.Create(Id + 16, "CanTargetNeutralChaos", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelect>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", ChangeRoles, 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
-        Target.Clear();
+        playerIdList = [];
+        Target = [];
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        IsEnable = true;
 
+        //ターゲット割り当て
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
-
             List<PlayerControl> targetList = [];
             var rand = IRandom.Instance;
             foreach (var target in Main.AllPlayerControls)
             {
                 if (playerId == target.PlayerId) continue;
-                else if (!CanTargetImpostor.GetBool() && target.Is(Custom_Team.Impostor)) continue;
+                else if (!CanTargetImpostor.GetBool() && target.Is(CustomRoleTypes.Impostor)) continue;
                 else if (!CanTargetNeutralKiller.GetBool() && target.GetCustomRole().IsNK()) continue;
                 else if (!CanTargetNeutralBenign.GetBool() && target.GetCustomRole().IsNB()) continue;
                 else if (!CanTargetNeutralEvil.GetBool() && target.GetCustomRole().IsNE()) continue;
@@ -154,70 +145,30 @@ internal class Executioner : RoleBase
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         executioner.Notify(text);
     }
-
-    public static bool CheckTarget(byte targetId) => Target.ContainsValue(targetId);
-    public static bool IsTarget(byte executionerId, byte targetId) => Target.TryGetValue(executionerId, out var exeTargetId) && exeTargetId == targetId;
-
-    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
-    {
-        ExecutionerWasDead(target.PlayerId);
-    }
-    private void OnOthersDead(PlayerControl killer, PlayerControl target, bool inMeeting)
-    {
-        if (CheckTarget(target.PlayerId))
-            ChangeRoleByTarget(target);
-    }
-
-    public override void OnPlayerLeft(ClientData clientData)
-    {
-        if (Target.ContainsKey(clientData.Character.PlayerId))
-        {
-            ChangeRole(clientData.Character);
-        }
-
-        else if (CheckTarget(clientData.Character.PlayerId))
-            ChangeRoleByTarget(clientData.Character);
-    }
-
-    private static void ExecutionerWasDead(byte targetId)
-    {
-        if (Target.ContainsKey(targetId))
-        {
-            Target.Remove(targetId);
-            SendRPC(targetId);
-        }
-    }
-
-    public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
+    public static bool KnowRole(PlayerControl player, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;
         return player.Is(CustomRoles.Executioner) && Target.TryGetValue(player.PlayerId, out var tar) && tar == target.PlayerId;
     }
-
-    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public static string TargetMark(PlayerControl seer, PlayerControl target)
     {
-        if (target == null || !seer.IsAlive()) return string.Empty;
+        if (!seer.Is(CustomRoles.Executioner) || seer.Data.IsDead) return "";
 
         var GetValue = Target.TryGetValue(seer.PlayerId, out var targetId);
-        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "♦") : string.Empty;
+        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "♦") : "";
     }
-
-    public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public static bool CheckExileTarget(GameData.PlayerInfo exiled, bool DecidedWinner, bool Check = false)
     {
         foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId).ToArray())
         {
             var executioner = Utils.GetPlayerById(kvp.Key);
             if (executioner == null || !executioner.IsAlive() || executioner.Data.Disconnected) continue;
-            if (!isMeetingHud) ExeWin(kvp.Key, DecidedWinner);
-
-            if (isMeetingHud)
-            {
-                name = string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
-                DecidedWinner = true;
-            }
+            if (!Check) ExeWin(kvp.Key, DecidedWinner);
+            return true;
         }
+        return false;
     }
-    private static void ExeWin(byte playerId, bool DecidedWinner)
+    public static void ExeWin(byte playerId, bool DecidedWinner)
     {
         if (!DecidedWinner)
         {

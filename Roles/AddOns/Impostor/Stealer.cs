@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public static class Stealer
 {
-    private const int Id = 23200;
+    private static readonly int Id = 23200;
     
     public static OptionItem TicketsPerKill;
     public static void SetupCustomOption()

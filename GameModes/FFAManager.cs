@@ -1,4 +1,7 @@
-﻿using Hazel;
+﻿using HarmonyLib;
+using Hazel;
+using System.Collections.Generic;
+using System.Linq;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -162,7 +165,7 @@ internal static class FFAManager
         try
         {
             int ms = KBScore[playerId];
-            int rank = 1 + KBScore.Values.Count(x => x > ms);
+            int rank = 1 + KBScore.Values.Where(x => x > ms).Count();
             rank += KBScore.Where(x => x.Value == ms).ToList().IndexOf(new(playerId, ms));
             return rank;
         }
@@ -323,7 +326,7 @@ internal static class FFAManager
             FFAEnterVentTime.Remove(killer.PlayerId);
         }
 
-        killer.RpcMurderPlayer(target);
+        killer.RpcMurderPlayerV3(target);
     }
 
     public static void OnPlayerKill(PlayerControl killer)
@@ -332,59 +335,6 @@ internal static class FFAManager
             PlayerControl.LocalPlayer.KillFlash();
 
         KBScore[killer.PlayerId]++;
-    }
-
-    public static bool CheckCoEnterVent(PlayerPhysics physics, int ventId)
-    {
-        if (FFA_DisableVentingWhenTwoPlayersAlive.GetBool() && Main.AllAlivePlayerControls.Length <= 2)
-        {
-            var pc = physics?.myPlayer;
-            _ = new LateTask(() =>
-            {
-                pc?.Notify(GetString("FFA-NoVentingBecauseTwoPlayers"), 7f);
-                pc?.MyPhysics?.RpcBootFromVent(ventId);
-            }, 0.5f, "Player No Venting Because Two Players");
-            return true;
-        }
-
-        if (FFA_DisableVentingWhenKCDIsUp.GetBool())
-        {
-            var pc = physics?.myPlayer;
-            var now = Utils.GetTimeStamp();
-            FFAEnterVentTime[pc.PlayerId] = now;
-            if (!FFAVentDuration.ContainsKey(pc.PlayerId)) FFAVentDuration[pc.PlayerId] = 0;
-            var canVent = (now - FFALastKill[pc.PlayerId]) <= (Main.AllPlayerKillCooldown[pc.PlayerId] + FFAVentDuration[pc.PlayerId]);
-            Logger.Warn($"Enter Time = {now}, last kill time = {FFALastKill[pc.PlayerId]}, {FFAVentDuration[pc.PlayerId]}", "VENT DURATION TESTING");
-            Logger.Warn($"can vent {canVent}", "FFA MODE VENTING");
-            if (!canVent)
-            {
-                _ = new LateTask(() =>
-                {
-                    pc?.Notify(GetString("FFA-NoVentingBecauseKCDIsUP"), 7f);
-                    pc?.MyPhysics?.RpcBootFromVent(ventId);
-                }, 0.5f, "Player No Venting Because KCD Is UP");
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static void CoExitVent(PlayerControl player)
-    {
-        if (player == null) return;
-
-        var now = Utils.GetTimeStamp();
-        byte playerId = player.PlayerId;
-
-        if (FFAEnterVentTime.ContainsKey(playerId))
-        {
-            if (!FFAVentDuration.ContainsKey(playerId)) FFAVentDuration[playerId] = 0f;
-            FFAVentDuration[playerId] = FFAVentDuration[playerId] + (now - FFAEnterVentTime[playerId]);
-
-            Logger.Warn($"Vent Duration = {FFAVentDuration[playerId]}, vent enter time = {FFAEnterVentTime[playerId]}, vent exit time = {now}, vent time = {now - FFAEnterVentTime[playerId]}", "FFA VENT DURATION");
-            FFAEnterVentTime.Remove(playerId);
-        }
     }
 
     public static string GetPlayerArrow(PlayerControl seer, PlayerControl target = null)

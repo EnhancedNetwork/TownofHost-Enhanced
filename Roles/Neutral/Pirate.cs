@@ -1,35 +1,31 @@
 ﻿using Hazel;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
-using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
-internal class Pirate : RoleBase
+public static class Pirate
 {
-    //===========================SETUP================================\\
-    private const int Id = 15000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
-    //==================================================================\\
-
-    private static OptionItem SuccessfulDuelsToWin;
-    private static OptionItem TryHideMsg;
-    private static OptionItem DuelCooldown;
-
-    private static readonly Dictionary<byte, bool> DuelDone = [];
-
+    private static readonly int Id = 15000;
+    private static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
     public static byte PirateTarget;
+    private static Dictionary<byte, bool> DuelDone = [];
     private static int pirateChose, targetChose;
     public static int NumWin = 0;
 
-    public override void SetupCustomOption()
+
+    public static OptionItem SuccessfulDuelsToWin;
+    private static OptionItem TryHideMsg;
+    public static OptionItem DuelCooldown;
+
+
+    public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pirate);
         DuelCooldown = FloatOptionItem.Create(Id + 12, "DuelCooldown", new(0f, 180f, 2.5f), 22.5f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pirate])
@@ -40,30 +36,31 @@ internal class Pirate : RoleBase
             .SetValueFormat(OptionFormat.Times);
     }
 
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
+        playerIdList = [];
         PirateTarget = byte.MaxValue;
-        DuelDone.Clear();
+        DuelDone = [];
         pirateChose = -1;
         targetChose = -1;
         NumWin = 0;
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         DuelDone.Add(playerId, false);
-        CustomRoleManager.MarkOthers.Add(GetPlunderedMark);
+        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public override void MeetingHudClear()
+    public static void OnMeetingStart()
     {
-        if (!HasEnabled || PirateTarget == byte.MaxValue) return;
+        if (!IsEnable || PirateTarget == byte.MaxValue) return;
 
-        var pc = Utils.GetPlayerById(playerIdList.ToArray().FirstOrDefault());
+        var pc = Utils.GetPlayerById(playerIdList[0]);
         var tpc = Utils.GetPlayerById(PirateTarget);
         if (!tpc.IsAlive()) return;
         _ = new LateTask(() =>
@@ -71,16 +68,13 @@ internal class Pirate : RoleBase
             Utils.SendMessage(GetString("PirateMeetingMsg"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pirate), GetString("PirateTitle")));
             Utils.SendMessage(GetString("PirateTargetMeetingMsg"), tpc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pirate), GetString("PirateTitle")));
         }, 3f, "Pirate Meeting Messages");
+
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DuelCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override string GetProgressText(byte playerId, bool comms)
-            => ColorString(GetRoleColor(CustomRoles.Pirate).ShadeColor(0.25f), $"({Pirate.NumWin}/{Pirate.SuccessfulDuelsToWin.GetInt()})");
-    
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DuelCooldown.GetFloat();
+
     public static void SendRPC(int operate, byte target = byte.MaxValue, int points = -1)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Pirate);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PirateSyncData, SendOption.Reliable, -1);
         writer.Write(operate);
         writer.Write(target);
         if (operate == 1)
@@ -90,7 +84,7 @@ internal class Pirate : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    public static void ReceiveRPC(MessageReader reader)
     {
         int operate = reader.ReadInt32();
         byte target = reader.ReadByte();
@@ -102,7 +96,7 @@ internal class Pirate : RoleBase
         }
     }
 
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.Pestilence)) return true;
         if (PirateTarget != byte.MaxValue)
@@ -118,22 +112,17 @@ internal class Pirate : RoleBase
         else killer.SetKillCooldown();
         return false;
     }
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    public static string GetPlunderedMark(byte target, bool isMeeting)
     {
-        hud.KillButton.OverrideText(GetString("PirateDuelButtonText"));
-    }
-    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Challenge");
-    private static string GetPlunderedMark(PlayerControl seer, PlayerControl target, bool isMeeting = false)
-    {
-        if (target != null && isMeeting && target.PlayerId == PirateTarget)
+        if (isMeeting && target == PirateTarget)
         {
             return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pirate), " ⦿");
         }
         return "";
     }
-    public override void AfterMeetingTasks()
+    public static void AfterMeetingTask()
     {
-        var pirateId = playerIdList.ToArray().FirstOrDefault();
+        var pirateId = playerIdList[0];
         if (PirateTarget != byte.MaxValue)
         {
             if (DuelDone[pirateId])

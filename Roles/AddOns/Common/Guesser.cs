@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Guesser
 {
-    private const int Id = 22200;
+    private static readonly int Id = 22200;
 
     public static OptionItem ImpCanBeGuesser;
     public static OptionItem CrewCanBeGuesser;

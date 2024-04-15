@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Rascal
 {
-    private const int Id = 20800;
+    private static readonly int Id = 20800;
 
     private static OptionItem RascalAppearAsMadmate;
     

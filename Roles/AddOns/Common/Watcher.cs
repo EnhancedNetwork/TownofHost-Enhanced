@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Watcher
 {
-    private const int Id = 20400;
+    private static readonly int Id = 20400;
     
     public static OptionItem ImpCanBeWatcher;
     public static OptionItem CrewCanBeWatcher;

@@ -1,44 +1,43 @@
-﻿using static TOHE.Options;
+﻿using System.Collections.Generic;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-internal class Lurker : RoleBase
+public static class Lurker
 {
-    //===========================SETUP================================\\
-    private const int Id = 1900;
-
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
-    //==================================================================\\
+    private static readonly int Id = 1900;
+    public static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ReduceKillCooldown;
 
-
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Lurker);
-        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "Arrogance/Juggernaut___DefaultKillCooldown", new(20f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lurker])
+        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "ArroganceDefaultKillCooldown", new(20f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lurker])
             .SetValueFormat(OptionFormat.Seconds);
-        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "Arrogance/Juggernaut___ReduceKillCooldown", new(0f, 10f, 1f), 2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lurker])
+        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "ArroganceReduceKillCooldown", new(0f, 10f, 1f), 2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lurker])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
+        playerIdList = [];
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        IsEnable = true;
     }
 
-    public  override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DefaultKillCooldown.GetFloat();
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DefaultKillCooldown.GetFloat();
 
-    public override void OnEnterVent(PlayerControl pc, Vent vent)
+    public static void OnEnterVent(PlayerControl pc)
     {
+        if (!IsEnable) return;
+        if (!pc.Is(CustomRoles.Lurker)) return;
+
         float newCd = Main.AllPlayerKillCooldown[pc.PlayerId] - ReduceKillCooldown.GetFloat();
         if (newCd <= 0)
         {
@@ -49,7 +48,7 @@ internal class Lurker : RoleBase
         pc.SyncSettings();
     }
 
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurder(PlayerControl killer)
     {
         killer.ResetKillCooldown();
         killer.SyncSettings();

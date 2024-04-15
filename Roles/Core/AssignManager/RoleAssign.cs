@@ -1,5 +1,7 @@
 ﻿using AmongUs.GameOptions;
-using TOHE.Modules;
+using HarmonyLib;
+using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -88,7 +90,7 @@ public class RoleAssign
             if (role.IsVanilla() || chance == 0 || role.IsAdditionRole() || role.IsGhostRole()) continue;
             switch (role)
             {
-                case CustomRoles.Stalker when GameStates.FungleIsActive:
+                case CustomRoles.DarkHide when GameStates.FungleIsActive:
                 case CustomRoles.VengefulRomantic:
                 case CustomRoles.RuthlessRomantic:
                 case CustomRoles.GM:
@@ -107,11 +109,11 @@ public class RoleAssign
             else Roles[RoleAssignType.Crewmate].Add(info);
         }
 
-        //if (Roles[RoleAssignType.Impostor].Count == 0 && !SetRoles.Values.Any(x => x.IsImpostor()))
-        //{
-        //    Roles[RoleAssignType.Impostor].Add(new(CustomRoles.ImpostorTOHE, 100, optImpNum));
-        //    Logger.Warn("Adding Vanilla Impostor", "CustomRoleSelector");
-        //}
+        if (Roles[RoleAssignType.Impostor].Count == 0 && !SetRoles.Values.Any(x => x.IsImpostor()))
+        {
+            Roles[RoleAssignType.Impostor].Add(new(CustomRoles.ImpostorTOHE, 100, optImpNum));
+            Logger.Warn("Adding Vanilla Impostor", "CustomRoleSelector");
+        }
 
         Logger.Info($"Number of NKs: {optNeutralKillingNum}, Number of NonNKs: {optNonNeutralKillingNum}", "NeutralNum");
         Logger.Msg("=====================================================", "AllActiveRoles");
@@ -249,7 +251,7 @@ public class RoleAssign
             // Assign roles set to 100%
             if (readyImpNum < optImpNum)
             {
-                while (AlwaysImpRoles.Any())
+                while (AlwaysImpRoles.Count > 0)
                 {
                     var selected = AlwaysImpRoles[rd.Next(0, AlwaysImpRoles.Count)];
                     var info = ImpRoleCounts.FirstOrDefault(x => x.Role == selected);
@@ -271,7 +273,7 @@ public class RoleAssign
             // Assign other roles when needed
             if (readyRoleNum < playerCount && readyImpNum < optImpNum)
             {
-                while (ChanceImpRoles.Any())
+                while (ChanceImpRoles.Count > 0)
                 {
                     var selectesItem = rd.Next(0, ChanceImpRoles.Count);
                     var selected = ChanceImpRoles[selectesItem];
@@ -352,7 +354,7 @@ public class RoleAssign
                 // Assign roles set to 100%
                 if (readyNonNeutralKillingNum < optNonNeutralKillingNum)
                 {
-                    while (AlwaysNonNKRoles.Any() && optNonNeutralKillingNum > 0)
+                    while (AlwaysNonNKRoles.Count > 0 && optNonNeutralKillingNum > 0)
                     {
                         var selected = AlwaysNonNKRoles[rd.Next(0, AlwaysNonNKRoles.Count)];
                         var info = NonNKRoleCounts.FirstOrDefault(x => x.Role == selected);
@@ -374,7 +376,7 @@ public class RoleAssign
                 // Assign other roles when needed
                 if (readyRoleNum < playerCount && readyNonNeutralKillingNum < optNonNeutralKillingNum)
                 {
-                    while (ChanceNonNKRoles.Any() && optNonNeutralKillingNum > 0)
+                    while (ChanceNonNKRoles.Count > 0 && optNonNeutralKillingNum > 0)
                     {
                         var selectesItem = rd.Next(0, ChanceNonNKRoles.Count);
                         var selected = ChanceNonNKRoles[selectesItem];
@@ -453,7 +455,7 @@ public class RoleAssign
                 // Assign roles set to 100%
                 if (readyNeutralKillingNum < optNeutralKillingNum)
                 {
-                    while (AlwaysNKRoles.Any() && optNeutralKillingNum > 0)
+                    while (AlwaysNKRoles.Count > 0 && optNeutralKillingNum > 0)
                     {
                         var selected = AlwaysNKRoles[rd.Next(0, AlwaysNKRoles.Count)];
                         var info = NKRoleCounts.FirstOrDefault(x => x.Role == selected);
@@ -475,7 +477,7 @@ public class RoleAssign
                 // Assign other roles when needed
                 if (readyRoleNum < playerCount && readyNeutralKillingNum < optNeutralKillingNum)
                 {
-                    while (ChanceNKRoles.Any() && optNeutralKillingNum > 0)
+                    while (ChanceNKRoles.Count > 0 && optNeutralKillingNum > 0)
                     {
                         var selectesItem = rd.Next(0, ChanceNKRoles.Count);
                         var selected = ChanceNKRoles[selectesItem];
@@ -553,7 +555,7 @@ public class RoleAssign
             // Assign roles set to ALWAYS
             if (readyRoleNum < playerCount)
             {
-                while (AlwaysCrewRoles.Any())
+                while (AlwaysCrewRoles.Count > 0)
                 {
                     var selected = AlwaysCrewRoles[rd.Next(0, AlwaysCrewRoles.Count)];
                     var info = CrewRoleCounts.FirstOrDefault(x => x.Role == selected);
@@ -573,7 +575,7 @@ public class RoleAssign
             // Assign other roles when needed
             if (readyRoleNum < playerCount)
             {
-                while (ChanceCrewRoles.Any())
+                while (ChanceCrewRoles.Count > 0)
                 {
                     var selectesItem = rd.Next(0, ChanceCrewRoles.Count);
                     var selected = ChanceCrewRoles[selectesItem];
@@ -598,19 +600,21 @@ public class RoleAssign
 
     EndOfAssign:
 
-        if (Imps.Any()) Logger.Info(string.Join(", ", Imps.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "ImpRoleResult");
-        if (NNKs.Any()) Logger.Info(string.Join(", ", NNKs.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "NNKRoleResult");
-        if (NKs.Any()) Logger.Info(string.Join(", ", NKs.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "NKRoleResult");
-        if (Crews.Any()) Logger.Info(string.Join(", ", Crews.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "CrewRoleResult");
+        if (Imps.Length > 0) Logger.Info(string.Join(", ", Imps.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "ImpRoleResult");
+        if (NNKs.Length > 0) Logger.Info(string.Join(", ", NNKs.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "NNKRoleResult");
+        if (NKs.Length > 0) Logger.Info(string.Join(", ", NKs.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "NKRoleResult");
+        if (Crews.Length > 0) Logger.Info(string.Join(", ", Crews.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "CrewRoleResult");
+
+        if (rd.Next(0, 100) < Options.SunnyboyChance.GetInt() && FinalRolesList.Remove(CustomRoles.Jester)) FinalRolesList.Add(CustomRoles.Sunnyboy);
+        if (rd.Next(0, 100) < Arrogance.BardChance.GetInt() && FinalRolesList.Remove(CustomRoles.Arrogance)) FinalRolesList.Add(CustomRoles.Bard);
+        if (rd.Next(0, 100) < Options.NukerChance.GetInt() && FinalRolesList.Remove(CustomRoles.Bomber)) FinalRolesList.Add(CustomRoles.Nuker);
 
         if (FinalRolesList.Contains(CustomRoles.Mini))
         {
             FinalRolesList.Remove(CustomRoles.Mini);
 
-            if (Mini.CheckSpawnEvilMini())
+            if (Mini.CanBeEvil.GetBool() && (rd.Next(0, 100) < Mini.EvilMiniSpawnChances.GetInt()))
             {
-                var tempImpRole = FinalRolesList.FirstOrDefault(role => role.IsImpostor());
-                FinalRolesList.Remove(tempImpRole);
                 FinalRolesList.Add(CustomRoles.EvilMini);
             }
             else
@@ -619,52 +623,30 @@ public class RoleAssign
             }
         }
 
-        if (Sunnyboy.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Jester)) FinalRolesList.Add(CustomRoles.Sunnyboy);
-        if (Bard.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Arrogance)) FinalRolesList.Add(CustomRoles.Bard);
-
-        if (Romantic.HasEnabled)
+        if (Romantic.IsEnable)
         {
             if (FinalRolesList.Contains(CustomRoles.Romantic) && FinalRolesList.Contains(CustomRoles.Lovers))
                 FinalRolesList.Remove(CustomRoles.Lovers);
         }
 
-        // if roles are very few, add vanilla сrewmate roles
-        if (AllPlayers.Count > FinalRolesList.Count)
-        {
-            while (FinalRolesList.Count < AllPlayers.Count)
-            {
-                FinalRolesList.Add(CustomRoles.CrewmateTOHE);
-            }
-        }
-
         Logger.Info(string.Join(", ", FinalRolesList.Select(x => x.ToString())), "RoleResults");
 
-        while (AllPlayers.Any() && FinalRolesList.Any())
+        while (AllPlayers.Count > 0 && FinalRolesList.Count > 0)
         {
-            // Shuffle all players list
-            if (AllPlayers.Count > 2)
-                AllPlayers = AllPlayers.Shuffle(rd).ToList();
+            var roleId = rd.Next(0, FinalRolesList.Count);
 
-            // Shuffle final roles list
-            if (FinalRolesList.Count > 2)
-                FinalRolesList = FinalRolesList.Shuffle(rd).ToList();
+            CustomRoles assignedRole = FinalRolesList[roleId];
 
-            // Select random role and player from list
-            var randomPlayer = AllPlayers[rd.Next(AllPlayers.Count)];
-            var assignedRole = FinalRolesList[rd.Next(FinalRolesList.Count)];
+            RoleResult[AllPlayers[0]] = assignedRole;
+            Logger.Info($"Player：{AllPlayers[0].GetRealName()} => {assignedRole}", "RoleAssign");
 
-            // Assign random role for random player
-            RoleResult[randomPlayer] = assignedRole;
-            Logger.Info($"Player：{randomPlayer.GetRealName()} => {assignedRole}", "RoleAssign");
-
-            // Remove random role and player from list
-            AllPlayers.Remove(randomPlayer);
-            FinalRolesList.Remove(assignedRole);
+            AllPlayers.RemoveAt(0);
+            FinalRolesList.RemoveAt(roleId);
         }
 
-        if (AllPlayers.Any())
+        if (AllPlayers.Count > 0)
             Logger.Warn("Role assignment error: There are players who have not been assigned a role", "RoleAssign");
-        if (FinalRolesList.Any())
+        if (FinalRolesList.Count > 0)
             Logger.Warn("Team assignment error: There is an unassigned team", "RoleAssign");
         return;
 

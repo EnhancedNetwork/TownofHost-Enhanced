@@ -1,17 +1,14 @@
-﻿using static TOHE.Options;
+﻿using System.Collections.Generic;
+using System.Linq;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-internal class Instigator : RoleBase
+public class Instigator
 {
-    //===========================SETUP================================\\
-    private const int Id = 1700;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
-    //==================================================================\\
+    private static readonly int Id = 1700;
+    public static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
 
     private static OptionItem KillCooldown;
     private static OptionItem AbilityLimit;
@@ -21,7 +18,7 @@ internal class Instigator : RoleBase
 
     private static Dictionary<int, int> AbilityUseCount = [];
 
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Instigator);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(20f, 180f, 1f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])
@@ -31,22 +28,24 @@ internal class Instigator : RoleBase
         KillsPerAbilityUse = IntegerOptionItem.Create(Id + 12, "InstigatorKillsPerAbilityUse", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])
             .SetValueFormat(OptionFormat.Times);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
+        playerIdList = [];
+        IsEnable = false;
         AbilityUseCount = [];
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        IsEnable = true;
         AbilityUseCount.Add(playerId, 0);
     }
 
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public override void OnPlayerExiled(PlayerControl instigator, GameData.PlayerInfo exiled)
+    public static void OnPlayerExile(GameData.PlayerInfo exiled)
     {
-        if (exiled == null || !exiled.GetCustomRole().IsCrewmate()) return;
+        if (!IsEnable || !exiled.GetCustomRole().IsCrewmate()) return;
 
         foreach (var player in playerIdList)
         {

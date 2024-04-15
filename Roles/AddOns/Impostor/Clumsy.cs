@@ -1,10 +1,11 @@
-﻿using static TOHE.Options;
+﻿using System.Collections.Generic;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
 
 public static class Clumsy
 {
-    private const int Id = 22700;
+    private static readonly int Id = 22700;
 
     private static OptionItem ChanceToMiss;
 

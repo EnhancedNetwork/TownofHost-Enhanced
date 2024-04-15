@@ -1,7 +1,10 @@
+using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -12,7 +15,6 @@ public static class Translator
 {
     public static Dictionary<string, Dictionary<int, string>> translateMaps;
     public const string LANGUAGE_FOLDER_NAME = "Language";
-    private static readonly Dictionary<SupportedLangs, Dictionary<CustomRoles, string>> ActualRoleNames = [];
     public static void Init()
     {
         Logger.Info("Loading language files...", "Translator");
@@ -84,17 +86,6 @@ public static class Translator
         {
             if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
             {
-                if (!ActualRoleNames.ContainsKey(lang))
-                    ActualRoleNames.Add(lang, []);
-                foreach (var role in CustomRolesHelper.AllRoles)
-                {
-                    if (ActualRoleNames[lang].ContainsKey(role))
-                        ActualRoleNames[lang][role] = GetString($"{role}", lang);
-                    else
-                    {
-                        ActualRoleNames[lang].Add(role, GetString($"{role}", lang));
-                    }
-                }
                 UpdateCustomTranslation($"{lang}.dat"/*, lang*/);
                 LoadCustomTranslation($"{lang}.dat", lang);
             }
@@ -170,25 +161,7 @@ public static class Translator
     //            LoadCustomTranslation($"{lang}.dat", (SupportedLangs)lang);
     //    }
     //}
-    public static void GetActualRoleName(this CustomRoles role, out string RealName)
-    {
-        var currentlang = TranslationController.Instance.currentLanguage.languageID;
-        if (ActualRoleNames.TryGetValue(currentlang, out var RoleList))
-        {
-            if (RoleList.TryGetValue(role, out var RoleString))
-                RealName = RoleString;
-            else
-            {
-                RealName = GetString($"{role}");
-                Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "Translator.GetActualRoleName");
-            }
-            return;
-        }
-        else
-        {
-            RealName = GetString($"{role}");
-        }
-    }
+
     public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true, bool vanilla = false)
     {
         if (vanilla)
@@ -228,7 +201,7 @@ public static class Translator
             if (!translateMaps.ContainsKey(str)) //translateMapsにない場合、StringNamesにあれば取得する
             {
                 var stringNames = EnumHelper.GetAllValues<StringNames>().Where(x => x.ToString() == str).ToArray();
-                if (stringNames != null && stringNames.Any())
+                if (stringNames != null && stringNames.Length > 0)
                     res = GetString(stringNames.FirstOrDefault());
             }
         }

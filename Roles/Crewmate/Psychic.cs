@@ -1,20 +1,17 @@
+using HarmonyLib;
 using Hazel;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
-using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
-internal class Psychic : RoleBase
+public static class Psychic
 {
-    //===========================SETUP================================\\
-    private const int Id = 9400;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
-    //==================================================================\\
+    private static readonly int Id = 9400;
+    private static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
 
     private static OptionItem CanSeeNum;
     private static OptionItem Fresh;
@@ -23,9 +20,9 @@ internal class Psychic : RoleBase
     private static OptionItem NEshowEvil;
     private static OptionItem NCshowEvil;
 
-    private static readonly HashSet<byte> RedPlayer = [];
+    private static List<byte> RedPlayer = [];
 
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Psychic);
         CanSeeNum = IntegerOptionItem.Create(Id + 2, "PsychicCanSeeNum", new(1, 15, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic])
@@ -36,14 +33,16 @@ internal class Psychic : RoleBase
         NEshowEvil = BooleanOptionItem.Create(Id + 5, "NEareRed", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
         NCshowEvil = BooleanOptionItem.Create(Id + 7, "NCareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
     }
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
-        RedPlayer.Clear();
+        playerIdList = [];
+        RedPlayer = [];
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        IsEnable = true;
     }
     private static void SendRPC()
     {
@@ -56,30 +55,29 @@ internal class Psychic : RoleBase
     public static void ReceiveRPC(MessageReader reader)
     {
         int count = reader.ReadInt32();
-        RedPlayer.Clear();
-
+        RedPlayer = [];
         for (int i = 0; i < count; i++)
             RedPlayer.Add(reader.ReadByte());
     }
-    public static bool IsRedForPsy(PlayerControl target, PlayerControl seer)
+    public static bool IsRedForPsy(this PlayerControl target, PlayerControl seer)
     {
         if (target == null || seer == null) return false;
         var targetRole = target.GetCustomRole();
-        if (seer.Is(CustomRoles.Madmate)) return targetRole.IsNK() || targetRole.IsNE() || targetRole.IsCrewKiller();
+        if (seer.Is(CustomRoles.Madmate)) return targetRole.IsNK() || targetRole.IsNE() || targetRole.IsCK();
         else return RedPlayer != null && RedPlayer.Contains(target.PlayerId);
     }
-    public override void OnReportDeadBody(PlayerControl reported, PlayerControl target)
+    public static void OnReportDeadBody()
     {
         if (Fresh.GetBool() || RedPlayer == null || RedPlayer.Count < 1)
             GetRedName();
     }
     public static void GetRedName()
     {
-        if (!HasEnabled || !AmongUsClient.Instance.AmHost) return;
+        if (!IsEnable || !AmongUsClient.Instance.AmHost) return;
 
         List<PlayerControl> BadListPc = Main.AllAlivePlayerControls.Where(x =>
-        x.Is(Custom_Team.Impostor)  && !x.Is(CustomRoles.Trickster) || x.Is(CustomRoles.Madmate) || x.Is(CustomRoles.Rascal) || x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Charmed) || x.Is(CustomRoles.Infected) || !x.Is(CustomRoles.Admired) || x.Is(CustomRoles.Contagious) ||
-        (x.GetCustomRole().IsCrewKiller() && CkshowEvil.GetBool()) ||
+        x.Is(CustomRoleTypes.Impostor)  && !x.Is(CustomRoles.Trickster) || x.Is(CustomRoles.Madmate) || x.Is(CustomRoles.Rascal) || x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Charmed) || x.Is(CustomRoles.Infected) || !x.Is(CustomRoles.Admired) || x.Is(CustomRoles.Contagious) ||
+        (x.GetCustomRole().IsCK() && CkshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNE() && NEshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNC() && NCshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNB() && NBshowEvil.GetBool())
@@ -99,7 +97,7 @@ internal class Psychic : RoleBase
 
         if (ENum < 1) goto EndOfSelect;
 
-        RedPlayer.Clear();
+        RedPlayer = [];
         for (int i = 0; i < ENum && BadList.Count >= 1; i++)
         {
             RedPlayer.Add(BadList[IRandom.Instance.Next(0, BadList.Count)]);
@@ -120,10 +118,4 @@ internal class Psychic : RoleBase
         SendRPC(); //RPC同步红名名单
 
     }
-
-    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
-        => IsForMeeting && IsRedForPsy(target, seer) && seer.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Impostor), TargetPlayerName) : string.Empty;
-
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
-        => IsRedForPsy(target, seer) && seer.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Impostor), pva.NameText.text) : string.Empty;
 }

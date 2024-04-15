@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Fool
 {
-    private const int Id = 25600;
+    private static readonly int Id = 25600;
     public static bool IsEnable = false;
 
     public static OptionItem ImpCanBeFool;

@@ -1,9 +1,11 @@
-﻿using static TOHE.Options;
+﻿using TOHE.Roles.AddOns.Common;
+using static TOHE.Options;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.AddOns.Impostor;
 public static class Mimic
 {
-    private const int Id = 23100;
+    private static readonly int Id = 23100;
 
     private static OptionItem CanSeeDeadRolesOpt;
     public static void SetupCustomOption()

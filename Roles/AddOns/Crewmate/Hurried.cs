@@ -3,7 +3,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public static class Hurried
 {
-    private const int Id = 21300;
+    private static readonly int Id = 21300;
 
     public static OptionItem CanBeOnMadMate;
     public static OptionItem CanBeOnTaskBasedCrew;

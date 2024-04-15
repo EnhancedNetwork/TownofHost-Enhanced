@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Onbound
 {
-    private const int Id = 25800;
+    private static readonly int Id = 25800;
 
     public static OptionItem ImpCanBeOnbound;
     public static OptionItem CrewCanBeOnbound;

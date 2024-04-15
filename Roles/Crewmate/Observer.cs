@@ -1,31 +1,31 @@
-﻿using static TOHE.Options;
+﻿using System.Collections.Generic;
+using System.Linq;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
-internal class Observer : RoleBase
+public static class Observer
 {
-    //===========================SETUP================================\\
-    private const int Id = 9000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
-    //==================================================================\\
+    private static readonly int Id = 9000;
+    private static HashSet<byte> playerIdList = [];
+    public static bool IsEnable = false;
 
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Observer);
     }
 
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
+        playerIdList = [];
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        IsEnable = true;
     }
+
     public static void ActivateGuardAnimation(byte killerId, PlayerControl target, int colorId)
     {
         foreach (var observerId in playerIdList.ToArray())

@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public static class Bloodlust
 {
-    private const int Id = 21700;
+    private static readonly int Id = 21700;
 
     public static OptionItem ImpCanBeAutopsy;
     public static OptionItem CrewCanBeAutopsy;

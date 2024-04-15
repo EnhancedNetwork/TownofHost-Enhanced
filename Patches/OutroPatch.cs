@@ -1,6 +1,9 @@
+using HarmonyLib;
 using Hazel;
 using TMPro;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
@@ -9,7 +12,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using TOHE.Roles.Crewmate;
 
 namespace TOHE;
 
@@ -37,13 +39,13 @@ class EndGamePatch
 
                 if (AmongUsClient.Instance.AmHost)
                 {
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, Hazel.SendOption.Reliable, -1);
                     writer.Write(pvc);
                     writer.WritePacked((int)prevrole);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                 }
             }
-            if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
+            if (GhostRoleAssign.GhostGetPreviousRole.Count > 0) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
             // Seems to be a problem with Exiled() Patch. I plan to diligently attempt fixes in RoleBase PR.
         }
         catch(Exception e)
@@ -59,13 +61,17 @@ class EndGamePatch
 
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
-            if (Doppelganger.HasEnabled && Doppelganger.DoppelVictim.TryGetValue(id, out var playerName))
+            if (Doppelganger.IsEnable && Doppelganger.DoppelVictim.ContainsKey(id))
             {
                 var dpc = Utils.GetPlayerById(id);
                 if (dpc != null)
                 {
-                    dpc.RpcSetName(playerName);
-                    Main.AllPlayerNames[id] = playerName;
+                    //if (id == PlayerControl.LocalPlayer.PlayerId) Main.nickName = Doppelganger.DoppelVictim[id];
+                    //else
+                    //{ 
+                    dpc.RpcSetName(Doppelganger.DoppelVictim[id]);
+                    //}
+                    Main.AllPlayerNames[id] = Doppelganger.DoppelVictim[id];
                 }
             }
 
@@ -101,8 +107,8 @@ class EndGamePatch
             winner.AddRange(Main.AllPlayerControls.Where(p => p.Is(team) && !winner.Contains(p)));
         }
 
-        Main.winnerNameList.Clear();
-        Main.winnerList.Clear();
+        Main.winnerNameList = [];
+        Main.winnerList = [];
         foreach (var pc in winner.ToArray())
         {
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw && pc.Is(CustomRoles.GM)) continue;
@@ -112,10 +118,11 @@ class EndGamePatch
             Main.winnerNameList.Add(pc.GetRealName());
         }
 
-        BountyHunter.ChangeTimer.Clear();
-        Revolutionist.IsDraw.Clear();
-        Overseer.IsRevealed.Clear();
-        Main.PlayerQuitTimes.Clear();
+        BountyHunter.ChangeTimer = [];
+        Main.isDoused = [];
+        Main.isDraw = [];
+        Main.isRevealed = [];
+        Main.PlayerQuitTimes = [];
         ChatManager.ChatSentBySystem = [];
 
         Main.VisibleTasksCount = false;
@@ -193,6 +200,10 @@ class SetEverythingUpPatch
             case CustomWinner.Impostor:
                 CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Impostor);
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Impostor);
+                break;
+            case CustomWinner.Rogue:
+                CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Rogue);
+                __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Rogue);
                 break;
             case CustomWinner.Egoist:
                 CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Egoist);

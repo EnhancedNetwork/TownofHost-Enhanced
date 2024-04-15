@@ -1,8 +1,10 @@
-﻿namespace TOHE.Roles.AddOns.Common;
+﻿using System.Collections.Generic;
+
+namespace TOHE.Roles.AddOns.Common;
 
 public static class Sleuth
 {
-    private const int Id = 20100;
+    private static readonly int Id = 20100;
 
     public static OptionItem ImpCanBeSleuth;
     public static OptionItem CrewCanBeSleuth;
@@ -27,21 +29,5 @@ public static class Sleuth
     public static void Clear()
     {
         SleuthNotify.Clear();
-    }
-
-    public static void OnReportDeadBody(PlayerControl reporter, PlayerControl deadBody)
-    {
-        if (reporter.Is(CustomRoles.Sleuth) && deadBody != null && !deadBody.IsAlive() && reporter.PlayerId != deadBody.PlayerId)
-        {
-            string msg;
-            msg = string.Format(Translator.GetString("SleuthNoticeVictim"), deadBody.GetRealName(), deadBody.GetDisplayRoleAndSubName(deadBody, false));
-            if (SleuthCanKnowKillerRole.GetBool())
-            {
-                var realKiller = deadBody.GetRealKiller();
-                if (realKiller == null) msg += "；" + Translator.GetString("SleuthNoticeKillerNotFound");
-                else msg += "；" + string.Format(Translator.GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false));
-            }
-            SleuthNotify.Add(reporter.PlayerId, msg);
-        }
     }
 }

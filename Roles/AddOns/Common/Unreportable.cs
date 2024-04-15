@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Unreportable
 {
-    private const int Id = 20500;
+    private static readonly int Id = 20500;
 
     public static OptionItem ImpCanBeUnreportable;
     public static OptionItem CrewCanBeUnreportable;

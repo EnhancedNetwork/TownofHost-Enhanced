@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using TOHE.Roles.Core;
+using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -8,24 +9,18 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-internal class Shroud : RoleBase
+public static class Shroud
 {
-    //===========================SETUP================================\\
-    private const int Id = 18000;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
-    //==================================================================\\
+    private static readonly int Id = 18000;
+    public static bool IsEnable = false;
+
+    public static Dictionary<byte, byte> ShroudList = [];
 
     private static OptionItem ShroudCooldown;
-    private static OptionItem CanVent;
+    public static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
 
-    private static readonly Dictionary<byte, byte> ShroudList = [];
-
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Shroud, 1, zeroOne: false);
         ShroudCooldown = FloatOptionItem.Create(Id + 10, "ShroudCooldown", new(0f, 180f, 1f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Shroud])
@@ -33,16 +28,14 @@ internal class Shroud : RoleBase
         CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Shroud]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Shroud]);
     }
-    public override void Init()
+    public static void Init()
     {
-        PlayerIds.Clear();
-        ShroudList.Clear();
+        ShroudList = [];
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
-        CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
-        CustomRoleManager.MarkOthers.Add(GetShroudMark);
+        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -50,14 +43,13 @@ internal class Shroud : RoleBase
     }
     private static void SendRPC(byte shroudId, byte targetId, byte typeId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Shroud); // syncShroud
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncShroud, SendOption.Reliable, -1);
         writer.Write(typeId);
         writer.Write(shroudId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    public static void ReceiveRPC(MessageReader reader)
     {
         var typeId = reader.ReadByte();
         var shroudId = reader.ReadByte();
@@ -76,16 +68,7 @@ internal class Shroud : RoleBase
                 break;
         }
     }
-
-    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ShroudCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-
-    public static bool ShroudIsActive(byte playerId) => ShroudList.ContainsKey(playerId);
-
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
@@ -102,7 +85,7 @@ internal class Shroud : RoleBase
         return false;
     }
 
-    private static void OnFixedUpdateOthers(PlayerControl shroud)
+    public static void OnFixedUpdate(PlayerControl shroud)
     {
         if (!ShroudList.ContainsKey(shroud.PlayerId)) return;
 
@@ -123,7 +106,7 @@ internal class Shroud : RoleBase
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }
-            if (targetDistance.Any())
+            if (targetDistance.Count > 0)
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);
@@ -136,7 +119,7 @@ internal class Shroud : RoleBase
                         RPC.PlaySoundRPC(shroudId, Sounds.KillSound);
                         target.SetRealKiller(Utils.GetPlayerById(shroudId));
                         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
-                        shroud.RpcMurderPlayer(target);
+                        shroud.RpcMurderPlayerV3(target);
                         Utils.MarkEveryoneDirtySettings();
                         ShroudList.Remove(shroud.PlayerId);
                         SendRPC(byte.MaxValue, shroud.PlayerId, 2);
@@ -148,36 +131,39 @@ internal class Shroud : RoleBase
         }
     }
 
-    public override void OnPlayerExiled(PlayerControl shroud, GameData.PlayerInfo exiled)
+    public static void MurderShroudedPlayers(PlayerControl shrouded)
     {
-        if (!shroud.IsAlive())
+        if (!ShroudList.ContainsKey(shrouded.PlayerId)) return;
+        byte shroudId = ShroudList[shrouded.PlayerId];
+        PlayerControl shroudPC = Utils.GetPlayerById(shroudId);
+        if (shroudPC == null) return;
+        if (shroudPC.IsAlive())
         {
-            ShroudList.Remove(shroud.PlayerId);
-            SendRPC(byte.MaxValue, shroud.PlayerId, 2);
-            return;
-        }
-
-        foreach (var shroudedId in ShroudList.Keys)
-        {
-            PlayerControl shrouded = Utils.GetPlayerById(shroudedId);
-            if (shrouded == null) continue;
-
             Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
-            shrouded.RpcMurderPlayer(shrouded);
-
-            ShroudList.Remove(shrouded.PlayerId);
-            SendRPC(byte.MaxValue, shrouded.PlayerId, 2);
+            shrouded.RpcMurderPlayerV3(shrouded);
         }
+        ShroudList.Remove(shrouded.PlayerId);
+        SendRPC(byte.MaxValue, shrouded.PlayerId, 2);
     }
 
-    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-        => target != null && (ShroudList.ContainsValue(seer.PlayerId) && ShroudList.ContainsKey(target.PlayerId)) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
+    public static string TargetMark(PlayerControl seer, PlayerControl target)
+        => (ShroudList.ContainsValue(seer.PlayerId) && ShroudList.ContainsKey(target.PlayerId)) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : "";
     
-    private static string GetShroudMark(PlayerControl seer, PlayerControl target, bool isMeeting)
-        => isMeeting && target != null && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
-
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    public static string GetShroudMark(byte target, bool isMeeting)
     {
-        hud.KillButton?.OverrideText($"{GetString("ShroudButtonText")}");
+        if (isMeeting && ShroudList.ContainsKey(target))
+        {
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈");
+        }
+        return "";
+    }
+
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ShroudCooldown.GetFloat();
+    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
+    public static void CanUseVent(PlayerControl player)
+    {
+        bool Shroud_canUse = CanVent.GetBool();
+        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(Shroud_canUse && !player.Data.IsDead);
+        player.Data.Role.CanVent = Shroud_canUse;
     }
 }

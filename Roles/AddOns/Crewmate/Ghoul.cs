@@ -1,10 +1,12 @@
-﻿using static TOHE.Options;
+﻿using System.Collections.Generic;
+using System.Linq;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Ghoul
 {
-    private const int Id = 21900;
+    private static readonly int Id = 21900;
     public static HashSet<byte> KillGhoul = [];
     public static bool IsEnable;
     
@@ -45,16 +47,16 @@ public class Ghoul
             _ = new LateTask(() =>
             {
                 Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                player.RpcMurderPlayer(player);
+                player.RpcMurderPlayerV3(player);
 
             }, 0.2f, "Ghoul Suicide");
         }
         else
         {
-            foreach (var killer in Main.AllAlivePlayerControls.Where(x => KillGhoul.Contains(x.PlayerId)))
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => KillGhoul.Contains(x.PlayerId)))
             {
-                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Kill;
-                player.RpcMurderPlayer(killer);
+                Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Kill;
+                player.RpcMurderPlayerV3(pc);
             }
         }
     }

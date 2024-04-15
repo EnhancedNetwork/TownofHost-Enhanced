@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Torch
 {
-    private const int Id = 20300;
+    private static readonly int Id = 20300;
     private static OptionItem TorchVision;
     private static OptionItem TorchAffectedByLights;
 

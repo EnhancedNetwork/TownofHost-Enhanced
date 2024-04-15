@@ -1,4 +1,7 @@
+using HarmonyLib;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,13 +33,13 @@ public class MainMenuManagerStartPatch
         if ((Ambience = GameObject.Find("Ambience")) != null)
         {
             // Show play button when mod is fully loaded
-            //if (Options.IsLoaded && !__instance.playButton.enabled)
-            //    __instance.playButton.transform.gameObject.SetActive(true);
+            if (Options.IsLoaded && !__instance.playButton.enabled)
+                __instance.playButton.transform.gameObject.SetActive(true);
 
-            //else if (!Options.IsLoaded)
-            //    __instance.playButton?.transform.gameObject.SetActive(false);
+            else if (!Options.IsLoaded)
+                __instance.playButton?.transform.gameObject.SetActive(false);
 
-            //Logger.Msg($"Play button showed? : Options is loaded: {Options.IsLoaded} - check play button enabled {__instance.playButton.enabled}", "PlayButton");
+            Logger.Msg($"Play button showed? : Options is loaded: {Options.IsLoaded} - check play button enabled {__instance.playButton.enabled}", "PlayButton");
 
             Ambience.SetActive(false);
         }
@@ -46,7 +49,7 @@ public class MainMenuManagerStartPatch
 class MainMenuManagerLateUpdatePatch
 {
     private static int lateUpdate = 590;
-    //private static GameObject LoadingHint;
+    private static GameObject LoadingHint;
 
     private static void Postfix(MainMenuManager __instance)
     {
@@ -59,22 +62,22 @@ class MainMenuManagerLateUpdatePatch
         }
         lateUpdate = 0;
 
-        //LoadingHint = new GameObject("LoadingHint");
+        LoadingHint = new GameObject("LoadingHint");
 
-        //if (!Options.IsLoaded)
-        //{
-        //    LoadingHint.transform.position = Vector3.down;
-        //    var LoadingHintText = LoadingHint.AddComponent<TextMeshPro>();
-        //    LoadingHintText.text = GetString("SettingsAreLoading");
-        //    LoadingHintText.alignment = TextAlignmentOptions.Center;
-        //    LoadingHintText.fontSize = 3f;
-        //    LoadingHintText.transform.position = GameObject.Find("LOGO-AU").transform.position;
-        //    LoadingHintText.transform.position += new Vector3(-0.2f, -0.9f, 0f);
-        //    LoadingHintText.color = new Color32(0, 255, 8, byte.MaxValue); // new Color32(17, 255, 1, byte.MaxValue);
-        //}
+        if (!Options.IsLoaded)
+        {
+            LoadingHint.transform.position = Vector3.down;
+            var LoadingHintText = LoadingHint.AddComponent<TextMeshPro>();
+            LoadingHintText.text = GetString("SettingsAreLoading");
+            LoadingHintText.alignment = TextAlignmentOptions.Center;
+            LoadingHintText.fontSize = 3f;
+            LoadingHintText.transform.position = GameObject.Find("LOGO-AU").transform.position;
+            LoadingHintText.transform.position += new Vector3(-0.2f, -0.9f, 0f);
+            LoadingHintText.color = new Color32(0, 255, 8, byte.MaxValue); // new Color32(17, 255, 1, byte.MaxValue);
+        }
 
-        //LoadingHint?.SetActive(!Options.IsLoaded);
-        //__instance.playButton.transform.gameObject.SetActive(Options.IsLoaded);
+        LoadingHint?.SetActive(!Options.IsLoaded);
+        __instance.playButton.transform.gameObject.SetActive(Options.IsLoaded);
 
         var PlayOnlineButton = __instance.PlayOnlineButton;
         if (PlayOnlineButton != null)
@@ -99,6 +102,8 @@ public static class MainMenuManagerPatch
     private static PassiveButton discordButton;
     private static PassiveButton websiteButton;
     //private static PassiveButton patreonButton;
+
+    public static PassiveButton updateButton;
 
     [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
     public static void StartPostfix(MainMenuManager __instance)
@@ -236,6 +241,20 @@ public static class MainMenuManagerPatch
         }
         kofiButton.gameObject.SetActive(Main.ShowKofiButton);
 
+        // update Button
+        if (updateButton == null)
+        {
+            updateButton = CreateButton(
+                "updateButton",
+                new(3.68f, -2.68f, 1f),
+                new(255, 165, 0, byte.MaxValue),
+                new(255, 200, 0, byte.MaxValue),
+                () => ModUpdater.StartUpdate(ModUpdater.downloadUrl, true),
+                GetString("update")); //"Update"
+            updateButton.transform.localScale = Vector3.one;
+        }
+        updateButton.gameObject.SetActive(ModUpdater.hasUpdate);
+
         // GitHub Button
         if (gitHubButton == null)
         {
@@ -284,7 +303,7 @@ public static class MainMenuManagerPatch
 
     }
 
-    public static PassiveButton CreateButton(string name, Vector3 localPosition, Color32 normalColor, Color32 hoverColor, Action action, string label, Vector2? scale = null)
+    private static PassiveButton CreateButton(string name, Vector3 localPosition, Color32 normalColor, Color32 hoverColor, Action action, string label, Vector2? scale = null)
     {
         var button = Object.Instantiate(template, MainMenuManagerStartPatch.ToheLogo.transform);
         button.name = name;

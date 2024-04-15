@@ -1,29 +1,21 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
+﻿using Hazel;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
-namespace TOHE.Roles._Ghosts_.Crewmate;
+namespace TOHE.Roles.Crewmate;
 
-internal class Warden : RoleBase
+public class Warden
 {
-    //===========================SETUP================================\\
-    private const int Id = 27800;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateGhosts;
-    //==================================================================\\
-
-    private static OptionItem AbilityCooldown;
-    private static OptionItem IncreaseSpeed;
-    private static OptionItem WardenCanAlertNum;
-
-    private static readonly HashSet<byte> IsAffected = [];
-    private static readonly Dictionary<byte, int> AbilityCount = [];
-    public override void SetupCustomOption()
+    private static readonly int Id = 27800;
+    public static OptionItem AbilityCooldown;
+    public static OptionItem IncreaseSpeed;
+    public static OptionItem WardenCanAlertNum;
+    private static List<byte> IsAffected;
+    public static Dictionary<byte, int> AbilityCount;
+    public static void SetupCustomOptions()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Warden);
         AbilityCooldown = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(0f, 120f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
@@ -33,14 +25,14 @@ internal class Warden : RoleBase
         WardenCanAlertNum = IntegerOptionItem.Create(Id + 12, "WardenNotifyLimit", new(1, 20, 1), 2, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
                .SetValueFormat(OptionFormat.Players);
     }
-    public override void Init()
+    public static void Init()
     {
-        IsAffected.Clear();
-        AbilityCount.Clear();
+        IsAffected = [];
+        AbilityCount = [];
     }
-    public override void Add(byte PlayerId)
+    public static void Add(byte PlayerId)
     {
-        AbilityCount.TryAdd(PlayerId, WardenCanAlertNum.GetInt());
+        AbilityCount.Add(PlayerId, WardenCanAlertNum.GetInt());
     }
     private static void SendRPC(byte playerId)
     {
@@ -50,18 +42,18 @@ internal class Warden : RoleBase
         writer.Write(AbilityCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
         AbilityCount[PlayerId] = Limit;
     }
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    public static void SetAbilityCooldown()
     {
         AURoleOptions.GuardianAngelCooldown = AbilityCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
-    public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         var getTargetRole = target.GetCustomRole();
         if (AbilityCount[killer.PlayerId] > 0) 
@@ -92,7 +84,7 @@ internal class Warden : RoleBase
     }
 
     public static bool CanGuard(byte id) => AbilityCount.TryGetValue(id, out var x) && x > 0;
-    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(CanGuard(playerId) ? Utils.GetRoleColor(CustomRoles.Warden).ShadeColor(0.25f) : Color.gray, AbilityCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
+    public static string GetNotifyLimit(byte playerId) => Utils.ColorString(CanGuard(playerId) ? Utils.GetRoleColor(CustomRoles.Warden).ShadeColor(0.25f) : Color.gray, AbilityCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
 
 
 }

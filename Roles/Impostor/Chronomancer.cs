@@ -1,50 +1,45 @@
+using System.Collections.Generic;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
-
-internal class Chronomancer : RoleBase
+public static class Chronomancer
 {
-    //===========================SETUP================================\\
-    private const int Id = 900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
-    //==================================================================\\
+    private static readonly int Id = 900;
+    public static List<byte> playerIdList = [];
+    public static bool IsEnable = false;
 
-    private static Dictionary<byte, long> firstKill = [];
-    private static Dictionary<byte, long> lastCooldownStart = [];
-    private static Dictionary<byte, float> ChargedTime = [];
+    public static Dictionary<byte, long> firstKill = [];
+    public static Dictionary<byte, long> lastCooldownStart = [];
+    public static Dictionary<byte, float> ChargedTime = [];
 
     private static OptionItem KillCooldown;
 
-    public override void SetupCustomOption()
+    public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Chronomancer);
         KillCooldown = FloatOptionItem.Create(Id + 10, "ChronomancerKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Seconds);
     }
 
-    public override void Init()
+    public static void Init()
     {
-        playerIdList.Clear();
+        playerIdList = [];
         firstKill = [];
         lastCooldownStart = [];
         ChargedTime = [];
+        IsEnable = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         long now = Utils.GetTimeStamp();
         playerIdList.Add(playerId);
         firstKill.Add(playerId, -1);
         ChargedTime.Add(playerId, 0);
         lastCooldownStart.Add(playerId, now);
+        IsEnable = true;
     }
 
-    public override void SetKillCooldown(byte id) => OnSetKillCooldown(id);
-
-    private static void OnSetKillCooldown(byte id)
+    public static void SetKillCooldown(byte id)
     {
         long now = Utils.GetTimeStamp();
 
@@ -64,7 +59,7 @@ internal class Chronomancer : RoleBase
         Logger.Info($"{Utils.GetPlayerById(id).GetNameWithRole()} kill cd set to {Main.AllPlayerKillCooldown[id]}", "Chronomancer");
     }
 
-    public override void AfterMeetingTasks()
+    public static void AfterMeetingTask()
     {
         long now = Utils.GetTimeStamp();
         foreach (var playerId in playerIdList.ToArray())
@@ -74,7 +69,7 @@ internal class Chronomancer : RoleBase
                 firstKill[playerId] =  -1;
                 lastCooldownStart[playerId] = now;
                 ChargedTime[playerId] = 0;
-                OnSetKillCooldown(playerId);
+                SetKillCooldown(playerId);
             }
            
         }
@@ -88,6 +83,6 @@ internal class Chronomancer : RoleBase
             firstKill[killer.PlayerId] = now;
             ChargedTime[killer.PlayerId] = (firstKill[killer.PlayerId] - lastCooldownStart[killer.PlayerId]) - KillCooldown.GetFloat();
         }
-        OnSetKillCooldown(killer.PlayerId);
+        SetKillCooldown(killer.PlayerId);
     }
 }

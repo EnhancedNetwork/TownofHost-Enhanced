@@ -1,38 +1,35 @@
 using Hazel;
-using System;
+using System.Collections.Generic;
+using UnityEngine;
 using static TOHE.Translator;
-using static TOHE.Utils;
 
 namespace TOHE.Roles.Double;
-internal class Mini : RoleBase
+public class Mini
 {
-    //===========================SETUP================================\\
-    private const int Id = 7000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public override bool IsEnable => HasEnabled;
-    public static bool HasEnabled => playerIdList.Any();
-    public override CustomRoles ThisRoleBase => IsEvilMini ? CustomRoles.Impostor : CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => IsEvilMini ? Custom_RoleType.ImpostorKilling : Custom_RoleType.CrewmateBasic;
-    //==================================================================\\
-
-    private static OptionItem GrowUpDuration;
-    private static OptionItem EveryoneCanKnowMini;
-    private static OptionItem CountMeetingTime;
-    private static OptionItem EvilMiniSpawnChances;
-    private static OptionItem CanBeEvil;
-    private static OptionItem UpDateAge;
-    private static OptionItem MinorCD;
-    private static OptionItem MajorCD;
-
-
-    public static int Age = new();
-    private static bool IsEvilMini = false;
-    private static int GrowUpTime = new();
-    private static int GrowUp = new();
+    private static readonly int Id = 7000;
+    public static bool IsEvilMini = false;
+    public static void SetMiniTeam(float EvilMiniRate)
+    {
+        EvilMiniRate = EvilMiniSpawnChances.GetFloat();
+        IsEvilMini = Random.Range(1, 100) < EvilMiniRate;
+    }
+    private static List<byte> playerIdList = [];
+    public static int GrowUpTime = new();
+    public static int GrowUp = new();
+    //public static int EvilKillCDmin = new();
     private static long LastFixedUpdate = new();
-    private static bool misguessed = false;
-
-    public override void SetupCustomOption()
+    public static int Age = new();
+    public static OptionItem GrowUpDuration;
+    public static OptionItem EveryoneCanKnowMini;
+    public static OptionItem CountMeetingTime;
+    public static bool IsEnable = false;
+    public static bool misguessed = false;
+    public static OptionItem EvilMiniSpawnChances;
+    public static OptionItem CanBeEvil;
+    public static OptionItem UpDateAge;
+    public static OptionItem MinorCD;
+    public static OptionItem MajorCD;
+    public static void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mini, 1, zeroOne: false);
         GrowUpDuration = IntegerOptionItem.Create(Id + 100, "GrowUpDuration", new(200, 800, 25), 400, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mini])
@@ -48,20 +45,19 @@ internal class Mini : RoleBase
         UpDateAge = BooleanOptionItem.Create(Id + 114, "UpDateAge", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mini]);
         CountMeetingTime = BooleanOptionItem.Create(Id + 116, "CountMeetingTime", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mini]);
     }
-    public override void Init()
+    public static void Init()
     {
         GrowUpTime = 0;
-        playerIdList.Clear();
+        playerIdList = [];
         GrowUp = GrowUpDuration.GetInt() / 18;
+        IsEnable = false;
         Age = 0;
         misguessed = false;
-
-        var rand = new Random();
-        IsEvilMini = CanBeEvil.GetBool() && (rand.Next(0, 100) < EvilMiniSpawnChances.GetInt());
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -69,32 +65,18 @@ internal class Mini : RoleBase
     }
     public static void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Mini);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncMiniCrewAge, SendOption.Reliable, -1);
         writer.Write(Age);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    public static void ReceiveRPC(MessageReader reader)
     {
         Age = reader.ReadInt32();
     }
-
-    public static bool CheckSpawnEvilMini() => IsEvilMini;
-
-    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    public static void OnFixedUpdate(PlayerControl player)
     {
-        if (Age < 18)
-        {
-            killer.Notify(ColorString(GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
-            return false;
-        }
-        return true;
-    }
-    public static void OnFixedUpdates(PlayerControl player)
-    {
-        if (!GameStates.IsInGame) return;
+        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
         if (Age >= 18) return;
-
         //Check if nice mini is dead
         if (!player.IsAlive() && player.Is(CustomRoles.NiceMini))
         {
@@ -108,8 +90,8 @@ internal class Mini : RoleBase
 
         if (GameStates.IsMeeting && !CountMeetingTime.GetBool()) return;
 
-        if (LastFixedUpdate == GetTimeStamp()) return;
-        LastFixedUpdate = GetTimeStamp();
+        if (LastFixedUpdate == Utils.GetTimeStamp()) return;
+        LastFixedUpdate = Utils.GetTimeStamp();
         GrowUpTime++;
 
         if (GrowUpTime >= GrowUpDuration.GetInt() / 18)
@@ -126,7 +108,6 @@ internal class Mini : RoleBase
 
             if (player.Is(CustomRoles.NiceMini))
                 player.RpcGuardAndKill();
-            
             /*Dont show guard animation for evil mini,
             this would simply stop them from murdering.
             Imagine reseting kill cool down every 20 seconds
@@ -136,13 +117,12 @@ internal class Mini : RoleBase
             {
                 SendRPC();
                 player.Notify(GetString("MiniUp"));
-                NotifyRoles();
+                Utils.NotifyRoles();
             }
         }
     }
 
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = GetKillCoolDown();
-    private static float GetKillCoolDown()
+    public static float GetKillCoolDown()
     {
         if (MinorCD.GetFloat() <= MajorCD.GetFloat())
             return MinorCD.GetFloat();
@@ -152,65 +132,5 @@ internal class Mini : RoleBase
 
         return MinorCD.GetFloat() + (MajorCD.GetFloat() - MinorCD.GetFloat()) / 18 * Age;
     }
-    public override string GetProgressText(byte playerId, bool comms) => ColorString(GetRoleColor(CustomRoles.Mini), Age != 18 ? $"({Age})" : "");
-    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
-    {
-        if (guesser.Is(CustomRoles.NiceMini) && Age < 18 && misguessed)
-        {
-            if (!isUI) SendMessage(GetString("MiniGuessMax"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("MiniGuessMax"));
-            return true;
-        }
-        return false;
-    }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
-    {
-        if (target.Is(CustomRoles.NiceMini) && Age < 18)
-        {
-            if (!isUI) SendMessage(GetString("GuessMini"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessMini"));
-            return true;
-        }
-        return false;
-    }
-    public override bool CheckMisGuessed(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
-    {
-        if (Age < 18 && guesser.PlayerId == target.PlayerId)
-        {
-            misguessed = true;
-            _ = new LateTask(() => { SendMessage(GetString("MiniMisGuessed"), target.PlayerId, ColorString(GetRoleColor(CustomRoles.NiceMini), GetString("GuessKillTitle")), true); }, 0.6f, "Mini MisGuess Msg");
-            return true;
-        }
-
-        return false;
-    }
-
-    public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
-    {
-        if (GetPlayerById(exiled.PlayerId).Is(CustomRoles.NiceMini) && Age < 18)
-        {
-            if (isMeetingHud)
-            {
-                name = string.Format(GetString("ExiledNiceMini"), Main.LastVotedPlayer, GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
-                DecidedWinner = true;
-            }
-            else
-            {
-                if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
-                {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
-                    CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
-                }
-            }
-        }
-    }
-
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
-        => (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && EveryoneCanKnowMini.GetBool();
-
-    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-            => !seer.GetCustomRole().IsImpostorTeam() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? Main.roleColors[CustomRoles.Mini] : string.Empty;
-    
-    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-            => HasEnabled && EveryoneCanKnowMini.GetBool() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? ColorString(GetRoleColor(CustomRoles.Mini), Age != 18 && UpDateAge.GetBool() ? $"({Age})" : string.Empty) : string.Empty;
+    public static string GetAge(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Age != 18 ? $"({Age})" : "");
 }
