@@ -74,6 +74,8 @@ public class Main : BasePlugin
     public static bool ExceptionMessageIsShown = false;
     public static bool AlreadyShowMsgBox = false;
     public static string credentialsText;
+    public const int MaxPlayers = 127;
+    public const int MaxImpostors = 127 / 2;
     public Coroutines coroutines;
     public static NormalGameOptionsV07 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
     public static HideNSeekGameOptionsV07 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
@@ -414,7 +416,8 @@ public class Main : BasePlugin
     public override void Load()
     {
         Instance = this;
-
+        NormalGameOptionsV07.RecommendedImpostors = NormalGameOptionsV07.MaxImpostors = Enumerable.Repeat(127, 127).ToArray();
+        NormalGameOptionsV07.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
         //Client Options
         HideName = Config.Bind("Client Options", "Hide Game Code Name", "TOHE");
         HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"{ModColor}");
