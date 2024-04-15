@@ -18,19 +18,6 @@ class GameSettingMenuStartPatch
         __instance.Tabs.SetActive(true);
     }
 }
-[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Close))]
-class GameSettingMenuClosePatch
-{
-    public static void Postfix()
-    {
-        // if custom game mode is HideNSeekTOHE in normal game, set standart
-        if (GameStates.IsNormalGame && Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
-        {
-            // Select standart custom game mode
-            Options.GameMode.SetValue(0);
-        }
-    }
-}
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.InitializeOptions))]
 public static class GameSettingMenuInitializeOptionsPatch
 {
@@ -72,7 +59,7 @@ public static class GameOptionsMenuStartPatch
                 if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
                 {
                     // Select standart custom game mode for normal game
-                    Options.GameMode.SetValue(0);
+                    Options.CurrentGameMode = CustomGameMode.Standard;
                 }
 
                 template = Object.FindObjectOfType<StringOption>();
@@ -113,7 +100,7 @@ public static class GameOptionsMenuStartPatch
             else if (GameStates.IsHideNSeek)
             {
                 // Select custom game mode for Hide & Seek
-                Options.GameMode.SetValue(2);
+                Options.CurrentGameMode = CustomGameMode.HidenSeekTOHE;
 
                 gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
                 if (gameSettingMenu == null) return;
@@ -521,12 +508,12 @@ public class StringOptionIncreasePatch
             if (GameStates.IsHideNSeek)
             {
                 // Set Hide & Seek game mode
-                Options.GameMode.SetValue(2);
+                Options.CurrentGameMode = CustomGameMode.HidenSeekTOHE;
             }
             else if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
             {
                 // Set standart game mode
-                Options.GameMode.SetValue(0);
+                Options.CurrentGameMode = CustomGameMode.Standard;
             }
         }
         return false;
@@ -564,12 +551,12 @@ public class StringOptionDecreasePatch
             if (GameStates.IsHideNSeek)
             {
                 // Set Hide & Seek game mode
-                Options.GameMode.SetValue(2);
+                Options.CurrentGameMode = CustomGameMode.HidenSeekTOHE;
             }
             else if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
             {
                 // Set standart game mode
-                Options.GameMode.SetValue(0);
+                Options.CurrentGameMode = CustomGameMode.Standard;
             }
         }
         return false;

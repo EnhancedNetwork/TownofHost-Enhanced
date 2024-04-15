@@ -51,15 +51,7 @@ public static class Options
         Main.Preset4.Value, Main.Preset5.Value
     ];
 
-    // Custom Game Mode
-    public static OptionItem GameMode;
-    public static CustomGameMode CurrentGameMode
-        => GameMode.GetInt() switch
-        {
-            1 => CustomGameMode.FFA,
-            2 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
-            _ => CustomGameMode.Standard
-        };
+    public static CustomGameMode CurrentGameMode = CustomGameMode.Standard;
 
     public static readonly string[] gameModes =
     [
@@ -605,11 +597,6 @@ public static class Options
         _ = PresetOptionItem.Create(0, TabGroup.SystemSettings)
                 .SetColor(new Color32(255, 235, 4, byte.MaxValue))
                 .SetHeader(true);
-
-        // Game Mode
-        GameMode = StringOptionItem.Create(60000, "GameMode", gameModes, 0, TabGroup.GameSettings, false)
-            .SetHeader(true);
-
 
         #region Roles/Add-ons Settings
         CustomRoleCounts = [];

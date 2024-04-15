@@ -41,8 +41,8 @@ public static class OptionShower
                 GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10) + "\n\n"
             ];
 
-        // Mod Settings
-        sb.Append($"{Options.GameMode.GetName()}: {Options.GameMode.GetString()}\n\n");
+        // Mod Settings (todo)
+        //sb.Append($"{Options.CurrentGameMode.ToString()}: {Options.GameMode.GetString()}\n\n");
         if (Options.HideGameSettings.GetBool() && !AmongUsClient.Instance.AmHost)
         {
             sb.Append($"<color=#ff0000>{GetString("Message.HideGameSettings")}</color>");
