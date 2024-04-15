@@ -253,7 +253,7 @@ internal class HexMaster : RoleBase
     }
     public override string GetSuffix(PlayerControl hexmaster, PlayerControl seen = null, bool isMeeting = false)
     {
-        if (hexmaster == null || isMeeting) return "";
+        if (hexmaster == null || seen == null || isMeeting || hexmaster != seen) return "";
 
         var str = new StringBuilder();
         if (!isMeeting)
