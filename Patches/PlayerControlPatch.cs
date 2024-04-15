@@ -4418,16 +4418,7 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        try
-        {
-            var DeathPlayer = __instance;
-
-            GhostRoleAssign.GhostAssignPatch(DeathPlayer);
-        }
-        catch (Exception error)
-        {
-            Logger.Error($"Error after Ghost assign: {error}", "DiePlayerPatch.GhostAssign");
-        }
+        
 
         __instance.RpcRemovePet();
     }
@@ -4470,6 +4461,7 @@ class PlayerControlSetRolePatch
                 if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
                 {
                     roleType = RoleTypes.GuardianAngel;
+                    return true;
                 }
                 else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
                 {

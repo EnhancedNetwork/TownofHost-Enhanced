@@ -1469,13 +1469,13 @@ public static class Options
         /*
          * Impostor Ghost Roles
         */
-        TextOptionItem.Create(10000111, "RoleType.ImpGhost", TabGroup.ImpostorRoles)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 25, 25, byte.MaxValue));
+        //TextOptionItem.Create(10000111, "RoleType.ImpGhost", TabGroup.ImpostorRoles)
+        //    .SetGameMode(CustomGameMode.Standard)
+        //    .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
-        Minion.SetupCustomOption();
+        //Minion.SetupCustomOption();
 
-        Nemesis.SetupCustomOption();
+        //Nemesis.SetupCustomOption();
 
         #endregion
 
@@ -1956,13 +1956,13 @@ public static class Options
         /*
          * Crewmate Ghost Roles
         */
-        TextOptionItem.Create(10000101, "RoleType.CrewGhost", TabGroup.CrewmateRoles)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+        //TextOptionItem.Create(10000101, "RoleType.CrewGhost", TabGroup.CrewmateRoles)
+        //    .SetGameMode(CustomGameMode.Standard)
+        //    .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        Warden.SetupCustomOptions();
+        //Warden.SetupCustomOptions();
 
-        Retributionist.SetupCustomOptions();
+        //Retributionist.SetupCustomOptions();
 
         #endregion
 

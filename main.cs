@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using System;
@@ -39,14 +40,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0330.160.0600"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.6.0 Canary 6";
+    public const string PluginVersion = "2024.0413.200.0020"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 dev 2";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = true; // ACTIVE - Latest: V1.6.0 Canary 5
-    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.2
-    public static readonly bool devRelease = false; // INACTIVE - Latest: V1.6.0 Dev 7
+    public static readonly bool Canary = false; // ACTIVE - Latest: V1.6.0 Canary 6
+    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
+    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 2
 
     public static bool hasAccess = true;
 
@@ -72,6 +73,7 @@ public class Main : BasePlugin
     public static bool ExceptionMessageIsShown = false;
     public static bool AlreadyShowMsgBox = false;
     public static string credentialsText;
+    public Coroutines coroutines;
     public static NormalGameOptionsV07 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
     public static HideNSeekGameOptionsV07 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
@@ -86,7 +88,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> DarkTheme { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
     public static ConfigEntry<bool> ModeForSmallScreen { get; private set; }
-    //public static ConfigEntry<bool> HorseMode { get; private set; }
+    public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> AutoMuteUs { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
@@ -235,7 +237,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
     public static Dictionary<string, int> PlayerQuitTimes = [];
 
-    
 
     //public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     //public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
@@ -304,6 +305,25 @@ public class Main : BasePlugin
             TOHE.Logger.Error($"File not found：{filename}", "LoadCustomTranslation");
         }
     }
+
+    public void StartCoroutine(System.Collections.IEnumerator coroutine)
+    {
+        if (coroutine == null)
+        {
+            return;
+        }
+        coroutines.StartCoroutine(coroutine.WrapToIl2Cpp());
+    }
+
+    public void StopCoroutine(System.Collections.IEnumerator coroutine)
+    {
+        if (coroutine == null)
+        {
+            return;
+        }
+        coroutines.StopCoroutine(coroutine.WrapToIl2Cpp());
+    }
+
     public static void LoadRoleColors()
     {
         try
@@ -435,7 +455,7 @@ public class Main : BasePlugin
         DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
         ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
-        //HorseMode = Config.Bind("Client Options", "HorseMode", false);
+        HorseMode = Config.Bind("Client Options", "HorseMode", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
@@ -449,6 +469,7 @@ public class Main : BasePlugin
         AutoRehost = Config.Bind("Client Options", "AutoRehost", false);
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
+        coroutines = AddComponent<Coroutines>();
         TOHE.Logger.Enable();
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
@@ -996,4 +1017,7 @@ public enum TieMode
     Default,
     All,
     Random
+}
+public class Coroutines : MonoBehaviour
+{
 }
