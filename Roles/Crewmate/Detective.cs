@@ -39,7 +39,7 @@ internal class Detective : RoleBase
     public override void OnReportDeadBody(PlayerControl player, PlayerControl target)
     {
         var tpc = target;
-        if (player.Is(CustomRoles.Detective) && player.PlayerId != target.PlayerId)
+        if ((player != null && player.Is(CustomRoles.Detective)) && player != target)
         {
             string msg;
             msg = string.Format(GetString("DetectiveNoticeVictim"), tpc.GetRealName(), tpc.GetDisplayRoleAndSubName(tpc, false));
