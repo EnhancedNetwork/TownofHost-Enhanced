@@ -213,7 +213,7 @@ internal class Witch : RoleBase
     }
     public override string GetLowerText(PlayerControl witch, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (witch == null || isForMeeting) return string.Empty;
+        if (witch == null || isForMeeting || seen == null || witch != seen) return string.Empty;
 
         var str = new StringBuilder();
         if (isForHud)
