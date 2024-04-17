@@ -144,6 +144,8 @@ public static class CustomRoleManager
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
 
+        Logger.Info("Start", "ForcedCheckMurderAsKiller");
+
         // Forced check
         if (killerRoleClass.ForcedCheckMurderAsKiller(killer, target) == false)
         {
@@ -151,12 +153,16 @@ public static class CustomRoleManager
             return false;
         }
 
+        Logger.Info("Start", "OnCheckMurder.RpcCheckAndMurder");
+
         // Check in target
         if (killer.RpcCheckAndMurder(target, true) == false)
         {
             Logger.Info("Cancels because target cancel kill", "OnCheckMurder.RpcCheckAndMurder");
             return false;
         }
+
+        Logger.Info("Start foreach", "KillerSubRoles");
 
         if (killerSubRoles.Any())
             foreach (var killerSubRole in killerSubRoles.ToArray())
@@ -194,8 +200,10 @@ public static class CustomRoleManager
                 }
             }
 
+        Logger.Info("Start", "OnCheckMurderAsKiller");
+
         // Check murder as killer
-        if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
+        if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
         {
             Logger.Info("Cancels because for killer no need kill target", "OnCheckMurderAsKiller");
             return false;
