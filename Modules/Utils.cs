@@ -306,7 +306,11 @@ public static class Utils
     public static string GetRoleTitle(this CustomRoles role)
     {
         string ColorName = ColorString(GetRoleColor(role), GetString($"{role}"));
-        return $"{ColorName} {GetRoleMode(role)}";
+        
+        string chance = GetRoleMode(role);
+        if (role.IsAdditionRole() && !role.IsEnable()) chance = ColorString(Color.red, "(OFF)");
+        
+        return $"{ColorName} {chance}";
     }
     public static string GetInfoLong(this CustomRoles role) 
     {
