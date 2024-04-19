@@ -1657,6 +1657,7 @@
   "JudgeCanTrialNeutralK": "Can trial <color=#7f8c8d>Neutral</color> <color=#ff1919>Killing</color>",
   "JudgeCanTrialNeutralE": "Can trial <color=#7f8c8d>Neutral</color> <color=#912900>Evil</color>",
   "JudgeCanTrialNeutralC": "Can trial <color=#7f8c8d>Neutral</color> <color=#D4AF37>Chaos</color>",
+  "JudgeCanTrialNeutralA": "Can trial <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color>",
   "JudgeCanTrialSidekick": "Can trial <color=#00b4eb>Sidekick</color>",
   "JudgeCanTrialInfected": "Can trial <color=#7B8968>Infected</color>",
   "JudgeCanTrialContagious": "Can trial <color=#2E8B57>Contagious</color>",
