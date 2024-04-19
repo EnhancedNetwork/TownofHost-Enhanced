@@ -216,6 +216,8 @@ internal class Lawyer : RoleBase
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         lawyer.Notify(text);
     }
+    /* 
+    // Lonnie moment, makes the lawyer loose after death
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         if (Target.ContainsKey(target.PlayerId))
@@ -224,6 +226,7 @@ internal class Lawyer : RoleBase
             SendRPC(target.PlayerId, SetTarget: false);
         }
     }
+    */
     /*public static bool CheckExileTarget(GameData.PlayerInfo exiled, bool DecidedWinner, bool Check = false)
     {
         if (!HasEnabled) return false;

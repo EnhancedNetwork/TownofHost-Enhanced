@@ -1462,7 +1462,7 @@ internal class ChatCommands
                     if (isUp) return;
                 }
                 var Des = rl.GetInfoLong();
-                var title = $"<color=#ffffff>" + rl.GetRoleTitle() + "</color>\n";
+                var title = devMark + $"<color=#ffffff>" + rl.GetRoleTitle() + "</color>\n";
                 var Conf = new StringBuilder();
                 string rlHex = Utils.GetRoleColorCode(rl);
                 if (Options.CustomRoleSpawnChances.ContainsKey(rl))
