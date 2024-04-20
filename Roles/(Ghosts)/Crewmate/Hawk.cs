@@ -116,6 +116,7 @@ internal class Hawk : RoleBase
         {
             killer.RpcResetAbilityCooldown();
             KillCount[killer.PlayerId]--;
+            SendRPC(killer.PlayerId);
             killer.Notify(ColorString(GetRoleColor(CustomRoles.Hawk), GetString("HawkMissed")));
         }
 
