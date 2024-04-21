@@ -40,12 +40,12 @@ public class Susceptible
         if (EnabledDeathReasons.GetBool())
         {
             Logger.Info($"{victim.GetNameWithRole().RemoveHtmlTags()} had the death reason {randomReason}", "Susceptible");
-            Main.PlayerStates[victim.PlayerId].deathReason = randomReason.DeathReasonIsEnable() ? randomReason : PlayerState.DeathReason.Kill;
+            Main.PlayerStates[victim.PlayerId].deathReason = randomReason.DeathReasonIsEnable() ? randomReason : Main.PlayerStates[victim.PlayerId].deathReason;
             
         }
         else
         {
-            Main.PlayerStates[victim.PlayerId].deathReason = randomReason.DeathReasonIsEnable(true) ? randomReason : PlayerState.DeathReason.Kill;
+            Main.PlayerStates[victim.PlayerId].deathReason = randomReason.DeathReasonIsEnable(true) ? randomReason : Main.PlayerStates[victim.PlayerId].deathReason;
         }
     }
 }
