@@ -105,6 +105,14 @@ internal class Veteran : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
+        // Ability use limit reached
+        if (VeteranNumOfUsed[pc.PlayerId] <= 0)
+        {
+            pc.Notify(GetString("VeteranMaxUsage"));
+            return;
+        }
+
+        // Use ability
         if (!VeteranInProtect.ContainsKey(pc.PlayerId))
         {
             VeteranInProtect.Remove(pc.PlayerId);
@@ -114,7 +122,6 @@ internal class Veteran : RoleBase
             pc.RPCPlayCustomSound("Gunload");
             pc.Notify(GetString("VeteranOnGuard"), VeteranSkillDuration.GetFloat());
         }
-        if (VeteranNumOfUsed[pc.PlayerId] >= 0) pc.Notify(GetString("VeteranMaxUsage"));
     }
     public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
         => VeteranNumOfUsed.TryGetValue(physics.myPlayer.PlayerId, out var count) && count < 1;
