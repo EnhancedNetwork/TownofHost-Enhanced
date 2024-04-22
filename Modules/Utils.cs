@@ -1816,7 +1816,7 @@ public static class Utils
             PlayerState.DeathReason.Hex => (CustomRoles.HexMaster.IsEnable()),
             PlayerState.DeathReason.Curse => (CustomRoles.CursedWolf.IsEnable()),
             PlayerState.DeathReason.Jinx => (CustomRoles.Jinx.IsEnable()),
-            PlayerState.DeathReason.Shattered => (CustomRoles.Lovers.IsEnable()),
+            PlayerState.DeathReason.Shattered => (CustomRoles.Fragile.IsEnable()),
             PlayerState.DeathReason.Bite => (CustomRoles.Vampire.IsEnable()),
             PlayerState.DeathReason.Poison => (CustomRoles.Poisoner.IsEnable()),
             PlayerState.DeathReason.Bombed => (CustomRoles.Bomber.IsEnable() || CustomRoles.Burst.IsEnable()
