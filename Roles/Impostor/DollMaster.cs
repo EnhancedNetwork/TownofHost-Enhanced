@@ -13,7 +13,9 @@ internal class DollMaster : RoleBase
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
     private static readonly HashSet<byte> ReducedVisionPlayers = [];
     public static bool isEnabled = false;
@@ -33,7 +35,7 @@ internal class DollMaster : RoleBase
     private static OptionItem ShapeshiftDuration;
     public static OptionItem CanKillAsMainBody;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.DollMaster);
         DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
@@ -55,7 +57,7 @@ internal class DollMaster : RoleBase
     public override void Add(byte playerId)
     {
         PlayerIds.Add(playerId);
-        DollMasterTarget = PlayerControl.AllPlayerControls[playerId];
+        DollMasterTarget = Utils.GetPlayerById(playerId);
         IsControllingPlayer = false;
     }
 
@@ -86,7 +88,7 @@ internal class DollMaster : RoleBase
         }
     }
 
-    public static void OnFixedUpdate() // Setup settings for main body when possessing and more.
+    public override void OnFixedUpdate(PlayerControl pc) // Setup settings for main body when possessing and more.
     {
         if (controllingTarget != null && DollMasterTarget != null && Main.AllPlayerSpeed.ContainsKey(controllingTarget.PlayerId))
         {
@@ -182,8 +184,8 @@ internal class DollMaster : RoleBase
         // If Target as DollMaster Main Body gets killed, kill DollMaster instead.
         if (target.PlayerId == ControllingPlayerId)
         {
-            PlayerControl playertarget = PlayerControl.AllPlayerControls[ControllingPlayerId];
-            PlayerControl dollmaster = PlayerControl.AllPlayerControls[DollMasterPlayerId];
+            PlayerControl playertarget = Utils.GetPlayerById(ControllingPlayerId);
+            PlayerControl dollmaster = Utils.GetPlayerById(DollMasterPlayerId);
             UnPossess(dollmaster, playertarget);
             GetPlayersPositions(dollmaster);
             SwapPlayersPositions(dollmaster);
@@ -194,8 +196,8 @@ internal class DollMaster : RoleBase
         // If DollMaster gets killed as possessed Target, kill possessed Target instead.
         else if (target.PlayerId == DollMasterPlayerId)
         {
-            PlayerControl playertarget = PlayerControl.AllPlayerControls[ControllingPlayerId];
-            PlayerControl dollmaster = PlayerControl.AllPlayerControls[DollMasterPlayerId];
+            PlayerControl playertarget = Utils.GetPlayerById(ControllingPlayerId);
+            PlayerControl dollmaster = Utils.GetPlayerById(DollMasterPlayerId);
             UnPossess(dollmaster, playertarget);
             GetPlayersPositions(dollmaster);
             SwapPlayersPositions(dollmaster);
@@ -235,7 +237,7 @@ internal class DollMaster : RoleBase
         // Possess Player & UnPossess Player.
         if (!IsControllingPlayer)
         {
-            controllingTarget = PlayerControl.AllPlayerControls[target.PlayerId];
+            controllingTarget = Utils.GetPlayerById(target.PlayerId);
             ControllingPlayerId = target.PlayerId;
             DollMasterPlayerId = pc.PlayerId;
             originalSpeed = Main.AllPlayerSpeed[target.PlayerId];

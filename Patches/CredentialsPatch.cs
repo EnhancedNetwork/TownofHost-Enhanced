@@ -118,7 +118,6 @@ public static class Credentials
             Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>";
             buildtype = "Debug";
 #endif
-            Logger.Info($"v{Main.PluginVersion}, {buildtype}:{ThisAssembly.Git.Branch}:({ThisAssembly.Git.Commit}), link [{ThisAssembly.Git.RepositoryUrl}], dirty: [{ThisAssembly.Git.IsDirty}]", "TOHE version");
 
             if (Main.IsAprilFools)
                 Main.credentialsText = $"\r\n<color=#00bfff>Town Of Host</color> v11.45.14";

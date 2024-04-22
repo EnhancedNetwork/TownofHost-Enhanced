@@ -4,6 +4,7 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
+using MonoMod.Cil;
 using System;
 using System.IO;
 using System.Reflection;
@@ -40,14 +41,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0420.200.0000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 dev D1";
+    public const string PluginVersion = "2024.0422.200.0004"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 dev 4";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = false; // ACTIVE - Latest: V1.6.0 Canary 6
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
-    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 2
+    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 2.1
 
     public static bool hasAccess = true;
 
@@ -126,7 +127,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
     const string LANGUAGE_FOLDER_NAME = "Language";
     
-    public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable() || CustomRoles.Vampiress.IsEnable();
+    public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
     public static GameData.PlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
@@ -297,9 +298,9 @@ public class Main : BasePlugin
 
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
             {
-                switch (role.GetCustomRoleTypes())
+                switch (role.GetCustomRoleTeam())
                 {
-                    case CustomRoleTypes.Impostor:
+                    case Custom_Team.Impostor:
                         roleColors.TryAdd(role, "#ff1919");
                         break;
                     default:
@@ -331,16 +332,21 @@ public class Main : BasePlugin
             var RoleTypes = Assembly.GetAssembly(typeof(RoleBase))!
                 .GetTypes()
                 .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
+
+            CustomRolesHelper.DuplicatedRoles = new Dictionary<CustomRoles, Type>
+            {
+                { CustomRoles.Pestilence, typeof(PlagueBearer) },
+                { CustomRoles.NiceMini, typeof(Mini) },
+                { CustomRoles.EvilMini, typeof(Mini) }
+            };
+
+
             foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
             {
-                Type roleType = role switch // Switch role to FatherRole (Double Classes)
+                if (!CustomRolesHelper.DuplicatedRoles.TryGetValue(role, out Type roleType))
                 {
-                    CustomRoles.Vampiress => typeof(Vampire),
-                    CustomRoles.Pestilence => typeof(PlagueBearer),
-                    CustomRoles.Nuker => typeof(Bomber),
-                    CustomRoles.NiceMini or CustomRoles.EvilMini => typeof(Mini),
-                    _ => RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(VanillaRole),
-                };
+                    roleType = RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(DefaultSetup);
+                }
 
                 CustomRoleManager.RoleClass.Add(role, (RoleBase)Activator.CreateInstance(roleType));
             }
@@ -486,8 +492,8 @@ public class Main : BasePlugin
         hasArgumentException = false;
         ExceptionMessage = "";
 
-        LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
         LoadRoleClasses();
+        LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
 
         CustomWinnerHolder.Reset();
         Translator.Init();
@@ -585,7 +591,6 @@ public enum CustomRoles
     Morphling,
     Nemesis,
     Ninja,
-    Nuker,
     Parasite,
     Penguin,
     Pitfall,
@@ -608,7 +613,6 @@ public enum CustomRoles
     Underdog,
     Undertaker,
     Vampire,
-    Vampiress,
     Vindicator,
     Visionary,
     Warlock,
@@ -856,7 +860,7 @@ public enum CustomRoles
     VoidBallot,
     Watcher,
     Workhorse,
-    Youtuber
+    Youtuber   
 }
 //WinData
 public enum CustomWinner
