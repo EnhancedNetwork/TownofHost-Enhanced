@@ -237,7 +237,7 @@ internal class DollMaster : RoleBase
         // Possess Player & UnPossess Player.
         if (!IsControllingPlayer)
         {
-            controllingTarget = Utils.GetPlayerById(target.PlayerId);
+            if (target != null) controllingTarget = Utils.GetPlayerById(target.PlayerId);
             ControllingPlayerId = target.PlayerId;
             DollMasterPlayerId = pc.PlayerId;
             originalSpeed = Main.AllPlayerSpeed[target.PlayerId];
