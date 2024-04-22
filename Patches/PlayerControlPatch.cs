@@ -103,7 +103,7 @@ class CheckMurderPatch
         if (GameStates.IsHideNSeek) return true;
 
         var killer = __instance;
-        var killerRole = __instance.GetRoleClass();
+        var killerRole = __instance.GetCustomRole();
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
@@ -113,22 +113,18 @@ class CheckMurderPatch
         }
 
         // Set kill cooldown for Chronomancer
-        if (killerRole is Chronomancer)
+        if (killerRole is CustomRoles.Chronomancer)
             Chronomancer.OnCheckMurder(killer);
 
         killer.ResetKillCooldown();
         Logger.Info($"Kill Cooldown Resets", "CheckMurder");
 
         // Replacement process when the actual killer and the KILLER are different
-        if (Sniper.SnipeIsActive(__instance.PlayerId))
+        if (Sniper.HasEnabled)
         {
-            Logger.Info($"Killer is Sniper", "CheckMurder");
-
             Sniper.TryGetSniper(target.PlayerId, ref killer);
-
-            Logger.Info($"After Try Get Sniper", "CheckMurder");
-
-            if (killer.PlayerId != __instance.PlayerId)
+            
+            if (killer != __instance)
             {
                 Logger.Info($"Real Killer = {killer.GetNameWithRole().RemoveHtmlTags()}", "Sniper.CheckMurder");
             }
@@ -239,11 +235,7 @@ class CheckMurderPatch
     {
         if (!AmongUsClient.Instance.AmHost) return false;
 
-        Logger.Info($"check: {check}", "RpcCheckAndMurder");
-
         if (target == null) target = killer;
-
-        Logger.Info($"Start", "Shaman.CheckMurder");
 
         // Shaman replace target
         if (Shaman.HasEnabled && Shaman.ShamanTarget != byte.MaxValue)
@@ -254,8 +246,6 @@ class CheckMurderPatch
 
             Logger.Info($"Real target after = {target.GetNameWithRole().RemoveHtmlTags()}", "Shaman.CheckMurder");
         }
-
-        Logger.Info($"End", "Shaman.CheckMurder");
 
         var killerRole = killer.GetCustomRole();
 
@@ -287,10 +277,8 @@ class CheckMurderPatch
         }
 
         // Impostors can kill Madmate
-        if (killer.Is(Custom_Team.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
+        if (killer.Is(CustomRoleTypes.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
-
-        Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
 
         // Check murder on others targets
         if (CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target) == false)
@@ -298,8 +286,6 @@ class CheckMurderPatch
             Logger.Info("Cancels because for others target need cancel kill", "OnCheckMurderAsTargetOnOthers");
             return false;
         }
-
-        Logger.Info($"Start", "TargetSubRoles");
 
         if (targetSubRoles.Any())
             foreach (var targetSubRole in targetSubRoles.ToArray())
@@ -333,7 +319,6 @@ class CheckMurderPatch
                         if (!Lucky.OnCheckMurder(killer, target))
                             return false;
                         break;
-
                     case CustomRoles.Cyber when killer.PlayerId != target.PlayerId:
                         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToArray())
                         {
@@ -349,8 +334,6 @@ class CheckMurderPatch
                         break;
                 }
             }
-
-        Logger.Info($"Start", "OnCheckMurderAsTarget");
 
         // Check Murder as target
         if (targetRoleClass.OnCheckMurderAsTarget(killer, target) == false)
@@ -420,7 +403,7 @@ class MurderPlayerPatch
                 }
             }
 
-            if (!target.IsProtected() && !Doppelganger.CheckDoppelVictim(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+            if (!target.IsProtected() && !Doppelganger.CheckDoppelVictim(target.PlayerId) && !Murderer.CheckMurdererVictim(target.PlayerId) &&!Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
             {
                 Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
                 Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
@@ -831,7 +814,7 @@ class ReportDeadBodyPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            if (!Doppelganger.CheckDoppelVictim(pc.PlayerId))
+            if (!Doppelganger.CheckDoppelVictim(pc.PlayerId) && !Murderer.CheckMurdererVictim(pc.PlayerId))
             {
                 // Update skins again, since players have different skins
                 // And can be easily distinguished from each other
@@ -1036,6 +1019,9 @@ class FixedUpdateInNormalGamePatch
                 {
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
 
+                    if (DollMaster.isEnabled)
+                        DollMaster.OnFixedUpdate();
+
                     if (Rainbow.isEnabled)
                         Rainbow.OnFixedUpdate();
 
@@ -1062,7 +1048,7 @@ class FixedUpdateInNormalGamePatch
                 if (GameStates.IsInGame && Main.RefixCooldownDelay <= 0)
                     foreach (var pc in Main.AllPlayerControls)
                     {
-                        if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja))
+                        if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja) || pc.Is(CustomRoles.Vampiress))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Options.DefaultKillCooldown * 2;
                         
                         if (pc.Is(CustomRoles.Poisoner))
@@ -1075,7 +1061,7 @@ class FixedUpdateInNormalGamePatch
         if (player.AmOwner && GameStates.IsInTask)
         {
             //Kill target override processing
-            if (!player.Is(Custom_Team.Impostor) && player.CanUseKillButton() && !player.Data.IsDead)
+            if (!player.Is(CustomRoleTypes.Impostor) && player.CanUseKillButton() && !player.Data.IsDead)
             {
                 var players = __instance.GetPlayersInAbilityRangeSorted(false);
                 PlayerControl closest = !players.Any() ? null : players[0];
@@ -1428,7 +1414,7 @@ class PlayerControlCompleteTaskPatch
                             break;
 
                         case CustomRoles.Madmate when taskState.IsTaskFinished && player.Is(CustomRoles.Snitch):
-                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor)).ToArray())
+                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(CustomRoleTypes.Impostor)).ToArray())
                             {
                                 NameColorManager.Add(impostor.PlayerId, player.PlayerId, "#ff1919");
                             }
@@ -1483,7 +1469,7 @@ public static class PlayerControlMixupOutfitPatch
 
         // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
         if (PlayerControl.LocalPlayer.Data.Role.IsImpostor &&  // Impostor with vanilla
-            !PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) &&  // Not an Impostor
+            !PlayerControl.LocalPlayer.Is(CustomRoleTypes.Impostor) &&  // Not an Impostor
             Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId))  // Desync Impostor
         {
             // Hide names
@@ -1561,12 +1547,12 @@ class PlayerControlSetRolePatch
                 Logger.Warn($"Error After RpcSetRole: {error}", "RpcSetRole.Prefix.GhostAssignPatch");
             }
 
-            var targetIsKiller = target.Is(Custom_Team.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
+            var targetIsKiller = target.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
 
             foreach (var seer in Main.AllPlayerControls)
             {
                 var self = seer.PlayerId == target.PlayerId;
-                var seerIsKiller = seer.Is(Custom_Team.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
+                var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
                 if (!ghostRoles.ContainsKey(seer))
                     ghostRoles.Add(seer, roleType);
 
@@ -1574,7 +1560,7 @@ class PlayerControlSetRolePatch
                 {
                     ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
-                else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(Custom_Team.Impostor)))
+                else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(CustomRoleTypes.Impostor)))
                 {
                     ghostRoles[seer] = RoleTypes.ImpostorGhost;
                 }
