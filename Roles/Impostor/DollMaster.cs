@@ -253,7 +253,7 @@ internal class DollMaster : RoleBase
             }, 0.35f);
             return false;
         }
-        else
+        else if (controllingTarget != null)
         {
             UnPossess(pc, Utils.GetPlayerById(controllingTarget.PlayerId));
             GetPlayersPositions(pc);
