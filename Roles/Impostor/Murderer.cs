@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -6,7 +6,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Murderer : RoleBase
 {
-    private readonly static GameData.PlayerOutfit UnidentifiableOutfit = new GameData.PlayerOutfit().Set("Body", 0, "", "", "visor_Dirty", "", "");
+    private readonly static GameData.PlayerOutfit UnidentifiableOutfit = new GameData.PlayerOutfit().Set("<color=#a13535>Dead Body", 0, "", "", "visor_Dirty", "", "");
     public static readonly Dictionary<byte, string> MurdererVictim = [];
     private static float KillerOriginalSpeed = 0;
     //===========================SETUP================================\\

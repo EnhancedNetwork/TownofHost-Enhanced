@@ -92,6 +92,8 @@ internal class DollMaster : RoleBase
     {
         if (controllingTarget != null && DollMasterTarget != null && Main.AllPlayerSpeed.ContainsKey(controllingTarget.PlayerId))
         {
+            var TempDollMasterTarget = Utils.GetPlayerById(DollMasterTarget.PlayerId);
+            var TempControllingTarget = Utils.GetPlayerById(controllingTarget.PlayerId);
             // Set settings.
             if (IsControllingPlayer)
             {
@@ -108,36 +110,36 @@ internal class DollMaster : RoleBase
             ReducedVisionPlayers.Remove(DollMasterTarget.PlayerId);
 
             // Boot Possessed Player from vent if inside of a vent and if waiting.
-            if (IsControllingPlayer && Main.AllPlayerControls[controllingTarget.PlayerId].inVent && !Main.AllPlayerControls[controllingTarget.PlayerId].walkingToVent)
+            if (IsControllingPlayer && TempControllingTarget.inVent && !TempControllingTarget.walkingToVent)
             {
                 _ = new LateTask(() =>
                 {
-                    if (!Main.AllPlayerControls[controllingTarget.PlayerId].inVent || Main.AllPlayerControls[controllingTarget.PlayerId].walkingToVent) return;
-                    Main.AllPlayerControls[controllingTarget.PlayerId].MyPhysics.RpcBootFromVent(GetPlayerVentId(Main.AllPlayerControls[controllingTarget.PlayerId]));
-                }, 0.25f, "Boot Possessed Player from vent: " + GetPlayerVentId(Main.AllPlayerControls[controllingTarget.PlayerId]));
+                    if (!TempControllingTarget.inVent || TempControllingTarget.walkingToVent) return;
+                    TempControllingTarget.MyPhysics.RpcBootFromVent(GetPlayerVentId(TempControllingTarget));
+                }, 0.25f, "Boot Possessed Player from vent: " + GetPlayerVentId(TempControllingTarget));
             }
 
             // If DollMaster can't be teleported start waiting to unpossess.
             if (IsControllingPlayer && WaitToUnPossess)
             {
                 // Boot DollMaster from vent if inside of a vent and if waiting.
-                if (Main.AllPlayerControls[DollMasterTarget.PlayerId].inVent && !Main.AllPlayerControls[DollMasterTarget.PlayerId].walkingToVent)
+                if (TempDollMasterTarget.inVent && !TempDollMasterTarget.walkingToVent)
                 {
                     _ = new LateTask(() =>
                     {
-                        if (!Main.AllPlayerControls[DollMasterTarget.PlayerId].inVent || Main.AllPlayerControls[DollMasterTarget.PlayerId].walkingToVent) return;
-                        Main.AllPlayerControls[DollMasterTarget.PlayerId].MyPhysics.RpcBootFromVent(GetPlayerVentId(Main.AllPlayerControls[DollMasterTarget.PlayerId]));
-                    }, 0.25f, "Boot DollMaster from vent: " + GetPlayerVentId(Main.AllPlayerControls[DollMasterTarget.PlayerId]));
+                        if (!TempDollMasterTarget.inVent || TempDollMasterTarget.walkingToVent) return;
+                        TempDollMasterTarget.MyPhysics.RpcBootFromVent(GetPlayerVentId(TempDollMasterTarget));
+                    }, 0.25f, "Boot DollMaster from vent: " + GetPlayerVentId(TempDollMasterTarget));
                 }
                 // Unpossessed after waiting for DollMaster.
-                if (Main.AllPlayerControls[DollMasterTarget.PlayerId].CanBeTeleported())
+                if (TempDollMasterTarget.CanBeTeleported())
                 {
                     _ = new LateTask(() =>
                     {
                         if (!WaitToUnPossess) return;
-                        UnPossess(Main.AllPlayerControls[DollMasterTarget.PlayerId], Main.AllPlayerControls[ControllingPlayerId]);
-                        GetPlayersPositions(Main.AllPlayerControls[DollMasterTarget.PlayerId]);
-                        SwapPlayersPositions(Main.AllPlayerControls[DollMasterTarget.PlayerId]);
+                        UnPossess(TempDollMasterTarget, TempControllingTarget);
+                        GetPlayersPositions(TempDollMasterTarget);
+                        SwapPlayersPositions(TempDollMasterTarget);
                     }, 0.15f, "UnPossess");
                 }
             }
@@ -160,9 +162,9 @@ internal class DollMaster : RoleBase
         if (IsControllingPlayer && controllingTarget != null)
         {
             bool shouldAnimate = false;
-            Main.AllPlayerControls[DollMasterPlayerId].RpcShapeshift(Main.AllPlayerControls[DollMasterPlayerId], shouldAnimate);
-            Main.AllPlayerControls[ControllingPlayerId].RpcShapeshift(Main.AllPlayerControls[ControllingPlayerId], shouldAnimate);
-            UnPossess(Main.AllPlayerControls[DollMasterPlayerId], Main.AllPlayerControls[ControllingPlayerId]);
+            Utils.GetPlayerById(DollMasterTarget.PlayerId).RpcShapeshift(Utils.GetPlayerById(DollMasterTarget.PlayerId), shouldAnimate);
+            Utils.GetPlayerById(controllingTarget.PlayerId).RpcShapeshift(Utils.GetPlayerById(controllingTarget.PlayerId), shouldAnimate);
+            UnPossess(Utils.GetPlayerById(DollMasterTarget.PlayerId), Utils.GetPlayerById(controllingTarget.PlayerId));
             Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
             ReportDeadBodyPatch.CanReport[controllingTarget.PlayerId] = true;
             ReducedVisionPlayers.Clear();
@@ -251,9 +253,9 @@ internal class DollMaster : RoleBase
             }, 0.35f);
             return false;
         }
-        else
+        else if (controllingTarget != null)
         {
-            UnPossess(pc, Main.AllPlayerControls[ControllingPlayerId]);
+            UnPossess(pc, Utils.GetPlayerById(controllingTarget.PlayerId));
             GetPlayersPositions(pc);
             SwapPlayersPositions(pc);
         }
