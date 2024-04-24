@@ -160,8 +160,6 @@ class CheckMurderPatch
     public static void Postfix()
     {
         CustomRoleManager.killercheck = null;
-
-
     }
     public static bool CheckForInvalidMurdering(PlayerControl killer, PlayerControl target)
     {
