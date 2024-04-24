@@ -107,6 +107,7 @@ class CheckMurderPatch
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
+
         if (CheckForInvalidMurdering(killer, target) == false)
         {
             return false;
@@ -136,10 +137,16 @@ class CheckMurderPatch
 
         Logger.Info($"Start: CustomRoleManager.OnCheckMurder", "CheckMurder");
 
-        if (CustomRoleManager.OnCheckMurder(killer, target) == false)
-        {
-            Logger.Info($"Canceled from CustomRoleManager.OnCheckMurder", "CheckMurder");
-            return false;
+        if (CustomRoleManager.killercheck != null) // Incase it was trying to run here and not internally.
+        { 
+            if (CustomRoleManager.OnCheckMurder(killer, target) == false)
+            {
+                Logger.Info($"Canceled from CustomRoleManager.OnCheckMurder", "CheckMurder");
+                return false;
+            }
+        }
+        else { 
+            Logger.Warn($"Warning! {killer.GetNameWithRole()} tried to activate CustomRoleManager.OnCheckMurder on {target.GetNameWithRole()} twice", "PlayerControlPatch.OnCheckMurder");
         }
 
         Logger.Info($"End: CustomRoleManager.OnCheckMurder", "CheckMurder");
@@ -149,6 +156,12 @@ class CheckMurderPatch
         //============
 
         return false;
+    }
+    public static void Postfix()
+    {
+        CustomRoleManager.killercheck = null;
+
+
     }
     public static bool CheckForInvalidMurdering(PlayerControl killer, PlayerControl target)
     {
@@ -243,6 +256,16 @@ class CheckMurderPatch
 
         if (target == null) target = killer;
 
+        if (CustomRoleManager.killercheck != null)
+        {
+            if (CustomRoleManager.killercheck(killer, target))
+                return true;
+            else
+            {
+                return false;
+            }
+        }
+
         Logger.Info($"Start", "Shaman.CheckMurder");
 
         // Shaman replace target
@@ -290,7 +313,11 @@ class CheckMurderPatch
         if (killer.Is(Custom_Team.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
 
-        Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
+        CustomRoleManager.killercheck = (PlayerControl killer, PlayerControl target) =>
+        {
+            Logger.Warn($"Warning! {killer.GetNameWithRole()} tried to repeat a check on {target.GetNameWithRole()}, last recorded OnCheckMurderAsTargetOnOthers [false, Line 307]", "PlayerControlPatch.RpcCheckAndMurder");
+            return false;
+        };
 
         // Check murder on others targets
         if (CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target) == false)
@@ -299,7 +326,11 @@ class CheckMurderPatch
             return false;
         }
 
-        Logger.Info($"Start", "TargetSubRoles");
+        CustomRoleManager.killercheck = (PlayerControl killer, PlayerControl target) =>
+        {
+            Logger.Warn($"Warning! {killer.GetNameWithRole()} tried to repeat a check on {target.GetNameWithRole()}, last recorded ForEach-TargetSubRoles [false, Line 319]", "PlayerControlPatch.RpcCheckAndMurder");
+            return false;
+        };
 
         if (targetSubRoles.Any())
             foreach (var targetSubRole in targetSubRoles.ToArray())
@@ -350,7 +381,11 @@ class CheckMurderPatch
                 }
             }
 
-        Logger.Info($"Start", "OnCheckMurderAsTarget");
+        CustomRoleManager.killercheck = (PlayerControl killer, PlayerControl target) =>
+        {
+            Logger.Warn($"Warning! {killer.GetNameWithRole()} tried to repeat a check on {target.GetNameWithRole()}, last recorded OnCheckMurderAsTarget [false, Line 375]", "PlayerControlPatch.RpcCheckAndMurder");
+            return false;
+        };
 
         // Check Murder as target
         if (targetRoleClass.OnCheckMurderAsTarget(killer, target) == false)
@@ -358,6 +393,12 @@ class CheckMurderPatch
             Logger.Info("Cancels because for target need cancel kill", "OnCheckMurderAsTarget");
             return false;
         }
+
+        CustomRoleManager.killercheck = (PlayerControl killer, PlayerControl target) =>
+        {
+            Logger.Warn($"Warning! {killer.GetNameWithRole()} tried to repeat a check on {target.GetNameWithRole()}, last recorded RpcCheckAndMurder [true, Line 388]", "PlayerControlPatch.RpcCheckAndMurder");
+            return true;
+        };
 
         if (!check) killer.RpcMurderPlayer(target);
         return true;
