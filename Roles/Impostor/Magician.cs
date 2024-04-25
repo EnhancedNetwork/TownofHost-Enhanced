@@ -127,5 +127,8 @@ internal class Magician : RoleBase
         hud.KillButton.OverrideText(GetString("MagicianKillButtonText"));
         hud.AbilityButton.OverrideText(GetString("MagicianSwapButtonText"));
     }
+    
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("prophecies");
+    
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("magicianTeleport");
 }
