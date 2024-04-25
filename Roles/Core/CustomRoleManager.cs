@@ -137,14 +137,29 @@ public static class CustomRoleManager
     /// <summary>
     /// Check Murder as Killer in target
     /// </summary>
+    /// 
+    public static Func<PlayerControl, PlayerControl, bool> killercheck; // It's a function not a hashset<func> because the game won't proceed if killer hasn't finished checkmurder task.
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (killer == target) return true;
+        if (killercheck != null)
+        {
+            if (killercheck(killer, target))
+                return true;
+            else
+            {
+                return false;
+            }
+        }
 
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
 
-        Logger.Info("Start", "ForcedCheckMurderAsKiller");
+        killercheck = (PlayerControl killer, PlayerControl target) => 
+        {
+            Logger.Warn($"Warning! {killer.GetNameWithRole()} tried to repeat a check on {target.GetNameWithRole()}, last recorded ForcedCheckMurderAsKiller [false, Line 166]", "CustomRoleManager.OnCheckMurder");
+            return false; 
+        };
 
         // Forced check
         if (killerRoleClass.ForcedCheckMurderAsKiller(killer, target) == false)
@@ -153,7 +168,12 @@ public static class CustomRoleManager
             return false;
         }
 
-        Logger.Info("Start", "OnCheckMurder.RpcCheckAndMurder");
+
+        killercheck = (PlayerControl killer, PlayerControl target) =>
+        {
+            Logger.Warn($"Warning! {killer.GetNameWithRole()} tried to repeat a check on {target.GetNameWithRole()}, last recorded RpcCheckAndMurder [false, Line 179]", "CustomRoleManager.OnCheckMurder");
+            return false;
+        };
 
         // Check in target
         if (killer.RpcCheckAndMurder(target, true) == false)
@@ -162,7 +182,11 @@ public static class CustomRoleManager
             return false;
         }
 
-        Logger.Info("Start foreach", "KillerSubRoles");
+        killercheck = (PlayerControl killer, PlayerControl target) =>
+        {
+            Logger.Warn($"Warning! {killer.GetNameWithRole()} tried to repeat a check on {target.GetNameWithRole()}, last recorded ForEach-KillerSubRoles [false, Line 191]", "CustomRoleManager.OnCheckMurder");
+            return false;
+        };
 
         if (killerSubRoles.Any())
             foreach (var killerSubRole in killerSubRoles.ToArray())
@@ -200,7 +224,11 @@ public static class CustomRoleManager
                 }
             }
 
-        Logger.Info("Start", "OnCheckMurderAsKiller");
+        killercheck = (PlayerControl killer, PlayerControl target) =>
+        {
+            Logger.Warn($"Warning! {killer.GetNameWithRole()} tried to repeat a check on {target.GetNameWithRole()}, last recorded OnCheckMurderAsKiller [false, Line 234]", "CustomRoleManager.OnCheckMurder");
+            return false;
+        };
 
         // Check murder as killer
         if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
@@ -208,6 +236,12 @@ public static class CustomRoleManager
             Logger.Info("Cancels because for killer no need kill target", "OnCheckMurderAsKiller");
             return false;
         }
+
+        killercheck = (PlayerControl killer, PlayerControl target) =>
+        {
+            Logger.Warn($"Warning! {killer.GetNameWithRole()} tried to repeat a check on {target.GetNameWithRole()}, last recorded OnCheckMurder [true, Line 246]", "CustomRoleManager.OnCheckMurder");
+            return true;
+        };
 
         return true;
     }
