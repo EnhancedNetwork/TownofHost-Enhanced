@@ -151,7 +151,7 @@ public class PlayerState(byte playerId)
             SubRoles.Add(role);
         if (role.IsConverted())
         {
-            SubRoles.Where(AddON => AddON != role && AddON.IsConverted()).Do(x => SubRoles.Remove(x));
+            SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
             SubRoles.Remove(CustomRoles.Rascal);
             SubRoles.Remove(CustomRoles.Loyal);
             SubRoles.Remove(CustomRoles.Admired);
@@ -300,7 +300,7 @@ public class PlayerState(byte playerId)
         BloodLet,
         WrongAnswer,
 
-        //Please add all new roles with deathreason & new deathreason in Susceptible.CallEnabledAndChange
+        //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
     }
 

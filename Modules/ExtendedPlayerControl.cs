@@ -662,7 +662,16 @@ static class ExtendedPlayerControl
                 break;
         }
     }
-    public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false) => CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
+    public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false)
+    {
+        var caller = new System.Diagnostics.StackFrame(1, false);
+        var callerMethod = caller.GetMethod();
+        string callerMethodName = callerMethod.Name;
+        string callerClassName = callerMethod.DeclaringType.FullName;
+        Logger.Msg($"RpcCheckAndMurder activated from: {callerClassName}.{callerMethodName}", "RpcCheckAndMurder");
+
+        return CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
+    }
     public static bool CheckForInvalidMurdering(this PlayerControl killer, PlayerControl target) => CheckMurderPatch.CheckForInvalidMurdering(killer, target);
     public static void NoCheckStartMeeting(this PlayerControl reporter, GameData.PlayerInfo target, bool force = false)
     { 

@@ -2585,6 +2585,8 @@
   "IncreaseByOneIfConvert": "Increase The KillCount +1 If a Crew Is Converted",
   "HawkMissed": "Missed!",
   "HawkCanKillNum": "Max Slices",
+  "HawkKillMax": "You've ran out of ability uses",
+  "HawkKillTooManyDead": "Too many people are dead",
   "MinimumPlayersAliveToKill": "Minimum Players Alive To Kill",
   "BloodMoonCanKillNum": "Max BloodLettings",
   "BloodMoonTimeTilDie": "Time Until Death",
