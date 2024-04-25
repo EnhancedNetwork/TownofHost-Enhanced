@@ -2215,7 +2215,6 @@
   "Warning.NoModHost": "TOHE is not installed on the host",
   "Warning.MismatchedVersion": "<b>{0}</b> has a different version of <b>{1}</b>",
   "Warning.AutoExitAtMismatchedVersion": "The host has no or a different version of {0}\nYou will be kicked in {1}",
-  "Warning.HostFriendCodeListDoseNotMatch": "This build has restrictions and\n{0}: {1}\nis not on the allowed Host list\nYou will be kicked in {2}s",
   "Warning.CanNotUseBepInExConsole": "The use of the console is prohibited\nso your console has been off",
   "Error.MeetingException": "Error: {0}\r\nPlease use SHIFT+M+ENTER to end the meeting",
   "Error.InvalidRoleAssignment": "Error: Invalid role found for a player during role assignment({0})",
