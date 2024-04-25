@@ -21,8 +21,6 @@ internal class DollMaster : RoleBase
     private static bool IsControllingPlayer = false;
     private static bool ResetPlayerSpeed = false;
     private static bool WaitToUnPossess = false;
-    private static int ControllingPlayerId = -99; // Possessed player ID for reference.
-    private static int DollMasterPlayerId = -99; // Killer player ID for reference.
     private static PlayerControl controllingTarget = null; // Personal possessed player identifier for reference.
     private static PlayerControl DollMasterTarget = null; // Personal possessed player identifier for reference.
     private static float originalSpeed = 0;
@@ -185,10 +183,10 @@ internal class DollMaster : RoleBase
         if (!IsControllingPlayer || controllingTarget == null || DollMasterTarget == null) return false;
 
         // If Target as DollMaster Main Body gets killed, kill DollMaster instead.
-        if (target.PlayerId == ControllingPlayerId)
+        if (target.PlayerId == controllingTarget.PlayerId)
         {
-            PlayerControl playertarget = Utils.GetPlayerById(ControllingPlayerId);
-            PlayerControl dollmaster = Utils.GetPlayerById(DollMasterPlayerId);
+            PlayerControl playertarget = Utils.GetPlayerById(controllingTarget.PlayerId);
+            PlayerControl dollmaster = Utils.GetPlayerById(DollMasterTarget.PlayerId);
             UnPossess(dollmaster, playertarget);
             GetPlayersPositions(dollmaster);
             SwapPlayersPositions(dollmaster);
@@ -197,10 +195,10 @@ internal class DollMaster : RoleBase
             return true;
         }
         // If DollMaster gets killed as possessed Target, kill possessed Target instead.
-        else if (target.PlayerId == DollMasterPlayerId)
+        else if (target.PlayerId == DollMasterTarget.PlayerId)
         {
-            PlayerControl playertarget = Utils.GetPlayerById(ControllingPlayerId);
-            PlayerControl dollmaster = Utils.GetPlayerById(DollMasterPlayerId);
+            PlayerControl playertarget = Utils.GetPlayerById(controllingTarget.PlayerId);
+            PlayerControl dollmaster = Utils.GetPlayerById(DollMasterTarget.PlayerId);
             UnPossess(dollmaster, playertarget);
             GetPlayersPositions(dollmaster);
             SwapPlayersPositions(dollmaster);
@@ -241,8 +239,6 @@ internal class DollMaster : RoleBase
         if (!IsControllingPlayer)
         {
             if (target != null) controllingTarget = Utils.GetPlayerById(target.PlayerId);
-            ControllingPlayerId = target.PlayerId;
-            DollMasterPlayerId = pc.PlayerId;
             originalSpeed = Main.AllPlayerSpeed[target.PlayerId];
             IsControllingPlayer = true;
 
