@@ -29,8 +29,8 @@ public static class Fragile
     public static bool KillFragile(PlayerControl killer, PlayerControl target)
     {
         var killerRole = killer.GetCustomRole();
-        if (/*killer.RpcCheckAndMurder(target, true) //Fragile shouldn't be on immortal roles, also this was causing rpccheckandmurder to repeat itself
-            &&*/ ((killerRole.IsImpostorTeamV3() && ImpCanKillFragile.GetBool())
+        if (killer.RpcCheckAndMurder(target, true) 
+            && ((killerRole.IsImpostorTeamV3() && ImpCanKillFragile.GetBool())
             || (killerRole.IsNeutral() && NeutralCanKillFragile.GetBool())
             || (killerRole.IsCrewmate() && CrewCanKillFragile.GetBool())))
         {
