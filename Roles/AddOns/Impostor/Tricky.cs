@@ -28,58 +28,7 @@ public static class Tricky
     {
         if (reason is PlayerState.DeathReason.Disconnected or PlayerState.DeathReason.etc) return false;
         if (!EnabledDeathReasons.GetBool()) return true;
-        return reason switch
-        {
-            PlayerState.DeathReason.Eaten => (CustomRoles.Pelican.IsEnable()),
-            PlayerState.DeathReason.Spell => (CustomRoles.Witch.IsEnable()),
-            PlayerState.DeathReason.Hex => (CustomRoles.HexMaster.IsEnable()),
-            PlayerState.DeathReason.Curse => (CustomRoles.CursedWolf.IsEnable()),
-            PlayerState.DeathReason.Jinx => (CustomRoles.Jinx.IsEnable()),
-            PlayerState.DeathReason.Shattered => (CustomRoles.Lovers.IsEnable()),
-            PlayerState.DeathReason.Bite => (CustomRoles.Vampire.IsEnable()),
-            PlayerState.DeathReason.Poison => (CustomRoles.Poisoner.IsEnable()),
-            PlayerState.DeathReason.Bombed => (CustomRoles.Bomber.IsEnable() || CustomRoles.Burst.IsEnable() 
-                                || CustomRoles.Trapster.IsEnable() || CustomRoles.Fireworker.IsEnable() || CustomRoles.Bastion.IsEnable()),
-            PlayerState.DeathReason.Misfire => (CustomRoles.ChiefOfPolice.IsEnable() || CustomRoles.Sheriff.IsEnable() 
-                                || CustomRoles.Reverie.IsEnable() || CustomRoles.Sheriff.IsEnable() || CustomRoles.Fireworker.IsEnable() 
-                                || CustomRoles.Hater.IsEnable() || CustomRoles.Pursuer.IsEnable() || CustomRoles.Romantic.IsEnable()),
-            PlayerState.DeathReason.Torched => (CustomRoles.Arsonist.IsEnable()),
-            PlayerState.DeathReason.Sniped => (CustomRoles.Sniper.IsEnable()),
-            PlayerState.DeathReason.Revenge => (CustomRoles.Avanger.IsEnable() || CustomRoles.Retributionist.IsEnable() 
-                                || CustomRoles.Nemesis.IsEnable() || CustomRoles.Randomizer.IsEnable()),
-            PlayerState.DeathReason.Quantization => (CustomRoles.Lightning.IsEnable()),
-            //PlayerState.DeathReason.Overtired => (CustomRoles.Workaholic.IsEnable()),
-            PlayerState.DeathReason.Ashamed => (CustomRoles.Workaholic.IsEnable()),
-            PlayerState.DeathReason.PissedOff => (CustomRoles.Pestilence.IsEnable() || CustomRoles.Provocateur.IsEnable()),
-            PlayerState.DeathReason.Dismembered => (CustomRoles.Butcher.IsEnable()),
-            PlayerState.DeathReason.LossOfHead => (CustomRoles.Hangman.IsEnable()),
-            PlayerState.DeathReason.Trialed => (CustomRoles.Judge.IsEnable() || CustomRoles.Councillor.IsEnable()),
-            PlayerState.DeathReason.Infected => (CustomRoles.Infectious.IsEnable()),
-            PlayerState.DeathReason.Hack => (CustomRoles.Glitch.IsEnable()),
-            PlayerState.DeathReason.Pirate => (CustomRoles.Pirate.IsEnable()),
-            PlayerState.DeathReason.Shrouded => (CustomRoles.Shroud.IsEnable()),
-            PlayerState.DeathReason.Mauled => (CustomRoles.Werewolf.IsEnable()),
-            PlayerState.DeathReason.Suicide => (CustomRoles.Unlucky.IsEnable() || CustomRoles.Ghoul.IsEnable() 
-                                || CustomRoles.Terrorist.IsEnable() || CustomRoles.Dictator.IsEnable() 
-                                || CustomRoles.Addict.IsEnable() || CustomRoles.Mercenary.IsEnable()
-                                || CustomRoles.Mastermind.IsEnable() || CustomRoles.Deathpact.IsEnable()),
-            PlayerState.DeathReason.FollowingSuicide => (CustomRoles.Lovers.IsEnable()),
-            PlayerState.DeathReason.Execution => (CustomRoles.Jailer.IsEnable()),
-            PlayerState.DeathReason.Fall => LadderDeath.GetBool(),
-            PlayerState.DeathReason.Sacrifice => (CustomRoles.Bodyguard.IsEnable() || CustomRoles.Revolutionist.IsEnable() 
-                                || CustomRoles.Hater.IsEnable()),
-            PlayerState.DeathReason.Drained => CustomRoles.Puppeteer.IsEnable(),
-            PlayerState.DeathReason.Trap => CustomRoles.Trapster.IsEnable(),
-            PlayerState.DeathReason.Targeted => CustomRoles.Kamikaze.IsEnable(),
-            PlayerState.DeathReason.Retribution => CustomRoles.Instigator.IsEnable(),
-            PlayerState.DeathReason.WrongAnswer => CustomRoles.Quizmaster.IsEnable(),
-            PlayerState.DeathReason.Disconnected or PlayerState.DeathReason.Overtired or PlayerState.DeathReason.etc 
-                                or PlayerState.DeathReason.Vote or PlayerState.DeathReason.Gambled => false,
-            PlayerState.DeathReason.Slice => CustomRoles.Hawk.IsEnable(),
-            PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
-            PlayerState.DeathReason.Kill => true,
-            _ => true,
-        };
+        return reason.DeathReasonIsEnable();
     }
     public static void AfterPlayerDeathTasks(PlayerControl target)
     {
