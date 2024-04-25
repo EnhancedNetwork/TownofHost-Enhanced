@@ -13,7 +13,6 @@ internal class DollMaster : RoleBase
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
-    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -34,17 +33,19 @@ internal class DollMaster : RoleBase
     private static OptionItem ShapeshiftCooldown;
     private static OptionItem ShapeshiftDuration;
     public static OptionItem CanKillAsMainBody;
+    public static OptionItem TargetDiesAfterPossession;
 
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.DollMaster);
-        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.DollMaster);
+        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DollMasterPossessionCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
+        ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DollMasterPossessionCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "DollMasterPossessionDuration", new(0f, 180f, 2.5f), 10f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
+        ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "DollMasterPossessionDuration", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
-        CanKillAsMainBody = BooleanOptionItem.Create(Id + 13, "DollMasterCanKillAsMainBody", true, TabGroup.OtherRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
+        CanKillAsMainBody = BooleanOptionItem.Create(Id + 13, "DollMasterCanKillAsMainBody", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
+        TargetDiesAfterPossession = BooleanOptionItem.Create(Id + 14, "DollMasterTargetDiesAfterPossession", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
     }
 
     public override void Init()
@@ -159,7 +160,7 @@ internal class DollMaster : RoleBase
     // Prepare for a meeting if possessing.
     public override void OnReportDeadBody(PlayerControl pc, PlayerControl target) // Fix crap when meeting gets called.
     {
-        if (IsControllingPlayer && controllingTarget != null)
+        if (IsControllingPlayer && controllingTarget != null && DollMasterTarget != null)
         {
             bool shouldAnimate = false;
             Utils.GetPlayerById(DollMasterTarget.PlayerId).RpcShapeshift(Utils.GetPlayerById(DollMasterTarget.PlayerId), shouldAnimate);
@@ -283,6 +284,7 @@ internal class DollMaster : RoleBase
         _ = new LateTask(() =>
         {
             ReducedVisionPlayers.Clear();
+            if (TargetDiesAfterPossession.GetBool() && !GameStates.IsMeeting) target.RpcMurderPlayer(target);
         }, 0.35f);
     }
 
