@@ -3,7 +3,7 @@
     {
       "Number": "100002",
       "Title": "Marcador de posición titulo",
-      "Subtitle": "Marcador de posición subtitulo",
+      "Subtitle": "Marcador de posición titulo corto",
       "Short": "Marcador de posición titulo corto",
       "Body": [
         "Marcador de posición cuerpo"
@@ -25,7 +25,7 @@
         "\n      --- Todos los roles que utilizan el cambiaformas como base ya no nesisitaran que pasar por la animacion de cambiar formas",
         "\n--- Esta función se puede ajustar usando la configuración «Desactivar Animaciones de Cambio de Forma» (El Francotirador tiene una configuración separada)",
         "\n--- Nota: En la próxima versión puede ser cambiado, por ejemplo: algunos roles tendrán el Cambio de Forma desactivado por defecto y a algunos roles se les añadirá una configuración con «Desactivar Animación de Cambio de Forma»",
-        "\n     - La base de código para todos los complementos se a mejora (Por: Drakos - Creó el código base, y TommyXL - Ayudó parcialmente)",
+        "\n     - La base de código para todos los complementos se a mejorado (Por: Drakos - Creó el código base, y TommyXL - Ayudó parcialmente)",
         "\n\n<b>【 Nuevas Configuraciones 】</b>",
         "\n     - Desactivar Sistema de Votación para Expulsar (Por: Pietro)",
         "\n     - Los impostores pueden ver los complementos de los demás impostores (Por: TommyXL)",
@@ -50,7 +50,7 @@
         "\n- Ahora los roles vainilla y el Amnésico siempre se mostrarán en la UI del Adivinador (Por: TommyXL)",
         "\n\n<b>【 Correcciones de Errores 】</b>",
         "\n     - Arreglo del Actualizador del Mod (Por: Pietro y NikoCat223)",
-        "\n     - Arreglo del texto del progreso y la marca de objetivo para el Pirata (Por: ryuk)",
+        "\n     - Se ha arreglo el texto del progreso y la marca de objetivo para el Pirata (Por: ryuk)",
         "\n     - Se eliminó Cansancio Extremo de la lista de complementos habilitados (Por: ryuk)",
         "\n     - El Verdugo transformado ignora al veterano alertado (Por: ryuk)",
         "\n     - Se ha arreglado el error de «FixedUpdate» para roles trabajando en el vestíbulo (Por: TommyXL)",
