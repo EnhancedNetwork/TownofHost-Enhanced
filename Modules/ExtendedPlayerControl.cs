@@ -656,6 +656,10 @@ static class ExtendedPlayerControl
                 Statue.Remove(Killed.PlayerId);
                 Statue.Add(target.PlayerId);
                 break;
+            case CustomRoles.Glow:
+                Glow.Remove(Killed.PlayerId);
+                Glow.Add(target.PlayerId);
+                break;
         }
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false)
