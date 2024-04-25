@@ -64,6 +64,7 @@ public static class HudSpritePatch
     EndOfSelectImg:
 
         __instance.KillButton.graphic.sprite = newKillButton;
+        __instance.KillButton.graphic.SetCooldownNormalizedUvs();
         __instance.AbilityButton.graphic.sprite = newAbilityButton;
         __instance.AbilityButton.graphic.SetCooldownNormalizedUvs();
         __instance.ImpostorVentButton.graphic.sprite = newVentButton;
