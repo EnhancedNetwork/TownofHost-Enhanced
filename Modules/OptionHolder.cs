@@ -1040,6 +1040,9 @@ public static class Options
 
         //SetupAdtRoleOptions(25300, CustomRoles.Ntr, tab: TabGroup.OtherRoles);
 
+        Glow.SetupCustomOptions();
+
+
         Youtuber.SetupCustomOptions();
 
         #endregion

@@ -789,6 +789,7 @@ public enum CustomRoles
     // Add-ons
     Admired,
     Antidote,
+    Glow,
     Autopsy,
     Avanger,
     Aware,

@@ -837,6 +837,9 @@ internal static class RPC
             case CustomRoles.Aware:
                 Aware.Add(targetId);
                 break;
+            case CustomRoles.Glow:
+                Glow.Add(targetId);
+                break;
             case CustomRoles.Workhorse:
                 Workhorse.Add(targetId);
                 break;
