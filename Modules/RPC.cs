@@ -827,7 +827,7 @@ internal static class RPC
             Main.PlayerStates[targetId].SetSubRole(role);
         }
 
-        targetId.GetRoleClassById()?.Add(targetId);
+        if (role < CustomRoles.NotAssigned) targetId.GetRoleClassById()?.Add(targetId);
 
         switch (role)
         {

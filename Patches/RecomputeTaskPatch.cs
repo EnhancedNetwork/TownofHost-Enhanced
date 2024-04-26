@@ -6,6 +6,7 @@ class CustomTaskCountsPatch
     public static bool Prefix(GameData __instance)
     {
         if (GameStates.IsHideNSeek) return true;
+        if (!AmongUsClient.Instance.AmHost) return false;
 
         __instance.TotalTasks = 0;
         __instance.CompletedTasks = 0;
