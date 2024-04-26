@@ -192,6 +192,10 @@ public static class Camouflage
                 {
                     Utils.GetPlayerById(id)?.RpcSetName(playerName);
                 }
+                if (GameEnd && Murderer.MurdererVictim.TryGetValue(id, out var VictimPlayerName))
+                {
+                    Utils.GetPlayerById(id)?.RpcSetName(VictimPlayerName);
+                }
 
                 // Set Outfit
                 newOutfit = PlayerSkins[id];
