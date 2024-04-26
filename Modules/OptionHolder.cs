@@ -745,6 +745,7 @@ public static class Options
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanilla).ForEach(r => r.SetupCustomOption());
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanillaGhosts).ForEach(r => r.SetupCustomOption());
 
         /*
          * BASIC ROLES
@@ -824,6 +825,11 @@ public static class Options
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralKilling).ForEach(r => r.SetupCustomOption());
+
+        /*
+         * PlagueBearer 
+         */
+        CustomRoles.PlagueBearer.GetStaticRoleClass().SetupCustomOption();
 
         #endregion
 
@@ -1033,6 +1039,9 @@ public static class Options
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
 
         //SetupAdtRoleOptions(25300, CustomRoles.Ntr, tab: TabGroup.OtherRoles);
+
+        Glow.SetupCustomOptions();
+
 
         Youtuber.SetupCustomOptions();
 

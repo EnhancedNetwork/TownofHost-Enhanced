@@ -96,6 +96,7 @@ enum CustomRPC
     SetMedicalerProtectList,
     SyncPsychicRedList,
     SetMorticianArrow,
+    SetAmnesaicArrows,
     SetTracefinderArrow,
     PresidentEnd,
     PresidentReveal,
@@ -488,6 +489,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SetMorticianArrow:
                 Mortician.ReceiveRPC(reader);
                 break;
+            case CustomRPC.SetAmnesaicArrows:
+                Amnesiac.ReceiveRPC(reader);
+                break;
             case CustomRPC.SetTracefinderArrow:
                 Tracefinder.ReceiveRPC(reader);
                 break;
@@ -832,6 +836,9 @@ internal static class RPC
                 break;
             case CustomRoles.Aware:
                 Aware.Add(targetId);
+                break;
+            case CustomRoles.Glow:
+                Glow.Add(targetId);
                 break;
             case CustomRoles.Workhorse:
                 Workhorse.Add(targetId);

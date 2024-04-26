@@ -166,6 +166,7 @@ internal class ChangeRoleSettings
             Diseased.Init();
             Clumsy.Init();
             Aware.Init();
+            Glow.Init();
             Sleuth.Init();
             Bait.Init();
             Antidote.Init();
@@ -407,6 +408,9 @@ internal class SelectRolesPatch
                     {
                         case CustomRoles.Aware:
                             Aware.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Glow:
+                            Glow.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Oiiai:
                             Oiiai.Add(pc.PlayerId);

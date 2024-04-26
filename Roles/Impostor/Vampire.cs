@@ -25,9 +25,16 @@ internal class Vampire : RoleBase
 
     private static OptionItem OptionKillDelay;
     private static OptionItem CanVent;
-    private static OptionItem VampiressChance;
+    private static OptionItem ActionModeOpt;
 
-    private static float KillDelay;
+    private enum ActionMode
+    {
+        Vampire_OnlyBites,
+        TriggerDouble
+    }
+    private static ActionMode NowActionMode;
+
+    private static float KillDelay = new();
     private static readonly Dictionary<byte, BittenInfo> BittenPlayers = [];
 
     public override void SetupCustomOption()
@@ -36,9 +43,8 @@ internal class Vampire : RoleBase
         OptionKillDelay = FloatOptionItem.Create(Id + 10, "VampireKillDelay", new(1f, 60f, 1f), 10f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Vampire])
             .SetValueFormat(OptionFormat.Seconds);
         CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Vampire]);
-        VampiressChance = IntegerOptionItem.Create(Id + 12, "VampiressChance", new(0, 100, 5), 25, TabGroup.ImpostorRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Vampire])
-            .SetValueFormat(OptionFormat.Percent);
+        ActionModeOpt = StringOptionItem.Create(Id + 12, "VampireActionMode", EnumHelper.GetAllNames<ActionMode>(), 2, TabGroup.ImpostorRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Vampire]);
     }
     public override void Init()
     {
@@ -46,6 +52,7 @@ internal class Vampire : RoleBase
         BittenPlayers.Clear();
 
         KillDelay = OptionKillDelay.GetFloat();
+        NowActionMode = (ActionMode)ActionModeOpt.GetValue();
     }
     public override void Add(byte playerId)
     {
@@ -55,18 +62,11 @@ internal class Vampire : RoleBase
     public static bool CheckCanUseVent() => CanVent.GetBool();
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CheckCanUseVent();
 
-    public static bool CheckSpawnVampiress()
-    {
-        var Rand = IRandom.Instance;
-        return Rand.Next(0, 100) < VampiressChance.GetInt();
-    }
-
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.Bait)) return true;
-        if (Guardian.CannotBeKilled(target)) return true;
 
-        if (killer.Is(CustomRoles.Vampire))
+        if (NowActionMode == ActionMode.Vampire_OnlyBites)
         {
             killer.SetKillCooldown();
             killer.RPCPlayCustomSound("Bite");
@@ -76,7 +76,7 @@ internal class Vampire : RoleBase
                 BittenPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));
             }
         }
-        else // Vampiress
+        else if (NowActionMode == ActionMode.TriggerDouble)
         {
             return killer.CheckDoubleTrigger(target, () =>
             {

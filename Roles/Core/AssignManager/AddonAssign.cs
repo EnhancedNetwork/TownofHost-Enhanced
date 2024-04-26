@@ -154,7 +154,6 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.Hater)
                 || pc.Is(CustomRoles.Sunnyboy)
                 || pc.Is(CustomRoles.Bomber)
-                || pc.Is(CustomRoles.Nuker)
                 || pc.Is(CustomRoles.Provocateur)
                 || pc.Is(CustomRoles.RuthlessRomantic)
                 || pc.Is(CustomRoles.Romantic)
