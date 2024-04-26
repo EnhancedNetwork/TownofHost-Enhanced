@@ -229,7 +229,7 @@ internal class DollMaster : RoleBase
         if (!target.IsAlive() || !target.CanBeTeleported() || Pelican.IsEaten(pc.PlayerId) || Pelican.IsEaten(target.PlayerId))
         {
             AURoleOptions.ShapeshifterCooldown = 0;
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), target.IsAlive() ? GetString("CouldNotSwap") : GetString("CanNotSwapWithDead")));
+            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), target.IsAlive() ? GetString("CouldNotSwapWithTarget") : GetString("CanNotSwapWithDeadTarget")));
             return false;
         }
 
@@ -264,7 +264,7 @@ internal class DollMaster : RoleBase
     {
         pc.RpcShapeshift(target, shouldAnimate);
         target.RpcShapeshift(pc, shouldAnimate);
-        pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("PossessedTarget")));
+        pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
     }
 
     // UnPossess Player
@@ -284,19 +284,6 @@ internal class DollMaster : RoleBase
         }, 0.35f);
     }
 
-    // Set name Suffix for Doll and Main Body under name.
-    public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-    {
-        if (!seer.Is(CustomRoles.DollMaster)) return string.Empty;
-        if (GameStates.IsMeeting) return string.Empty;
-        if (controllingTarget == null) return string.Empty;
-        if (target != null && seer.PlayerId == controllingTarget.PlayerId) return string.Empty;
-        if (target != null && seer.PlayerId != target.PlayerId && IsControllingPlayer) return "<color=#ffea00>" + GetString("MainBody");
-        if (!IsControllingPlayer) return string.Empty;
-        return "<color=#ffea00>" + GetString("Doll");
-    }
-
-
     // Get players locations.
     private static void GetPlayersPositions(PlayerControl pc)
     {
@@ -311,6 +298,18 @@ internal class DollMaster : RoleBase
         if (controllingTarget == null) return;
         controllingTarget.RpcTeleport(DollMasterPos);
         pc.RpcTeleport(controllingTargetPos);
+    }
+
+    // Set name Suffix for Doll and Main Body under name.
+    public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    {
+        if (!seer.Is(CustomRoles.DollMaster)) return string.Empty;
+        if (!IsControllingPlayer) return string.Empty;
+        if (GameStates.IsMeeting) return string.Empty;
+        if (controllingTarget == null) return string.Empty;
+        if (target != null && seer.PlayerId == controllingTarget.PlayerId) return string.Empty;
+        if (target != null && seer.PlayerId != target.PlayerId && IsControllingPlayer) return "<color=#ffea00>" + GetString("DollMaster_MainBody");
+        return "<color=#ffea00>" + GetString("DollMaster_Doll");
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.AbilityButton.OverrideText(GetString(IsControllingPlayer ? "DollMasterUnPossessionButtonText" : "DollMasterPossessionButtonText"));
