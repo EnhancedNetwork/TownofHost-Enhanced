@@ -22,7 +22,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
-using static Il2CppMono.Security.X509.X520;
 
 
 namespace TOHE;
