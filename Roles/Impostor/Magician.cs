@@ -95,7 +95,7 @@ internal class Magician : RoleBase
         // If players can be swapped.
         if (!target.IsAlive() || !target.CanBeTeleported() || Pelican.IsEaten(pc.PlayerId) || Pelican.IsEaten(target.PlayerId)) {
             AURoleOptions.ShapeshifterCooldown = 0;
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Magician), target.IsAlive() ? GetString("CouldNotSwap") : GetString("CanNotSwapWithDead")));
+            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Magician), target.IsAlive() ? GetString("CouldNotSwapWithTarget") : GetString("CanNotSwapWithDeadTarget")));
             return false;
         }
 
@@ -117,7 +117,7 @@ internal class Magician : RoleBase
         target.RpcTeleport(MagicianPos);
         pc.RpcTeleport(TargetPos);
         pc.RpcResetAbilityCooldown();
-        pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Magician), GetString("SwappedWithPlayer")));
+        pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Magician), GetString("Magician_SwappedWithPlayer")));
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
         return false;
     }
@@ -127,8 +127,8 @@ internal class Magician : RoleBase
         hud.KillButton.OverrideText(GetString("MagicianKillButtonText"));
         hud.AbilityButton.OverrideText(GetString("MagicianSwapButtonText"));
     }
-    
+
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("prophecies");
-    
+
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("magicianTeleport");
 }
