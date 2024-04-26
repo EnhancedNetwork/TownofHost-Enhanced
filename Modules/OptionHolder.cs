@@ -1038,10 +1038,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
 
-        //SetupAdtRoleOptions(25300, CustomRoles.Ntr, tab: TabGroup.OtherRoles);
-
         Glow.SetupCustomOptions();
-
 
         Youtuber.SetupCustomOptions();
 

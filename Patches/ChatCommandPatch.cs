@@ -421,9 +421,7 @@ internal class ChatCommands
 
                         foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.ToArray())
                             Sub.Append($"\n\n" + $"<size={Asize}>" + Utils.GetRoleTitle(subRole) + Utils.GetInfoLong(subRole) + "</size>");
-                        if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                            Sub.Append($"\n\n" + $"<size={Asize}>" + Utils.GetRoleTitle(CustomRoles.Lovers) + Utils.GetInfoLong(CustomRoles.Lovers) + "</size>");
-
+                        
                         if (Sub.ToString() != string.Empty)
                         {
                             var ACleared = Sub.ToString().Remove(0, 2);
@@ -1297,7 +1295,6 @@ internal class ChatCommands
             "超頻" or "超频波" or "超频" => GetString("Overclocked"),
             "戀人" or "恋人" => GetString("Lovers"),
             "叛徒" => GetString("Madmate"),
-            "海王" => GetString("Ntr"),
             "觀察者" or "窥视者" or "觀察" or "窥视" => GetString("Watcher"),
             "閃電俠" or "闪电侠" or "閃電" or "闪电" => GetString("Flash"),
             "持燈人" or "火炬" or "持燈" => GetString("Torch"),
@@ -1556,8 +1553,6 @@ internal class ChatCommands
                     {
                         Sub.Append($"\n\n" + $"<size={Asize}>" + Utils.GetRoleTitle(subRole) + Utils.GetInfoLong(subRole) + "</size>");
 
-                        if (CustomRoles.Ntr.RoleExist() && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                            Sub.Append($"\n\n" + $"<size={Asize}>" + Utils.GetRoleTitle(CustomRoles.Lovers) + Utils.GetInfoLong(CustomRoles.Lovers) + "</size>");
                     }
                     if (Sub.ToString() != string.Empty)
                     {

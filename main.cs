@@ -829,7 +829,6 @@ public enum CustomRoles
     Mimic,
     Mundane,
     Necroview,
-    Ntr, //neptune
     Nimble,
     Oblivious,
     Oiiai,

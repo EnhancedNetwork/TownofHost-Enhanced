@@ -1174,14 +1174,6 @@ class FixedUpdateInNormalGamePatch
                 {
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                 }
-                else if (target.Is(CustomRoles.Ntr) || seer.Is(CustomRoles.Ntr))
-                {
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                }
-                else if (target == seer && CustomRolesHelper.RoleExist(CustomRoles.Ntr))
-                {
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                }
 
 
                 if (Options.CurrentGameMode == CustomGameMode.FFA)

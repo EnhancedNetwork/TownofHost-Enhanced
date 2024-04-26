@@ -148,7 +148,6 @@ public static class AddonAssign
         {
             if (pc.Is(CustomRoles.GM)
                 || (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt())
-                || pc.Is(CustomRoles.Ntr)
                 || pc.Is(CustomRoles.Dictator)
                 || pc.Is(CustomRoles.God)
                 || pc.Is(CustomRoles.Hater)
