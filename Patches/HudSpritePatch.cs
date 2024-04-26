@@ -1,5 +1,6 @@
 ﻿using TOHE.Roles.Core;
 using UnityEngine;
+using System;
 
 namespace TOHE;
 
@@ -8,19 +9,19 @@ public static class CustomButton
     public static Sprite Get(string name) => Utils.LoadSprite($"TOHE.Resources.Images.Skills.{name}.png", 115f);
 }
 
-[HarmonyPriority(520)]
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
+[HarmonyPatch(new Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
 public static class HudSpritePatch
 {
     private static Sprite Kill;
     private static Sprite Ability;
     private static Sprite Vent;
     private static Sprite Report;
-    public static void Postfix(HudManager __instance)
+    public static void Postfix(HudManager __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(2)] bool isActive)
     {
-        var player = PlayerControl.LocalPlayer;
+        Logger.Info("Postfix", "HudSpritePatch");
         if (player == null || GameStates.IsHideNSeek || !GameStates.IsModHost) return;
-        if (!SetHudActivePatch.IsActive || !player.IsAlive()) return;
+        if (!isActive || !player.IsAlive()) return;
         if (!Main.EnableCustomButton.Value) return;
 
         if (!AmongUsClient.Instance.IsGameStarted || !Main.introDestroyed)
@@ -61,12 +62,22 @@ public static class HudSpritePatch
 
         // CustomButton.Get("Paranoid"); for Paranoid
 
-    EndOfSelectImg:
+        EndOfSelectImg:
 
+        // Set custom icon for kill button
         __instance.KillButton.graphic.sprite = newKillButton;
-        __instance.AbilityButton.graphic.sprite = newAbilityButton;
+        //  Set custom icon for impostor vent button
         __instance.ImpostorVentButton.graphic.sprite = newVentButton;
+        // Set custom icon for ability button (Shapeshift, Vitals, Engineer Vent)
+        __instance.AbilityButton.graphic.sprite = newAbilityButton;
+        // Set custom icon for report button
         __instance.ReportButton.graphic.sprite = newReportButton;
 
+        // Normalized Uvs
+        // The sprites after custom icons has a strong overexposure
+        __instance.KillButton.graphic.SetCooldownNormalizedUvs();
+        __instance.ImpostorVentButton.graphic.SetCooldownNormalizedUvs();
+        __instance.AbilityButton.graphic.SetCooldownNormalizedUvs();
+        __instance.ReportButton.graphic.SetCooldownNormalizedUvs();
     }
 }

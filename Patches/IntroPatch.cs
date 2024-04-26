@@ -584,6 +584,9 @@ class IntroCutsceneDestroyPatch
             }
         }
         Logger.Info("OnDestroy", "IntroCutscene");
+
+        // Update hud buttons
+        HudManager.Instance.SetHudActive(true);
     }
 }
  
