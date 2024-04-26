@@ -83,7 +83,7 @@ public static class HudSpritePatch
         __instance.ReportButton.graphic.SetCooldownNormalizedUvs();
     }
 }
-// Update hud after revert shapeshift
+
 [HarmonyPatch(typeof(AbilityButton), nameof(AbilityButton.SetFromSettings))]
 public static class AbilityButtonSetFromSettingsPatch
 {
