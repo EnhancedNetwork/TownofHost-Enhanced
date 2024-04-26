@@ -848,6 +848,10 @@ public static class Utils
         {
             lr.Chunk(1200).Do(x => SendMessage("\n", PlayerId, new(x)));
         }
+        else
+        {
+            SendMessage("\n", PlayerId, lr);
+        }
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
     {
