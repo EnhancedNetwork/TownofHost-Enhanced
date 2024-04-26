@@ -22,6 +22,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using static Il2CppMono.Security.X509.X520;
 
 
 namespace TOHE;
@@ -844,8 +845,10 @@ public static class Utils
         }
         sb.Append("</size>");
         string lr = sb.ToString();
-        if (lr.Length > 1200) lr = lr.RemoveHtmlTags();
-        SendMessage("\n", PlayerId, lr);
+        if (lr.Length > 1200 && !GetPlayerById(PlayerId).IsModClient())
+        {
+            lr.Chunk(1200).Do(x => SendMessage("\n", PlayerId, new(x)));
+        }
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
     {
@@ -857,8 +860,8 @@ public static class Utils
         if (EndGamePatch.KillLog != "") 
         {
             string kl = EndGamePatch.KillLog;
-            if (Options.OldKillLog.GetBool() || kl.Length > 1200) kl = kl.RemoveHtmlTags();
-            SendMessage(kl, PlayerId); 
+            if (Options.OldKillLog.GetBool()) kl = kl.RemoveHtmlTags();
+            SendMessage(kl, PlayerId, ShouldSplit: true); 
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
@@ -1195,9 +1198,18 @@ public static class Utils
             , ID);
     }
 
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+        if (ShouldSplit && text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient())
+        {
+            text.Chunk(1200).Do(x => SendMessage(new(x), sendTo, title));
+            return;
+        } 
+        else if (text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient()) 
+        {
+            text = text.RemoveHtmlTags();
+        }
 
         // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
         if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
