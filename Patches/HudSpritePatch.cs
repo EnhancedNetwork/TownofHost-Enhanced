@@ -1,6 +1,7 @@
 ﻿using TOHE.Roles.Core;
 using UnityEngine;
 using System;
+using TMPro;
 
 namespace TOHE;
 
@@ -67,8 +68,11 @@ public static class HudSpritePatch
         __instance.KillButton.graphic.sprite = newKillButton;
         //  Set custom icon for impostor vent button
         __instance.ImpostorVentButton.graphic.sprite = newVentButton;
+
         // Set custom icon for ability button (Shapeshift, Vitals, Engineer Vent)
         __instance.AbilityButton.graphic.sprite = newAbilityButton;
+        __instance.AbilityButton.usesRemainingSprite.sprite = newAbilityButton;
+
         // Set custom icon for report button
         __instance.ReportButton.graphic.sprite = newReportButton;
 
@@ -78,5 +82,26 @@ public static class HudSpritePatch
         __instance.ImpostorVentButton.graphic.SetCooldownNormalizedUvs();
         __instance.AbilityButton.graphic.SetCooldownNormalizedUvs();
         __instance.ReportButton.graphic.SetCooldownNormalizedUvs();
+    }
+}
+// Update hud after revert shapeshift
+[HarmonyPatch(typeof(AbilityButton), nameof(AbilityButton.SetFromSettings))]
+public static class AbilityButtonSetFromSettingsPatch
+{
+    public static bool Prefix(AbilityButton __instance, AbilityButtonSettings settings)
+    {
+        // When Custom Buttons is disabled run vanilla code
+        if (!Main.EnableCustomButton.Value) return true;
+
+        __instance.SetInfiniteUses();
+
+        // When ability button is initialize, set default image
+        if (!Main.introDestroyed)
+            __instance.graphic.sprite = settings.Image;
+
+        __instance.graphic.SetCooldownNormalizedUvs();
+        __instance.buttonLabelText.fontSharedMaterial = settings.FontMaterial;
+        __instance.buttonLabelText.text = TranslationController.Instance.GetString(settings.Text);
+        return false;
     }
 }
