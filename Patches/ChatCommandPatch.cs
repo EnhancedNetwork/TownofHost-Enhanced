@@ -1550,7 +1550,7 @@ internal class ChatCommands
                         Utils.ShowChildrenSettings(opt, ref Conf);
                     var cleared = Conf.ToString();
                     var Setting = $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n";
-                    Conf.Clear().Append($"<color=#ffffff>" + $"<size={Csize}>" + Setting + cleared + "</size>" + "</Color>");
+                    Conf.Clear().Append($"<color=#ffffff>" + $"<size={Csize}>" + Setting + cleared + "</size>" + "</color>");
 
                     foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
                     {
