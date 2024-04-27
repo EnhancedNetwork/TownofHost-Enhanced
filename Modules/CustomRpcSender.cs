@@ -103,10 +103,10 @@ public class CustomRpcSender
     #endregion
     #region Start/End Rpc
     public CustomRpcSender StartRpc(uint targetNetId, RpcCalls rpcCall)
-        => StartRpc(targetNetId, (byte)rpcCall);
+        => StartRpc(targetNetId, (int)rpcCall);
     public CustomRpcSender StartRpc(
         uint targetNetId,
-        byte callId)
+        int callId)
     {
         if (currentState != State.InRootMessage)
         {
@@ -142,7 +142,7 @@ public class CustomRpcSender
     #endregion
     public CustomRpcSender AutoStartRpc(
         uint targetNetId,
-        byte callId,
+        int callId,
         int targetClientId = -1)
     {
         if (targetClientId == -2) targetClientId = -1;
