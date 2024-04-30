@@ -209,15 +209,17 @@ class SetVentOutlinePatch
 class SetHudActivePatch
 {
     public static bool IsActive = false;
-    public static void Postfix(HudManager __instance, [HarmonyArgument(2)] bool isActive)
+    public static void Postfix(HudManager __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(2)] bool isActive)
     {
+        // Fix vanilla bug when report button displayed in the lobby
         __instance.ReportButton.ToggleVisible(!GameStates.IsLobby && isActive);
+
         if (!GameStates.IsModHost) return;
         if (GameStates.IsHideNSeek) return;
-        IsActive = isActive;
-        if (!isActive) return;
 
-        var player = PlayerControl.LocalPlayer;
+        IsActive = isActive;
+
+        if (!isActive) return;
         if (player == null) return;
 
         if (player.Is(CustomRoles.Oblivious))
