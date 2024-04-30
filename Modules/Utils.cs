@@ -769,10 +769,10 @@ public static class Utils
         neutralsb.Sort();
         addonsb.Sort();
         
-        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
-        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
-        SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"));
-        SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"));
+        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"), ShouldSplit: true);
+        SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"), ShouldSplit: true);
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
@@ -844,8 +844,14 @@ public static class Utils
         }
         sb.Append("</size>");
         string lr = sb.ToString();
-        if (lr.Length > 1200) lr = lr.RemoveHtmlTags();
-        SendMessage("\n", PlayerId, lr);
+        if (lr.Length > 1200 && !GetPlayerById(PlayerId).IsModClient())
+        {
+            lr.Chunk(1200).Do(x => SendMessage("\n", PlayerId, new(x)));
+        }
+        else
+        {
+            SendMessage("\n", PlayerId, lr);
+        }
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
     {
@@ -857,8 +863,8 @@ public static class Utils
         if (EndGamePatch.KillLog != "") 
         {
             string kl = EndGamePatch.KillLog;
-            if (Options.OldKillLog.GetBool() || kl.Length > 1200) kl = kl.RemoveHtmlTags();
-            SendMessage(kl, PlayerId); 
+            if (Options.OldKillLog.GetBool()) kl = kl.RemoveHtmlTags();
+            SendMessage(kl, PlayerId, ShouldSplit: true); 
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
@@ -895,12 +901,6 @@ public static class Utils
                 sb.Append($"{ColorString(RoleColor, "(")}{RoleText}{ColorString(RoleColor, ")")}");
             else
                 sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
-        }
-
-        if (intro && !SubRoles.Contains(CustomRoles.Lovers) && !SubRoles.Contains(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
-        {
-            var RoleText = disableColor ? GetRoleName(CustomRoles.Lovers) : ColorString(GetRoleColor(CustomRoles.Lovers), GetRoleName(CustomRoles.Lovers));
-            sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
         }
 
         return sb.ToString();
@@ -1195,9 +1195,18 @@ public static class Utils
             , ID);
     }
 
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+        if (ShouldSplit && text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient())
+        {
+            text.Chunk(1200).Do(x => SendMessage(new(x), sendTo, title));
+            return;
+        } 
+        else if (text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient()) 
+        {
+            text = text.RemoveHtmlTags();
+        }
 
         // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
         if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
@@ -1530,7 +1539,7 @@ public static class Utils
                 SelfMark.Append(seerRoleClass?.GetMark(seer, isForMeeting: isForMeeting));
                 SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, isForMeeting: isForMeeting));
 
-                if (seer.Is(CustomRoles.Lovers) /* || CustomRoles.Ntr.RoleExist() */)
+                if (seer.Is(CustomRoles.Lovers))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
 
                 if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
@@ -1669,10 +1678,6 @@ public static class Utils
                             TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                         }
                         else if (seer.Data.IsDead && !seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
-                        {
-                            TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                        }
-                        else if (target.Is(CustomRoles.Ntr) || seer.Is(CustomRoles.Ntr))
                         {
                             TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                         }

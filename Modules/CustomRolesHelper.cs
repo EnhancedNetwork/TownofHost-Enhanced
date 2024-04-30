@@ -700,16 +700,6 @@ public static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Ntr:
-                if (pc.Is(CustomRoles.Lovers)
-                    || pc.Is(CustomRoles.Hater)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE)
-                    || pc.Is(CustomRoles.RuthlessRomantic)
-                    || pc.Is(CustomRoles.Romantic)
-                    || pc.Is(CustomRoles.VengefulRomantic))
-                    return false;
-                break;
-
             case CustomRoles.Madmate:
                 if (pc.Is(CustomRoles.Sidekick)
                     || pc.Is(CustomRoles.SuperStar)
