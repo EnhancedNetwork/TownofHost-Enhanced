@@ -99,8 +99,8 @@ internal class Executioner : RoleBase
             else
             {
                 Logger.Warn(" Warning! No suitableable target was found for executioner, switching role","Executioner.Add");
+                ChangeRole(Utils.GetPlayerById(playerId));
             }
-            ChangeRole(Utils.GetPlayerById(playerId));
         }
     }
     public static void SendRPC(byte executionerId, byte targetId = 0x73, string Progress = "")
