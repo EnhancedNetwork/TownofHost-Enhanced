@@ -156,6 +156,6 @@ internal class Demon : RoleBase
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.KillButton.OverrideText(GetString("GamerButtonText"));
+        hud.KillButton.OverrideText(GetString("DemonButtonText"));
     }
 }
