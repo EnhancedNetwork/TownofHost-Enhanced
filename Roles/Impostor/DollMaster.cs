@@ -187,6 +187,7 @@ internal class DollMaster : RoleBase
         {
             PlayerControl playertarget = Utils.GetPlayerById(controllingTarget.PlayerId);
             PlayerControl dollmaster = Utils.GetPlayerById(DollMasterTarget.PlayerId);
+            dollmaster.RpcRemovePet();
             UnPossess(dollmaster, playertarget);
             GetPlayersPositions(dollmaster);
             SwapPlayersPositions(dollmaster);
@@ -199,6 +200,7 @@ internal class DollMaster : RoleBase
         {
             PlayerControl playertarget = Utils.GetPlayerById(controllingTarget.PlayerId);
             PlayerControl dollmaster = Utils.GetPlayerById(DollMasterTarget.PlayerId);
+            target.RpcRemovePet();
             UnPossess(dollmaster, playertarget);
             GetPlayersPositions(dollmaster);
             SwapPlayersPositions(dollmaster);
@@ -303,13 +305,14 @@ internal class DollMaster : RoleBase
     // Set name Suffix for Doll and Main Body under name.
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.DollMaster)) return string.Empty;
         if (!IsControllingPlayer) return string.Empty;
         if (GameStates.IsMeeting) return string.Empty;
+        if (target == null) return string.Empty;
         if (controllingTarget == null) return string.Empty;
-        if (target != null && seer.PlayerId == controllingTarget.PlayerId) return string.Empty;
-        if (target != null && seer.PlayerId != target.PlayerId && IsControllingPlayer) return "<color=#ffea00>" + GetString("DollMaster_MainBody");
-        return "<color=#ffea00>" + GetString("DollMaster_Doll");
+        if (DollMasterTarget == null) return string.Empty;
+        if (seer.PlayerId != target.PlayerId && target.PlayerId == controllingTarget.PlayerId) return "<color=#ffea00>" + GetString("DollMaster_MainBody");
+        if (seer.PlayerId == target.PlayerId && target.PlayerId == DollMasterTarget.PlayerId) return "<color=#ffea00>" + GetString("DollMaster_Doll");
+        return string.Empty;
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.AbilityButton.OverrideText(GetString(IsControllingPlayer ? "DollMasterUnPossessionButtonText" : "DollMasterPossessionButtonText"));
