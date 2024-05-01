@@ -1223,9 +1223,7 @@ public static class Utils
             // var indx2 = partmsg.LastIndexOf("</color>"); taking by </color> breaks it.
             if (indx1 > 1169 && partmsg.Length > 1200) // If a newline after 1169 can be found send it to the queue
             {
-                Logger.Info("Testing n...","Test n");
                 forqueue = LongMsg[..1201][(indx1+1)..1200]; // substring.substring;
-                Logger.Info("wawa", "baba");
                 result.Add(LongMsg[..indx1]);
                 LongMsg = LongMsg.TryRemove();
                 capturedN = true;
@@ -1234,7 +1232,6 @@ public static class Utils
             {
                 if (partmsg[partmsg.LastIndexOf("<")..1200].Contains("co"))
                 {
-                    Logger.Info("Testing remove clr...", "Test remove clr");
                     result.Add(LongMsg[..partmsg.LastIndexOf("<")]);
                     LongMsg = LongMsg.TryRemove();
                     capturedN = false;
