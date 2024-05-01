@@ -1235,7 +1235,7 @@ public static class Utils
             }
             else if (partmsg.LastIndexOf("<") >= 1185 && partmsg.Length > 1200) // If /n isn't present remove the first color instance
             {
-                if (!partmsg[partmsg.LastIndexOf("<")..1200].Contains(">"))
+                if (!partmsg[partmsg.LastIndexOf("<")..1200].Contains('>'))
                 {
                     result.Add(LongMsg[..partmsg.LastIndexOf("<")]);
                     LongMsg = LongMsg.TryRemove();
