@@ -871,6 +871,7 @@ public static class Utils
         {
             string kl = EndGamePatch.KillLog;
             if (Options.OldKillLog.GetBool()) kl = kl.RemoveHtmlTags();
+            kl = kl.Replace("<color=", "<");
             SendMessage(kl, PlayerId, ShouldSplit: true); 
         }
     }
