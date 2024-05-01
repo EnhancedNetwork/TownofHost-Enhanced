@@ -810,7 +810,7 @@ public static class Utils
 
         var sb = new StringBuilder();
 
-        sb.Append($"<#ffffff>{GetString("RoleSummaryText")}</color><size=70%>");
+        sb.Append($"<#ffffff>{GetString("RoleSummaryText")}</color>");
 
         List<byte> cloneRoles = new(Main.PlayerStates.Keys);
         foreach (byte id in Main.winnerList.ToArray())
@@ -839,19 +839,20 @@ public static class Utils
                     if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>"))
                         continue;
                     sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
+                    
                 }
                 break;
         }
-        sb.Append("</size>");
         string lr = sb.ToString();
         try{
             if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient() /*&& !AmongUsClient.Instance.AmHost*/))
             {
+                lr = lr.Replace("<color=", "<");
                 lr.SplitMessage().Do(x => SendMessage("\n", PlayerId, x));
             }
             else
             {
-                SendMessage("\n", PlayerId, lr);
+                SendMessage("\n", PlayerId,  "<size=75%>" + lr + "</size>");
             }
         }
         catch (Exception err)
@@ -1205,12 +1206,13 @@ public static class Utils
         List<string> result = [];
         string forqueue = "";
         bool capturedN = false;
+        bool didDo = true;
 
         while (LongMsg != string.Empty)
         {
             if (LongMsg.IndexOf(">") < LongMsg.IndexOf("<") && !capturedN) // color litter
             {
-                LongMsg = LongMsg.Remove(0, LongMsg.IndexOf(">"));
+                LongMsg = LongMsg.Remove(0, LongMsg.IndexOf(">")+1);
             }
             if (forqueue != string.Empty)
             {
@@ -1220,6 +1222,9 @@ public static class Utils
 
             var partmsg = LongMsg.Length > 1200 ? LongMsg[..1201] : LongMsg;
             var indx1 = partmsg.LastIndexOf("\n");
+
+            didDo = false;
+
             // var indx2 = partmsg.LastIndexOf("</color>"); taking by </color> breaks it.
             if (indx1 > 1169 && partmsg.Length > 1200) // If a newline after 1169 can be found send it to the queue
             {
@@ -1227,24 +1232,45 @@ public static class Utils
                 result.Add(LongMsg[..indx1]);
                 LongMsg = LongMsg.TryRemove();
                 capturedN = true;
+                didDo = true;
             }
             else if (partmsg.LastIndexOf("<") >= 1185 && partmsg.Length > 1200) // If /n isn't present remove the first color instance
             {
-                if (partmsg[partmsg.LastIndexOf("<")..1200].Contains("co"))
+                if (!partmsg[partmsg.LastIndexOf("<")..1200].Contains(">"))
                 {
                     result.Add(LongMsg[..partmsg.LastIndexOf("<")]);
                     LongMsg = LongMsg.TryRemove();
                     capturedN = false;
+                    didDo = true;
                 }
+            }
+            else if (partmsg.Length > 1200)
+            {
+                result.Add(LongMsg[..1200]);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+                didDo = true;
             }
             else
             {
                 result.Add(partmsg);
                 LongMsg = LongMsg.TryRemove();
                 capturedN = true;
+                break;
             }
-        }
 
+            if (!didDo) // Incase compiler decides to be a fckn dumbass
+            {
+                var thismsg = partmsg.Length > 1200 ? partmsg[..1200] : partmsg;
+                Logger.Info(" Warning, compiler decided to be a fckn dumbass and check_absolute activated.", "Utils.SplitMessage..Check Absolute");
+                result.Add(thismsg);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+                if (thismsg.Length < 1200) break;
+            }
+
+
+        }
 
         return [.. result];
     }
