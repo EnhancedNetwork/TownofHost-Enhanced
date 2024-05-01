@@ -246,7 +246,7 @@ public class GameStartManagerPatch
                 RPC.RpcVersionCheck();
 
                 GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
-                GameStartManager.Instance.countDownTimer = countdown;
+                GameStartManager.Instance.countDownTimer = (countdown == 0 ? 0.2f : countdown);
                 GameStartManager.Instance.StartButton.gameObject.SetActive(false);
             }, 0.8f, "Auto Start");
         }
