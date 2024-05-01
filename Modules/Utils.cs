@@ -1225,7 +1225,6 @@ public static class Utils
 
             didDo = false;
 
-            // var indx2 = partmsg.LastIndexOf("</color>"); taking by </color> breaks it.
             if (indx1 > 1169 && partmsg.Length > 1200) // If a newline after 1169 can be found send it to the queue
             {
                 forqueue = LongMsg[..1201][(indx1+1)..1200]; // substring.substring;
