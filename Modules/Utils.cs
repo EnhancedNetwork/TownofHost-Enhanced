@@ -848,7 +848,7 @@ public static class Utils
             if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
             {
                 lr = lr.Replace("<color=", "<");
-                lr.SplitMessage().Do(x => SendMessage("\n", PlayerId, x));
+                lr.SplitMessage(1099).Do(x => SendMessage("\n", PlayerId, x));
             }
             else
             {
@@ -1201,7 +1201,7 @@ public static class Utils
         //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
             , ID);
     }
-    public static string[] SplitMessage(this string LongMsg)
+    public static string[] SplitMessage(this string LongMsg, int NewLineRange = 1169)
     {
         List<string> result = [];
         string forqueue = "";
@@ -1225,7 +1225,7 @@ public static class Utils
 
             didDo = false;
 
-            if (indx1 > 1169 && partmsg.Length > 1200) // If a newline after 1169 can be found send it to the queue
+            if (indx1 > NewLineRange && partmsg.Length > 1200) // If a newline after NewLineRange can be found send it to the queue
             {
                 forqueue = LongMsg[..1201][(indx1+1)..1200]; // substring.substring;
                 result.Add(LongMsg[..indx1]);
