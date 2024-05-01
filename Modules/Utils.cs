@@ -1210,14 +1210,14 @@ public static class Utils
 
         while (LongMsg != string.Empty)
         {
-            if (LongMsg.IndexOf(">") < LongMsg.IndexOf("<") && !capturedN) // color litter
-            {
-                LongMsg = LongMsg.Remove(0, LongMsg.IndexOf(">")+1);
-            }
             if (forqueue != string.Empty)
             {
                 LongMsg = forqueue + LongMsg;
                 forqueue = string.Empty;
+            }
+            if (LongMsg.IndexOf(">") < LongMsg.IndexOf("<") && !capturedN) // color litter
+            {
+                LongMsg = LongMsg.Remove(0, LongMsg.IndexOf(">")+1);
             }
 
             var partmsg = LongMsg.Length > 1200 ? LongMsg[..1201] : LongMsg;
