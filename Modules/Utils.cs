@@ -845,7 +845,7 @@ public static class Utils
         }
         string lr = sb.ToString();
         try{
-            if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient() /*&& !AmongUsClient.Instance.AmHost*/))
+            if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
             {
                 lr = lr.Replace("<color=", "<");
                 lr.SplitMessage().Do(x => SendMessage("\n", PlayerId, x));
@@ -1279,12 +1279,12 @@ public static class Utils
         if (!AmongUsClient.Instance.AmHost) return;
         try
         {
-            if (ShouldSplit && text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()/* && !AmongUsClient.Instance.AmHost*/))
+            if (ShouldSplit && text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
             {
                 text.SplitMessage().Do(x => SendMessage(x, sendTo, title));
                 return;
             }
-            else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()  /*&& !AmongUsClient.Instance.AmHost*/))
+            else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
             {
                 text = text.RemoveHtmlTags();
             }
