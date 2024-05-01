@@ -844,13 +844,19 @@ public static class Utils
         }
         sb.Append("</size>");
         string lr = sb.ToString();
-        if (lr.Length > 1200 && !GetPlayerById(PlayerId).IsModClient())
-        {
-            lr.Chunk(1200).Do(x => SendMessage("\n", PlayerId, new(x)));
+        try{
+            if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient() /*&& !AmongUsClient.Instance.AmHost*/))
+            {
+                lr.SplitMessage().Do(x => SendMessage("\n", PlayerId, x));
+            }
+            else
+            {
+                SendMessage("\n", PlayerId, lr);
+            }
         }
-        else
+        catch (Exception err)
         {
-            SendMessage("\n", PlayerId, lr);
+            Logger.Warn($"Error after try split the msg {lr} at: {err}", "Utils.ShowLastRoles..LastRoles");
         }
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
@@ -1194,18 +1200,76 @@ public static class Utils
         //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
             , ID);
     }
+    public static string[] SplitMessage(this string LongMsg)
+    {
+        List<string> result = [];
+        string forqueue = "";
+        bool capturedN = false;
 
+        while (LongMsg != string.Empty)
+        {
+            if (LongMsg.IndexOf(">") < LongMsg.IndexOf("<") && !capturedN) // color litter
+            {
+                LongMsg = LongMsg.Remove(0, LongMsg.IndexOf(">"));
+            }
+            if (forqueue != string.Empty)
+            {
+                LongMsg = forqueue + LongMsg;
+                forqueue = string.Empty;
+            }
+
+            var partmsg = LongMsg.Length > 1200 ? LongMsg[..1201] : LongMsg;
+            var indx1 = partmsg.LastIndexOf("\n");
+            // var indx2 = partmsg.LastIndexOf("</color>"); taking by </color> breaks it.
+            if (indx1 > 1169 && partmsg.Length > 1200) // If a newline after 1169 can be found send it to the queue
+            {
+                Logger.Info("Testing n...","Test n");
+                forqueue = LongMsg[..1201][(indx1+1)..1200]; // substring.substring;
+                Logger.Info("wawa", "baba");
+                result.Add(LongMsg[..indx1]);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+            }
+            else if (partmsg.LastIndexOf("<") >= 1185 && partmsg.Length > 1200) // If /n isn't present remove the first color instance
+            {
+                if (partmsg[partmsg.LastIndexOf("<")..1200].Contains("co"))
+                {
+                    Logger.Info("Testing remove clr...", "Test remove clr");
+                    result.Add(LongMsg[..partmsg.LastIndexOf("<")]);
+                    LongMsg = LongMsg.TryRemove();
+                    capturedN = false;
+                }
+            }
+            else
+            {
+                result.Add(partmsg);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+            }
+        }
+
+
+        return [.. result];
+    }
+    private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (ShouldSplit && text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient())
+        try
         {
-            text.Chunk(1200).Do(x => SendMessage(new(x), sendTo, title));
-            return;
-        } 
-        else if (text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient()) 
+            if (ShouldSplit && text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()/* && !AmongUsClient.Instance.AmHost*/))
+            {
+                text.SplitMessage().Do(x => SendMessage(x, sendTo, title));
+                return;
+            }
+            else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()  /*&& !AmongUsClient.Instance.AmHost*/))
+            {
+                text = text.RemoveHtmlTags();
+            }
+        }
+        catch (Exception exx)
         {
-            text = text.RemoveHtmlTags();
+            Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage..SplitMessage");
         }
 
         // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
