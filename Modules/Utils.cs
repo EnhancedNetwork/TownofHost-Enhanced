@@ -848,7 +848,7 @@ public static class Utils
             if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
             {
                 lr = lr.Replace("<color=", "<");
-                lr.SplitMessage(1099).Do(x => SendMessage("\n", PlayerId, x));
+                lr.SplitMessage(899).Do(x => SendMessage("\n", PlayerId, x));
             }
             else
             {
