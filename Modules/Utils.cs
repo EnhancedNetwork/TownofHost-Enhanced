@@ -1287,7 +1287,7 @@ public static class Utils
             }
             else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
             {
-                text = text.RemoveHtmlTags();
+                text = text.RemoveHtmlTagsIfNeccessary();
             }
         }
         catch (Exception exx)
@@ -2102,6 +2102,7 @@ public static class Utils
     }
     public static string RemoveHtmlTagsTemplate(this string str) => Regex.Replace(str, "", "");
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", "");
+    public static string RemoveHtmlTagsIfNeccessary(this string str) => str.Replace("<color=", "<").Length > 1200 ? str.RemoveHtmlTags() : str.Replace("<color=", "<");
 
     public static void FlashColor(Color color, float duration = 1f)
     {
