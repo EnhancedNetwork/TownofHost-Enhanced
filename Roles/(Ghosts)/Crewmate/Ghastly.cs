@@ -65,10 +65,13 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             writer.Write(PossessLimit);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+        public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
         {
             int Limit = reader.ReadInt32();
-            PossessLimit = Limit;
+            var ghas = (Ghastly)pc.GetRoleClass();
+            if (ghas == null) return;
+
+            ghas.PossessLimit = Limit;
         }
         public override void ApplyGameOptions(IGameOptions opt, byte playerId)
         {
