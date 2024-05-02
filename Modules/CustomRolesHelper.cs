@@ -35,7 +35,7 @@ public static class CustomRolesHelper
     }
 
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
-        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor() 
+        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor() || role is CustomRoles.Killer // FFA
             ? RoleTypes.Impostor 
             : RoleTypes.GuardianAngel;
 
@@ -266,10 +266,7 @@ public static class CustomRolesHelper
 
         return role is
             CustomRoles.Impostor or
-            CustomRoles.Shapeshifter or
-            CustomRoles.Crewmate or
-            CustomRoles.Engineer or
-            CustomRoles.Scientist;
+            CustomRoles.Shapeshifter;
     }
 
     public static bool IsAbleToBeSidekicked(this CustomRoles role) 
@@ -593,7 +590,6 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Guardian)
                     || pc.Is(CustomRoles.Medic)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.Jinx)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.CursedWolf)
@@ -619,6 +615,10 @@ public static class CustomRolesHelper
                     return false;
                 break;
 
+            case CustomRoles.Glow:
+                if ((pc.GetCustomRole().IsCrewmate() && !Glow.CrewCanBeGlow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Glow.NeutralCanBeGlow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Glow.ImpCanBeGlow.GetBool()))
+                    return false;
+                break;
             case CustomRoles.Antidote:
                 if (pc.Is(CustomRoles.Diseased) || pc.Is(CustomRoles.Solsticer))
                     return false;
@@ -789,7 +789,6 @@ public static class CustomRolesHelper
             case CustomRoles.TicketsStealer:
                 if (pc.Is(CustomRoles.Vindicator)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.VoidBallot))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
@@ -811,11 +810,9 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Ludopath)
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Vampire)
-                    || pc.Is(CustomRoles.Vampiress)
                     || pc.Is(CustomRoles.Arrogance)
                     || pc.Is(CustomRoles.LastImpostor)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.Trapster)
                     || pc.Is(CustomRoles.Onbound)
                     || pc.Is(CustomRoles.Rebound)
@@ -827,17 +824,16 @@ public static class CustomRolesHelper
 
             case CustomRoles.Swift:
                 if (pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.Trapster)
                     || pc.Is(CustomRoles.Kamikaze)
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Vampire)
-                    || pc.Is(CustomRoles.Vampiress)
                     || pc.Is(CustomRoles.Scavenger)
                     || pc.Is(CustomRoles.Puppeteer)
                     || pc.Is(CustomRoles.Mastermind)
                     || pc.Is(CustomRoles.Warlock)
                     || pc.Is(CustomRoles.Witch)
+                    || pc.Is(CustomRoles.Penguin)
                     || pc.Is(CustomRoles.Nemesis)
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Clumsy)
@@ -859,7 +855,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Circumvent:
-                if (pc.GetCustomRole() is CustomRoles.Vampire or CustomRoles.Vampiress && !Vampire.CheckCanUseVent()
+                if (pc.GetCustomRole() is CustomRoles.Vampire && !Vampire.CheckCanUseVent()
                     || pc.Is(CustomRoles.Witch) && Witch.ModeSwitchActionOpt.GetValue() == 1
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Wildling)
@@ -873,7 +869,6 @@ public static class CustomRolesHelper
             case CustomRoles.Clumsy:
                 if (pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.KillingMachine))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())

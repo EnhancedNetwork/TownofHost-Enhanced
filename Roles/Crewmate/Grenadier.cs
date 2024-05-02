@@ -3,10 +3,10 @@ using System;
 using System.Text;
 using UnityEngine;
 using TOHE.Modules;
-using TOHE.Roles.Core;
 using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
+using Hazel;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -42,7 +42,7 @@ internal class Grenadier : RoleBase
         GrenadierCauseVision = FloatOptionItem.Create(Id + 12, "GrenadierCauseVision", new(0f, 5f, 0.05f), 0.3f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
             .SetValueFormat(OptionFormat.Multiplier);
         GrenadierCanAffectNeutral = BooleanOptionItem.Create(Id + 13, "GrenadierCanAffectNeutral", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier]);
-        GrenadierSkillMaxOfUseage = IntegerOptionItem.Create(Id + 14, "GrenadierSkillMaxOfUseage", new(0, 20, 1), 2, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
+        GrenadierSkillMaxOfUseage = FloatOptionItem.Create(Id + 14, "GrenadierSkillMaxOfUseage", new(0, 20, 1), 2, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
             .SetValueFormat(OptionFormat.Times);
         GrenadierAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 15, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
             .SetValueFormat(OptionFormat.Times);
@@ -57,8 +57,23 @@ internal class Grenadier : RoleBase
     }
     public override void Add(byte playerId)
     {
-        GrenadierNumOfUsed.Add(playerId, GrenadierSkillMaxOfUseage.GetInt());
-        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnGrenaderFixOthers);
+        playerIdList.Add(playerId);
+        GrenadierNumOfUsed.Add(playerId, GrenadierSkillMaxOfUseage.GetFloat());
+        //CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnGrenaderFixOthers);
+    }
+    public static void SendRPC(byte playerId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Grenadier);
+        writer.Write(playerId);
+        writer.Write(GrenadierNumOfUsed[playerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        byte playerId = reader.ReadByte();
+        float count = reader.ReadSingle();
+        GrenadierNumOfUsed[playerId] = count;
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -83,7 +98,10 @@ internal class Grenadier : RoleBase
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player.IsAlive())
+        { 
             GrenadierNumOfUsed[player.PlayerId] += GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendRPC(player.PlayerId);
+        }
 
         return true;
     }
@@ -117,6 +135,7 @@ internal class Grenadier : RoleBase
             pc.RPCPlayCustomSound("FlashBang");
             pc.Notify(GetString("GrenadierSkillInUse"), GrenadierSkillDuration.GetFloat());
             GrenadierNumOfUsed[pc.PlayerId] -= 1;
+            SendRPC(pc.PlayerId);
             MarkEveryoneDirtySettings();
         }
     }
@@ -125,6 +144,19 @@ internal class Grenadier : RoleBase
     public static bool stopMadGrenadierSkill = false;
     public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
+        if (!GrenadierBlinding.ContainsKey(player.PlayerId) && !MadGrenadierBlinding.ContainsKey(player.PlayerId)) return;
+
+        var nowStamp = GetTimeStamp();
+        if (GrenadierBlinding.TryGetValue(player.PlayerId, out var grenadierTime) && grenadierTime + GrenadierSkillDuration.GetInt() < nowStamp)
+        {
+            GrenadierBlinding.Remove(player.PlayerId);
+            stopGrenadierSkill = true;
+        }
+        if (MadGrenadierBlinding.TryGetValue(player.PlayerId, out var madGrenadierTime) && madGrenadierTime + GrenadierSkillDuration.GetInt() < nowStamp)
+        {
+            MadGrenadierBlinding.Remove(player.PlayerId);
+            stopMadGrenadierSkill = true;
+        }
         if (stopGrenadierSkill || stopMadGrenadierSkill)
         {
             if (!DisableShieldAnimations.GetBool())
@@ -141,22 +173,7 @@ internal class Grenadier : RoleBase
             stopMadGrenadierSkill = false;
         }
     }
-    private static void OnGrenaderFixOthers(PlayerControl pc)
-    {
-        if (!GrenadierBlinding.ContainsKey(pc.PlayerId) || !MadGrenadierBlinding.ContainsKey(pc.PlayerId)) return;
 
-        var nowStamp = GetTimeStamp();
-        if (GrenadierBlinding.TryGetValue(pc.PlayerId, out var grenadierTime) && grenadierTime + GrenadierSkillDuration.GetInt() < nowStamp)
-        {
-            GrenadierBlinding.Remove(pc.PlayerId);
-            stopGrenadierSkill = true;
-        }
-        if (MadGrenadierBlinding.TryGetValue(pc.PlayerId, out var madGrenadierTime) && madGrenadierTime + GrenadierSkillDuration.GetInt() < nowStamp)
-        {
-            MadGrenadierBlinding.Remove(pc.PlayerId);
-            stopMadGrenadierSkill = true;
-        }
-    }
     public override string GetProgressText(byte playerId, bool comms)
     {
         var ProgressText = new StringBuilder();

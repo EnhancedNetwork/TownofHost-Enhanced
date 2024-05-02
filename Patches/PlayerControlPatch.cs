@@ -103,7 +103,7 @@ class CheckMurderPatch
         if (GameStates.IsHideNSeek) return true;
 
         var killer = __instance;
-        var killerRole = __instance.GetCustomRole();
+        var killerRole = __instance.GetRoleClass();
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
@@ -113,18 +113,22 @@ class CheckMurderPatch
         }
 
         // Set kill cooldown for Chronomancer
-        if (killerRole is CustomRoles.Chronomancer)
+        if (killerRole is Chronomancer)
             Chronomancer.OnCheckMurder(killer);
 
         killer.ResetKillCooldown();
         Logger.Info($"Kill Cooldown Resets", "CheckMurder");
 
         // Replacement process when the actual killer and the KILLER are different
-        if (Sniper.HasEnabled)
+        if (Sniper.SnipeIsActive(__instance.PlayerId))
         {
+            Logger.Info($"Killer is Sniper", "CheckMurder");
+
             Sniper.TryGetSniper(target.PlayerId, ref killer);
-            
-            if (killer != __instance)
+
+            Logger.Info($"After Try Get Sniper", "CheckMurder");
+
+            if (killer.PlayerId != __instance.PlayerId)
             {
                 Logger.Info($"Real Killer = {killer.GetNameWithRole().RemoveHtmlTags()}", "Sniper.CheckMurder");
             }
@@ -235,7 +239,11 @@ class CheckMurderPatch
     {
         if (!AmongUsClient.Instance.AmHost) return false;
 
+        Logger.Info($"check: {check}", "RpcCheckAndMurder");
+
         if (target == null) target = killer;
+
+        Logger.Info($"Start", "Shaman.CheckMurder");
 
         // Shaman replace target
         if (Shaman.HasEnabled && Shaman.ShamanTarget != byte.MaxValue)
@@ -246,6 +254,8 @@ class CheckMurderPatch
 
             Logger.Info($"Real target after = {target.GetNameWithRole().RemoveHtmlTags()}", "Shaman.CheckMurder");
         }
+
+        Logger.Info($"End", "Shaman.CheckMurder");
 
         var killerRole = killer.GetCustomRole();
 
@@ -280,12 +290,16 @@ class CheckMurderPatch
         if (killer.Is(Custom_Team.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
 
+        Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
+
         // Check murder on others targets
         if (CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target) == false)
         {
             Logger.Info("Cancels because for others target need cancel kill", "OnCheckMurderAsTargetOnOthers");
             return false;
         }
+
+        Logger.Info($"Start", "TargetSubRoles");
 
         if (targetSubRoles.Any())
             foreach (var targetSubRole in targetSubRoles.ToArray())
@@ -302,8 +316,6 @@ class CheckMurderPatch
 
                     case CustomRoles.Susceptible:
                         Susceptible.CallEnabledAndChange(target);
-                        if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote)
-                            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill; // When susceptible is still alive "Vote" triggers role visibility for others.
                         break;
 
                     case CustomRoles.Fragile:
@@ -335,6 +347,8 @@ class CheckMurderPatch
                         break;
                 }
             }
+
+        Logger.Info($"Start", "OnCheckMurderAsTarget");
 
         // Check Murder as target
         if (targetRoleClass.OnCheckMurderAsTarget(killer, target) == false)
@@ -503,13 +517,6 @@ class RpcMurderPlayerPatch
         messageWriter.Write((int)murderResultFlags);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
 
-        var killer = target.GetRealKiller();
-        if (target.Is(CustomRoles.Susceptible))
-            Susceptible.CallEnabledAndChange(target);
-
-        if (!killer.RpcCheckAndMurder(target, check: true) && !killer.Is(CustomRoles.Pestilence))
-            Logger.Warn($" Killer: {killer.GetRealName} murdered {target.GetRealName()} while target was under protection", "RpcMurderPlayerPatch..Prefix");
-
         return false;
         // There is no need to include DecisionByHost. DecisionByHost will make client check protection locally and cause confusion.
     }
@@ -574,11 +581,11 @@ public static class CheckShapeshiftPatch
             logger.Info("Shapeshifting canceled because shapeshifter is dead");
             return false;
         }
-        if (!instance.Is(CustomRoles.Glitch) && instance.Data.Role.Role != RoleTypes.Shapeshifter && instance.GetCustomRole().GetVNRole() != CustomRoles.Shapeshifter)
-        {
-            logger.Info("Shapeshifting canceled because the shapeshifter is not a shapeshifter");
-            return false;
-        }
+        //if (!instance.Is(CustomRoles.Glitch) && instance.Data.Role.Role != RoleTypes.Shapeshifter && instance.GetCustomRole().GetVNRole() != CustomRoles.Shapeshifter)
+        //{
+        //    logger.Info("Shapeshifting canceled because the shapeshifter is not a shapeshifter");
+        //    return false;
+        //}
         if (instance.Data.Disconnected)
         {
             logger.Info("Shapeshifting canceled because shapeshifter is disconnected");
@@ -1015,10 +1022,12 @@ class FixedUpdateInNormalGamePatch
 
                 if (player.Is(CustomRoles.Statue) && player.IsAlive())
                     Statue.OnFixedUpdate(player);
-            
+
                 if (!lowLoad)
                 {
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
+                    if (Glow.IsEnable)
+                        Glow.OnFixedUpdate(player);
 
                     if (Rainbow.isEnabled)
                         Rainbow.OnFixedUpdate();
@@ -1046,7 +1055,7 @@ class FixedUpdateInNormalGamePatch
                 if (GameStates.IsInGame && Main.RefixCooldownDelay <= 0)
                     foreach (var pc in Main.AllPlayerControls)
                     {
-                        if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja) || pc.Is(CustomRoles.Vampiress))
+                        if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Options.DefaultKillCooldown * 2;
                         
                         if (pc.Is(CustomRoles.Poisoner))

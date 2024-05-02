@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using HarmonyLib;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -93,7 +94,7 @@ public static class CustomRoleManager
         if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
-
+        
         // Add-ons
         if (Bewilder.IsEnable) Bewilder.ApplyGameOptions(opt, player);
         if (Ghoul.IsEnable) Ghoul.ApplyGameOptions(player);
@@ -131,6 +132,7 @@ public static class CustomRoleManager
                         break;
                 }
             }
+        if (Glow.IsEnable) Glow.ApplyGameOptions(opt, player); //keep this at last
     }
 
     /// <summary>
@@ -143,6 +145,8 @@ public static class CustomRoleManager
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
 
+        Logger.Info("Start", "ForcedCheckMurderAsKiller");
+
         // Forced check
         if (killerRoleClass.ForcedCheckMurderAsKiller(killer, target) == false)
         {
@@ -150,12 +154,16 @@ public static class CustomRoleManager
             return false;
         }
 
+        Logger.Info("Start", "OnCheckMurder.RpcCheckAndMurder");
+
         // Check in target
         if (killer.RpcCheckAndMurder(target, true) == false)
         {
             Logger.Info("Cancels because target cancel kill", "OnCheckMurder.RpcCheckAndMurder");
             return false;
         }
+
+        Logger.Info("Start foreach", "KillerSubRoles");
 
         if (killerSubRoles.Any())
             foreach (var killerSubRole in killerSubRoles.ToArray())
@@ -193,8 +201,10 @@ public static class CustomRoleManager
                 }
             }
 
+        Logger.Info("Start", "OnCheckMurderAsKiller");
+
         // Check murder as killer
-        if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
+        if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
         {
             Logger.Info("Cancels because for killer no need kill target", "OnCheckMurderAsKiller");
             return false;

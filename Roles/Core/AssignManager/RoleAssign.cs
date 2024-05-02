@@ -619,8 +619,6 @@ public class RoleAssign
             }
         }
 
-        if (Bomber.CheckSpawnNuker() && FinalRolesList.Remove(CustomRoles.Bomber)) FinalRolesList.Add(CustomRoles.Nuker);
-        if (Vampire.CheckSpawnVampiress() && FinalRolesList.Remove(CustomRoles.Vampire)) FinalRolesList.Add(CustomRoles.Vampiress);
         if (Sunnyboy.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Jester)) FinalRolesList.Add(CustomRoles.Sunnyboy);
         if (Bard.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Arrogance)) FinalRolesList.Add(CustomRoles.Bard);
 

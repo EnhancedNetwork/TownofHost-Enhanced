@@ -41,14 +41,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0413.200.0020"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 dev 2";
+    public const string PluginVersion = "2024.0425.200.0005"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 dev 5";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = false; // ACTIVE - Latest: V1.6.0 Canary 6
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
-    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 2
+    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 5
 
     public static bool hasAccess = true;
 
@@ -127,7 +127,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
     const string LANGUAGE_FOLDER_NAME = "Language";
     
-    public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable() || CustomRoles.Vampiress.IsEnable();
+    public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
     public static GameData.PlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
@@ -335,9 +335,7 @@ public class Main : BasePlugin
 
             CustomRolesHelper.DuplicatedRoles = new Dictionary<CustomRoles, Type>
             {
-                { CustomRoles.Vampiress, typeof(Vampire) },
                 { CustomRoles.Pestilence, typeof(PlagueBearer) },
-                { CustomRoles.Nuker, typeof(Bomber) },
                 { CustomRoles.NiceMini, typeof(Mini) },
                 { CustomRoles.EvilMini, typeof(Mini) }
             };
@@ -590,7 +588,6 @@ public enum CustomRoles
     Morphling,
     Nemesis,
     Ninja,
-    Nuker,
     Parasite,
     Penguin,
     Pitfall,
@@ -613,7 +610,6 @@ public enum CustomRoles
     Underdog,
     Undertaker,
     Vampire,
-    Vampiress,
     Vindicator,
     Visionary,
     Warlock,
@@ -794,6 +790,7 @@ public enum CustomRoles
     // Add-ons
     Admired,
     Antidote,
+    Glow,
     Autopsy,
     Avanger,
     Aware,

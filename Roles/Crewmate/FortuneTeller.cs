@@ -244,8 +244,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Fireworker,
                 CustomRoles.RuthlessRomantic,
                 CustomRoles.VengefulRomantic,
-                CustomRoles.Lookout,
-                CustomRoles.Nuker],
+                CustomRoles.Lookout],
                 
                 [CustomRoles.BountyHunter,
                 CustomRoles.Detective,
@@ -403,7 +402,6 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.TimeThief,
                 CustomRoles.ShapeMaster,
                 CustomRoles.Werewolf,
-                CustomRoles.Vampiress,
                 CustomRoles.Sniper],
                 
                 [CustomRoles.Puppeteer,
