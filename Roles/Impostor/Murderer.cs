@@ -1,4 +1,5 @@
 using Hazel;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -128,4 +129,6 @@ internal class Murderer : RoleBase
     {
         hud.KillButton.OverrideText(GetString("MurdererKillButtonText"));
     }
+
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Assassinate");
 }

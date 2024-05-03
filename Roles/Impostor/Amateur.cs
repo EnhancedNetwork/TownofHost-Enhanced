@@ -1,6 +1,4 @@
-﻿using Il2CppInterop.Runtime;
-using System.Runtime.InteropServices;
-using UnityEngine;
+﻿using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
