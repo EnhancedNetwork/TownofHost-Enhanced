@@ -8,6 +8,16 @@ namespace TOHE.Roles.Impostor;
 
 internal class DollMaster : RoleBase
 {
+    private static readonly HashSet<byte> ReducedVisionPlayers = [];
+    public static bool isEnabled = false;
+    private static bool IsControllingPlayer = false;
+    private static bool ResetPlayerSpeed = false;
+    private static bool WaitToUnPossess = false;
+    private static PlayerControl controllingTarget = null; // Personal possessed player identifier for reference.
+    private static PlayerControl DollMasterTarget = null; // Personal possessed player identifier for reference.
+    private static float originalSpeed = float.MinValue;
+    private static Vector2 controllingTargetPos = new(0, 0);
+    private static Vector2 DollMasterPos = new(0, 0);
     //===========================SETUP================================\\
     private const int Id = 28500;
     private static readonly HashSet<byte> PlayerIds = [];
@@ -16,16 +26,6 @@ internal class DollMaster : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
-    private static readonly HashSet<byte> ReducedVisionPlayers = [];
-    public static bool isEnabled = false;
-    private static bool IsControllingPlayer = false;
-    private static bool ResetPlayerSpeed = false;
-    private static bool WaitToUnPossess = false;
-    private static PlayerControl controllingTarget = null; // Personal possessed player identifier for reference.
-    private static PlayerControl DollMasterTarget = null; // Personal possessed player identifier for reference.
-    private static float originalSpeed = 0;
-    private static Vector2 controllingTargetPos = new(0, 0);
-    private static Vector2 DollMasterPos = new(0, 0);
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ShapeshiftCooldown;

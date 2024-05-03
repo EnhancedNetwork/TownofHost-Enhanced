@@ -9,7 +9,6 @@ internal class Murderer : RoleBase
 {
     private readonly static GameData.PlayerOutfit UnidentifiableOutfit = new GameData.PlayerOutfit().Set("<color=#a13535>Dead Body", 0, "", "", "visor_Dirty", "", "");
     public static readonly Dictionary<byte, string> MurdererVictim = [];
-    private static float KillerOriginalSpeed = 0;
     //===========================SETUP================================\\
     private const int Id = 28600;
     private static readonly HashSet<byte> playerIdList = [];
@@ -114,7 +113,7 @@ internal class Murderer : RoleBase
         Utils.NotifyRoles(ForceLoop: true, NoCache: true);
         RPC.SyncAllPlayerNames();
 
-        KillerOriginalSpeed = Main.AllPlayerSpeed[killer.PlayerId];
+        var KillerOriginalSpeed = Main.AllPlayerSpeed[killer.PlayerId];
         Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;
         killer.MarkDirtySettings();
         _ = new LateTask(() =>
