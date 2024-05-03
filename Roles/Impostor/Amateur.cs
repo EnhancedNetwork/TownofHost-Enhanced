@@ -195,8 +195,12 @@ internal class Amateur : RoleBase
         else // Set as Normal.
         {
             if (!IsRevealed) return;
-            pc.MyPhysics.SetBodyType(PlayerBodyTypes.Normal);
-            Camouflage.RpcSetSkin(pc, RevertToDefault: true, ForceRevert: true);
+            if (pc.inVent || pc.walkingToVent) return;
+            _ = new LateTask(() =>
+            {
+                pc.MyPhysics.SetBodyType(PlayerBodyTypes.Normal);
+                Camouflage.RpcSetSkin(pc, RevertToDefault: true, ForceRevert: true);
+            }, 0.3f, "Set player to normal");
             IsRevealed = false;
         }
     }
