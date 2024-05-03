@@ -68,8 +68,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
         {
             int Limit = reader.ReadInt32();
-            var ghas = (Ghastly)pc.GetRoleClass();
-            if (ghas == null) return;
+            if (pc.GetRoleClass() is not Ghastly ghas) return;
 
             ghas.PossessLimit = Limit;
         }
