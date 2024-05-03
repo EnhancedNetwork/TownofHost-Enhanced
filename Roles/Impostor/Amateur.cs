@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Amateur : RoleBase
 {
-    private static float RealTimeKillCooldown = 0f;
+    private static float RealTimeKillCooldown = float.MinValue;
     private static PlayerControl SelfTarget = null;
     private static bool IsRevealed = false;
     private static bool IsInMeeting = false;
@@ -24,7 +25,6 @@ internal class Amateur : RoleBase
     public static OptionItem IncreaseKillCooldownOnVent;
     public static OptionItem IncreaseKillCooldownAmount;
     public static OptionItem SetKillCooldownOffDistance;
-    private System.IntPtr NativeMethodInfoPtr_RpcShapeshift_Public_Void_PlayerControl_Boolean_0;
 
     public override void SetupCustomOption()
     {
@@ -49,7 +49,7 @@ internal class Amateur : RoleBase
         playerIdList.Add(playerId);
         RealTimeKillCooldown = KillCooldown.GetFloat();
         SelfTarget = Utils.GetPlayerById(playerId);
-        RealTimeKillCooldown = 99f;
+        RealTimeKillCooldown = float.MaxValue;
 
         // Sync killcooldowns for all maps but Airshit.
         _ = new LateTask(() =>
@@ -139,10 +139,12 @@ internal class Amateur : RoleBase
     {
         if (SelfTarget == null) return;
         IsInMeeting = true;
-        RealTimeKillCooldown = 99f;
+        RealTimeKillCooldown = float.MaxValue;
         if (!IsRevealed) return;
         {
+            var SaveFlipX = SelfTarget.MyPhysics.FlipX;
             SelfTarget.MyPhysics.SetBodyType(PlayerBodyTypes.Normal);
+            SelfTarget.MyPhysics.FlipX = SaveFlipX;
             Camouflage.RpcSetSkin(SelfTarget, RevertToDefault: true, ForceRevert: true);
             IsRevealed = false;
         }
@@ -154,8 +156,11 @@ internal class Amateur : RoleBase
         if (SelfTarget == null) return;
         if (!GameStates.AirshipIsActive)
         {
-            RealTimeKillCooldown = KillCooldown.GetFloat();
-            SelfTarget.SetKillCooldown(RealTimeKillCooldown);
+            _ = new LateTask(() =>
+            {
+                RealTimeKillCooldown = KillCooldown.GetFloat();
+                SelfTarget.SetKillCooldown(RealTimeKillCooldown);
+            }, 1f, "Sync killcooldowns after meeting");
         }
         else SetUpForAirship = false;
         IsInMeeting = false;
@@ -166,39 +171,66 @@ internal class Amateur : RoleBase
     {
         if (IsInMeeting) return;
 
-        // Sync killcooldowns for Airshit.
+        SyncAirshipKC(pc); // Sync killcooldowns for Airshit.
+
+        if (RealTimeKillCooldown >= 0 && !pc.inVent && pc.IsAlive()) RealTimeKillCooldown -= Time.deltaTime;
+
+        if (RealTimeKillCooldown <= 0) SetAsSeeker(pc); // Set as seeker.
+        else SetAsNormal(pc); // Set as Normal.
+    }
+
+    private static void SetAsSeeker(PlayerControl pc) // Set as seeker.
+    {
+        if (IsRevealed) return;
+
+        if (pc.inMovingPlat && GameStates.FungleIsActive // Make sure that the player is not in certain states to reveal.
+        || pc.MyPhysics.Animations.IsPlayingEnterVentAnimation()
+        || pc.onLadder
+        || pc.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
+        || Pelican.IsEaten(pc.PlayerId)) return;
+
+        var SaveFlipX = pc.MyPhysics.FlipX;
+        pc.MyPhysics.SetBodyType(PlayerBodyTypes.Seeker);
+        pc.MyPhysics.FlipX = SaveFlipX;
+        pc.RpcSetVisor("visor_Mouth");
+        pc.RpcSetSkin("");
+        pc.KillFlash();
+        RPC.PlaySoundRPC(pc.PlayerId, Sounds.ImpTransform);
+        IsRevealed = true;
+    }
+
+    private static void SetAsNormal(PlayerControl pc) // Set as Normal.
+    {
+        if (!IsRevealed) return;
+        if (pc.inVent || pc.walkingToVent) return;
+
+        _ = new LateTask(() =>
+        {
+            var SaveFlipX = pc.MyPhysics.FlipX;
+            pc.MyPhysics.SetBodyType(PlayerBodyTypes.Normal);
+            pc.MyPhysics.FlipX = SaveFlipX;
+            Camouflage.RpcSetSkin(pc, RevertToDefault: true, ForceRevert: true);
+        }, 0.3f, "Set player to normal");
+        IsRevealed = false;
+    }
+
+    private static void SyncAirshipKC(PlayerControl pc) // Sync killcooldowns for Airshit.
+    {
         if (GameStates.AirshipIsActive && !SetUpForAirship)
         {
+            var CheckRange = Vector2.Distance(pc.GetTruePosition(), new(-25, 40));
+
             // Check if the player is not within the specified range.
-            if (Vector2.Distance(pc.GetTruePosition(), new(-25, 40)) > 2.0f && !IsInMeeting)
+            if (CheckRange > 5.0f && !IsInMeeting)
             {
                 _ = new LateTask(() =>
                 {
+                    if (CheckRange < 5.0f) return;
                     RealTimeKillCooldown = KillCooldown.GetFloat();
                     SelfTarget.SetKillCooldown(RealTimeKillCooldown);
-                }, 0.5f, "Sync killcooldowns");
+                }, 1f, "Sync killcooldowns");
                 SetUpForAirship = true;
             }
-        }
-
-        if (RealTimeKillCooldown >= 0 && !pc.inVent) RealTimeKillCooldown -= Time.deltaTime;
-
-        if (RealTimeKillCooldown <= 0) // Set as seeker.
-        {
-            if (IsRevealed) return;
-            pc.MyPhysics.SetBodyType(PlayerBodyTypes.Seeker);
-            pc.RpcSetVisor("visor_Mouth");
-            pc.RpcSetSkin("");
-            pc.KillFlash();
-            RPC.PlaySoundRPC(pc.PlayerId, Sounds.ImpTransform);
-            IsRevealed = true;
-        }
-        else // Set as Normal.
-        {
-            if (!IsRevealed) return;
-            pc.MyPhysics.SetBodyType(PlayerBodyTypes.Normal);
-            Camouflage.RpcSetSkin(pc, RevertToDefault: true, ForceRevert: true);
-            IsRevealed = false;
         }
     }
 
