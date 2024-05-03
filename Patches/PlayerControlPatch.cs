@@ -831,7 +831,7 @@ class ReportDeadBodyPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            if (!Doppelganger.CheckDoppelVictim(pc.PlayerId))
+            if (!Doppelganger.CheckDoppelVictim(pc.PlayerId) && !Murderer.CheckMurdererVictim(pc.PlayerId))
             {
                 if (target != null && Murderer.CheckMurdererVictim(target.PlayerId)) return;
                 
