@@ -1,3 +1,4 @@
+using Hazel;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
@@ -86,8 +87,7 @@ internal class Amateur : RoleBase
         return true;
     }
 
-    // Calculate closest alive player distance to killcooldown.
-    private static float GetClosestPlayerDistance()
+    private static float GetClosestPlayerDistance() // Calculate closest alive player distance to killcooldown.
     {
         if (SelfTarget == null) return KillCooldown.GetFloat();
 
@@ -189,13 +189,13 @@ internal class Amateur : RoleBase
         || pc.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
         || Pelican.IsEaten(pc.PlayerId)) return;
 
+        RedFlash(pc);
+        RPC.PlaySoundRPC(pc.PlayerId, Sounds.ImpTransform);
         var SaveFlipX = pc.MyPhysics.FlipX;
         pc.MyPhysics.SetBodyType(PlayerBodyTypes.Seeker);
         pc.MyPhysics.FlipX = SaveFlipX;
         pc.RpcSetVisor("visor_Mouth");
         pc.RpcSetSkin("");
-        pc.KillFlash();
-        RPC.PlaySoundRPC(pc.PlayerId, Sounds.ImpTransform);
         IsRevealed = true;
     }
 
@@ -212,6 +212,33 @@ internal class Amateur : RoleBase
             Camouflage.RpcSetSkin(pc, RevertToDefault: true, ForceRevert: true);
         }, 0.3f, "Set player to normal");
         IsRevealed = false;
+    }
+
+    private static void RedFlash(PlayerControl pc) // Red flash on screen.
+    {
+        // Kill flash (blackout flash + reactor flash)
+        bool ReactorCheck = Utils.IsActive(Utils.GetCriticalSabotageSystemType());
+
+        var Duration = 0.25f;
+        if (ReactorCheck) Duration += 0.2f;
+
+        Main.PlayerStates[pc.PlayerId].IsBlackOut = true;
+        if (pc.AmOwner)
+        {
+            Utils.FlashColor(new(1f, 0f, 0f, 0.3f));
+        }
+        else if (pc.IsModClient())
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KillFlash, SendOption.Reliable, pc.GetClientId());
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        else if (!ReactorCheck) pc.ReactorFlash(0f);
+        pc.MarkDirtySettings();
+        _ = new LateTask(() =>
+        {
+            Main.PlayerStates[pc.PlayerId].IsBlackOut = false;
+            pc.MarkDirtySettings();
+        }, Duration, "Remove Red Flash");
     }
 
     private static void SyncAirshipKC(PlayerControl pc) // Sync killcooldowns for Airshit.
