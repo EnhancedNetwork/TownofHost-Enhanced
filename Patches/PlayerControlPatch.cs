@@ -831,10 +831,8 @@ class ReportDeadBodyPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            if (!Doppelganger.CheckDoppelVictim(pc.PlayerId) && !Murderer.CheckMurdererVictim(pc.PlayerId))
-            {
-                if (target != null && Murderer.CheckMurdererVictim(target.PlayerId)) return;
-                
+            if (!Doppelganger.CheckDoppelVictim(pc.PlayerId))
+            {           
                 // Update skins again, since players have different skins
                 // And can be easily distinguished from each other
                 if (Camouflage.IsCamouflage && Options.KPDCamouflageMode.GetValue() is 2 or 3)
