@@ -168,14 +168,17 @@ internal class Amateur : RoleBase
         // Sync killcooldowns for Airshit.
         if (GameStates.AirshipIsActive && !SetUpForAirship)
         {
+            var CheckRange = Vector2.Distance(pc.GetTruePosition(), new(-25, 40));
+
             // Check if the player is not within the specified range.
-            if (Vector2.Distance(pc.GetTruePosition(), new(-25, 40)) > 2.0f && !IsInMeeting)
+            if (CheckRange > 5.0f && !IsInMeeting)
             {
                 _ = new LateTask(() =>
                 {
+                    if (CheckRange < 5.0f) return;
                     RealTimeKillCooldown = KillCooldown.GetFloat();
                     SelfTarget.SetKillCooldown(RealTimeKillCooldown);
-                }, 0.5f, "Sync killcooldowns");
+                }, 1f, "Sync killcooldowns");
                 SetUpForAirship = true;
             }
         }
@@ -192,7 +195,9 @@ internal class Amateur : RoleBase
             || pc.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
             || Pelican.IsEaten(pc.PlayerId)) return;
             
+            var SaveFlipX = pc.MyPhysics.FlipX;
             pc.MyPhysics.SetBodyType(PlayerBodyTypes.Seeker);
+            pc.MyPhysics.FlipX = SaveFlipX;
             pc.RpcSetVisor("visor_Mouth");
             pc.RpcSetSkin("");
             pc.KillFlash();
@@ -205,7 +210,9 @@ internal class Amateur : RoleBase
             if (pc.inVent || pc.walkingToVent) return;
             _ = new LateTask(() =>
             {
+                var SaveFlipX = pc.MyPhysics.FlipX;
                 pc.MyPhysics.SetBodyType(PlayerBodyTypes.Normal);
+                pc.MyPhysics.FlipX = SaveFlipX;
                 Camouflage.RpcSetSkin(pc, RevertToDefault: true, ForceRevert: true);
             }, 0.3f, "Set player to normal");
             IsRevealed = false;
