@@ -24,7 +24,6 @@ internal class Amateur : RoleBase
     public static OptionItem IncreaseKillCooldownOnVent;
     public static OptionItem IncreaseKillCooldownAmount;
     public static OptionItem SetKillCooldownOffDistance;
-    private System.IntPtr NativeMethodInfoPtr_RpcShapeshift_Public_Void_PlayerControl_Boolean_0;
 
     public override void SetupCustomOption()
     {
