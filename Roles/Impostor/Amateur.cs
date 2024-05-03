@@ -185,6 +185,13 @@ internal class Amateur : RoleBase
         if (RealTimeKillCooldown <= 0) // Set as seeker.
         {
             if (IsRevealed) return;
+
+            if (pc.inMovingPlat && GameStates.FungleIsActive // Make sure that the player is not in certain states to reveal.
+            || pc.MyPhysics.Animations.IsPlayingEnterVentAnimation()
+            || pc.onLadder
+            || pc.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
+            || Pelican.IsEaten(pc.PlayerId)) return;
+            
             pc.MyPhysics.SetBodyType(PlayerBodyTypes.Seeker);
             pc.RpcSetVisor("visor_Mouth");
             pc.RpcSetSkin("");
