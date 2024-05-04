@@ -10,11 +10,12 @@ internal class ShapeMaster : RoleBase // Should be deleted tbh, because it's lit
     public static bool HasEnabled => Playerids.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
 
     private static OptionItem ShapeMasterShapeshiftDuration;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.ShapeMaster);
         ShapeMasterShapeshiftDuration = FloatOptionItem.Create(Id + 2, "ShapeshiftDuration", new(1, 60, 1), 10, TabGroup.ImpostorRoles, false)

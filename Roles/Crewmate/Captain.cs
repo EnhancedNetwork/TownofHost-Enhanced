@@ -13,6 +13,7 @@ internal class Captain : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
 
     private static OptionItem OptionCrewCanFindCaptain;
@@ -30,7 +31,7 @@ internal class Captain : RoleBase
     private static readonly Dictionary<byte, float> OriginalSpeed = [];
     private static readonly Dictionary<byte, List<byte>> CaptainVoteTargets = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Captain);
         OptionCrewCanFindCaptain = BooleanOptionItem.Create(Id + 11, "CrewCanFindCaptain", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);

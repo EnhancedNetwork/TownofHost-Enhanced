@@ -12,13 +12,14 @@ internal class Terrorist : RoleBase
     public static bool HasEnabled = PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
     public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public static OptionItem CanTerroristSuicideWin;
     public static OptionItem TerroristCanGuess;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
 
         SetupRoleOptions(15400, TabGroup.NeutralRoles, CustomRoles.Terrorist);

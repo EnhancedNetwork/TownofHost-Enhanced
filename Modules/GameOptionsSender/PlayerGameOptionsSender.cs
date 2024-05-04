@@ -95,7 +95,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             }
         }
 
-        if (player.GetCustomRole().GetCustomRoleTypes() is CustomRoleTypes.Impostor)
+        if (player.Is(Custom_Team.Impostor))
         {
             AURoleOptions.ShapeshifterCooldown = Options.DefaultShapeshiftCooldown.GetFloat();
             opt.SetVision(true);

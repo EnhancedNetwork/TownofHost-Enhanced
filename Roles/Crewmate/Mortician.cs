@@ -14,6 +14,7 @@ internal class Mortician : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem ShowArrows;
@@ -21,7 +22,7 @@ internal class Mortician : RoleBase
     private static readonly Dictionary<byte, string> lastPlayerName = [];
     private static readonly Dictionary<byte, string> msgToSend = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mortician);
         ShowArrows = BooleanOptionItem.Create(Id + 2, "ShowArrows", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mortician]);

@@ -16,6 +16,7 @@ internal class FortuneTeller : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem CheckLimitOpt;
@@ -32,7 +33,7 @@ internal class FortuneTeller : RoleBase
     private static readonly Dictionary<byte, HashSet<byte>> targetList = [];
 
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.FortuneTeller);
         CheckLimitOpt = IntegerOptionItem.Create(Id + 10, "FortuneTellerSkillLimit", new(0, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.FortuneTeller])
@@ -243,8 +244,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Fireworker,
                 CustomRoles.RuthlessRomantic,
                 CustomRoles.VengefulRomantic,
-                CustomRoles.Lookout,
-                CustomRoles.Nuker],
+                CustomRoles.Lookout],
                 
                 [CustomRoles.BountyHunter,
                 CustomRoles.Detective,
@@ -333,7 +333,6 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Gangster,
                 CustomRoles.Godfather,
                 CustomRoles.Glitch,
-                //CustomRoles.Luckey,
                 CustomRoles.Underdog],
                 
                 [CustomRoles.EvilGuesser,
@@ -403,7 +402,6 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.TimeThief,
                 CustomRoles.ShapeMaster,
                 CustomRoles.Werewolf,
-                CustomRoles.Vampiress,
                 CustomRoles.Sniper],
                 
                 [CustomRoles.Puppeteer,

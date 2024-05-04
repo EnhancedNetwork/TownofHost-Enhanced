@@ -96,8 +96,8 @@ internal class Snitch : RoleBase
     }
 
     private static bool IsSnitchTarget(PlayerControl target)
-        => HasEnabled && (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsNeutralKiller() && CanFindNeutralKiller) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate) || (target.IsNeutralApocalypse() && CanFindNeutralApocalypse));
-
+        => HasEnabled && (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsNeutralKiller() && CanFindNeutralKiller) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
+    
     private static void CheckTask(PlayerControl snitch)
     {
         if (!snitch.IsAlive() || snitch.Is(CustomRoles.Madmate)) return;

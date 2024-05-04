@@ -8,7 +8,6 @@ using static TOHE.Roles.Core.CustomRoleManager;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using System;
-using static Il2CppSystem.Linq.Expressions.DebugViewWriter;
 
 namespace TOHE;
 
@@ -36,8 +35,8 @@ public static class CustomRolesHelper
     }
 
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
-        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor() 
-            ? RoleTypes.Impostor
+        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor() || role is CustomRoles.Killer // FFA
+            ? RoleTypes.Impostor 
             : RoleTypes.GuardianAngel;
 
 
@@ -68,7 +67,7 @@ public static class CustomRolesHelper
             CustomRoles.EvilSpirit;
 
     }
-
+    
     /*
     public static bool IsExperimental(this CustomRoles role)
     {
@@ -82,6 +81,7 @@ public static class CustomRolesHelper
 
     // Add-ons
     public static bool IsAdditionRole(this CustomRoles role) => role > CustomRoles.NotAssigned;
+
     public static bool IsAmneMaverick(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
         return role is
@@ -255,17 +255,17 @@ public static class CustomRolesHelper
     }
     public static bool IsNB(this CustomRoles role)
     {
-        return role is
+        return role.GetStaticRoleClass().ThisRoleType
             is Custom_RoleType.NeutralBenign;
     }
     public static bool IsNE(this CustomRoles role)
     {
-        return role is
+        return role.GetStaticRoleClass().ThisRoleType
             is Custom_RoleType.NeutralEvil;
     }
     public static bool IsNC(this CustomRoles role)
     {
-        return role is
+        return role.GetStaticRoleClass().ThisRoleType
             is Custom_RoleType.NeutralChaos;
     }
     public static bool IsImpostor(this CustomRoles role) // IsImp
@@ -277,6 +277,7 @@ public static class CustomRolesHelper
             Custom_RoleType.ImpostorConcealing or
             Custom_RoleType.ImpostorHindering or
             Custom_RoleType.ImpostorGhosts) return true;
+
         return role is
             CustomRoles.Impostor or
             CustomRoles.Shapeshifter;
@@ -692,7 +693,6 @@ public static class CustomRolesHelper
 
             case CustomRoles.Lucky:
                 if (pc.Is(CustomRoles.Guardian)
-                    || pc.Is(CustomRoles.Veteran)
                     || pc.Is(CustomRoles.Unlucky)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Fragile))
@@ -792,7 +792,6 @@ public static class CustomRolesHelper
             case CustomRoles.TicketsStealer:
                 if (pc.Is(CustomRoles.Vindicator)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.VoidBallot))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())

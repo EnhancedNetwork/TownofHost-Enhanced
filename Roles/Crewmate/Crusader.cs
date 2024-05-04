@@ -13,6 +13,7 @@ internal class Crusader : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
     private static OptionItem SkillLimitOpt;
@@ -22,7 +23,7 @@ internal class Crusader : RoleBase
     private static readonly Dictionary<byte, int> CrusaderLimit = [];
     private static readonly Dictionary<byte, float> CurrentKillCooldown = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Crusader);
         SkillCooldown = FloatOptionItem.Create(Id + 10, "CrusaderSkillCooldown", new(2.5f, 180f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Crusader])

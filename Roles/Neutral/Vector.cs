@@ -14,14 +14,15 @@ internal class Vector : RoleBase
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
-    
+
     private static OptionItem VectorVentNumWin;
     private static OptionItem VectorVentCD;
 
     private static readonly Dictionary<byte, int> VectorVentCount = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(15500, TabGroup.NeutralRoles, CustomRoles.Vector);
         VectorVentNumWin = IntegerOptionItem.Create(15502, "VectorVentNumWin", new(5, 500, 5), 40, TabGroup.NeutralRoles, false)

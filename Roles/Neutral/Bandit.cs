@@ -14,6 +14,7 @@ internal class Bandit : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
     private static OptionItem KillCooldownOpt;
@@ -35,7 +36,7 @@ internal class Bandit : RoleBase
         BanditStealMode_Instantly
     }
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Bandit);
         MaxSteals = IntegerOptionItem.Create(Id + 10, "BanditMaxSteals", new(1, 20, 1), 6, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
@@ -176,12 +177,18 @@ internal class Bandit : RoleBase
         if (SelectedAddOn == null || flag) // no stealable addons found on the target.
         {
             killer.Notify(Translator.GetString("Bandit_NoStealableAddons"));
+            killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return true;
         }
         if (TotalSteals[killer.PlayerId] >= MaxSteals.GetInt())
         {
             Logger.Info("Max steals reached killing the player", "Bandit");
             TotalSteals[killer.PlayerId] = MaxSteals.GetInt();
+            killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return true;
         }
 
@@ -189,6 +196,8 @@ internal class Bandit : RoleBase
         {
             // Double click
             killCooldown[killer.PlayerId] = KillCooldownOpt.GetFloat();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return true;
         }
         else

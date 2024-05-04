@@ -14,6 +14,7 @@ internal class RiftMaker : RoleBase
     public static bool HasEnabled => Playerids.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
 
     private static OptionItem SSCooldown;
@@ -26,7 +27,7 @@ internal class RiftMaker : RoleBase
     private static readonly Dictionary<byte, long> LastTP = [];
     private static float TPCooldown = new();
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.RiftMaker);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker])

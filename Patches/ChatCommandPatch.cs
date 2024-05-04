@@ -697,9 +697,11 @@ internal class ChatCommands
                     {
                         player.Data.IsDead = true;
                         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.etc;
+                        player.SetRealKiller(PlayerControl.LocalPlayer);
                         Main.PlayerStates[player.PlayerId].SetDead();
                         player.RpcExileV2();
-                       
+                        MurderPlayerPatch.AfterPlayerDeathTasks(PlayerControl.LocalPlayer, player, GameStates.IsMeeting);
+
                         if (player.AmOwner) Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
                         else Utils.SendMessage(string.Format(GetString("Message.Executed"), player.Data.PlayerName));
                     }
@@ -1460,7 +1462,7 @@ internal class ChatCommands
                     if (isUp) return;
                 }
                 var Des = rl.GetInfoLong();
-                var title = $"<color=#ffffff>" + rl.GetRoleTitle() + "</color>\n";
+                var title = devMark + $"<color=#ffffff>" + rl.GetRoleTitle() + "</color>\n";
                 var Conf = new StringBuilder();
                 string rlHex = Utils.GetRoleColorCode(rl);
                 if (Options.CustomRoleSpawnChances.ContainsKey(rl))

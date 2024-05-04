@@ -15,6 +15,7 @@ internal class Mechanic : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem SkillLimit;
@@ -31,7 +32,7 @@ internal class Mechanic : RoleBase
 
     private static bool DoorsProgressing = false;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mechanic);
         SkillLimit = IntegerOptionItem.Create(Id + 10, "MechanicSkillLimit", new(0, 100, 1), 10, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mechanic])
@@ -127,20 +128,20 @@ internal class Mechanic : RoleBase
                 if (mapId == 2)
                 {
                     //Polus
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 71, 72);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 67, 68);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 64, 66);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 73, 74);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 71, 72);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 67, 68);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 64, 66);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 73, 74);
                 }
                 else if (mapId == 4)
                 {
                     //Airship
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 64, 67);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 71, 73);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 74, 75);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 76, 78);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 68, 70);
-                    RepairSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 83, 84);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 64, 67);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 71, 73);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 74, 75);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 76, 78);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 68, 70);
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 83, 84);
                 }
                 DoorsProgressing = false;
                 break;

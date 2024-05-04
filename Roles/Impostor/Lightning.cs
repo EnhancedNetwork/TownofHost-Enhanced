@@ -15,6 +15,7 @@ internal class Lightning : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
 
     private static OptionItem KillCooldown;
@@ -24,7 +25,7 @@ internal class Lightning : RoleBase
     private static readonly List<byte> GhostPlayer = [];
     private static readonly Dictionary<byte, PlayerControl> RealKiller = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Lightning);
         KillCooldown = FloatOptionItem.Create(Id + 10, "LightningKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lightning])

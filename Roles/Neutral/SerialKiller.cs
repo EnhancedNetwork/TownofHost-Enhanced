@@ -11,6 +11,7 @@ internal class SerialKiller : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
     private static OptionItem KillCooldown;
@@ -19,7 +20,7 @@ internal class SerialKiller : RoleBase
     private static OptionItem HasSerialKillerBuddy;
     //private static OptionItem ChanceToSpawn;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.SerialKiller, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller])

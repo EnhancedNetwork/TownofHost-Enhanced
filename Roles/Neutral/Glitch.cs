@@ -13,6 +13,7 @@ internal class Glitch : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
     private static readonly Dictionary<byte, long> hackedIdList = [];
@@ -35,7 +36,7 @@ internal class Glitch : RoleBase
 
     private static bool isShifted = false;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         //Glitchは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Glitch, 1, zeroOne: false);

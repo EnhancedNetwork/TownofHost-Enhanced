@@ -19,8 +19,6 @@ class CheckForEndVotingPatch
     public static bool Prefix(MeetingHud __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
-        
-        if (Medic.HasEnabled) Medic.OnCheckMark();
 
         //Meeting Skip with vote counting on keystroke (m + delete)
         var shouldSkip = false;
@@ -469,6 +467,7 @@ class CheckForEndVotingPatch
             Main.DoBlockNameChange = true;
             if (GameStates.IsInGame)
             {
+                GameData.Instance.UpdateName(exiledPlayer.PlayerId, name, false);
                 player.RpcSetName(name);
             }
         }, 3.0f, "Change Exiled Player Name");
@@ -484,6 +483,7 @@ class CheckForEndVotingPatch
             if (GameStates.IsInGame && player.Data.Disconnected)
             {
                 player.Data.PlayerName = realName;
+                GameData.Instance.UpdateName(exiledPlayer.PlayerId, realName, false);
                 //Await Next Send Data or Next Meeting
             }
         }, 11.5f, "Change Exiled Player Name Back");
@@ -1119,9 +1119,10 @@ class MeetingHudUpdatePatch
                 if (player != null && !player.Data.IsDead)
                 {
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Execution;
+                    player.SetRealKiller(PlayerControl.LocalPlayer);
                     player.RpcExileV2();
                     Main.PlayerStates[player.PlayerId].SetDead();
-
+                    MurderPlayerPatch.AfterPlayerDeathTasks(PlayerControl.LocalPlayer, player, GameStates.IsMeeting);
                     Utils.SendMessage(string.Format(GetString("Message.Executed"), player.Data.PlayerName));
                     Logger.Info($"{player.GetNameWithRole()} was executed", "Execution");
                     __instance.CheckForEndVoting();

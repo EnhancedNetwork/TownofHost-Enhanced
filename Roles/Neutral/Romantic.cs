@@ -16,6 +16,7 @@ internal class Romantic : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
     private static readonly int MaxBetTimes = 1;
@@ -37,7 +38,7 @@ internal class Romantic : RoleBase
     private static readonly Dictionary<byte, int> BetTimes = [];
     public static readonly Dictionary<byte, byte> BetPlayer = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Romantic, 1, zeroOne: false);
         BetCooldown = FloatOptionItem.Create(Id + 10, "RomanticBetCooldown", new(0f, 60f, 1f), 7f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic])
@@ -280,7 +281,8 @@ internal class VengefulRomantic : RoleBase
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
-    public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase; 
+    public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
+    public override Custom_RoleType ThisRoleType => new Romantic().ThisRoleType;
     //==================================================================\\
 
     public static bool hasKilledKiller = false;
@@ -355,7 +357,7 @@ internal class RuthlessRomantic : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
-
+    public override Custom_RoleType ThisRoleType => new Romantic().ThisRoleType;
     //==================================================================\\
     public override void Init()
     {

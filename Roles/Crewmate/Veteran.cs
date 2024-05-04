@@ -17,6 +17,7 @@ internal class Veteran : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
     private static OptionItem VeteranSkillCooldown;
@@ -27,7 +28,7 @@ internal class Veteran : RoleBase
     private static readonly Dictionary<byte, long> VeteranInProtect = [];
     private static readonly Dictionary<byte, float> VeteranNumOfUsed = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Veteran);
         VeteranSkillCooldown = FloatOptionItem.Create(Id + 10, "VeteranSkillCooldown", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
@@ -104,6 +105,14 @@ internal class Veteran : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
+        // Ability use limit reached
+        if (VeteranNumOfUsed[pc.PlayerId] <= 0)
+        {
+            pc.Notify(GetString("VeteranMaxUsage"));
+            return;
+        }
+
+        // Use ability
         if (!VeteranInProtect.ContainsKey(pc.PlayerId))
         {
             VeteranInProtect.Remove(pc.PlayerId);
@@ -113,7 +122,6 @@ internal class Veteran : RoleBase
             pc.RPCPlayCustomSound("Gunload");
             pc.Notify(GetString("VeteranOnGuard"), VeteranSkillDuration.GetFloat());
         }
-        if (VeteranNumOfUsed[pc.PlayerId] >= 0) pc.Notify(GetString("VeteranMaxUsage"));
     }
     public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
         => VeteranNumOfUsed.TryGetValue(physics.myPlayer.PlayerId, out var count) && count < 1;

@@ -8,12 +8,13 @@ internal class Vindicator : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
 
     private static OptionItem VindicatorAdditionalVote;
     private static OptionItem VindicatorHideVote;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Vindicator);
         VindicatorAdditionalVote = IntegerOptionItem.Create(Id + 2, "MayorAdditionalVote", new(1, 20, 1), 3, TabGroup.ImpostorRoles, false)

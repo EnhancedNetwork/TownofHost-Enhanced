@@ -16,6 +16,7 @@ internal class Solsticer : RoleBase
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => SolsticerCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
 
     private static OptionItem EveryOneKnowSolsticer;
@@ -34,7 +35,7 @@ internal class Solsticer : RoleBase
     private static bool CanGuess = true;
     private static string MurderMessage = string.Empty;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Solsticer, 1);
         EveryOneKnowSolsticer = BooleanOptionItem.Create(Id + 10, "EveryOneKnowSolsticer", true, TabGroup.NeutralRoles, false)

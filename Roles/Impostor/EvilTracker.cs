@@ -15,6 +15,7 @@ internal class EvilTracker : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => (TargetMode)OptionTargetMode.GetValue() == TargetMode.Never ? CustomRoles.Impostor : CustomRoles.Shapeshifter;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Track");
 
@@ -45,7 +46,7 @@ internal class EvilTracker : RoleBase
         "EvilTrackerTargetMode.Always",
     ];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.EvilTracker);
         OptionCanSeeKillFlash = BooleanOptionItem.Create(Id + 10, "EvilTrackerCanSeeKillFlash", true, TabGroup.ImpostorRoles, false)
@@ -77,7 +78,7 @@ internal class EvilTracker : RoleBase
         foreach (var target in Main.AllAlivePlayerControls)
         {
             var targetId = target.PlayerId;
-            if (targetId != playerId && target.Is(CustomRoleTypes.Impostor))
+            if (targetId != playerId && target.Is(Custom_Team.Impostor))
             {
                 ImpostorsId[playerId].Add(targetId);
                 TargetArrow.Add(playerId, targetId);
@@ -106,11 +107,11 @@ internal class EvilTracker : RoleBase
     public static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
         && target.IsAlive() && seer != target
-        && (target.Is(CustomRoleTypes.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
+        && (target.Is(Custom_Team.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
 
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (target.Is(CustomRoleTypes.Impostor) || !CanTarget(shapeshifter.PlayerId)) return false;
+        if (target.Is(Custom_Team.Impostor) || !CanTarget(shapeshifter.PlayerId)) return false;
 
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
 

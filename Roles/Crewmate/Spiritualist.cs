@@ -12,6 +12,7 @@ internal class Spiritualist : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem ShowGhostArrowEverySeconds;
@@ -21,7 +22,7 @@ internal class Spiritualist : RoleBase
     private static readonly Dictionary<byte, long> ShowGhostArrowUntil = [];
     private static readonly Dictionary<byte, long> LastGhostArrowShowTime = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Spiritualist);
         ShowGhostArrowEverySeconds = FloatOptionItem.Create(Id + 10, "SpiritualistShowGhostArrowEverySeconds", new(1f, 60f, 1f), 15f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritualist])

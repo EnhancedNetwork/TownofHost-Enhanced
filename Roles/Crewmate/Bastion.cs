@@ -16,6 +16,7 @@ internal class Bastion : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
     private static OptionItem BombsClearAfterMeeting;
@@ -26,7 +27,7 @@ internal class Bastion : RoleBase
     private static readonly HashSet<int> BombedVents = [];
     private static float BastionNumberOfAbilityUses = 0;
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Bastion, 1);
         BombsClearAfterMeeting = BooleanOptionItem.Create(Id + 10, "BombsClearAfterMeeting", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bastion]);

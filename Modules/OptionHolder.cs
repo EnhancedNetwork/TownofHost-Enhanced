@@ -631,7 +631,6 @@ public static class Options
         ImpsCanSeeEachOthersAddOns = BooleanOptionItem.Create(60002, "ImpsCanSeeEachOthersAddOns", true, TabGroup.ImpostorRoles, false)
             .SetParent(ImpsCanSeeEachOthersRoles);
 
-
         Madmate.SetupMenuOptions();
 
         //MadmateCanFixSabotage = BooleanOptionItem.Create(50010, "MadmateCanFixSabotage", false, TabGroup.ImpostorRoles, false)
@@ -769,7 +768,7 @@ public static class Options
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateBasic).ForEach(r => r.SetupCustomOption());
 
         /*
-         * MINI
+         * MINI 
          */
         CustomRoles.Mini.GetStaticRoleClass().SetupCustomOption();
 
@@ -1037,6 +1036,7 @@ public static class Options
 
         CustomRoleManager.GetExperimentalOptions(Custom_Team.Crewmate).ForEach(r => r.SetupCustomOption());
 
+        // Neutral roles
         TextOptionItem.Create(10000022, "OtherRoles.NeutralRoles", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));

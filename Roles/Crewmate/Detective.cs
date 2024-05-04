@@ -12,13 +12,14 @@ internal class Detective : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem DetectiveCanknowKiller;
 
     private static readonly Dictionary<byte, string> DetectiveNotify = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Detective);
         DetectiveCanknowKiller = BooleanOptionItem.Create(7902, "DetectiveCanknowKiller", true, TabGroup.CrewmateRoles, false)
@@ -35,16 +36,17 @@ internal class Detective : RoleBase
     {
         playerIdList.Add(playerId);
     }
-    public override void OnReportDeadBody(PlayerControl player, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl player, PlayerControl deadBody)
     {
-        var tpc = target;
-        if (player.Is(CustomRoles.Detective) && player.PlayerId != target.PlayerId)
+        if (deadBody == null || deadBody.IsAlive()) return;
+
+        if (player != null && player.Is(CustomRoles.Detective) && player != deadBody)
         {
             string msg;
-            msg = string.Format(GetString("DetectiveNoticeVictim"), tpc.GetRealName(), tpc.GetDisplayRoleAndSubName(tpc, false));
+            msg = string.Format(GetString("DetectiveNoticeVictim"), deadBody.GetRealName(), deadBody.GetDisplayRoleAndSubName(deadBody, false));
             if (DetectiveCanknowKiller.GetBool())
             {
-                var realKiller = tpc.GetRealKiller();
+                var realKiller = deadBody.GetRealKiller();
                 if (realKiller == null) msg += "；" + GetString("DetectiveNoticeKillerNotFound");
                 else msg += "；" + string.Format(GetString("DetectiveNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false));
             }

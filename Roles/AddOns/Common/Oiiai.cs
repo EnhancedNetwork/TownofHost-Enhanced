@@ -7,7 +7,7 @@ namespace TOHE.Roles.AddOns.Common;
 public static class Oiiai
 {
     private const int Id = 25700;
-    public static List<byte> playerIdList = [];
+    private readonly static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem CanBeOnCrew;
@@ -16,13 +16,12 @@ public static class Oiiai
     private static OptionItem CanPassOn;
     private static OptionItem ChangeNeutralRole;
 
-    public static readonly string[] NChangeRoles =
-    [
-        "Role.NoChange",
-        "Role.Amnesiac",
-        "Role.Imitator",
-        //   CustomRoles.Crewmate.ToString(), CustomRoles.Jester.ToString(), CustomRoles.Opportunist.ToString(),
-    ];
+    private enum ChangeRolesSelect
+    {
+        Role_NoChange,
+        Role_Amnesiac,
+        Role_Imitator
+    }
 
     public static readonly CustomRoles[] NRoleChangeRoles =
     [
@@ -37,7 +36,7 @@ public static class Oiiai
         CanBeOnCrew = BooleanOptionItem.Create(Id + 12, "CrewCanBeOiiai", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
         CanBeOnNeutral = BooleanOptionItem.Create(Id + 13, "NeutralCanBeOiiai", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
         CanPassOn = BooleanOptionItem.Create(Id + 14, "OiiaiCanPassOn", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
-        ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", NChangeRoles, 1, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
+        ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", EnumHelper.GetAllNames<ChangeRolesSelect>(), 1, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
     }
     public static void Init()
     {

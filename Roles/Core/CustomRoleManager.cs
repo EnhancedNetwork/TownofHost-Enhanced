@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using HarmonyLib;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -13,11 +14,49 @@ namespace TOHE.Roles.Core;
 public static class CustomRoleManager
 {
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
-    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new VanillaRole(); 
+    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup(); 
     public static List<RoleBase> AllEnabledRoles => RoleClass.Values.Where(x => x.IsEnable).ToList();
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
+    public static List<RoleBase> GetNormalOptions(Custom_RoleType type)
+    {
+        List<RoleBase> roles = [];
+        foreach (var role in RoleClass.Values)
+        {
+            if (IsOptBlackListed(role.GetType()) || role.IsExperimental) continue;
+
+            if (role.ThisRoleType == type)
+            {
+                roles.Add(role);
+            }
+        }
+        return roles;
+    }
+    public static List<RoleBase> GetExperimentalOptions(Custom_Team team)
+    {
+        List<RoleBase> roles = [];
+        switch (team)
+        {
+            case Custom_Team.Crewmate:
+                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCrewmate()).Select(r => r.Value).ToList();
+                break;
+
+            case Custom_Team.Impostor:
+                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsImpostorTeam()).Select(r => r.Value).ToList();
+                break;
+
+            case Custom_Team.Neutral:
+                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsNeutralTeamV2()).Select(r => r.Value).ToList();
+                break;
+
+            default:
+                Logger.Info("Unsupported team was sent.", "GetExperimentalOptions");
+                break;
+        }
+        return roles;
+    }
+    public static bool IsOptBlackListed(this Type role) => CustomRolesHelper.DuplicatedRoles.ContainsValue(role);
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
-    public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
+    public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new DefaultSetup();
 
     public static RoleBase CreateRoleClass(this CustomRoles role) 
     {
@@ -44,26 +83,11 @@ public static class CustomRoleManager
             AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
         }
 
+        // Set Impostor vision
+        opt.SetVision(false);
+
         player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
 
-        switch (role)
-        {
-            case CustomRoles.ShapeshifterTOHE:
-                AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
-                break;
-            case CustomRoles.ScientistTOHE:
-                AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
-                AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
-                break;
-            case CustomRoles.EngineerTOHE:
-                AURoleOptions.EngineerCooldown = 0f;
-                AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            default:
-                opt.SetVision(false);
-                break;
-        }
 
         if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
         if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
@@ -120,12 +144,16 @@ public static class CustomRoleManager
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
 
+        Logger.Info("Start", "ForcedCheckMurderAsKiller");
+
         // Forced check
         if (killerRoleClass.ForcedCheckMurderAsKiller(killer, target) == false)
         {
             Logger.Info("Cancels because for killer no need kill target", "ForcedCheckMurderAsKiller");
             return false;
         }
+
+        Logger.Info("Start", "OnCheckMurder.RpcCheckAndMurder");
 
         // Check in target
         if (killer.RpcCheckAndMurder(target, true) == false)
@@ -134,12 +162,14 @@ public static class CustomRoleManager
             return false;
         }
 
+        Logger.Info("Start foreach", "KillerSubRoles");
+
         if (killerSubRoles.Any())
             foreach (var killerSubRole in killerSubRoles.ToArray())
             {
                 switch (killerSubRole)
                 {
-                    case CustomRoles.Madmate when target.Is(CustomRoleTypes.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
+                    case CustomRoles.Madmate when target.Is(Custom_Team.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
                     case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTargets:
                     case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
                         return false;
@@ -150,7 +180,7 @@ public static class CustomRoleManager
                         break;
 
                     case CustomRoles.Unlucky:
-                        Unlucky.SuicideRand(killer);
+                        Unlucky.SuicideRand(killer, Unlucky.StateSuicide.TryKill);
                         if (Unlucky.UnluckCheck[killer.PlayerId]) return false;
                         break;
 
@@ -170,8 +200,10 @@ public static class CustomRoleManager
                 }
             }
 
+        Logger.Info("Start", "OnCheckMurderAsKiller");
+
         // Check murder as killer
-        if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
+        if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
         {
             Logger.Info("Cancels because for killer no need kill target", "OnCheckMurderAsKiller");
             return false;
@@ -327,6 +359,9 @@ public static class CustomRoleManager
     public static HashSet<Func<PlayerControl, PlayerControl, bool, bool, string>> LowerOthers = [];
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> SuffixOthers = [];
 
+    /// <summary>
+    /// If seer == seen then GetMarkOthers called from FixedUpadte or MeetingHud (for Host)
+    /// </summary>
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (!MarkOthers.Any()) return string.Empty;
@@ -339,6 +374,9 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+    /// <summary>
+    /// If seer == seen then GetMarkOthers called from FixedUpadte (for Host)
+    /// </summary>
     public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         if (!LowerOthers.Any()) return string.Empty;
@@ -351,6 +389,9 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+    /// <summary>
+    /// If seer == seen then GetMarkOthers called from FixedUpadte or MeetingHud (for Host)
+    /// </summary>
     public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (!SuffixOthers.Any()) return string.Empty;

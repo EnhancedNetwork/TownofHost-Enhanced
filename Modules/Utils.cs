@@ -306,7 +306,11 @@ public static class Utils
     public static string GetRoleTitle(this CustomRoles role)
     {
         string ColorName = ColorString(GetRoleColor(role), GetString($"{role}"));
-        return $"{ColorName} {GetRoleMode(role)}";
+        
+        string chance = GetRoleMode(role);
+        if (role.IsAdditionRole() && !role.IsEnable()) chance = ColorString(Color.red, "(OFF)");
+        
+        return $"{ColorName} {chance}";
     }
     public static string GetInfoLong(this CustomRoles role) 
     {
@@ -482,28 +486,30 @@ public static class Utils
         return deathReason;
     }
 
-    public static bool HasTasks(GameData.PlayerInfo p, bool ForRecompute = true)
+    public static bool HasTasks(GameData.PlayerInfo playerData, bool ForRecompute = true)
     {
         if (GameStates.IsLobby) return false;
 
         //Tasks may be null, in which case no task is assumed
-        if (p.Tasks == null) return false;
-        if (p.Role == null) return false;
+        if (playerData.Tasks == null) return false;
+        if (playerData.Role == null) return false;
 
         var hasTasks = true;
-        var States = Main.PlayerStates[p.PlayerId];
-        if (p.Disconnected) return false;
-        if (p.Role.IsImpostor)
+        var States = Main.PlayerStates[playerData.PlayerId];
+
+        //
+        if (playerData.Disconnected) return false;
+        if (playerData.Role.IsImpostor)
             hasTasks = false; //Tasks are determined based on CustomRole
 
         if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
-        if (p.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
+        if (playerData.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
         
         if (GameStates.IsHideNSeek) return hasTasks;
 
         var role = States.MainRole;
 
-        if (!States.RoleClass.HasTasks(p, role, ForRecompute))
+        if (!States.RoleClass.HasTasks(playerData, role, ForRecompute))
             hasTasks = false;
 
         switch (role)
@@ -511,12 +517,10 @@ public static class Utils
             case CustomRoles.GM:
                 hasTasks = false;
                 break;
-            case CustomRoles.Sunnyboy:
-                if (ForRecompute)
-                    hasTasks = false;
-                    break;
             default:
-                if (role.IsImpostor() || role.IsNK()) hasTasks = false;
+                // player based on an impostor not should have tasks
+                if (States.RoleClass.ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter)
+                    hasTasks = false;
                 break;
         }
 
@@ -541,8 +545,8 @@ public static class Utils
 
             }
 
-        if (CopyCat.NoHaveTask(p.PlayerId)) hasTasks = false;
-        if (Main.TasklessCrewmate.Contains(p.PlayerId)) hasTasks = false;
+        if (CopyCat.NoHaveTask(playerData.PlayerId)) hasTasks = false;
+        if (Main.TasklessCrewmate.Contains(playerData.PlayerId)) hasTasks = false;
 
         return hasTasks;
     }
@@ -1281,8 +1285,10 @@ public static class Utils
     public static void ApplySuffix(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost || player == null || Main.AutoMuteUs.Value) return;
-        
-        if (!(player.AmOwner || (player.FriendCode.GetDevUser().HasTag())))
+        // Check invalid color
+        if (player.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= player.Data.DefaultOutfit.ColorId) return;
+
+        if (!(player.AmOwner || player.FriendCode.GetDevUser().HasTag()))
         {
             if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode))
             {
@@ -1511,7 +1517,7 @@ public static class Utils
             var seerRoleClass = seer.GetRoleClass();
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
+            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
             {
                 seer.RpcSetNamePrivate("<size=0%>", true, force: NoCache);
             }
@@ -1639,9 +1645,9 @@ public static class Utils
                     //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
+                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
                     {
-                        seer.RpcSetNamePrivate("<size=0%>", true, force: NoCache);
+                        target.RpcSetNamePrivate("<size=0%>", true, force: NoCache);
                     }
                     else
                     {
@@ -1652,7 +1658,7 @@ public static class Utils
                         TargetMark.Append(seerRoleClass?.GetMark(seer, target, isForMeeting));
                         TargetMark.Append(CustomRoleManager.GetMarkOthers(seer, target, isForMeeting));
 
-                        if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
+                        if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
 
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
@@ -1833,7 +1839,7 @@ public static class Utils
     }
     public static void CountAlivePlayers(bool sendLog = false)
     {
-        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(CustomRoleTypes.Impostor));
+        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor));
         if (Main.AliveImpostorCount != AliveImpostorCount)
         {
             Logger.Info("Number Impostor left: " + AliveImpostorCount, "CountAliveImpostors");

@@ -10,6 +10,7 @@ internal class Godfather : RoleBase
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
 
     private static OptionItem GodfatherChangeOpt;
@@ -22,7 +23,7 @@ internal class Godfather : RoleBase
         GodfatherCount_Madmate
     }
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Godfather);
         GodfatherChangeOpt = StringOptionItem.Create(Id + 2, "GodfatherTargetCountMode", EnumHelper.GetAllNames<GodfatherChangeMode>(), 0, TabGroup.ImpostorRoles, false)

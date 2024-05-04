@@ -14,6 +14,7 @@ internal class Warden : RoleBase
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateGhosts;
     //==================================================================\\
 
     private static OptionItem AbilityCooldown;
@@ -22,7 +23,7 @@ internal class Warden : RoleBase
 
     private static readonly HashSet<byte> IsAffected = [];
     private static readonly Dictionary<byte, int> AbilityCount = [];
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Warden);
         AbilityCooldown = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(0f, 120f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])

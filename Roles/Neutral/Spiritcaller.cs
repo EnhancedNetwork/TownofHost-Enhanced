@@ -15,6 +15,7 @@ internal class Spiritcaller : RoleBase
     public static bool HasEnabled = playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
     private static OptionItem KillCooldown;
@@ -32,7 +33,7 @@ internal class Spiritcaller : RoleBase
     private static long ProtectTimeStamp = new();
     private static int SpiritLimit = new();
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Spiritcaller, 1);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 60f, 1f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])

@@ -15,6 +15,7 @@ internal class Lighter : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem LighterVisionNormal;
@@ -27,7 +28,7 @@ internal class Lighter : RoleBase
     private static readonly Dictionary<byte, long> Timer = [];
     private static readonly Dictionary<byte, float> LighterNumOfUsed = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Lighter, 1);
         LighterSkillCooldown = FloatOptionItem.Create(Id + 10, "LighterSkillCooldown", new(1f, 180f, 1f), 25f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lighter])

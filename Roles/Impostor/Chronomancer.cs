@@ -10,6 +10,7 @@ internal class Chronomancer : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
     private static Dictionary<byte, long> firstKill = [];
@@ -18,7 +19,7 @@ internal class Chronomancer : RoleBase
 
     private static OptionItem KillCooldown;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Chronomancer);
         KillCooldown = FloatOptionItem.Create(Id + 10, "ChronomancerKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])

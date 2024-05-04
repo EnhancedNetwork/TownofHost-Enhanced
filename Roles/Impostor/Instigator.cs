@@ -10,6 +10,7 @@ internal class Instigator : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
     private static OptionItem KillCooldown;
@@ -20,7 +21,7 @@ internal class Instigator : RoleBase
 
     private static Dictionary<int, int> AbilityUseCount = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Instigator);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(20f, 180f, 1f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])

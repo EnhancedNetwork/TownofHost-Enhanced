@@ -14,6 +14,7 @@ internal class Eraser : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
 
     private static OptionItem EraseLimitOpt;
@@ -25,7 +26,7 @@ internal class Eraser : RoleBase
     private static readonly Dictionary<byte, int> TempEraseLimit = [];
     public static readonly Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Eraser);
         EraseLimitOpt = IntegerOptionItem.Create(Id + 10, "EraseLimit", new(1, 15, 1), 2, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser])

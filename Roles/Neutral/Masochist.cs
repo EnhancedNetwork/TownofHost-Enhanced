@@ -12,13 +12,14 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
 
     private static OptionItem MasochistKillMax;
     
     private static readonly Dictionary<byte, int> MasochistMax = [];
 
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Masochist);
         MasochistKillMax = IntegerOptionItem.Create(Id + 2, "MasochistKillMax", new(1, 30, 1), 5, TabGroup.NeutralRoles, false)

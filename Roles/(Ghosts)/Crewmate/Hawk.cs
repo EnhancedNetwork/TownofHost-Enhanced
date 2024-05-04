@@ -16,6 +16,7 @@ internal class Hawk : RoleBase
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateGhosts;
     //==================================================================\\
 
     public static OptionItem KillCooldown;
@@ -27,7 +28,7 @@ internal class Hawk : RoleBase
     public static readonly Dictionary<byte, int> KillCount = [];
     public static readonly Dictionary<byte, float> KillerChanceMiss = [];
     public static int KeepCount = 0;
-    public static void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Hawk);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 120f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])

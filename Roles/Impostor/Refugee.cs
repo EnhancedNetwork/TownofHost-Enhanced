@@ -11,11 +11,12 @@ internal class Refugee : RoleBase
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\
 
     private static OptionItem RefugeeKillCD;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         RefugeeKillCD = FloatOptionItem.Create(Id, "RefugeeKillCD", new(0f, 180f, 2.5f), 22.5f, TabGroup.ImpostorRoles, false)
             .SetHeader(true)

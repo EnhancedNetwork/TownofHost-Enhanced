@@ -12,6 +12,7 @@ internal class Stealth : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
 
     private static OptionItem optionExcludeImpostors;
@@ -23,7 +24,7 @@ internal class Stealth : RoleBase
     private static PlayerControl[] darkenedPlayers;
     private static SystemTypes? darkenedRoom;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Stealth, 1);
         optionExcludeImpostors = BooleanOptionItem.Create(Id + 10, "StealthExcludeImpostors", false, TabGroup.ImpostorRoles, false)

@@ -76,6 +76,7 @@ internal class Jailer : RoleBase
         JailerDidVote.Remove(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
+
     public static bool IsTarget(byte playerId) => JailerTarget.ContainsValue(playerId);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? JailCooldown.GetFloat() : 300f;
     public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer).ShadeColor(0.25f), JailerExeLimit.TryGetValue(playerId, out var exeLimit) ? $"({exeLimit})" : "Invalid");
