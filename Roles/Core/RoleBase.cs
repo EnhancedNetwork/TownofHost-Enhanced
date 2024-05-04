@@ -34,26 +34,33 @@ public abstract class RoleBase
     public abstract CustomRoles ThisRoleBase { get; }
 
     /// <summary>
+    /// Defines the role type
+    /// </summary>
+    public abstract Custom_RoleType ThisRoleType { get; }
+
+    /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.
     /// </summary>
-    public virtual bool CanUseKillButton(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor) && pc.IsAlive();
+    public virtual bool CanUseKillButton(PlayerControl pc) => pc.Is(Custom_Team.Impostor) && pc.IsAlive();
 
     /// <summary>
     /// A generic method to set if a impostor/SS base may vent.
     /// </summary>
-    public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor) && pc.IsAlive();
+    public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.Is(Custom_Team.Impostor) && pc.IsAlive();
 
     /// <summary>
     /// A generic method to set if the role can use sabotage.
     /// </summary>
-    public virtual bool CanUseSabotage(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor);
+    public virtual bool CanUseSabotage(PlayerControl pc) => pc.Is(Custom_Team.Impostor);
     /// <summary>
     /// When the player presses the sabotage button
     /// </summary>
     public virtual bool OnSabotage(PlayerControl pc) => pc != null;
 
-    //public virtual void SetupCustomOption()
-    //{ }
+    public virtual void SetupCustomOption()
+    { }
+
+    public virtual bool IsExperimental => false;
 
     /// <summary>
     /// A generic method to send a CustomRole's Gameoptions.
@@ -314,8 +321,14 @@ public abstract class RoleBase
     /// Set PlayerName text for the role
     /// </summary>
     public virtual string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) => string.Empty;
-
+    //
+    //
     // Add Mark/LowerText/Suffix for player
+    // When using this code remember the seer can also see the target, therefore..
+    //
+    // return string.empty if "seer != seen" if only seer should have it
+    // otherwise make some list or byte or smt of sorts to only get the target.
+    // not needed if both should have it.
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;

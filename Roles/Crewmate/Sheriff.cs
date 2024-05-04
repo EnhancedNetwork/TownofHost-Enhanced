@@ -13,6 +13,7 @@ internal class Sheriff : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
     private static OptionItem KillCooldown;
@@ -46,7 +47,7 @@ internal class Sheriff : RoleBase
         SheriffCanKillSeparately
     }
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Sheriff);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 60f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff])
@@ -191,10 +192,10 @@ internal class Sheriff : RoleBase
         {
             CustomRoles.Trickster => false,
             CustomRoles.Pestilence => true,
-            _ => cRole.GetCustomRoleTypes() switch
+            _ => cRole.GetCustomRoleTeam() switch
             {
-                CustomRoleTypes.Impostor => true,
-                CustomRoleTypes.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())),
+                Custom_Team.Impostor => true,
+                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())),
                 _ => CanKill,
             }
         };

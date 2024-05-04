@@ -14,6 +14,7 @@ internal class Jailer : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
     private static OptionItem JailCooldown;
@@ -31,7 +32,7 @@ internal class Jailer : RoleBase
     private static readonly Dictionary<byte, bool> JailerHasExe = [];
     private static readonly Dictionary<byte, bool> JailerDidVote = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Jailer);
         JailCooldown = FloatOptionItem.Create(Id + 10, "JailerJailCooldown", new(0f, 999f, 1f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer])
@@ -74,7 +75,7 @@ internal class Jailer : RoleBase
         JailerHasExe.Remove(playerId);
         JailerDidVote.Remove(playerId);
     }
-
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public static bool IsTarget(byte playerId) => JailerTarget.ContainsValue(playerId);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? JailCooldown.GetFloat() : 300f;
     public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer).ShadeColor(0.25f), JailerExeLimit.TryGetValue(playerId, out var exeLimit) ? $"({exeLimit})" : "Invalid");
@@ -181,7 +182,7 @@ internal class Jailer : RoleBase
                 (role.IsNE() && NECanBeExe.GetBool()) ||
                 (role.IsNK() && NKCanBeExe.GetBool()) ||
                 (role.IsNA() && NACanBeExe.GetBool()) ||
-                (role.IsCK() && CKCanBeExe.GetBool()) ||
+                (role.IsCrewKiller() && CKCanBeExe.GetBool()) ||
                 (role.IsImpostorTeamV3()));
     }
 

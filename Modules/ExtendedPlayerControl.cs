@@ -130,8 +130,8 @@ static class ExtendedPlayerControl
 
     public static void RpcSetNamePrivate(this PlayerControl player, string name, bool DontShowOnModdedClient = false, PlayerControl seer = null, bool force = false)
     {
-        //player: 名前の変更対象
-        //seer: 上の変更を確認することができるプレイヤー
+        //player: player whose name needs to be changed
+        //seer: player who can see name changes
         if (player == null || name == null || !AmongUsClient.Instance.AmHost) return;
         if (seer == null) seer = player;
 
@@ -145,10 +145,12 @@ static class ExtendedPlayerControl
         Logger.Info($"Set:{player?.Data?.PlayerName}:{name} for {seer.GetNameWithRole().RemoveHtmlTags()}", "RpcSetNamePrivate");
 
         var clientId = seer.GetClientId();
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, clientId);
-        writer.Write(name);
-        writer.Write(DontShowOnModdedClient);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var sender = CustomRpcSender.Create(name: $"SetNamePrivate");
+        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, clientId)
+            .Write(name)
+            .Write(DontShowOnModdedClient)
+        .EndRpc();
+        sender.SendMessage();
     }
     public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role, int clientId)
     {

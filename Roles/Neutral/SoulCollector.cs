@@ -12,6 +12,7 @@ internal class SoulCollector : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
 
     private static OptionItem SoulCollectorPointsOpt;
@@ -22,7 +23,7 @@ internal class SoulCollector : RoleBase
     private static readonly Dictionary<byte, int> SoulCollectorPoints = [];
     private static readonly Dictionary<byte, bool> DidVote = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.SoulCollector, 1, zeroOne: false);
         SoulCollectorPointsOpt = IntegerOptionItem.Create(Id + 10, "SoulCollectorPointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector])
@@ -53,7 +54,7 @@ internal class SoulCollector : RoleBase
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.SoulCollector); //SetSoulCollectorLimit
+        writer.WritePacked((int)CustomRoles.Collector); //SetSoulCollectorLimit
         writer.Write(playerId);
         writer.Write(SoulCollectorPoints[playerId]);
         writer.Write(SoulCollectorTarget[playerId]);
@@ -109,8 +110,12 @@ internal class SoulCollector : RoleBase
             DidVote[playerId] = false;
             if (GetPassiveSouls.GetBool())
             {
-                SoulCollectorPoints[playerId]++;
-                Utils.SendMessage(GetString("PassiveSoulGained"), playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
+                SoulCollectorPoints[playerId]++;                
+                _ = new LateTask(() =>
+                {
+                    Utils.SendMessage(GetString("PassiveSoulGained"), playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
+
+                }, 3f, "Set Chat Visible for Everyone");
             }
         }
     }
@@ -134,35 +139,37 @@ internal class SoulCollector : RoleBase
         }
     }
 
-    public static void KillIfNotEjected(PlayerControl player)
+    public override void AfterMeetingTasks()
     {
+        PlayerControl sc = Utils.GetPlayerById(playerIdList.First());
+        if (SoulCollectorPoints[sc.PlayerId] < SoulCollectorPointsOpt.GetInt()) return;
+        sc.RpcSetCustomRole(CustomRoles.Death);
+        sc.Notify(GetString("SoulCollectorToDeath"));
+        sc.RpcGuardAndKill(sc);
+    }
+    public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    {
+        if (!HasEnabled || deathReason != PlayerState.DeathReason.Vote) return;
+        if (!CustomRoles.Death.RoleExist()) return;
+        if (exileIds.Contains(playerIdList.First())) return;
         var deathList = new List<byte>();
-        if (Main.AfterMeetingDeathPlayers.ContainsKey(player.PlayerId)) return;
+        PlayerControl sc = Utils.GetPlayerById(playerIdList.First());
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.IsNeutralApocalypse()) continue;
-            if (player != null && player.IsAlive())
+            if (sc != null && sc.IsAlive())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
                 {
-                    pc.SetRealKiller(player);
+                    pc.SetRealKiller(sc);
                     deathList.Add(pc.PlayerId);
                 }
-                else
-                {
-                    Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
-                }
             }
-            else return;
+            else
+            {
+                Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
+            }
         }
-        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Armageddon, [..deathList]);
-    }
-    public override void OnFixedUpdate(PlayerControl player)
-    {
-        if (SoulCollectorPoints[player.PlayerId] < SoulCollectorPointsOpt.GetInt() || player.GetCustomRole() is CustomRoles.Death) return;
-        player.RpcSetCustomRole(CustomRoles.Death);
-        player.Notify(GetString("SoulCollectorToDeath"));
-        player.RpcGuardAndKill(player);
-        KillIfNotEjected(player);
+        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Armageddon, [.. deathList]);
     }
 }

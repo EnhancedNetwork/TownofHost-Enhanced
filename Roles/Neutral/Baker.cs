@@ -12,11 +12,12 @@ namespace TOHE.Roles.Neutral;
 internal class Baker : RoleBase
 {
     //===========================SETUP================================\\
-    private static readonly int Id = 28200;
+    private static readonly int Id = 28400;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
 
     private static OptionItem BreadNeededToTransform;
@@ -24,7 +25,7 @@ internal class Baker : RoleBase
     private static readonly Dictionary<byte, List<byte>> BreadList = [];
     private static bool CanUseAbility;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Baker, 1, zeroOne: false);
         BreadNeededToTransform = IntegerOptionItem.Create(Id + 10, "BakerBreadNeededToTransform", new(1, 5, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker])
