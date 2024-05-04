@@ -87,60 +87,71 @@ internal class DollMaster : RoleBase
         }
     }
 
-    public override void OnFixedUpdate(PlayerControl pc) // Setup settings for main body when possessing and more.
+    public override void OnFixedUpdate(PlayerControl pc) // Setup settings for main body when possessing and booting from vent.
     {
-        if (controllingTarget != null && DollMasterTarget != null && Main.AllPlayerSpeed.ContainsKey(controllingTarget.PlayerId))
+        if (controllingTarget != null && DollMasterTarget != null)
         {
-            var TempDollMasterTarget = Utils.GetPlayerById(DollMasterTarget.PlayerId);
-            var TempControllingTarget = Utils.GetPlayerById(controllingTarget.PlayerId);
             // Set settings.
-            if (IsControllingPlayer)
-            {
-                Main.AllPlayerSpeed[controllingTarget.PlayerId] = Main.MinSpeed;
-                ReportDeadBodyPatch.CanReport[controllingTarget.PlayerId] = false;
-                controllingTarget.MarkDirtySettings();
-            }
-            else if (ResetPlayerSpeed)
-            {
-                Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
-                ReportDeadBodyPatch.CanReport[controllingTarget.PlayerId] = true;
-                controllingTarget.MarkDirtySettings();
-            }
-            ReducedVisionPlayers.Remove(DollMasterTarget.PlayerId);
-
+            SetSettingsUpdate(controllingTarget);
             // Boot Possessed Player from vent if inside of a vent and if waiting.
-            if (IsControllingPlayer && TempControllingTarget.inVent && !TempControllingTarget.walkingToVent)
+            BootPossessedPlayerFromVentUpdate(controllingTarget);
+            // If DollMaster can't be teleported start waiting to unpossess.
+            WaitToUnPossessUpdate(DollMasterTarget, controllingTarget);
+        }
+    }
+
+    private static void SetSettingsUpdate(PlayerControl target) // Set settings.
+    {
+        if (IsControllingPlayer)
+        {
+            Main.AllPlayerSpeed[target.PlayerId] = Main.MinSpeed;
+            ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
+            target.MarkDirtySettings();
+        }
+        else if (ResetPlayerSpeed)
+        {
+            Main.AllPlayerSpeed[target.PlayerId] = originalSpeed;
+            ReportDeadBodyPatch.CanReport[target.PlayerId] = true;
+            target.MarkDirtySettings();
+        }
+        ReducedVisionPlayers.Remove(DollMasterTarget.PlayerId);
+    }
+
+    private static void BootPossessedPlayerFromVentUpdate(PlayerControl target) // Boot Possessed Player from vent if inside of a vent and if waiting.
+    {
+        if (IsControllingPlayer && target.inVent && !target.walkingToVent)
+        {
+            _ = new LateTask(() =>
+            {
+                if (!target.inVent || target.walkingToVent) return;
+                target.MyPhysics.RpcBootFromVent(GetPlayerVentId(target));
+            }, 0.25f, "Boot Possessed Player from vent: " + GetPlayerVentId(target));
+        }
+    }
+
+    private static void WaitToUnPossessUpdate(PlayerControl pc, PlayerControl target) // If DollMaster can't be teleported start waiting to unpossess.
+    {
+        if (IsControllingPlayer && WaitToUnPossess)
+        {
+            // Boot DollMaster from vent if inside of a vent and if waiting.
+            if (pc.inVent && !pc.walkingToVent && !pc.MyPhysics.Animations.IsPlayingEnterVentAnimation())
             {
                 _ = new LateTask(() =>
                 {
-                    if (!TempControllingTarget.inVent || TempControllingTarget.walkingToVent) return;
-                    TempControllingTarget.MyPhysics.RpcBootFromVent(GetPlayerVentId(TempControllingTarget));
-                }, 0.25f, "Boot Possessed Player from vent: " + GetPlayerVentId(TempControllingTarget));
+                    if (!pc.inVent || pc.walkingToVent || pc.MyPhysics.Animations.IsPlayingEnterVentAnimation()) return;
+                    pc.MyPhysics.RpcBootFromVent(GetPlayerVentId(pc));
+                }, 0.3f, "Boot DollMaster from vent: " + GetPlayerVentId(pc));
             }
-
-            // If DollMaster can't be teleported start waiting to unpossess.
-            if (IsControllingPlayer && WaitToUnPossess)
+            // Unpossessed after waiting for DollMaster.
+            if (pc.CanBeTeleported())
             {
-                // Boot DollMaster from vent if inside of a vent and if waiting.
-                if (TempDollMasterTarget.inVent && !TempDollMasterTarget.walkingToVent)
+                _ = new LateTask(() =>
                 {
-                    _ = new LateTask(() =>
-                    {
-                        if (!TempDollMasterTarget.inVent || TempDollMasterTarget.walkingToVent) return;
-                        TempDollMasterTarget.MyPhysics.RpcBootFromVent(GetPlayerVentId(TempDollMasterTarget));
-                    }, 0.25f, "Boot DollMaster from vent: " + GetPlayerVentId(TempDollMasterTarget));
-                }
-                // Unpossessed after waiting for DollMaster.
-                if (TempDollMasterTarget.CanBeTeleported())
-                {
-                    _ = new LateTask(() =>
-                    {
-                        if (!WaitToUnPossess) return;
-                        UnPossess(TempDollMasterTarget, TempControllingTarget);
-                        GetPlayersPositions(TempDollMasterTarget);
-                        SwapPlayersPositions(TempDollMasterTarget);
-                    }, 0.15f, "UnPossess");
-                }
+                    if (!WaitToUnPossess) return;
+                    UnPossess(pc, target);
+                    GetPlayersPositions(pc);
+                    SwapPlayersPositions(pc);
+                }, 0.15f, "UnPossess");
             }
         }
     }
@@ -264,6 +275,7 @@ internal class DollMaster : RoleBase
     // Possess Player
     private static void Possess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
     {
+        (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc.RpcShapeshift(target, shouldAnimate);
         target.RpcShapeshift(pc, shouldAnimate);
         pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
@@ -273,6 +285,7 @@ internal class DollMaster : RoleBase
     private static void UnPossess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
     {
         WaitToUnPossess = false;
+        (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc.RpcShapeshift(pc, shouldAnimate);
         target.RpcShapeshift(target, shouldAnimate);
         pc.RpcResetAbilityCooldown();
