@@ -10,7 +10,9 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Vanilla;
 using UnityEngine;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -129,7 +131,7 @@ public static class Options
         "CamouflageMode.TommyXL"
     ];
 
-    // 各役職の詳細設定
+
     //public static OptionItem EnableGM;
     public static float DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
     public static OptionItem GhostsDoTasks;
@@ -488,14 +490,6 @@ public static class Options
     public static OptionItem AddBracketsToAddons;
     public static OptionItem NoLimitAddonsNumMax;
 
-    // Impostors role settings
-    public static OptionItem ShapeshiftCD;
-    public static OptionItem ShapeshiftDur;
-
-    // Crewmates role settings
-    public static OptionItem ScientistCD;
-    public static OptionItem ScientistDur;
-
     // Add-Ons settings 
     public static OptionItem LoverSpawnChances;
     public static OptionItem LoverKnowRoles;
@@ -525,7 +519,7 @@ public static class Options
      {
          "GuesserMode.All", "GuesserMode.Harmful", "GuesserMode.Random"
      }; */
-    
+
     public static readonly string[] suffixModes =
     [
         "SuffixMode.None",
@@ -536,7 +530,7 @@ public static class Options
         "SuffixMode.OriginalName",
         "SuffixMode.DoNotKillMe",
         "SuffixMode.NoAndroidPlz",
-        "SuffixMode.AutoHost"    
+        "SuffixMode.AutoHost"
     ];
     public static readonly string[] roleAssigningAlgorithms =
     [
@@ -598,7 +592,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 28200 lasted id for roles/add-ons (Next use 28300)
+        // 28400 lasted id for roles/add-ons (Next use 28500)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -639,8 +633,6 @@ public static class Options
 
 
         Madmate.SetupMenuOptions();
-
-        Refugee.SetupCustomOption();
 
         //MadmateCanFixSabotage = BooleanOptionItem.Create(50010, "MadmateCanFixSabotage", false, TabGroup.ImpostorRoles, false)
         //.SetGameMode(CustomGameMode.Standard);
@@ -700,154 +692,14 @@ public static class Options
             .SetHeader(true)
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
-        SetupRoleOptions(300, TabGroup.ImpostorRoles, CustomRoles.ImpostorTOHE);
-
-        SetupRoleOptions(400, TabGroup.ImpostorRoles, CustomRoles.ShapeshifterTOHE);
-        ShapeshiftCD = FloatOptionItem.Create(402, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.ShapeshifterTOHE])
-            .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftDur = FloatOptionItem.Create(403, "ShapeshiftDuration", new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.ShapeshifterTOHE])
-            .SetValueFormat(OptionFormat.Seconds);
-
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorVanilla).ForEach(r => r.SetupCustomOption());
 
         TextOptionItem.Create(10000001, "RoleType.ImpKilling", TabGroup.ImpostorRoles) // KILLING
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));// KILLING
 
-        /*
-         * Arrogance
-         */
-        Arrogance.SetupCustomOption();
-
-        /*
-         * Bomber
-         */
-        Bomber.SetupCustomOption();
-
-        /*
-         * Bounty Hunter
-         */
-        BountyHunter.SetupCustomOption();
-
-        /*
-         * Butcher
-         */
-        Butcher.SetupCustomOption();
-
-        /*
-         * Chronomancer
-         */
-        Chronomancer.SetupCustomOption();
-
-        /*
-         * Councillor
-         */
-        Councillor.SetupCustomOption();
-
-        /*
-         * Cursed Wolf (From: TOH_Y)
-         */
-        CursedWolf.SetupCustomOption();
-
-
-        /*
-         * Deathpact
-         */
-        Deathpact.SetupCustomOption();
-
-        /*
-         * Evil Guesser
-         */
-        EvilGuesser.SetupCustomOption();
-
-        /*
-         * Evil Tracker
-         */
-        EvilTracker.SetupCustomOption();
-
-        /*
-         * Greedy
-         */
-        Greedy.SetupCustomOption();
-
-        /*
-         * Hangman
-         */
-        Hangman.SetupCustomOption();
-
-        /*
-         * Inhibitor
-         */
-        Inhibitor.SetupCustomOption();
-
-        /*
-         * Instigator
-         */
-        Instigator.SetupCustomOption();
-
-        /*
-         * Killing Machine
-         */
-        KillingMachine.SetupCustomOption();
-
-        /*
-         * Ludopath
-         */
-        Ludopath.SetupCustomOption();
-
-        /*
-         * Lurker
-         */
-        Lurker.SetupCustomOption();
-
-        // Mare.SetupCustomOption();
-
-        /*
-         * Mercenary
-         */
-        Mercenary.SetupCustomOption();
-
-        /*
-         * Ninja
-         */
-        Ninja.SetupCustomOption();
-
-        /*
-         * Quick Shooter
-         */
-        QuickShooter.SetupCustomOption();
-
-        /*
-         * Saboteur
-         */
-        Saboteur.SetupCustomOption();
-
-        /*
-         * Sniper
-         */
-        Sniper.SetupCustomOption();
-
-        /*
-         * Spellcaster
-         */
-        Witch.SetupCustomOption();
-
-        /*
-         * Trapster
-         */
-        Trapster.SetupCustomOption();
-
-        /*
-         * Underdog
-         */
-        Underdog.SetupCustomOption();
-
-        /*
-         * Zombie
-         */
-        Zombie.SetupCustomOption();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorKilling).ForEach(r => r.SetupCustomOption());
 
         /*
          * SUPPORT ROLES
@@ -856,74 +708,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
-        /*
-         * Anti Adminer
-         */
-        AntiAdminer.SetupCustomOption();
-
-        /*
-         * Blackmailer
-        */
-        Blackmailer.SetupCustomOption();
-
-        /*
-         * Camouflager
-         */
-        Camouflager.SetupCustomOption();
-
-        /*
-         * Cleaner
-         */
-        Cleaner.SetupCustomOption();
-
-        /* 
-         * Consigliere
-         */
-        Consigliere.SetupCustomOption();
-
-        /*
-         * Fireworker
-         */
-        Fireworker.SetupCustomOption();
-
-        /*
-         * Gangster
-         */
-        Gangster.SetupCustomOption();
-
-        /*
-         * Godfather
-         */
-        Godfather.SetupCustomOption();
-
-        /*
-         * Kamikaze
-         */
-        Kamikaze.SetupCustomOption();
-
-        /*
-         * Morphling
-         */
-        Morphling.SetupCustomOption();
-
-        /*
-         * Nemesis
-         */
-        Nemesis.SetupCustomOptions();
-        /*
-         * Time Thief
-         */
-        TimeThief.SetupCustomOption();
-
-        /*
-         * Vindicator
-         */
-        Vindicator.SetupCustomOption();
-
-        /*
-         * Visionary
-         */
-        Visionary.SetupCustomOption();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorSupport).ForEach(r => r.SetupCustomOption());
 
         /*
          * CONCEALING ROLES
@@ -932,80 +717,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
-        /*
-         * Escapist
-         */
-        Escapist.SetupCustomOption();
-
-        /*
-         * Lightning
-         */
-        Lightning.SetupCustomOption();
-
-        /*
-         * Mastermind
-         */
-        Mastermind.SetupCustomOption();
-
-        /*
-         * Miner
-         */
-        Miner.SetupCustomOption();
-
-        /*
-         * Puppeteer
-         */
-        Puppeteer.SetupCustomOption();
-
-        /*
-         * Rift Maker
-         */
-        RiftMaker.SetupCustomOption();
-
-        /*
-         * Scavenger
-         */
-        Scavenger.SetupCustomOption();
-
-        /*
-         * ShapeMaster
-         */
-        ShapeMaster.SetupCustomOption();
-
-        /*
-         * Soul Catcher
-         */
-        SoulCatcher.SetupCustomOption();
-
-        /*
-         * Swooper
-         */
-        Swooper.SetupCustomOption();
-
-        /*
-         * Trickster
-         */
-        Trickster.SetupCustomOption();
-
-        /*
-         * Undertaker
-         */
-        Undertaker.SetupCustomOption();
-
-        /*
-         * Vampire
-         */
-        Vampire.SetupCustomOption();
-
-        /*
-         * Warlock
-         */
-        Warlock.SetupCustomOption();
-
-        /*
-         * Wildling
-         */
-        Wildling.SetupCustomOption();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorConcealing).ForEach(r => r.SetupCustomOption());
 
         /*
          * HINDERING ROLES
@@ -1014,45 +726,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
-        /*
-         * Anonymous
-         */
-        Anonymous.SetupCustomOption();
-
-        /*
-         * Dazzler
-         */
-        Dazzler.SetupCustomOption();
-
-        /*
-         * Stealth
-         */
-        Stealth.SetupCustomOption();
-
-        /*
-         * Devourer
-         */
-        Devourer.SetupCustomOption();
-
-        /*
-         * Eraser
-         */
-        Eraser.SetupCustomOption();
-
-        /*
-         * Pitfall
-         */
-        Pitfall.SetupCustomOption();
-
-        /*
-         * Penguin
-         */
-        Penguin.SetupCustomOption();
-
-        /*
-         * Twister
-         */
-        Twister.SetupCustomOption();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorHindering).ForEach(r => r.SetupCustomOption());
 
         /*
          * MADMATE ROLES
@@ -1061,15 +735,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
-        /*
-         * Crewpostor
-         */
-        Crewpostor.SetupCustomOption();
-
-        /*
-         * Parasite
-         */
-        Parasite.SetupCustomOption();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.Madmate).ForEach(r => r.SetupCustomOption());
 
         /*
          * Impostor Ghost Roles
@@ -1078,9 +744,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
-        Minion.SetupCustomOption();
-
-        Bloodmoon.SetupCustomOption();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorGhosts).ForEach(r => r.SetupCustomOption());
 
         #endregion
 
@@ -1091,32 +755,9 @@ public static class Options
         TextOptionItem.Create(10000006, "RoleType.VanillaRoles", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
-        
-        /*
-         * Crewmate
-         */
-        SetupRoleOptions(6000, TabGroup.CrewmateRoles, CustomRoles.CrewmateTOHE);
 
-        /*
-         * Engineer
-         */
-        SetupRoleOptions(6100, TabGroup.CrewmateRoles, CustomRoles.EngineerTOHE);
-
-        /*
-         * Scientist
-         */
-        SetupRoleOptions(6200, TabGroup.CrewmateRoles, CustomRoles.ScientistTOHE);
-        ScientistCD = FloatOptionItem.Create(6202, "VitalsCooldown", new(1f, 250f, 1f), 3f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.ScientistTOHE])
-            .SetValueFormat(OptionFormat.Seconds);
-        ScientistDur = FloatOptionItem.Create(6203, "VitalsDuration", new(1f, 250f, 1f), 15f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.ScientistTOHE])
-            .SetValueFormat(OptionFormat.Seconds);
-
-        /*
-         * Guardian Angel
-         */
-        GuardianAngelTOHE.SetupCustomOptions();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanilla).ForEach(r => r.SetupCustomOption());
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanillaGhosts).ForEach(r => r.SetupCustomOption());
 
         /*
          * BASIC ROLES
@@ -1125,84 +766,13 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        /*
-         * Addict
-         */
-        Addict.SetupCustomOption();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateBasic).ForEach(r => r.SetupCustomOption());
 
         /*
-         * Alchemist
+         * MINI
          */
-        Alchemist.SetupCustomOption();
+        CustomRoles.Mini.GetStaticRoleClass().SetupCustomOption();
 
-        /*
-         * Celebrity
-         */
-        Celebrity.SetupCustomOptions();    
-
-        /*
-         * Cleanser
-         */
-        Cleanser.SetupCustomOption();
-
-        /*
-         * Doctor
-         */
-        Doctor.SetupCustomOptions();
-
-        /*
-         * Guess Master
-         */
-        GuessMaster.SetupCustomOption();
-
-        /*
-         * Lazy Guy
-         */
-        LazyGuy.SetupCustomOptions();
-
-        /*
-         * Luckey
-         */
-        //SetupRoleOptions(6900, TabGroup.CrewmateRoles, CustomRoles.Luckey);
-        //LuckeyProbability = IntegerOptionItem.Create(6902, "LuckeyProbability", new(0, 100, 5), 50, TabGroup.CrewmateRoles, false)
-        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Luckey])
-        //    .SetValueFormat(OptionFormat.Percent);
-
-        /*
-         * Mini
-         */
-        Mini.SetupCustomOption();
-
-        /*
-         * Mole
-         */
-        Mole.SetupCustomOption();
-
-        /*
-         * Superstar
-         */
-        SuperStar.SetupCustomOptions();
-
-        /*
-         * Task Manager
-         */
-        TaskManager.SetupCustomOptions();
-
-        /*
-         * Tracefinder
-         */
-        Tracefinder.SetupCustomOption();
-
-        /*
-         * Transporter
-         */
-        Transporter.SetupCustomOptions();
-
-        /*
-         * Randomizer
-         */
-        Randomizer.SetupCustomOptions();
-        
         /*
          * SUPPORT ROLES
          */
@@ -1210,213 +780,25 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        /*
-         * Benefactor 
-         */
-        Benefactor.SetupCustomOption();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateSupport).ForEach(r => r.SetupCustomOption());
 
         /*
-         * Chameleon
+         * KILLING ROLES
          */
-        Chameleon.SetupCustomOption();
-
-        /*
-         * Coroner
-         */
-        Coroner.SetupCustomOption();
-
-        /*
-         * Deputy
-         */
-        Deputy.SetupCustomOption();
-
-        /*
-         * Detective
-         */
-        Detective.SetupCustomOptions();
-
-        /*
-         * Fortune Teller
-         */
-        FortuneTeller.SetupCustomOption();
-
-        /*
-         * Enigma
-         */
-        Enigma.SetupCustomOption();
-
-        /*
-         * Grenadier
-         */
-        Grenadier.SetupCustomOptions();
-
-        /*
-         * Inspector
-         */
-        Inspector.SetupCustomOption();
-
-        /*
-         * Investigator
-         */
-        Investigator.SetupCustomOption();
-
-        /*
-         *  Keeper
-         */
-        Keeper.SetupCustomOption();
-
-        /*
-         * Lighter
-         */
-        Lighter.SetupCustomOptions();
-
-        /*
-         * Mechanic
-         */
-        Mechanic.SetupCustomOption();
-
-        /*
-         * Medic
-         */
-        Medic.SetupCustomOption();
-
-        /*
-         * Medium
-         */
-        Medium.SetupCustomOption();
-
-        /*
-         * Merchant
-         */
-        Merchant.SetupCustomOption();
-
-        /*
-         * Mortician
-         */
-        Mortician.SetupCustomOption();
-
-        /*
-         * Observer
-         */
-        Observer.SetupCustomOption();
-
-        /*
-         * Oracle
-         */
-        Oracle.SetupCustomOption();
-
-        /*
-         * Pacifist
-         */
-        Pacifist.SetupCustomOptions();
-
-        /*SetupRoleOptions(9300, TabGroup.CrewmateRoles, CustomRoles.Paranoia);
-        ParanoiaNumOfUseButton = IntegerOptionItem.Create(9302, "ParanoiaNumOfUseButton", new(1, 20, 1), 3, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Paranoia])
-            .SetValueFormat(OptionFormat.Times);
-        ParanoiaVentCooldown = FloatOptionItem.Create(9303, "ParanoiaVentCooldown", new(0, 180, 1), 10, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Paranoia])
-            .SetValueFormat(OptionFormat.Seconds); */
-
-        /*
-         * Psychic
-         */
-        Psychic.SetupCustomOption();
-
-        /*
-         * Snitch
-         */
-        Snitch.SetupCustomOption();
-
-        /*
-         * Spiritualist
-         */
-        Spiritualist.SetupCustomOption();
-
-        /*
-         * Spy
-         */
-        Spy.SetupCustomOption();
-
-        /*
-         * Time Manager
-         */
-        TimeManager.SetupCustomOption();
-
-        /*
-         * Time Master
-         */
-        TimeMaster.SetupCustomOptions();
-
-        /*
-         * Tracker
-         */
-        Tracker.SetupCustomOption();
-
-        /*
-         * Witness
-         */
-        Witness.SetupCustomOptions();
-
-
         TextOptionItem.Create(10000009, "RoleType.CrewKilling", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        Bastion.SetupCustomOptions();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateKilling).ForEach(r => r.SetupCustomOption());
 
-        Bodyguard.SetupCustomOptions();
-        
-        Crusader.SetupCustomOption();
-        
-        Deceiver.SetupCustomOption();
-        
-        Jailer.SetupCustomOption();
-        
-        Judge.SetupCustomOption();
-        
-        Knight.SetupCustomOption();
-
-        Retributionist.SetupCustomOptions();
-        
-        Reverie.SetupCustomOption();
-        
-        Sheriff.SetupCustomOption();
-
-        Veteran.SetupCustomOptions();
-
+        /*
+         * POWER ROLES
+         */
         TextOptionItem.Create(10000010, "RoleType.CrewPower", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        Admirer.SetupCustomOption();
-
-        Captain.SetupCustomOption();
-
-        CopyCat.SetupCustomOption();
-
-        Dictator.SetupCustomOptions();
-
-        Guardian.SetupCustomOptions();
-
-        Lookout.SetupCustomOptions();
-
-        Marshall.SetupCustomOption();
-
-        Mayor.SetupCustomOptions();
-
-        Monarch.SetupCustomOption();
-        
-        Overseer.SetupCustomOption();
-        
-        President.SetupCustomOption();
-        
-        Swapper.SetupCustomOption();
-        
-        Telecommunication.SetupCustomOption();
-
-        //ChiefOfPolice.SetupCustomOption();
-
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmatePower).ForEach(r => r.SetupCustomOption());
 
         /*
          * Crewmate Ghost Roles
@@ -1425,9 +807,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        Warden.SetupCustomOptions();
-
-        Hawk.SetupCustomOptions();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateGhosts).ForEach(r => r.SetupCustomOption());
 
         #endregion
 
@@ -1437,156 +817,32 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
-        Amnesiac.SetupCustomOption();
-
-        Follower.SetupCustomOption();
-
-        Hater.SetupCustomOption();
-
-        Imitator.SetupCustomOption();
-
-        Lawyer.SetupCustomOption();
-
-        Maverick.SetupCustomOption();
-
-        Opportunist.SetupCustomOptions();
-        
-        Pixie.SetupCustomOption();
-        
-        Pursuer.SetupCustomOption();
-
-        Romantic.SetupCustomOption();
-
-        SchrodingersCat.SetupCustomOption();
-
-        Shaman.SetupCustomOptions();
-
-        Taskinator.SetupCustomOption();
-
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralBenign).ForEach(r => r.SetupCustomOption());
 
         TextOptionItem.Create(10000012, "RoleType.NeutralEvil", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
-        CursedSoul.SetupCustomOption();
-
-        Doomsayer.SetupCustomOption();
-
-        Executioner.SetupCustomOption();
-
-        Innocent.SetupCustomOptions();
-
-        Jester.SetupCustomOptions();
-
-        Seeker.SetupCustomOption();
-
-        Masochist.SetupCustomOptions();
-
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralEvil).ForEach(r => r.SetupCustomOption());
 
         TextOptionItem.Create(10000013, "RoleType.NeutralChaos", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
-        
-        Collector.SetupCustomOption();
-        
-        Cultist.SetupCustomOption();
 
-        Phantom.SetupCustomOptions();
-        
-        Pirate.SetupCustomOption();
-
-        Provocateur.SetupCustomOptions();
-
-        Revolutionist.SetupCustomOptions();
-        
-
-        /*
-         * Solsticer
-        */
-        Solsticer.SetupCustomOption();
-
-        Terrorist.SetupCustomOptions();
-
-        Vector.SetupCustomOptions();
-        
-        Vulture.SetupCustomOption();
-
-        Workaholic.SetupCustomOptions();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralChaos).ForEach(r => r.SetupCustomOption());
 
         TextOptionItem.Create(10000014, "RoleType.NeutralKilling", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
-        
-        Agitater.SetupCustomOption();
 
-        Arsonist.SetupCustomOptions();
-
-        Bandit.SetupCustomOption();
-
-        BloodKnight.SetupCustomOption();
-
-        Demon.SetupCustomOption();
-
-        Glitch.SetupCustomOption();
-
-        HexMaster.SetupCustomOption();
-
-        Huntsman.SetupCustomOption();
-
-        Infectious.SetupCustomOption();
-
-        Jackal.SetupCustomOption();
-
-        Jinx.SetupCustomOption();
-
-        Juggernaut.SetupCustomOption();
-
-        Medusa.SetupCustomOption();
-
-        Necromancer.SetupCustomOption();
-
-        Spiritcaller.SetupCustomOption();
-
-        Pelican.SetupCustomOption();
-
-        Pickpocket.SetupCustomOption();
-
-        Poisoner.SetupCustomOption();
-
-        PlagueDoctor.SetupCustomOption();
-
-        PotionMaster.SetupCustomOption();
-
-        Pyromaniac.SetupCustomOption();
-
-        if (!Quizmaster.InExperimental)
-            Quizmaster.SetupCustomOption();
-
-        SerialKiller.SetupCustomOption(); 
-
-        Shroud.SetupCustomOption();
-
-        Stalker.SetupCustomOption(); // Stalker (TOHY)
-
-        Traitor.SetupCustomOption();
-
-        Virus.SetupCustomOption();
-
-        Werewolf.SetupCustomOption();
-
-        Wraith.SetupCustomOption();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralKilling).ForEach(r => r.SetupCustomOption());
 
         TextOptionItem.Create(10000015, "RoleType.NeutralApocalypse", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
-        Baker.SetupCustomOption();
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralApocalypse).ForEach(r => r.SetupCustomOption());
 
-        Berserker.SetupCustomOption();
-
-        PlagueBearer.SetupCustomOption();
-
-        SoulCollector.SetupCustomOption();
         #endregion
 
         #region Add-Ons Settings
@@ -1599,7 +855,7 @@ public static class Options
         Autopsy.SetupCustomOptions();
 
         Bait.SetupCustomOptions();
-        
+
         /*
          * Beartrap
          */
@@ -1634,7 +890,7 @@ public static class Options
         Sleuth.SetupCustomOptions();
 
         Tiebreaker.SetupCustomOptions();
-    
+
         Torch.SetupCustomOptions();
 
         Watcher.SetupCustomOptions();
@@ -1662,7 +918,7 @@ public static class Options
         Rascal.SetupCustomOptions();
 
         Unlucky.SetupCustomOptions();
-        
+
         Tired.SetupCustomOptions();
 
         VoidBallot.SetupCustomOptions();
@@ -1760,7 +1016,7 @@ public static class Options
         Reach.SetupCustomOptions();
 
         Rainbow.SetupCustomOptions();
-        
+
         Workhorse.SetupCustomOption();
 
         #endregion
@@ -1770,40 +1026,30 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(247, 70, 49, byte.MaxValue));
 
-        Disperser.SetupCustomOption();        
+        CustomRoleManager.GetExperimentalOptions(Custom_Team.Impostor).ForEach(r => r.SetupCustomOption());
 
-        // 船员
+        //Disperser.SetupCustomOption();        
+
+        // Crewmate roles
         TextOptionItem.Create(10000021, "OtherRoles.CrewmateRoles", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        /*SetupRoleOptions(24700, TabGroup.OtherRoles, CustomRoles.SpeedBooster);
-        SpeedBoosterUpSpeed = FloatOptionItem.Create(24703, "SpeedBoosterUpSpeed", new(0.1f, 1.0f, 0.1f), 0.2f, TabGroup.OtherRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.SpeedBooster])
-            .SetValueFormat(OptionFormat.Multiplier);
-        SpeedBoosterTimes = IntegerOptionItem.Create(24704, "SpeedBoosterTimes", new(1, 99, 1), 5, TabGroup.OtherRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.SpeedBooster])
-            .SetValueFormat(OptionFormat.Times); */
-                
-        // 中立
+        CustomRoleManager.GetExperimentalOptions(Custom_Team.Crewmate).ForEach(r => r.SetupCustomOption());
+
         TextOptionItem.Create(10000022, "OtherRoles.NeutralRoles", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
-        
-        Doppelganger.SetupCustomOption();
 
-        God.SetupCustomOption();
-
-        if (Quizmaster.InExperimental)
-            Quizmaster.SetupCustomOption();
+        CustomRoleManager.GetExperimentalOptions(Custom_Team.Neutral).ForEach(r => r.SetupCustomOption());
 
 
-        // 副职
+        // addons
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
 
-        //SetupAdtRoleOptions(25300, CustomRoles.Ntr, tab: TabGroup.OtherRoles);
+        Glow.SetupCustomOptions;
 
         Youtuber.SetupCustomOptions();
 
@@ -1818,7 +1064,7 @@ public static class Options
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
             .SetColor(Color.green)
             .HideInHnS();
-        
+
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Level)
             .SetHeader(true);
@@ -1904,7 +1150,7 @@ public static class Options
             .HideInHnS();
         AutoDisplayLastResult = BooleanOptionItem.Create(60290, "AutoDisplayLastResult", true, TabGroup.SystemSettings, false)
             .HideInHnS();
-        
+
         SuffixMode = StringOptionItem.Create(60300, "SuffixMode", suffixModes, 0, TabGroup.SystemSettings, true)
             .SetHeader(true);
         HideHostText = BooleanOptionItem.Create(60311, "HideHostText", false, TabGroup.SystemSettings, false);
@@ -2025,7 +1271,7 @@ public static class Options
 
         // Random Spawn
         RandomSpawn.SetupCustomOption();
-        
+
         MapModification = BooleanOptionItem.Create(60480, "MapModification", false, TabGroup.GameSettings, false)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Airship Variable Electrical
@@ -2436,7 +1682,7 @@ public static class Options
             .SetParent(DisableLongTasks);
         DisableHoistSupplies = BooleanOptionItem.Create(60639, "DisableHoistSupplies", false, TabGroup.TaskSettings, false)
             .SetParent(DisableLongTasks);
-        
+
 
 
         //Disable Divert Power, Weather Nodes and etc. situational Tasks
@@ -2627,7 +1873,7 @@ public static class Options
         var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? EnumHelper.GetAllNames<RatesZeroOne>() : EnumHelper.GetAllNames<SpawnChance>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
-        
+
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 15, 1), 1, tab, false)
         .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
