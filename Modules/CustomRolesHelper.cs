@@ -1407,8 +1407,7 @@ public static class CustomRolesHelper
            CustomRoles.Shroud => CountTypes.Shroud,
            CustomRoles.Werewolf => CountTypes.Werewolf,
            CustomRoles.Wraith => CountTypes.Wraith,
-           CustomRoles.Pestilence or CustomRoles.PlagueBearer or CustomRoles.SoulCollector or CustomRoles.Death or CustomRoles.Baker or CustomRoles.Famine or CustomRoles.Berserker or CustomRoles.War 
-           => CountTypes.Apocalypse,
+           var r when r.IsNA() => CountTypes.Apocalypse,           
            CustomRoles.Agitater => CountTypes.Agitater,
            CustomRoles.Parasite => CountTypes.Impostor,
            CustomRoles.SerialKiller => CountTypes.SerialKiller,

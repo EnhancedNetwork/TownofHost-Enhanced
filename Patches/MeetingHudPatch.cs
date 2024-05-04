@@ -545,6 +545,7 @@ class CheckForEndVotingPatch
         Witch.OnCheckForEndVoting(deathReason, playerIds);
         HexMaster.OnCheckForEndVoting(deathReason, playerIds);
         Virus.OnCheckForEndVoting(deathReason, playerIds);
+        SoulCollector.OnCheckForEndVoting(deathReason, playerIds);
 
         foreach (var playerId in playerIds)
         {
@@ -810,7 +811,36 @@ class MeetingHudStartPatch
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
             AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
         }
-        
+        // Apocalypse Notify
+        if (CustomRoles.Death.RoleExist())
+        {
+            _ = new LateTask(() =>
+            {
+                AddMsg(string.Format(GetString("SoulCollectorTransform")), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Death), GetString("ApocalypseIsNigh")));
+            }, 3f, "Death Apocalypse Notify");
+        }
+        if (CustomRoles.Famine.RoleExist())
+        {
+            _ = new LateTask(() =>
+            {
+                AddMsg(string.Format(GetString("BakerTransform")), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Famine), GetString("ApocalypseIsNigh")));
+            }, 3f, "Famine Apocalypse Notify");
+        }
+        if (CustomRoles.War.RoleExist())
+        {
+            _ = new LateTask(() =>
+            {
+                AddMsg(string.Format(GetString("BerserkerTransform")), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.War), GetString("ApocalypseIsNigh")));
+            }, 3f, "War Apocalypse Notify");
+        }
+        if (CustomRoles.Pestilence.RoleExist())
+        {
+            _ = new LateTask(() =>
+            {
+                AddMsg(string.Format(GetString("PestilenceTransform")), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pestilence), GetString("ApocalypseIsNigh")));
+            }, 3f, "Pestilence Apocalypse Notify");
+        }
+
         string MimicMsg = "";
         foreach (var pc in Main.AllPlayerControls)
         {
