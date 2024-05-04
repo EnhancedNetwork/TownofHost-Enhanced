@@ -86,7 +86,7 @@ internal class Snitch : RoleBase
     }
 
     private static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
-    
+
     private static bool GetExpose(PlayerControl pc)
     {
         if (!IsThisRole(pc.PlayerId) || !pc.IsAlive() || pc.Is(CustomRoles.Madmate)) return false;
@@ -94,10 +94,10 @@ internal class Snitch : RoleBase
         var snitchId = pc.PlayerId;
         return IsExposed[snitchId];
     }
-    
+
     private static bool IsSnitchTarget(PlayerControl target)
         => HasEnabled && (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsNeutralKiller() && CanFindNeutralKiller) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate) || (target.IsNeutralApocalypse() && CanFindNeutralApocalypse));
-    
+
     private static void CheckTask(PlayerControl snitch)
     {
         if (!snitch.IsAlive() || snitch.Is(CustomRoles.Madmate)) return;
@@ -146,7 +146,7 @@ internal class Snitch : RoleBase
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (!IsThisRole(player.PlayerId) || player.Is(CustomRoles.Madmate)) return true;
-        
+
         CheckTask(player);
         return true;
     }
