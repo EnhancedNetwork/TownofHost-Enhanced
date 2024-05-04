@@ -316,8 +316,6 @@ class CheckMurderPatch
 
                     case CustomRoles.Susceptible:
                         Susceptible.CallEnabledAndChange(target);
-                        if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote)
-                            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill; // When susceptible is still alive "Vote" triggers role visibility for others.
                         break;
 
                     case CustomRoles.Fragile:
@@ -519,13 +517,6 @@ class RpcMurderPlayerPatch
         messageWriter.Write((int)murderResultFlags);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
 
-        var killer = target.GetRealKiller();
-        if (target.Is(CustomRoles.Susceptible))
-            Susceptible.CallEnabledAndChange(target);
-
-        if (!killer.RpcCheckAndMurder(target, check: true) && !killer.Is(CustomRoles.Pestilence))
-            Logger.Warn($" Killer: {killer.GetRealName} murdered {target.GetRealName()} while target was under protection", "RpcMurderPlayerPatch..Prefix");
-
         return false;
         // There is no need to include DecisionByHost. DecisionByHost will make client check protection locally and cause confusion.
     }
@@ -590,11 +581,11 @@ public static class CheckShapeshiftPatch
             logger.Info("Shapeshifting canceled because shapeshifter is dead");
             return false;
         }
-        if (!instance.Is(CustomRoles.Glitch) && instance.Data.Role.Role != RoleTypes.Shapeshifter && instance.GetCustomRole().GetVNRole() != CustomRoles.Shapeshifter)
-        {
-            logger.Info("Shapeshifting canceled because the shapeshifter is not a shapeshifter");
-            return false;
-        }
+        //if (!instance.Is(CustomRoles.Glitch) && instance.Data.Role.Role != RoleTypes.Shapeshifter && instance.GetCustomRole().GetVNRole() != CustomRoles.Shapeshifter)
+        //{
+        //    logger.Info("Shapeshifting canceled because the shapeshifter is not a shapeshifter");
+        //    return false;
+        //}
         if (instance.Data.Disconnected)
         {
             logger.Info("Shapeshifting canceled because shapeshifter is disconnected");
@@ -1031,10 +1022,12 @@ class FixedUpdateInNormalGamePatch
 
                 if (player.Is(CustomRoles.Statue) && player.IsAlive())
                     Statue.OnFixedUpdate(player);
-            
+
                 if (!lowLoad)
                 {
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
+                    if (Glow.IsEnable)
+                        Glow.OnFixedUpdate(player);
 
                     if (Rainbow.isEnabled)
                         Rainbow.OnFixedUpdate();
@@ -1178,14 +1171,6 @@ class FixedUpdateInNormalGamePatch
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                 }
                 else if (target.Is(CustomRoles.Lovers) && seer.Data.IsDead)
-                {
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                }
-                else if (target.Is(CustomRoles.Ntr) || seer.Is(CustomRoles.Ntr))
-                {
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                }
-                else if (target == seer && CustomRolesHelper.RoleExist(CustomRoles.Ntr))
                 {
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                 }

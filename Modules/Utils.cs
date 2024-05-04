@@ -769,10 +769,10 @@ public static class Utils
         neutralsb.Sort();
         addonsb.Sort();
         
-        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
-        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
-        SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"));
-        SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"));
+        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"), ShouldSplit: true);
+        SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"), ShouldSplit: true);
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
@@ -844,8 +844,14 @@ public static class Utils
         }
         sb.Append("</size>");
         string lr = sb.ToString();
-        if (lr.Length > 1200) lr = lr.RemoveHtmlTags();
-        SendMessage("\n", PlayerId, lr);
+        if (lr.Length > 1200 && !GetPlayerById(PlayerId).IsModClient())
+        {
+            lr.Chunk(1200).Do(x => SendMessage("\n", PlayerId, new(x)));
+        }
+        else
+        {
+            SendMessage("\n", PlayerId, lr);
+        }
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
     {
@@ -857,8 +863,8 @@ public static class Utils
         if (EndGamePatch.KillLog != "") 
         {
             string kl = EndGamePatch.KillLog;
-            if (Options.OldKillLog.GetBool() || kl.Length > 1200) kl = kl.RemoveHtmlTags();
-            SendMessage(kl, PlayerId); 
+            if (Options.OldKillLog.GetBool()) kl = kl.RemoveHtmlTags();
+            SendMessage(kl, PlayerId, ShouldSplit: true); 
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
@@ -895,12 +901,6 @@ public static class Utils
                 sb.Append($"{ColorString(RoleColor, "(")}{RoleText}{ColorString(RoleColor, ")")}");
             else
                 sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
-        }
-
-        if (intro && !SubRoles.Contains(CustomRoles.Lovers) && !SubRoles.Contains(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
-        {
-            var RoleText = disableColor ? GetRoleName(CustomRoles.Lovers) : ColorString(GetRoleColor(CustomRoles.Lovers), GetRoleName(CustomRoles.Lovers));
-            sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
         }
 
         return sb.ToString();
@@ -1195,9 +1195,18 @@ public static class Utils
             , ID);
     }
 
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+        if (ShouldSplit && text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient())
+        {
+            text.Chunk(1200).Do(x => SendMessage(new(x), sendTo, title));
+            return;
+        } 
+        else if (text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient()) 
+        {
+            text = text.RemoveHtmlTags();
+        }
 
         // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
         if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
@@ -1530,7 +1539,7 @@ public static class Utils
                 SelfMark.Append(seerRoleClass?.GetMark(seer, isForMeeting: isForMeeting));
                 SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, isForMeeting: isForMeeting));
 
-                if (seer.Is(CustomRoles.Lovers) /* || CustomRoles.Ntr.RoleExist() */)
+                if (seer.Is(CustomRoles.Lovers))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
 
                 if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
@@ -1672,10 +1681,6 @@ public static class Utils
                         {
                             TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                         }
-                        else if (target.Is(CustomRoles.Ntr) || seer.Is(CustomRoles.Ntr))
-                        {
-                            TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                        }
 
                         // ====== Seer know target role ======
 
@@ -1796,6 +1801,70 @@ public static class Utils
     {
         PlayerGameOptionsSender.SetDirtyToAll();
         GameOptionsSender.SendAllGameOptions();
+    }
+    public static bool DeathReasonIsEnable(this PlayerState.DeathReason reason, bool checkbanned = false)
+    {
+        
+        static bool BannedReason(PlayerState.DeathReason rso)
+        {
+            return rso is PlayerState.DeathReason.Disconnected 
+                or PlayerState.DeathReason.Overtired 
+                or PlayerState.DeathReason.etc
+                or PlayerState.DeathReason.Vote 
+                or PlayerState.DeathReason.Gambled;
+        }
+
+        return checkbanned ? !BannedReason(reason) : reason switch
+        {
+            PlayerState.DeathReason.Eaten => (CustomRoles.Pelican.IsEnable()),
+            PlayerState.DeathReason.Spell => (CustomRoles.Witch.IsEnable()),
+            PlayerState.DeathReason.Hex => (CustomRoles.HexMaster.IsEnable()),
+            PlayerState.DeathReason.Curse => (CustomRoles.CursedWolf.IsEnable()),
+            PlayerState.DeathReason.Jinx => (CustomRoles.Jinx.IsEnable()),
+            PlayerState.DeathReason.Shattered => (CustomRoles.Fragile.IsEnable()),
+            PlayerState.DeathReason.Bite => (CustomRoles.Vampire.IsEnable()),
+            PlayerState.DeathReason.Poison => (CustomRoles.Poisoner.IsEnable()),
+            PlayerState.DeathReason.Bombed => (CustomRoles.Bomber.IsEnable() || CustomRoles.Burst.IsEnable()
+                                || CustomRoles.Trapster.IsEnable() || CustomRoles.Fireworker.IsEnable() || CustomRoles.Bastion.IsEnable()),
+            PlayerState.DeathReason.Misfire => (CustomRoles.ChiefOfPolice.IsEnable() || CustomRoles.Sheriff.IsEnable()
+                                || CustomRoles.Reverie.IsEnable() || CustomRoles.Sheriff.IsEnable() || CustomRoles.Fireworker.IsEnable()
+                                || CustomRoles.Hater.IsEnable() || CustomRoles.Pursuer.IsEnable() || CustomRoles.Romantic.IsEnable()),
+            PlayerState.DeathReason.Torched => (CustomRoles.Arsonist.IsEnable()),
+            PlayerState.DeathReason.Sniped => (CustomRoles.Sniper.IsEnable()),
+            PlayerState.DeathReason.Revenge => (CustomRoles.Avanger.IsEnable() || CustomRoles.Retributionist.IsEnable()
+                                || CustomRoles.Nemesis.IsEnable() || CustomRoles.Randomizer.IsEnable()),
+            PlayerState.DeathReason.Quantization => (CustomRoles.Lightning.IsEnable()),
+            //PlayerState.DeathReason.Overtired => (CustomRoles.Workaholic.IsEnable()),
+            PlayerState.DeathReason.Ashamed => (CustomRoles.Workaholic.IsEnable()),
+            PlayerState.DeathReason.PissedOff => (CustomRoles.Pestilence.IsEnable() || CustomRoles.Provocateur.IsEnable()),
+            PlayerState.DeathReason.Dismembered => (CustomRoles.Butcher.IsEnable()),
+            PlayerState.DeathReason.LossOfHead => (CustomRoles.Hangman.IsEnable()),
+            PlayerState.DeathReason.Trialed => (CustomRoles.Judge.IsEnable() || CustomRoles.Councillor.IsEnable()),
+            PlayerState.DeathReason.Infected => (CustomRoles.Infectious.IsEnable()),
+            PlayerState.DeathReason.Hack => (CustomRoles.Glitch.IsEnable()),
+            PlayerState.DeathReason.Pirate => (CustomRoles.Pirate.IsEnable()),
+            PlayerState.DeathReason.Shrouded => (CustomRoles.Shroud.IsEnable()),
+            PlayerState.DeathReason.Mauled => (CustomRoles.Werewolf.IsEnable()),
+            PlayerState.DeathReason.Suicide => (CustomRoles.Unlucky.IsEnable() || CustomRoles.Ghoul.IsEnable()
+                                || CustomRoles.Terrorist.IsEnable() || CustomRoles.Dictator.IsEnable()
+                                || CustomRoles.Addict.IsEnable() || CustomRoles.Mercenary.IsEnable()
+                                || CustomRoles.Mastermind.IsEnable() || CustomRoles.Deathpact.IsEnable()),
+            PlayerState.DeathReason.FollowingSuicide => (CustomRoles.Lovers.IsEnable()),
+            PlayerState.DeathReason.Execution => (CustomRoles.Jailer.IsEnable()),
+            PlayerState.DeathReason.Fall => Options.LadderDeath.GetBool(),
+            PlayerState.DeathReason.Sacrifice => (CustomRoles.Bodyguard.IsEnable() || CustomRoles.Revolutionist.IsEnable()
+                                || CustomRoles.Hater.IsEnable()),
+            PlayerState.DeathReason.Drained => CustomRoles.Puppeteer.IsEnable(),
+            PlayerState.DeathReason.Trap => CustomRoles.Trapster.IsEnable(),
+            PlayerState.DeathReason.Targeted => CustomRoles.Kamikaze.IsEnable(),
+            PlayerState.DeathReason.Retribution => CustomRoles.Instigator.IsEnable(),
+            PlayerState.DeathReason.WrongAnswer => CustomRoles.Quizmaster.IsEnable(),
+            var Breason when BannedReason(Breason) => false,
+            PlayerState.DeathReason.Slice => CustomRoles.Hawk.IsEnable(),
+            PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
+            PlayerState.DeathReason.Kill => true,
+            _ => true,
+        };
     }
     public static void AfterMeetingTasks()
     {

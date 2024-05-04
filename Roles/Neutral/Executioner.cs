@@ -1,5 +1,6 @@
 using Hazel;
 using InnerNet;
+using System;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 
@@ -91,10 +92,18 @@ internal class Executioner : RoleBase
 
                 targetList.Add(target);
             }
-            var SelectedTarget = targetList[rand.Next(targetList.Count)];
-            Target.Add(playerId, SelectedTarget.PlayerId);
-            SendRPC(playerId, SelectedTarget.PlayerId, "SetTarget");
-            Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()}:{SelectedTarget.GetNameWithRole()}", "Executioner");
+            if (targetList.Any())
+            {
+                var SelectedTarget = targetList[rand.Next(targetList.Count)];
+                Target.Add(playerId, SelectedTarget.PlayerId);
+                SendRPC(playerId, SelectedTarget.PlayerId, "SetTarget");
+                Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()}:{SelectedTarget.GetNameWithRole()}", "Executioner");
+            }
+            else
+            {
+                Logger.Warn(" Warning! No suitableable target was found for executioner, switching role","Executioner.Add");
+                ChangeRole(Utils.GetPlayerById(playerId));
+            }
         }
     }
     public static void SendRPC(byte executionerId, byte targetId = 0x73, string Progress = "")
@@ -156,6 +165,9 @@ internal class Executioner : RoleBase
         var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), Translator.GetString(""));
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         executioner.Notify(text);
+        try { executioner.GetRoleClass().Add(executioner.PlayerId); } 
+        catch (Exception err) 
+        { Logger.Warn($"Error after attempting to RoleCLass.Add({executioner.GetCustomRole().ToString().RemoveHtmlTags() + ", " + executioner.GetRealName()}.PlayerId): {err}", "Executioner.ChangeRole.Add"); }
     }
 
     public static bool CheckTarget(byte targetId) => Target.ContainsValue(targetId);

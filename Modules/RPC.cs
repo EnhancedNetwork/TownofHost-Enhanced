@@ -14,7 +14,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC
+enum CustomRPC : int
 {
     // RpcCalls can increase with each AU version
     // On version 2023.11.28 the last id in RpcCalls: 61
@@ -827,7 +827,7 @@ internal static class RPC
             Main.PlayerStates[targetId].SetSubRole(role);
         }
 
-        targetId.GetRoleClassById()?.Add(targetId);
+        if (role < CustomRoles.NotAssigned) targetId.GetRoleClassById()?.Add(targetId);
 
         switch (role)
         {
@@ -836,6 +836,9 @@ internal static class RPC
                 break;
             case CustomRoles.Aware:
                 Aware.Add(targetId);
+                break;
+            case CustomRoles.Glow:
+                Glow.Add(targetId);
                 break;
             case CustomRoles.Workhorse:
                 Workhorse.Add(targetId);

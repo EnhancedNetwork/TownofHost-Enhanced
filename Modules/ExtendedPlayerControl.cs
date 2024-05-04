@@ -656,9 +656,22 @@ static class ExtendedPlayerControl
                 Statue.Remove(Killed.PlayerId);
                 Statue.Add(target.PlayerId);
                 break;
+            case CustomRoles.Glow:
+                Glow.Remove(Killed.PlayerId);
+                Glow.Add(target.PlayerId);
+                break;
         }
     }
-    public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false) => CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
+    public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false)
+    {
+        var caller = new System.Diagnostics.StackFrame(1, false);
+        var callerMethod = caller.GetMethod();
+        string callerMethodName = callerMethod.Name;
+        string callerClassName = callerMethod.DeclaringType.FullName;
+        Logger.Msg($"RpcCheckAndMurder activated from: {callerClassName}.{callerMethodName}", "RpcCheckAndMurder");
+
+        return CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
+    }
     public static bool CheckForInvalidMurdering(this PlayerControl killer, PlayerControl target) => CheckMurderPatch.CheckForInvalidMurdering(killer, target);
     public static void NoCheckStartMeeting(this PlayerControl reporter, GameData.PlayerInfo target, bool force = false)
     { 
@@ -723,7 +736,7 @@ static class ExtendedPlayerControl
         else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
         else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return true;
-        else if (Options.LoverKnowRoles.GetBool() && (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) || target.Is(CustomRoles.Ntr)) return true;
+        else if (Options.LoverKnowRoles.GetBool() && (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))) return true;
         else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor)) return true;
         else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor)) return true;
         else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(Custom_Team.Impostor)) return true;

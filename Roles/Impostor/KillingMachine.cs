@@ -40,6 +40,8 @@ internal class KillingMachine : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
+        opt.SetVision(false);
+        opt.SetFloat(FloatOptionNames.CrewLightMod, 0.2f);
         opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.2f);
     }
 

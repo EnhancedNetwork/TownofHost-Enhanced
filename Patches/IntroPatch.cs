@@ -44,9 +44,6 @@ class SetUpRoleTextPatch
                 foreach (var subRole in Main.PlayerStates[localPlayer.PlayerId].SubRoles.ToArray())
                     __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(subRole), GetString($"{subRole}Info"));
 
-                if (!localPlayer.Is(CustomRoles.Lovers) && !localPlayer.Is(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
-                    __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), GetString($"{CustomRoles.Lovers}Info"));
-
                 __instance.RoleText.text += Utils.GetSubRolesText(localPlayer.PlayerId, false, true);
             }
         }, 0.0001f, "Override Role Text");
@@ -584,6 +581,9 @@ class IntroCutsceneDestroyPatch
             }
         }
         Logger.Info("OnDestroy", "IntroCutscene");
+
+        // Update hud buttons
+        HudManager.Instance.SetHudActive(true);
     }
 }
  

@@ -763,9 +763,7 @@ class MeetingHudStartPatch
 
                 foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles.ToArray())
                     Sub.Append($"\n\n" + $"<size={ChatCommands.Asize}>" + Utils.GetRoleTitle(subRole) + Utils.GetInfoLong(subRole) + "</size>");
-                if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                    Sub.Append($"\n\n" + $"<size={ChatCommands.Asize}>" + Utils.GetRoleTitle(CustomRoles.Lovers) + Utils.GetInfoLong(CustomRoles.Lovers) + "</size>");
-
+                
                 if (Sub.ToString() != string.Empty)
                 {
                     var ACleared = Sub.ToString().Remove(0, 2);
@@ -1081,11 +1079,6 @@ class MeetingHudStartPatch
                 }
             }
             //add checks for both seer and target's subrole, maybe one day we can use them...
-
-            if ((seer.Is(CustomRoles.Ntr) || target.Is(CustomRoles.Ntr)) && !seer.Data.IsDead && !isLover)
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
-            else if (seer == target && CustomRoles.Ntr.RoleExist() && !isLover)
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
 
             if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));

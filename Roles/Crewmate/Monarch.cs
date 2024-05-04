@@ -20,8 +20,8 @@ internal class Monarch : RoleBase
 
     private static OptionItem KnightCooldown;
     private static OptionItem KnightMax;
-    
-    private static int KnightLimit = new();
+
+    private static Dictionary<byte, int> KnightLimit = [];
 
     public override void SetupCustomOption()
     {
@@ -34,12 +34,12 @@ internal class Monarch : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        KnightLimit = new();
+        KnightLimit = [];
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        KnightLimit = KnightMax.GetInt();
+        KnightLimit[playerId] = KnightMax.GetInt();
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -47,22 +47,27 @@ internal class Monarch : RoleBase
     }
     public override void Remove(byte playerId)
     {
+        KnightLimit.Remove(playerId);
         playerIdList.Remove(playerId);
     }
-    private static void SendRPC()
+    private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WritePacked((int)CustomRoles.Monarch);
-        writer.Write(KnightLimit);
+        writer.Write(playerId);
+        writer.Write(KnightLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        KnightLimit = reader.ReadInt32();
+        byte playerId = reader.ReadByte();
+        KnightLimit[playerId] = reader.ReadInt32();
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KnightCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl player) => player.IsAlive() && KnightLimit >= 1;
+    public override bool CanUseKillButton(PlayerControl player) => player.IsAlive() 
+                                                                    && KnightLimit.ContainsKey(player.PlayerId) 
+                                                                    && KnightLimit[player.PlayerId] >= 1;
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
@@ -70,7 +75,8 @@ internal class Monarch : RoleBase
     }
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (KnightLimit < 1) return false;
+        if (!KnightLimit.ContainsKey(killer.PlayerId)) KnightLimit[killer.PlayerId] = KnightMax.GetInt();
+        if (KnightLimit[killer.PlayerId] < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
@@ -78,8 +84,8 @@ internal class Monarch : RoleBase
         }
         if (CanBeKnighted(target))
         {
-            KnightLimit--;
-            SendRPC();
+            KnightLimit[killer.PlayerId]--;
+            SendRPC(killer.PlayerId);
             target.RpcSetCustomRole(CustomRoles.Knighted);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Monarch), GetString("MonarchKnightedPlayer")));
@@ -87,18 +93,18 @@ internal class Monarch : RoleBase
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
-      //      killer.RpcGuardAndKill(target);
+            //      killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
             target.SetKillCooldown(forceAnime: true);
 
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Knighted.ToString(), "Assign " + CustomRoles.Knighted.ToString());
-            if (KnightLimit < 0)
+            if (KnightLimit[killer.PlayerId] < 0)
                 HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{KnightLimit}次招募机会", "Monarch");
             return false;
         }
-        
-        if (KnightLimit < 0)
+
+        if (KnightLimit[killer.PlayerId] < 0)
             HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Monarch), GetString("MonarchInvalidTarget")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{KnightLimit}次招募机会", "Monarch");
@@ -114,10 +120,18 @@ internal class Monarch : RoleBase
         }
         return false;
     }
-    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(KnightLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Monarch).ShadeColor(0.25f) : Color.gray, $"({KnightLimit})");
+    public override string GetProgressText(byte PlayerId, bool comms)
+    {
+        if (!KnightLimit.ContainsKey(PlayerId)) return "Invalid";
+        Color color;
+        if (KnightLimit[PlayerId] >= 1)
+            color = Utils.GetRoleColor(CustomRoles.Monarch);
+        else color = Color.gray;
+        return (Utils.ColorString(color, $"({KnightLimit[PlayerId]})"));
+    }
     private static bool CanBeKnighted(PlayerControl pc)
     {
-        return pc != null && !pc.GetCustomRole().IsNotKnightable() && 
+        return pc != null && !pc.GetCustomRole().IsNotKnightable() &&
             !pc.IsAnySubRole(x => x is CustomRoles.Knighted or CustomRoles.Stubborn or CustomRoles.TicketsStealer);
     }
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.Monarch) && target.Is(CustomRoles.Knighted) ? Main.roleColors[CustomRoles.Knighted] : "";
