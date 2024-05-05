@@ -842,6 +842,8 @@ public static class Options
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralApocalypse).ForEach(r => r.SetupCustomOption());
 
+        CustomRoles.PlagueBearer.GetStaticRoleClass().SetupCustomOption();
+
         #endregion
 
         #region Add-Ons Settings
