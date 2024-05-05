@@ -38,10 +38,6 @@ internal class Murderer : RoleBase
         playerIdList.Add(playerId);
         if (playerId == PlayerControl.LocalPlayer.PlayerId && Main.nickName.Length != 0) MurdererVictim[playerId] = Main.nickName;
         else MurdererVictim[playerId] = Utils.GetPlayerById(playerId).Data.PlayerName;
-
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     private static void SendRPC(byte playerId)
