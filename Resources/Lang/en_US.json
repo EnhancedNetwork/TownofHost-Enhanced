@@ -2181,6 +2181,10 @@
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>ERROR</b></size></color>\n\n<color=#ff1919>This command may only be used by the host.</color>",
   "Message.MaxPlayers": "Maximum players set to ",
   "Message.GhostRoleInfo": "<size=90%><b>Ghost Role Info</b></size>\nHiya! A little bit about ghost roles...<size=75%>\n\nGhost roles drastically impact the game, so not recommended for smaller lobbies, if you're unfamiliar.\n\n<b>Spawning:</b>\nGhost-roles only spawn after death, the first x people from (team) to die get them.</size>\n\n<size=50%><b>PS: If your previous role didn't have tasks(e.g sheriff), your tasks as a ghost-role aren't needed for task-win</b></size>",
+  "Message.MeCommandInfo": "<size=100%><b>Hi [{0}] {1} !</b></size>\n\n<size=90%>Your <color=#f34c50>friend code</color> is <u>{2}</u>.</size>\n\n<size=90%>Your <color=#f34c50>hash puid</color> is <u>{3}</u>.</size>\n\n<size=90%>Your <b><color=#ffc0cb>TOHE</color> <color=#5865F2>Discord</color></b> role is <u>{4}</u>.</size>\n\n",
+  "Message.MeCommandTargetInfo": "<size=100%><b>Selected [{0}] Player {1} ,</b></size>\n\n<size=90%>Their <color=#f34c50>friend code</color> is <u>{2}</u>.</size>\n\n<size=90%>Their <color=#f34c50>hash puid</color> is <u>{3}</u>.</size>\n\n<size=90%>Their <b><color=#ffc0cb>TOHE</color> <color=#5865F2>Discord</color></b> role is <u>{4}</u>.</size>\n\n",
+  "Message.MeCommandInvalidID": "The ID you entered seems incorrect. \nPlease use /id to get the player id of online players",
+  "Message.MeCommandNoPermission": "You are not allowed to use /me command for others",
 
   "EnableGadientTags": "Enable Gradient Tags <color=#ff0000>(can cause disconnect issues)</color>",
   "Warning.GradientTags": "<color=#ff0000><size=150%>Warning:</size></color>\n\nHost has enabled gradient tags. This feature is not recommended to use because it can cause <b>disconnect issues</b>",

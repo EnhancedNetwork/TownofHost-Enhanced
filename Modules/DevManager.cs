@@ -2,10 +2,11 @@
 
 namespace TOHE;
 
-public class DevUser(string code = "", string color = "null", string tag = "null", bool isUp = false, bool isDev = false, bool deBug = false, bool colorCmd = false, bool nameCmd = false, string upName = "未认证用户")
+public class DevUser(string code = "", string color = "null", string userType = "null", string tag = "null", bool isUp = false, bool isDev = false, bool deBug = false, bool colorCmd = false, bool nameCmd = false, string upName = "未认证用户")
 {
     public string Code { get; set; } = code;
     public string Color { get; set; } = color;
+    public string UserType { get; set; } = userType;
     public string Tag { get; set; } = tag;
     public bool IsUp { get; set; } = isUp;
     public bool IsDev { get; set; } = isDev;
@@ -88,20 +89,21 @@ public static class DevManager
     public static void Init()
     {
         // Dev
-        DevUserList.Add(new(code: "actorour#0029", color: "#ffc0cb", tag: "Original Developer", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "KARPED1EM"));
-        DevUserList.Add(new(code: "pinklaze#1776", color: "#30548e", tag: "#Dev", isUp: true, isDev: true, deBug: true, colorCmd: false, upName: "NCSIMON"));
-        //DevUserList.Add(new(code: "sofaagile#3120", color: "null", tag: "null", isUp: false, isDev: true, deBug: true, colorCmd: false, upName: null)); //天寸
+        DevUserList.Add(new(code: "actorour#0029", color: "#ffc0cb", tag: "Original Developer", userType: "s_cr", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "KARPED1EM"));
+        DevUserList.Add(new(code: "pinklaze#1776", color: "#30548e", tag: "#Dev", userType: "s_cr", isUp: true, isDev: true, deBug: true, colorCmd: false, upName: "NCSIMON"));
+        DevUserList.Add(new(code: "sofaagile#3120", color: "null", tag: "null", userType: "s_cr", isUp: false, isDev: true, deBug: true, colorCmd: false, upName: null)); //天寸
         //DevUserList.Add(new(code: "keyscreech#2151", color: "null", tag: "<color=#D3A4FF>美術</color><color=#5A5AAD>NotKomi</color>", isUp: false, isDev: true, deBug: false, upName: null)); //Endrmen40409
-        DevUserList.Add(new(code: "icingposh#6469", color: "#9e2424", tag: "discord.gg/tohe", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "ryuk2"));
-
-        DevUserList.Add(new(code: "bestanswer#3360", color: "#00ff1d", tag: "绿色游戏", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null)); //NikoCat233's alt
+        DevUserList.Add(new(code: "icingposh#6469", color: "#9e2424", userType: "s_cr", tag: "discord.gg/tohe", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "ryuk2"));
+        DevUserList.Add(new(code: "bestanswer#3360", color: "#00ff1d", tag: "绿色游戏", userType: "s_cr", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null)); //NikoCat233's alt
 
         //// pt-BR Translators
         //DevUserList.Add(new(code: "modelpad#5195", color: "null", tag: "Tradutor", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Reginaldoo")); // and content creator
         //DevUserList.Add(new(code: "mimerecord#9638", color: "null", tag: "Tradutor", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Arc"));
+
         //// Latam Translators
         //DevUserList.Add(new(code: "magicyear#5568", color: "#1F75FE", tag: "Traductor", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "CreepPower")); //creeppower
-        //// China Up
+
+        //// Chinese Content makers
         DevUserList.Add(new(code: "truantwarm#9165", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "萧暮不姓萧"));
         DevUserList.Add(new(code: "drilldinky#1386", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "爱玩AU的河豚"));
         DevUserList.Add(new(code: "farardour#6818", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "-提米SaMa-"));
@@ -142,4 +144,41 @@ public static class DevManager
     }
     public static bool IsDevUser(this string code) => DevUserList.Any(x => x.Code == code);
     public static DevUser GetDevUser(this string code) => code.IsDevUser() ? DevUserList.Find(x => x.Code == code) : DefaultDevUser;
+    public static string GetUserType(this DevUser user)
+    {
+        string rolename = "Crewmate";
+
+        if (user.UserType != "null" && user.UserType != string.Empty)
+        {
+            switch (user.UserType)
+            {
+                case "s_cr":
+                    rolename = "<color=#ff0000>Contributor</color>";
+                    break;
+                case "s_bo":
+                    rolename = "<color=#7f00ff>Booster</color>";
+                    break;
+                case "s_tr":
+                    rolename = "<color=#f46e6e>Tester</color>";
+                    break;
+                case "s_jc":
+                    rolename = "<color=#f46e6e>Junior Contributor</color>";
+                    break;
+
+                default:
+                    if (user.UserType.StartsWith("s_"))
+                    {
+                        rolename = "<color=#ffff00>Sponsor</color>";
+                    }
+                    else if (user.UserType.StartsWith("t_"))
+                    {
+                        rolename = "<color=#00ffff>Translator</color>";
+                    }
+                    break;
+            }
+        }
+
+        return rolename;
+    }
+
 }
