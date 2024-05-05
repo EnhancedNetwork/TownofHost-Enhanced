@@ -61,7 +61,8 @@ class ExileControllerWrapUpPatch
         if (!Collector.CollectorWin(false) && exiled != null)
         {
             // Reset player cam for exiled desync impostor
-            if (Main.ResetCamPlayerList.Contains(exiled.PlayerId))
+            if (AntiBlackout.currentSolution != SolutionAntiBlackScreen.AntiBlackout_FullResetCamera
+                && Main.ResetCamPlayerList.Contains(exiled.PlayerId))
             {
                 exiled.Object?.ResetPlayerCam(1f);
             }
@@ -89,20 +90,21 @@ class ExileControllerWrapUpPatch
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
-            // Check Anti BlackOut
-            if (player.GetCustomRole().IsImpostor() 
-                && !player.IsAlive() // if player is dead impostor
-                && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
-            {
-                player.ResetPlayerCam(1f);
-            }
-
             // Check for remove pet
             player.RpcRemovePet();
 
             // Reset Kill/Ability cooldown
             player.ResetKillCooldown();
             player.RpcResetAbilityCooldown();
+        }
+
+        if (AntiBlackout.currentSolution == SolutionAntiBlackScreen.AntiBlackout_FullResetCamera
+            && AntiBlackout.BlackOutIsActive)
+        {
+            foreach (var player in Main.AllPlayerControls)
+            {
+                AntiBlackout.ResetCamForPlayer(player);
+            }
         }
 
         Main.MeetingIsStarted = false;
@@ -167,7 +169,8 @@ class ExileControllerWrapUpPatch
                         player?.SetRealKiller(player, true);
 
                     // Reset player cam for dead desync impostor
-                    if (Main.ResetCamPlayerList.Contains(x.Key))
+                    if (AntiBlackout.currentSolution != SolutionAntiBlackScreen.AntiBlackout_FullResetCamera
+                        && Main.ResetCamPlayerList.Contains(x.Key))
                     {
                         player?.ResetPlayerCam(1f);
                     }

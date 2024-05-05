@@ -3,15 +3,20 @@ using System;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using TOHE.Roles.Impostor;
+using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
 public static class AntiBlackout
 {
+    public static SolutionAntiBlackScreen currentSolution;
+
     ///<summary>
     /// Check num alive Impostors & Crewmates & NeutralKillers
     ///</summary>
-    public static bool BlackOutIsActive => !Options.DisableAntiBlackoutProtects.GetBool() && CheckBlackOut();
+    public static bool BlackOutIsActive => currentSolution != SolutionAntiBlackScreen.AntiBlackout_DisableProtect && CheckBlackOut();
 
     ///<summary>
     /// Count alive players and check black out 
@@ -62,6 +67,11 @@ public static class AntiBlackout
             if (!BlackOutIsActive)
                 BlackOutIsActive = numAliveImpostors >= (numAliveNeutralKillers + numAliveCrewmates);
         }
+        else if (currentSolution == SolutionAntiBlackScreen.AntiBlackout_FullResetCamera)
+        {
+            BlackOutIsActive = (numAliveNeutralKillers + numAliveCrewmates) <= numAliveImpostors;
+        }
+
 
         Logger.Info($" {BlackOutIsActive}", "BlackOut Is Active");
         return BlackOutIsActive;
@@ -162,6 +172,58 @@ public static class AntiBlackout
             logger.Info("==/Temp Restore==");
         }
     }
+
+    public static void ResetCamForPlayer(PlayerControl player)
+    {
+        if (player == null || !AmongUsClient.Instance.AmHost || player.AmOwner || player.IsModClient()) return;
+
+        var ghostPlayer = Main.AllPlayerControls.FirstOrDefault(pc => !pc.IsAlive() && pc.PlayerId != player.PlayerId);
+        var playerPosition = player.GetCustomPosition();
+        var systemtypes = Utils.GetCriticalSabotageSystemType();
+
+        if (ghostPlayer != null)
+        {
+            var sender = CustomRpcSender.Create("ResetPlayerCam");
+            {
+                sender.AutoStartRpc(ghostPlayer.NetTransform.NetId, (byte)RpcCalls.SnapTo, targetClientId: player.GetClientId());
+                {
+                    NetHelpers.WriteVector2(new Vector2(100f, 100f), sender.stream);
+                    sender.Write((ushort)(ghostPlayer.NetTransform.lastSequenceId + 8));
+                }
+                sender.EndRpc();
+                sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer, targetClientId: player.GetClientId());
+                {
+                    sender.WriteNetObject(ghostPlayer);
+                    sender.Write((int)MurderResultFlags.Succeeded);
+                }
+                sender.EndRpc();
+                sender.AutoStartRpc(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, targetClientId: player.GetClientId());
+                {
+                    sender.Write((byte)systemtypes);
+                    sender.WriteNetObject(player);
+                    sender.Write((byte)128);
+                }
+                sender.EndRpc();
+            }
+            sender.SendMessage();
+        }
+
+        _ = new LateTask(() =>
+        {
+            if (!RandomSpawn.IsRandomSpawn() && !GameStates.AirshipIsActive)
+            {
+                player.RpcTeleport(playerPosition);
+            }
+
+            player.RpcDesyncUpdateSystem(systemtypes, 16);
+
+            if (GameStates.AirshipIsActive)
+            {
+                player.RpcDesyncUpdateSystem(systemtypes, 17);
+            }
+        }, 0.4f, "Fix Desync Reactor for reset cam", shoudLog: false);
+    }
+
     public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, GameData.PlayerInfo exiled, bool tie)
     {
         if (AmongUsClient.Instance.AmClient)
@@ -244,8 +306,16 @@ public static class AntiBlackout
         IsCached = false;
         ShowExiledInfo = false;
         StoreExiledMessage = "";
+        currentSolution = (SolutionAntiBlackScreen)Options.SolutionAntiBlackScreen.GetValue();
     }
 
     public static bool ShowExiledInfo = false;
     public static string StoreExiledMessage = "";
+}
+
+public enum SolutionAntiBlackScreen
+{
+    AntiBlackout_SkipVoting,
+    AntiBlackout_FullResetCamera,
+    AntiBlackout_DisableProtect
 }
