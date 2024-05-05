@@ -211,6 +211,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Greedy,
                 CustomRoles.Merchant,
                 CustomRoles.SoulCollector,
+                CustomRoles.Baker,
                 CustomRoles.Trickster], 
                 
                 [CustomRoles.Pestilence,
@@ -227,6 +228,8 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Arrogance,
                 CustomRoles.KillingMachine,
                 CustomRoles.Berserker,
+                CustomRoles.War,
+                CustomRoles.Death,
                 CustomRoles.Butcher],
                 
                 [CustomRoles.Coroner,
@@ -235,7 +238,8 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Tracefinder,
                 CustomRoles.Seeker,
                 CustomRoles.Tracker,
-                CustomRoles.Romantic, 
+                CustomRoles.Romantic,
+                CustomRoles.Famine,
                 CustomRoles.SchrodingersCat], 
                 
                 [CustomRoles.Bodyguard,
