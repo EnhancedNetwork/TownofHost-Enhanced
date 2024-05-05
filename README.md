@@ -86,7 +86,7 @@
 > - Dark Theme
 > - Improved Role Spawns
 > - Some ideas to improve performance
-### :star: [TOHEX](https://github.com/TOHEX-Official/TownOfHostEdited-Xi)
+### :star: [TONEX (Formerly TOHEX)](https://github.com/XtremeWave/TownOfNewEpic_Xtreme)
 >
 > - Provided roles: Swapper, Berserker, Randomizer and Blackmailer
 > - Improve chat spam system (ChatManager.cs)

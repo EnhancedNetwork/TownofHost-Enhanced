@@ -134,6 +134,7 @@ public class dbConnect
                         code: userData["friendcode"].ToString(),
                         color: userData["color"].ToString(),
                         tag: ToAutoTranslate(userData["overhead_tag"]),
+                        userType: userData["type"].ToString(),
                         isUp: userData["isUP"].GetInt32() == 1,
                         isDev: userData["isDev"].GetInt32() == 1,
                         deBug: userData["debug"].GetInt32() == 1,
