@@ -845,9 +845,13 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
-        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralApocalypse).ForEach(r => r.SetupCustomOption());
+        CustomRoles.Baker.GetStaticRoleClass().SetupCustomOption();
+
+        CustomRoles.Berserker.GetStaticRoleClass().SetupCustomOption();
 
         CustomRoles.PlagueBearer.GetStaticRoleClass().SetupCustomOption();
+
+        CustomRoles.SoulCollector.GetStaticRoleClass().SetupCustomOption();
 
         #endregion
 
