@@ -176,35 +176,34 @@ public static class AntiBlackout
         if (player == null || !AmongUsClient.Instance.AmHost || player.AmOwner || player.IsModClient()) return;
 
         var ghostPlayer = Main.AllPlayerControls.FirstOrDefault(pc => !pc.IsAlive() && pc.PlayerId != player.PlayerId);
+        if (ghostPlayer == null) return;
+
         var playerPosition = player.GetCustomPosition();
         var systemtypes = Utils.GetCriticalSabotageSystemType();
 
-        if (ghostPlayer != null)
+        var sender = CustomRpcSender.Create("ResetPlayerCam");
         {
-            var sender = CustomRpcSender.Create("ResetPlayerCam");
+            sender.AutoStartRpc(ghostPlayer.NetTransform.NetId, (byte)RpcCalls.SnapTo, targetClientId: player.GetClientId());
             {
-                sender.AutoStartRpc(ghostPlayer.NetTransform.NetId, (byte)RpcCalls.SnapTo, targetClientId: player.GetClientId());
-                {
-                    NetHelpers.WriteVector2(new Vector2(100f, 100f), sender.stream);
-                    sender.Write((ushort)(ghostPlayer.NetTransform.lastSequenceId + 8));
-                }
-                sender.EndRpc();
-                sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer, targetClientId: player.GetClientId());
-                {
-                    sender.WriteNetObject(ghostPlayer);
-                    sender.Write((int)MurderResultFlags.Succeeded);
-                }
-                sender.EndRpc();
-                sender.AutoStartRpc(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, targetClientId: player.GetClientId());
-                {
-                    sender.Write((byte)systemtypes);
-                    sender.WriteNetObject(player);
-                    sender.Write((byte)128);
-                }
-                sender.EndRpc();
+                NetHelpers.WriteVector2(new Vector2(100f, 100f), sender.stream);
+                sender.Write((ushort)(ghostPlayer.NetTransform.lastSequenceId + 8));
             }
-            sender.SendMessage();
+            sender.EndRpc();
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer, targetClientId: player.GetClientId());
+            {
+                sender.WriteNetObject(ghostPlayer);
+                sender.Write((int)MurderResultFlags.Succeeded);
+            }
+            sender.EndRpc();
+            sender.AutoStartRpc(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, targetClientId: player.GetClientId());
+            {
+                sender.Write((byte)systemtypes);
+                sender.WriteNetObject(player);
+                sender.Write((byte)128);
+            }
+            sender.EndRpc();
         }
+        sender.SendMessage();
 
         _ = new LateTask(() =>
         {
