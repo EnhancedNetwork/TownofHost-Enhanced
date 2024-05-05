@@ -1202,7 +1202,7 @@ class FixedUpdateInNormalGamePatch
                     RealName = $"<size=0%>{RealName}</size> ";
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
-                    ? $" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : string.Empty;
+                    ? $" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(seer.PlayerId))})" : string.Empty;
 
                 target.cosmetics.nameText.text = $"{RealName}{DeathReason}{Mark}";
 

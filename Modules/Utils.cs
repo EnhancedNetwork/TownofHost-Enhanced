@@ -22,6 +22,9 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using BepInEx.Unity.IL2CPP.UnityEngine;
+using static Il2CppSystem.Globalization.TimeSpanFormat;
+using static Il2CppSystem.Uri;
 
 
 namespace TOHE;
@@ -472,16 +475,24 @@ public static class Utils
         if (count < 1 && !ffa) return "";
         return ColorString(new Color32(255, 69, 0, byte.MaxValue), string.Format(GetString("KillCount"), count));
     }
-    public static string GetVitalText(byte playerId, bool RealKillerColor = false)
+    public static string GetVitalText(byte playerId, bool ColoredReason = false)
     {
         var state = Main.PlayerStates[playerId];
         string deathReason = state.IsDead ? GetString("DeathReason." + state.deathReason) : GetString("Alive");
-        if (RealKillerColor)
+
+        if (ColoredReason)
         {
-            var KillerId = state.GetRealKiller();
-            Color color = KillerId != byte.MaxValue ? Main.PlayerColors[KillerId] : GetRoleColor(CustomRoles.Doctor);
-            if (state.deathReason == PlayerState.DeathReason.Disconnected) color = new Color(255, 255, 255, 50);
-            deathReason = ColorString(color, deathReason);
+            if (deathReason != GetString("Alive"))
+            {
+                deathReason = TryGetHexColorByEnum(state.deathReason, out var hex) ? "<color=" + hex + ">" + deathReason + "</color>"
+                    : ColorString(GetRoleColor(CustomRoles.Doctor), deathReason);
+            }
+            else
+            {
+                deathReason = ColorString(GetRoleColor(CustomRoles.Doctor), deathReason);
+            }
+
+
         }
         return deathReason;
     }
@@ -870,9 +881,8 @@ public static class Utils
         if (EndGamePatch.KillLog != "") 
         {
             string kl = EndGamePatch.KillLog;
-            if (Options.OldKillLog.GetBool()) kl = kl.RemoveHtmlTags();
-            kl = kl.Replace("<color=", "<");
-            SendMessage(kl, PlayerId, ShouldSplit: true); 
+            kl = Options.OldKillLog.GetBool() ? kl.RemoveHtmlTags() : kl.Replace("<color=", "<");
+            SendSpesificMessage(kl, PlayerId, NewLineIndex: 899);
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
@@ -1275,6 +1285,28 @@ public static class Utils
         return [.. result];
     }
     private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
+    
+    
+    public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "", int NewLineIndex = 1679) 
+    {
+        // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
+
+
+        if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
+        {
+            foreach(var txt in text.SplitMessage(NewLineIndex))
+            {
+                var m = Regex.Replace(txt, "^<voffset=[-]?\\d+em>", ""); // replaces the first instance of voffset, if any.
+                SendMessage(m, sendTo, title);
+            }
+        }
+        else 
+        {
+            SendMessage(text, sendTo, title);
+        }
+
+
+    }
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -1676,7 +1708,7 @@ public static class Utils
 
                 string SelfTaskText = GetProgressText(seer);
                 string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, false)}{SelfTaskText}</size>";
-                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : "";
+                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor) ,GetVitalText(seer.PlayerId))})" : "";
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
@@ -1853,7 +1885,7 @@ public static class Utils
 
                         // ====== Target Death Reason for target (Death Reason visible ​​only to the seer) ======
                         string TargetDeathReason = seer.KnowDeathReason(target) 
-                            ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})" : "";
+                            ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : "";
 
                         // Devourer
                         if (CustomRoles.Devourer.HasEnabled())
@@ -2089,7 +2121,7 @@ public static class Utils
         }
         else { TaskCount = GetProgressText(id); }
 
-        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} ({GetVitalText(id, true)})";
+        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} 『{GetVitalText(id, true)}』";
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
@@ -2192,4 +2224,32 @@ public static class Utils
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);
     public static int PlayersCount(CountTypes countTypes) => Main.PlayerStates.Values.Count(state => state.countTypes == countTypes);
     public static int AlivePlayersCount(CountTypes countTypes) => Main.AllAlivePlayerControls.Count(pc => pc.Is(countTypes));
+    public static bool TryGetHexColorByEnum(this Enum enumValue, out string hexcolor)
+    {
+        if (enumValue == null)
+        {
+            hexcolor = string.Empty;
+            return false;
+        }
+
+        Type type = enumValue.GetType();
+        MemberInfo[] memberInfo = type.GetMember(enumValue.ToString());
+        if (memberInfo.Length > 0)
+        {
+            var attributes = memberInfo[0].GetCustomAttributes(typeof(HexColorAttribute), false);
+            if (attributes.Length > 0)
+            {
+                hexcolor = ((HexColorAttribute)attributes[0]).HexColor;
+                return true;
+            }
+        }
+        hexcolor = string.Empty;
+        return false;
+    }
+}
+
+[AttributeUsage(AttributeTargets.Field)]
+public class HexColorAttribute(string hexColor) : Attribute
+{
+    public string HexColor = hexColor;
 }

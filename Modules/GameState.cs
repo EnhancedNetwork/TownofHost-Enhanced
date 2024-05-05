@@ -254,51 +254,51 @@ public class PlayerState(byte playerId)
     public void InitTask(PlayerControl player) => taskState.Init(player);
     public void UpdateTask(PlayerControl player) => taskState.Update(player);
 
-    public enum DeathReason
+    public enum DeathReason //Adding hexcolor is optional.
     {
-        Kill,
-        Vote,
-        Suicide,
-        Spell,
-        Curse,
-        Hex,
-        FollowingSuicide,
-        Bite,
-        Poison,
-        Bombed,
-        Misfire,
-        Torched,
-        Sniped,
-        Revenge,
-        Execution,
-        Disconnected,
-        Fall,
+        [HexColor("#b03541")] Kill,
+        [HexColor("#d1d11f")] Vote,
+        [HexColor("#250e42")] Suicide,
+        [HexColor("#94089e")] Spell,
+        [HexColor("#0c0463")] Curse,
+        [HexColor("#a1007e")] Hex,
+        [HexColor("#220b29")] FollowingSuicide,//(HeartBroken)
+        [HexColor("#a12720")] Bite,
+        [HexColor("#37a366")] Poison,
+        [HexColor("#a36637")] Bombed,
+        [HexColor("#a38537")] Misfire,
+        [HexColor("#b85f07")] Torched,
+        [HexColor("#40372d")] Sniped,
+        [HexColor("#9e4331")] Revenge,
+        [HexColor("#bf280a")] Execution,
+        [HexColor("#181924")] Disconnected,
+        [HexColor("#879159")] Fall,
 
         // TOHE
-        Gambled,
-        Eaten,
-        Sacrifice,
-        Quantization,
-        Overtired,
-        Ashamed,
-        PissedOff,
-        Dismembered,
-        LossOfHead,
-        Trialed,
-        Infected,
-        Jinx,
-        Hack,
-        Pirate,
-        Shrouded,
-        Mauled,
-        Drained,
-        Shattered,
-        Trap,
-        Targeted,
-        Retribution,
-        Slice,
-        BloodLet,
-        WrongAnswer,
+        [HexColor("#0dbd5f")] Gambled,
+        [HexColor("#30a667")] Eaten,
+        [HexColor("#421b26")] Sacrifice,
+        [HexColor("#1b2f42")] Quantization,
+        [HexColor("#374d61")] Overtired,
+        [HexColor("#374d61")] Ashamed,
+        [HexColor("#4d080d")] PissedOff,
+        [HexColor("#4d0843")] Dismembered,
+        [HexColor("#084d2a")] LossOfHead,
+        [HexColor("#7e9e4d")] Trialed,
+        [HexColor("#5cc953")] Infected,
+        [HexColor("#a653c9")] Jinx,
+        [HexColor("#23a68c")] Hack,
+        [HexColor("#ffe554")] Pirate,
+        [HexColor("#525a9e")] Shrouded,
+        [HexColor("#678ea8")] Mauled,
+        [HexColor("#784d5f")] Drained,
+        [HexColor("#b595db")] Shattered,
+        [HexColor("#ab9c7d")] Trap,
+        [HexColor("#99393c")] Targeted,
+        [HexColor("#399962")] Retribution,
+        [HexColor("#848c8a")] Slice,
+        [HexColor("#ff171b")] BloodLet,
+        [HexColor("#ffd117")] WrongAnswer,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
@@ -453,6 +453,8 @@ public static class GameStates
     public static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
     public static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
 }
+
+
 public static class MeetingStates
 {
     public static DeadBody[] DeadBodies = null;
