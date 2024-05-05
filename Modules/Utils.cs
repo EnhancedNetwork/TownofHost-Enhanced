@@ -22,9 +22,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
-using BepInEx.Unity.IL2CPP.UnityEngine;
-using static Il2CppSystem.Globalization.TimeSpanFormat;
-using static Il2CppSystem.Uri;
 
 
 namespace TOHE;
