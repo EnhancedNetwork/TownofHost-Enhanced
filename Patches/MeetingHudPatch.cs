@@ -1046,12 +1046,12 @@ class MeetingHudStartPatch
                             //isLover = true;
                         }
                         break;
+                    case CustomRoles.Cyber when Cyber.CyberKnown.GetBool():
+                        sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
+                        break;
                 }
             }
             //add checks for both seer and target's subrole, maybe one day we can use them...
-
-            if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
 
             pva.NameText.text += sb.ToString();
             pva.ColorBlindName.transform.localPosition -= new Vector3(1.35f, 0f, 0f);
