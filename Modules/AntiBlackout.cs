@@ -33,6 +33,7 @@ public static class AntiBlackout
 
             else if (pc.GetCustomRole().IsNK()) NeutralKillers.Add(pc.PlayerId); // Neutral Killers
             else if (pc.Is(CustomRoles.Cultist)) NeutralKillers.Add(pc.PlayerId);
+            else if (pc.GetCustomRole().IsNA()) NeutralKillers.Add(pc.PlayerId); // Neutral Apocalypse
 
             else Crewmates.Add(pc.PlayerId);
         }
