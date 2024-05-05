@@ -1034,7 +1034,7 @@ class MeetingHudStartPatch
                 }
             }
 
-            bool isLover = false;
+            //bool isLover = false;
             foreach (var TargetSubRole in target.GetCustomSubRoles().ToArray())
             {
                 switch (TargetSubRole)
@@ -1043,7 +1043,7 @@ class MeetingHudStartPatch
                         if (seer.Is(CustomRoles.Lovers) || seer.Data.IsDead)
                         {
                             sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
-                            isLover = true;
+                            //isLover = true;
                         }
                         break;
                 }
