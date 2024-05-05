@@ -2,7 +2,7 @@
 
 namespace TOHE;
 
-public static class WriterHelper
+public static class WriterHelper // Currently not in use, because all rpc are based on byte. May be in use for a new enum perhaps...
 {
     /// <summary>
     /// Starts a rpc using a integer value.
@@ -11,7 +11,7 @@ public static class WriterHelper
     /// <param name="callId">The call that will be called in the InnerNetObject</param>
     /// <param name="option">The send option of the packet, Reliable packets are bigger</param>
     /// <returns>A new MessageWriter</returns>
-    public static MessageWriter StartRpc(this AmongUsClient client, uint targetNetId, int callId, SendOption option = SendOption.Reliable)
+    private static MessageWriter StartRpc(this AmongUsClient client, uint targetNetId, int callId, SendOption option = SendOption.Reliable)
     {
         MessageWriter messageWriter = client.Streams[(int)option];
         messageWriter.StartMessage(2);
@@ -28,7 +28,7 @@ public static class WriterHelper
     /// <param name="option">The send option of the packet, Reliable packets are bigger</param>
     /// <param name="targetClientId">The target client id that the message will be streamed to</param>
     /// <returns>A new MessageWriter</returns>
-    public static MessageWriter StartRpcImmediately(this AmongUsClient client, uint targetNetId, int callId, SendOption option, int targetClientId = -1)
+    private static MessageWriter StartRpcImmediately(this AmongUsClient client, uint targetNetId, int callId, SendOption option, int targetClientId = -1)
     {
         MessageWriter messageWriter = MessageWriter.Get(option);
         if (targetClientId < 0)

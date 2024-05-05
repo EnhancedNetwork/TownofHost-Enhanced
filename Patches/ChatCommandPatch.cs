@@ -111,6 +111,7 @@ internal class ChatCommands
                     }
                 }
                 break;
+
             default:
                 Main.isChatCommand = false;
                 break;
@@ -435,6 +436,41 @@ internal class ChatCommands
                     }
                     else
                         Utils.SendMessage((PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + GetString("Message.CanNotUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
+                    break;
+
+                case "/me":
+                    canceled = true;
+                    subArgs = text.Length == 3 ? string.Empty : text.Remove(0, 3);
+                    if (string.IsNullOrEmpty(subArgs))
+                    {
+                        HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{string.Format(GetString("Message.MeCommandInfo"), PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.GetRealName(), PlayerControl.LocalPlayer.GetClient().FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid(), PlayerControl.LocalPlayer.FriendCode.GetDevUser().GetUserType())}");
+                    }
+                    else
+                    {
+                        if (byte.TryParse(subArgs, out byte meid))
+                        {
+                            if (meid != PlayerControl.LocalPlayer.PlayerId)
+                            {
+                                var targetplayer = Utils.GetPlayerById(meid);
+                                if (targetplayer != null && targetplayer.GetClient() != null)
+                                {
+                                    HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{string.Format(GetString("Message.MeCommandTargetInfo"), targetplayer.PlayerId, targetplayer.GetRealName(), targetplayer.GetClient().FriendCode, targetplayer.GetClient().GetHashedPuid(), targetplayer.FriendCode.GetDevUser().GetUserType())}");
+                                }
+                                else
+                                {
+                                    HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{(GetString("Message.MeCommandInvalidID"))}");
+                                }
+                            }
+                            else
+                            {
+                                HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{string.Format(GetString("Message.MeCommandInfo"), PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.GetRealName(), PlayerControl.LocalPlayer.GetClient().FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid(), PlayerControl.LocalPlayer.FriendCode.GetDevUser().GetUserType())}");
+                            }
+                        }
+                        else
+                        {
+                            HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{(GetString("Message.MeCommandInvalidID"))}");
+                        }
+                    }
                     break;
 
                 case "/t":
@@ -2425,6 +2461,45 @@ internal class ChatCommands
                     Utils.SendMessage(string.Format(GetString("RandResult"), botResult), player.PlayerId);
                     break;
                 }
+            case "/me":
+                subArgs = text.Length == 3 ? string.Empty : text.Remove(0, 3);
+                if (string.IsNullOrEmpty(subArgs))
+                {
+                    Utils.SendMessage((player.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{string.Format(GetString("Message.MeCommandInfo"), player.PlayerId, player.GetRealName(), player.GetClient().FriendCode, player.GetClient().GetHashedPuid(), player.FriendCode.GetDevUser().GetUserType())}", player.PlayerId);
+                }
+                else
+                {
+                    if (Options.ApplyModeratorList.GetValue() == 0 || !Utils.IsPlayerModerator(player.FriendCode))
+                    {
+                        Utils.SendMessage(GetString("Message.MeCommandNoPermission"), player.PlayerId);
+                        break;
+                    }
+
+                    if (byte.TryParse(subArgs, out byte meid))
+                    {
+                        if (meid != player.PlayerId)
+                        {
+                            var targetplayer = Utils.GetPlayerById(meid);
+                            if (targetplayer != null && targetplayer.GetClient() != null)
+                            {
+                                Utils.SendMessage($"{string.Format(GetString("Message.MeCommandTargetInfo"), targetplayer.PlayerId, targetplayer.GetRealName(), targetplayer.GetClient().FriendCode, targetplayer.GetClient().GetHashedPuid(), targetplayer.FriendCode.GetDevUser().GetUserType())}", player.PlayerId);
+                            }
+                            else
+                            {
+                                Utils.SendMessage($"{(GetString("Message.MeCommandInvalidID"))}", player.PlayerId);
+                            }
+                        }
+                        else
+                        {
+                            Utils.SendMessage($"{string.Format(GetString("Message.MeCommandInfo"), PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.GetRealName(), PlayerControl.LocalPlayer.GetClient().FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid(), PlayerControl.LocalPlayer.FriendCode.GetDevUser().GetUserType())}", player.PlayerId);
+                        }
+                    }
+                    else
+                    {
+                        Utils.SendMessage($"{(GetString("Message.MeCommandInvalidID"))}", player.PlayerId);
+                    }
+                }
+                break;
 
 
             default:

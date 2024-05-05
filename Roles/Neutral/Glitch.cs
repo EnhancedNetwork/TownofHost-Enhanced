@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using System.Text;
 using static TOHE.Translator;
 using static TOHE.Options;
+using Hazel;
 
 namespace TOHE.Roles.Neutral;
 
@@ -35,6 +36,7 @@ internal class Glitch : RoleBase
     public static long LastMimic;
 
     private static bool isShifted = false;
+    private static long lastRpcSend = 0;
 
     public override void SetupCustomOption()
     {
@@ -74,6 +76,7 @@ internal class Glitch : RoleBase
         LastKill = ts;
         LastHack = ts;
         LastMimic = ts;
+        lastRpcSend = ts;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -168,6 +171,12 @@ internal class Glitch : RoleBase
             KCDTimer = 0;
             MimicCDTimer = 0;
             MimicDurTimer = 0;
+
+            if (lastRpcSend <= Utils.GetTimeStamp() + 500)
+            {
+                SendRPC();
+                lastRpcSend += 9999;
+            }
             return;
         }
 
@@ -221,6 +230,14 @@ internal class Glitch : RoleBase
 
             if ((!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != ns) && ns != string.Empty) player.Notify(ns, 1.1f);
         }
+        else if (!player.AmOwner) // For mooded non host players, sync kcd per second
+        {
+            if (lastRpcSend < Utils.GetTimeStamp())
+            {
+                SendRPC();
+                lastRpcSend = Utils.GetTimeStamp();
+            }
+        }
     }
     public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
@@ -246,6 +263,7 @@ internal class Glitch : RoleBase
         KCDTimer = 10;
         HackCDTimer = 10;
         MimicCDTimer = 10;
+        SendRPC();
     }
     public override bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId)
     {
@@ -285,5 +303,24 @@ internal class Glitch : RoleBase
     {
         hud.KillButton.OverrideText(GetString("KillButtonText"));
         hud.SabotageButton.OverrideText(GetString("Glitch_MimicButtonText"));
+    }
+
+    private static void SendRPC()
+    {
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, Hazel.SendOption.None, -1);
+        writer.WritePacked((int)CustomRoles.Glitch);
+        writer.Write(HackCDTimer);
+        writer.Write(KCDTimer);
+        writer.Write(MimicCDTimer);
+        writer.Write(MimicDurTimer);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        HackCDTimer = reader.ReadInt32();
+        KCDTimer = reader.ReadInt32();
+        MimicCDTimer = reader.ReadInt32();
+        MimicDurTimer = reader.ReadInt32();
     }
 }
