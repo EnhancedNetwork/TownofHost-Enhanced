@@ -472,27 +472,20 @@ public static class Utils
         if (count < 1 && !ffa) return "";
         return ColorString(new Color32(255, 69, 0, byte.MaxValue), string.Format(GetString("KillCount"), count));
     }
-    public static string GetVitalText(byte playerId, bool ColoredReason = false)
+    public static string GetVitalText(byte playerId, bool RealKillerColor = false)
     {
         var state = Main.PlayerStates[playerId];
         string deathReason = state.IsDead ? GetString("DeathReason." + state.deathReason) : GetString("Alive");
-
-        if (ColoredReason)
+        if (RealKillerColor)
         {
-            if (deathReason != GetString("Alive"))
-            {
-                deathReason = TryGetHexColorByEnum(state.deathReason, out var hex) ? "<color=" + hex + ">" + deathReason + "</color>"
-                    : ColorString(GetRoleColor(CustomRoles.Doctor), deathReason);
-            }
-            else
-            {
-                deathReason = ColorString(GetRoleColor(CustomRoles.Doctor), deathReason);
-            }
-
-
+            var KillerId = state.GetRealKiller();
+            Color color = KillerId != byte.MaxValue ? Main.PlayerColors[KillerId] : GetRoleColor(CustomRoles.Doctor);
+            if (state.deathReason == PlayerState.DeathReason.Disconnected) color = new Color(255, 255, 255, 50);
+            deathReason = ColorString(color, deathReason);
         }
         return deathReason;
     }
+
 
     public static bool HasTasks(GameData.PlayerInfo playerData, bool ForRecompute = true)
     {
@@ -2221,32 +2214,4 @@ public static class Utils
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);
     public static int PlayersCount(CountTypes countTypes) => Main.PlayerStates.Values.Count(state => state.countTypes == countTypes);
     public static int AlivePlayersCount(CountTypes countTypes) => Main.AllAlivePlayerControls.Count(pc => pc.Is(countTypes));
-    public static bool TryGetHexColorByEnum(this Enum enumValue, out string hexcolor)
-    {
-        if (enumValue == null)
-        {
-            hexcolor = string.Empty;
-            return false;
-        }
-
-        Type type = enumValue.GetType();
-        MemberInfo[] memberInfo = type.GetMember(enumValue.ToString());
-        if (memberInfo.Length > 0)
-        {
-            var attributes = memberInfo[0].GetCustomAttributes(typeof(HexColorAttribute), false);
-            if (attributes.Length > 0)
-            {
-                hexcolor = ((HexColorAttribute)attributes[0]).HexColor;
-                return true;
-            }
-        }
-        hexcolor = string.Empty;
-        return false;
-    }
-}
-
-[AttributeUsage(AttributeTargets.Field)]
-public class HexColorAttribute(string hexColor) : Attribute
-{
-    public string HexColor = hexColor;
 }
