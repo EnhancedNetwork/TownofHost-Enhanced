@@ -453,8 +453,6 @@ public static class GameStates
     public static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
     public static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
 }
-
-
 public static class MeetingStates
 {
     public static DeadBody[] DeadBodies = null;
