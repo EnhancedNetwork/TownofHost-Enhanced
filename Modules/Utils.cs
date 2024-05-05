@@ -848,7 +848,7 @@ public static class Utils
             if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
             {
                 lr = lr.Replace("<color=", "<");
-                lr.SplitMessage(899).Do(x => SendMessage("\n", PlayerId, x));
+                lr.SplitMessage(899).Do(x => SendMessage("\n", PlayerId, $"<size=75%>" + x + "</size>")); //Since it will always capture a newline, there's more than enough space to put this in
             }
             else
             {
