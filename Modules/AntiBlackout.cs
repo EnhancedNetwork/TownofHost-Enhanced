@@ -3,9 +3,7 @@ using System;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using TOHE.Roles.Impostor;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
