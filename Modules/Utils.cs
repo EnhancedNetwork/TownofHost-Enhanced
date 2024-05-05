@@ -810,7 +810,7 @@ public static class Utils
 
         var sb = new StringBuilder();
 
-        sb.Append($"<#ffffff>{GetString("RoleSummaryText")}</color><size=70%>");
+        sb.Append($"<#ffffff>{GetString("RoleSummaryText")}</color>");
 
         List<byte> cloneRoles = new(Main.PlayerStates.Keys);
         foreach (byte id in Main.winnerList.ToArray())
@@ -839,18 +839,25 @@ public static class Utils
                     if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>"))
                         continue;
                     sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
+                    
                 }
                 break;
         }
-        sb.Append("</size>");
         string lr = sb.ToString();
-        if (lr.Length > 1200 && !GetPlayerById(PlayerId).IsModClient())
-        {
-            lr.Chunk(1200).Do(x => SendMessage("\n", PlayerId, new(x)));
+        try{
+            if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
+            {
+                lr = lr.Replace("<color=", "<");
+                lr.SplitMessage(899).Do(x => SendMessage("\n", PlayerId, x));
+            }
+            else
+            {
+                SendMessage("\n", PlayerId,  "<size=75%>" + lr + "</size>");
+            }
         }
-        else
+        catch (Exception err)
         {
-            SendMessage("\n", PlayerId, lr);
+            Logger.Warn($"Error after try split the msg {lr} at: {err}", "Utils.ShowLastRoles..LastRoles");
         }
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
@@ -864,6 +871,7 @@ public static class Utils
         {
             string kl = EndGamePatch.KillLog;
             if (Options.OldKillLog.GetBool()) kl = kl.RemoveHtmlTags();
+            kl = kl.Replace("<color=", "<");
             SendMessage(kl, PlayerId, ShouldSplit: true); 
         }
     }
@@ -1194,18 +1202,97 @@ public static class Utils
         //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
             , ID);
     }
+    public static string[] SplitMessage(this string LongMsg, int NewLineRange = 1169)
+    {
+        List<string> result = [];
+        string forqueue = "";
+        bool capturedN = false;
+        bool didDo = true;
 
+        while (LongMsg != string.Empty)
+        {
+            if (forqueue != string.Empty)
+            {
+                LongMsg = forqueue + LongMsg;
+                forqueue = string.Empty;
+            }
+            if (LongMsg.IndexOf(">") < LongMsg.IndexOf("<") && !capturedN) // color litter
+            {
+                LongMsg = LongMsg.Remove(0, LongMsg.IndexOf(">")+1);
+            }
+
+            var partmsg = LongMsg.Length > 1200 ? LongMsg[..1201] : LongMsg;
+            var indx1 = partmsg.LastIndexOf("\n");
+
+            didDo = false;
+
+            if (indx1 > NewLineRange && partmsg.Length > 1200) // If a newline after NewLineRange can be found send it to the queue
+            {
+                forqueue = LongMsg[..1201][(indx1+1)..1200]; // substring.substring;
+                result.Add(LongMsg[..indx1]);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+                didDo = true;
+            }
+            else if (partmsg.LastIndexOf("<") >= 1185 && partmsg.Length > 1200) // If /n isn't present remove the first color instance
+            {
+                if (!partmsg[partmsg.LastIndexOf("<")..1200].Contains('>'))
+                {
+                    result.Add(LongMsg[..partmsg.LastIndexOf("<")]);
+                    LongMsg = LongMsg.TryRemove();
+                    capturedN = false;
+                    didDo = true;
+                }
+            }
+            else if (partmsg.Length > 1200)
+            {
+                result.Add(LongMsg[..1200]);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+                didDo = true;
+            }
+            else
+            {
+                result.Add(partmsg);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+                break;
+            }
+
+            if (!didDo) // Incase compiler decides to be a fckn dumbass
+            {
+                var thismsg = partmsg.Length > 1200 ? partmsg[..1200] : partmsg;
+                Logger.Info(" Warning, compiler decided to be a fckn dumbass and check_absolute activated.", "Utils.SplitMessage..Check Absolute");
+                result.Add(thismsg);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+                if (thismsg.Length < 1200) break;
+            }
+
+
+        }
+
+        return [.. result];
+    }
+    private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (ShouldSplit && text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient())
+        try
         {
-            text.Chunk(1200).Do(x => SendMessage(new(x), sendTo, title));
-            return;
-        } 
-        else if (text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient()) 
+            if (ShouldSplit && text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
+            {
+                text.SplitMessage().Do(x => SendMessage(x, sendTo, title));
+                return;
+            }
+            else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
+            {
+                text = text.RemoveHtmlTagsIfNeccessary();
+            }
+        }
+        catch (Exception exx)
         {
-            text = text.RemoveHtmlTags();
+            Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage..SplitMessage");
         }
 
         // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
@@ -2015,6 +2102,7 @@ public static class Utils
     }
     public static string RemoveHtmlTagsTemplate(this string str) => Regex.Replace(str, "", "");
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", "");
+    public static string RemoveHtmlTagsIfNeccessary(this string str) => str.Replace("<color=", "<").Length > 1200 ? str.RemoveHtmlTags() : str.Replace("<color=", "<");
 
     public static void FlashColor(Color color, float duration = 1f)
     {
