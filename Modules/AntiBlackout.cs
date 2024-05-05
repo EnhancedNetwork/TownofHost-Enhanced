@@ -205,6 +205,8 @@ public static class AntiBlackout
         }
         sender.SendMessage();
 
+        Main.UnreportableBodies.Add(ghostPlayer.PlayerId);
+
         _ = new LateTask(() =>
         {
             if (!RandomSpawn.IsRandomSpawn() && !GameStates.AirshipIsActive)
