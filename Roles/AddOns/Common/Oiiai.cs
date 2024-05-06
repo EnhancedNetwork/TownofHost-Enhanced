@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using TOHE.Roles.Neutral;
+﻿using TOHE.Roles.Core;
+using TOHE.Roles.Impostor;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public static class Oiiai
 {
-    private static readonly int Id = 25700;
-    public static List<byte> playerIdList = [];
+    private const int Id = 25700;
+    private readonly static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem CanBeOnCrew;
@@ -16,13 +16,12 @@ public static class Oiiai
     private static OptionItem CanPassOn;
     private static OptionItem ChangeNeutralRole;
 
-    public static readonly string[] NChangeRoles =
-    [
-        "Role.NoChange",
-        "Role.Amnesiac",
-        "Role.Imitator",
-        //   CustomRoles.Crewmate.ToString(), CustomRoles.Jester.ToString(), CustomRoles.Opportunist.ToString(),
-    ];
+    private enum ChangeRolesSelect
+    {
+        Role_NoChange,
+        Role_Amnesiac,
+        Role_Imitator
+    }
 
     public static readonly CustomRoles[] NRoleChangeRoles =
     [
@@ -37,11 +36,12 @@ public static class Oiiai
         CanBeOnCrew = BooleanOptionItem.Create(Id + 12, "CrewCanBeOiiai", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
         CanBeOnNeutral = BooleanOptionItem.Create(Id + 13, "NeutralCanBeOiiai", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
         CanPassOn = BooleanOptionItem.Create(Id + 14, "OiiaiCanPassOn", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
-        ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", NChangeRoles, 1, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
+        ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", EnumHelper.GetAllNames<ChangeRolesSelect>(), 1, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
     }
     public static void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
+        Eraser.ErasedRoleStorage.Clear();
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -65,9 +65,9 @@ public static class Oiiai
             Logger.Info(killer.GetNameWithRole() + " gets Oiiai addon by " + target.GetNameWithRole(), "Oiiai");
         }
 
-        if (!Main.ErasedRoleStorage.ContainsKey(killer.PlayerId))
+        if (!Eraser.ErasedRoleStorage.ContainsKey(killer.PlayerId))
         {
-            Main.ErasedRoleStorage.Add(killer.PlayerId, killer.GetCustomRole());
+            Eraser.ErasedRoleStorage.Add(killer.PlayerId, killer.GetCustomRole());
             Logger.Info($"Added {killer.GetNameWithRole()} to ErasedRoleStorage", "Oiiai");
         }
         else
@@ -79,7 +79,7 @@ public static class Oiiai
         if (!killer.GetCustomRole().IsNeutral())
         {
             //Use eraser here LOL
-            killer.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
+            killer.RpcSetCustomRole(Eraser.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
             Logger.Info($"Oiiai {killer.GetNameWithRole()} with eraser assign.", "Oiiai");
         }
         else
@@ -91,8 +91,7 @@ public static class Oiiai
                 if (changeValue != 0)
                 {
                     killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
-                    if (changeValue == 1) Amnesiac.Add(killer.PlayerId);
-                    else if (changeValue == 2) Imitator.Add(killer.PlayerId);
+                    killer.GetRoleClass().Add(killer.PlayerId);
 
                     Logger.Info($"Oiiai {killer.GetNameWithRole()} with Neutrals with kill button assign.", "Oiiai");
                 }

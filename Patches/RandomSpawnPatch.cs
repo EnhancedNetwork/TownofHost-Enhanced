@@ -1,8 +1,5 @@
-﻿using HarmonyLib;
-using Hazel;
+﻿using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Impostor;
 using UnityEngine;
 
@@ -64,12 +61,12 @@ class RandomSpawn
 
             // if the difference between the values multiplied by 10 is closer than 0.1,
             //The original coordinates are not in increments of 0.1, so it is not a spring position.
-            if (Mathf.Abs(((float)decupleXInt) - decupleXFloat) >= 0.09f)
+            if (Mathf.Abs(decupleXInt - decupleXFloat) >= 0.09f)
             {
                 return false;
             }
             var decupleYInt = Mathf.RoundToInt(decupleYFloat);
-            if (Mathf.Abs(((float)decupleYInt) - decupleYFloat) >= 0.09f)
+            if (Mathf.Abs(decupleYInt - decupleYFloat) >= 0.09f)
             {
                 return false;
             }

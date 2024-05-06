@@ -1,12 +1,8 @@
 using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -35,9 +31,8 @@ public static class AntiBlackout
             if (pc.GetCustomRole().IsImpostor()) Impostors.Add(pc.PlayerId); // Impostors
             else if (Main.PlayerStates[pc.PlayerId].countTypes == CountTypes.Impostor) Impostors.Add(pc.PlayerId); // Madmates
 
-            else if (pc.GetCustomRole().IsNK() && !(pc.Is(CustomRoles.Arsonist) || pc.Is(CustomRoles.Quizmaster))) NeutralKillers.Add(pc.PlayerId); // Neutral Killers
-            else if (pc.Is(CustomRoles.Arsonist) && Options.ArsonistCanIgniteAnytime.GetBool()) NeutralKillers.Add(pc.PlayerId);
-            else if (pc.Is(CustomRoles.Succubus)) NeutralKillers.Add(pc.PlayerId);
+            else if (pc.GetCustomRole().IsNK()) NeutralKillers.Add(pc.PlayerId); // Neutral Killers
+            else if (pc.Is(CustomRoles.Cultist)) NeutralKillers.Add(pc.PlayerId);
 
             else Crewmates.Add(pc.PlayerId);
         }
@@ -85,7 +80,7 @@ public static class AntiBlackout
             return;
         }
         isDeadCache.Clear();
-        foreach (var info in GameData.Instance.AllPlayers.ToArray())
+        foreach (var info in GameData.Instance.AllPlayers)
         {
             if (info == null) continue;
             isDeadCache[info.PlayerId] = (info.IsDead, info.Disconnected);
@@ -98,7 +93,7 @@ public static class AntiBlackout
     public static void RestoreIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
         logger.Info($"RestoreIsDead is called from {callerMethodName}");
-        foreach (var info in GameData.Instance.AllPlayers.ToArray())
+        foreach (var info in GameData.Instance.AllPlayers)
         {
             if (info == null) continue;
             if (isDeadCache.TryGetValue(info.PlayerId, out var val))
@@ -230,11 +225,10 @@ public static class AntiBlackout
         {
             _ = new LateTask(() =>
             {
-                if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: true);
-                if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: true);
-                if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
-                if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: true);
-
+                foreach (var pc in Main.AllAlivePlayerControls)
+                {
+                    pc.GetRoleClass()?.NotifyAfterMeeting();
+                }
             }, timeNotify + 0.2f, "Notify AfterMeetingTasks");
         }
         catch (Exception error)

@@ -1,7 +1,4 @@
 using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Neutral;
 using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -9,68 +6,85 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Dazzler
+internal class Dazzler : RoleBase
 {
-    private static readonly int Id = 5400;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
-
-    public static Dictionary<byte, List<byte>> PlayersDazzled = [];
+    //===========================SETUP================================\\
+    private const int Id = 5400;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem ShapeshiftCooldown;
-    //    private static OptionItem ShapeshiftDuration;
     private static OptionItem CauseVision;
     private static OptionItem DazzleLimit;
     private static OptionItem ResetDazzledVisionOnDeath;
+    private static OptionItem ShowShapeshiftAnimationsOpt;
 
-    public static void SetupCustomOption()
+    private static Dictionary<byte, List<byte>> PlayersDazzled = [];
+
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Dazzler);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
             .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DazzleCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
             .SetValueFormat(OptionFormat.Seconds);
-        //     ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "ShapeshiftDuration", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
-        //       .SetValueFormat(OptionFormat.Seconds);
         CauseVision = FloatOptionItem.Create(Id + 13, "DazzlerCauseVision", new(0f, 5f, 0.05f), 0.65f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
             .SetValueFormat(OptionFormat.Multiplier);
         DazzleLimit = IntegerOptionItem.Create(Id + 14, "DazzlerDazzleLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
             .SetValueFormat(OptionFormat.Times);
-        ResetDazzledVisionOnDeath = BooleanOptionItem.Create(Id + 15, "DazzlerResetDazzledVisionOnDeath", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler]);
+        ResetDazzledVisionOnDeath = BooleanOptionItem.Create(Id + 15, "DazzlerResetDazzledVisionOnDeath", true, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler]);
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 16, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler]);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
         PlayersDazzled = [];
-        IsEnable = false;
+        PlayerIds.Clear();
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         PlayersDazzled.TryAdd(playerId, []);
-        IsEnable = true;
+        PlayerIds.Add(playerId);
     }
 
-    public static void ApplyGameOptions()
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static void OnShapeshift(PlayerControl pc, PlayerControl target)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return;
+        if (ShowShapeshiftAnimationsOpt.GetBool() || shapeshifter.PlayerId == target.PlayerId) return true;
 
-        if (!PlayersDazzled[pc.PlayerId].Contains(target.PlayerId) && PlayersDazzled[pc.PlayerId].Count < DazzleLimit.GetInt())
+        DoDazzled(shapeshifter, target);
+        shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+        return false;
+    }
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    {
+        if (!shapeshifting) return;
+
+        DoDazzled(shapeshifter, target);
+    }
+
+    private static void DoDazzled(PlayerControl shapeshifter, PlayerControl target)
+    {
+        if (!PlayersDazzled[shapeshifter.PlayerId].Contains(target.PlayerId) && PlayersDazzled[shapeshifter.PlayerId].Count < DazzleLimit.GetInt())
         {
-            Tired.Remove(pc.PlayerId);
+            Tired.Remove(shapeshifter.PlayerId);
             target.Notify(ColorString(GetRoleColor(CustomRoles.Dazzler), GetString("DazzlerDazzled")));
-            PlayersDazzled[pc.PlayerId].Add(target.PlayerId);
+            PlayersDazzled[shapeshifter.PlayerId].Add(target.PlayerId);
             MarkEveryoneDirtySettings();
         }
     }
@@ -84,5 +98,10 @@ public static class Dazzler
             opt.SetFloat(FloatOptionNames.CrewLightMod, CauseVision.GetFloat());
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, CauseVision.GetFloat());
         }
+    }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(GetString("DazzleButtonText"));
     }
 }

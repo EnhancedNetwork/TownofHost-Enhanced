@@ -1,0 +1,130 @@
+﻿using AmongUs.GameOptions;
+using UnityEngine;
+using static TOHE.Options;
+using static TOHE.Translator;
+
+namespace TOHE.Roles.Crewmate;
+
+internal partial class Mayor : RoleBase
+{
+    //===========================SETUP================================\\
+    private const int Id = 12000;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
+    //==================================================================\\
+
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Collective");
+
+    private static OptionItem MayorAdditionalVote;
+    private static OptionItem MayorHasPortableButton;
+    private static OptionItem MayorNumOfUseButton;
+    private static OptionItem MayorHideVote;
+    private static OptionItem MayorRevealWhenDoneTasks;
+
+    private static readonly Dictionary<byte, int> MayorUsedButtonCount = [];
+
+    public override void SetupCustomOption()
+    {
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mayor);
+        MayorAdditionalVote = IntegerOptionItem.Create(Id + 10, "MayorAdditionalVote", new(1, 20, 1), 3, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor])
+            .SetValueFormat(OptionFormat.Votes);
+        MayorHasPortableButton = BooleanOptionItem.Create(Id + 11, "MayorHasPortableButton", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
+        MayorNumOfUseButton = IntegerOptionItem.Create(Id + 12, "MayorNumOfUseButton", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false)
+            .SetParent(MayorHasPortableButton)
+            .SetValueFormat(OptionFormat.Times);
+        MayorHideVote = BooleanOptionItem.Create(Id + 13, "MayorHideVote", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
+        MayorRevealWhenDoneTasks = BooleanOptionItem.Create(Id + 14, "MayorRevealWhenDoneTasks", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
+        OverrideTasksData.Create(Id + 15, TabGroup.CrewmateRoles, CustomRoles.Mayor);
+    }
+
+    public override void Init()
+    {
+        playerIdList.Clear();
+        MayorUsedButtonCount.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        playerIdList.Add(playerId);
+        MayorUsedButtonCount[playerId] = 0;
+    }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        MayorUsedButtonCount[playerId] = 0;
+    }
+
+    public override int AddRealVotesNum(PlayerVoteArea PVA) => MayorAdditionalVote.GetInt();
+
+    public override void AddVisualVotes(PlayerVoteArea votedPlayer, ref List<MeetingHud.VoterState> statesList)
+    {
+        if (MayorHideVote.GetBool()) return;
+
+        for (var i2 = 0; i2 < MayorAdditionalVote.GetFloat(); i2++)
+        {
+            statesList.Add(new MeetingHud.VoterState()
+            {
+                VoterId = votedPlayer.TargetPlayerId,
+                VotedForId = votedPlayer.VotedFor
+            });
+        }
+    }
+
+    //public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    //{
+    //    if (target == null)
+    //        MayorUsedButtonCount[reporter.PlayerId] += 1;
+    //}
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown =
+                !MayorUsedButtonCount.TryGetValue(playerId, out var count) || count < MayorNumOfUseButton.GetInt()
+                ? opt.GetInt(Int32OptionNames.EmergencyCooldown)
+                : 300f;
+        AURoleOptions.EngineerInVentMaxTime = 1;
+    }
+    public override void OnEnterVent(PlayerControl pc, Vent vent)
+    {
+        if (MayorHasPortableButton.GetBool() && !CopyCat.playerIdList.Contains(pc.PlayerId))
+        {
+            if (MayorUsedButtonCount.TryGetValue(pc.PlayerId, out var count) && count < MayorNumOfUseButton.GetInt())
+            {
+                MayorUsedButtonCount[pc.PlayerId] += 1;
+                pc?.MyPhysics?.RpcBootFromVent(vent.Id);
+                pc?.NoCheckStartMeeting(pc?.Data);
+            }
+        }
+    }
+    public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
+        => MayorUsedButtonCount.TryGetValue(physics.myPlayer.PlayerId, out var count)
+        && count >= MayorNumOfUseButton.GetInt();
+
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (MayorRevealWhenDoneTasks.GetBool())
+        {
+            if (target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished)
+            {
+                if (!isUI) Utils.SendMessage(GetString("GuessMayor"), guesser.PlayerId);
+                else guesser.ShowPopUp(GetString("GuessMayor"));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static bool VisibleToEveryone(PlayerControl target) => MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished;
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
+    
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+        hud.AbilityButton.buttonLabelText.text = GetString("MayorVentButtonText");
+    }
+}

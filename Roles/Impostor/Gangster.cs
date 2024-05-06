@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using System.Collections.Generic;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -10,24 +9,32 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Gangster
+internal class Gangster : RoleBase
 {
-    private static readonly int Id = 3300;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 3300;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
+    //==================================================================\\
+
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CanRecruit(player.PlayerId) ? CustomButton.Get("Sidekick") : null;
 
     private static OptionItem RecruitLimitOpt;
-    public static OptionItem KillCooldown;
+    private static OptionItem KillCooldown;
     public static OptionItem SheriffCanBeMadmate;
     public static OptionItem MayorCanBeMadmate;
     public static OptionItem NGuesserCanBeMadmate;
     public static OptionItem JudgeCanBeMadmate;
+    public static OptionItem RetributionistCanBeMadmate;
     public static OptionItem MarshallCanBeMadmate;
-    public static OptionItem FarseerCanBeMadmate;
+    public static OptionItem OverseerCanBeMadmate;
 
-    public static Dictionary<byte, int> RecruitLimit = [];
+    private static readonly Dictionary<byte, int> RecruitLimit = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Gangster);
         KillCooldown = FloatOptionItem.Create(Id + 10, "GangsterRecruitCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster])
@@ -40,19 +47,18 @@ public static class Gangster
         NGuesserCanBeMadmate = BooleanOptionItem.Create(Id + 16, "GanNGuesserCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
         JudgeCanBeMadmate = BooleanOptionItem.Create(Id + 17, "GanJudgeCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
         MarshallCanBeMadmate = BooleanOptionItem.Create(Id + 18, "GanMarshallCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
-        FarseerCanBeMadmate = BooleanOptionItem.Create(Id + 19, "GanFarseerCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
+        RetributionistCanBeMadmate = BooleanOptionItem.Create(Id + 20, "GanRetributionistCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
+        OverseerCanBeMadmate = BooleanOptionItem.Create(Id + 19, "GanOverseerCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        RecruitLimit = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        RecruitLimit.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         RecruitLimit.TryAdd(playerId, RecruitLimitOpt.GetInt());
-        IsEnable = true;
     }
     private static void SendRPC(byte playerId)
     {
@@ -62,37 +68,32 @@ public static class Gangster
         writer.Write(RecruitLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
         RecruitLimit.TryAdd(PlayerId, Limit);
         RecruitLimit[PlayerId] = Limit;
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanRecruit(id) ? KillCooldown.GetFloat() : Options.DefaultKillCooldown;
-    public static bool CanRecruit(byte id) => RecruitLimit.TryGetValue(id, out var x) && x > 0;
-    public static void SetKillButtonText(byte playerId)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanRecruit(id) ? KillCooldown.GetFloat() : Options.DefaultKillCooldown;
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         if (CanRecruit(playerId))
             HudManager.Instance.KillButton.OverrideText(GetString("GangsterButtonText"));
         else
             HudManager.Instance.KillButton.OverrideText(GetString("KillButtonText"));
     }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (RecruitLimit[killer.PlayerId] < 1)
+        if (!CanRecruit(killer.PlayerId))
         {
-            if (killer.AmOwner)
-            {
-                HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
-            } //Why do we even need this?
-            return false;
+            return true;
         }
 
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("CantRecruit")));
-            return false;
+            return true;
         }
 
         if (CanBeGansterRecruit(target))
@@ -105,7 +106,7 @@ public static class Gangster
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("BeRecruitedByGangster")));
             }
-            else if (killer.Is(CustomRoles.Admired) && target.CanBeAdmired(killer))
+            else if (killer.Is(CustomRoles.Admired) && Admirer.CanBeAdmired(target, killer))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Admired.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Admired);
@@ -114,21 +115,21 @@ public static class Gangster
                 Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
                 Admirer.SendRPC(killer.PlayerId, target.PlayerId);
             }
-            else if (killer.Is(CustomRoles.Recruit) && target.CanBeSidekick())
+            else if (killer.Is(CustomRoles.Recruit) && Jackal.CanBeSidekick(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Recruit.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Recruit);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("BeRecruitedByGangster")));
             }
-            else if (killer.Is(CustomRoles.Charmed) && target.CanBeCharmed())
+            else if (killer.Is(CustomRoles.Charmed) && Cultist.CanBeCharmed(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Charmed.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Charmed);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("BeRecruitedByGangster")));
             }
-            else if (killer.Is(CustomRoles.Infected) && target.CanBeBitten())
+            else if (killer.Is(CustomRoles.Infected) && Infectious.CanBeBitten(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Infected.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Infected);
@@ -156,19 +157,21 @@ public static class Gangster
 
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
             SendRPC(killer.PlayerId);
-            return true;
+            return false;
         }
+
     GangsterFailed:
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterRecruitmentFailure")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
         SendRPC(killer.PlayerId);
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
         Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
-        return false;
+        return true;
     }
-    public static string GetRecruitLimit(byte playerId) => Utils.ColorString(CanRecruit(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, RecruitLimit.TryGetValue(playerId, out var recruitLimit) ? $"({recruitLimit})" : "Invalid");
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanRecruit(playerId)? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, RecruitLimit.TryGetValue(playerId, out var recruitLimit) ? $"({recruitLimit})" : "Invalid");
 
-    public static bool CanBeGansterRecruit(PlayerControl pc)
+    private static bool CanRecruit(byte id) => RecruitLimit.TryGetValue(id, out var x) && x > 0;
+    private static bool CanBeGansterRecruit(PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral())
             && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)

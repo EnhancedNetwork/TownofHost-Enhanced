@@ -1,6 +1,6 @@
-﻿using HarmonyLib;
-using TOHE.Roles.Impostor;
+﻿using TOHE.Roles.Core;
 using UnityEngine;
+using System;
 
 namespace TOHE;
 
@@ -9,19 +9,20 @@ public static class CustomButton
     public static Sprite Get(string name) => Utils.LoadSprite($"TOHE.Resources.Images.Skills.{name}.png", 115f);
 }
 
-[HarmonyPriority(520)]
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
+[HarmonyPatch(new Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
 public static class HudSpritePatch
 {
     private static Sprite Kill;
     private static Sprite Ability;
     private static Sprite Vent;
     private static Sprite Report;
-    public static void Postfix(HudManager __instance)
+    public static void Postfix(HudManager __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(2)] bool isActive)
     {
-        var player = PlayerControl.LocalPlayer;
         if (player == null || GameStates.IsHideNSeek || !GameStates.IsModHost) return;
-        if (!SetHudActivePatch.IsActive || !player.IsAlive()) return;
+        if (!isActive || !player.IsAlive()) return;
+        if (!Main.EnableCustomButton.Value) return;
+
         if (!AmongUsClient.Instance.IsGameStarted || !Main.introDestroyed)
         {
             Kill = null;
@@ -43,159 +44,63 @@ public static class HudSpritePatch
         Sprite newVentButton = Vent;
         Sprite newReportButton = Report;
 
-        if (!Main.EnableCustomButton.Value) goto EndOfSelectImg;
+        var playerRoleClass = player.GetRoleClass();
+        if (playerRoleClass == null) goto EndOfSelectImg;
 
-        switch (player.GetCustomRole())
-        {
-            case CustomRoles.Assassin:
-                if (!shapeshifting)
-                {
-                    newKillButton = CustomButton.Get("Mark");
-                    if (Assassin.MarkedPlayer.ContainsKey(player.PlayerId))
-                        newAbilityButton = CustomButton.Get("Assassinate");
-                }
-                break;
-            case CustomRoles.Bomber:
-            case CustomRoles.Nuker:
-                newAbilityButton = CustomButton.Get("Bomb");
-                break;
-            case CustomRoles.Camouflager:
-                newAbilityButton = CustomButton.Get("Camo");
-                break;
-            case CustomRoles.Arsonist:
-                newKillButton = CustomButton.Get("Douse");
-                if (player.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && Utils.GetDousedPlayerCount(player.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt())) newVentButton = CustomButton.Get("Ignite");
-                break;
-            case CustomRoles.Fireworker:
-                if (Fireworker.nowFireworkerCount[player.PlayerId] == 0)
-                    newAbilityButton = CustomButton.Get("FireworkD");
-                else
-                    newAbilityButton = CustomButton.Get("FireworkP");
-                break;
-            case CustomRoles.Anonymous:
-                newAbilityButton = CustomButton.Get("Hack");
-                break;
-            case CustomRoles.Hangman:
-                if (shapeshifting) newAbilityButton = CustomButton.Get("Hangman");
-                break;
-            case CustomRoles.Paranoia:
-                newAbilityButton = CustomButton.Get("Paranoid");
-                break;
-            case CustomRoles.Puppeteer:
-                newKillButton = CustomButton.Get("Puttpuer");
-                break;
-            case CustomRoles.Medic:
-                newKillButton = CustomButton.Get("Shield");
-                break;
-            case CustomRoles.Gangster:
-                if (Gangster.CanRecruit(player.PlayerId)) newKillButton = CustomButton.Get("Sidekick");
-                break;
-            case CustomRoles.Succubus:
-                newKillButton = CustomButton.Get("Subbus");
-                break;
-            case CustomRoles.Innocent:
-                newKillButton = CustomButton.Get("Suidce");
-                break;
-            case CustomRoles.EvilTracker:
-                newAbilityButton = CustomButton.Get("Track");
-                break;
-            case CustomRoles.Tracker:
-                newAbilityButton = CustomButton.Get("Track");
-                break;
-            case CustomRoles.Vampire:
-                newKillButton = CustomButton.Get("Bite");
-                break;
-            case CustomRoles.Veteran:
-                newAbilityButton = CustomButton.Get("Veteran");
-                break;
-            case CustomRoles.Lighter:
-                newAbilityButton = CustomButton.Get("Lighter");
-                break;
-            case CustomRoles.Witness:
-                newKillButton = CustomButton.Get("Examine");
-                break;
-            case CustomRoles.Pelican:
-                newKillButton = CustomButton.Get("Vulture");
-                break;
-            case CustomRoles.CursedSoul:
-                newKillButton = CustomButton.Get("Soul");
-                break;
-            case CustomRoles.Amnesiac:
-                newReportButton = CustomButton.Get("Amnesiac");
-                break;
-            case CustomRoles.Deputy:
-                newKillButton = CustomButton.Get("Deputy");
-                break;
-            case CustomRoles.TimeMaster:
-                newAbilityButton = CustomButton.Get("Time Master");
-                break;
-            case CustomRoles.Mario:
-                newAbilityButton = CustomButton.Get("Happy");
-                break;
-            case CustomRoles.Mayor:
-                newAbilityButton = CustomButton.Get("Collective");
-                break;
-            case CustomRoles.Sheriff:
-                newKillButton = CustomButton.Get("Kill");
-                break;
-            case CustomRoles.Pirate:
-                newKillButton = CustomButton.Get("Challenge");
-                break;
-            case CustomRoles.BountyHunter:
-                newKillButton = CustomButton.Get("Handoff");
-                break;
-            case CustomRoles.ImperiusCurse:
-                newKillButton = CustomButton.Get("Teleport");
-                break;
-            case CustomRoles.Swooper:
-                newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Chameleon:
-                newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Wraith:
-                newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Escapist:
-                newAbilityButton = CustomButton.Get("abscond");
-                break;
-            case CustomRoles.Farseer:
-                newKillButton = CustomButton.Get("prophecies");
-                break;
-            case CustomRoles.Jailer:
-                newKillButton = CustomButton.Get("penitentiary");
-                break;
-            //case CustomRoles.Penguin:
-            //    newAbilityButton = CustomButton.Get("Timer");
-            //    break;
-            case CustomRoles.Agitater:
-                newKillButton = CustomButton.Get("bombshell");
-                break;
-            case CustomRoles.Vulture:
-                newReportButton = CustomButton.Get("Eat");
-                break;
-            case CustomRoles.Pursuer:
-                newAbilityButton = CustomButton.Get("Pursuer");
-                break;
-            case CustomRoles.Cleaner:
-                newReportButton = CustomButton.Get("Clean");
-                break;
-            case CustomRoles.Warlock:
-                if (!shapeshifting)
-                {
-                    newKillButton = CustomButton.Get("Curse");
-                    if (Main.isCurseAndKill.TryGetValue(player.PlayerId, out bool curse) && curse)
-                        newAbilityButton = CustomButton.Get("CurseKill");
-                }
-                break;
-        }
+        if (playerRoleClass?.GetKillButtonSprite(player, shapeshifting) != null)
+            newKillButton = playerRoleClass.GetKillButtonSprite(player, shapeshifting);
 
-    EndOfSelectImg:
+        if (playerRoleClass?.ImpostorVentButtonSprite(player) != null)
+            newVentButton = playerRoleClass.ImpostorVentButtonSprite(player);
 
+        if (playerRoleClass?.GetAbilityButtonSprite(player, shapeshifting) != null)
+            newAbilityButton = playerRoleClass.GetAbilityButtonSprite(player, shapeshifting);
+
+        if (playerRoleClass?.ReportButtonSprite != null)
+            newReportButton = playerRoleClass.ReportButtonSprite;
+
+        // CustomButton.Get("Paranoid"); for Paranoid
+
+        EndOfSelectImg:
+
+        // Set custom icon for kill button
         __instance.KillButton.graphic.sprite = newKillButton;
-        __instance.AbilityButton.graphic.sprite = newAbilityButton;
+        //  Set custom icon for impostor vent button
         __instance.ImpostorVentButton.graphic.sprite = newVentButton;
+
+        // Set custom icon for ability button (Shapeshift, Vitals, Engineer Vent)
+        __instance.AbilityButton.graphic.sprite = newAbilityButton;
+        __instance.AbilityButton.usesRemainingSprite.sprite = newAbilityButton;
+
+        // Set custom icon for report button
         __instance.ReportButton.graphic.sprite = newReportButton;
 
+        // Normalized Uvs
+        // The sprites after custom icons has a strong overexposure
+        __instance.KillButton.graphic.SetCooldownNormalizedUvs();
+        __instance.ImpostorVentButton.graphic.SetCooldownNormalizedUvs();
+        __instance.AbilityButton.graphic.SetCooldownNormalizedUvs();
+        __instance.ReportButton.graphic.SetCooldownNormalizedUvs();
+    }
+}
+
+[HarmonyPatch(typeof(AbilityButton), nameof(AbilityButton.SetFromSettings))]
+public static class AbilityButtonSetFromSettingsPatch
+{
+    public static bool Prefix(AbilityButton __instance, AbilityButtonSettings settings)
+    {
+        // When Custom Buttons is disabled run vanilla code
+        if (!Main.EnableCustomButton.Value) return true;
+
+        __instance.SetInfiniteUses();
+
+        // When ability button is initialize, set default image
+        if (!Main.introDestroyed)
+            __instance.graphic.sprite = settings.Image;
+
+        __instance.graphic.SetCooldownNormalizedUvs();
+        __instance.buttonLabelText.fontSharedMaterial = settings.FontMaterial;
+        __instance.buttonLabelText.text = TranslationController.Instance.GetString(settings.Text);
+        return false;
     }
 }

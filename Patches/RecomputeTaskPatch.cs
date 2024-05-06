@@ -1,5 +1,3 @@
-using HarmonyLib;
-
 namespace TOHE;
 
 [HarmonyPatch(typeof(GameData), nameof(GameData.RecomputeTaskCounts))]
@@ -8,6 +6,7 @@ class CustomTaskCountsPatch
     public static bool Prefix(GameData __instance)
     {
         if (GameStates.IsHideNSeek) return true;
+        if (!AmongUsClient.Instance.AmHost) return false;
 
         __instance.TotalTasks = 0;
         __instance.CompletedTasks = 0;
@@ -17,11 +16,6 @@ class CustomTaskCountsPatch
             var hasTasks = Utils.HasTasks(p) && Main.PlayerStates[p.PlayerId].TaskState.AllTasksCount > 0;
             if (hasTasks)
             {
-                // if (p.Tasks == null)
-                // {
-                //     Logger.warn("警告:" + p.PlayerName + "のタスクがnullです");
-                //     continue;//これより下を実行しない
-                // }
                 foreach (var task in p.Tasks.ToArray())
                 {
                     __instance.TotalTasks++;
@@ -31,12 +25,5 @@ class CustomTaskCountsPatch
         }
 
         return false;
-    }
-}
-[HarmonyPatch(typeof(GameData), nameof(GameData.CompleteTask))]
-class CompleteTaskPatch
-{
-    public static void Postfix(/*GameData __instance*/)
-    {
     }
 }

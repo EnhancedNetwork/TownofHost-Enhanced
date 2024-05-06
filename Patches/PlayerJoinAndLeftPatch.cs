@@ -1,17 +1,14 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
 using InnerNet;
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Neutral;
-using static TOHE.Translator;
 using TOHE.Roles.Core.AssignManager;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -47,11 +44,10 @@ class OnGameJoinedPatch
 
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
-            Main.newLobby = true;
             RoleAssign.SetRoles = [];
             EAC.DeNum = new();
-            Main.AllPlayerNames = [];
-            Main.PlayerQuitTimes = [];
+            Main.AllPlayerNames.Clear();
+            Main.PlayerQuitTimes.Clear();
             KickPlayerPatch.AttemptedKickPlayerList = [];
 
             switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
@@ -110,6 +106,7 @@ class OnGameJoinedPatch
                     SceneChanger.ChangeScene("MainMenu");
                     return;
                 }
+                RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
                 var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
                 var host = AmongUsClient.Instance.GetHost();
                 Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined");
@@ -261,6 +258,15 @@ public static class OnPlayerJoinedPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
 class OnPlayerLeftPatch
 {
+    static void Prefix([HarmonyArgument(0)] ClientData data)
+    {
+        //if (!AmongUsClient.Instance.AmHost) return;
+
+        if (GameStates.IsNormalGame && GameStates.IsInGame)
+            MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
+        
+        //data.Character.GetRoleClass()?.OnPlayerLeft(data);
+    }
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
         try
@@ -277,32 +283,7 @@ class OnPlayerLeftPatch
                     }
                 }
 
-                if (data.Character.Is(CustomRoles.Executioner) && Executioner.Target.ContainsKey(data.Character.PlayerId))
-                {
-                    Executioner.ChangeRole(data.Character);
-                }
-                else if (Executioner.Target.ContainsValue(data.Character.PlayerId))
-                {
-                    Executioner.ChangeRoleByTarget(data.Character);
-                }
-                
-                if (data.Character.Is(CustomRoles.Lawyer) && Lawyer.Target.ContainsKey(data.Character.PlayerId))
-                {
-                    Lawyer.ChangeRole(data.Character);
-                }
-                if (Lawyer.Target.ContainsValue(data.Character.PlayerId))
-                {
-                    Lawyer.ChangeRoleByTarget(data.Character);
-                }
-
-                if (data.Character.Is(CustomRoles.Pelican))
-                {
-                    Pelican.OnPelicanDied(data.Character.PlayerId);
-                }
-                if (Spiritualist.SpiritualistTarget == data.Character.PlayerId)
-                {
-                    Spiritualist.RemoveTarget();
-                }
+                if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
 
                 if (Main.PlayerStates[data.Character.PlayerId].deathReason == PlayerState.DeathReason.etc) // If no cause of death was established
                 {
@@ -311,7 +292,7 @@ class OnPlayerLeftPatch
                 }
 
                 // if the player left while he had a Notice message, clear it
-                if (NameNotifyManager.Notice.ContainsKey(data.Character.PlayerId))
+                if (NameNotifyManager.Notifying(data.Character))
                 {
                     NameNotifyManager.Notice.Remove(data.Character.PlayerId);
                     Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
@@ -413,6 +394,7 @@ class OnPlayerLeftPatch
 
             if (data != null)
                 Main.playerVersion.Remove(data.Id);
+
             if (AmongUsClient.Instance.AmHost)
             {
                 Main.SayStartTimes.Remove(__instance.ClientId);

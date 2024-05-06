@@ -1,6 +1,4 @@
-using HarmonyLib;
 using Hazel;
-using System.Linq;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -128,7 +126,7 @@ public class SabotageSystemPatch
         {
             Logger.Info($" IsActive", "MushroomMixupSabotageSystem.UpdateSystem.Postfix");
 
-            foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
+            foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
             {
                 // Need for hiding player names if player is desync Impostor
                 Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true, MushroomMixupIsActive: true);
@@ -181,7 +179,7 @@ public class SabotageSystemPatch
                     }
                 }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
 
-                foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
+                foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
                 {
                     // Need for display player names if player is desync Impostor
                     Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
@@ -190,7 +188,7 @@ public class SabotageSystemPatch
         }
     }
     [HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))]
-    private static class SwitchSystemRepairDamagePatch
+    private static class SwitchSystemUpdatePatch
     {
         private static bool Prefix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
         {
@@ -214,11 +212,6 @@ public class SabotageSystemPatch
                 return true;
             }
 
-            if (Fool.IsEnable && player.Is(CustomRoles.Fool))
-            {
-                return false;
-            }
-
             // Cancel if player can't fix a specific outage on Airship
             if (GameStates.AirshipIsActive)
             {
@@ -228,6 +221,10 @@ public class SabotageSystemPatch
                 if (Options.DisableAirshipCargoLightsPanel.GetBool() && Vector2.Distance(truePosition, new(30.56f, 2.12f)) <= 2f) return false;
             }
 
+            if (Fool.IsEnable && player.Is(CustomRoles.Fool))
+            {
+                return false;
+            }
 
             if (Options.BlockDisturbancesToSwitches.GetBool())
             {
@@ -311,7 +308,7 @@ public class SabotageSystemPatch
 
             if (systemType is SystemTypes.Comms)
             {
-                if (Camouflager.IsEnable && playerRole.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage)
+                if (Camouflager.CantPressCommsSabotageButton(player))
                     return false;
             }
 

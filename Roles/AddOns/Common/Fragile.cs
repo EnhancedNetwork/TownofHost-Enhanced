@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Fragile
 {
-    private static readonly int Id = 20600;
+    private const int Id = 20600;
 
     public static OptionItem ImpCanBeFragile;
     public static OptionItem CrewCanBeFragile;
@@ -36,11 +36,11 @@ public static class Fragile
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
             if (FragileKillerLunge.GetBool())
             {
-                killer.RpcMurderPlayerV3(target);
+                killer.RpcMurderPlayer(target);
             }
             else
             {
-                target.RpcMurderPlayerV3(target);
+                target.RpcMurderPlayer(target);
             }
             target.SetRealKiller(killer);
             killer.ResetKillCooldown();

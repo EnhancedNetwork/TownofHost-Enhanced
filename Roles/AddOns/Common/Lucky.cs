@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using static TOHE.Options;
+﻿using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public static class Lucky
 {
-    private static readonly int Id = 19500;
+    private const int Id = 19500;
 
     private static OptionItem LuckyProbability;
     public static OptionItem ImpCanBeLucky;

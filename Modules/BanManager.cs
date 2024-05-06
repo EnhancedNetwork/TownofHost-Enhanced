@@ -1,9 +1,6 @@
-using HarmonyLib;
 using InnerNet;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -151,8 +148,8 @@ public static class BanManager
     }
     public static void CheckBanPlayer(InnerNet.ClientData player)
     {
-        if (!AmongUsClient.Instance.AmHost || !Options.ApplyBanList.GetBool()) return;
-        if (CheckBanList(player?.FriendCode, player?.GetHashedPuid()))
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (CheckBanList(player?.FriendCode, player?.GetHashedPuid()) && Options.ApplyBanList.GetBool())
         {
             AmongUsClient.Instance.KickPlayer(player.Id, true);
             Logger.SendInGame(string.Format(GetString("Message.BannedByBanList"), player.PlayerName));

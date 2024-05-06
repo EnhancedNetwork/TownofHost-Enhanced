@@ -1,40 +1,43 @@
 ﻿using Hazel;
-using System.Collections.Generic;
 
 namespace TOHE;
 
 public static class NameNotifyManager
 {
-    public static Dictionary<byte, (string, long)> Notice = [];
-    public static void Reset() => Notice = [];
+    public static readonly Dictionary<byte, (string, long)> Notice = [];
+    public static void Reset() => Notice.Clear();
     public static bool Notifying(this PlayerControl pc) => Notice.ContainsKey(pc.PlayerId);
-    public static void Notify(this PlayerControl pc, string text, float time = 4f)
+    public static void Notify(this PlayerControl pc, string text, float time = 4f, bool sendInLog = true)
     {
         if (!AmongUsClient.Instance.AmHost || pc == null) return;
         if (!GameStates.IsInTask) return;
+
         if (!text.Contains("<color=#")) text = Utils.ColorString(Utils.GetRoleColor(pc.GetCustomRole()), text);
+        
         Notice.Remove(pc.PlayerId);
         Notice.Add(pc.PlayerId, new(text, Utils.GetTimeStamp() + (long)time));
+        
         SendRPC(pc.PlayerId);
-        Utils.NotifyRoles(SpecifySeer: pc);
-        Logger.Info($"New name notify for {pc.GetNameWithRole().RemoveHtmlTags()}: {text} ({time}s)", "Name Notify");
+        Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);
+
+        if (sendInLog) Logger.Info($"New name notify for {pc.GetNameWithRole().RemoveHtmlTags()}: {text} ({time}s)", "Name Notify");
     }
     public static void OnFixedUpdate(PlayerControl player)
     {
         if (!GameStates.IsInTask)
         {
-            if (Notice.Count > 0) Notice = [];
+            if (Notice.Any()) Notice.Clear();
             return;
         }
         if (Notice.ContainsKey(player.PlayerId) && Notice[player.PlayerId].Item2 < Utils.GetTimeStamp())
         {
             Notice.Remove(player.PlayerId);
-            Utils.NotifyRoles(SpecifySeer: player);
+            Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false);
         }
     }
     public static bool GetNameNotify(PlayerControl player, out string name)
     {
-        name = "";
+        name = string.Empty;
         if (!Notice.ContainsKey(player.PlayerId)) return false;
         name = Notice[player.PlayerId].Item1;
         return true;
