@@ -17,7 +17,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC
+enum CustomRPC : byte
 {
     // RpcCalls can increase with each AU version
     // On version 2023.11.28 the last id in RpcCalls: 61
@@ -194,14 +194,13 @@ internal class RPCHandlerPatch
                 Logger.Info($"{__instance.GetNameWithRole()} => {p?.GetNameWithRole() ?? "null"}", "StartMeeting");
                 break;
         }
-        if (__instance.PlayerId != 0
-    && Enum.IsDefined(typeof(CustomRPC), (int)callId)
-    && !TrustedRpc(callId)) //ホストではなく、CustomRPCで、VersionCheckではない
+        if (__instance.PlayerId != PlayerControl.LocalPlayer.PlayerId &&
+            ((Enum.IsDefined(typeof(CustomRPC), (byte)callId) && !TrustedRpc(callId)) // Is Custom RPC
+            || (!Enum.IsDefined(typeof(CustomRPC), (byte)callId) && !Enum.IsDefined(typeof(RpcCalls), (byte)callId)))) //Is not Custom RPC and not Vanilla RPC
         {
             Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) has been canceled because it was sent by someone other than the host", "CustomRPC");
             if (AmongUsClient.Instance.AmHost)
             {
-                if (!EAC.ReceiveInvalidRpc(__instance, callId)) return false;
                 AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
                 Logger.Warn($"Received an uncredited RPC from {__instance?.Data?.PlayerName} and kicked it out", "Kick");
                 Logger.SendInGame(string.Format(GetString("Warning.InvalidRpc"), __instance?.Data?.PlayerName));
