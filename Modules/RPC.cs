@@ -109,6 +109,7 @@ enum CustomRPC : byte
     SetCoronerArrow,
     SetCoronerkKillerArrow,
     SetVultureArrow,
+    SetRadarArrow,
     SyncVultureBodyAmount,
     SetTrackerTarget,
     SpyRedNameSync,
@@ -553,6 +554,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SetVultureArrow:
                 Vulture.ReceiveRPC(reader);
                 break;
+            case CustomRPC.SetRadarArrow:
+                Radar.ReceiveRPC(reader);
+                break;
             case CustomRPC.SyncVultureBodyAmount:
                 Vulture.ReceiveBodyRPC(reader);
                 break;
@@ -835,6 +839,9 @@ internal static class RPC
                 break;
             case CustomRoles.Aware:
                 Aware.Add(targetId);
+                break;
+            case CustomRoles.Radar:
+                Radar.Add(targetId);
                 break;
             case CustomRoles.Glow:
                 Glow.Add(targetId);
