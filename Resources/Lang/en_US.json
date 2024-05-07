@@ -632,7 +632,7 @@
   "RecruitInfo": "Help the Jackal",
   "AdmiredInfo": "The Admirer chose you as their love",
   "GlowInfo": "You glow in the dark",
-  "RadarInfo": "Arrow's hue, closest to you",
+  "RadarInfo": "Arrow's hue, closest to you!",
   "DiseasedInfo": "Increase the cooldown of player who interacts with you",
   "AntidoteInfo": "Decrease the cooldown of player who interacts with you",
   "StubbornInfo": "Protect your role and addons",
@@ -2699,9 +2699,9 @@
   "AntidoteCDOpt": "Decrease the cooldown by",
   "AntidoteCDReset": "Cooldown returns to normal after a meeting",
 
-  "ImpCanBeRadar": "<color=#ff1919>Impostors</color> can become <color=#FF9876>Radar</color>",
-  "NeutralCanBeRadar": "<color=#7f8c8d>Neutrals</color> can become <color=#FF9876>Radar</color>",
-  "CrewCanBeRadar": "<color=#8cffff>Crewmates</color> can become <color=#FF9876>Radar</color>",
+  "ImpCanBeRadar": "<color=#ff1919>Impostors</color> can become Radar",
+  "NeutralCanBeRadar": "<color=#7f8c8d>Neutrals</color> can become Radar",
+  "CrewCanBeRadar": "<color=#8cffff>Crewmates</color> can become Radar",
 
   "ImpCanBeGlow": "<color=#ff1919>Impostors</color> can become <color=#E2F147>Glow</color>",
   "NeutralCanBeGlow": "<color=#7f8c8d>Neutrals</color> can become <color=#E2F147>Glow</color>",
