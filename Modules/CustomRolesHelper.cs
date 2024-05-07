@@ -637,6 +637,10 @@ public static class CustomRolesHelper
                 if ((pc.GetCustomRole().IsCrewmate() && !Glow.CrewCanBeGlow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Glow.NeutralCanBeGlow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Glow.ImpCanBeGlow.GetBool()))
                     return false;
                 break;
+            case CustomRoles.Radar:
+                if ((pc.GetCustomRole().IsCrewmate() && !Radar.CrewCanBeRadar.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Radar.NeutralCanBeRadar.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Radar.ImpCanBeRadar.GetBool()))
+                    return false;
+                break;
             case CustomRoles.Antidote:
                 if (pc.Is(CustomRoles.Diseased) || pc.Is(CustomRoles.Solsticer))
                     return false;

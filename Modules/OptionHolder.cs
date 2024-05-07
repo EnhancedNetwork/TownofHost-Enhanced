@@ -893,6 +893,8 @@ public static class Options
 
         Overclocked.SetupCustomOptions();
 
+        Radar.SetupCustomOptions();
+
         Seer.SetupCustomOptions();
 
         Silent.SetupCustomOptions();
