@@ -1029,6 +1029,9 @@ class FixedUpdateInNormalGamePatch
                     if (Glow.IsEnable)
                         Glow.OnFixedUpdate(player);
 
+                    if (Radar.IsEnable)
+                        Radar.OnFixedUpdate(player);
+
                     if (Rainbow.isEnabled)
                         Rainbow.OnFixedUpdate();
 
@@ -1156,6 +1159,8 @@ class FixedUpdateInNormalGamePatch
 
                 Suffix.Append(seerRoleClass?.GetSuffix(seer, target));
                 Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
+
+                if (Radar.IsEnable) Radar.GetPlayerArrow(seer, isForMeeting: false);
 
                 if (seerRole.IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
                 {

@@ -166,6 +166,7 @@ internal class ChangeRoleSettings
             Diseased.Init();
             Clumsy.Init();
             Aware.Init();
+            Radar.Init();
             Glow.Init();
             Sleuth.Init();
             Bait.Init();
@@ -408,6 +409,9 @@ internal class SelectRolesPatch
                     {
                         case CustomRoles.Aware:
                             Aware.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Radar:
+                            Radar.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Glow:
                             Glow.Add(pc.PlayerId);

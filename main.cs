@@ -4,7 +4,6 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
-using MonoMod.Cil;
 using System;
 using System.IO;
 using System.Reflection;
@@ -12,7 +11,6 @@ using System.Text;
 using System.Text.Json;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 
@@ -834,6 +832,7 @@ public enum CustomRoles
     Oiiai,
     Onbound,
     Overclocked,
+    Radar,
     Rainbow,
     Rascal,
     Reach,
