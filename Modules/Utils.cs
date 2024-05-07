@@ -1640,13 +1640,12 @@ public static class Utils
                 SelfSuffix.Append(seerRoleClass?.GetLowerText(seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, seer, isForMeeting: isForMeeting));
 
+                if (Radar.IsEnable)
+                    SelfSuffix.Append(Radar.GetPlayerArrow(seer, isForMeeting: isForMeeting));
+
                 SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
-                SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
-                
-                if (Radar.IsEnable)
-                    SelfSuffix.Append(Radar.GetPlayerArrow(seer, isForMeeting));
 
                 switch (Options.CurrentGameMode)
                 {

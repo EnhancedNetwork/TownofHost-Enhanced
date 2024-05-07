@@ -1157,10 +1157,12 @@ class FixedUpdateInNormalGamePatch
 
                 Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target));
 
+
+                if (Radar.IsEnable) Suffix.Append(Radar.GetPlayerArrow(seer, target, isForMeeting: false));
+
                 Suffix.Append(seerRoleClass?.GetSuffix(seer, target));
                 Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
 
-                if (Radar.IsEnable) Radar.GetPlayerArrow(seer, isForMeeting: false);
 
                 if (seerRole.IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
                 {
