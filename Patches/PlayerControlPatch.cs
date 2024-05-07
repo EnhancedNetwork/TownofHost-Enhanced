@@ -81,6 +81,13 @@ class CheckProtectPatch
         
         return true;
     }
+
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    {
+        var angel = __instance;
+        Utils.NotifyRoles(SpecifySeer: angel);
+        Utils.NotifyRoles(SpecifySeer: target);
+    }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))]
 class CheckMurderPatch

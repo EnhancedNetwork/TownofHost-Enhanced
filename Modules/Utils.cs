@@ -479,12 +479,13 @@ public static class Utils
         if (RealKillerColor)
         {
             var KillerId = state.GetRealKiller();
-            Color color = KillerId != byte.MaxValue ? Main.PlayerColors[KillerId] : GetRoleColor(CustomRoles.Doctor);
+            Color color = KillerId != byte.MaxValue ? GetRoleColor(Main.PlayerStates[KillerId].MainRole) : GetRoleColor(CustomRoles.Doctor);
             if (state.deathReason == PlayerState.DeathReason.Disconnected) color = new Color(255, 255, 255, 50);
             deathReason = ColorString(color, deathReason);
         }
         return deathReason;
     }
+
 
     public static bool HasTasks(GameData.PlayerInfo playerData, bool ForRecompute = true)
     {
@@ -848,7 +849,7 @@ public static class Utils
             if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
             {
                 lr = lr.Replace("<color=", "<");
-                lr.SplitMessage(899).Do(x => SendMessage("\n", PlayerId, x));
+                lr.SplitMessage(899).Do(x => SendMessage("\n", PlayerId, $"<size=75%>" + x + "</size>")); //Since it will always capture a newline, there's more than enough space to put this in
             }
             else
             {
@@ -870,9 +871,8 @@ public static class Utils
         if (EndGamePatch.KillLog != "") 
         {
             string kl = EndGamePatch.KillLog;
-            if (Options.OldKillLog.GetBool()) kl = kl.RemoveHtmlTags();
-            kl = kl.Replace("<color=", "<");
-            SendMessage(kl, PlayerId, ShouldSplit: true); 
+            kl = Options.OldKillLog.GetBool() ? kl.RemoveHtmlTags() : kl.Replace("<color=", "<");
+            SendSpesificMessage(kl, PlayerId, NewLineIndex: 899);
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
@@ -1275,6 +1275,28 @@ public static class Utils
         return [.. result];
     }
     private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
+    
+    
+    public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "", int NewLineIndex = 1679) 
+    {
+        // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
+
+
+        if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
+        {
+            foreach(var txt in text.SplitMessage(NewLineIndex))
+            {
+                var m = Regex.Replace(txt, "^<voffset=[-]?\\d+em>", ""); // replaces the first instance of voffset, if any.
+                SendMessage(m, sendTo, title);
+            }
+        }
+        else 
+        {
+            SendMessage(text, sendTo, title);
+        }
+
+
+    }
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -2093,7 +2115,7 @@ public static class Utils
         }
         else { TaskCount = GetProgressText(id); }
 
-        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} ({GetVitalText(id, true)})";
+        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} 『{GetVitalText(id, true)}』";
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
