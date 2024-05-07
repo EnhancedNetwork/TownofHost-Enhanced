@@ -122,6 +122,11 @@ public static class CustomRolesHelper
             CustomRoles.Stalker or
             CustomRoles.Doomsayer or
             CustomRoles.SoulCollector or
+            CustomRoles.Death or
+            CustomRoles.Berserker or 
+            CustomRoles.War or
+            CustomRoles.Baker or
+            CustomRoles.Famine or
             CustomRoles.Pirate or
             CustomRoles.Seeker or
             CustomRoles.Pixie or
@@ -245,7 +250,7 @@ public static class CustomRolesHelper
           is Custom_RoleType.NeutralApocalypse
           || role.IsTNA();
     }
-    public static bool IsTNA(this CustomRoles role)
+    public static bool IsTNA(this CustomRoles role) // Transformed Neutral Apocalypse
     {
         return role is
             CustomRoles.Pestilence or

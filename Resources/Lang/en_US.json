@@ -2574,6 +2574,11 @@
   "BakerBreadNeededToTransform": "Required number of bread to become Famine",
   "BakerCantBreadApoc": "You cannot give other Apocalypse members bread!",
   "BakerKillButtonText": "Bread",
+  "FamineKillButtonText": "Starve",
+  "FamineStarveCooldown": "<color=#83461c>Famine</color> starve cooldown",
+  "FamineCantStarveApoc": "You cannot starve other Apocalypse members!",
+  "FamineAlreadyStarved": "That player has already been starved!",
+  "FamineStarved": "Player starved",
 
   "ChronomancerKillCooldown": "Time to fully charge the kill button",
 

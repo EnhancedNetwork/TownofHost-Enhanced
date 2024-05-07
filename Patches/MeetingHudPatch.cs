@@ -545,6 +545,7 @@ class CheckForEndVotingPatch
         Witch.OnCheckForEndVoting(deathReason, playerIds);
         HexMaster.OnCheckForEndVoting(deathReason, playerIds);
         Virus.OnCheckForEndVoting(deathReason, playerIds);
+        Baker.OnCheckForEndVoting(deathReason, playerIds);
         SoulCollector.OnCheckForEndVoting(deathReason, playerIds);
 
         foreach (var playerId in playerIds)
