@@ -1624,7 +1624,7 @@ public static class Utils
 
                 // ====== Add SelfMark for seer ======
                 SelfMark.Append(seerRoleClass?.GetMark(seer, isForMeeting: isForMeeting));
-                SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, isForMeeting: isForMeeting));
+                SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, seer, isForMeeting: isForMeeting));
 
                 if (seer.Is(CustomRoles.Lovers))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
@@ -1638,9 +1638,11 @@ public static class Utils
                 SelfSuffix.Clear();
 
                 SelfSuffix.Append(seerRoleClass?.GetLowerText(seer, isForMeeting: isForMeeting));
-                SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, seer, isForMeeting: isForMeeting));
 
                 SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
+
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
                 
                 if (Radar.IsEnable)

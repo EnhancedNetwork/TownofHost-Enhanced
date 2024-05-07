@@ -164,7 +164,7 @@ internal class RPCHandlerPatch
                 break;
         }
         if (__instance != null && __instance.PlayerId != 0
-            && Enum.IsDefined(typeof(CustomRPC), (int)callId)
+            && Enum.IsDefined(typeof(CustomRPC), (byte)callId)
             && !TrustedRpc(callId)) //ホストではなく、CustomRPCで、VersionCheckではない
         {
             Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) has been canceled because it was sent by someone other than the host", "CustomRPC");

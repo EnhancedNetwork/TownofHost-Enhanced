@@ -361,7 +361,7 @@ public static class CustomRoleManager
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> SuffixOthers = [];
 
     /// <summary>
-    /// If seer == seen then GetMarkOthers called from FixedUpadte or MeetingHud (for Host)
+    /// If seer == seen then GetMarkOthers called from FixedUpadte or MeetingHud or NotifyRoles
     /// </summary>
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
@@ -376,7 +376,7 @@ public static class CustomRoleManager
     }
 
     /// <summary>
-    /// If seer == seen then GetMarkOthers called from FixedUpadte (for Host)
+    /// If seer == seen then GetMarkOthers called from FixedUpadte or NotifyRoles
     /// </summary>
     public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
@@ -391,7 +391,7 @@ public static class CustomRoleManager
     }
 
     /// <summary>
-    /// If seer == seen then GetMarkOthers called from FixedUpadte or MeetingHud (for Host)
+    /// If seer == seen then GetMarkOthers called from FixedUpadte or NotifyRoles
     /// </summary>
     public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
