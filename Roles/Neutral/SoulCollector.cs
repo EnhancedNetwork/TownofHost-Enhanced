@@ -49,7 +49,7 @@ internal class SoulCollector : RoleBase
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
 
-    public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), SoulCollectorPoints.TryGetValue(playerId, out var x) ? $"({x}/{SoulCollectorPointsOpt.GetInt()})" : "Invalid");
+    public override string GetProgressText(byte playerId, bool cvooms) => CustomRoles.SoulCollector.RoleExist() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), SoulCollectorPoints.TryGetValue(playerId, out var x) ? $"({x}/{SoulCollectorPointsOpt.GetInt()})" : "Invalid") : "";
 
     private static void SendRPC(byte playerId)
     {

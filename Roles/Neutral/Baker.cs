@@ -103,7 +103,10 @@ internal class Baker : RoleBase
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.KillButton.OverrideText(GetString("BakerKillButtonText"));
+        if (CustomRoles.Baker.RoleExist())
+            hud.KillButton.OverrideText(GetString("BakerKillButtonText"));
+        else if (CustomRoles.Famine.RoleExist())
+            hud.KillButton.OverrideText(GetString("FamineKillButtonText"));
     }
     private static bool HasBread(byte pc, byte target)
     {
@@ -182,7 +185,16 @@ internal class Baker : RoleBase
             killer.Notify(GetString("FamineAlreadyStarved"));
             return false;
         }
-        if (killer.GetCustomRole() is CustomRoles.Baker)
+        if (killer.GetCustomRole() is CustomRoles.Famine) {
+            FamineList[killer.PlayerId].Add(target.PlayerId);
+            SendRPC(killer, target);
+            Utils.NotifyRoles(SpecifySeer: killer);
+            killer.Notify(GetString("FamineStarved"));
+            Logger.Info(target.GetRealName() + $" has been starved", "Famine");
+            CanUseAbility = true;
+            return false;
+        }
+        else if (killer.GetCustomRole() is CustomRoles.Baker)
         {
             BreadList[killer.PlayerId].Add(target.PlayerId);
             SendRPC(killer, target);
@@ -190,13 +202,7 @@ internal class Baker : RoleBase
             killer.Notify(GetString("BakerBreaded"));
             Logger.Info($"Bread given to " + target.GetRealName(), "Baker");
             CanUseAbility = false;
-        }
-        else if (killer.GetCustomRole() is CustomRoles.Famine) {
-            FamineList[killer.PlayerId].Add(target.PlayerId);
-            SendRPC(killer, target);
-            Utils.NotifyRoles(SpecifySeer: killer);
-            killer.Notify(GetString("FamineStarved"));
-            Logger.Info(target.GetRealName() + $" has been starved", "Baker");
+            return false;
         }
         return false;
     }
