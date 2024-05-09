@@ -12,7 +12,6 @@ internal class CursedSoul : RoleBase
     private const int Id = 14000;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\

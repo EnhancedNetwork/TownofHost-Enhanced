@@ -13,6 +13,7 @@ public abstract class RoleBase
     public PlayerControl _Player => Utils.GetPlayerById(_state.PlayerId);
 #pragma warning restore IDE1006
     public int AbilityLimit { get; set; }
+    public bool IsEnable { get; set; }
 
 
     public void OnInit() // CustomRoleManager.RoleClass executes this
@@ -24,7 +25,7 @@ public abstract class RoleBase
     public void OnAdd(byte playerid) // The player with the class executes this
     {
         _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
-        try { CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true; } catch { Logger.Error($"Tried to change IsEnable when for {_state.MainRole} it's disabled", "RoleBase.OnAdd"); }
+        CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true; 
 
         Add(playerid);
     }
@@ -46,11 +47,6 @@ public abstract class RoleBase
     /// </summary>
     public virtual void Remove(byte playerId)
     { }
-
-    /// <summary>
-    /// Make A HashSet(byte) PlayerIdList = []; and check PlayerIdList.Any();
-    /// </summary>
-    public virtual bool IsEnable { get; set; }
 
     /// <summary>
     /// Used to Determine the CustomRole's BASE
