@@ -1315,10 +1315,10 @@ public static class Utils
                 text.SplitMessage().Do(x => SendMessage(x, sendTo, title));
                 return;
             }
-            else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
-            {
-                text = text.RemoveHtmlTagsIfNeccessary();
-            }
+            //else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
+            //{
+            //    text = text.RemoveHtmlTagsIfNeccessary();
+            //}
         }
         catch (Exception exx)
         {
