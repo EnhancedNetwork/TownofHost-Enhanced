@@ -12,7 +12,7 @@ public abstract class RoleBase
 #pragma warning disable IDE1006
     public PlayerControl _Player => Utils.GetPlayerById(_state.PlayerId);
 #pragma warning restore IDE1006
-    public int AbilityLimit { get; set; }
+    public int AbilityLimit { get; set; } = byte.MaxValue;
 
 
     public void OnInit() // CustomRoleManager.RoleClass executes this
