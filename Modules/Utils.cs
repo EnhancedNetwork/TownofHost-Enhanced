@@ -418,24 +418,32 @@ public static class Utils
                     var seerPlatform = seer.GetClient()?.PlatformData.Platform;
                     var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
 
+                    static bool Checkif(string str) {
+
+                        string[] strings = {"*Prefix", "INVALID" };
+                        return strings.Any(str.Contains); 
+                    }
+                    static string Getname(string str) => !Checkif(GetString($"Prefix.{str}")) ? GetString($"Prefix.{str}") : GetString($"{str}");
+
                     // if the player is playing on a console platform
                     if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
                     {
                         // By default, censorship is enabled on consoles
                         // Need to set add-ons colors without endings "</color>"
 
+
                         // colored role
                         RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
 
                         // colored add-ons
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"{subRole}")}) " : $"{GetString($"{subRole}")} ") + RoleText;
+                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname($"{subRole}")}) " : $"{Getname($"{subRole}")} ") + RoleText;
                     }
                     // default
                     else
                     {
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"{subRole}")}) " : $"{GetString($"{subRole}")} ") + RoleText;
+                            RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname($"{subRole}")}) " : $"{Getname($"{subRole}")} ") + RoleText;
                     }
                 }
 
