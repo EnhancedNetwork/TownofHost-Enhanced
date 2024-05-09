@@ -16,6 +16,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -1216,16 +1217,19 @@ class FixedUpdateInNormalGamePatch
                 if (Suffix.ToString() != "")
                 {
                     RoleText.transform.SetLocalY(0.35f);
+                    target.cosmetics.colorBlindText.transform.SetLocalY(-0.4f);
                     target.cosmetics.nameText.text += "\r\n" + Suffix.ToString();
                 }
                 else
                 {
                     RoleText.transform.SetLocalY(0.2f);
+                    target.cosmetics.colorBlindText.transform.SetLocalY(-0.2f);
                 }
             }
             else
             {
                 RoleText.transform.SetLocalY(0.2f);
+                __instance.cosmetics.colorBlindText.transform.SetLocalY(-0.32f);
             }
         }
         return Task.CompletedTask;

@@ -10,9 +10,8 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 {
     internal class Ghastly : RoleBase
     {
-
         //===========================SETUP================================\\
-        private const int Id = 22004;
+        private const int Id = 22060;
         private readonly static HashSet<byte> PlayerIds = [];
         public static bool HasEnabled => PlayerIds.Any();
         public override bool IsEnable => HasEnabled;
