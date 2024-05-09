@@ -49,7 +49,7 @@ internal class Cleanser : RoleBase
         if (AbilityLimit > 0)
             x = Utils.GetRoleColor(CustomRoles.Cleanser);
         else x = Color.gray;
-        return (Utils.ColorString(x, $"({CleanserUsesOpt.GetInt() - AbilityLimit})"));
+        return (Utils.ColorString(x, $"({AbilityLimit})"));
     }
 
     public override void OnVote(PlayerControl voter, PlayerControl target)
