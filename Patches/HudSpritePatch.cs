@@ -47,17 +47,17 @@ public static class HudSpritePatch
         var playerRoleClass = player.GetRoleClass();
         if (playerRoleClass == null) goto EndOfSelectImg;
 
-        if (playerRoleClass?.GetKillButtonSprite(player, shapeshifting) != null)
-            newKillButton = playerRoleClass.GetKillButtonSprite(player, shapeshifting);
+        if (playerRoleClass?.GetKillButtonSprite(player, shapeshifting) is Sprite killbutton)
+            newKillButton = killbutton;
 
-        if (playerRoleClass?.ImpostorVentButtonSprite(player) != null)
-            newVentButton = playerRoleClass.ImpostorVentButtonSprite(player);
+        if (playerRoleClass?.ImpostorVentButtonSprite(player) is Sprite Ventbutton)
+            newVentButton = Ventbutton;
 
-        if (playerRoleClass?.GetAbilityButtonSprite(player, shapeshifting) != null)
-            newAbilityButton = playerRoleClass.GetAbilityButtonSprite(player, shapeshifting);
+        if (playerRoleClass?.GetAbilityButtonSprite(player, shapeshifting) is Sprite Abilitybutton)
+            newAbilityButton = Abilitybutton;
 
-        if (playerRoleClass?.ReportButtonSprite != null)
-            newReportButton = playerRoleClass.ReportButtonSprite;
+        if (playerRoleClass?.ReportButtonSprite is Sprite Reportbutton)
+            newReportButton = Reportbutton;
 
         // CustomButton.Get("Paranoid"); for Paranoid
 
