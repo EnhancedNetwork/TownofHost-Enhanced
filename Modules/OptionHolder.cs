@@ -595,11 +595,10 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 28100 lasted id for roles/add-ons (Next use 28200)
+        // 28200 last id for roles/add-ons (Next use 28300)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
-        // 22004 (Glow)
 
 
         // Start Load Settings
@@ -796,12 +795,13 @@ public static class Options
 
         /*
          * Crewmate Ghost Roles
-        */
+         */
         TextOptionItem.Create(10000101, "RoleType.CrewGhost", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateGhosts).ForEach(r => r.SetupCustomOption());
+
 
         #endregion
 
