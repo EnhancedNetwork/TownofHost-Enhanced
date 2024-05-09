@@ -24,7 +24,7 @@ public abstract class RoleBase
     public void OnAdd(byte playerid) // The player with the class executes this
     {
         _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
-        CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;
+        try { CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true; } catch { Logger.Error($"Tried to change IsEnable when for {_state.MainRole} it's disabled", "RoleBase.OnAdd"); }
 
         Add(playerid);
     }
