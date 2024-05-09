@@ -211,6 +211,19 @@ public static class AntiBlackout
         // In case the dead body is in plain sight
         Main.UnreportableBodies.Add(ghostPlayer.PlayerId);
 
+        // End critical sabotage locally for the player
+        _ = new LateTask(() =>
+        {
+            if (player == null) return;
+
+            player.RpcDesyncUpdateSystem(systemtypes, 16);
+
+            if (GameStates.AirshipIsActive)
+            {
+                player.RpcDesyncUpdateSystem(systemtypes, 17);
+            }
+        }, 0.2f, "Fix Desync Reactor for reset cam", shoudLog: false);
+
         // Teleport player back
         if (!RandomSpawn.IsRandomSpawn() && !GameStates.AirshipIsActive)
         {
@@ -220,21 +233,8 @@ public static class AntiBlackout
 
                 player.RpcTeleport(playerPosition);
 
-            }, 0.2f, "Teleport player back", shoudLog: false);
+            }, 0.4f, "Teleport player back", shoudLog: false);
         }
-
-        _ = new LateTask(() =>
-        {
-            if (player == null) return;
-
-            // End critical sabotage locally for the player
-            player.RpcDesyncUpdateSystem(systemtypes, 16);
-
-            if (GameStates.AirshipIsActive)
-            {
-                player.RpcDesyncUpdateSystem(systemtypes, 17);
-            }
-        }, 0.4f, "Fix Desync Reactor for reset cam", shoudLog: false);
     }
 
     public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, GameData.PlayerInfo exiled, bool tie)
@@ -287,12 +287,23 @@ public static class AntiBlackout
     {
         var timeNotify = 0f;
 
-        if (CheckForEndVotingPatch.TempExileMsg != null && BlackOutIsActive)
+        if (BlackOutIsActive)
         {
-            timeNotify = 4f;
-            foreach (var pc in Main.AllPlayerControls.Where(p => p != null && !(p.AmOwner || p.IsModClient())).ToArray())
+            if (currentSolution == SolutionAntiBlackScreen.AntiBlackout_SkipVoting && CheckForEndVotingPatch.TempExileMsg != null)
             {
-                pc.Notify(CheckForEndVotingPatch.TempExileMsg, time: timeNotify);
+                timeNotify = 4f;
+                foreach (var pc in Main.AllPlayerControls.Where(p => p != null && !(p.AmOwner || p.IsModClient())).ToArray())
+                {
+                    pc.Notify(CheckForEndVotingPatch.TempExileMsg, time: timeNotify);
+                }
+            }
+            else if (currentSolution == SolutionAntiBlackScreen.AntiBlackout_FullResetCamera)
+            {
+                timeNotify = 12f;
+                foreach (var pc in Main.AllPlayerControls.Where(p => p != null && !(p.AmOwner || p.IsModClient())).ToArray())
+                {
+                    pc.Notify(Translator.GetString("AntiBlackout_ClickMapButtonToShowAllButtons"), time: timeNotify);
+                }
             }
         }
 

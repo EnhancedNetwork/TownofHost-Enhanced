@@ -2204,7 +2204,7 @@
   "AntiBlackout_SkipVoting": "Show Skip Voting",
   "AntiBlackout_FullResetCamera": "Full Reset Camera",
   "AntiBlackout_DisableProtect": "Disable Protect",
-
+  "AntiBlackout_ClickMapButtonToShowAllButtons": "Click the Map button to show all buttons again",
 
   "Warning.InvalidRpc": "Kicked <b>{0}</b> because an invalid RPC was received.\nPlease check that no mods other than TOHE installed.",
   "Warning.NoModHost": "TOHE is not installed on the host",

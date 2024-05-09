@@ -97,16 +97,19 @@ class ExileControllerWrapUpPatch
             player.RpcResetAbilityCooldown();
         }
 
-        if (AntiBlackout.currentSolution == SolutionAntiBlackScreen.AntiBlackout_FullResetCamera
-            && AntiBlackout.BlackOutIsActive)
+        _ = new LateTask(() =>
         {
-            foreach (var player in Main.AllPlayerControls)
+            if (AntiBlackout.currentSolution == SolutionAntiBlackScreen.AntiBlackout_FullResetCamera
+                && AntiBlackout.BlackOutIsActive)
             {
-                if (Main.ResetCamPlayerList.Contains(player.PlayerId) && exiled != null && exiled.PlayerId == player.PlayerId) continue;
+                foreach (var player in Main.AllPlayerControls)
+                {
+                    if (Main.ResetCamPlayerList.Contains(player.PlayerId) && exiled != null && exiled.PlayerId == player.PlayerId) continue;
 
-                AntiBlackout.FullResetCamForPlayer(player);
+                    AntiBlackout.FullResetCamForPlayer(player);
+                }
             }
-        }
+        }, 0.6f, "AntiBlackout Full Reset Camera For Player");
 
         Main.MeetingIsStarted = false;
         Main.MeetingsPassed++;
@@ -132,7 +135,7 @@ class ExileControllerWrapUpPatch
                 };
                 if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
 
-            }, 0.8f, "Random Spawn After Meeting");
+            }, 1.2f, "Random Spawn After Meeting");
         }
     }
 
