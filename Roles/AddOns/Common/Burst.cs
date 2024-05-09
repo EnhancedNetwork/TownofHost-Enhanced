@@ -43,7 +43,7 @@ public static class Burst
     {
         target.SetRealKiller(killer);
         BurstBodies.Add(target.PlayerId);
-        if (killer.PlayerId != target.PlayerId && !killer.Is(CustomRoles.Pestilence))
+        if (killer.PlayerId != target.PlayerId && !killer.IsTransformedNeutralApocalypse())
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstNotify")));
             _ = new LateTask(() =>

@@ -75,7 +75,7 @@ internal class Veteran : RoleBase
                     Logger.Info($"{target.GetRealName()} 老兵反弹击杀：{killer.GetRealName()}", "Veteran Kill");
                     return false;
                 }
-                if (killer.Is(CustomRoles.Pestilence))
+                if (killer.Is(CustomRoles.Pestilence) || killer.Is(CustomRoles.War))
                 {
                     target.SetRealKiller(killer);
                     killer.RpcMurderPlayer(target);

@@ -221,7 +221,13 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessShielded"));
                     return true;
                 }
-                
+
+                if (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessImmune"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessImmune"));
+                    return true;
+                }
                 if (pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);

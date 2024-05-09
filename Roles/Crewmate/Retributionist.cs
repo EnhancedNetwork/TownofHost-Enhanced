@@ -145,10 +145,10 @@ internal class Retributionist : RoleBase
             else pc.ShowPopUp(GetString("RetributionistKillDead"));
             return true;
         }
-        else if (target.Is(CustomRoles.Pestilence))
+        else if (target.IsTransformedNeutralApocalypse())
         {
-            if (!isUI) SendMessage(GetString("PestilenceImmune"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("PestilenceImmune"));
+            if (!isUI) SendMessage(GetString("GuessImmune"), pc.PlayerId);
+            else pc.ShowPopUp(GetString("GuessImmune"));
             return true;
         }
         else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)

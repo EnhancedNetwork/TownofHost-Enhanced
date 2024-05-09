@@ -113,7 +113,7 @@ internal class Pelican : RoleBase
             if (target.Is(CustomRoles.Penguin) || id == Penguin.AbductVictim.PlayerId)
                 return false;
 
-        return target != null && target.CanBeTeleported() && !target.Is(CustomRoles.Pestilence) && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
+        return target != null && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
     }
     public static Vector2 GetBlackRoomPSForPelican()
     {

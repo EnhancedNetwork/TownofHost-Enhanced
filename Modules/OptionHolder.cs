@@ -480,6 +480,7 @@ public static class Options
     public static OptionItem NeutralKillingRolesMaxPlayer;
     public static OptionItem NeutralApocalypseRolesMinPlayer;
     public static OptionItem NeutralApocalypseRolesMaxPlayer;
+    public static OptionItem TransformedNeutralApocalypseCanBeGuessed;
     public static OptionItem NeutralRoleWinTogether;
     public static OptionItem NeutralWinTogether;
 
@@ -663,6 +664,9 @@ public static class Options
         NeutralApocalypseRolesMaxPlayer = IntegerOptionItem.Create(60023, "NeutralApocalypseRolesMaxPlayer", new(0, 4, 1), 0, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Players);
+        TransformedNeutralApocalypseCanBeGuessed = BooleanOptionItem.Create(60024, "TNACanBeGuessed", false, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
 
 
         NeutralRoleWinTogether = BooleanOptionItem.Create(60017, "NeutralRoleWinTogether", false, TabGroup.NeutralRoles, false)

@@ -104,7 +104,7 @@ internal class Crusader : RoleBase
 
         foreach (var crusader in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Crusader)).ToArray())
         {
-            if (!killer.Is(CustomRoles.Pestilence) && !killer.Is(CustomRoles.KillingMachine)
+            if (!killer.IsTransformedNeutralApocalypse() && !killer.Is(CustomRoles.KillingMachine)
                 && killer.CheckForInvalidMurdering(target) && crusader.RpcCheckAndMurder(killer, true))
             {
                 crusader.RpcMurderPlayer(killer);

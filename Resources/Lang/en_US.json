@@ -2573,6 +2573,7 @@
   "PassiveSoulGained": "You have gained a passive soul from the underworld.",
 
   "ApocalypseIsNigh": "[ The Apocalypse Is Nigh! ]",
+  "ApocalypseImmune": "This player is immune because they are invincible!",
   "BakerToFamine": "You have become Famine!!!",
   "BakerTransform": "<align=\"center\"><size=150%>The <b><color=#bf9f7a>Baker</b></color> has transformed into <b><color=#83461c>Famine</b></color>, Horseman of the Apocalypse! A famine has begun!</size></align>",
   "BakerAlreadyBreaded": "That player already has bread!",

@@ -129,10 +129,10 @@ internal class Nemesis : RoleBase
             else pc.ShowPopUp(GetString("NemesisKillDead"));
             return true;
         }
-        else if (target.Is(CustomRoles.Pestilence))
+        else if (target.IsTransformedNeutralApocalypse())
         {
-            if (!isUI) Utils.SendMessage(GetString("PestilenceImmune"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("PestilenceImmune"));
+            if (!isUI) Utils.SendMessage(GetString("GuessImmune"), pc.PlayerId);
+            else pc.ShowPopUp(GetString("GuessImmune"));
             return true;
         }
         else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)

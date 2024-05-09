@@ -176,6 +176,12 @@ internal class Councillor : RoleBase
                     else pc.ShowPopUp(GetString("GuessSolsticer"));
                     return true;
                 }
+                else if (target.IsTransformedNeutralApocalypse() && !target.Is(CustomRoles.Pestilence))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("ApocalypseImmune"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("ApocalypseImmune"));
+                    return true;
+                }
                 else if (target.Is(CustomRoles.Madmate) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
                 else if (target.Is(CustomRoles.Parasite) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
                 else if (target.Is(CustomRoles.Refugee) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;

@@ -191,7 +191,7 @@ internal class Sheriff : RoleBase
         return cRole switch
         {
             CustomRoles.Trickster => false,
-            CustomRoles.Pestilence => true,
+            var r when cRole.IsTNA() => false,
             _ => cRole.GetCustomRoleTeam() switch
             {
                 Custom_Team.Impostor => true,

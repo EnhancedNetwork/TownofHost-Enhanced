@@ -162,6 +162,17 @@ internal class Baker : RoleBase
     }
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (killer.GetCustomRole() == CustomRoles.Famine && !target.IsNeutralApocalypse()) {
+            if (StarvedNonBreaded) { 
+                FamineList[killer.PlayerId].Add(target.PlayerId);
+                SendRPC(killer, target);
+                Utils.NotifyRoles(SpecifySeer: killer);
+                killer.Notify(GetString("FamineStarved"));
+                Logger.Info(target.GetRealName() + $" has been starved", "Famine");
+                CanUseAbility = true;
+                return false; 
+            }
+        }
         if (!CanUseAbility)
         {
             killer.Notify(GetString("BakerBreadUsedAlready"));
@@ -169,7 +180,7 @@ internal class Baker : RoleBase
         }
         if (target.IsNeutralApocalypse())
         {
-            if (killer.GetCustomRole() is CustomRoles.Baker)
+            if (killer.GetCustomRole() == CustomRoles.Baker)
                 killer.Notify(GetString("BakerCantBreadApoc"));
             else
                 killer.Notify(GetString("FamineCantStarveApoc"));
@@ -185,25 +196,12 @@ internal class Baker : RoleBase
             killer.Notify(GetString("FamineAlreadyStarved"));
             return false;
         }
-        if (killer.GetCustomRole() is CustomRoles.Famine) {
-            FamineList[killer.PlayerId].Add(target.PlayerId);
-            SendRPC(killer, target);
-            Utils.NotifyRoles(SpecifySeer: killer);
-            killer.Notify(GetString("FamineStarved"));
-            Logger.Info(target.GetRealName() + $" has been starved", "Famine");
-            CanUseAbility = true;
-            return false;
-        }
-        else if (killer.GetCustomRole() is CustomRoles.Baker)
-        {
-            BreadList[killer.PlayerId].Add(target.PlayerId);
-            SendRPC(killer, target);
-            Utils.NotifyRoles(SpecifySeer: killer);
-            killer.Notify(GetString("BakerBreaded"));
-            Logger.Info($"Bread given to " + target.GetRealName(), "Baker");
-            CanUseAbility = false;
-            return false;
-        }
+        BreadList[killer.PlayerId].Add(target.PlayerId);
+        SendRPC(killer, target);
+        Utils.NotifyRoles(SpecifySeer: killer);
+        killer.Notify(GetString("BakerBreaded"));
+        Logger.Info($"Bread given to " + target.GetRealName(), "Baker");
+        CanUseAbility = false;
         return false;
     }
     public override void OnFixedUpdate(PlayerControl player)

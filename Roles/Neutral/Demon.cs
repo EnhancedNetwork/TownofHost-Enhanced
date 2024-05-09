@@ -111,7 +111,7 @@ internal class Demon : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Pestilence)) return true;
+        if (target.IsTransformedNeutralApocalypse()) return true;
         if (killer == null || target == null || !target.Is(CustomRoles.Demon) || killer.Is(CustomRoles.Demon)) return true;
 
         if (DemonHealth[target.PlayerId] - SelfDamage.GetInt() < 1)
