@@ -12,19 +12,19 @@ public abstract class RoleBase
 #pragma warning disable IDE1006
     public PlayerControl _Player => Utils.GetPlayerById(_state.PlayerId);
 #pragma warning restore IDE1006
+    public int AbilityLimit { get; set; }
 
 
-    public void OnInit()
+    public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;
         Init();
     }
 
-    public void OnAdd(byte playerid)
+    public void OnAdd(byte playerid) // The player with the class executes this
     {
         _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
         CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;
-
 
         Add(playerid);
     }
@@ -33,11 +33,13 @@ public abstract class RoleBase
     /// <summary>
     /// Variable resets when the game starts.
     /// </summary>
-    public abstract void Init();
+    public virtual void Init()
+    { }
     /// <summary>
     /// When role is applied in the game, beginning or during the game.
     /// </summary>
-    public abstract void Add(byte playerId);
+    public virtual void Add(byte playerId)
+    { }
 
     /// <summary>
     /// If role has to be removed from player
@@ -360,6 +362,20 @@ public abstract class RoleBase
     public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
+
+
+    public void OnReceiveRPC(MessageReader reader) 
+    {
+        var Limit = reader.ReadInt32();
+        AbilityLimit = Limit;
+
+    }
+    public void SendSkillRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.Write(AbilityLimit);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
     public virtual void ReceiveRPC(MessageReader reader, PlayerControl pc)
     { }
 }
