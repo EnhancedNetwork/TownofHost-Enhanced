@@ -42,7 +42,6 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         public override void Add(byte playerId)
         {
             AbilityLimit = MaxPossesions.GetInt();
-            PlayerIds.Add(playerId);
 
             CustomRoleManager.LowerOthers.Add(OthersNameText);
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
@@ -153,7 +152,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
             return "";
         }
-        public override string GetProgressText(byte playerId, bool cooms) => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({PossessLimit})");
+        public override string GetProgressText(byte playerId, bool cooms) => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
         
     }
 }
