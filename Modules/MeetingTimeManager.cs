@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using System;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Modules;
 
@@ -58,7 +59,10 @@ public class MeetingTimeManager
             MeetingTimeMax = TimeManager.MeetingTimeLimit.GetInt();
             BonusMeetingTime += TimeManager.TotalIncreasedMeetingTime();
         }
-
+        if (SoulCollector.HasEnabled)
+        {
+            BonusMeetingTime += SoulCollector.GetDeathMeetingTimeIncrease();
+        }
         int TotalMeetingTime = DiscussionTime + VotingTime;
        
         if (TimeManager.HasEnabled) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeManager, MeetingTimeMax) - TotalMeetingTime;

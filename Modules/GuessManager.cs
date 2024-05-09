@@ -901,6 +901,30 @@ public static class GuessManager
                         listOfRoles.Add(CustomRoles.Admired);
                 }
 
+                if (CustomRoles.PlagueBearer.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Pestilence))
+                        listOfRoles.Add(CustomRoles.Pestilence);
+                }
+
+                if (CustomRoles.SoulCollector.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Death))
+                        listOfRoles.Add(CustomRoles.Death);
+                }
+
+                if (CustomRoles.Baker.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Famine))
+                        listOfRoles.Add(CustomRoles.Famine);
+                }
+
+                if (CustomRoles.Berserker.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.War))
+                        listOfRoles.Add(CustomRoles.War);
+                }
+
                 arrayOfRoles = [.. listOfRoles];
             }
             else
@@ -936,7 +960,7 @@ public static class GuessManager
                     or CustomRoles.LastImpostor
                     or CustomRoles.Mare
                     or CustomRoles.Cyber
-                    ) continue;
+                    || (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())) continue;
 
                 CreateRole(role);
             }

@@ -23,6 +23,7 @@ internal class Baker : RoleBase
 
     private static OptionItem BreadNeededToTransform;
     private static OptionItem FamineStarveCooldown;
+    private static OptionItem BakerCanVent;
 
     private static readonly Dictionary<byte, List<byte>> BreadList = [];
     private static readonly Dictionary<byte, List<byte>> FamineList = [];
@@ -36,6 +37,7 @@ internal class Baker : RoleBase
             .SetValueFormat(OptionFormat.Times);
         FamineStarveCooldown = FloatOptionItem.Create(Id + 11, "FamineStarveCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Baker])
                 .SetValueFormat(OptionFormat.Seconds);
+        BakerCanVent = BooleanOptionItem.Create(Id + 13, "BakerCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
     }
     public override void Init()
     {
@@ -93,6 +95,7 @@ internal class Baker : RoleBase
             return FamineList[seer.PlayerId].Contains(seen.PlayerId) ? $"<color={GetRoleColorCode(seer.GetCustomRole())}>●</color>" : "";
     }
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => BakerCanVent.GetBool();
     public override void SetKillCooldown(byte id)
     {
         PlayerControl baker = Utils.GetPlayerById(playerIdList.First());
@@ -202,6 +205,12 @@ internal class Baker : RoleBase
         killer.Notify(GetString("BakerBreaded"));
         Logger.Info($"Bread given to " + target.GetRealName(), "Baker");
         CanUseAbility = false;
+        return false;
+    }
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (killer == null || target == null) return false;
+        if (target.Is(CustomRoles.Baker)) return true;
         return false;
     }
     public override void OnFixedUpdate(PlayerControl player)

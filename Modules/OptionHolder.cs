@@ -664,9 +664,6 @@ public static class Options
         NeutralApocalypseRolesMaxPlayer = IntegerOptionItem.Create(60023, "NeutralApocalypseRolesMaxPlayer", new(0, 4, 1), 0, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Players);
-        TransformedNeutralApocalypseCanBeGuessed = BooleanOptionItem.Create(60024, "TNACanBeGuessed", false, TabGroup.NeutralRoles, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetHeader(true);
 
 
         NeutralRoleWinTogether = BooleanOptionItem.Create(60017, "NeutralRoleWinTogether", false, TabGroup.NeutralRoles, false)
@@ -842,6 +839,9 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
+        TransformedNeutralApocalypseCanBeGuessed = BooleanOptionItem.Create(60024, "TNACanBeGuessed", false, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
         CustomRoles.Baker.GetStaticRoleClass().SetupCustomOption();
 
         CustomRoles.Berserker.GetStaticRoleClass().SetupCustomOption();
