@@ -3,6 +3,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -70,12 +71,7 @@ internal class DollMaster : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DefaultKillCooldown.GetFloat();
 
     // A quick check if a player is being possessed.
-    public static bool IsDoll(byte id)
-    {
-        if (ReducedVisionPlayers.Contains(id))
-            return true;
-        return false;
-    }
+    public static bool IsDoll(byte id) => ReducedVisionPlayers.Contains(id);
 
     // Set Vision to 0 for possessed Target.
     public static void SetVision(IGameOptions opt, PlayerControl target)
@@ -173,11 +169,10 @@ internal class DollMaster : RoleBase
         if (IsControllingPlayer && controllingTarget != null && DollMasterTarget != null)
         {
             bool shouldAnimate = false;
-            Utils.GetPlayerById(DollMasterTarget.PlayerId).RpcShapeshift(Utils.GetPlayerById(DollMasterTarget.PlayerId), shouldAnimate);
-            Utils.GetPlayerById(controllingTarget.PlayerId).RpcShapeshift(Utils.GetPlayerById(controllingTarget.PlayerId), shouldAnimate);
-            UnPossess(Utils.GetPlayerById(DollMasterTarget.PlayerId), Utils.GetPlayerById(controllingTarget.PlayerId));
+            DollMasterTarget.RpcShapeshift(DollMasterTarget, shouldAnimate);
+            controllingTarget.RpcShapeshift(controllingTarget, shouldAnimate);
+            UnPossess(DollMasterTarget, controllingTarget);
             Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
-            ReportDeadBodyPatch.CanReport[controllingTarget.PlayerId] = true;
             ReducedVisionPlayers.Clear();
         }
     }
@@ -186,7 +181,7 @@ internal class DollMaster : RoleBase
     // Prevent possessed player from reporting body.
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
-        if (ReducedVisionPlayers.Contains(reporter.PlayerId)) return false;
+        if (IsDoll(reporter.PlayerId)) return false;
         return true;
     }
 
@@ -197,26 +192,22 @@ internal class DollMaster : RoleBase
         // If Target as DollMaster Main Body gets killed, kill DollMaster instead.
         if (target.PlayerId == controllingTarget.PlayerId)
         {
-            PlayerControl playertarget = Utils.GetPlayerById(controllingTarget.PlayerId);
-            PlayerControl dollmaster = Utils.GetPlayerById(DollMasterTarget.PlayerId);
-            dollmaster.RpcRemovePet();
-            UnPossess(dollmaster, playertarget);
-            GetPlayersPositions(dollmaster);
-            SwapPlayersPositions(dollmaster);
+            DollMasterTarget.RpcRemovePet();
+            UnPossess(DollMasterTarget, controllingTarget);
+            GetPlayersPositions(DollMasterTarget);
+            SwapPlayersPositions(DollMasterTarget);
             if (killer == DollMasterTarget) controllingTarget.RpcTeleport(DollMasterTarget.GetCustomPosition());
-            killer.RpcMurderPlayer(dollmaster);
+            killer.RpcMurderPlayer(DollMasterTarget);
             return true;
         }
         // If DollMaster gets killed as possessed Target, kill possessed Target instead.
         else if (target.PlayerId == DollMasterTarget.PlayerId)
         {
-            PlayerControl playertarget = Utils.GetPlayerById(controllingTarget.PlayerId);
-            PlayerControl dollmaster = Utils.GetPlayerById(DollMasterTarget.PlayerId);
             target.RpcRemovePet();
-            UnPossess(dollmaster, playertarget);
-            GetPlayersPositions(dollmaster);
-            SwapPlayersPositions(dollmaster);
-            killer.RpcMurderPlayer(playertarget);
+            UnPossess(DollMasterTarget, controllingTarget);
+            GetPlayersPositions(DollMasterTarget);
+            SwapPlayersPositions(DollMasterTarget);
+            killer.RpcMurderPlayer(controllingTarget);
             return true;
         }
 
@@ -239,6 +230,14 @@ internal class DollMaster : RoleBase
             return false;
         }
 
+        // If target is on imp team retune.
+        if (!IsControllingPlayer && target.GetCustomRole().IsImpostorTeam())
+        {
+            AURoleOptions.ShapeshifterCooldown = 0;
+            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_CannotPossessImpTeammate")));
+            return false;
+        }
+
         // If players can be taken over.
         if (!target.IsAlive() || !target.CanBeTeleported() || Pelican.IsEaten(pc.PlayerId) || Pelican.IsEaten(target.PlayerId))
         {
@@ -252,7 +251,7 @@ internal class DollMaster : RoleBase
         // Possess Player & UnPossess Player.
         if (!IsControllingPlayer)
         {
-            if (target != null) controllingTarget = Utils.GetPlayerById(target.PlayerId);
+            if (target != null) controllingTarget = target;
             originalSpeed = Main.AllPlayerSpeed[target.PlayerId];
             IsControllingPlayer = true;
 
@@ -266,7 +265,7 @@ internal class DollMaster : RoleBase
         }
         else if (controllingTarget != null)
         {
-            UnPossess(pc, Utils.GetPlayerById(controllingTarget.PlayerId));
+            UnPossess(pc, controllingTarget);
             GetPlayersPositions(pc);
             SwapPlayersPositions(pc);
         }
@@ -324,8 +323,8 @@ internal class DollMaster : RoleBase
         if (target == null) return string.Empty;
         if (controllingTarget == null) return string.Empty;
         if (DollMasterTarget == null) return string.Empty;
-        if (seer.PlayerId != target.PlayerId && target.PlayerId == controllingTarget.PlayerId) return "<color=#ffea00>" + GetString("DollMaster_MainBody");
-        if (seer.PlayerId == target.PlayerId && target.PlayerId == DollMasterTarget.PlayerId) return "<color=#ffea00>" + GetString("DollMaster_Doll");
+        if (seer.PlayerId != target.PlayerId && target.PlayerId == controllingTarget.PlayerId) return "<color=#ffea00>" + GetString("DollMaster_MainBody") + "</color>";
+        if (seer.PlayerId == target.PlayerId && target.PlayerId == DollMasterTarget.PlayerId) return "<color=#ffea00>" + GetString("DollMaster_Doll") + "</color>";
         return string.Empty;
     }
 
