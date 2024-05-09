@@ -16,8 +16,8 @@ public static class Glow
     private static OptionItem GlowVisionOthers;
     private static OptionItem GlowVisionSelf;
 
-    private static Dictionary<byte, HashSet<byte>> InRadius = [];
-    private static Dictionary<byte, bool> MarkedOnce = [];
+    private static readonly Dictionary<byte, HashSet<byte>> InRadius = [];
+    private static readonly Dictionary<byte, bool> MarkedOnce = [];
 
     public static void SetupCustomOptions()
     {

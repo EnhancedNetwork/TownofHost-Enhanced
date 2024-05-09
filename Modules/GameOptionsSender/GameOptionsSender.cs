@@ -9,7 +9,7 @@ namespace TOHE.Modules;
 public abstract class GameOptionsSender
 {
     #region Static
-    public readonly static List<GameOptionsSender> AllSenders = new(15) { new NormalGameOptionsSender() };
+    public readonly static List<GameOptionsSender> AllSenders = new(100) { new NormalGameOptionsSender() };
 
     public static void SendAllGameOptions()
     {
