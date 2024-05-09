@@ -183,6 +183,14 @@ public static class AntiBlackout
 
         var sender = CustomRpcSender.Create("ResetPlayerCam");
         {
+            // Start critical sabotage locally for the player (clean up black screen)
+            sender.AutoStartRpc(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, targetClientId: player.GetClientId());
+            {
+                sender.Write((byte)systemtypes);
+                sender.WriteNetObject(player);
+                sender.Write((byte)128);
+            }
+            sender.EndRpc();
             // Teleport a ghost player locally for the player
             sender.AutoStartRpc(ghostPlayer.NetTransform.NetId, (byte)RpcCalls.SnapTo, targetClientId: player.GetClientId());
             {
@@ -197,29 +205,27 @@ public static class AntiBlackout
                 sender.Write((int)MurderResultFlags.Succeeded);
             }
             sender.EndRpc();
-            // Start critical sabotage locally for the player (clean up black screen)
-            sender.AutoStartRpc(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, targetClientId: player.GetClientId());
-            {
-                sender.Write((byte)systemtypes);
-                sender.WriteNetObject(player);
-                sender.Write((byte)128);
-            }
-            sender.EndRpc();
         }
         sender.SendMessage();
 
         // In case the dead body is in plain sight
         Main.UnreportableBodies.Add(ghostPlayer.PlayerId);
 
+        // Teleport player back
+        if (!RandomSpawn.IsRandomSpawn() && !GameStates.AirshipIsActive)
+        {
+            _ = new LateTask(() =>
+            {
+                if (player == null) return;
+
+                player.RpcTeleport(playerPosition);
+
+            }, 0.2f, "Teleport player back", shoudLog: false);
+        }
+
         _ = new LateTask(() =>
         {
             if (player == null) return;
-
-            // Teleport player back
-            if (!RandomSpawn.IsRandomSpawn() && !GameStates.AirshipIsActive)
-            {
-                player.RpcTeleport(playerPosition);
-            }
 
             // End critical sabotage locally for the player
             player.RpcDesyncUpdateSystem(systemtypes, 16);
@@ -228,7 +234,7 @@ public static class AntiBlackout
             {
                 player.RpcDesyncUpdateSystem(systemtypes, 17);
             }
-        }, 0.5f, "Fix Desync Reactor for reset cam", shoudLog: false);
+        }, 0.4f, "Fix Desync Reactor for reset cam", shoudLog: false);
     }
 
     public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, GameData.PlayerInfo exiled, bool tie)
