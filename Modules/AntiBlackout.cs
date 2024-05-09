@@ -51,26 +51,17 @@ public static class AntiBlackout
 
         var BlackOutIsActive = false;
 
-        // Don't check if Neutral killers are not present in the game
-        if (numAliveNeutralKillers >= 1)
-        {
-            // if all Crewmates is dead
-            if (!BlackOutIsActive)
-                BlackOutIsActive = numAliveCrewmates <= 0;
+        // if all Crewmates is dead
+        if (!BlackOutIsActive)
+            BlackOutIsActive = numAliveCrewmates <= 0;
 
-            // if all Impostors is dead and neutral killers > or = num alive crewmates
-            if (!BlackOutIsActive)
-                BlackOutIsActive = numAliveImpostors <= 0 && (numAliveNeutralKillers >= numAliveCrewmates);
+        // if all Impostors is dead and neutral killers > or = num alive crewmates
+        if (!BlackOutIsActive)
+            BlackOutIsActive = numAliveImpostors <= 0 && (numAliveNeutralKillers >= numAliveCrewmates);
 
-            // if num alive Impostors > or = num alive Crewmates/Neutral killers
-            if (!BlackOutIsActive)
-                BlackOutIsActive = numAliveImpostors >= (numAliveNeutralKillers + numAliveCrewmates);
-        }
-        else if (currentSolution == SolutionAntiBlackScreen.AntiBlackout_FullResetCamera)
-        {
-            BlackOutIsActive = (numAliveNeutralKillers + numAliveCrewmates) <= numAliveImpostors;
-        }
-
+        // if num alive Impostors > or = num alive Crewmates/Neutral killers
+        if (!BlackOutIsActive)
+            BlackOutIsActive = numAliveImpostors >= (numAliveNeutralKillers + numAliveCrewmates);
 
         Logger.Info($" {BlackOutIsActive}", "BlackOut Is Active");
         return BlackOutIsActive;
