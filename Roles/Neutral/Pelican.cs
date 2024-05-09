@@ -15,7 +15,7 @@ internal class Pelican : RoleBase
     private const int Id = 17300;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\

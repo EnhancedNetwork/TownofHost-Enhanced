@@ -830,7 +830,7 @@ internal static class RPC
             Main.PlayerStates[targetId].SetSubRole(role);
         }
 
-        if (role < CustomRoles.NotAssigned) targetId.GetRoleClassById()?.Add(targetId);
+        if (role < CustomRoles.NotAssigned) targetId.GetRoleClassById()?.OnAdd(targetId);
 
         switch (role)
         {
@@ -892,7 +892,7 @@ internal static class RPC
                     Admirer.ReceiveRPC(reader, false);
                     break;
                 default:
-                    role.GetStaticRoleClass().ReceiveRPC(reader, pc);
+                    pc.GetRoleClass().OnReceiveRPC(reader);
                     break;
             }
         }

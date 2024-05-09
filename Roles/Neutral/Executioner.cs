@@ -12,7 +12,7 @@ internal class Executioner : RoleBase
     private const int Id = 14200;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
@@ -162,7 +162,7 @@ internal class Executioner : RoleBase
         var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), Translator.GetString(""));
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         executioner.Notify(text);
-        try { executioner.GetRoleClass().Add(executioner.PlayerId); } 
+        try { executioner.GetRoleClass().OnAdd(executioner.PlayerId); } 
         catch (Exception err) 
         { Logger.Warn($"Error after attempting to RoleCLass.Add({executioner.GetCustomRole().ToString().RemoveHtmlTags() + ", " + executioner.GetRealName()}.PlayerId): {err}", "Executioner.ChangeRole.Add"); }
     }

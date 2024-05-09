@@ -9,7 +9,7 @@ internal class Mini : RoleBase
     //===========================SETUP================================\\
     private const int Id = 7000;
     private static readonly HashSet<byte> playerIdList = [];
-    public override bool IsEnable => HasEnabled;
+    
     public static bool HasEnabled => playerIdList.Any();
     public override CustomRoles ThisRoleBase => IsEvilMini ? CustomRoles.Impostor : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => IsEvilMini ? Custom_RoleType.ImpostorKilling : Custom_RoleType.CrewmateBasic;

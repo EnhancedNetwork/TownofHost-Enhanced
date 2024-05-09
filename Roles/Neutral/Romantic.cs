@@ -14,7 +14,7 @@ internal class Romantic : RoleBase
     private const int Id = 13500;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -240,7 +240,7 @@ internal class Romantic : RoleBase
         {
             Logger.Info($"Neutral Romantic Partner Died changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
             pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
-            pc.GetRoleClass().Add(pc.PlayerId);
+            pc.GetRoleClass().OnAdd(pc.PlayerId);
             Utils.NotifyRoles(ForceLoop: true);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
@@ -254,7 +254,7 @@ internal class Romantic : RoleBase
                 if (killer == null) //change role to RuthlessRomantic if there is no killer for partner in game
                 {
                     pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
-                    pc.GetRoleClass().Add(pc.PlayerId);
+                    pc.GetRoleClass().OnAdd(pc.PlayerId);
                     Logger.Info($"No real killer for {player.GetRealName().RemoveHtmlTags()}, role changed to ruthless romantic", "Romantic");
                 }
                 else 
@@ -263,7 +263,7 @@ internal class Romantic : RoleBase
 
                     VengefulRomantic.SendRPC(pc.PlayerId);
                     pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
-                    pc.GetRoleClass().Add(pc.PlayerId);
+                    pc.GetRoleClass().OnAdd(pc.PlayerId);
                     Logger.Info($"Vengeful romantic target: {killer.GetRealName().RemoveHtmlTags()}, [{VengefulTargetId}]", "Vengeful Romantic");
                 }
                 Utils.NotifyRoles(ForceLoop: true);
@@ -280,7 +280,7 @@ internal class VengefulRomantic : RoleBase
     //===========================SETUP================================\\
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
     public override Custom_RoleType ThisRoleType => new Romantic().ThisRoleType;
     //==================================================================\\
@@ -355,7 +355,7 @@ internal class RuthlessRomantic : RoleBase
     //===========================SETUP================================\\
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
     public override Custom_RoleType ThisRoleType => new Romantic().ThisRoleType;
     //==================================================================\\

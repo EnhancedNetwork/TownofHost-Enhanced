@@ -11,7 +11,7 @@ internal class Imitator : RoleBase
     private const int Id = 13000;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -92,7 +92,7 @@ internal class Imitator : RoleBase
             RememberLimit[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
             killer.RpcSetCustomRole(role);
-            killer.GetRoleClass().Add(killer.PlayerId);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
 
             if (role.IsCrewmate())
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
@@ -114,22 +114,22 @@ internal class Imitator : RoleBase
                 case 1:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedPursuer")));
                     killer.RpcSetCustomRole(CustomRoles.Pursuer);
-                    killer.GetRoleClass().Add(killer.PlayerId);
+                    killer.GetRoleClass().OnAdd(killer.PlayerId);
                     break;
                 case 2:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedFollower")));
                     killer.RpcSetCustomRole(CustomRoles.Follower);
-                    killer.GetRoleClass().Add(killer.PlayerId);
+                    killer.GetRoleClass().OnAdd(killer.PlayerId);
                     break;
                 case 3:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedMaverick")));
                     killer.RpcSetCustomRole(CustomRoles.Maverick);
-                    killer.GetRoleClass().Add(killer.PlayerId);
+                    killer.GetRoleClass().OnAdd(killer.PlayerId);
                     break;
                 case 4: //....................................................................................x100
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedAmnesiac")));
                     killer.RpcSetCustomRole(CustomRoles.Amnesiac);
-                    killer.GetRoleClass().Add(killer.PlayerId);
+                    killer.GetRoleClass().OnAdd(killer.PlayerId);
                     break;
             }
 
@@ -139,7 +139,7 @@ internal class Imitator : RoleBase
             RememberLimit[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Sheriff);
-            killer.GetRoleClass().Add(killer.PlayerId);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }
