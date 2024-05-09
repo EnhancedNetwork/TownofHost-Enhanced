@@ -795,12 +795,13 @@ public static class Options
 
         /*
          * Crewmate Ghost Roles
-        */
+         */
         TextOptionItem.Create(10000101, "RoleType.CrewGhost", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateGhosts).ForEach(r => r.SetupCustomOption());
+
 
         #endregion
 
