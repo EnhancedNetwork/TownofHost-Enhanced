@@ -81,6 +81,13 @@ class CheckProtectPatch
         
         return true;
     }
+
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    {
+        var angel = __instance;
+        Utils.NotifyRoles(SpecifySeer: angel);
+        Utils.NotifyRoles(SpecifySeer: target);
+    }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))]
 class CheckMurderPatch
@@ -1029,6 +1036,9 @@ class FixedUpdateInNormalGamePatch
                     if (Glow.IsEnable)
                         Glow.OnFixedUpdate(player);
 
+                    if (Radar.IsEnable)
+                        Radar.OnFixedUpdate(player);
+
                     if (Rainbow.isEnabled)
                         Rainbow.OnFixedUpdate();
 
@@ -1154,8 +1164,12 @@ class FixedUpdateInNormalGamePatch
 
                 Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target));
 
+
+                if (Radar.IsEnable) Suffix.Append(Radar.GetPlayerArrow(seer, target, isForMeeting: false));
+
                 Suffix.Append(seerRoleClass?.GetSuffix(seer, target));
                 Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
+
 
                 if (seerRole.IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
                 {
@@ -1171,14 +1185,6 @@ class FixedUpdateInNormalGamePatch
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                 }
                 else if (target.Is(CustomRoles.Lovers) && seer.Data.IsDead)
-                {
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                }
-                else if (target.Is(CustomRoles.Ntr) || seer.Is(CustomRoles.Ntr))
-                {
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                }
-                else if (target == seer && CustomRolesHelper.RoleExist(CustomRoles.Ntr))
                 {
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                 }

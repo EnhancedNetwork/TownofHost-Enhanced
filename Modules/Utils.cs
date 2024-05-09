@@ -418,24 +418,32 @@ public static class Utils
                     var seerPlatform = seer.GetClient()?.PlatformData.Platform;
                     var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
 
+                    static bool Checkif(string str) {
+
+                        string[] strings = {"*Prefix", "INVALID" };
+                        return strings.Any(str.Contains); 
+                    }
+                    static string Getname(string str) => !Checkif(GetString($"Prefix.{str}")) ? GetString($"Prefix.{str}") : GetString($"{str}");
+
                     // if the player is playing on a console platform
                     if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
                     {
                         // By default, censorship is enabled on consoles
                         // Need to set add-ons colors without endings "</color>"
 
+
                         // colored role
                         RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
 
                         // colored add-ons
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"{subRole}")}) " : $"{GetString($"{subRole}")} ") + RoleText;
+                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname($"{subRole}")}) " : $"{Getname($"{subRole}")} ") + RoleText;
                     }
                     // default
                     else
                     {
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"{subRole}")}) " : $"{GetString($"{subRole}")} ") + RoleText;
+                            RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname($"{subRole}")}) " : $"{Getname($"{subRole}")} ") + RoleText;
                     }
                 }
 
@@ -479,12 +487,13 @@ public static class Utils
         if (RealKillerColor)
         {
             var KillerId = state.GetRealKiller();
-            Color color = KillerId != byte.MaxValue ? Main.PlayerColors[KillerId] : GetRoleColor(CustomRoles.Doctor);
+            Color color = KillerId != byte.MaxValue ? GetRoleColor(Main.PlayerStates[KillerId].MainRole) : GetRoleColor(CustomRoles.Doctor);
             if (state.deathReason == PlayerState.DeathReason.Disconnected) color = new Color(255, 255, 255, 50);
             deathReason = ColorString(color, deathReason);
         }
         return deathReason;
     }
+
 
     public static bool HasTasks(GameData.PlayerInfo playerData, bool ForRecompute = true)
     {
@@ -769,10 +778,10 @@ public static class Utils
         neutralsb.Sort();
         addonsb.Sort();
         
-        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
-        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
-        SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"));
-        SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"));
+        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"), ShouldSplit: true);
+        SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"), ShouldSplit: true);
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
@@ -810,7 +819,7 @@ public static class Utils
 
         var sb = new StringBuilder();
 
-        sb.Append($"<#ffffff>{GetString("RoleSummaryText")}</color><size=70%>");
+        sb.Append($"<#ffffff>{GetString("RoleSummaryText")}</color>");
 
         List<byte> cloneRoles = new(Main.PlayerStates.Keys);
         foreach (byte id in Main.winnerList.ToArray())
@@ -839,13 +848,26 @@ public static class Utils
                     if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>"))
                         continue;
                     sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
+                    
                 }
                 break;
         }
-        sb.Append("</size>");
         string lr = sb.ToString();
-        if (lr.Length > 1200) lr = lr.RemoveHtmlTags();
-        SendMessage("\n", PlayerId, lr);
+        try{
+            if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
+            {
+                lr = lr.Replace("<color=", "<");
+                lr.SplitMessage(899).Do(x => SendMessage("\n", PlayerId, $"<size=75%>" + x + "</size>")); //Since it will always capture a newline, there's more than enough space to put this in
+            }
+            else
+            {
+                SendMessage("\n", PlayerId,  "<size=75%>" + lr + "</size>");
+            }
+        }
+        catch (Exception err)
+        {
+            Logger.Warn($"Error after try split the msg {lr} at: {err}", "Utils.ShowLastRoles..LastRoles");
+        }
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
     {
@@ -857,8 +879,8 @@ public static class Utils
         if (EndGamePatch.KillLog != "") 
         {
             string kl = EndGamePatch.KillLog;
-            if (Options.OldKillLog.GetBool() || kl.Length > 1200) kl = kl.RemoveHtmlTags();
-            SendMessage(kl, PlayerId); 
+            kl = Options.OldKillLog.GetBool() ? kl.RemoveHtmlTags() : kl.Replace("<color=", "<");
+            SendSpesificMessage(kl, PlayerId, NewLineIndex: 899);
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
@@ -895,12 +917,6 @@ public static class Utils
                 sb.Append($"{ColorString(RoleColor, "(")}{RoleText}{ColorString(RoleColor, ")")}");
             else
                 sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
-        }
-
-        if (intro && !SubRoles.Contains(CustomRoles.Lovers) && !SubRoles.Contains(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
-        {
-            var RoleText = disableColor ? GetRoleName(CustomRoles.Lovers) : ColorString(GetRoleColor(CustomRoles.Lovers), GetRoleName(CustomRoles.Lovers));
-            sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
         }
 
         return sb.ToString();
@@ -1194,10 +1210,120 @@ public static class Utils
         //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
             , ID);
     }
+    public static string[] SplitMessage(this string LongMsg, int NewLineRange = 1169)
+    {
+        List<string> result = [];
+        string forqueue = "";
+        bool capturedN = false;
+        bool didDo = true;
 
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
+        while (LongMsg != string.Empty)
+        {
+            if (forqueue != string.Empty)
+            {
+                LongMsg = forqueue + LongMsg;
+                forqueue = string.Empty;
+            }
+            if (LongMsg.IndexOf(">") < LongMsg.IndexOf("<") && !capturedN) // color litter
+            {
+                LongMsg = LongMsg.Remove(0, LongMsg.IndexOf(">")+1);
+            }
+
+            var partmsg = LongMsg.Length > 1200 ? LongMsg[..1201] : LongMsg;
+            var indx1 = partmsg.LastIndexOf("\n");
+
+            didDo = false;
+
+            if (indx1 > NewLineRange && partmsg.Length > 1200) // If a newline after NewLineRange can be found send it to the queue
+            {
+                forqueue = LongMsg[..1201][(indx1+1)..1200]; // substring.substring;
+                result.Add(LongMsg[..indx1]);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+                didDo = true;
+            }
+            else if (partmsg.LastIndexOf("<") >= 1185 && partmsg.Length > 1200) // If /n isn't present remove the first color instance
+            {
+                if (!partmsg[partmsg.LastIndexOf("<")..1200].Contains('>'))
+                {
+                    result.Add(LongMsg[..partmsg.LastIndexOf("<")]);
+                    LongMsg = LongMsg.TryRemove();
+                    capturedN = false;
+                    didDo = true;
+                }
+            }
+            else if (partmsg.Length > 1200)
+            {
+                result.Add(LongMsg[..1200]);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+                didDo = true;
+            }
+            else
+            {
+                result.Add(partmsg);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+                break;
+            }
+
+            if (!didDo) // Incase compiler decides to be a fckn dumbass
+            {
+                var thismsg = partmsg.Length > 1200 ? partmsg[..1200] : partmsg;
+                Logger.Info(" Warning, compiler decided to be a fckn dumbass and check_absolute activated.", "Utils.SplitMessage..Check Absolute");
+                result.Add(thismsg);
+                LongMsg = LongMsg.TryRemove();
+                capturedN = true;
+                if (thismsg.Length < 1200) break;
+            }
+
+
+        }
+
+        return [.. result];
+    }
+    private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
+    
+    
+    public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "", int NewLineIndex = 1679) 
+    {
+        // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
+
+
+        if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
+        {
+            foreach(var txt in text.SplitMessage(NewLineIndex))
+            {
+                var m = Regex.Replace(txt, "^<voffset=[-]?\\d+em>", ""); // replaces the first instance of voffset, if any.
+                SendMessage(m, sendTo, title);
+            }
+        }
+        else 
+        {
+            SendMessage(text, sendTo, title);
+        }
+
+
+    }
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+        try
+        {
+            if (ShouldSplit && text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
+            {
+                text.SplitMessage().Do(x => SendMessage(x, sendTo, title));
+                return;
+            }
+            else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
+            {
+                text = text.RemoveHtmlTagsIfNeccessary();
+            }
+        }
+        catch (Exception exx)
+        {
+            Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage..SplitMessage");
+        }
 
         // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
         if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
@@ -1528,9 +1654,9 @@ public static class Utils
 
                 // ====== Add SelfMark for seer ======
                 SelfMark.Append(seerRoleClass?.GetMark(seer, isForMeeting: isForMeeting));
-                SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, isForMeeting: isForMeeting));
+                SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, seer, isForMeeting: isForMeeting));
 
-                if (seer.Is(CustomRoles.Lovers) /* || CustomRoles.Ntr.RoleExist() */)
+                if (seer.Is(CustomRoles.Lovers))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
 
                 if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
@@ -1542,10 +1668,14 @@ public static class Utils
                 SelfSuffix.Clear();
 
                 SelfSuffix.Append(seerRoleClass?.GetLowerText(seer, isForMeeting: isForMeeting));
-                SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, seer, isForMeeting: isForMeeting));
+
+                if (Radar.IsEnable)
+                    SelfSuffix.Append(Radar.GetPlayerArrow(seer, isForMeeting: isForMeeting));
 
                 SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, isForMeeting: isForMeeting));
-                SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
+
 
                 switch (Options.CurrentGameMode)
                 {
@@ -1669,10 +1799,6 @@ public static class Utils
                             TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                         }
                         else if (seer.Data.IsDead && !seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
-                        {
-                            TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                        }
-                        else if (target.Is(CustomRoles.Ntr) || seer.Is(CustomRoles.Ntr))
                         {
                             TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                         }
@@ -1997,7 +2123,7 @@ public static class Utils
         }
         else { TaskCount = GetProgressText(id); }
 
-        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} ({GetVitalText(id, true)})";
+        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} 『{GetVitalText(id, true)}』";
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
@@ -2010,6 +2136,7 @@ public static class Utils
     }
     public static string RemoveHtmlTagsTemplate(this string str) => Regex.Replace(str, "", "");
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", "");
+    public static string RemoveHtmlTagsIfNeccessary(this string str) => str.Replace("<color=", "<").Length > 1200 ? str.RemoveHtmlTags() : str.Replace("<color=", "<");
 
     public static void FlashColor(Color color, float duration = 1f)
     {

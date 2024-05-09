@@ -50,9 +50,10 @@ internal class RiftMaker : RoleBase
     }
     public override void Add(byte playerId)
     {
-        MarkedLocation[playerId].Clear();
+        MarkedLocation[playerId] = [];
         var now = Utils.GetTimeStamp();
         LastTP[playerId] = now;
+
         TPCooldown = TPCooldownOpt.GetFloat();
         Playerids.Add(playerId);
     }

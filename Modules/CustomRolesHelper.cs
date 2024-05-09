@@ -619,6 +619,10 @@ public static class CustomRolesHelper
                 if ((pc.GetCustomRole().IsCrewmate() && !Glow.CrewCanBeGlow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Glow.NeutralCanBeGlow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Glow.ImpCanBeGlow.GetBool()))
                     return false;
                 break;
+            case CustomRoles.Radar:
+                if ((pc.GetCustomRole().IsCrewmate() && !Radar.CrewCanBeRadar.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Radar.NeutralCanBeRadar.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Radar.ImpCanBeRadar.GetBool()))
+                    return false;
+                break;
             case CustomRoles.Antidote:
                 if (pc.Is(CustomRoles.Diseased) || pc.Is(CustomRoles.Solsticer))
                     return false;
@@ -697,16 +701,6 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Taskinator))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Unlucky.CrewCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Unlucky.NeutralCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Unlucky.ImpCanBeUnlucky.GetBool()))
-                    return false;
-                break;
-
-            case CustomRoles.Ntr:
-                if (pc.Is(CustomRoles.Lovers)
-                    || pc.Is(CustomRoles.Hater)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE)
-                    || pc.Is(CustomRoles.RuthlessRomantic)
-                    || pc.Is(CustomRoles.Romantic)
-                    || pc.Is(CustomRoles.VengefulRomantic))
                     return false;
                 break;
 

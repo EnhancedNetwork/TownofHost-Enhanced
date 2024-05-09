@@ -150,7 +150,6 @@
   "NotAssigned": "#ffffff",
   "LastImpostor": "#ff1919",
   "Lovers": "#ff9ace",
-  "Ntr": "#00a4ff",
   "Madmate": "#ff1919",
   "Watcher": "#800080",
   "Flash": "#ff8400",
@@ -230,5 +229,6 @@
   "Warden": "#588733",
   "Hawk": "#606c80",
   "Ghastly": "#9ad6d4",
-  "Glow": "#E2F147"
+  "Glow": "#E2F147",
+  "Radar": "#FF2400"
 }

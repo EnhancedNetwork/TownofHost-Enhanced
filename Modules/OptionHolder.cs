@@ -182,6 +182,11 @@ public static class Options
     public static OptionItem MaxWaitAutoStart;
     public static OptionItem PlayerAutoStart;
     public static OptionItem AutoStartTimer;
+    public static OptionItem ImmediateAutoStart;
+    public static OptionItem ImmediateStartTimer;
+    public static OptionItem StartWhenPlayersReach;
+    public static OptionItem StartWhenTimerLowerThan;
+
     public static OptionItem AutoPlayAgain;
     public static OptionItem AutoPlayAgainCountdown;
 
@@ -590,7 +595,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 28100 lasted id for roles/add-ons (Next use 28200)
+        // 28200 last id for roles/add-ons (Next use 28300)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -871,6 +876,8 @@ public static class Options
 
         Overclocked.SetupCustomOptions();
 
+        Radar.SetupCustomOptions();
+
         Seer.SetupCustomOptions();
 
         Silent.SetupCustomOptions();
@@ -1038,10 +1045,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
 
-        //SetupAdtRoleOptions(25300, CustomRoles.Ntr, tab: TabGroup.OtherRoles);
-
         Glow.SetupCustomOptions();
-
 
         Youtuber.SetupCustomOptions();
 
@@ -1109,8 +1113,19 @@ public static class Options
         AutoWarnStopWords = BooleanOptionItem.Create(60163, "AutoWarnStopWords", false, TabGroup.SystemSettings, false); */
         MinWaitAutoStart = FloatOptionItem.Create(60170, "MinWaitAutoStart", new(0f, 10f, 0.5f), 1.5f, TabGroup.SystemSettings, false).SetHeader(true);
         MaxWaitAutoStart = FloatOptionItem.Create(60180, "MaxWaitAutoStart", new(0f, 10f, 0.5f), 1.5f, TabGroup.SystemSettings, false);
-        PlayerAutoStart = IntegerOptionItem.Create(60190, "PlayerAutoStart", new(1, 15, 1), 14, TabGroup.SystemSettings, false);
+        PlayerAutoStart = IntegerOptionItem.Create(60190, "PlayerAutoStart", new(1, 100, 1), 14, TabGroup.SystemSettings, false)
+            .SetValueFormat(OptionFormat.Players);
         AutoStartTimer = IntegerOptionItem.Create(60200, "AutoStartTimer", new(10, 600, 1), 20, TabGroup.SystemSettings, false)
+            .SetValueFormat(OptionFormat.Seconds);
+        ImmediateAutoStart = BooleanOptionItem.Create(60201, "ImmediateAutoStart", false, TabGroup.SystemSettings, false);
+        ImmediateStartTimer = IntegerOptionItem.Create(60202, "ImmediateStartTimer", new(0, 60, 1), 20, TabGroup.SystemSettings, false)
+            .SetParent(ImmediateAutoStart)
+            .SetValueFormat(OptionFormat.Seconds);
+        StartWhenPlayersReach = IntegerOptionItem.Create(60203, "StartWhenPlayersReach", new(0, 100, 1), 14, TabGroup.SystemSettings, false)
+            .SetParent(ImmediateAutoStart)
+            .SetValueFormat(OptionFormat.Players);
+        StartWhenTimerLowerThan = IntegerOptionItem.Create(60204, "StartWhenTimerLowerThan", new(0, 600, 5), 60, TabGroup.SystemSettings, false)
+            .SetParent(ImmediateAutoStart)
             .SetValueFormat(OptionFormat.Seconds);
         AutoPlayAgain = BooleanOptionItem.Create(60210, "AutoPlayAgain", false, TabGroup.SystemSettings, false);
         AutoPlayAgainCountdown = IntegerOptionItem.Create(60211, "AutoPlayAgainCountdown", new(1, 20, 1), 10, TabGroup.SystemSettings, false)
