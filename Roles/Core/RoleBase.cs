@@ -1,17 +1,39 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using TOHE.Roles.Core;
 using UnityEngine;
 
 namespace TOHE;
 
 public abstract class RoleBase
 {
+    public PlayerState _state;
+#pragma warning disable IDE1006
+    public PlayerControl _Player => Utils.GetPlayerById(_state.PlayerId);
+#pragma warning restore IDE1006
+
+
+    public void OnInit()
+    {
+        IsEnable = false;
+        Init();
+    }
+
+    public void OnAdd(byte playerid)
+    {
+        _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
+        CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;
+
+
+        Add(playerid);
+    }
+
+
     /// <summary>
     /// Variable resets when the game starts.
     /// </summary>
     public abstract void Init();
-
     /// <summary>
     /// When role is applied in the game, beginning or during the game.
     /// </summary>
@@ -26,7 +48,7 @@ public abstract class RoleBase
     /// <summary>
     /// Make A HashSet(byte) PlayerIdList = []; and check PlayerIdList.Any();
     /// </summary>
-    public abstract bool IsEnable { get; }
+    public virtual bool IsEnable { get; set; }
 
     /// <summary>
     /// Used to Determine the CustomRole's BASE

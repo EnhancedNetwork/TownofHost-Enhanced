@@ -12,7 +12,7 @@ internal class Amnesiac : RoleBase
     private const int Id = 12700;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled = playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -129,7 +129,7 @@ internal class Amnesiac : RoleBase
                 if (tar.IsAmneCrew())
                 {
                     __instance.RpcSetCustomRole(tar.GetCustomRole());
-                    __instance.GetRoleClass().Add(__instance.PlayerId);
+                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
                     __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                     tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                     Main.TasklessCrewmate.Add(__instance.PlayerId);
@@ -137,7 +137,7 @@ internal class Amnesiac : RoleBase
                 else
                 {
                     __instance.RpcSetCustomRole(CustomRoles.EngineerTOHE);
-                    __instance.GetRoleClass().Add(__instance.PlayerId);
+                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
                     __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                     tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                     Main.TasklessCrewmate.Add(__instance.PlayerId);
@@ -146,7 +146,7 @@ internal class Amnesiac : RoleBase
             if (tar.GetCustomRole().IsAmneNK())
             {
                 __instance.RpcSetCustomRole(tar.GetCustomRole());
-                __instance.GetRoleClass().Add(__instance.PlayerId);
+                __instance.GetRoleClass().OnAdd(__instance.PlayerId);
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                 tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
             }
@@ -181,7 +181,7 @@ internal class Amnesiac : RoleBase
                         break;
                 }
                 if (__instance.GetCustomRole() != CustomRoles.Amnesiac) 
-                    __instance.GetRoleClass().Add(__instance.PlayerId);
+                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
             }         
             return false;
         }
