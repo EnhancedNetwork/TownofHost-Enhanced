@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
+using static TOHE.RandomSpawn;
 
 namespace TOHE;
 
@@ -225,16 +226,20 @@ public static class AntiBlackout
         }, 0.2f, "Fix Desync Reactor for reset cam", shoudLog: false);
 
         // Teleport player back
-        if (!RandomSpawn.IsRandomSpawn() && !GameStates.AirshipIsActive)
+        _ = new LateTask(() =>
         {
-            _ = new LateTask(() =>
+            if (player == null) return;
+
+            if (GameStates.AirshipIsActive)
             {
-                if (player == null) return;
-
+                new AirshipSpawnMap().FirstTeleport(player);
+            }
+            else
+            {
                 player.RpcTeleport(playerPosition);
+            }
 
-            }, 0.4f, "Teleport player back", shoudLog: false);
-        }
+        }, 0.4f, "Teleport player back", shoudLog: false);
     }
 
     public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, GameData.PlayerInfo exiled, bool tie)
