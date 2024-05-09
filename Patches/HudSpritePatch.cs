@@ -94,8 +94,8 @@ public static class AbilityButtonSetFromSettingsPatch
 
         __instance.SetInfiniteUses();
 
-        // When ability button is initialize, set default image
-        if (!Main.introDestroyed)
+        // When ability button is initialize or player is dead, set default image
+        if (!Main.introDestroyed || PlayerControl.LocalPlayer.Data.IsDead)
             __instance.graphic.sprite = settings.Image;
 
         __instance.graphic.SetCooldownNormalizedUvs();
