@@ -660,6 +660,10 @@ static class ExtendedPlayerControl
                 Glow.Remove(Killed.PlayerId);
                 Glow.Add(target.PlayerId);
                 break;
+            case CustomRoles.Radar:
+                Radar.Remove(Killed.PlayerId);
+                Radar.Add(target.PlayerId);
+                break;
         }
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false)

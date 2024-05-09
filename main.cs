@@ -4,7 +4,6 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
-using MonoMod.Cil;
 using System;
 using System.IO;
 using System.Reflection;
@@ -12,7 +11,6 @@ using System.Text;
 using System.Text.Json;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 
@@ -41,8 +39,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0505.200.0071"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 dev 7 Hotfix 1";
+    public const string PluginVersion = "2024.0508.200.0008"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 dev 8";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -834,6 +832,7 @@ public enum CustomRoles
     Oiiai,
     Onbound,
     Overclocked,
+    Radar,
     Rainbow,
     Rascal,
     Reach,
