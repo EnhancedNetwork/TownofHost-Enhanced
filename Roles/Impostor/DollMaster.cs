@@ -101,13 +101,11 @@ internal class DollMaster : RoleBase
         if (IsControllingPlayer)
         {
             Main.AllPlayerSpeed[target.PlayerId] = Main.MinSpeed;
-            ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
             target.MarkDirtySettings();
         }
         else if (ResetPlayerSpeed)
         {
             Main.AllPlayerSpeed[target.PlayerId] = originalSpeed;
-            ReportDeadBodyPatch.CanReport[target.PlayerId] = true;
             target.MarkDirtySettings();
         }
         ReducedVisionPlayers.Remove(DollMasterTarget.PlayerId);
