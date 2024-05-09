@@ -28,13 +28,8 @@ public class Ghoul
     {
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
         {
-            var pc = Utils.GetPlayerById(player.PlayerId);
-            if (pc != null)
-            {
-                if (!pc.Is(CustomRoles.Pestilence))
-                    KillGhoul.Add(player.PlayerId);
-            }
-
+            if (!player.Is(CustomRoles.Pestilence))
+                KillGhoul.Add(player.PlayerId);
         }
     }
 

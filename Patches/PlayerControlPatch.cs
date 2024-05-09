@@ -1422,7 +1422,7 @@ class PlayerControlCompleteTaskPatch
                             Bloodlust.OnTaskComplete(player);
                             break;
 
-                        case CustomRoles.Ghoul when (taskState.CompletedTasksCount + 1) >= taskState.AllTasksCount:
+                        case CustomRoles.Ghoul when taskState.CompletedTasksCount >= taskState.AllTasksCount:
                             Ghoul.OnTaskComplete(player);
                             break;
 
