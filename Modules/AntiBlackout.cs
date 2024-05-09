@@ -171,7 +171,7 @@ public static class AntiBlackout
         }
     }
 
-    public static void ResetCamForPlayer(PlayerControl player)
+    public static void FullResetCamForPlayer(PlayerControl player)
     {
         if (player == null || !AmongUsClient.Instance.AmHost || player.AmOwner || player.IsModClient()) return;
 
@@ -183,18 +183,21 @@ public static class AntiBlackout
 
         var sender = CustomRpcSender.Create("ResetPlayerCam");
         {
+            // Teleport a ghost player locally for the player
             sender.AutoStartRpc(ghostPlayer.NetTransform.NetId, (byte)RpcCalls.SnapTo, targetClientId: player.GetClientId());
             {
                 NetHelpers.WriteVector2(new Vector2(100f, 100f), sender.stream);
                 sender.Write((ushort)(ghostPlayer.NetTransform.lastSequenceId + 8));
             }
             sender.EndRpc();
+            // Player kill ghost player locally for the player
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer, targetClientId: player.GetClientId());
             {
                 sender.WriteNetObject(ghostPlayer);
                 sender.Write((int)MurderResultFlags.Succeeded);
             }
             sender.EndRpc();
+            // Start critical sabotage locally for the player (clean up black screen)
             sender.AutoStartRpc(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, targetClientId: player.GetClientId());
             {
                 sender.Write((byte)systemtypes);
@@ -205,22 +208,27 @@ public static class AntiBlackout
         }
         sender.SendMessage();
 
+        // In case the dead body is in plain sight
         Main.UnreportableBodies.Add(ghostPlayer.PlayerId);
 
         _ = new LateTask(() =>
         {
+            if (player == null) return;
+
+            // Teleport player back
             if (!RandomSpawn.IsRandomSpawn() && !GameStates.AirshipIsActive)
             {
                 player.RpcTeleport(playerPosition);
             }
 
+            // End critical sabotage locally for the player
             player.RpcDesyncUpdateSystem(systemtypes, 16);
 
             if (GameStates.AirshipIsActive)
             {
                 player.RpcDesyncUpdateSystem(systemtypes, 17);
             }
-        }, 0.4f, "Fix Desync Reactor for reset cam", shoudLog: false);
+        }, 0.5f, "Fix Desync Reactor for reset cam", shoudLog: false);
     }
 
     public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, GameData.PlayerInfo exiled, bool tie)

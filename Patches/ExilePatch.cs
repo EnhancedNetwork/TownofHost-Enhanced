@@ -61,8 +61,7 @@ class ExileControllerWrapUpPatch
         if (!Collector.CollectorWin(false) && exiled != null)
         {
             // Reset player cam for exiled desync impostor
-            if (AntiBlackout.currentSolution != SolutionAntiBlackScreen.AntiBlackout_FullResetCamera
-                && Main.ResetCamPlayerList.Contains(exiled.PlayerId))
+            if (Main.ResetCamPlayerList.Contains(exiled.PlayerId))
             {
                 exiled.Object?.ResetPlayerCam(1f);
             }
@@ -103,7 +102,9 @@ class ExileControllerWrapUpPatch
         {
             foreach (var player in Main.AllPlayerControls)
             {
-                AntiBlackout.ResetCamForPlayer(player);
+                if (Main.ResetCamPlayerList.Contains(player.PlayerId) && exiled != null && exiled.PlayerId == player.PlayerId) continue;
+
+                AntiBlackout.FullResetCamForPlayer(player);
             }
         }
 
@@ -169,8 +170,7 @@ class ExileControllerWrapUpPatch
                         player?.SetRealKiller(player, true);
 
                     // Reset player cam for dead desync impostor
-                    if (AntiBlackout.currentSolution != SolutionAntiBlackScreen.AntiBlackout_FullResetCamera
-                        && Main.ResetCamPlayerList.Contains(x.Key))
+                    if (Main.ResetCamPlayerList.Contains(x.Key))
                     {
                         player?.ResetPlayerCam(1f);
                     }
