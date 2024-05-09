@@ -1216,16 +1216,19 @@ class FixedUpdateInNormalGamePatch
                 if (Suffix.ToString() != "")
                 {
                     RoleText.transform.SetLocalY(0.35f);
+                    target.cosmetics.colorBlindText.transform.SetLocalY(-0.4f);
                     target.cosmetics.nameText.text += "\r\n" + Suffix.ToString();
                 }
                 else
                 {
                     RoleText.transform.SetLocalY(0.2f);
+                    target.cosmetics.colorBlindText.transform.SetLocalY(-0.2f);
                 }
             }
             else
             {
                 RoleText.transform.SetLocalY(0.2f);
+                __instance.cosmetics.colorBlindText.transform.SetLocalY(-0.32f);
             }
         }
         return Task.CompletedTask;
@@ -1422,7 +1425,7 @@ class PlayerControlCompleteTaskPatch
                             Bloodlust.OnTaskComplete(player);
                             break;
 
-                        case CustomRoles.Ghoul when (taskState.CompletedTasksCount + 1) >= taskState.AllTasksCount:
+                        case CustomRoles.Ghoul when taskState.CompletedTasksCount >= taskState.AllTasksCount:
                             Ghoul.OnTaskComplete(player);
                             break;
 

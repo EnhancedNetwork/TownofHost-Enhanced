@@ -1,9 +1,4 @@
 using System;
-using TOHE.Roles._Ghosts_.Crewmate;
-using TOHE.Roles._Ghosts_.Impostor;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.AddOns.Common;
 

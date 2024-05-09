@@ -629,6 +629,7 @@ public enum CustomRoles
     //Crewmate Ghost
     Hawk,
     Warden,
+    Ghastly,
 
     //Crewmate
     Addict,

@@ -4,13 +4,6 @@ using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles._Ghosts_.Impostor;
-using TOHE.Roles._Ghosts_.Crewmate;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
-using TOHE.Roles.Vanilla;
 using UnityEngine;
 using TOHE.Roles.Core;
 
@@ -601,7 +594,6 @@ public static class Options
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
-        // 22004 (Glow)
 
 
         // Start Load Settings
@@ -806,12 +798,13 @@ public static class Options
 
         /*
          * Crewmate Ghost Roles
-        */
+         */
         TextOptionItem.Create(10000101, "RoleType.CrewGhost", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateGhosts).ForEach(r => r.SetupCustomOption());
+
 
         #endregion
 

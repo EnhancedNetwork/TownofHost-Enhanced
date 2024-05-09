@@ -159,10 +159,10 @@ internal class Jailer : RoleBase
 
     public override void OnVote(PlayerControl voter, PlayerControl target)
     {
-        if (voter == null || target == null) return;
-        if (!voter.Is(CustomRoles.Jailer)) return;
-        if (JailerDidVote[voter.PlayerId]) return;
-        if (JailerTarget[voter.PlayerId] == byte.MaxValue) return;
+        if (voter == null || target == null || !voter.Is(CustomRoles.Jailer)) return;
+        if (JailerDidVote.TryGetValue(voter.PlayerId, out var didVote) && didVote) return;
+        if (JailerTarget.TryGetValue(voter.PlayerId, out var jTarget) && jTarget == byte.MaxValue) return;
+
         JailerDidVote[voter.PlayerId] = true;
         if (target.PlayerId == JailerTarget[voter.PlayerId])
         {

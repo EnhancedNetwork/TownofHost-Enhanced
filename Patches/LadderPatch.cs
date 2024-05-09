@@ -12,7 +12,7 @@ public class FallFromLadder
     }
     public static void OnClimbLadder(PlayerPhysics player, Ladder source)
     {
-        if (!Options.LadderDeath.GetBool()) return;
+        if (!Options.LadderDeath.GetBool() || player.myPlayer.Is(CustomRoles.Solsticer)) return;
         var sourcePos = source.transform.position;
         var targetPos = source.Destination.transform.position;
         //降りているのかを検知
