@@ -1,8 +1,4 @@
-using Hazel;
-using UnityEngine;
-using static TOHE.Translator;
-
-namespace TOHE.Roles.Crewmate;
+//namespace TOHE.Roles.Crewmate;
 
 
 // Unused role

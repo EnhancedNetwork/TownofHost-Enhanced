@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using HarmonyLib;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -94,10 +93,6 @@ public static class CustomRoleManager
         if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
-        
-        // Add-ons
-        if (Bewilder.IsEnable) Bewilder.ApplyGameOptions(opt, player);
-        if (Ghoul.IsEnable) Ghoul.ApplyGameOptions(player);
 
         var playerSubRoles = player.GetCustomSubRoles();
 
@@ -132,7 +127,11 @@ public static class CustomRoleManager
                         break;
                 }
             }
+
+        // Add-ons
         if (Glow.IsEnable) Glow.ApplyGameOptions(opt, player); //keep this at last
+        if (Bewilder.IsEnable) Bewilder.ApplyGameOptions(opt, player);
+        if (Ghoul.IsEnable) Ghoul.ApplyGameOptions(player);
     }
 
     /// <summary>
@@ -363,7 +362,7 @@ public static class CustomRoleManager
     /// <summary>
     /// If seer == seen then GetMarkOthers called from FixedUpadte or MeetingHud or NotifyRoles
     /// </summary>
-    public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (!MarkOthers.Any()) return string.Empty;
 
@@ -378,7 +377,7 @@ public static class CustomRoleManager
     /// <summary>
     /// If seer == seen then GetMarkOthers called from FixedUpadte or NotifyRoles
     /// </summary>
-    public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
         if (!LowerOthers.Any()) return string.Empty;
 
@@ -393,7 +392,7 @@ public static class CustomRoleManager
     /// <summary>
     /// If seer == seen then GetMarkOthers called from FixedUpadte or NotifyRoles
     /// </summary>
-    public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (!SuffixOthers.Any()) return string.Empty;
 

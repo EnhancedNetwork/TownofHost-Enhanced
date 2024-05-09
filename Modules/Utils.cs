@@ -420,7 +420,7 @@ public static class Utils
 
                     static bool Checkif(string str) {
 
-                        string[] strings = {"*Prefix", "INVALID" };
+                        string[] strings = ["*Prefix", "INVALID"];
                         return strings.Any(str.Contains); 
                     }
                     static string Getname(string str) => !Checkif(GetString($"Prefix.{str}")) ? GetString($"Prefix.{str}") : GetString($"{str}");
@@ -1653,7 +1653,7 @@ public static class Utils
                 SelfMark.Clear();
 
                 // ====== Add SelfMark for seer ======
-                SelfMark.Append(seerRoleClass?.GetMark(seer, isForMeeting: isForMeeting));
+                SelfMark.Append(seerRoleClass?.GetMark(seer, seer, isForMeeting: isForMeeting));
                 SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, seer, isForMeeting: isForMeeting));
 
                 if (seer.Is(CustomRoles.Lovers))
@@ -1667,13 +1667,13 @@ public static class Utils
 
                 SelfSuffix.Clear();
 
-                SelfSuffix.Append(seerRoleClass?.GetLowerText(seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(seerRoleClass?.GetLowerText(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, seer, isForMeeting: isForMeeting));
 
                 if (Radar.IsEnable)
                     SelfSuffix.Append(Radar.GetPlayerArrow(seer, isForMeeting: isForMeeting));
 
-                SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
 

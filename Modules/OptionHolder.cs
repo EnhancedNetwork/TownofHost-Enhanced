@@ -4,13 +4,6 @@ using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles._Ghosts_.Impostor;
-using TOHE.Roles._Ghosts_.Crewmate;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
-using TOHE.Roles.Vanilla;
 using UnityEngine;
 using TOHE.Roles.Core;
 

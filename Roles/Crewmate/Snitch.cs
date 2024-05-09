@@ -147,9 +147,9 @@ internal class Snitch : RoleBase
         return true;
     }
 
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (seen == null) return string.Empty;
+        if (seen == seer) return string.Empty;
 
         return IsSnitchTarget(seen) && IsComplete[seer.PlayerId] ? Utils.ColorString(RoleColor, "⚠") : string.Empty;
     }
