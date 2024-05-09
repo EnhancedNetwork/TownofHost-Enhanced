@@ -144,8 +144,9 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             {
                 var arrows = TargetArrow.GetArrows(GetPlayerById(killer), target);
                 var tar = GetPlayerById(target).GetRealName();
-                var colorstring = "<alpha=#88>" + ColorString(GetRoleColor(CustomRoles.Ghastly), tar + arrows) + "</alpha>";
+                if (tar == null) return "";
 
+                var colorstring = "<alpha=#88>" + ColorString(GetRoleColor(CustomRoles.Ghastly), tar + arrows) + "</alpha>";
                 return colorstring;
             }
 
