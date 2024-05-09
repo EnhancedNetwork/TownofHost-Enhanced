@@ -93,6 +93,7 @@ public static class CustomRoleManager
         if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
+        if (DollMaster.HasEnabled) DollMaster.SetVision(opt, player);
 
         var playerSubRoles = player.GetCustomSubRoles();
 

@@ -409,7 +409,8 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Transporter,
                 CustomRoles.Twister,
                 CustomRoles.Mercenary,
-                CustomRoles.Penguin],
+                CustomRoles.Penguin,
+                CustomRoles.DollMaster],
                 
                 [CustomRoles.Crewpostor,
                 CustomRoles.Taskinator,
