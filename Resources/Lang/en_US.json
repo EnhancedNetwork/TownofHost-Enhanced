@@ -3007,6 +3007,7 @@
   "DollMasterPossessionButtonText": "Possess",
   "DollMasterUnPossessionButtonText": "UnPossess",
   "DollMaster_PossessedTarget": "Possessed target",
+  "DollMaster_CannotPossessImpTeammate": "Unable to possess teammate",
   "DollMaster_MainBody": "Main Body",
   "DollMaster_Doll": "Doll",
   "EatenByDevourer": "Your skin was eaten by the Devourer",
