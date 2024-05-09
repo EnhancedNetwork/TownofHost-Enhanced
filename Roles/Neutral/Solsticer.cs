@@ -271,7 +271,7 @@ internal class Solsticer : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if( role == CustomRoles.Solsticer)
+        if (role == CustomRoles.Solsticer)
         {
             if (!isUI) Utils.SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessSolsticer"));
