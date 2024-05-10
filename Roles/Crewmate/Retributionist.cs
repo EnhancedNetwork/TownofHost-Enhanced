@@ -48,7 +48,7 @@ internal class Retributionist : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        RetributionistRevenged.Add(playerId, 0);
+        RetributionistRevenged[playerId] = 0;
     }
     
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
@@ -75,18 +75,18 @@ internal class Retributionist : RoleBase
             return true;
         }
         int playerCount = Main.AllAlivePlayerControls.Length;
-        {
-            if (playerCount <= MinimumPlayersAliveToRetri.GetInt())
-            {
-                if (!pc.IsAlive())
-                {
-                    if (!isUI) SendMessage(GetString("RetributionistKillTooManyDead"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("RetributionistKillTooManyDead"));
-                    return true;
-                }
-            }
 
+        if (playerCount <= MinimumPlayersAliveToRetri.GetInt())
+        {
+            if (!pc.IsAlive())
+            {
+                if (!isUI) SendMessage(GetString("RetributionistKillTooManyDead"), pc.PlayerId);
+                else pc.ShowPopUp(GetString("RetributionistKillTooManyDead"));
+                return true;
+            }
         }
+
+
         if (CanOnlyRetributeWithTasksDone.GetBool())
         {
             if (!pc.GetPlayerTaskState().IsTaskFinished && !pc.IsAlive() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId))
