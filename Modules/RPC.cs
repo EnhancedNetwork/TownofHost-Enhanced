@@ -892,7 +892,7 @@ internal static class RPC
                     Admirer.ReceiveRPC(reader, false);
                     break;
                 default:
-                    pc.GetRoleClass().OnReceiveRPC(reader);
+                    pc.GetRoleClass().ReceiveRPC(reader, pc);
                     break;
             }
         }

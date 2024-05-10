@@ -23,7 +23,11 @@ public abstract class RoleBase
     public void OnAdd(byte playerid) // The player with the class executes this
     {
         _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
-        try { CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true; } catch { } // temporary try catch
+        try { 
+            CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;
+            this.IsEnable = true; // Not supposed to be used, but some methods may have still implemented that check.
+        } catch { } // temporary try catch
+
 
         Add(playerid);
     }
@@ -360,9 +364,8 @@ public abstract class RoleBase
 
     public void OnReceiveRPC(MessageReader reader) 
     {
-        var Limit = reader.ReadInt32();
+        float Limit = reader.ReadSingle();
         AbilityLimit = Limit;
-
     }
     public void SendSkillRPC()
     {
@@ -371,5 +374,7 @@ public abstract class RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public virtual void ReceiveRPC(MessageReader reader, PlayerControl pc)
-    { }
+    {
+        OnReceiveRPC(reader); // Default implementation
+    }
 }
