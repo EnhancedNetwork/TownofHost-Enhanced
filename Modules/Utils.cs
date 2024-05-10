@@ -1716,13 +1716,6 @@ public static class Utils
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                     SelfName = name;
 
-                switch (seerRole)
-                {
-                    case CustomRoles.PlagueBearer:
-                        PlagueBearer.PlaguerNotify(seer);
-                        break;
-                }
-
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
 
