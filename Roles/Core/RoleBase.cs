@@ -12,7 +12,7 @@ public abstract class RoleBase
 #pragma warning disable IDE1006
     public PlayerControl _Player => Utils.GetPlayerById(_state.PlayerId);
 #pragma warning restore IDE1006
-    public float AbilityLimit { get; set; } = 0;
+    public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
