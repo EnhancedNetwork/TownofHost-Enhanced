@@ -7,6 +7,7 @@ using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
 using Hazel;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -14,9 +15,7 @@ internal class Grenadier : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 8200;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Grenadier);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -49,13 +48,11 @@ internal class Grenadier : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
         GrenadierBlinding.Clear();
         MadGrenadierBlinding.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         AbilityLimit = GrenadierSkillMaxOfUseage.GetFloat();
         //CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnGrenaderFixOthers);
     }
