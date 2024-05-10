@@ -205,7 +205,7 @@ class CheckForEndVotingPatch
                 });
 
                 // Swapper swap votes
-                Swapper.SwapVotes(__instance);
+                 if(voter.GetRoleClass() is Swapper sw) sw.SwapVotes(__instance);
 
                 playerRoleClass?.AddVisualVotes(ps, ref statesList);
             }
