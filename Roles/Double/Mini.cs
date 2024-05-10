@@ -1,5 +1,6 @@
 using Hazel;
 using System;
+using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -8,9 +9,7 @@ internal class Mini : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7000;
-    private static readonly HashSet<byte> playerIdList = [];
-    
-    public static bool HasEnabled => playerIdList.Any();
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.EvilMini) || CustomRoleManager.HasEnabled(CustomRoles.NiceMini);
     public override CustomRoles ThisRoleBase => IsEvilMini ? CustomRoles.Impostor : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => IsEvilMini ? Custom_RoleType.ImpostorKilling : Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -51,7 +50,6 @@ internal class Mini : RoleBase
     public override void Init()
     {
         GrowUpTime = 0;
-        playerIdList.Clear();
         GrowUp = GrowUpDuration.GetInt() / 18;
         Age = 0;
         misguessed = false;
@@ -61,7 +59,6 @@ internal class Mini : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
