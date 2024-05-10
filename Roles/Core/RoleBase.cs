@@ -12,8 +12,8 @@ public abstract class RoleBase
 #pragma warning disable IDE1006
     public PlayerControl _Player => Utils.GetPlayerById(_state.PlayerId);
 #pragma warning restore IDE1006
-    public int AbilityLimit { get; set; } = 0;
-    public bool IsEnable { get; set; } = false;
+    public float AbilityLimit { get; set; } = 0;
+    public virtual bool IsEnable { get; set; } = false;
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;
@@ -23,7 +23,7 @@ public abstract class RoleBase
     public void OnAdd(byte playerid) // The player with the class executes this
     {
         _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
-        CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true; 
+        try { CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true; } catch { } // temporary try catch
 
         Add(playerid);
     }

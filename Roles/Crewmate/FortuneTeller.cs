@@ -27,7 +27,6 @@ internal class FortuneTeller : RoleBase
 
 
     private readonly HashSet<byte> didVote = [];
-    private float CheckLimit;
     private float TempCheckLimit;
     private readonly HashSet<byte> targetList = [];
 
@@ -47,7 +46,7 @@ internal class FortuneTeller : RoleBase
     }
     public override void Add(byte playerId)
     {
-        CheckLimit = CheckLimitOpt.GetInt();
+        AbilityLimit = CheckLimitOpt.GetInt();
     }
 
     public void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
@@ -59,7 +58,7 @@ internal class FortuneTeller : RoleBase
         if (!isTemp)
         {
             writer.Write(playerId);
-            writer.Write(CheckLimit);
+            writer.Write(AbilityLimit);
             writer.Write(voted);
         }
         else
@@ -76,7 +75,7 @@ internal class FortuneTeller : RoleBase
         float limit = reader.ReadSingle();
         if (!isTemp)
         {
-            CheckLimit = limit;
+            AbilityLimit = limit;
             bool voted = reader.ReadBoolean();
             if (voted && !didVote.Contains(playerId)) didVote.Add(playerId);
         }
@@ -96,7 +95,7 @@ internal class FortuneTeller : RoleBase
     {
         if (player.Is(CustomRoles.FortuneTeller) && player.IsAlive())
         {
-            CheckLimit += AbilityUseGainWithEachTaskCompleted.GetFloat();
+            AbilityLimit += AbilityUseGainWithEachTaskCompleted.GetFloat();
             SendRPC(player.PlayerId);
         }
         return true;
@@ -107,7 +106,7 @@ internal class FortuneTeller : RoleBase
         if (didVote.Contains(player.PlayerId)) return;
         didVote.Add(player.PlayerId);
 
-        if (CheckLimit < 1)
+        if (AbilityLimit < 1)
         {
             SendMessage(GetString("FortuneTellerCheckReachLimit"), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
             return;
@@ -117,17 +116,17 @@ internal class FortuneTeller : RoleBase
         {
             if (targetList.Contains(target.PlayerId))
             {
-                SendMessage(GetString("FortuneTellerAlreadyCheckedMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+                SendMessage(GetString("FortuneTellerAlreadyCheckedMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
                 return;
             }
         }
 
-        CheckLimit -= 1;
+        AbilityLimit -= 1;
         SendRPC(player.PlayerId, voted: true);
 
         if (player.PlayerId == target.PlayerId)
         {
-            SendMessage(GetString("FortuneTellerCheckSelfMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+            SendMessage(GetString("FortuneTellerCheckSelfMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
             return;
         }
 
@@ -424,7 +423,7 @@ internal class FortuneTeller : RoleBase
             }
         }
 
-        SendMessage(GetString("FortuneTellerCheck") + "\n" + msg + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+        SendMessage(GetString("FortuneTellerCheck") + "\n" + msg + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
     }
     public override string GetProgressText(byte playerId, bool comms)
     {
@@ -437,17 +436,17 @@ internal class FortuneTeller : RoleBase
         TextColor4 = comms ? Color.gray : NormalColor4;
         string Completed4 = comms ? "?" : $"{taskState4.CompletedTasksCount}";
         Color TextColor41;
-        if (CheckLimit < 1) TextColor41 = Color.red;
+        if (AbilityLimit < 1) TextColor41 = Color.red;
         else TextColor41 = Color.white;
         ProgressText.Append(ColorString(TextColor4, $"({Completed4}/{taskState4.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor41, $" <color=#ffffff>-</color> {Math.Round(CheckLimit)}"));
+        ProgressText.Append(ColorString(TextColor41, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit)}"));
         return ProgressText.ToString();
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         didVote.Clear();
 
-        TempCheckLimit = CheckLimit;
+        TempCheckLimit = AbilityLimit;
         SendRPC(_state.PlayerId, isTemp: true);
 
     }

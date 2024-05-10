@@ -23,7 +23,6 @@ internal class Grenadier : RoleBase
 
     private static readonly Dictionary<byte, long> GrenadierBlinding = [];
     private static readonly Dictionary<byte, long> MadGrenadierBlinding = [];
-    private static readonly Dictionary<byte, float> GrenadierNumOfUsed = [];
 
     private static OptionItem GrenadierSkillCooldown;
     private static OptionItem GrenadierSkillDuration;
@@ -53,27 +52,12 @@ internal class Grenadier : RoleBase
         playerIdList.Clear();
         GrenadierBlinding.Clear();
         MadGrenadierBlinding.Clear();
-        GrenadierNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        GrenadierNumOfUsed.Add(playerId, GrenadierSkillMaxOfUseage.GetFloat());
+        AbilityLimit = GrenadierSkillMaxOfUseage.GetFloat();
         //CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnGrenaderFixOthers);
-    }
-    public static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Grenadier);
-        writer.Write(playerId);
-        writer.Write(GrenadierNumOfUsed[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        byte playerId = reader.ReadByte();
-        float count = reader.ReadSingle();
-        GrenadierNumOfUsed[playerId] = count;
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -99,8 +83,8 @@ internal class Grenadier : RoleBase
     {
         if (player.IsAlive())
         { 
-            GrenadierNumOfUsed[player.PlayerId] += GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
-            SendRPC(player.PlayerId);
+            AbilityLimit += GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendSkillRPC();
         }
 
         return true;
@@ -113,7 +97,7 @@ internal class Grenadier : RoleBase
 
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (GrenadierNumOfUsed[pc.PlayerId] >= 1)
+        if (AbilityLimit >= 1)
         {
             if (pc.Is(CustomRoles.Madmate))
             {
@@ -134,8 +118,8 @@ internal class Grenadier : RoleBase
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
             pc.RPCPlayCustomSound("FlashBang");
             pc.Notify(GetString("GrenadierSkillInUse"), GrenadierSkillDuration.GetFloat());
-            GrenadierNumOfUsed[pc.PlayerId] -= 1;
-            SendRPC(pc.PlayerId);
+            AbilityLimit -= 1;
+            SendSkillRPC();
             MarkEveryoneDirtySettings();
         }
     }
@@ -185,10 +169,10 @@ internal class Grenadier : RoleBase
         TextColor3 = comms ? Color.gray : NormalColor3;
         string Completed3 = comms ? "?" : $"{taskState3.CompletedTasksCount}";
         Color TextColor31;
-        if (GrenadierNumOfUsed[playerId] < 1) TextColor31 = Color.red;
+        if (AbilityLimit < 1) TextColor31 = Color.red;
         else TextColor31 = Color.white;
         ProgressText.Append(ColorString(TextColor3, $"({Completed3}/{taskState3.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor31, $" <color=#ffffff>-</color> {Math.Round(GrenadierNumOfUsed[playerId], 1)}"));
+        ProgressText.Append(ColorString(TextColor31, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
         return ProgressText.ToString();
     }
 
