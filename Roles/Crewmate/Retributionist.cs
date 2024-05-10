@@ -48,7 +48,7 @@ internal class Retributionist : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        RetributionistRevenged.Add(playerId, RetributionistCanKillNum.GetInt());
+        RetributionistRevenged.Add(playerId, 0);
     }
     
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
