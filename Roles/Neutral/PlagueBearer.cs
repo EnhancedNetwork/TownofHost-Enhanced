@@ -1,9 +1,11 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -190,7 +192,7 @@ internal class PlagueBearer : RoleBase
         }
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
-        => PlaguedList[seer.PlayerId].Contains(seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Pestilence), "⦿") : string.Empty;
+        => IsPlagued(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Pestilence), "⦿") : string.Empty;
 
     public override string GetProgressText(byte playerId, bool comms)
     {
