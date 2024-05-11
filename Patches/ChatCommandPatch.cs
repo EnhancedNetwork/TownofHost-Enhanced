@@ -1519,7 +1519,7 @@ internal class ChatCommands
     {
         canceled = false;
         if (!AmongUsClient.Instance.AmHost) return;
-        if ((Options.NewHideMsg.GetBool() || Blackmailer.HasEnabled) && player.PlayerId != 0) // Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && PlayerControl.LocalPlayer.IsAlive() && player.PlayerId != 0)
+        if ((Options.NewHideMsg.GetBool() || Blackmailer.HasEnabled) && !player.OwnedByHost()) // Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && PlayerControl.LocalPlayer.IsAlive() && !player.OwnedByHost())
         {
             ChatManager.SendMessage(player, text);
         }
@@ -1547,7 +1547,7 @@ internal class ChatCommands
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
-        if (Blackmailer.CheckBlackmaile(player) && player.IsAlive() && player.PlayerId != 0)
+        if (Blackmailer.CheckBlackmaile(player) && player.IsAlive() && !player.OwnedByHost())
         {
             Logger.Info($"This player (id {player.PlayerId}) was Blackmailed", "OnReceiveChat");
             ChatManager.SendPreviousMessagesToAll();
