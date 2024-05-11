@@ -942,7 +942,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.Statue)
-                    || pc.Is(CustomRoles.Seeker))
+                    || pc.Is(CustomRoles.Seeker)
+                    || pc.Is(CustomRoles.Doppelganger))
                     return false;
                 break;
 
@@ -987,6 +988,8 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Rainbow:
+                if (pc.Is(CustomRoles.Doppelganger))
+                    return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Rainbow.CrewCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Rainbow.NeutralCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Rainbow.ImpCanBeRainbow.GetBool()))
                     return false;
                 break;
