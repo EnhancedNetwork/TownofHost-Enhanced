@@ -2779,7 +2779,7 @@
   "CanOnlyRetributeWithTasksDone": "Can only retribute on task completion",
   "RetributionistCanKillNum": "Max retributions",
   "RetributionistKillTooManyDead": "Too many players are dead, you can't retribute.",
-  "MinimumPlayersAliveToRetri": "Maximum players needed to block retributions",
+  "MinimumPlayersAliveToRetri": "Minimum players alive to retribute",
   "MinimumNoKillerEjectsToKill": "Minimum meetings passed with no killer ejects to kill",
   "BakerChangeChances": "Chance that <color=#b58428>Baker</color> turns into <color=#cb4d4d>Famine</color>",
   "BakerChange": "The Baker has turned into Famine!\nThe bread is now poisoned.\nIf the Famine is not exiled, all players with poisoned bread die.",
