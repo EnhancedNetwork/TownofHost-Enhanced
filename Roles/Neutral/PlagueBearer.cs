@@ -1,11 +1,9 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using MS.Internal.Xml.XPath;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
