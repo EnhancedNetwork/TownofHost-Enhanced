@@ -500,25 +500,25 @@ public static class Utils
         if (GameStates.IsLobby) return false;
 
         //Tasks may be null, in which case no task is assumed
+        if (playerData == null) return false;
         if (playerData.Tasks == null) return false;
         if (playerData.Role == null) return false;
 
         var hasTasks = true;
         var States = Main.PlayerStates[playerData.PlayerId];
 
-        //
         if (playerData.Disconnected) return false;
         if (playerData.Role.IsImpostor)
             hasTasks = false; //Tasks are determined based on CustomRole
 
         if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
         if (playerData.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
-        
+
         if (GameStates.IsHideNSeek) return hasTasks;
 
         var role = States.MainRole;
 
-        if (!States.RoleClass.HasTasks(playerData, role, ForRecompute))
+        if (States.RoleClass != null && States.RoleClass.HasTasks(playerData, role, ForRecompute) == false)
             hasTasks = false;
 
         switch (role)
@@ -1719,13 +1719,6 @@ public static class Utils
 
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                     SelfName = name;
-
-                switch (seerRole)
-                {
-                    case CustomRoles.PlagueBearer:
-                        PlagueBearer.PlaguerNotify(seer);
-                        break;
-                }
 
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
