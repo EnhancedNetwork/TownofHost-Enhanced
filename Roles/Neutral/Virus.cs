@@ -56,13 +56,11 @@ internal class Virus : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
         InfectedBodies.Clear();
         VirusNotify.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         AbilityLimit = InfectMax.GetInt();
 
         if (!AmongUsClient.Instance.AmHost) return;

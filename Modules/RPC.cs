@@ -337,8 +337,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncPuppet:
                 Puppeteer.ReceiveRPC(reader);
                 break;
-             case CustomRPC.SyncKami:
-                Kamikaze.ReceiveRPC(reader);
+             case CustomRPC.SyncKami when __instance.GetRoleClass() is Kamikaze km:
+                km.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetKillOrSpell:
                 Witch.ReceiveRPC(reader, false);
@@ -418,8 +418,8 @@ internal class RPCHandlerPatch
                 byte killerId = reader.ReadByte();
                 RPC.SetRealKiller(targetId, killerId);
                 break;
-            case CustomRPC.SetTrackerTarget:
-                Tracker.ReceiveRPC(reader);
+            case CustomRPC.SetTrackerTarget when __instance.GetRoleClass() is Tracker tr:
+                tr.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetJailerExeLimit:
                 Jailer.ReceiveRPC(reader, setTarget: false);
@@ -430,8 +430,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SetCrewpostorTasksDone:
                 Crewpostor.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SyncAdmiredList:
-                Admirer.ReceiveRPC(reader, true);
+            case CustomRPC.SyncAdmiredList when __instance.GetRoleClass() is Admirer ad:
+                ad.ReceiveRPC(reader, true);
                 break;
             case CustomRPC.PlayCustomSound:
                 CustomSoundsManager.ReceiveRPC(reader);
@@ -519,8 +519,8 @@ internal class RPCHandlerPatch
             case CustomRPC.RetributionistRevenge:
                 Retributionist.ReceiveRPC_Custom(reader, __instance);
                 break;
-            case CustomRPC.SetChameleonTimer:
-                Chameleon.ReceiveRPC_Custom(reader);
+            case CustomRPC.SetChameleonTimer when __instance.GetRoleClass() is Chameleon cl:
+                cl.ReceiveRPC_Custom(reader);
                 break;
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
@@ -888,8 +888,8 @@ internal static class RPC
             switch (role)
             {
                 //Crew Roles
-                case CustomRoles.Admirer:
-                    Admirer.ReceiveRPC(reader, false);
+                case CustomRoles.Admirer when pc.GetRoleClass() is Admirer ad:
+                    ad.ReceiveRPC(reader, false);
                     break;
                 default:
                     pc.GetRoleClass().ReceiveRPC(reader, pc);

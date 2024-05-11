@@ -14,9 +14,7 @@ internal class Chameleon : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7600;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Chameleon);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -29,7 +27,6 @@ internal class Chameleon : RoleBase
     private static Dictionary<byte, long> InvisTime = [];
     private static readonly Dictionary<byte, long> lastTime = [];
     private static readonly Dictionary<byte, int> ventedId = [];
-    private static readonly Dictionary<byte, float> UseLimit = [];
 
     public override void SetupCustomOption()
     {
@@ -46,18 +43,15 @@ internal class Chameleon : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         InvisTime.Clear();
         lastTime.Clear();
         ventedId.Clear();
-        UseLimit.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        UseLimit.Add(playerId, UseLimitOpt.GetInt());
+        AbilityLimit = UseLimitOpt.GetInt();
     }
-    public static void SendRPC(PlayerControl pc, bool isLimit = false)
+    public void SendRPC(PlayerControl pc, bool isLimit = false)
     {
         if (isLimit)
         {
@@ -65,7 +59,7 @@ internal class Chameleon : RoleBase
             writer.WritePacked((int)CustomRoles.Chameleon);
             writer.Write(pc.PlayerId);
             writer.Write(isLimit);
-            writer.Write(UseLimit[pc.PlayerId]);
+            writer.Write(AbilityLimit);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         else 
@@ -78,14 +72,14 @@ internal class Chameleon : RoleBase
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public static void ReceiveRPC_Custom(MessageReader reader)
+    public void ReceiveRPC_Custom(MessageReader reader)
     {
         byte pid = reader.ReadByte();
         bool isLimit = reader.ReadBoolean();
         if (isLimit)
         {
             float limit = reader.ReadSingle();
-            UseLimit[pid] = limit;
+            AbilityLimit = limit;
         }
         else 
         {
@@ -112,7 +106,7 @@ internal class Chameleon : RoleBase
         lastTime.Clear();
         InvisTime.Clear();
 
-        foreach (var chameleonId in playerIdList.ToArray())
+        foreach (var chameleonId in _playerIdList.ToArray())
         {
             if (!ventedId.ContainsKey(chameleonId)) continue;
             var chameleon = GetPlayerById(chameleonId);
@@ -128,7 +122,7 @@ internal class Chameleon : RoleBase
     {
         lastTime.Clear();
         InvisTime.Clear();
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
+        foreach (var pc in Main.AllAlivePlayerControls.Where(x => _playerIdList.Contains(x.PlayerId)).ToArray())
         {
             lastTime.Add(pc.PlayerId, GetTimeStamp());
             SendRPC(pc);
@@ -138,7 +132,7 @@ internal class Chameleon : RoleBase
     {
         if (player.IsAlive())
         {
-            UseLimit[player.PlayerId] += ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
+            AbilityLimit += ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
             SendRPC(player, isLimit: true);
         }
         return true;
@@ -193,7 +187,7 @@ internal class Chameleon : RoleBase
         {
             if (CanGoInvis(pc.PlayerId))
             {
-                if (UseLimit[pc.PlayerId] >= 1)
+                if (AbilityLimit >= 1)
                 {
                     ventedId.Remove(pc.PlayerId);
                     ventedId.Add(pc.PlayerId, ventId);
@@ -206,7 +200,7 @@ internal class Chameleon : RoleBase
                     SendRPC(pc);
                     pc.Notify(GetString("ChameleonInvisState"), ChameleonDuration.GetFloat());
 
-                    UseLimit[pc.PlayerId] -= 1;
+                    AbilityLimit -= 1;
                     SendRPC(pc, isLimit: true);
                 }
                 else
@@ -279,10 +273,10 @@ internal class Chameleon : RoleBase
         TextColor13 = comms ? Color.gray : NormalColor13;
         string Completed13 = comms ? "?" : $"{taskState13.CompletedTasksCount}";
         Color TextColor131;
-        if (UseLimit[playerId] < 1) TextColor131 = Color.red;
+        if (AbilityLimit < 1) TextColor131 = Color.red;
         else TextColor131 = Color.white;
         ProgressText.Append(ColorString(TextColor13, $"({Completed13}/{taskState13.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor131, $" <color=#ffffff>-</color> {Math.Round(UseLimit[playerId], 1)}"));
+        ProgressText.Append(ColorString(TextColor131, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
         return ProgressText.ToString();
     }
 }
