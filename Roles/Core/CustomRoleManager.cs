@@ -247,7 +247,7 @@ public static class CustomRoleManager
                         Cyber.AfterCyberDeadTask(target, inMeeting);
                         break;
 
-                    case CustomRoles.Bait when !inMeeting && !isSuicide:
+                    case CustomRoles.Bait when !inMeeting:
                         Bait.BaitAfterDeathTasks(killer, target);
                         break;
 
