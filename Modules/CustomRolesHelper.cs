@@ -594,6 +594,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.CursedWolf)
                     || pc.Is(CustomRoles.Masochist)
+                    || pc.Is(CustomRoles.SchrodingersCat)
                     || pc.Is(CustomRoles.PlagueBearer)
                     || pc.Is(CustomRoles.Pestilence))
                     return false;
