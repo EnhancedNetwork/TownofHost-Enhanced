@@ -82,9 +82,6 @@ public static class CustomRoleManager
             AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
         }
 
-        // Set Impostor vision
-        opt.SetVision(false);
-
         player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
 
 

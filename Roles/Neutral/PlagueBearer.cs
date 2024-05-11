@@ -65,7 +65,7 @@ internal class PlagueBearer : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PlagueBearerCooldownOpt.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    private static bool IsPlagued(byte pc, byte target) => PlaguedList[pc].Contains(target);
+    private static bool IsPlagued(byte pc, byte target) => PlaguedList.TryGetValue(pc, out var Targets) && Targets.Contains(target);
     
     public static void SendRPC(PlayerControl player, PlayerControl target)
     {
@@ -84,24 +84,35 @@ internal class PlagueBearer : RoleBase
     }
     public static void CheckAndInfect(PlayerControl seer, PlayerControl target)
     {
-        if (seer.Is(CustomRoles.PlagueBearer) || target.Is(CustomRoles.PlagueBearer)) return;
+        if (seer.Is(CustomRoles.PlagueBearer)) return;
 
         foreach (var (PlagueId, Targets) in PlaguedList)
         {
             var plagueBearer = GetPlayerById(PlagueId);
-            if (plagueBearer == null) continue;
+            if (plagueBearer == null || !plagueBearer.IsAlive()) continue;
 
-            if (Targets.Contains(seer.PlayerId) && !Targets.Contains(target.PlayerId))
+            bool needCheck = false;
+            if (target.Is(CustomRoles.PlagueBearer))
+            {
+                PlaguedList[PlagueId].Add(seer.PlayerId);
+                SendRPC(plagueBearer, seer);
+                needCheck = true;
+            }
+            else if (Targets.Contains(seer.PlayerId) && !Targets.Contains(target.PlayerId))
             {
                 PlaguedList[PlagueId].Add(target.PlayerId);
                 SendRPC(plagueBearer, target);
-                NotifyRoles(SpecifySeer: plagueBearer);
-                CheckPlagueAllPlayers();
+                needCheck = true;
             }
             else if (!Targets.Contains(seer.PlayerId) && Targets.Contains(target.PlayerId))
             {
                 PlaguedList[PlagueId].Add(seer.PlayerId);
                 SendRPC(plagueBearer, seer);
+                needCheck = true;
+            }
+
+            if (needCheck)
+            {
                 NotifyRoles(SpecifySeer: plagueBearer);
                 CheckPlagueAllPlayers();
             }
@@ -109,15 +120,9 @@ internal class PlagueBearer : RoleBase
     }
     private static (int, int) PlaguedPlayerCount(byte playerId)
     {
-        int plagued = 0, all = 0;
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            if (pc.PlayerId == playerId) continue;
+        int all = Main.AllAlivePlayerControls.Count(pc => pc.PlayerId != playerId);
+        int plagued = Main.AllAlivePlayerControls.Count(pc => pc.PlayerId != playerId && IsPlagued(playerId, pc.PlayerId));
 
-            all++;
-            if (IsPlagued(playerId, pc.PlayerId))
-                plagued++;
-        }
         return (plagued, all);
     }
     private static bool IsPlaguedAll(PlayerControl player)
@@ -136,14 +141,18 @@ internal class PlagueBearer : RoleBase
 
             if (IsPlaguedAll(plagueBearer))
             {
-                plagueBearer.GetRoleClass()?.Remove(PlagueId);
+                playerIdList.Remove(PlagueId);
 
+                // Set Pestilence
                 plagueBearer.RpcSetCustomRole(CustomRoles.Pestilence);
                 plagueBearer.GetRoleClass()?.Add(PlagueId);
 
                 plagueBearer.Notify(GetString("PlagueBearerToPestilence"), time: 2f);
                 plagueBearer.RpcGuardAndKill(plagueBearer);
                 plagueBearer.ResetKillCooldown();
+
+                NotifyRoles(SpecifySeer: plagueBearer);
+                plagueBearer.MarkDirtySettings();
             }
         }
     }
@@ -180,8 +189,8 @@ internal class PlagueBearer : RoleBase
             CheckAndInfect(killer, deadBody);
         }
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-        => PlaguedList[seer.PlayerId].Contains(seen.PlayerId) ? $"<color={GetRoleColorCode(CustomRoles.PlagueBearer)}>●</color>" : string.Empty;
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
+        => PlaguedList[seer.PlayerId].Contains(seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Pestilence), "⦿") : string.Empty;
 
     public override string GetProgressText(byte playerId, bool comms)
     {
