@@ -575,8 +575,8 @@ internal class RPCHandlerPatch
             case CustomRPC.KeeperRPC:
                 Keeper.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetSwapperVotes:
-                Swapper.ReceiveSwapRPC(reader, __instance);
+            case CustomRPC.SetSwapperVotes when __instance.GetRoleClass() is Swapper sw:
+                sw.ReceiveSwapRPC(reader, __instance);
                 break;
         }
     }

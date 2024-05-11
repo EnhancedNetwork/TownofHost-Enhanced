@@ -290,8 +290,8 @@ class CheckForEndVotingPatch
                     braked = true;
                 }
             }
-
-            Collector.CollectAmount(VotingData, __instance);
+            List<Collector> CollectorCL = Utils.GetPlayerListByRole(CustomRoles.Collector).Select(x => x.GetRoleClass()).Where(x => x is Collector) as List<Collector>;
+            CollectorCL.Do(x => { x.CollectAmount(VotingData, __instance); });
 
             if (Options.VoteMode.GetBool() && Options.WhenTie.GetBool() && tie)
             {
@@ -651,7 +651,10 @@ static class ExtendedMeetingHud
         Logger.Info("===Start of vote counting processing===", "Vote");
         
         Dictionary<byte, int> dic = [];
+
         Collector.Clear();
+
+
         Tiebreaker.Clear();
 
         // |Voted By| Number of Times Voted For

@@ -232,11 +232,15 @@ class CheckMurderPatch
         }
 
         // Penguin's victim unable to kill
-        if (Penguin.AbductVictim != null && killer.PlayerId == Penguin.AbductVictim.PlayerId)
+        var penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
+        if (penguins != null)
         {
-            killer.Notify(GetString("PenguinTargetOnCheckMurder"));
-            killer.SetKillCooldown(5);
-            return false;
+            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && killer.PlayerId == pg.AbductVictim.PlayerId))
+            {
+                killer.Notify(GetString("PenguinTargetOnCheckMurder"));
+                killer.SetKillCooldown(5);
+                return false;
+            }
         }
 
         return true;
@@ -425,7 +429,7 @@ class MurderPlayerPatch
                 }
             }
 
-            if (!target.IsProtected() && !Doppelganger.CheckDoppelVictim(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+            if (!target.IsProtected() && !Doppelganger.Doppelgangers.Any(x => x.CheckDoppelVictim(target.PlayerId)) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
             {
                 Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
                 Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
@@ -829,7 +833,7 @@ class ReportDeadBodyPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            if (!Doppelganger.CheckDoppelVictim(pc.PlayerId))
+            if (!Doppelganger.Doppelgangers.Any(x => x.CheckDoppelVictim(target.PlayerId)))
             {
                 // Update skins again, since players have different skins
                 // And can be easily distinguished from each other

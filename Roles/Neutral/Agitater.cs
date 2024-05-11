@@ -23,11 +23,11 @@ internal class Agitater : RoleBase
     private static OptionItem AgitaterAutoReportBait;
     private static OptionItem HasImpostorVision;
 
-    public static byte CurrentBombedPlayer = byte.MaxValue;
-    public static byte LastBombedPlayer = byte.MaxValue;
-    public static bool AgitaterHasBombed = false;
-    public static long CurrentBombedPlayerTime = new();
-    public static long AgitaterBombedTime = new();
+    public byte CurrentBombedPlayer = byte.MaxValue;
+    public byte LastBombedPlayer = byte.MaxValue;
+    public bool AgitaterHasBombed = false;
+    public long? CurrentBombedPlayerTime = new();
+    public long? AgitaterBombedTime = new();
 
 
     public override void SetupCustomOption()
@@ -62,7 +62,7 @@ internal class Agitater : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    public static void ResetBomb()
+    public void ResetBomb()
     {
         CurrentBombedPlayer = byte.MaxValue;
         CurrentBombedPlayerTime = new();
@@ -129,7 +129,7 @@ internal class Agitater : RoleBase
         ResetBomb();
         Logger.Info($"{killer.GetRealName()} bombed {target.GetRealName()} on report", "Agitater");
     }
-    private static void OnFixedUpdateOthers(PlayerControl player)
+    private void OnFixedUpdateOthers(PlayerControl player)
     {
         if (!AgitaterHasBombed) return;
 
@@ -164,7 +164,7 @@ internal class Agitater : RoleBase
             }
         }
     }
-    private static void PassBomb(PlayerControl player, PlayerControl target)
+    private void PassBomb(PlayerControl player, PlayerControl target)
     {
         if (!AgitaterHasBombed) return;
         if (target.Data.IsDead) return;
