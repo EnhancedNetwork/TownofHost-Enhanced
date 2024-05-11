@@ -90,7 +90,10 @@ public abstract class RoleBase
     /// A generic method to send a CustomRole's Gameoptions.
     /// </summary>
     public virtual void ApplyGameOptions(IGameOptions opt, byte playerId)
-    { }
+    {
+        // Set vision
+        opt.SetVision(false);
+    }
 
     /// <summary>
     /// Set a specific kill cooldown

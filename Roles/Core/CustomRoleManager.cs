@@ -82,9 +82,6 @@ public static class CustomRoleManager
             AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
         }
 
-        // Set Impostor vision
-        opt.SetVision(false);
-
         player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
 
 
@@ -143,6 +140,13 @@ public static class CustomRoleManager
 
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
+
+        Logger.Info("Start", "PlagueBearer.CheckAndInfect");
+
+        if (PlagueBearer.HasEnabled)
+        {
+            PlagueBearer.CheckAndInfect(killer, target);
+        }
 
         Logger.Info("Start", "ForcedCheckMurderAsKiller");
 
