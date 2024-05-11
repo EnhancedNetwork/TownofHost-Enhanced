@@ -87,8 +87,6 @@ enum CustomRPC : byte
     SetDarkHiderKillCount,
     SetConsigliere,
     SetGreedy,
-    SetCursedWolfSpellCount,
-    SetJinxSpellCount,
     BenefactorRPC,
     SetSwapperVotes,
     SetMarkedPlayer,
@@ -444,12 +442,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetGreedy:
                 Greedy.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetCursedWolfSpellCount:
-                CursedWolf.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetJinxSpellCount:
-                Jinx.ReceiveRPC(reader);
                 break;
             case CustomRPC.BenefactorRPC:
                 Benefactor.ReceiveRPC(reader);

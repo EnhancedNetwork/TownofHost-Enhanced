@@ -47,7 +47,7 @@ internal class Quizmaster : RoleBase
 
     public override void SetupCustomOption()
     {
-        TabGroup tab = TabGroup.OtherRoles;
+        TabGroup tab = TabGroup.NeutralRoles;
 
         SetupSingleRoleOptions(Id, tab, CustomRoles.Quizmaster, 1);
         QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.QuestionDifficulty", new(1, 4, 1), 1, tab, false).SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);

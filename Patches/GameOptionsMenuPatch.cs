@@ -357,7 +357,6 @@ public class GameOptionsMenuUpdatePatch
                 TabGroup.CrewmateRoles => "#8cffff",
                 TabGroup.NeutralRoles => "#7f8c8d",
                 TabGroup.Addons => "#ff9ace",
-                TabGroup.OtherRoles => "#76b8e0",
                 _ => "#ffffff",
             };
             if (__instance.transform.parent.parent.name != tab + "Tab") continue;
