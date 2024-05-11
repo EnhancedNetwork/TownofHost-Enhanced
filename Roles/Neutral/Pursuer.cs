@@ -3,6 +3,7 @@ using Hazel;
 using UnityEngine;
 using TOHE.Modules;
 using static TOHE.Translator;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -10,9 +11,7 @@ internal class Pursuer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 13400;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pursuer);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -21,8 +20,7 @@ internal class Pursuer : RoleBase
     private static OptionItem PursuerSkillLimitTimes;
 
     private static readonly HashSet<byte> notActiveList = [];
-    public static readonly Dictionary<byte, int> SeelLimit = [];
-    private static readonly Dictionary<byte, List<byte>> clientList = [];
+    private List<byte> clientList = [];
 
     public override void SetupCustomOption()
     {
@@ -34,70 +32,45 @@ internal class Pursuer : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
-        clientList.Clear();
         notActiveList.Clear();
-        SeelLimit.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        SeelLimit.Add(playerId, PursuerSkillLimitTimes.GetInt());
+        AbilityLimit = PursuerSkillLimitTimes.GetInt();
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    private static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Pursuer); //SetPursuerSellLimit
-        writer.Write(playerId);
-        writer.Write(SeelLimit[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        byte PlayerId = reader.ReadByte();
-        int Limit = reader.ReadInt32();
-        if (SeelLimit.ContainsKey(PlayerId))
-            SeelLimit[PlayerId] = Limit;
-        else
-            SeelLimit.Add(PlayerId, PursuerSkillLimitTimes.GetInt());
-    }
     public override bool CanUseKillButton(PlayerControl pc) => CanUseKillButton(pc.PlayerId);
     
-    public static bool CanUseKillButton(byte playerId)
+    public bool CanUseKillButton(byte playerId)
         => !Main.PlayerStates[playerId].IsDead
-        && SeelLimit.TryGetValue(playerId, out var x) && x >= 1;
-    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Pursuer) : Color.gray, SeelLimit.TryGetValue(playerId, out var x) ? $"({x})" : "Invalid");
+        && AbilityLimit >= 1;
+    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Pursuer) : Color.gray, $"({AbilityLimit})");
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? PursuerSkillCooldown.GetFloat() : 300f;
-    public static bool IsClient(byte playerId)
+    public bool IsClient(byte playerId)
     {
-        foreach (var pc in clientList)
-            if (pc.Value.Contains(playerId)) return true;
-        return false;
+        return clientList.Contains(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
-    public static bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
-    public static bool CanSeel(byte playerId) => playerIdList.Contains(playerId) && SeelLimit.TryGetValue(playerId, out int x) && x > 0;
+    public bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
+    public bool CanSeel(byte playerId) => AbilityLimit > 0;
     public override bool OnCheckMurderAsKiller(PlayerControl pc, PlayerControl target)
     {
         if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return true;
         if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.SerialKiller)) return false;
         if (!(CanBeClient(target) && CanSeel(pc.PlayerId))) return false;
 
-        SeelLimit[pc.PlayerId]--;
-        SendRPC(pc.PlayerId);
+        AbilityLimit--;
+        SendSkillRPC();
         if (target.Is(CustomRoles.KillingMachine)) 
         {
             Logger.Info("target is Killing Machine, ability used count reduced, but target will not die", "Purser");
             return false; 
         }
-        if (!clientList.ContainsKey(pc.PlayerId))
-            clientList.Add(pc.PlayerId, []);
 
-        clientList[pc.PlayerId].Add(target.PlayerId);
+        clientList.Add(target.PlayerId);
 
         if (!Options.DisableShieldAnimations.GetBool())
             pc.RpcGuardAndKill(pc);
@@ -117,7 +90,7 @@ internal class Pursuer : RoleBase
         
         byte cfId = byte.MaxValue;
         foreach (var cf in clientList)
-            if (cf.Value.Contains(pc.PlayerId)) cfId = cf.Key;
+            if (cf == pc.PlayerId) cfId = cf;
         
         if (cfId == byte.MaxValue) return false;
         

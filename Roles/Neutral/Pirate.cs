@@ -12,9 +12,7 @@ internal class Pirate : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 15000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pirate);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -42,7 +40,6 @@ internal class Pirate : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
         PirateTarget = byte.MaxValue;
         DuelDone.Clear();
         pirateChose = -1;
@@ -51,7 +48,6 @@ internal class Pirate : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         DuelDone.Add(playerId, false);
         CustomRoleManager.MarkOthers.Add(GetPlunderedMark);
 
@@ -63,7 +59,7 @@ internal class Pirate : RoleBase
     {
         if (!HasEnabled || PirateTarget == byte.MaxValue) return;
 
-        var pc = Utils.GetPlayerById(playerIdList.ToArray().FirstOrDefault());
+        var pc = _Player;
         var tpc = Utils.GetPlayerById(PirateTarget);
         if (!tpc.IsAlive()) return;
         _ = new LateTask(() =>
@@ -133,7 +129,7 @@ internal class Pirate : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        var pirateId = playerIdList.ToArray().FirstOrDefault();
+        var pirateId = _state.PlayerId;
         if (PirateTarget != byte.MaxValue)
         {
             if (DuelDone[pirateId])
@@ -170,7 +166,7 @@ internal class Pirate : RoleBase
         DuelDone.Clear();
         PirateTarget = byte.MaxValue;
         SendRPC(operate: 1, target: byte.MaxValue, points: NumWin);
-        foreach (byte playerId in playerIdList) { DuelDone.Add(playerId, false); }
+        foreach (byte playerId in Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Pirate).Select(x => x.PlayerId)) { DuelDone.Add(playerId, false); }
     }
 
     public static bool DuelCheckMsg(PlayerControl pc, string msg, bool isUI = false)

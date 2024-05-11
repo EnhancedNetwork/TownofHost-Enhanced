@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System;
+using TOHE.Roles.Core;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
@@ -9,8 +10,7 @@ internal class Taskinator : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 13700;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Taskinator);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\

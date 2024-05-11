@@ -9,17 +9,13 @@ internal class Imitator : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 13000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Imitator);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
     private static OptionItem RememberCooldown;
     private static OptionItem IncompatibleNeutralMode;
-
-    private static readonly Dictionary<byte, int> RememberLimit = [];
 
     private enum ImitatorIncompatibleNeutralModeSelect
     {
@@ -37,48 +33,19 @@ internal class Imitator : RoleBase
                 .SetValueFormat(OptionFormat.Seconds);
         IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", EnumHelper.GetAllNames<ImitatorIncompatibleNeutralModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
     }
-    public override void Init()
-    {
-        playerIdList.Clear();
-        RememberLimit.Clear();
-    }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        RememberLimit.Add(playerId, 1);
+        AbilityLimit = 1;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-
-    private static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Imitator);
-        writer.Write(playerId);
-        writer.Write(RememberLimit[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        byte playerId = reader.ReadByte();
-        int Limit = reader.ReadInt32();
-
-        if (!RememberLimit.ContainsKey(playerId))
-        {
-            RememberLimit.Add(playerId, Limit);
-        }
-        else
-        {
-            RememberLimit[playerId] = Limit;
-        }
-    }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberLimit[id] >= 1 ? RememberCooldown.GetFloat() : 300f;
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (!RememberLimit.TryGetValue(player.PlayerId, out var x) || x > 0);
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? RememberCooldown.GetFloat() : 300f;
+    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (AbilityLimit > 0);
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (RememberLimit[killer.PlayerId] < 1) return true;
+        if (AbilityLimit < 1) return true;
 
         var role = target.GetCustomRole();
 
@@ -89,8 +56,8 @@ internal class Imitator : RoleBase
             or CustomRoles.BloodKnight
             or CustomRoles.Sheriff)
         {
-            RememberLimit[killer.PlayerId]--;
-            SendRPC(killer.PlayerId);
+            AbilityLimit--;
+            SendSkillRPC();
             killer.RpcSetCustomRole(role);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
 
@@ -104,8 +71,8 @@ internal class Imitator : RoleBase
         }
         else if (role.IsAmneMaverick())
         {
-            RememberLimit[killer.PlayerId]--;
-            SendRPC(killer.PlayerId);
+            AbilityLimit--;
+            SendSkillRPC();
             switch (IncompatibleNeutralMode.GetInt())
             {
                 case 0:
@@ -136,8 +103,8 @@ internal class Imitator : RoleBase
         }
         else if (role.IsCrewmate())
         {
-            RememberLimit[killer.PlayerId]--;
-            SendRPC(killer.PlayerId);
+            AbilityLimit--;
+            SendSkillRPC();
             killer.RpcSetCustomRole(CustomRoles.Sheriff);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
@@ -145,8 +112,8 @@ internal class Imitator : RoleBase
         }
         else if (role.IsImpostor())
         {
-            RememberLimit[killer.PlayerId]--;
-            SendRPC(killer.PlayerId);
+            AbilityLimit--;
+            SendSkillRPC();
             killer.RpcSetCustomRole(CustomRoles.Refugee);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImpostor")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
@@ -160,7 +127,7 @@ internal class Imitator : RoleBase
             killer.SetKillCooldown(forceAnime: true);
 
             Logger.Info("Imitator remembered: " + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString(), "Imitator Assign");
-            Logger.Info($"{killer.GetNameWithRole()} : {RememberLimit} remember limits left", "Imitator");
+            Logger.Info($"{killer.GetNameWithRole()} : {AbilityLimit} remember limits left", "Imitator");
 
             Utils.NotifyRoles(SpecifySeer: killer);
         }

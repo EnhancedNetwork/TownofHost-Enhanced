@@ -222,10 +222,10 @@ static class ExtendedPlayerControl
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
-        if (player.Is(CustomRoles.Glitch))
+        if (player.GetRoleClass() is Glitch gc)
         {
-            Glitch.LastKill = Utils.GetTimeStamp() + ((int)(time / 2) - Glitch.KillCooldown.GetInt());
-            Glitch.KCDTimer = (int)(time / 2);
+            gc.LastKill = Utils.GetTimeStamp() + ((int)(time / 2) - Glitch.KillCooldown.GetInt());
+            gc.KCDTimer = (int)(time / 2);
         }
         else if (forceAnime || !player.IsModClient() || !Options.DisableShieldAnimations.GetBool())
         {
@@ -339,12 +339,12 @@ static class ExtendedPlayerControl
     {
         if (!AmongUsClient.Instance.AmHost) return; // Nothing happens when run by anyone other than the host.
         Logger.Info($"Ability cooldown reset: {target.name}({target.PlayerId})", "RpcResetAbilityCooldown");
-        if (target.Is(CustomRoles.Glitch))
+        if (target.GetRoleClass() is Glitch gc)
         {
-            Glitch.LastHack = Utils.GetTimeStamp();
-            Glitch.LastMimic = Utils.GetTimeStamp();
-            Glitch.MimicCDTimer = 10;
-            Glitch.HackCDTimer = 10;
+            gc.LastHack = Utils.GetTimeStamp();
+            gc.LastMimic = Utils.GetTimeStamp();
+            gc.MimicCDTimer = 10;
+            gc.HackCDTimer = 10;
         }
         else if (PlayerControl.LocalPlayer == target && !target.GetCustomRole().IsGhostRole() && !target.IsAnySubRole(x => x.IsGhostRole()))
         {

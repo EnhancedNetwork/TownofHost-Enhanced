@@ -15,9 +15,7 @@ internal class Pelican : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17300;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pelican);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -42,7 +40,6 @@ internal class Pelican : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         eatenList.Clear();
         originalSpeed.Clear();
         PelicanLastPosition.Clear();
@@ -51,7 +48,6 @@ internal class Pelican : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))

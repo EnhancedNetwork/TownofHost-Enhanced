@@ -12,9 +12,7 @@ internal class Solsticer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 26200;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Solsticer);
     public override CustomRoles ThisRoleBase => SolsticerCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -56,7 +54,6 @@ internal class Solsticer : RoleBase
     }
     public override void Init()
     {
-        PlayerIds.Clear();
         playerid = byte.MaxValue;
         warningActived = false;
         patched = false;
@@ -69,7 +66,6 @@ internal class Solsticer : RoleBase
     public override void Add(byte playerId)
     {
         playerid = playerId;
-        PlayerIds.Add(playerId);
 
         CustomRoleManager.SuffixOthers.Add(GetSuffixOthers);
     }

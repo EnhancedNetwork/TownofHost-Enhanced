@@ -13,9 +13,7 @@ internal class Jackal : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16700;
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jailer);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -38,9 +36,6 @@ internal class Jackal : RoleBase
     public static OptionItem CanUseSabotageSK;
     private static OptionItem SidekickCanKillJackal;
     private static OptionItem SidekickCanKillSidekick;
-    
-    public static readonly Dictionary<byte, int> RecruitLimit = [];
-
     private enum SidekickAssignModeSelect
     {
         Jackal_SidekickAssignMode_SidekickAndRecruit,
@@ -84,14 +79,11 @@ internal class Jackal : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
-        RecruitLimit.Clear();
         ResetKillCooldownWhenSbGetKilled = OptionResetKillCooldownWhenSbGetKilled;
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        RecruitLimit.TryAdd(playerId, SidekickRecruitLimitOpt.GetInt());
+        AbilityLimit = SidekickRecruitLimitOpt.GetInt();
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -101,26 +93,6 @@ internal class Jackal : RoleBase
                 Main.ResetCamPlayerList.Add(playerId);
         }
     }
-
-    private static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Jackal);
-        writer.Write(playerId);
-        writer.Write(RecruitLimit[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        byte PlayerId = reader.ReadByte();
-        int Limit = reader.ReadInt32();
-        if (RecruitLimit.ContainsKey(PlayerId))
-            RecruitLimit[PlayerId] = Limit;
-        else
-            RecruitLimit.Add(PlayerId, SidekickRecruitLimitOpt.GetInt());
-    }
-
     public override void ApplyGameOptions(IGameOptions opt, byte babuyaga) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
@@ -136,7 +108,7 @@ internal class Jackal : RoleBase
 
         return false;
     }
-    private static bool CanRecruit(byte id) => RecruitLimit.TryGetValue(id, out var x) && x > 0;
+    private bool CanRecruit(byte id) => AbilityLimit > 0;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         if (CanRecruit(playerId))
@@ -160,14 +132,14 @@ internal class Jackal : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.Jackal)) return false;
-        if (!CanRecruitSidekick.GetBool() || RecruitLimit[killer.PlayerId] < 1) return true;
+        if (!CanRecruitSidekick.GetBool() || AbilityLimit < 1) return true;
         
         if (SidekickAssignMode.GetValue() != 2)
         {
             if (CanBeSidekick(target))
             {
-                RecruitLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
+                AbilityLimit--;
+                SendSkillRPC();
                 
                 if (CopyCat.playerIdList.Contains(target.PlayerId))
                     target.GetRoleClass()?.Remove(target.PlayerId);
@@ -195,10 +167,10 @@ internal class Jackal : RoleBase
 
                 Logger.Info($"Target: {target.GetRealName()} : {target.GetCustomRole()} => {CustomRoles.Sidekick}", "Assign Sidekick");
                 
-                if (RecruitLimit[killer.PlayerId] < 0)
+                if (AbilityLimit < 0)
                     HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
 
-                Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{RecruitLimit[killer.PlayerId]}", "Jackal");
+                Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{AbilityLimit}", "Jackal");
                 return false;
             }
         }
@@ -206,8 +178,8 @@ internal class Jackal : RoleBase
         {
             if (!target.GetCustomRole().IsNeutral() && !target.Is(CustomRoles.Sidekick) && !target.Is(CustomRoles.Recruit) && !target.Is(CustomRoles.Loyal) && !target.Is(CustomRoles.Admired))
             {
-                RecruitLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
+                AbilityLimit--;
+                SendSkillRPC();
                 target.RpcSetCustomRole(CustomRoles.Recruit);
 
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
@@ -228,17 +200,17 @@ internal class Jackal : RoleBase
 
                 Logger.Info($"Target: {target.GetRealName()} = {target.GetCustomRole()} => {CustomRoles.Recruit}", "Assign Recruit");
                 
-                if (RecruitLimit[killer.PlayerId] < 0)
+                if (AbilityLimit < 0)
                     HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
 
-                Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{RecruitLimit[killer.PlayerId]}", "Jackal");
+                Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{AbilityLimit}", "Jackal");
                 return false;
             }
         }
-        if (RecruitLimit[killer.PlayerId] < 0)
+        if (AbilityLimit < 0)
             HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
         
-        Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{RecruitLimit[killer.PlayerId]}", "Jackal");
+        Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{AbilityLimit}", "Jackal");
         return true;
     }
 
@@ -251,10 +223,10 @@ internal class Jackal : RoleBase
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 
-    private static string GetRecruitLimit(byte playerId)
+    private string GetRecruitLimit(byte playerId)
         => Utils.ColorString(CanRecruit(playerId)
             ? Utils.GetRoleColor(CustomRoles.Jackal).ShadeColor(0.25f)
-            : Color.gray, RecruitLimit.TryGetValue(playerId, out var recruitLimit) ? $"({recruitLimit})" : "Invalid");
+            : Color.gray, $"({AbilityLimit})");
     
     public override string GetProgressText(byte playerId, bool comms)
         => CanRecruitSidekick.GetBool() ? GetRecruitLimit(playerId) : "";

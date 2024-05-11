@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -6,9 +7,7 @@ internal class SchrodingersCat : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6900;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.SchrodingersCat);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -23,13 +22,11 @@ internal class SchrodingersCat : RoleBase
     public override void Init()
     {
         teammate.Clear();
-        PlayerIds.Clear();
     }
 
     public override void Add(byte playerId)
     {
         teammate[playerId] = byte.MaxValue;
-        PlayerIds.Add(playerId);
     }
 
     private static void SendRPC(byte catID)

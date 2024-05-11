@@ -11,9 +11,7 @@ internal class Quizmaster : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 27000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Quizmaster);
     public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => CanKillsAfterMark() ? Custom_RoleType.NeutralKilling : Custom_RoleType.NeutralChaos;
@@ -66,7 +64,6 @@ internal class Quizmaster : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         Player = null;
         firstSabotageOfRound = Sabotages.None;
         //killsForRound = 0;
@@ -93,7 +90,6 @@ internal class Quizmaster : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         MarkedPlayer = byte.MaxValue;
 
         if (AmongUsClient.Instance.AmHost)
@@ -220,9 +216,9 @@ internal class Quizmaster : RoleBase
         DoQuestion();
     }
 
-    private static void DoQuestion()
+    private void DoQuestion()
     {
-        Player = Utils.GetPlayerById(playerIdList.ToList().First());
+        Player = _Player;
         if (MarkedPlayer != byte.MaxValue)
         {
             CustomRoles randomRole = GetRandomRole([.. CustomRolesHelper.AllRoles], false);
