@@ -128,6 +128,13 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                     killer.Notify(GetString("GhastlyNotUrTarget"));
                     return true;
                 }
+                else 
+                {
+                    TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
+                    LastTime.Remove(killer.PlayerId);
+                    KillerIsChosen = false;
+                    killertarget = (byte.MaxValue, byte.MaxValue);
+                }
             }
             return false;
         }
