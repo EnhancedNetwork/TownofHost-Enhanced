@@ -18,7 +18,7 @@ internal class Glitch : RoleBase
 
     private Dictionary<byte, long> hackedIdList = [];
 
-    public static List<Glitch> Glitchs => Utils.GetPlayerListByRole(CustomRoles.Glitch)?.Select(x => x.GetRoleClass()).Where(x => x is Glitch) as List<Glitch>; 
+    public static List<Glitch> Glitchs => Utils.GetPlayerListByRole(CustomRoles.Glitch)?.Select(x => x.GetRoleClass()).Cast<Glitch>().ToList(); 
 
     public static OptionItem KillCooldown;
     private static OptionItem HackCooldown;

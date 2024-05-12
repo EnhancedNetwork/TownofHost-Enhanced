@@ -2,6 +2,7 @@
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 
 namespace TOHE;
@@ -11,7 +12,7 @@ public abstract class RoleBase
     public PlayerState _state;
 #pragma warning disable IDE1006
     public PlayerControl _Player => Utils.GetPlayerById(_state.PlayerId);
-    public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId) as List<byte>;
+    public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
 #pragma warning restore IDE1006
 
     public float AbilityLimit { get; set; } = -100;
