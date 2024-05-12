@@ -218,7 +218,8 @@ class CheckMurderPatch
         }
 
         // if player hacked by Glitch
-        if (Glitch.HasEnabled && !Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target)))
+        var glitchthingy = Glitch.Glitchs != null ? !Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target)) : false;
+        if (glitchthingy)
         {
             Logger.Info("Is hacked by Glitch, it cannot kill", "Pelican.CheckMurder");
             return false;
@@ -232,7 +233,7 @@ class CheckMurderPatch
         }
 
         // Penguin's victim unable to kill
-        var penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
+        List<PlayerControl> penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
         if (penguins != null)
         {
             if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && killer.PlayerId == pg.AbductVictim.PlayerId))
@@ -429,7 +430,7 @@ class MurderPlayerPatch
                 }
             }
 
-            if (!target.IsProtected() && !Doppelganger.Doppelgangers.Any(x => x.CheckDoppelVictim(target.PlayerId)) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+            if (!target.IsProtected() && (Doppelganger.Doppelgangers != null && !Doppelganger.Doppelgangers.Any(x => x.CheckDoppelVictim(target.PlayerId))) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
             {
                 Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
                 Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);

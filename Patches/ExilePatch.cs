@@ -58,10 +58,11 @@ class ExileControllerWrapUpPatch
         var collectors = Utils.GetPlayerListByRole(CustomRoles.Collector);
         List<Collector> collectorCL = collectors.Select(x => x.GetRoleClass()).Where(x => x is Collector) as List<Collector>;
 
-        Logger.Info($"{!collectorCL.Any(x => x.CollectorWin(false))}", "!Collector.CollectorWin(false)");
+        if (collectorCL != null) Logger.Info($"{!collectorCL.Any(x => x.CollectorWin(false))}", "!Collector.CollectorWin(false)");
         Logger.Info($"{exiled != null}", "exiled != null");
+        bool CLThingy = collectorCL != null ? !collectorCL.Any(x => x.CollectorWin(false)) : true;
 
-        if (!collectorCL.Any(x => x.CollectorWin(false)) && exiled != null)
+        if (CLThingy && exiled != null)
         {
             // Reset player cam for exiled desync impostor
             if (Main.ResetCamPlayerList.Contains(exiled.PlayerId))
