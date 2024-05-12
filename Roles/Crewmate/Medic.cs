@@ -142,7 +142,9 @@ internal class Medic : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return true;
+
+        var Medics = Utils.GetPlayerListByRole(CustomRoles.Medic);
+        if (killer == null || target == null || Medics == null) return true;
         if (!ProtectList.Contains(target.PlayerId)) return false;
 
         SendRPCForProtectList();
@@ -153,7 +155,6 @@ internal class Medic : RoleBase
         NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
         NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
-        var Medics = Utils.GetPlayerListByRole(CustomRoles.Medic);
         switch (KnowShieldBrokenOpt.GetValue())
         {
             case 0:

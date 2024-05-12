@@ -59,15 +59,18 @@ class EndGamePatch
 
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
-            foreach (var dg in Doppelganger.Doppelgangers) 
+            if (Doppelganger.Doppelgangers != null)
             {
-                if (Doppelganger.HasEnabled && dg.DoppelVictim.TryGetValue(id, out var playerName))
+                foreach (var dg in Doppelganger.Doppelgangers)
                 {
-                    var dpc = Utils.GetPlayerById(id);
-                    if (dpc != null)
+                    if (Doppelganger.HasEnabled && dg.DoppelVictim.TryGetValue(id, out var playerName))
                     {
-                        dpc.RpcSetName(playerName);
-                        Main.AllPlayerNames[id] = playerName;
+                        var dpc = Utils.GetPlayerById(id);
+                        if (dpc != null)
+                        {
+                            dpc.RpcSetName(playerName);
+                            Main.AllPlayerNames[id] = playerName;
+                        }
                     }
                 }
             }

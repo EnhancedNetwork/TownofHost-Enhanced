@@ -23,7 +23,7 @@ internal class Doppelganger : RoleBase
     public readonly Dictionary<byte, string> DoppelVictim = [];
     public readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
 
-    public static List<Doppelganger> Doppelgangers = Utils.GetPlayerListByRole(CustomRoles.Doppelganger).Select(x => x.GetRoleClass()).Where(x => x is Doppelganger) as List<Doppelganger>;
+    public static List<Doppelganger> Doppelgangers = Utils.GetPlayerListByRole(CustomRoles.Doppelganger)?.Select(x => x.GetRoleClass()).Where(x => x is Doppelganger) as List<Doppelganger>;
 
 
     public override void SetupCustomOption()
