@@ -32,7 +32,7 @@ class CheckForEndVotingPatch
         //  SkippedVote = 253;
         //  DeadVote = 252;
 
-    var voteLog = Logger.Handler("Vote");
+        var voteLog = Logger.Handler("Vote");
         try
         {
             List<MeetingHud.VoterState> statesList = [];
