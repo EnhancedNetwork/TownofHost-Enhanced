@@ -888,15 +888,13 @@ internal static class RPC
     }
     public static void SyncRoleSkillReader(MessageReader reader, PlayerControl pc)
     {
-        CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
-        Logger.Info($"Received Sync Role Skill RPC for role {role}", "SyncRoleSkillReader");
 
         try
         {
-            switch (role)
+            switch (pc.GetRoleClass())
             {
                 //Crew Roles
-                case CustomRoles.Admirer when pc.GetRoleClass() is Admirer ad:
+                case Admirer ad:
                     ad.ReceiveRPC(reader, false);
                     break;
                 default:
@@ -906,7 +904,7 @@ internal static class RPC
         }
         catch (Exception error)
         {
-            Logger.Error($"Role {role} - error RPC:{error}", "SyncRoleSkillReader");
+            Logger.Error($"Role {pc.GetRoleClass().GetType().Name} - error RPC:{error}", "SyncRoleSkillReader");
         }
     }
     public static void RpcDoSpell(byte targetId, byte killerId)
