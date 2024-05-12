@@ -1221,6 +1221,7 @@ internal class ChatCommands
             "正義的追蹤者" or "正义追踪者" or "正义的追踪者" => GetString("Tracker"),
             "商人" => GetString("Merchant"),
             "總統" or "总统" => GetString("President"),
+            "獵鷹" or "猎鹰" => GetString("Hawk"),
             "捕快" or "下属" => GetString("Deputy"),
             "算命師" or "研究者" => GetString("Investigator"),
             "守護者" or "守护者" or "守护" => GetString("Guardian"),
@@ -1249,7 +1250,6 @@ internal class ChatCommands
             "猜想者" or "猜想" or "谜团" => GetString("Enigma"),
             "船長" or "舰长" or "船长" => GetString("Captain"),
             "慈善家" or "恩人" => GetString("Benefactor"),
-            "測驗者" or "测验长" => GetString("Quizmaster"),
 
             // 中立陣營職業 and 中立阵营职业
             "小丑" or "丑皇" => GetString("Jester"),
@@ -1325,6 +1325,7 @@ internal class ChatCommands
             "掃把星" or "扫把星" => GetString("Jinx"),
             "魔藥師" or "药剂师" => GetString("PotionMaster"),
             "死靈法師" or "亡灵巫师" => GetString("Necromancer"),
+            "測驗者" or "测验长" => GetString("Quizmaster"),
 
             // 附加職業 and 附加职业
             "絕境者" or "绝境者" => GetString("LastImpostor"),
@@ -1395,17 +1396,19 @@ internal class ChatCommands
             "順從者" or "影响者" or "順從" or "影响" => GetString("Influenced"),
             "沉默者" or "沉默" => GetString("Silent"),
             "易感者" or "易感" => GetString("Susceptible"),
-            "狡猾" or "棘手者" or "棘手" => ("Tricky"),
+            "狡猾" or "棘手者" or "棘手" => GetString("Tricky"),
             "彩虹" => GetString("Rainbow"),
             "疲勞者" or "疲劳者" or "疲勞" or "疲劳" => GetString("Tired"),
             "雕像" => GetString("Statue"),
+            "没有搜集的繁体中文" or "雷达" => GetString("Radar"),
 
             // 幽靈職業 and 幽灵职业
             // 偽裝者 and 内鬼
             "爪牙" => GetString("Minion"),
             "黑手黨" or "黑手党" or "黑手" => GetString("Nemesis"),
             // 船員 and 船员
-            "没有搜集的繁体中文" or "典狱长" => GetString("Warden"),
+            "没有搜集的繁体中文" or "鬼怪" => GetString("Ghastly"),
+            "冤魂" or "典狱长" => GetString("Warden"),
             "報應者" or "惩罚者" or "惩罚" or "报仇者" => GetString("Retributionist"),
 
             // 随机阵营职业
