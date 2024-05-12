@@ -198,7 +198,7 @@ static class ExtendedPlayerControl
             killer.MurderPlayer(target, MurderResultFlags.FailedProtected);
         }
         // Other Clients
-        if (killer.PlayerId != 0)
+        if (!killer.OwnedByHost())
         {
             var writer = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable);
             writer.WriteNetObject(target);
@@ -287,7 +287,7 @@ static class ExtendedPlayerControl
     public static void RpcSpecificShapeshift(this PlayerControl player, PlayerControl target, bool shouldAnimate)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (player.PlayerId == 0)
+        if (player.OwnedByHost())
         {
             player.Shapeshift(target, shouldAnimate);
             return;
@@ -380,6 +380,10 @@ static class ExtendedPlayerControl
         messageWriter.Write((byte)amount);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
+
+    public static bool OwnedByHost(this InnerNetObject innerObject)
+        => innerObject.OwnerId == AmongUsClient.Instance.HostId;
+
     public static void MarkDirtySettings(this PlayerControl player)
     {
         PlayerGameOptionsSender.SetDirty(player.PlayerId);

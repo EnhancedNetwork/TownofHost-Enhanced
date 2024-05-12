@@ -338,6 +338,13 @@ internal class EAC
         var Mapid = Utils.GetActiveMapId();
         Logger.Info("Check sabotage RPC" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + systemType.ToString() + ", amount: " + amount.ToString(), "EAC");
         if (!AmongUsClient.Instance.AmHost) return false;
+
+        if (player == null)
+        {
+            Logger.Warn("PlayerControl is null", "EAC RpcUpdateSystemCheck");
+            return true;
+        }
+
         if (systemType == SystemTypes.Sabotage) //Normal sabotage using buttons
         {
             if (!player.HasImpKillButton(true))
@@ -463,6 +470,12 @@ internal class EAC
     }
     public static void Report(PlayerControl pc, string reason)
     {
+        if (pc == null)
+        {
+            Logger.Warn("Report PlayerControl is null", "EAC Report");
+            return;
+        }
+
         string msg = $"{pc.GetClientId()}|{pc.FriendCode}|{pc.Data.PlayerName}|{pc.GetClient().GetHashedPuid()}|{reason}";
         //Cloud.SendData(msg);
         Logger.Fatal($"EAC报告：{msg}", "EAC Cloud");
@@ -471,6 +484,12 @@ internal class EAC
     }
     public static void HandleCheat(PlayerControl pc, string text)
     {
+        if (pc == null)
+        {
+            Logger.Warn("Target PlayerControl is null", "EAC HandleCheat");
+            return;
+        }
+
         switch (Options.CheatResponses.GetInt())
         {
             case 0:

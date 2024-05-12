@@ -251,11 +251,11 @@ internal class Medic : RoleBase
     {
         if (WhoCanSeeProtectOpt.GetInt() is 0 or 1)
         {
-            if (target == null && (InProtect(seer.PlayerId) || TempMarkProtected == seer.PlayerId))
+            if (seer.PlayerId == target.PlayerId && (InProtect(seer.PlayerId) || TempMarkProtected == seer.PlayerId))
             {
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
             }
-            else if (target != null && (InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId))
+            else if (seer.PlayerId != target.PlayerId && (InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId))
             {
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
             }
@@ -267,11 +267,11 @@ internal class Medic : RoleBase
         if (!seer.Is(CustomRoles.Medic))
         {
             // The seer sees protect on himself
-            if ((target == null || seer == target) && (InProtect(seer.PlayerId) || TempMarkProtected == seer.PlayerId) && (WhoCanSeeProtectOpt.GetInt() is 0 or 2))
+            if (seer.PlayerId == target.PlayerId && (InProtect(seer.PlayerId) || TempMarkProtected == seer.PlayerId) && (WhoCanSeeProtectOpt.GetInt() is 0 or 2))
             {
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
             }
-            else if (target != null && !seer.IsAlive() && (InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId))
+            else if (seer.PlayerId != target.PlayerId && !seer.IsAlive() && (InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId))
             {
                 // Dead players see protect
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
