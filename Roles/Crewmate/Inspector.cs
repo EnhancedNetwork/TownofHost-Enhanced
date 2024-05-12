@@ -68,7 +68,7 @@ internal class Inspector : RoleBase
     }
     public static void SendRPC(byte playerId, int operate)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetInspectorLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(operate);
         // reset round limit
@@ -83,7 +83,7 @@ internal class Inspector : RoleBase
         if (operate == 3) writer.Write(MaxCheckLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public void ReceiveRPC(MessageReader reader)
     {
         byte pid = reader.ReadByte();
         int operate = reader.ReadInt32();

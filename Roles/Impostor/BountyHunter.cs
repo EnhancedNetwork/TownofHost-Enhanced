@@ -73,19 +73,17 @@ internal class BountyHunter : RoleBase
 
     private static void SendRPC(byte bountyId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBountyTarget, SendOption.Reliable, -1);
-        writer.Write(bountyId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ReceiveRPC(MessageReader reader)
+    public void ReceiveRPC(MessageReader reader)
     {
-        byte bountyId = reader.ReadByte();
         byte targetId = reader.ReadByte();
 
-        Targets[bountyId] = targetId;
-        if (ShowTargetArrow) TargetArrow.Add(bountyId, targetId);
+        Targets[_state.PlayerId] = targetId;
+        if (ShowTargetArrow) TargetArrow.Add(_state.PlayerId, targetId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

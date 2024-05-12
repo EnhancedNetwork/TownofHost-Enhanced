@@ -60,21 +60,23 @@ internal class Witch : RoleBase
     {
         if (doSpell)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoSpell, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
             writer.Write(witchId);
+            writer.WritePacked(1);
             writer.Write(target);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillOrSpell, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
             writer.Write(witchId);
+            writer.WritePacked(2);
             writer.Write(SpellMode[witchId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
 
         }
     }
-    public static void ReceiveRPC(MessageReader reader, bool doSpell)
+    public void ReceiveRPC(MessageReader reader, bool doSpell)
     {
         if (doSpell)
         {

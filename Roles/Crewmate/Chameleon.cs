@@ -56,7 +56,6 @@ internal class Chameleon : RoleBase
         if (isLimit)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-            writer.WritePacked((int)CustomRoles.Chameleon);
             writer.Write(pc.PlayerId);
             writer.Write(isLimit);
             writer.Write(AbilityLimit);
@@ -64,7 +63,7 @@ internal class Chameleon : RoleBase
         }
         else 
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, SendOption.Reliable, pc.GetClientId());
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
             writer.Write(pc.PlayerId);
             writer.Write(isLimit);
             writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());

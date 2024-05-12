@@ -72,21 +72,23 @@ internal class HexMaster : RoleBase
     {
         if (doHex)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoHex, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
             writer.Write(hexId);
+            writer.WritePacked(1);
             writer.Write(target);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillOrHex, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
             writer.Write(hexId);
+            writer.WritePacked(1);
             writer.Write(HexMode[hexId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
 
         }
     }
-    public static void ReceiveRPC(MessageReader reader, bool doHex)
+    public void ReceiveRPC(MessageReader reader, bool doHex)
     {
         if (doHex)
         {

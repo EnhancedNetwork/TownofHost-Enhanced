@@ -139,7 +139,7 @@ internal class Overseer : RoleBase
         writer.Write(isRevealed);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveSetRevealedPlayerRPC(MessageReader reader)
+    public void ReceiveSetRevealedPlayerRPC(MessageReader reader)
     {
         byte OverseerId = reader.ReadByte();
         byte RevealId = reader.ReadByte();
