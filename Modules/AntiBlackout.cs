@@ -32,13 +32,18 @@ public static class AntiBlackout
             // if player is ejected, do not count him as alive
             if (lastExiled != null && pc.PlayerId == lastExiled.PlayerId) continue;
 
-            if (pc.GetCustomRole().IsImpostor()) Impostors.Add(pc.PlayerId); // Impostors
-            else if (Main.PlayerStates[pc.PlayerId].countTypes == CountTypes.Impostor) Impostors.Add(pc.PlayerId); // Madmates
+            // Impostors and Madmates
+            if (pc.Is(CountTypes.Impostor))
+                Impostors.Add(pc.PlayerId);
+            
+            // Crewmate
+            else if (pc.Is(CountTypes.Crew) 
+                || pc.Is(CountTypes.OutOfGame) 
+                || pc.Is(CountTypes.None))
+                Crewmates.Add(pc.PlayerId); // Crewmates
 
-            else if (pc.GetCustomRole().IsNK()) NeutralKillers.Add(pc.PlayerId); // Neutral Killers
-            else if (pc.Is(CustomRoles.Cultist)) NeutralKillers.Add(pc.PlayerId);
-
-            else Crewmates.Add(pc.PlayerId);
+            // Other CountTypes counts as neutral killers
+            else NeutralKillers.Add(pc.PlayerId);
         }
 
         var numAliveImpostors = Impostors.Count;
