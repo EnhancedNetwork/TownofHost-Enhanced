@@ -14,7 +14,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte
+enum CustomRPC : byte // (150/255 USED)
 {
     // RpcCalls can increase with each AU version
     // On version 2023.11.28 the last id in RpcCalls: 61
