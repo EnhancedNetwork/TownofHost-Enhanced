@@ -1406,6 +1406,7 @@ internal class ChatCommands
             // 偽裝者 and 内鬼
             "爪牙" => GetString("Minion"),
             "黑手黨" or "黑手党" or "黑手" => GetString("Nemesis"),
+            "嗜血之魂" or "血液伯爵" => GetString("Bloodmoon"),
             // 船員 and 船员
             "没有搜集的繁体中文" or "鬼怪" => GetString("Ghastly"),
             "冤魂" or "典狱长" => GetString("Warden"),
