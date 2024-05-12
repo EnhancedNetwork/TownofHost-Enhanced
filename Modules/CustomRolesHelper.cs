@@ -141,8 +141,6 @@ public static class CustomRolesHelper
                 CustomRoles.SuperStar or
                 CustomRoles.Celebrity or
                 CustomRoles.Mayor or
-                CustomRoles.Paranoia or
-                CustomRoles.Paranoia or
                 CustomRoles.Dictator or
                 CustomRoles.NiceGuesser or
                 CustomRoles.Bodyguard or
