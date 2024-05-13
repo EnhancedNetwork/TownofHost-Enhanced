@@ -676,7 +676,6 @@ public enum CustomRoles
     Oracle,
     Overseer, 
     Pacifist, 
-    Paranoia, //paranoid
     ChiefOfPolice, //police commisioner ///// UNUSED
     President,
     Psychic,
