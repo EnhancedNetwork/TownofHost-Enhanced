@@ -40,8 +40,6 @@ public static class EnumHelper
             chunkedList.Add(chunk);
         }
 
-
-        Logger.Info($"{chunkedList}", "Achunklist");
         return chunkedList;
 
     }
