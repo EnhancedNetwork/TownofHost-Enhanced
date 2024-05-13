@@ -106,7 +106,7 @@ internal class Taskinator : RoleBase
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if(!HasEnabled) return;
-        if (player == null) return;
+        if (player == null || _Player == null) return;
         if (!player.IsAlive()) return;
         byte playerId = player.PlayerId;
         if (player.Is(CustomRoles.Taskinator))
