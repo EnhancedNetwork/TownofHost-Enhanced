@@ -429,7 +429,7 @@ class MurderPlayerPatch
                 }
             }
 
-            if (!target.IsProtected() && Doppelganger.CheckDoppelVictim(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+            if (!target.IsProtected() && !Doppelganger.CheckDoppelVictim(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
             {
                 Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
                 Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
@@ -833,7 +833,7 @@ class ReportDeadBodyPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            if (Doppelganger.CheckDoppelVictim(target.PlayerId))
+            if (!Doppelganger.CheckDoppelVictim(pc.PlayerId))
             {
                 // Update skins again, since players have different skins
                 // And can be easily distinguished from each other
