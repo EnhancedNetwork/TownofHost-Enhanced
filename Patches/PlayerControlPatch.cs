@@ -1399,9 +1399,10 @@ class PlayerControlCompleteTaskPatch
             if (player != null && __args != null && __args.Any())
             {
                 int taskIndex = Convert.ToInt32(__args.First());
-                var playerTask = player.myTasks[taskIndex];
+                var playerTask = player.myTasks.ToArray().FirstOrDefault(task => (int)task.Id == taskIndex);
 
-                CustomRoleManager.OthersCompleteThisTask(player, playerTask);
+                if (playerTask != null)
+                    CustomRoleManager.OthersCompleteThisTask(player, playerTask);
             }
 
             var playerSubRoles = player.GetCustomSubRoles();
