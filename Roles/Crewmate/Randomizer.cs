@@ -41,13 +41,15 @@ internal class Randomizer : RoleBase
     {
         playerIdList.Add(playerId);
     }
-    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
+        if (inMeeting) return;
+
         var Fg = IRandom.Instance;
         int Randomizer = Fg.Next(1, 5);
         if (Randomizer == 1)
         {
-            if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Oblivious.ObliviousBaitImmune.GetBool()))
+            if (!isSuicide || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith) || !killer.Is(CustomRoles.KillingMachine) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Oblivious.ObliviousBaitImmune.GetBool()))
             {
                 killer.RPCPlayCustomSound("Congrats");
                 target.RPCPlayCustomSound("Congrats");
@@ -107,16 +109,14 @@ internal class Randomizer : RoleBase
             Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发随机复仇 => {target.GetNameWithRole()}", "Randomizer");
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Randomizer), GetString("YouKillRandomizer4")));
             {
-                var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToList();
-                var rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
-                if (!rp.IsTransformedNeutralApocalypse())
-                {
-                    Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
-                    rp.SetRealKiller(target);
-                    rp.RpcMurderPlayer(rp);
+                var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && target.RpcCheckAndMurder(x, true)).ToList();
+                var pc = pcList[IRandom.Instance.Next(0, pcList.Count)];
+                if (!pc.IsTransformedNeutralApocalypse()) { 
+                    Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+                    pc.RpcMurderPlayer(pc);
+                    pc.SetRealKiller(target);
                 }
             }
         }
-        return true;
     }
 }

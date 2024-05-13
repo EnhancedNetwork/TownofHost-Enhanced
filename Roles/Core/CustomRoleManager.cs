@@ -247,7 +247,7 @@ public static class CustomRoleManager
                         Cyber.AfterCyberDeadTask(target, inMeeting);
                         break;
 
-                    case CustomRoles.Bait when !inMeeting && !isSuicide:
+                    case CustomRoles.Bait when !inMeeting:
                         Bait.BaitAfterDeathTasks(killer, target);
                         break;
 
@@ -304,7 +304,7 @@ public static class CustomRoleManager
     /// Check if this task is marked by a role and do something.
     /// </summary>
     public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task)
-        => Main.PlayerStates.Values.ToArray().Do(PlrState => PlrState.RoleClass.OnOthersTaskComplete(player, task));
+        => AllEnabledRoles.Do(RoleClass => RoleClass.OnOthersTaskComplete(player, task));
     
 
     public static HashSet<Action<PlayerControl, PlayerControl, bool>> CheckDeadBodyOthers = [];

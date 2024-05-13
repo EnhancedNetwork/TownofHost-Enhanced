@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -60,6 +61,8 @@ internal class Captain : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+
+        CustomRoleManager.MarkOthers.Add(GetMarkForOthers);
     }
     private static void SendRPCSetSpeed(byte targetId)
     {
@@ -231,12 +234,14 @@ internal class Captain : RoleBase
         OriginalSpeed.Clear();
         SendRPCRevertAllSpeed();
     }
-    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    private string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool isForMeeting)
     {
-        if (target != null && (target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && OptionCrewCanFindCaptain.GetBool()) &&
-                                (target.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) &&
-                                (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && OptionMadmateCanFindCaptain.GetBool())))
+        if (target.Is(CustomRoles.Captain) && OptionCrewCanFindCaptain.GetBool() &&
+                (target.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) &&
+                (seer.Is(Custom_Team.Crewmate) && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && OptionMadmateCanFindCaptain.GetBool())))
+        {
             return ColorString(GetRoleColor(CustomRoles.Captain), " ☆");
+        }
         return string.Empty;
     }
     public override void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)

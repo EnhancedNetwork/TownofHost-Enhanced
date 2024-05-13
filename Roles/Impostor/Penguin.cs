@@ -252,7 +252,7 @@ internal class Penguin : RoleBase
             else if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 var position = penguin.transform.position;
-                if (penguin.PlayerId != 0)
+                if (!penguin.OwnedByHost())
                 {
                     AbductVictim.RpcTeleport(position, sendInfoInLogs: false);
                 }

@@ -1326,27 +1326,15 @@ class CoEnterVentPatch
         }
 
         var playerRoleClass = __instance.myPlayer.GetRoleClass();
-        
-        // Fix Vent Stuck
+
+        // Prevent vanilla players from enter vents if their current role does not allow it
         if ((__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer && !__instance.myPlayer.CanUseImpostorVentButton())
             || (playerRoleClass != null && playerRoleClass.CheckBootFromVent(__instance, id))
         )
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, -1);
-            writer.WritePacked(127);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-            
-            _ = new LateTask(() =>
-            {
-                int clientId = __instance.myPlayer.GetClientId();
-                MessageWriter writer2 = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, clientId);
-                writer2.Write(id);
-                AmongUsClient.Instance.FinishRpcImmediately(writer2);
-            }, 0.5f, "Fix DesyncImpostor Stuck");
+            __instance.RpcBootFromVent(id);
             return false;
         }
-
-        
 
         playerRoleClass?.OnCoEnterVent(__instance, id);
 
@@ -1398,10 +1386,11 @@ class PlayerControlCompleteTaskPatch
             // Check others complete task
             if (player != null && __args != null && __args.Any())
             {
-                int taskIndex = Convert.ToInt32(__args[0]);
-                var playerTask = player.myTasks[taskIndex];
+                int taskIndex = Convert.ToInt32(__args.First());
+                var playerTask = player.myTasks.ToArray().FirstOrDefault(task => (int)task.Id == taskIndex);
 
-                CustomRoleManager.OthersCompleteThisTask(player, playerTask);
+                if (playerTask != null)
+                    CustomRoleManager.OthersCompleteThisTask(player, playerTask);
             }
 
             var playerSubRoles = player.GetCustomSubRoles();

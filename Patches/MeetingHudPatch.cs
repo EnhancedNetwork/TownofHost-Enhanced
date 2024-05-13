@@ -26,14 +26,18 @@ class CheckForEndVotingPatch
         {
             shouldSkip = true;
         }
-        
+
+        //  HasNotVoted = 255;
+        //  MissedVote = 254;
+        //  SkippedVote = 253;
+        //  DeadVote = 252;
 
         var voteLog = Logger.Handler("Vote");
         try
         {
             List<MeetingHud.VoterState> statesList = [];
             MeetingHud.VoterState[] states;
-            foreach (var pva in __instance.playerStates.ToArray())
+            foreach (var pva in __instance.playerStates)
             {
                 if (pva == null) continue;
                 PlayerControl pc = Utils.GetPlayerById(pva.TargetPlayerId);
@@ -95,16 +99,11 @@ class CheckForEndVotingPatch
                 if (pva.DidVote && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);
-                    if (voteTarget == null)
+                    
+                    if (voteTarget == null || !voteTarget.IsAlive() || voteTarget.Data.Disconnected)
                     {
                         Utils.SendMessage(GetString("VoteDead"), pc.PlayerId);
-                        __instance.RpcClearVote(pc.GetClientId());
-                        Swapper.CheckSwapperTarget(pva.VotedFor);
-                        continue;
-                    }
-                    else if (!voteTarget.IsAlive() || voteTarget.Data.Disconnected)
-                    {
-                        Utils.SendMessage(GetString("VoteDead"), pc.PlayerId);
+                        __instance.UpdateButtons();
                         __instance.RpcClearVote(pc.GetClientId());
                         Swapper.CheckSwapperTarget(pva.VotedFor);
                         continue;
@@ -112,7 +111,6 @@ class CheckForEndVotingPatch
 
                     if (voteTarget != null)
                     {
-
                         pc.GetRoleClass()?.OnVote(pc, voteTarget); // Role has voted
                         voteTarget.GetRoleClass()?.OnVoted(voteTarget, pc); // Role is voted
 
@@ -126,7 +124,7 @@ class CheckForEndVotingPatch
 
             if (!shouldSkip)
             {
-                foreach (var ps in __instance.playerStates.ToArray())
+                foreach (var ps in __instance.playerStates)
                 {
                     //Players who are not dead have not voted
                     if (!ps.DidVote && Utils.GetPlayerById(ps.TargetPlayerId)?.IsAlive() == true)
@@ -139,7 +137,7 @@ class CheckForEndVotingPatch
             GameData.PlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
             bool tie = false;
 
-            foreach (var ps in __instance.playerStates.ToArray())
+            foreach (var ps in __instance.playerStates)
             {
                 if (ps == null) continue;
                 voteLog.Info(string.Format("{0,-2}{1}:{2,-3}{3}", ps.TargetPlayerId, Utils.PadRightV2($"({Utils.GetVoteName(ps.TargetPlayerId)})", 40), ps.VotedFor, $"({Utils.GetVoteName(ps.VotedFor)})"));
@@ -657,7 +655,7 @@ static class ExtendedMeetingHud
         Tiebreaker.Clear();
 
         // |Voted By| Number of Times Voted For
-        foreach (var ps in __instance.playerStates.ToArray())
+        foreach (var ps in __instance.playerStates)
         {
             if (ps == null) continue;
 
@@ -907,7 +905,7 @@ class MeetingHudStartPatch
         GuessManager.textTemplate = UnityEngine.Object.Instantiate(__instance.playerStates[0].NameText);
         GuessManager.textTemplate.enabled = false;
 
-        foreach (var pva in __instance.playerStates.ToArray())
+        foreach (var pva in __instance.playerStates)
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null) continue;
@@ -1004,7 +1002,7 @@ class MeetingHudStartPatch
             }, 3f, "SetName To Chat");
         }
 
-        foreach (var pva in __instance.playerStates.ToArray())
+        foreach (var pva in __instance.playerStates)
         {
             if (pva == null) continue;
             PlayerControl seer = PlayerControl.LocalPlayer;
