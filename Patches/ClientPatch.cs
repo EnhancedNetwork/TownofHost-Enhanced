@@ -173,7 +173,13 @@ internal class InnerNetObjectSerializePatch
 {
     public static void Prefix()
     {
-        if (AmongUsClient.Instance.AmHost)
-            GameOptionsSender.SendAllGameOptions();
+        // This code is sometimes called before the lobby has been created
+        try
+        {
+            if (AmongUsClient.Instance.AmHost)
+                GameOptionsSender.SendAllGameOptions();
+        }
+        catch
+        { }
     }
 }

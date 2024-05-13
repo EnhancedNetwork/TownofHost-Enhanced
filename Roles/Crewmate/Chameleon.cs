@@ -7,6 +7,7 @@ using TOHE.Roles.Core;
 using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -229,7 +230,9 @@ internal class Chameleon : RoleBase
     }
     public override string GetLowerText(PlayerControl pc, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (pc == null || !GameStates.IsInTask || !PlayerControl.LocalPlayer.IsAlive()) return "";
+        // Only for modded
+        if (pc == null || !isForHud || isForMeeting || !pc.IsAlive()) return string.Empty;
+
         var str = new StringBuilder();
         if (IsInvis(pc.PlayerId))
         {
