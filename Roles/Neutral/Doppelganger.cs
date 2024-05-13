@@ -20,10 +20,9 @@ internal class Doppelganger : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem MaxSteals;
 
-    public readonly Dictionary<byte, string> DoppelVictim = [];
-    public readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
+    public static readonly Dictionary<byte, string> DoppelVictim = [];
+    public static readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
 
-    public static List<Doppelganger> Doppelgangers => Utils.GetPlayerListByRole(CustomRoles.Doppelganger)?.Select(x => x.GetRoleClass()).Cast<Doppelganger>().ToList();
 
 
     public override void SetupCustomOption()
@@ -49,9 +48,9 @@ internal class Doppelganger : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
-    public bool CheckDoppelVictim(byte playerId) => DoppelVictim.ContainsKey(playerId);
+    public static bool CheckDoppelVictim(byte playerId) => DoppelVictim.ContainsKey(playerId);
 
-    private void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit, uint level)
+    private static void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit, uint level)
     {
         var sender = CustomRpcSender.Create(name: $"Doppelganger.RpcChangeSkin({pc.Data.PlayerName})");
 

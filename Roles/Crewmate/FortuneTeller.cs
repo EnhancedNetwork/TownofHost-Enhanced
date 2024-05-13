@@ -86,7 +86,7 @@ internal class FortuneTeller : RoleBase
         }
     }
 
-    public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && TempCheckLimit[pva.TargetPlayerId] > 0;
+    public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && TempCheckLimit > 0;
     private static string GetTargetRoleList(CustomRoles[] roles)
     {
         return roles != null ? string.Join("\n", roles.Select(role => $"    ★ {GetRoleName(role)}")) : "";

@@ -95,7 +95,7 @@ internal class Blackmailer : RoleBase
         if (CheckBlackmaile(pc))
         {
             var playername = pc.GetRealName();
-            if(Doppelganger.Doppelgangers != null && Doppelganger.Doppelgangers.Any()) foreach (var dg in Doppelganger.Doppelgangers) { if (dg.DoppelVictim.TryGetValue(pc.PlayerId, out var doppelPlayerName)) playername = doppelPlayerName; }
+            if( Doppelganger.DoppelVictim.TryGetValue(pc.PlayerId, out var doppelPlayerName)) playername = doppelPlayerName; 
             AddMsg(string.Format(GetString("BlackmailerDead"), playername, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
         }
     }
