@@ -133,7 +133,7 @@ internal class Overseer : RoleBase
 
     private static void SetRevealtPlayerRPC(PlayerControl player, PlayerControl target, bool isRevealed)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRevealedPlayer, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isRevealed);

@@ -78,7 +78,7 @@ internal class Virus : RoleBase
 
     private static void SendRPCInfectKill(byte virusId, byte target = 255)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoSpell, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.Write(virusId);
         writer.Write(target);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
