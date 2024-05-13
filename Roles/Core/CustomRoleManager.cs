@@ -69,7 +69,7 @@ public static class CustomRoleManager
     {
         // return true when need to cancel the kill target
         // "Any()" defines a function that returns true, and converts to false to cancel the kill
-        return !AllEnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target) == true);
+        return !Main.PlayerStates.Values.Any(state => state.RoleClass.CheckMurderOnOthersTarget(killer, target) == true);
     }
 
     /// <summary>
