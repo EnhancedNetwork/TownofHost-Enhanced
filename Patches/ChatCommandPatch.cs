@@ -1187,7 +1187,7 @@ internal class ChatCommands
             "守衛者" or "守卫者" => GetString("Keeper"),
             "俠客" or "侠客" or "正义使者" => GetString("Knight"),
             "市長" or "市长" => GetString("Mayor"),
-            "被害妄想症" or "被害妄想" or "被迫害妄想症" or "被害" or "妄想" or "妄想症" => GetString("Paranoia"),
+             // "被害妄想症" or "被害妄想" or "被迫害妄想症" or "被害" or "妄想" or "妄想症" => GetString("Paranoia"), going to make a paranoia rework
             "愚者" => GetString("Psychic"),
             "修理工" or "修理" or "修理大师" => GetString("Mechanic"),
             "警長" or "警长" => GetString("Sheriff"),
@@ -1222,6 +1222,7 @@ internal class ChatCommands
             "正義的追蹤者" or "正义追踪者" or "正义的追踪者" => GetString("Tracker"),
             "商人" => GetString("Merchant"),
             "總統" or "总统" => GetString("President"),
+            "獵鷹" or "猎鹰" => GetString("Hawk"),
             "捕快" or "下属" => GetString("Deputy"),
             "算命師" or "研究者" => GetString("Investigator"),
             "守護者" or "守护者" or "守护" => GetString("Guardian"),
@@ -1250,7 +1251,6 @@ internal class ChatCommands
             "猜想者" or "猜想" or "谜团" => GetString("Enigma"),
             "船長" or "舰长" or "船长" => GetString("Captain"),
             "慈善家" or "恩人" => GetString("Benefactor"),
-            "測驗者" or "测验长" => GetString("Quizmaster"),
 
             // 中立陣營職業 and 中立阵营职业
             "小丑" or "丑皇" => GetString("Jester"),
@@ -1326,6 +1326,7 @@ internal class ChatCommands
             "掃把星" or "扫把星" => GetString("Jinx"),
             "魔藥師" or "药剂师" => GetString("PotionMaster"),
             "死靈法師" or "亡灵巫师" => GetString("Necromancer"),
+            "測驗者" or "测验长" => GetString("Quizmaster"),
 
             // 附加職業 and 附加职业
             "絕境者" or "绝境者" => GetString("LastImpostor"),
@@ -1396,17 +1397,20 @@ internal class ChatCommands
             "順從者" or "影响者" or "順從" or "影响" => GetString("Influenced"),
             "沉默者" or "沉默" => GetString("Silent"),
             "易感者" or "易感" => GetString("Susceptible"),
-            "狡猾" or "棘手者" or "棘手" => ("Tricky"),
+            "狡猾" or "棘手者" or "棘手" => GetString("Tricky"),
             "彩虹" => GetString("Rainbow"),
             "疲勞者" or "疲劳者" or "疲勞" or "疲劳" => GetString("Tired"),
             "雕像" => GetString("Statue"),
+            "没有搜集的繁体中文" or "雷达" => GetString("Radar"),
 
             // 幽靈職業 and 幽灵职业
             // 偽裝者 and 内鬼
             "爪牙" => GetString("Minion"),
             "黑手黨" or "黑手党" or "黑手" => GetString("Nemesis"),
+            "嗜血之魂" or "血液伯爵" => GetString("Bloodmoon"),
             // 船員 and 船员
-            "没有搜集的繁体中文" or "典狱长" => GetString("Warden"),
+            "没有搜集的繁体中文" or "鬼怪" => GetString("Ghastly"),
+            "冤魂" or "典狱长" => GetString("Warden"),
             "報應者" or "惩罚者" or "惩罚" or "报仇者" => GetString("Retributionist"),
 
             // 随机阵营职业
@@ -1460,6 +1464,7 @@ internal class ChatCommands
         if (role.StartsWith("/up")) _ = role.Replace("/up", string.Empty);
         if (role.EndsWith("\r\n")) _ = role.Replace("\r\n", string.Empty);
         if (role.EndsWith("\n")) _ = role.Replace("\n", string.Empty);
+        if (role.StartsWith("/bt")) _ = role.Replace("/bt", string.Empty);
 
         if (role == "" || role == string.Empty)
         {
@@ -1520,7 +1525,7 @@ internal class ChatCommands
     {
         canceled = false;
         if (!AmongUsClient.Instance.AmHost) return;
-        if ((Options.NewHideMsg.GetBool() || Blackmailer.HasEnabled) && player.PlayerId != 0) // Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && PlayerControl.LocalPlayer.IsAlive() && player.PlayerId != 0)
+        if ((Options.NewHideMsg.GetBool() || Blackmailer.HasEnabled) && !player.OwnedByHost()) // Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && PlayerControl.LocalPlayer.IsAlive() && !player.OwnedByHost())
         {
             ChatManager.SendMessage(player, text);
         }
@@ -1548,7 +1553,7 @@ internal class ChatCommands
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
-        if (Blackmailer.CheckBlackmaile(player) && player.IsAlive() && player.PlayerId != 0)
+        if (Blackmailer.CheckBlackmaile(player) && player.IsAlive() && !player.OwnedByHost())
         {
             Logger.Info($"This player (id {player.PlayerId}) was Blackmailed", "OnReceiveChat");
             ChatManager.SendPreviousMessagesToAll();

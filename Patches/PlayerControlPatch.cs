@@ -1402,7 +1402,7 @@ class PlayerControlCompleteTaskPatch
             // Check others complete task
             if (player != null && __args != null && __args.Any())
             {
-                int taskIndex = Convert.ToInt32(__args[0]);
+                int taskIndex = Convert.ToInt32(__args.First());
                 var playerTask = player.myTasks[taskIndex];
 
                 CustomRoleManager.OthersCompleteThisTask(player, playerTask);

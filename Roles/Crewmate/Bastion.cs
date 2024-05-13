@@ -39,10 +39,12 @@ internal class Bastion : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         BombedVents.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         BastionNumberOfAbilityUses = BastionMaxBombs.GetInt();
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -79,15 +81,16 @@ internal class Bastion : RoleBase
         if (!BombedVents.Contains(ventId)) return false;
 
         var pc = physics.myPlayer;
-        if (pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Bastion) && !pc.IsCrewVenter() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId)) 
+        if (pc.Is(Custom_Team.Crewmate) && !pc.Is(CustomRoles.Bastion) && !pc.IsCrewVenter() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId)) 
         {
+            Logger.Info("Crewmate enter in bombed vent, bombed is cancel", "Bastion.OnCoEnterVentOther");
             return false;
         }
         else
         {
             _ = new LateTask(() =>
             {
-                foreach (var bastion in Main.AllAlivePlayerControls.Where(bastion => bastion.GetCustomRole() == CustomRoles.Bastion).ToArray())
+                foreach (var bastion in Main.AllAlivePlayerControls.Where(bastion => bastion.Is(CustomRoles.Bastion)).ToArray())
                 {
                     pc.SetRealKiller(bastion);
                     bastion.Notify(GetString("BastionNotify"));
