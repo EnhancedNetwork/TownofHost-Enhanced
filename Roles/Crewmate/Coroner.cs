@@ -62,6 +62,7 @@ internal class Coroner : RoleBase
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked(1);
         writer.Write(playerId);
         writer.Write(add);
         if (add)
@@ -75,7 +76,6 @@ internal class Coroner : RoleBase
     private void SendRPCLimit(byte playerId, int operate, byte targetId = 0xff)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
         writer.Write(playerId);
         writer.Write(operate);
         writer.Write(AbilityLimit);
