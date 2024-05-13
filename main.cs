@@ -39,8 +39,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0511.200.0009"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 dev 9";
+    public const string PluginVersion = "2024.0513.200.0010"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 Dev 10";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -676,7 +676,6 @@ public enum CustomRoles
     Oracle,
     Overseer, 
     Pacifist, 
-    Paranoia, //paranoid
     ChiefOfPolice, //police commisioner ///// UNUSED
     President,
     Psychic,
