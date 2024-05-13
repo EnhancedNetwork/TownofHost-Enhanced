@@ -59,7 +59,7 @@ class EndGamePatch
 
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
-            if (Doppelganger.Doppelgangers != null)
+            if (Doppelganger.Doppelgangers != null && Doppelganger.Doppelgangers.Any())
             {
                 foreach (var dg in Doppelganger.Doppelgangers)
                 {

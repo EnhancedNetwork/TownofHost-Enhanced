@@ -184,7 +184,7 @@ public static class Camouflage
             }
 
             // if game not end and Doppelganger clone skins
-            if (Doppelganger.Doppelgangers != null)
+            if (Doppelganger.Doppelgangers != null && Doppelganger.Doppelgangers.Any())
             {
                 foreach (var dg in Doppelganger.Doppelgangers)
                 {

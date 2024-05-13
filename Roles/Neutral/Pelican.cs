@@ -108,7 +108,7 @@ internal class Pelican : RoleBase
         var target = Utils.GetPlayerById(id);
 
         var penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
-        if (penguins != null)
+        if (penguins != null && penguins.Any())
         {
             if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && pg.AbductVictim != null && (target.PlayerId == pg.AbductVictim.PlayerId 
             || id == pg.AbductVictim.PlayerId)))

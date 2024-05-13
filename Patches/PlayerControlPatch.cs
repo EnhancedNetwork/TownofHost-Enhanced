@@ -218,9 +218,9 @@ class CheckMurderPatch
         }
 
         // if player hacked by Glitch
-        if (Glitch.Glitchs != null && !Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target)))
+        if (Glitch.HasEnabled && Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target)))
         {
-            Logger.Info("Is hacked by Glitch, it cannot kill", "Pelican.CheckMurder");
+            Logger.Info($"Is hacked by Glitch, it cannot kill  : {!Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target))}", "Pelican.CheckMurder");
             return false;
         }
 
@@ -233,7 +233,7 @@ class CheckMurderPatch
 
         // Penguin's victim unable to kill
         List<PlayerControl> penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
-        if (penguins != null)
+        if (Penguin.HasEnabled && penguins != null && penguins.Any())
         {
             if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && killer.PlayerId == pg.AbductVictim.PlayerId))
             {
@@ -429,7 +429,7 @@ class MurderPlayerPatch
                 }
             }
 
-            if (!target.IsProtected() && (Doppelganger.Doppelgangers != null && !Doppelganger.Doppelgangers.Any(x => x.CheckDoppelVictim(target.PlayerId))) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+            if (!target.IsProtected() && (Doppelganger.Doppelgangers != null && Doppelganger.Doppelgangers.Any() && !Doppelganger.Doppelgangers.Any(x => x.CheckDoppelVictim(target.PlayerId))) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
             {
                 Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
                 Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
@@ -833,7 +833,7 @@ class ReportDeadBodyPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            if (!Doppelganger.Doppelgangers.Any(x => x.CheckDoppelVictim(target.PlayerId)))
+            if (Doppelganger.Doppelgangers != null && Doppelganger.Doppelgangers.Any() && !Doppelganger.Doppelgangers.Any(x => x.CheckDoppelVictim(target.PlayerId)))
             {
                 // Update skins again, since players have different skins
                 // And can be easily distinguished from each other
@@ -890,7 +890,7 @@ class FixedUpdateInNormalGamePatch
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
         {
-            if(!Glitch.Glitchs.Any(x => x.OnCheckFixedUpdateReport(__instance, id)))
+            if(Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckFixedUpdateReport(__instance, id)))
             { }
             else
             {

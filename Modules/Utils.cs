@@ -1569,11 +1569,11 @@ public static class Utils
     }
     public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
     {
-        return PlayerIdList.ToList().Select(x => GetPlayerById(x)).ToList();
+        return PlayerIdList?.ToList().Select(x => GetPlayerById(x)).ToList();
     }
 
     public static List<PlayerControl> GetPlayerListByRole(this CustomRoles role)
-        => GetPlayerListByIds(Main.PlayerStates.Values.Where(x => x.MainRole == role).Select(r => r.PlayerId));
+        => GetPlayerListByIds(Main.PlayerStates.Values.Where(x => x.MainRole == role)?.Select(r => r.PlayerId));
     
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);

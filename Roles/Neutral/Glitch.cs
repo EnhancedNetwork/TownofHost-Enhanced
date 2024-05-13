@@ -286,12 +286,14 @@ internal class Glitch : RoleBase
     }
     public bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
     {
-        if (killer == target || killer == null) return true;
+        if (killer == target || killer == null) { Logger.Info("returning true", "glitchcheck"); return true; }
         if (hackedIdList.ContainsKey(killer.PlayerId))
         {
             killer.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchKill")));
+            Logger.Info("returning false", "glitchcheck"); 
             return false;
         }
+        Logger.Info("returning true", "glitchcheck");
         return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

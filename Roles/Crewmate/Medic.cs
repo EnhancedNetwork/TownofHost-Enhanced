@@ -144,7 +144,7 @@ internal class Medic : RoleBase
     {
 
         var Medics = Utils.GetPlayerListByRole(CustomRoles.Medic);
-        if (killer == null || target == null || Medics == null) return true;
+        if (killer == null || target == null || Medics == null || !Medics.Any()) return true;
         if (!ProtectList.Contains(target.PlayerId)) return false;
 
         SendRPCForProtectList();
