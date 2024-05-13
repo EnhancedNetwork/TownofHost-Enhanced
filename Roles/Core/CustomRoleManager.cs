@@ -13,8 +13,13 @@ namespace TOHE.Roles.Core;
 public static class CustomRoleManager
 {
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
-    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup(); 
-    public static List<RoleBase> AllEnabledRoles => RoleClass.Values.Where(x => x.IsEnable).ToList();
+    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup();
+    public static List<RoleBase> AllEnabledRoles()
+    {
+        List<RoleBase> classes = Main.PlayerStates.Values.Select(x => x.RoleClass).ToList();
+        classes.AddRange(RoleClass.Values.Where(x => x.IsEnable).ToList());
+        return classes;
+    }
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
     public static List<RoleBase> GetNormalOptions(Custom_RoleType type)
     {
@@ -69,7 +74,7 @@ public static class CustomRoleManager
     {
         // return true when need to cancel the kill target
         // "Any()" defines a function that returns true, and converts to false to cancel the kill
-        return !Main.PlayerStates.Values.Any(state => state.RoleClass.CheckMurderOnOthersTarget(killer, target) == true);
+        return !AllEnabledRoles().Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target) == true);
     }
 
     /// <summary>
@@ -304,7 +309,7 @@ public static class CustomRoleManager
     /// Check if this task is marked by a role and do something.
     /// </summary>
     public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task)
-        => Main.PlayerStates.Values.ToArray().Do(PlrState => PlrState.RoleClass.OnOthersTaskComplete(player, task)); //
+        => AllEnabledRoles().Do(RoleClass => RoleClass.OnOthersTaskComplete(player, task)); //
     
 
     public static HashSet<Action<PlayerControl, PlayerControl, bool>> CheckDeadBodyOthers = [];
@@ -356,7 +361,7 @@ public static class CustomRoleManager
     /// </summary>
     public static bool OthersCoEnterVent(PlayerPhysics physics, int ventId)
     {
-        return AllEnabledRoles.Any(RoleClass => RoleClass.OnCoEnterVentOthers(physics, ventId));
+        return AllEnabledRoles().Any(RoleClass => RoleClass.OnCoEnterVentOthers(physics, ventId));
     }
 
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = [];

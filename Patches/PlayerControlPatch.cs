@@ -1533,7 +1533,7 @@ public static class PlayerControlDiePatch
 
         if (GameStates.IsNormalGame)
         {
-            CustomRoleManager.AllEnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
+            CustomRoleManager.AllEnabledRoles().Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
         }
 
         __instance.RpcRemovePet();
