@@ -220,7 +220,7 @@ class CheckMurderPatch
         // if player hacked by Glitch
         if (Glitch.HasEnabled && Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target)))
         {
-            Logger.Info($"Is hacked by Glitch, it cannot kill  : {!Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target))}", "Pelican.CheckMurder");
+            Logger.Info($"Is hacked by Glitch, it cannot kill ", "Glitch.CheckMurder");
             return false;
         }
 
