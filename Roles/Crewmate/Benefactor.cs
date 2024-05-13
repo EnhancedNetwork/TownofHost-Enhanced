@@ -1,5 +1,4 @@
-﻿using Cpp2IL.Core.Extensions;
-using Hazel;
+﻿using Hazel;
 using System;
 using static TOHE.Translator;
 
