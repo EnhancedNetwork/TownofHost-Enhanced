@@ -462,7 +462,7 @@ class GameEndCheckerForNormal
     {
         if (Quizmaster.HasEnabled) Quizmaster.ResetMarkedPlayer();
 
-        CustomRoleManager.AllEnabledRoles().Do(roleClass => roleClass.OnCoEndGame());
+        CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.OnCoEndGame());
 
         // Set ghost role
         List<byte> ReviveRequiredPlayerIds = [];
