@@ -131,15 +131,26 @@ public class GameStartManagerPatch
                                 BeginAutoStart(Options.AutoStartTimer.GetInt());
                                 return;
                             }
+                            else
+                            {
+                                Main.updateTime = 0;
+                            }
                         }
                         else if (Options.ImmediateAutoStart.GetBool())
                         {
                             if ((GameData.Instance.PlayerCount >= Options.StartWhenPlayersReach.GetInt() && Options.StartWhenPlayersReach.GetInt() > 1) ||
                                 (timer <= Options.StartWhenTimerLowerThan.GetInt() && Options.StartWhenTimerLowerThan.GetInt() > 0))
                             {
-                                PlayerTimeOutManager.KickAllNotReady();
-                                BeginAutoStart(Options.ImmediateStartTimer.GetInt());
-                                return;
+                                if (PlayerTimeOutManager.IsAllReady())
+                                {                                    
+                                    BeginAutoStart(Options.ImmediateStartTimer.GetInt());
+                                    return;
+                                }
+                                else
+                                {
+                                    PlayerTimeOutManager.KickAllNotReady();
+                                    Main.updateTime = 25;
+                                }
                             }
                         }
                     }
