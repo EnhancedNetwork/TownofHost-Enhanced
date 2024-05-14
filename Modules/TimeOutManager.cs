@@ -1,6 +1,7 @@
 ﻿using Hazel;
 using InnerNet;
 using UnityEngine;
+using static TOHE.Translator;
 
 namespace TOHE.Modules;
 
@@ -27,6 +28,36 @@ public static class PlayerTimeOutManager
             return status;
         }
         return null;
+    }
+
+    public static bool IsAllReady()
+    {
+        foreach (var pt in PlayerTimer)
+        {
+            if (!pt.Value.Ready && !pt.Value.Disconnected)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static void KickAllNotReady()
+    {
+        foreach (var pt in PlayerTimer)
+        {
+            if (!pt.Value.Ready && !pt.Value.Disconnected)
+            {
+                var client = AmongUsClient.Instance.GetClient(pt.Key);
+
+                if (client != null)
+                {
+                    AmongUsClient.Instance.KickPlayer(pt.Key, false);
+                    Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");
+                }
+            }
+        }
     }
 
     public static TimeOutStatus GetTimeOutStatus(this PlayerControl player)
@@ -151,17 +182,10 @@ public static class PlayerTimeOutManager
 
                     var client = AmongUsClient.Instance.GetClient(pt.Key);
 
-                    if (GameStates.IsLocalGame)
-                    {
-                        AmongUsClient.Instance.KickPlayer(pt.Key, false);
-                        return;
-                    }
-
-                    AmongUsClient.Instance.SendLateRejection(pt.Key, DisconnectReasons.ClientTimeout);
-                    Logger.Info($"Client {pt.Key} Timed out! {pt.Value.RpcReady} {pt.Value.CustomNTReady}", "TimeOutManager");
                     if (client != null)
                     {
-                        AmongUsClient.Instance.OnPlayerLeft(client, DisconnectReasons.ClientTimeout);
+                        AmongUsClient.Instance.KickPlayer(pt.Key, false);
+                        Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");
                     }
                 }
             }
