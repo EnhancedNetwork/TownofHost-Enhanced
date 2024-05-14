@@ -39,14 +39,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0508.200.0008"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 dev 8";
+    public const string PluginVersion = "2024.0513.200.0010"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 Dev 10";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = false; // ACTIVE - Latest: V1.6.0 Canary 6
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
-    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 7
+    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 9
 
     public static bool hasAccess = true;
 
@@ -333,7 +333,6 @@ public class Main : BasePlugin
 
             CustomRolesHelper.DuplicatedRoles = new Dictionary<CustomRoles, Type>
             {
-                { CustomRoles.Pestilence, typeof(PlagueBearer) },
                 { CustomRoles.NiceMini, typeof(Mini) },
                 { CustomRoles.EvilMini, typeof(Mini) }
             };
@@ -678,7 +677,6 @@ public enum CustomRoles
     Oracle,
     Overseer, 
     Pacifist, 
-    Paranoia, //paranoid
     ChiefOfPolice, //police commisioner ///// UNUSED
     President,
     Psychic,

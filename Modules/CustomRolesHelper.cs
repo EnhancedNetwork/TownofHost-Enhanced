@@ -141,8 +141,6 @@ public static class CustomRolesHelper
                 CustomRoles.SuperStar or
                 CustomRoles.Celebrity or
                 CustomRoles.Mayor or
-                CustomRoles.Paranoia or
-                CustomRoles.Paranoia or
                 CustomRoles.Dictator or
                 CustomRoles.NiceGuesser or
                 CustomRoles.Bodyguard or
@@ -594,6 +592,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.CursedWolf)
                     || pc.Is(CustomRoles.Masochist)
+                    || pc.Is(CustomRoles.SchrodingersCat)
                     || pc.Is(CustomRoles.PlagueBearer)
                     || pc.Is(CustomRoles.Pestilence))
                     return false;
@@ -942,7 +941,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.Statue)
-                    || pc.Is(CustomRoles.Seeker))
+                    || pc.Is(CustomRoles.Seeker)
+                    || pc.Is(CustomRoles.Doppelganger))
                     return false;
                 break;
 
@@ -987,6 +987,8 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Rainbow:
+                if (pc.Is(CustomRoles.Doppelganger))
+                    return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Rainbow.CrewCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Rainbow.NeutralCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Rainbow.ImpCanBeRainbow.GetBool()))
                     return false;
                 break;

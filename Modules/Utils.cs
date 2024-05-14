@@ -270,10 +270,10 @@ public static class Utils
         bool ReactorCheck = IsActive(GetCriticalSabotageSystemType());
 
         var Duration = Options.KillFlashDuration.GetFloat();
-        if (ReactorCheck) Duration += 0.2f; //リアクター中はブラックアウトを長くする
+        if (ReactorCheck) Duration += 0.2f; // Prolong blackout during reactor for vanilla
 
-        //実行
-        Main.PlayerStates[player.PlayerId].IsBlackOut = true; //ブラックアウト
+        //Start
+        Main.PlayerStates[player.PlayerId].IsBlackOut = true; //Set black out for player
         if (player.AmOwner)
         {
             FlashColor(new(1f, 0f, 0f, 0.3f));
@@ -284,11 +284,11 @@ public static class Utils
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KillFlash, SendOption.Reliable, player.GetClientId());
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        else if (!ReactorCheck) player.ReactorFlash(0f); //リアクターフラッシュ
+        else if (!ReactorCheck) player.ReactorFlash(0f); //Reactor flash for vanilla
         player.MarkDirtySettings();
         _ = new LateTask(() =>
         {
-            Main.PlayerStates[player.PlayerId].IsBlackOut = false; //ブラックアウト解除
+            Main.PlayerStates[player.PlayerId].IsBlackOut = false; //Remove black out for player
             player.MarkDirtySettings();
         }, Options.KillFlashDuration.GetFloat(), "Remove Kill Flash");
     }
@@ -500,25 +500,25 @@ public static class Utils
         if (GameStates.IsLobby) return false;
 
         //Tasks may be null, in which case no task is assumed
+        if (playerData == null) return false;
         if (playerData.Tasks == null) return false;
         if (playerData.Role == null) return false;
 
         var hasTasks = true;
         var States = Main.PlayerStates[playerData.PlayerId];
 
-        //
         if (playerData.Disconnected) return false;
         if (playerData.Role.IsImpostor)
             hasTasks = false; //Tasks are determined based on CustomRole
 
         if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
         if (playerData.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
-        
+
         if (GameStates.IsHideNSeek) return hasTasks;
 
         var role = States.MainRole;
 
-        if (!States.RoleClass.HasTasks(playerData, role, ForRecompute))
+        if (States.RoleClass != null && States.RoleClass.HasTasks(playerData, role, ForRecompute) == false)
             hasTasks = false;
 
         switch (role)
@@ -1715,13 +1715,6 @@ public static class Utils
 
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                     SelfName = name;
-
-                switch (seerRole)
-                {
-                    case CustomRoles.PlagueBearer:
-                        PlagueBearer.PlaguerNotify(seer);
-                        break;
-                }
 
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";

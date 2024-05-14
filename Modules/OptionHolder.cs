@@ -824,11 +824,6 @@ public static class Options
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralKilling).ForEach(r => r.SetupCustomOption());
 
-        /*
-         * PlagueBearer 
-         */
-        CustomRoles.PlagueBearer.GetStaticRoleClass().SetupCustomOption();
-
         #endregion
 
         #region Add-Ons Settings

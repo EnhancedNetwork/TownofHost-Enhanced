@@ -95,6 +95,7 @@ public class GameStartManagerPatch
         private static int minPlayer;
         public static void Prefix(GameStartManager __instance)
         {
+            if (__instance == null) return;
             minWait = Options.MinWaitAutoStart.GetFloat();
             maxWait = Options.MaxWaitAutoStart.GetFloat();
             minPlayer = Options.PlayerAutoStart.GetInt();
@@ -112,7 +113,7 @@ public class GameStartManagerPatch
                 GameStartManagerStartPatch.HideName.enabled = false;
             }
 
-            update = GameData.Instance.PlayerCount != __instance.LastPlayerCount;
+            update = GameData.Instance?.PlayerCount != __instance.LastPlayerCount;
             if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return; // Not host or no instance or LocalGame
 
             if (Main.AutoStart.Value)

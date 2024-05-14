@@ -603,7 +603,7 @@ internal class SelectRolesPatch
                     foreach (var pc in PlayerControl.AllPlayerControls.ToArray())
                     {
                         if (pc == player) continue;
-                        if (pc.PlayerId == 0) player.SetRole(RoleTypes.Scientist); //ホスト視点用
+                        if (pc.OwnedByHost()) player.SetRole(RoleTypes.Scientist); //ホスト視点用
                         else sender.RpcSetRole(player, RoleTypes.Scientist, pc.GetClientId());
                     }
                 }
