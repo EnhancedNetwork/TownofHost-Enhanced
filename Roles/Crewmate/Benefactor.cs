@@ -38,6 +38,7 @@ internal class Benefactor : RoleBase
 
     public override void Init()
     {
+        playerIdList.Clear();
         taskIndex.Clear();
         shieldedPlayers.Clear();
         TaskMarkPerRound.Clear();
@@ -45,10 +46,12 @@ internal class Benefactor : RoleBase
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         TaskMarkPerRound[playerId] = 0;
     }
     public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
         TaskMarkPerRound.Remove(playerId);
     }
 
