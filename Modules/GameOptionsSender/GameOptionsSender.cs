@@ -14,8 +14,8 @@ public abstract class GameOptionsSender
     public static void SendAllGameOptions()
     {
         AllSenders.RemoveAll(s => !s.AmValid()); // .AmValid() has a virtual property, so it doesn't always return true
-        var array = AllSenders.ToArray();
-        foreach (GameOptionsSender sender in array)
+        var AllSendersArray = AllSenders.ToArray();
+        foreach (GameOptionsSender sender in AllSendersArray)
         {
             if (sender.IsDirty) sender.SendGameOptions();
             sender.IsDirty = false;

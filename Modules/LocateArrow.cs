@@ -138,7 +138,7 @@ static class LocateArrow
                 update = true;
             }
         }
-        if (update)
+        if (update && !seer.AmOwner)
         {
             Utils.NotifyRoles(SpecifySeer: seer, ForceLoop: false);
         }
