@@ -61,12 +61,14 @@ public abstract class GameOptionsSender
     {
         try
         {
-            for (byte i = 0; i < GameManager.Instance.LogicComponents.Count; i++)
+            byte logicOptionsIndex = 0;
+            foreach (var logicComponent in GameManager.Instance.LogicComponents.GetFastEnumerator())
             {
-                if (GameManager.Instance.LogicComponents[i].TryCast<LogicOptions>(out _))
+                if (logicComponent.TryCast<LogicOptions>(out _))
                 {
-                    SendOptionsArray(optionArray, i, -1);
+                    SendOptionsArray(optionArray, logicOptionsIndex, -1);
                 }
+                logicOptionsIndex++;
             }
         }
         catch (System.Exception error)

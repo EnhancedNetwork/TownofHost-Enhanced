@@ -56,7 +56,7 @@ class CoBeginPatch
     {
         var logger = Logger.Handler("Info");
 
-        var allPlayerControlsArray = Main.AllPlayerControls.ToArray();
+        var allPlayerControlsArray = Main.AllPlayerControls;
 
         Main.AssignRolesIsStarted = false;
 

@@ -88,6 +88,7 @@ static class LocateArrow
         }
         return arrows;
     }
+    public static bool HasLocateArrows(PlayerControl seer) => LocateArrows.Keys.Any(a => a.From == seer.PlayerId);
     /// <summary>
     /// Check target arrow every FixedUpdate
     /// Issue NotifyRoles when there are updates
