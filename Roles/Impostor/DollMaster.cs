@@ -9,7 +9,6 @@ namespace TOHE.Roles.Impostor;
 internal class DollMaster : RoleBase
 {
     private static readonly HashSet<byte> ReducedVisionPlayers = [];
-    public static bool isEnabled = false;
     private static bool IsControllingPlayer = false;
     private static bool ResetPlayerSpeed = false;
     private static bool WaitToUnPossess = false;
@@ -19,7 +18,7 @@ internal class DollMaster : RoleBase
     private static Vector2 controllingTargetPos = new(0, 0);
     private static Vector2 DollMasterPos = new(0, 0);
     //===========================SETUP================================\\
-    private const int Id = 28500;
+    private const int Id = 28300;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
     public override bool IsExperimental => true;
@@ -36,7 +35,7 @@ internal class DollMaster : RoleBase
 
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.DollMaster);
+        SetupSingleRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.DollMaster);
         DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DollMasterPossessionCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
@@ -51,7 +50,6 @@ internal class DollMaster : RoleBase
     {
         ReducedVisionPlayers.Clear();
         PlayerIds.Clear();
-        isEnabled = true;
     }
 
     public override void Add(byte playerId)
@@ -75,7 +73,7 @@ internal class DollMaster : RoleBase
     // Set Vision to 0 for possessed Target.
     public static void SetVision(IGameOptions opt, PlayerControl target)
     {
-        if (ReducedVisionPlayers.Contains(target.PlayerId))
+        if (IsDoll(target.PlayerId))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, 0f * 0);
@@ -177,10 +175,7 @@ internal class DollMaster : RoleBase
 
     // Prevent possessed player from reporting body.
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
-    {
-        if (IsDoll(reporter.PlayerId)) return false;
-        return true;
-    }
+        => !IsDoll(reporter.PlayerId);
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target) // Swap player kill interactions to each other when possessing.
     {
@@ -315,13 +310,15 @@ internal class DollMaster : RoleBase
     // Set name Suffix for Doll and Main Body under name.
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (!IsControllingPlayer) return string.Empty;
-        if (GameStates.IsMeeting) return string.Empty;
-        if (target == null) return string.Empty;
-        if (controllingTarget == null) return string.Empty;
-        if (DollMasterTarget == null) return string.Empty;
-        if (seer.PlayerId != target.PlayerId && target.PlayerId == controllingTarget.PlayerId) return "<color=#ffea00>" + GetString("DollMaster_MainBody") + "</color>";
-        if (seer.PlayerId == target.PlayerId && target.PlayerId == DollMasterTarget.PlayerId) return "<color=#ffea00>" + GetString("DollMaster_Doll") + "</color>";
+        if (!IsControllingPlayer || GameStates.IsMeeting || isForMeeting) return string.Empty;
+        if (controllingTarget == null || DollMasterTarget == null || target == null) return string.Empty;
+
+        if (seer.PlayerId != target.PlayerId && target.PlayerId == controllingTarget.PlayerId)
+            return "<color=#ffea00>" + GetString("DollMaster_MainBody") + "</color>";
+
+        if (seer.PlayerId == target.PlayerId && target.PlayerId == DollMasterTarget.PlayerId)
+            return "<color=#ffea00>" + GetString("DollMaster_Doll") + "</color>";
+        
         return string.Empty;
     }
 
