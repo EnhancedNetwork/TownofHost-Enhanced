@@ -28,6 +28,7 @@ class OnGameJoinedPatch
         if (!DebugModeManager.AmDebugger && Main.VersionCheat.Value)
             Main.VersionCheat.Value = false;
 
+        PlayerTimeOutManager.Init();
         ChatUpdatePatch.DoBlockChat = false;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();

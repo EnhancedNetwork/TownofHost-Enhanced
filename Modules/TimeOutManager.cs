@@ -20,7 +20,7 @@ public class TimeOutStatus
 public static class PlayerTimeOutManager
 {
     public static Dictionary<int, TimeOutStatus> PlayerTimer = [];
-    private static float CustomTimeOut = 3f;
+    private static float CustomTimeOut => Main.PlayerSpawnTimeOutCooldown.Value;
     public static TimeOutStatus GetTimeOutStatus(this ClientData client)
     {
         if (PlayerTimer.TryGetValue(client.Id, out var status))
@@ -30,6 +30,10 @@ public static class PlayerTimeOutManager
         return null;
     }
 
+    public static void Init()
+    {
+        PlayerTimer = [];
+    }
     public static bool IsAllReady()
     {
         foreach (var pt in PlayerTimer)
@@ -105,6 +109,7 @@ public static class PlayerTimeOutManager
             status.Timing = false;
             status.timer = -1f;
             status.Disconnected = true;
+            status.Ready = false;
         }
     }
 
