@@ -630,6 +630,13 @@ class CastVotePatch
                         return false;
                     }
                     break;
+                case CustomRoles.DoubleAgent:
+                    if (!DoubleAgent.OnVotes(voter, target))
+                    {
+                        __instance.RpcClearVote(voter.GetClientId());
+                        return false;
+                    }
+                    break;
             }
         }
 
