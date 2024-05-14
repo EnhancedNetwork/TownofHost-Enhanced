@@ -163,25 +163,7 @@ public static class OnPlayerJoinedPatch
 
         Main.AssignRolesIsStarted = false;
 
-        _ = new LateTask(() =>
-        {
-            try
-            {
-                if (!client.IsDisconnected() && !AmongUsClient.Instance.AmHost)
-                {
-                    RPC.RpcVersionCheck();
-                }
-
-                if (AmongUsClient.Instance.AmHost && !client.IsDisconnected() && client.Character == null)
-                {
-                    Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");
-                    AmongUsClient.Instance.KickPlayer(client.Id, false);
-                    Logger.Info($"Kicked client {client.Id}/{client.PlayerName} bcz PlayerControl is not spawned in time.", "OnPlayerJoinedPatchPostfix");
-                }
-            }
-            catch { }
-        }, 2.5f, "OnPlayerJoined Client <=> Client VersionCheck", false);
-
+        PlayerTimeOutManager.OnPlayerJoined(client.Id);
 
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
         {
@@ -260,6 +242,8 @@ class OnPlayerLeftPatch
 {
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
+        PlayerTimeOutManager.OnPlayerLeft(data);
+
         if (!AmongUsClient.Instance.AmHost) return;
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
@@ -436,6 +420,7 @@ class CreatePlayerPatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
+        PlayerTimeOutManager.OnPlayerCreated(client);
         Logger.Msg($"Create player data: ID {client.Character.PlayerId}: {client.PlayerName}", "CreatePlayer");
 
         // Standard nickname
