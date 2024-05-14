@@ -9,6 +9,7 @@ namespace TOHE;
 public static class EnumerationHelpers
 {
     /// <summary>
+    /// Also improves the speed of code in a foreach loop
     /// Used when List has a reference to Il2CppSystem.Collections.Generic
     /// </summary>
     /// <returns>IEnumerable of T</returns>
