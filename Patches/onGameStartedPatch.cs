@@ -8,6 +8,7 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Neutral;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -142,6 +143,8 @@ internal class ChangeRoleSettings
                 Camouflage.PlayerSkins[pc.PlayerId] = new GameData.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
                 Main.clientIdList.Add(pc.GetClientId());
             }
+
+            
 
             Main.VisibleTasksCount = true;
             if (__instance.AmHost)
@@ -460,8 +463,9 @@ internal class SelectRolesPatch
                     }
                 }
             }
+            Glitch.Glitchs.Do(x => Logger.Info($"{x._Player.GetRealName()}", "glitchtest"));
 
-            EndOfSelectRolePatch:
+        EndOfSelectRolePatch:
 
             HudManager.Instance.SetHudActive(true);
             //HudManager.Instance.Chat.SetVisible(true);

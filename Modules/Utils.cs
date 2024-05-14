@@ -1569,7 +1569,9 @@ public static class Utils
     }
     public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
     {
-        return PlayerIdList?.ToList().Select(x => GetPlayerById(x)).ToList();
+        var PlayerList = PlayerIdList?.ToList().Select(x => GetPlayerById(x)).ToList();
+
+        return PlayerList.Any() ? PlayerList : null;
     }
 
     public static List<PlayerControl> GetPlayerListByRole(this CustomRoles role)
