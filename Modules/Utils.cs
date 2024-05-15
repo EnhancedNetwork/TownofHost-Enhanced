@@ -1289,7 +1289,7 @@ public static class Utils
     {
         // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
 
-        if (text.Length > 1200)
+        if (text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient())
         {
             foreach(var txt in text.SplitMessage())
             {
