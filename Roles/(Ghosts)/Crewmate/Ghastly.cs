@@ -138,15 +138,15 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             }
             return false;
         }
-        private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting, bool isforhud = false)
+        private string OthersNameText(PlayerControl seer, PlayerControl seen, bool IsForMeeting, bool isforhud = false)
         {
             var IsMeeting = GameStates.IsMeeting || IsForMeeting;
-            if (IsMeeting || seer != player) return "";
+            if (IsMeeting || (seer != seen && seer.IsAlive())) return "";
 
             var killer = killertarget.Item1;
             var target = killertarget.Item2;
 
-            if (killer == seer.PlayerId && target != byte.MaxValue)
+            if (killer == seen.PlayerId && target != byte.MaxValue)
             {
                 var arrows = TargetArrow.GetArrows(GetPlayerById(killer), target);
                 var tar = GetPlayerById(target).GetRealName();
