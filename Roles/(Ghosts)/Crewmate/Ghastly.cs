@@ -45,7 +45,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             CustomRoleManager.LowerOthers.Add(OthersNameText);
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
 
-           // OnCheckProtect(_Player, Utils.GetPlayerById(0));
+            // OnCheckProtect(_Player, Utils.GetPlayerById(0));
            // OnCheckProtect(_Player, Utils.GetPlayerById(2));
         }
 
@@ -160,7 +160,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 var tar = GetPlayerById(target).GetRealName();
                 if (tar == null) return "";
 
-                var colorstring = ColorString(GetRoleColor(CustomRoles.Ghastly), tar + arrows);
+                var colorstring = ColorString(GetRoleColor(CustomRoles.Ghastly), "<alpha=#88>" +  tar + arrows);
                 return colorstring;
             }
 
