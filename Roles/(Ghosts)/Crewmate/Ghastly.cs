@@ -45,8 +45,8 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             CustomRoleManager.LowerOthers.Add(OthersNameText);
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
 
-            OnCheckProtect(_Player, Utils.GetPlayerById(0));
-            OnCheckProtect(_Player, Utils.GetPlayerById(2));
+           // OnCheckProtect(_Player, Utils.GetPlayerById(0));
+           // OnCheckProtect(_Player, Utils.GetPlayerById(2));
         }
 
         public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -97,7 +97,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             }
 
             killertarget = (killer, Target);
-            //Logger.Info($"{killertarget.Item1} ++ {killertarget.Item2}", "ghasltytargets");
+            Logger.Info($"{killertarget.Item1} ++ {killertarget.Item2}", "ghasltytargets");
 
             return false;
         }
@@ -115,7 +115,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             if (killertarget.Item1 == player.PlayerId 
                 && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= GetTimeStamp())
             {
-                //Logger.Info("removing the possesed!!", "ghastlyremovable");
+                Logger.Info("removing the possesed!!", "ghastlyremovable");
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(player.PlayerId);
                 KillerIsChosen = false;
@@ -126,12 +126,12 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
         {
             var tuple = killertarget;
-            //Logger.Info($" check KILLER {(killer.GetRealName())} : {Utils.GetPlayerById(killertarget.Item1).GetRealName()}" +  $" ++  check TARGET {(target.GetRealName())} : {Utils.GetPlayerById(killertarget.Item2).GetRealName()}", "GHASTLYONMURDEROTHER");
+            Logger.Info($" check KILLER {(killer.GetRealName())} : {Utils.GetPlayerById(killertarget.Item1).GetRealName()}" +  $" ++  check TARGET {(target.GetRealName())} : {Utils.GetPlayerById(killertarget.Item2).GetRealName()}", "GHASTLYONMURDEROTHER");
             if (tuple.Item1 == killer.PlayerId && tuple.Item2 != byte.MaxValue)
             {
                 if (tuple.Item2 != target.PlayerId)
                 {
-                    //Logger.Info($"Returned true", "GHASTLYONMURDEROTHER");
+                    Logger.Info($"Returned true", "GHASTLYONMURDEROTHER");
                     killer.Notify(GetString("GhastlyNotUrTarget"));
                     return true;
                 }
@@ -143,7 +143,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                     killertarget = (byte.MaxValue, byte.MaxValue);
                 }
             }
-            //Logger.Info($"Returned false", "GHASTLYONMURDEROTHER");
+            Logger.Info($"Returned false", "GHASTLYONMURDEROTHER");
             return false;
         }
         private string OthersNameText(PlayerControl seer, PlayerControl seen, bool IsForMeeting, bool isforhud = false)
@@ -160,7 +160,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 var tar = GetPlayerById(target).GetRealName();
                 if (tar == null) return "";
 
-                var colorstring = "<alpha=#88>" + ColorString(GetRoleColor(CustomRoles.Ghastly), tar + arrows);
+                var colorstring = "<alpha=#22>" + ColorString(GetRoleColor(CustomRoles.Ghastly), tar + arrows);
                 return colorstring;
             }
 
