@@ -97,7 +97,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             }
 
             killertarget = (killer, Target);
-            Logger.Info($"{killertarget.Item1} ++ {killertarget.Item2}", "ghasltytargets");
+            // Logger.Info($"{killertarget.Item1} ++ {killertarget.Item2}", "ghasltytargets");
 
             return false;
         }
@@ -126,7 +126,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
         {
             var tuple = killertarget;
-            Logger.Info($" check KILLER {(killer.GetRealName())} : {Utils.GetPlayerById(killertarget.Item1).GetRealName()}" +  $" ++  check TARGET {(target.GetRealName())} : {Utils.GetPlayerById(killertarget.Item2).GetRealName()}", "GHASTLYONMURDEROTHER");
+            // Logger.Info($" check KILLER {(killer.GetRealName())} : {Utils.GetPlayerById(killertarget.Item1).GetRealName()}" +  $" ++  check TARGET {(target.GetRealName())} : {Utils.GetPlayerById(killertarget.Item2).GetRealName()}", "GHASTLYONMURDEROTHER");
             if (tuple.Item1 == killer.PlayerId && tuple.Item2 != byte.MaxValue)
             {
                 if (tuple.Item2 != target.PlayerId)
@@ -143,7 +143,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                     killertarget = (byte.MaxValue, byte.MaxValue);
                 }
             }
-            Logger.Info($"Returned false", "GHASTLYONMURDEROTHER");
+            // Logger.Info($"Returned false", "GHASTLYONMURDEROTHER");
             return false;
         }
         private string OthersNameText(PlayerControl seer, PlayerControl seen, bool IsForMeeting, bool isforhud = false)
