@@ -170,7 +170,7 @@ internal class RPCHandlerPatch
                 PlayerTimeOutManager.OnSetColorRpc(__instance);
                 break;
         }
-        if (__instance.OwnerId != AmongUsClient.Instance.HostId &&
+        if (!__instance.OwnedByHost() &&
             ((Enum.IsDefined(typeof(CustomRPC), callId) && !TrustedRpc(callId)) // Is Custom RPC
             || (!Enum.IsDefined(typeof(CustomRPC), callId) && !Enum.IsDefined(typeof(RpcCalls), callId)))) //Is not Custom RPC and not Vanilla RPC
         {

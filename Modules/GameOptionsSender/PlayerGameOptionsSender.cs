@@ -39,7 +39,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         if (player.AmOwner)
         {
             var opt = BuildGameOptions();
-            foreach (var com in GameManager.Instance.LogicComponents.ToArray())
+            foreach (var com in GameManager.Instance.LogicComponents.GetFastEnumerator())
             {
                 if (com.TryCast<LogicOptions>(out var lo))
                     lo.SetGameOptions(opt);
@@ -51,12 +51,14 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
     public override void SendOptionsArray(Il2CppStructArray<byte> optionArray)
     {
-        for (byte i = 0; i < GameManager.Instance.LogicComponents.Count; i++)
+        byte logicOptionsIndex = 0;
+        foreach (var logicComponent in GameManager.Instance.LogicComponents.GetFastEnumerator())
         {
-            if (GameManager.Instance.LogicComponents[i].TryCast<LogicOptions>(out _))
+            if (logicComponent.TryCast<LogicOptions>(out _))
             {
-                SendOptionsArray(optionArray, i, player.GetClientId());
+                SendOptionsArray(optionArray, logicOptionsIndex, player.GetClientId());
             }
+            logicOptionsIndex++;
         }
     }
     public static void RemoveSender(PlayerControl player)

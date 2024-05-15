@@ -564,6 +564,7 @@ public enum CustomRoles
     Deathpact,
     Devourer,
     Disperser,
+    DollMaster,
     Eraser,
     Escapist,
     EvilGuesser,

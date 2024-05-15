@@ -881,6 +881,7 @@ class FixedUpdateInNormalGamePatch
     private static readonly StringBuilder Mark = new(20);
     private static readonly StringBuilder Suffix = new(120);
     private static readonly Dictionary<int, int> BufferTime = [];
+    private static readonly Dictionary<int, int> BufferTimeForVeryLowLoad = [];
     private static int LevelKickBufferTime = 20;
 
     public static async void Postfix(PlayerControl __instance)
@@ -915,15 +916,20 @@ class FixedUpdateInNormalGamePatch
 
     public static Task DoPostfix(PlayerControl __instance)
     {
+        // FixedUpdate is called 30 times every 1 second
+        // If count only one player
+        // For example: 15 players will called 450 times every 1 second
+
         var player = __instance;
 
+        // The code is called once every 1 second (by one player)
         bool lowLoad = false;
         if (Options.LowLoadMode.GetBool())
         {
             if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
             {
-                BufferTime.TryAdd(player.PlayerId, 10);
-                timerLowLoad = 10;
+                BufferTime.TryAdd(player.PlayerId, 30);
+                timerLowLoad = 30;
             }
 
             timerLowLoad--;
@@ -934,11 +940,32 @@ class FixedUpdateInNormalGamePatch
             }
             else
             {
-                timerLowLoad = 10;
+                timerLowLoad = 30;
             }
 
             BufferTime[player.PlayerId] = timerLowLoad;
         }
+
+        // The code is called once every 5 second (by one player)
+        bool veryLowLoad = false;
+        if (!BufferTimeForVeryLowLoad.TryGetValue(player.PlayerId, out var timerVeryLowLoad))
+        {
+            BufferTimeForVeryLowLoad.TryAdd(player.PlayerId, 150);
+            timerVeryLowLoad = 150;
+        }
+
+        timerVeryLowLoad--;
+
+        if (timerVeryLowLoad > 0)
+        {
+            veryLowLoad = true;
+        }
+        else
+        {
+            timerVeryLowLoad = 150;
+        }
+
+        BufferTimeForVeryLowLoad[player.PlayerId] = timerVeryLowLoad;
 
         if (!lowLoad)
         {
@@ -1099,8 +1126,9 @@ class FixedUpdateInNormalGamePatch
 
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
         var RoleText = RoleTextTransform.GetComponent<TMPro.TextMeshPro>();
+        bool runCode = !veryLowLoad || (!lowLoad && __instance.AmOwner && (LocateArrow.HasLocateArrows(__instance) || TargetArrow.HasTargetArrows(__instance)));
 
-        if (RoleText != null && __instance != null && !lowLoad)
+        if (RoleText != null && __instance != null && runCode)
         {
             if (GameStates.IsLobby)
             {
