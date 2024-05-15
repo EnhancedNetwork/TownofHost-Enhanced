@@ -1303,6 +1303,7 @@ public static class Utils
         else 
         {
             text += $"<voffset=-1.3em><alpha=#00>.</voffset>";
+            if (text.IndexOf("\n") <= 4) text = text[(text.IndexOf("\n") + 1)..text.Length];
             SendMessage(text, sendTo, title);
         }
 
