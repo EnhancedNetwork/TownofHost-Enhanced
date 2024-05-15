@@ -857,7 +857,7 @@ public static class Utils
             if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
             {
                 lr = lr.Replace("<color=", "<");
-                lr.SplitMessage(899).Do(x => SendMessage("\n", PlayerId, $"<size=75%>" + x + "</size>")); //Since it will always capture a newline, there's more than enough space to put this in
+                lr.SplitMessage().Do(x => SendMessage("\n", PlayerId, $"<size=75%>" + x + "</size>")); //Since it will always capture a newline, there's more than enough space to put this in
             }
             else
             {
@@ -880,7 +880,7 @@ public static class Utils
         {
             string kl = EndGamePatch.KillLog;
             kl = Options.OldKillLog.GetBool() ? kl.RemoveHtmlTags() : kl.Replace("<color=", "<");
-            SendSpesificMessage(kl, PlayerId, NewLineIndex: 899);
+            SendSpesificMessage(kl, PlayerId);
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
@@ -1210,7 +1210,7 @@ public static class Utils
         //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
             , ID);
     }
-    public static string[] SplitMessage(this string LongMsg, int NewLineRange = 1169)
+    public static string[] SplitMessage(this string LongMsg)
     {
         List<string> result = [];
         string forqueue = "";
@@ -1234,7 +1234,7 @@ public static class Utils
 
             didDo = false;
 
-            if (indx1 > NewLineRange && partmsg.Length > 1200) // If a newline after NewLineRange can be found send it to the queue
+            if (indx1 != -1 && partmsg.Length > 1200) // If a newline can be found send the last one to the queue
             {
                 forqueue = LongMsg[..1201][(indx1+1)..1200]; // substring.substring;
                 result.Add(LongMsg[..indx1]);
@@ -1285,16 +1285,16 @@ public static class Utils
     private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
     
     
-    public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "", int NewLineIndex = 1679) 
+    public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "") 
     {
         // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
 
-
-        if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
+        if (text.Length > 1200)
         {
-            foreach(var txt in text.SplitMessage(NewLineIndex))
+            foreach(var txt in text.SplitMessage())
             {
                 var m = Regex.Replace(txt, "^<voffset=[-]?\\d+em>", ""); // replaces the first instance of voffset, if any.
+                m += $"<voffset=-1.3em><alpha=#00>.</voffset>"; // fix text clipping OOB
                 SendMessage(m, sendTo, title);
             }
         }
