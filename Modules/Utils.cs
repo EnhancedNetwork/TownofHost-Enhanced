@@ -880,7 +880,8 @@ public static class Utils
         {
             string kl = EndGamePatch.KillLog;
             kl = Options.OldKillLog.GetBool() ? kl.RemoveHtmlTags() : kl.Replace("<color=", "<");
-            SendSpesificMessage(kl, PlayerId);
+            var tytul = !Options.OldKillLog.GetBool() ? ColorString(new Color32(102, 16, 16, 255),  "《 " + GetString("KillLog") + " 》") : "";
+            SendSpesificMessage(kl, PlayerId, tytul);
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
@@ -1289,17 +1290,19 @@ public static class Utils
     {
         // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
 
-        if (text.Length > 1200 && !Utils.GetPlayerById(sendTo).IsModClient())
+        if (text.Length > 1200 && !GetPlayerById(sendTo).IsModClient())
         {
             foreach(var txt in text.SplitMessage())
             {
                 var m = Regex.Replace(txt, "^<voffset=[-]?\\d+em>", ""); // replaces the first instance of voffset, if any.
                 m += $"<voffset=-1.3em><alpha=#00>.</voffset>"; // fix text clipping OOB
+                if (m.IndexOf("\n") <= 4) m = m[(m.IndexOf("\n")+1)..m.Length];
                 SendMessage(m, sendTo, title);
             }
         }
         else 
         {
+            text += $"<voffset=-1.3em><alpha=#00>.</voffset>";
             SendMessage(text, sendTo, title);
         }
 
