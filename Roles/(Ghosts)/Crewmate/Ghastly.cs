@@ -131,7 +131,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             {
                 if (tuple.Item2 != target.PlayerId)
                 {
-                    Logger.Info($"Returned true", "GHASTLYONMURDEROTHER");
+                    //Logger.Info($"Returned true", "GHASTLYONMURDEROTHER");
                     killer.Notify(GetString("GhastlyNotUrTarget"));
                     return true;
                 }
@@ -160,7 +160,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 var tar = GetPlayerById(target).GetRealName();
                 if (tar == null) return "";
 
-                var colorstring = "<alpha=#22>" + ColorString(GetRoleColor(CustomRoles.Ghastly), tar + arrows);
+                var colorstring = ColorString(GetRoleColor(CustomRoles.Ghastly), tar + arrows);
                 return colorstring;
             }
 
