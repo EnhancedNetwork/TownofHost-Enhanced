@@ -119,6 +119,12 @@ internal class Chronomancer : RoleBase
         }
         _Player.SyncSettings();
     }
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    {
+        ChargedTime = 0;
+        IsInMassacre = false;
+        _Player.MarkDirtySettings();
+    }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (ChargedTime >= FullCharge)
@@ -133,6 +139,8 @@ internal class Chronomancer : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl pc)
     {
+        if (GameStates.IsMeeting) return;
+
         if (LastCD != GetCharge())
         {
             LastCD = GetCharge();
