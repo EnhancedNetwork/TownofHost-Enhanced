@@ -93,7 +93,7 @@ internal class Chronomancer : RoleBase
         sb.Append($"<size=75%>");
         for (int i = 0; i < Charges; i++)
         {
-            string box = ChargeToColor > 0 ? $"<color=#0cb339>█ </color>" : "<color=#666666>█ </color>";
+            string box = ChargeToColor > 0 ? $"<#0cb339>█ </color>" : "<#666666>█ </color>";
             ChargeToColor--;
             sb.Append(box);
         }
