@@ -43,7 +43,7 @@ internal class Chronomancer : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         Dtime = FloatOptionItem.Create(Id + 11, "ChronomancerDecreaseTime", new(0.05f, 1f, 0.05f), 0.15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Seconds);
-        ReduceVision = FloatOptionItem.Create(Id + 12, "ChronomancerVisionMassacre", new(0.25f, 1f, 0.25f), 0.75f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
+        ReduceVision = FloatOptionItem.Create(Id + 12, "ChronomancerVisionMassacre", new(0.25f, 1f, 0.25f), 0.5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Add(byte playerId)
@@ -57,7 +57,7 @@ internal class Chronomancer : RoleBase
         if (IsInMassacre)
         {
             opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.3f);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, ReduceVision.GetFloat());
         }
         else
         {
@@ -81,7 +81,7 @@ internal class Chronomancer : RoleBase
     private string GetCharge()
     {
         Color32 percentcolor = GetPercentColor(ChargedTime);
-        var sb = new StringBuilder(Utils.ColorString(percentcolor, $"<br>{(int)Math.Round(((double)ChargedTime / FullCharge) * 100)}% "));
+        var sb = new StringBuilder(Utils.ColorString(percentcolor, $"{(int)Math.Round(((double)ChargedTime / FullCharge) * 100)}% "));
         var ChargeToColor = GetChargeToColor();
 
         sb.Append($"<size=75%>");
@@ -144,7 +144,13 @@ internal class Chronomancer : RoleBase
     public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
 
-        if(seer == seen) return GetCharge();
+        //if(seer == seen) return GetCharge();
+
+        return "";
+    }
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (seer == seen) return GetCharge();
 
         return "";
     }
