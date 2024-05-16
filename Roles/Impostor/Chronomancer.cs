@@ -6,6 +6,8 @@ using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
 using AmongUs.GameOptions;
+using TOHE.Roles.Core;
+using Rewired.Libraries.SharpDX.RawInput;
 
 namespace TOHE.Roles.Impostor;
 
@@ -22,15 +24,17 @@ internal class Chronomancer : RoleBase
     private int FullCharge = 0;
     private bool IsInMassacre;
 
-    public float realcooldown; 
+    public float realcooldown;
 
-    float LastNowF = 0;
-    float countnowF = 0;
+    private float LastNowF = 0;
+    private float countnowF = 0;
 
-    private static Color32 OrangeColor = new (143, 126, 96, 255); // The lest color
+    private string LastCD;
+
+    private static Color32 OrangeColor = new (255, 190, 92, 255); // The lest color
     private static Color32 GreenColor = new (0, 128, 0, 255); // The final color
 
-    static int Charges;
+    private static int Charges;
 
     private static OptionItem KillCooldown;
     private static OptionItem Dtime;
@@ -51,6 +55,8 @@ internal class Chronomancer : RoleBase
         FullCharge = KillCooldown.GetInt();
         Charges = (int)Math.Round(KillCooldown.GetInt() / 10.0);
         realcooldown = DefaultKillCooldown;
+
+        LastCD = GetCharge();
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -95,6 +101,12 @@ internal class Chronomancer : RoleBase
 
         return sb.ToString();
     }
+    private string GetModdedCharge()
+    {
+        var sb = new StringBuilder($"{(int)Math.Round(((double)ChargedTime / FullCharge) * 100)}% ");
+
+        return sb.ToString();
+    }
     public void SetCooldown()
     {
         if (IsInMassacre)
@@ -121,6 +133,12 @@ internal class Chronomancer : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl pc)
     {
+        if (LastCD != GetCharge())
+        {
+            LastCD = GetCharge();
+            Utils.NotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
+        }
+
         if (ChargedTime != FullCharge 
             && now + 1 <= Utils.GetTimeStamp() && !IsInMassacre)
         {
@@ -141,17 +159,20 @@ internal class Chronomancer : RoleBase
 
         countnowF += Time.deltaTime;
     }
-    public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
-    {
-
-        //if(seer == seen) return GetCharge();
-
-        return "";
-    }
+    public override void OnFixedUpdateLowLoad(PlayerControl pc) => Utils.NotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (seer == seen) return GetCharge();
-
+        bool ismeeting = GameStates.IsMeeting || isForMeeting;
+        if (seer == seen && !ismeeting)
+        {
+            if (!seer.IsModClient()) return GetCharge();
+            else if(isForHud) return GetModdedCharge();
+        }
         return "";
+    }
+    public override float SetModdedLowerText(out Color32? FaceColor)
+    {
+        FaceColor = GetPercentColor(ChargedTime);
+        return 3.8f;
     }
 }

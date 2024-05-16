@@ -212,7 +212,7 @@ internal class Glitch : RoleBase
         catch { MimicCDTimer = 0; }
         if (MimicCDTimer > 180 || MimicCDTimer < 0) MimicCDTimer = 0;
 
-        if (!player.IsModClient())
+        /*if (!player.IsModClient())
         {
             var sb = new StringBuilder();
 
@@ -224,8 +224,8 @@ internal class Glitch : RoleBase
             string ns = sb.ToString();
 
             if ((!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != ns) && ns != string.Empty) player.Notify(ns, 1.1f);
-        }
-        else if (!player.AmOwner) // For mooded non host players, sync kcd per second
+        }*/
+        if (!player.AmOwner) // For mooded non host players, sync kcd per second
         {
             if (lastRpcSend < Utils.GetTimeStamp())
             {

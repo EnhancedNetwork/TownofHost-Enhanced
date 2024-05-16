@@ -26,7 +26,7 @@ public abstract class RoleBase
     public void OnAdd(byte playerid) // The player with the class executes this
     {
         _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
-        try { 
+        try {
             CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;
             this.IsEnable = true; // Not supposed to be used, but some methods may have still implemented that check.
         } catch { } // temporary try catch
@@ -125,7 +125,7 @@ public abstract class RoleBase
     /// The role's tasks are needed for a task win
     /// </summary>
     public virtual bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (!ForRecompute || !player.Object.IsAnySubRole(x => x.IsConverted()));
-    
+
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
@@ -358,6 +358,13 @@ public abstract class RoleBase
     // otherwise make some list or byte or smt of sorts to only get the target.
     // not needed if both should have it.
     public virtual string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
+
+    public virtual float SetModdedLowerText(out Color32? FaceColor)
+    {
+        FaceColor = null;
+        return 2.8f;
+    }
+    
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
