@@ -2548,7 +2548,7 @@
   "SoulCollector_CollectOwnSoulOpt": "Can collect their own soul",
   "SoulCollectorSelfVote": "Host settings do not allow you to collect your own soul",
 
-  "ChronomancerKillCooldown": "Time to fully charge the kill button",
+  "ChronomancerKillCooldown": "Ability Charge Time",
 
   "ShamanButtonText": "Voodoo",
   "ShamanTargetAlreadySelected": "You have already selected a voodoo doll in this round",
