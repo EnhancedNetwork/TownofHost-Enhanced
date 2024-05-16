@@ -584,12 +584,12 @@ static class ExtendedPlayerControl
         if (player.GetRoleClass() is Chronomancer ch)
         {
             ch.realcooldown = Main.AllPlayerKillCooldown[player.PlayerId];
+            ch.SetCooldown();
         }
 
 
         if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
         {
-            if (player.Is(CustomRoles.Chronomancer)) return;
             Main.AllPlayerKillCooldown[player.PlayerId] = 0.3f;
         }
     }

@@ -134,7 +134,6 @@ internal class Chronomancer : RoleBase
             IsInMassacre = true;
         }
         killer.SetKillCooldown();
-        SetCooldown();
         return true;
     }
     public override void OnFixedUpdate(PlayerControl pc)
