@@ -736,7 +736,7 @@
   "ConsigliereInfoLong": "(Impostors):\nAs the Consigliere, you can reveal the roles of other players using your kill button.\n\nSingle click: Reveal role\nDouble click: Kill\n\nIf you run out of reveal uses, your kill button functions normally.",
   "LudopathInfoLong": "(Impostors):\nAs the Ludopath, your kill cooldown is randomized.\n\nMinimum it can be is 1 second, while the maximum is your default kill cooldown.",
   "GodfatherInfoLong": "(Impostors):\nAs the Godfather, you vote someone to make them your target.\nIn the next round if someone kills the target, the killer will turn into a Refugee.",
-  "ChronomancerInfoLong": "(Impostors):\nAs the Chronomancer, you can charge up your kill button. Once activated the Chronomancer can use their kill button infinitely until they run out of charge.",
+  "ChronomancerInfoLong": "(Impostors):\nAs the Chronomancer, you have a charge bar which indicates when massacre is ready. When it is at 100% the next time you kill someone you go into massacre mode, meaning you can kill indefinetively untill your bar runs out of charge. Other-wise you have a normal KCD.",
   "PitfallInfoLong": "(Impostors):\nAs the Pitfall, you use your shapeshift to mark the area around the shapeshift as a trap. Players who enter this area will be immobilized for a short period of time and their vision will be affected.",
   "BerserkerInfoLong": "(Impostors):\nAs the Berserker, you level up with each kill.\nUpon reaching a certain level defined by the host, you unlock a new power.\n\nScavenged kills make your kills disappear.\nBombed kills make your kills explode.",
   "EvilMiniInfoLong": "(Impostors):\nAs an Evil Mini, you are unkillable until you grow up and have a very long initial kill cooldown, which is drastically shortened as you grow up.",
@@ -2549,6 +2549,9 @@
   "SoulCollectorSelfVote": "Host settings do not allow you to collect your own soul",
 
   "ChronomancerKillCooldown": "Ability Charge Time",
+  "ChronomancerDecreaseTime": "Massacre Decrease Time (lower is faster)",
+  "ChronomancerStartMassacre": "MASSACRE: ACTIVATED",
+  "ChronomancerVisionMassacre": "Vision When In Massacre",
 
   "ShamanButtonText": "Voodoo",
   "ShamanTargetAlreadySelected": "You have already selected a voodoo doll in this round",

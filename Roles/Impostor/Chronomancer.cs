@@ -1,10 +1,11 @@
-using Hazel;
+﻿using Hazel;
 using System;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Impostor;
 
@@ -12,15 +13,16 @@ internal class Chronomancer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 900;
-    public override bool IsEnable => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
-    private int ChargedTime;
+    private int ChargedTime = 0;
     long now = Utils.GetTimeStamp();
-    private int FullCharge;
+    private int FullCharge = 0;
     private bool IsInMassacre;
+
+    public float realcooldown; 
 
     float LastNowF = 0;
     float countnowF = 0;
@@ -31,24 +33,37 @@ internal class Chronomancer : RoleBase
     static int Charges;
 
     private static OptionItem KillCooldown;
-    private static OptionItem MassacreTime;
+    private static OptionItem Dtime;
+    private static OptionItem ReduceVision;
 
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Chronomancer);
-        KillCooldown = IntegerOptionItem.Create(Id + 10, "ChronomancerKillCooldown", new(1, 180, 1), 30, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
+        KillCooldown = IntegerOptionItem.Create(Id + 10, "ChronomancerKillCooldown", new(1, 180, 1), 60, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Seconds);
-        MassacreTime = IntegerOptionItem.Create(Id + 10, "ChronomancerKillCooldown", new(1, 15, 1), 10, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
+        Dtime = FloatOptionItem.Create(Id + 11, "ChronomancerDecreaseTime", new(0.05f, 1f, 0.05f), 0.15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Seconds);
-    }
-    public override void Init()
-    {
-        //Init bruv
+        ReduceVision = FloatOptionItem.Create(Id + 12, "ChronomancerVisionMassacre", new(0.25f, 1f, 0.25f), 0.75f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
+            .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Add(byte playerId)
     {
         FullCharge = KillCooldown.GetInt();
         Charges = (int)Math.Round(KillCooldown.GetInt() / 10.0);
+        realcooldown = DefaultKillCooldown;
+    }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        if (IsInMassacre)
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.3f);
+        }
+        else
+        {
+            opt.SetVision(true);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
+        }
     }
     private Color32 GetPercentColor(int val)
     {
@@ -65,18 +80,18 @@ internal class Chronomancer : RoleBase
     }
     private string GetCharge()
     {
-        
         Color32 percentcolor = GetPercentColor(ChargedTime);
-        var sb = new StringBuilder(Utils.ColorString(percentcolor, $"<br>{ChargedTime}% "));
+        var sb = new StringBuilder(Utils.ColorString(percentcolor, $"<br>{(int)Math.Round(((double)ChargedTime / FullCharge) * 100)}% "));
         var ChargeToColor = GetChargeToColor();
 
-        sb.Append("<mspace=2.75em>");
+        sb.Append($"<size=75%>");
         for (int i = 0; i < Charges; i++)
         {
-            string box = ChargeToColor > 0 ? $"<Color=#0cb339>?</color>" : "<color=#666666>?</color>";
+            string box = ChargeToColor > 0 ? $"<color=#0cb339>█ </color>" : "<color=#666666>█ </color>";
+            ChargeToColor--;
             sb.Append(box);
         }
-        sb.Append("</mspace");
+        sb.Append($"</size>");
 
         return sb.ToString();
     }
@@ -84,17 +99,24 @@ internal class Chronomancer : RoleBase
     {
         if (IsInMassacre)
         {
-
+            Main.AllPlayerKillCooldown[_state.PlayerId] = 0.1f;
         }
-
+        else
+        {
+            Main.AllPlayerKillCooldown[_state.PlayerId] = realcooldown;
+        }
+        _Player.SyncSettings();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (ChargedTime >= FullCharge)
         {
+            LastNowF = countnowF + Dtime.GetFloat();
             killer.Notify(GetString("ChronomancerStartMassacre"));
             IsInMassacre = true;
         }
+        killer.SetKillCooldown();
+        SetCooldown();
         return true;
     }
     public override void OnFixedUpdate(PlayerControl pc)
@@ -102,23 +124,28 @@ internal class Chronomancer : RoleBase
         if (ChargedTime != FullCharge 
             && now + 1 <= Utils.GetTimeStamp() && !IsInMassacre)
         {
+            now = Utils.GetTimeStamp();
             ChargedTime++;
         }
-        else if(IsInMassacre && ChargedTime > 0 && countnowF <= LastNowF)
+        else if(IsInMassacre && ChargedTime > 0 && countnowF >= LastNowF)
         {
-            LastNowF = countnowF + 0.2f;
+            LastNowF = countnowF + Dtime.GetFloat();
             ChargedTime--;
         }
 
         if(IsInMassacre && ChargedTime < 1)
         {
             IsInMassacre = false;
+            pc.MarkDirtySettings();
         }
 
         countnowF += Time.deltaTime;
     }
-    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        return GetCharge();
+
+        if(seer == seen) return GetCharge();
+
+        return "";
     }
 }
