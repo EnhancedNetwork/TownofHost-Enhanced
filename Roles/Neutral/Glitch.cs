@@ -36,6 +36,8 @@ internal class Glitch : RoleBase
     public long LastKill;
     public long LastMimic;
 
+    public string LastText;
+
     private bool isShifted = false;
     private long lastRpcSend = 0;
 
@@ -72,6 +74,8 @@ internal class Glitch : RoleBase
         LastHack = ts;
         LastMimic = ts;
         lastRpcSend = ts;
+
+        LastText = string.Empty;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -225,6 +229,11 @@ internal class Glitch : RoleBase
 
             if ((!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != ns) && ns != string.Empty) player.Notify(ns, 1.1f);
         }*/
+        if (!player.IsModClient() && LastText != GetLowerText())
+        {
+            LastText = GetLowerText();
+            Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: player);
+        }
         if (!player.AmOwner) // For mooded non host players, sync kcd per second
         {
             if (lastRpcSend < Utils.GetTimeStamp())
@@ -234,13 +243,10 @@ internal class Glitch : RoleBase
             }
         }
     }
-    public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
-    {
-        if (player == null) return string.Empty;
-        if (!player.Is(CustomRoles.Glitch)) return string.Empty;
-        if (!player.IsAlive()) return string.Empty;
 
-        var sb = new StringBuilder();
+    public string GetLowerText()
+    {
+        var sb = new StringBuilder(string.Empty);
 
         if (MimicDurTimer > 0) sb.Append($"{string.Format(GetString("Glitch_MimicDur"), MimicDurTimer)}\n");
         if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"{string.Format(GetString("Glitch_MimicCD"), MimicCDTimer)}\n");
@@ -248,6 +254,16 @@ internal class Glitch : RoleBase
         if (KCDTimer > 0) sb.Append($"{string.Format(GetString("Glitch_KCD"), KCDTimer)}\n");
 
         return sb.ToString();
+    }
+    public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (player == null) return string.Empty;
+        if (!player.Is(CustomRoles.Glitch)) return string.Empty;
+        if (!player.IsAlive()) return string.Empty;
+
+
+
+        return GetLowerText();
     }
     public override void AfterMeetingTasks()
     {
