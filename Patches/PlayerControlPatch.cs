@@ -944,8 +944,8 @@ class FixedUpdateInNormalGamePatch
         bool veryLowLoad = false;
         if (!BufferTimeForVeryLowLoad.TryGetValue(player.PlayerId, out var timerVeryLowLoad))
         {
-            BufferTimeForVeryLowLoad.TryAdd(player.PlayerId, 150);
-            timerVeryLowLoad = 150;
+            BufferTimeForVeryLowLoad.TryAdd(player.PlayerId, 90);
+            timerVeryLowLoad = 90;
         }
 
         timerVeryLowLoad--;
@@ -956,7 +956,7 @@ class FixedUpdateInNormalGamePatch
         }
         else
         {
-            timerVeryLowLoad = 150;
+            timerVeryLowLoad = 90;
         }
 
         BufferTimeForVeryLowLoad[player.PlayerId] = timerVeryLowLoad;
