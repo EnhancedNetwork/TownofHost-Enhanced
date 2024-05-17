@@ -130,15 +130,13 @@ internal class Infectious : RoleBase
             if (check)
             {
                 killer.RpcMurderPlayer(target);
-                return true;
             }
-            else return false;
         }
         else
         {
-            return InfectOrMurder(killer, target);
+            InfectOrMurder(killer, target);
         }
-        
+        return false;
     }
     public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
     {
