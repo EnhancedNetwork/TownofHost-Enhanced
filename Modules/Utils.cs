@@ -1731,7 +1731,7 @@ public static class Utils
                 }
 
                 // Camouflage
-                if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))
+                if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                     SelfName = $"<size=0%>{SelfName}</size>";
 
 
@@ -1891,7 +1891,7 @@ public static class Utils
                         }
 
                         // Camouflage
-                        if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))
+                        if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                             TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                         // Target Name
