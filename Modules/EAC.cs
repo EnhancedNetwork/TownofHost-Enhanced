@@ -189,9 +189,9 @@ internal class EAC
                 case 101: // Aum Chat
                     try
                     {
-                        var firstString = reader.ReadString();
-                        var secondString = reader.ReadString();
-                        reader.ReadInt32();
+                        var firstString = sr.ReadString();
+                        var secondString = sr.ReadString();
+                        sr.ReadInt32();
 
                         var flag = string.IsNullOrEmpty(firstString) && string.IsNullOrEmpty(secondString);
 
@@ -211,7 +211,7 @@ internal class EAC
                 case unchecked((byte)42069): // 85 AUM
                     try
                     {
-                        var aumid = reader.ReadByte();
+                        var aumid = sr.ReadByte();
 
                         if (aumid == pc.PlayerId)
                         {
@@ -227,7 +227,7 @@ internal class EAC
                     }
                     break;
                 case unchecked((byte)420): // 164 Sicko
-                    if (reader.BytesRemaining == 0)
+                    if (sr.BytesRemaining == 0)
                     {
                         Report(pc, "Sicko RPC");
                         HandleCheat(pc, "Sicko RPC");
