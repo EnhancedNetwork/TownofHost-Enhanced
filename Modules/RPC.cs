@@ -645,10 +645,23 @@ internal static class RPC
 
         if (PlayerControl.LocalPlayer.PlayerId == targetId) RemoveDisableDevicesPatch.UpdateDisableDevices();
     }
+    private static int Lastrpc = -1;
     public static void SyncRoleSkillReader(MessageReader reader, PlayerControl pc)
     {
-        int RpcInx = reader.ReadPackedInt32();
+        int RpcInx = Lastrpc;
 
+        try
+        {
+            RpcInx = reader.ReadPackedInt32();
+        }
+        catch { }
+
+        if (RpcInx != -1)
+        {
+            Lastrpc = RpcInx;
+        }
+
+        Logger.Info($"Recieved Rpc for role: {pc.GetRoleClass().GetType().Name} | With Rpcinx?: {(RpcInx != -1 ? RpcInx : false)} | Ishost?: {AmongUsClient.Instance.AmHost} ", "SyncRoleSkillReader");
 
         try
         {

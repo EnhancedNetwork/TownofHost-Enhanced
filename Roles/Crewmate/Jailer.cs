@@ -85,8 +85,8 @@ internal class Jailer : RoleBase
         if (!setTarget)
         {
             writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-            writer.Write(jailerId);
             writer.WritePacked(1);
+            writer.Write(jailerId);
             writer.Write(JailerExeLimit[jailerId]);
             writer.Write(JailerHasExe[jailerId]);
             writer.Write(JailerDidVote[jailerId]);
@@ -94,8 +94,8 @@ internal class Jailer : RoleBase
             return;
         }
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.Write(jailerId);
         writer.WritePacked(2);
+        writer.Write(jailerId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
