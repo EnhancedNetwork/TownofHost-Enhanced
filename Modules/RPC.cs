@@ -163,6 +163,12 @@ internal class RPCHandlerPatch
                 var p = Utils.GetPlayerById(subReader.ReadByte());
                 Logger.Info($"{__instance.GetNameWithRole()} => {p?.GetNameWithRole() ?? "null"}", "StartMeeting");
                 break;
+            case RpcCalls.CheckColor:
+                PlayerTimeOutManager.OnCheckColorRpc(__instance);
+                break;
+            case RpcCalls.SetColor:
+                PlayerTimeOutManager.OnSetColorRpc(__instance);
+                break;
         }
         if (!__instance.OwnedByHost() &&
             ((Enum.IsDefined(typeof(CustomRPC), callId) && !TrustedRpc(callId)) // Is Custom RPC
