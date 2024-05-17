@@ -103,9 +103,9 @@ internal class Agitater : RoleBase
                 if (pc != null && pc.IsAlive() && killer != null)
                 {
                     Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
-                    pc.SetRealKiller(Utils.GetPlayerById(playerIdList[0]));
                     pc.RpcMurderPlayer(pc);
-                    Logger.Info($"{killer.GetNameWithRole()}  bombed {pc.GetNameWithRole()} bomb cd complete", "Agitater");
+                    pc.SetRealKiller(killer);
+                    Logger.Info($"{killer.GetNameWithRole()} bombed {pc.GetNameWithRole()} - bomb cd complete", "Agitater");
                     ResetBomb();
                 }
 
@@ -118,7 +118,7 @@ internal class Agitater : RoleBase
     {
         if (CurrentBombedPlayer == byte.MaxValue) return;
         var target = Utils.GetPlayerById(CurrentBombedPlayer);
-        var killer = Utils.GetPlayerById(playerIdList[0]);
+        var killer = Utils.GetPlayerById(playerIdList.First());
         if (target == null || killer == null) return;
         
         target.SetRealKiller(killer);
