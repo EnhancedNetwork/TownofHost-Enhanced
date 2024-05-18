@@ -1,5 +1,4 @@
-﻿using Hazel;
-using InnerNet;
+﻿using InnerNet;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -9,7 +8,6 @@ public class TimeOutStatus
 {
     public bool Timing = false;
     public bool RpcReady = false;
-    public bool CustomNTReady = false;
     public bool Ready = false;
     public bool Kicking = false;
     public bool Disconnected = false;
@@ -146,16 +144,6 @@ public static class PlayerTimeOutManager
         }
     }
 
-    [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.Deserialize))]
-    [HarmonyPostfix]
-    public static void OnCustomNTDataReceived(CustomNetworkTransform __instance, [HarmonyArgument(0)] MessageReader reader, [HarmonyArgument(1)] bool inititalState)
-    {
-        var status = __instance.myPlayer.GetTimeOutStatus();
-        if (status != null && !inititalState)
-        {
-            status.CustomNTReady = true;
-        }
-    }
     public static void OnFixedUpdate()
     {
         var workingList = PlayerTimer.Where(x => x.Value.Timing == true).ToList();
@@ -171,7 +159,7 @@ public static class PlayerTimeOutManager
 
                 pt.Value.timer += Time.fixedDeltaTime;
 
-                if (pt.Value.RpcReady && pt.Value.CustomNTReady)
+                if (pt.Value.RpcReady)
                 {
                     pt.Value.Timing = false;
                     pt.Value.timer = -1;
