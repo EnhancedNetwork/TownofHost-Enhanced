@@ -87,18 +87,21 @@ internal class PlagueBearer : RoleBase
     }
     public static void CheckAndInfect(PlayerControl seer, PlayerControl target)
     {
-        if (seer.Is(CustomRoles.PlagueBearer)) return;
-
+        var isDisconnectOrSelfKill = seer.PlayerId == target.PlayerId;
         foreach (var (PlagueId, Targets) in PlaguedList)
         {
             var plagueBearer = GetPlayerById(PlagueId);
             if (plagueBearer == null || !plagueBearer.IsAlive()) continue;
 
             bool needCheck = false;
-            if (target.Is(CustomRoles.PlagueBearer))
+            if (target.Is(CustomRoles.PlagueBearer) && !isDisconnectOrSelfKill)
             {
                 PlaguedList[PlagueId].Add(seer.PlayerId);
                 SendRPC(plagueBearer, seer);
+                needCheck = true;
+            }
+            else if (isDisconnectOrSelfKill)
+            {
                 needCheck = true;
             }
             else if (Targets.Contains(seer.PlayerId) && !Targets.Contains(target.PlayerId))

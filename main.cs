@@ -39,14 +39,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0513.200.0010"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 Dev 10";
+    public const string PluginVersion = "2024.0517.200.0011"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 Dev 11";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = false; // ACTIVE - Latest: V1.6.0 Canary 6
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
-    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 9
+    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 11
 
     public static bool hasAccess = true;
 
@@ -113,7 +113,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> BetaBuildURL { get; private set; }
     public static ConfigEntry<float> LastKillCooldown { get; private set; }
     public static ConfigEntry<float> LastShapeshifterCooldown { get; private set; }
-    
+    public static ConfigEntry<float> PlayerSpawnTimeOutCooldown { get; private set; }
+
     public static OptionBackupData RealOptionsData;
     
     public static Dictionary<byte, PlayerState> PlayerStates = [];
@@ -485,6 +486,7 @@ public class Main : BasePlugin
         MessageWait = Config.Bind("Other", "MessageWait", 1);
         LastKillCooldown = Config.Bind("Other", "LastKillCooldown", (float)30);
         LastShapeshifterCooldown = Config.Bind("Other", "LastShapeshifterCooldown", (float)30);
+        PlayerSpawnTimeOutCooldown = Config.Bind("Other", "PlayerSpawnTimeOutCooldown", (float)3);
 
         hasArgumentException = false;
         ExceptionMessage = "";

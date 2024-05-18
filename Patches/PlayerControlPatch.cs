@@ -35,15 +35,21 @@ class PlayerControlOnEnablePatch
                 return;
             }
 
-            if (AmongUsClient.Instance.AmHost && __instance.PlayerId != PlayerControl.LocalPlayer.PlayerId)
-            {
-                Logger.Info("Host send version check, target player id is " + __instance.PlayerId, "PlayerControlOnEnable");
-                RPC.RpcVersionCheck();
-            }
+            //if (AmongUsClient.Instance.AmHost && __instance.PlayerId != PlayerControl.LocalPlayer.PlayerId)
+            //{
+            //    Logger.Info("Host send version check, target player id is " + __instance.PlayerId, "PlayerControlOnEnable");
+            //    RPC.RpcVersionCheck();
+            //}
         }, 0.2f, "Player Spawn LateTask ", false);
 
         //This late task happens where a playercontrol spawns, it will cause huge logs, so we have to hide it.
         //Its for host and joining client to recognize each other. Client and client recognize should be put in playerjoin latetask
+
+        //if (AmongUsClient.Instance.AmHost && __instance.OwnedByHost())
+        //{
+        //    RPC.RpcVersionCheck();
+        //    Logger.Info("am owner version check, local player id is " + __instance.PlayerId, "PlayerControlOnEnable");
+        //}
     }
 }
 
@@ -944,8 +950,8 @@ class FixedUpdateInNormalGamePatch
         bool veryLowLoad = false;
         if (!BufferTimeForVeryLowLoad.TryGetValue(player.PlayerId, out var timerVeryLowLoad))
         {
-            BufferTimeForVeryLowLoad.TryAdd(player.PlayerId, 150);
-            timerVeryLowLoad = 150;
+            BufferTimeForVeryLowLoad.TryAdd(player.PlayerId, 90);
+            timerVeryLowLoad = 90;
         }
 
         timerVeryLowLoad--;
@@ -956,7 +962,7 @@ class FixedUpdateInNormalGamePatch
         }
         else
         {
-            timerVeryLowLoad = 150;
+            timerVeryLowLoad = 90;
         }
 
         BufferTimeForVeryLowLoad[player.PlayerId] = timerVeryLowLoad;
@@ -981,63 +987,68 @@ class FixedUpdateInNormalGamePatch
 
         if (AmongUsClient.Instance.AmHost)
         {
-            if (GameStates.IsLobby)
+            if (player.AmOwner)
             {
-                bool shouldChangeGamePublic = (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || ModUpdater.isBroken || !Main.AllowPublicRoom || !VersionChecker.IsSupported;
-                if (shouldChangeGamePublic && AmongUsClient.Instance.IsGamePublic)
+                if (GameStates.IsLobby)
                 {
-                    AmongUsClient.Instance.ChangeGamePublic(false);
-                }
-
-                bool playerInAllowList = false;
-                if (Options.ApplyAllowList.GetBool())
-                {
-                    playerInAllowList = BanManager.CheckAllowList(player.Data.FriendCode);
-                }
-
-                if (!playerInAllowList)
-                {
-                    bool shouldKickLowLevelPlayer = !lowLoad && !player.AmOwner && Options.KickLowLevelPlayer.GetInt() != 0 && player.Data.PlayerLevel != 0 && player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt();
-
-                    if (shouldKickLowLevelPlayer)
+                    bool shouldChangeGamePublic = (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || ModUpdater.isBroken || !Main.AllowPublicRoom || !VersionChecker.IsSupported;
+                    if (shouldChangeGamePublic && AmongUsClient.Instance.IsGamePublic)
                     {
-                        LevelKickBufferTime--;
+                        AmongUsClient.Instance.ChangeGamePublic(false);
+                    }
 
-                        if (LevelKickBufferTime <= 0)
+                    bool playerInAllowList = false;
+                    if (Options.ApplyAllowList.GetBool())
+                    {
+                        playerInAllowList = BanManager.CheckAllowList(player.Data.FriendCode);
+                    }
+
+                    if (!playerInAllowList)
+                    {
+                        bool shouldKickLowLevelPlayer = !lowLoad && !player.AmOwner && Options.KickLowLevelPlayer.GetInt() != 0 && player.Data.PlayerLevel != 0 && player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt();
+
+                        if (shouldKickLowLevelPlayer)
                         {
-                            LevelKickBufferTime = 20;
-                            if (!Options.TempBanLowLevelPlayer.GetBool())
+                            LevelKickBufferTime--;
+
+                            if (LevelKickBufferTime <= 0)
                             {
-                                AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
-                                string msg = string.Format(GetString("KickBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
-                                Logger.SendInGame(msg);
-                                Logger.Info(msg, "Low Level Kick");
-                            }
-                            else
-                            {
-                                if (player.GetClient().ProductUserId != "")
+                                LevelKickBufferTime = 20;
+                                if (!Options.TempBanLowLevelPlayer.GetBool())
                                 {
-                                    if (!BanManager.TempBanWhiteList.Contains(player.GetClient().GetHashedPuid()))
-                                        BanManager.TempBanWhiteList.Add(player.GetClient().GetHashedPuid());
+                                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
+                                    string msg = string.Format(GetString("KickBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
+                                    Logger.SendInGame(msg);
+                                    Logger.Info(msg, "Low Level Kick");
                                 }
-                                string msg = string.Format(GetString("TempBannedBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
-                                Logger.SendInGame(msg);
-                                AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
-                                Logger.Info(msg, "Low Level Temp Ban");
+                                else
+                                {
+                                    if (player.GetClient().ProductUserId != "")
+                                    {
+                                        if (!BanManager.TempBanWhiteList.Contains(player.GetClient().GetHashedPuid()))
+                                            BanManager.TempBanWhiteList.Add(player.GetClient().GetHashedPuid());
+                                    }
+                                    string msg = string.Format(GetString("TempBannedBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
+                                    Logger.SendInGame(msg);
+                                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                                    Logger.Info(msg, "Low Level Temp Ban");
+                                }
                             }
                         }
                     }
-                }
 
-                if (KickPlayerPatch.AttemptedKickPlayerList.Any())
-                {
-                    foreach (var item in KickPlayerPatch.AttemptedKickPlayerList)
+                    if (KickPlayerPatch.AttemptedKickPlayerList.Any())
                     {
-                        KickPlayerPatch.AttemptedKickPlayerList[item.Key]++;
+                        foreach (var item in KickPlayerPatch.AttemptedKickPlayerList)
+                        {
+                            KickPlayerPatch.AttemptedKickPlayerList[item.Key]++;
 
-                        if (item.Value > 11)
-                            KickPlayerPatch.AttemptedKickPlayerList.Remove(item.Key);
+                            if (item.Value > 11)
+                                KickPlayerPatch.AttemptedKickPlayerList.Remove(item.Key);
+                        }
                     }
+
+                    PlayerTimeOutManager.OnFixedUpdate();
                 }
             }
 
@@ -1115,7 +1126,7 @@ class FixedUpdateInNormalGamePatch
 
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
         var RoleText = RoleTextTransform.GetComponent<TMPro.TextMeshPro>();
-        bool runCode = !veryLowLoad || (!lowLoad && __instance.AmOwner && (LocateArrow.HasLocateArrows(__instance) || TargetArrow.HasTargetArrows(__instance)));
+        bool runCode = !veryLowLoad || (!lowLoad && __instance.AmOwner && (LocateArrow.HasLocateArrows(__instance) || TargetArrow.HasTargetArrows(__instance) || Camouflage.IsCamouflage));
 
         if (RoleText != null && __instance != null && runCode)
         {
@@ -1233,7 +1244,7 @@ class FixedUpdateInNormalGamePatch
                 }
 
                 // Camouflage
-                if ((Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated)
+                if (Camouflage.IsCamouflage)
                     RealName = $"<size=0%>{RealName}</size> ";
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
@@ -1360,7 +1371,10 @@ class CoEnterVentPatch
             || (playerRoleClass != null && playerRoleClass.CheckBootFromVent(__instance, id))
         )
         {
-            __instance.RpcBootFromVent(id);
+            _ = new LateTask(() =>
+            {
+                __instance.RpcBootFromVent(id);
+            }, 0.5f, "Fix Vent Stuck");
             return false;
         }
 
