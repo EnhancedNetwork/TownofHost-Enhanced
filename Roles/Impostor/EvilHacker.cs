@@ -1,10 +1,12 @@
 using System;
 using System.Text;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -141,16 +143,43 @@ internal class EvilHacker : RoleBase
         CreateMurderNotify(room);
         if (AmongUsClient.Instance.AmHost)
         {
-            // SendRPC
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-            writer.WritePacked((int)CustomRoles.EvilHacker);
-            writer.Write((byte)room);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            SendRPC(2, room);
         }
+    }
+    private static void SendRPC(byte RpcTypeId, SystemTypes room)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.EvilHacker);
+        writer.Write(RpcTypeId);
+        writer.Write((byte)room);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        CreateMurderNotify((SystemTypes)reader.ReadByte());
+        var RpcTypeId = reader.ReadByte();
+
+        switch (RpcTypeId)
+        {
+            case 0:
+                foreach (var notify in activeNotifies)
+                {
+                    if (DateTime.Now - notify.CreatedAt > NotifyDuration)
+                    {
+                        activeNotifies.Remove(notify);
+                    }
+                }
+                break;
+            case 1:
+                activeNotifies.Add(new()
+                {
+                    CreatedAt = DateTime.Now,
+                    Room = (SystemTypes)reader.ReadByte(),
+                });
+                break;
+            case 2:
+                CreateMurderNotify((SystemTypes)reader.ReadByte());
+                break;
+        }
     }
 
     private static void CreateMurderNotify(SystemTypes room)
@@ -163,6 +192,7 @@ internal class EvilHacker : RoleBase
         if (AmongUsClient.Instance.AmHost)
         {
             Utils.NotifyRoles(SpecifySeer: evilHackerPlayer);
+            SendRPC(1, room);
         }
     }
     public override void OnFixedUpdateLowLoad(PlayerControl pc)
@@ -182,6 +212,7 @@ internal class EvilHacker : RoleBase
             if (DateTime.Now - notify.CreatedAt > NotifyDuration)
             {
                 activeNotifies.Remove(notify);
+                SendRPC(0, SystemTypes.Hallway);
                 doNotifyRoles = true;
             }
         }
