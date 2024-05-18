@@ -842,14 +842,8 @@ public static class Options
         TransformedNeutralApocalypseCanBeGuessed = BooleanOptionItem.Create(60024, "TNACanBeGuessed", false, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
-        CustomRoles.Baker.GetStaticRoleClass().SetupCustomOption();
 
-        CustomRoles.Berserker.GetStaticRoleClass().SetupCustomOption();
-
-        CustomRoles.PlagueBearer.GetStaticRoleClass().SetupCustomOption();
-
-        CustomRoles.SoulCollector.GetStaticRoleClass().SetupCustomOption();
-
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralApocalypse).ForEach(r => r.SetupCustomOption());
         #endregion
 
         #region Add-Ons Settings
