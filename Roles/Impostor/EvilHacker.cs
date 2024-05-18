@@ -221,7 +221,7 @@ internal class EvilHacker : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (isForMeeting || !canSeeMurderRoom || evilHackerPlayer == null || seer != evilHackerPlayer || seen != evilHackerPlayer || activeNotifies.Count <= 0)
+        if (!canSeeMurderRoom || seer.PlayerId != seen.PlayerId || isForMeeting || activeNotifies.Count <= 0)
         {
             return string.Empty;
         }
