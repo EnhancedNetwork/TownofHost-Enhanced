@@ -68,8 +68,6 @@ internal class ChatCommands
 
         if (Blackmailer.CheckBlackmaile(PlayerControl.LocalPlayer) && PlayerControl.LocalPlayer.IsAlive())
         {
-            ChatManager.SendPreviousMessagesToAll();
-            ChatManager.cancel = false;
             goto Canceled;
         }
         switch (args[0])
