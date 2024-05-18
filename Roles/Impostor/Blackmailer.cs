@@ -73,6 +73,7 @@ internal class Blackmailer : RoleBase
 
     public override void AfterMeetingTasks()
     {
+        if (Prevname.Any()) Prevname.Do(x => Main.AllPlayerNames[x.Key] = x.Value);
         ClearBlackmaile();
     }
     public override void OnCoEndGame()
@@ -80,11 +81,8 @@ internal class Blackmailer : RoleBase
         ClearBlackmaile();
     }
     private static readonly Dictionary<byte, string> Prevname = [];
-    private static void ClearBlackmaile()
-    {
-        if (Prevname.Any()) Prevname.Do(x => Main.AllPlayerNames[x.Key] = x.Value);
-        ForBlackmailer.Clear();
-    }
+    private static void ClearBlackmaile() => ForBlackmailer.Clear();
+    
     public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && ForBlackmailer.Contains(player.PlayerId);
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
