@@ -195,11 +195,7 @@ internal class EvilHacker : RoleBase
     }
     public override void OnFixedUpdateLowLoad(PlayerControl pc)
     {
-        if (evilHackerPlayer != null && evilHackerPlayer != PlayerControl.LocalPlayer)
-        {
-            return;
-        }
-        if (activeNotifies.Count <= 0)
+        if (!activeNotifies.Any())
         {
             return;
         }
