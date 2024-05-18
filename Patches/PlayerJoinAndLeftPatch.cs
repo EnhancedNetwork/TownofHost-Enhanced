@@ -9,6 +9,7 @@ using TOHE.Patches;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
+using MS.Internal.Xml.XPath;
 
 namespace TOHE;
 
@@ -466,6 +467,21 @@ class CreatePlayerPatch
                 if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
                 else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
             }, 3f, "Welcome Message");
+
+            // only for vanilla
+            if (!client.Character.OwnedByHost() && GameStates.IsOnlineGame)
+            {
+                _ = new LateTask(() =>
+                {
+                    if (client.Character != null && LobbyBehaviour.Instance != null)
+                    {
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(LobbyBehaviour.Instance.NetId, (byte)RpcCalls.LobbyTimeExpiring, SendOption.None, client.Id);
+                        writer.WritePacked((int)GameStartManagerPatch.timer);
+                        writer.Write(false);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    }
+                }, 3f, "RPC Timer");
+            }
 
             if (Options.GradientTagsOpt.GetBool())
             {
