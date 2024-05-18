@@ -333,10 +333,6 @@ public class Main : BasePlugin
 
             CustomRolesHelper.DuplicatedRoles = new Dictionary<CustomRoles, Type>
             {
-                { CustomRoles.Pestilence, typeof(PlagueBearer) },
-                { CustomRoles.Death, typeof(SoulCollector) },
-                { CustomRoles.War, typeof(Berserker) },
-                { CustomRoles.Famine, typeof(Baker) },
                 { CustomRoles.NiceMini, typeof(Mini) },
                 { CustomRoles.EvilMini, typeof(Mini) }
             };

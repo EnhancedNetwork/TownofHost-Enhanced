@@ -143,6 +143,13 @@ internal class Amnesiac : RoleBase
                     Main.TasklessCrewmate.Add(__instance.PlayerId);
                 }
             }
+            if (tar.GetCustomRole().IsNA())
+            {
+                __instance.RpcSetCustomRole(tar.GetCustomRole());
+                __instance.GetRoleClass().Add(__instance.PlayerId);
+                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+            }
             if (tar.GetCustomRole().IsAmneNK())
             {
                 __instance.RpcSetCustomRole(tar.GetCustomRole());

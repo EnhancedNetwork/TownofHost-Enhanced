@@ -61,7 +61,7 @@ public class MeetingTimeManager
         }
         if (SoulCollector.HasEnabled)
         {
-            BonusMeetingTime += SoulCollector.GetDeathMeetingTimeIncrease();
+            BonusMeetingTime += SoulCollector.DeathMeetingTimeIncrease.GetInt();
         }
         int TotalMeetingTime = DiscussionTime + VotingTime;
        

@@ -4,6 +4,7 @@ using TOHE.Roles.Impostor;
 using static TOHE.Options;
 using static TOHE.Translator;
 using AmongUs.GameOptions;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -32,11 +33,11 @@ internal class Berserker : RoleBase
     //public static OptionItem BerserkerSpeed;
     private static OptionItem BerserkerFourCanNotKill;
     private static OptionItem BerserkerImmortalLevel;
-    private static OptionItem WarKillCooldown;
+    public static OptionItem WarKillCooldown;
     private static OptionItem BerserkerHasImpostorVision;
-    private static OptionItem WarHasImpostorVision;
+    public static OptionItem WarHasImpostorVision;
     private static OptionItem BerserkerCanVent;
-    private static OptionItem WarCanVent;
+    public static OptionItem WarCanVent;
 
     private static readonly Dictionary<byte, int> BerserkerKillMax = [];
 
@@ -86,43 +87,20 @@ internal class Berserker : RoleBase
         BerserkerKillMax.Remove(playerId);
     }
 
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
-    public override void SetKillCooldown(byte id)
-    {   
-        if (CustomRoles.Berserker.RoleExist())
-            Main.AllPlayerKillCooldown[id] = BerserkerKillCooldown.GetFloat();
-        else if (CustomRoles.War.RoleExist())
-            Main.AllPlayerKillCooldown[id] = WarKillCooldown.GetFloat();
-    }
-    public override bool CanUseImpostorVentButton(PlayerControl pc)
-    {
-        if (pc.Is(CustomRoles.Berserker) && BerserkerCanVent.GetBool()) return true;
-        if (pc.Is(CustomRoles.War) && WarCanVent.GetBool()) return true;
-        return false;
-    }
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
-    {
-        if (CustomRoles.Berserker.RoleExist())
-            opt.SetVision(BerserkerHasImpostorVision.GetBool());
-        else if (CustomRoles.War.RoleExist())
-            opt.SetVision(WarHasImpostorVision.GetBool());
-    }
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) 
+        => KnowRoleTarget(seer, target);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) 
+        => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
+    public override void SetKillCooldown(byte id) 
+        => Main.AllPlayerKillCooldown[id] = BerserkerKillCooldown.GetFloat();
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => BerserkerCanVent.GetBool();
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) 
+        => opt.SetVision(BerserkerHasImpostorVision.GetBool());
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
-    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
-    {
-        if (BerserkerKillMax[target.PlayerId] >= BerserkerImmortalLevel.GetInt() && BerserkerFourCanNotKill.GetBool())
-        {
-            killer.RpcTeleport(target.GetCustomPosition());
-            RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-            killer.SetKillCooldown(target: target, forceAnime: true);
-            return false;
-        }
-        return true;
-    }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.IsNeutralApocalypse()) return false;
+        bool noScav = true;
         if (BerserkerKillMax[killer.PlayerId] < BerserkerMax.GetInt())
         {
             BerserkerKillMax[killer.PlayerId]++;
@@ -141,7 +119,7 @@ internal class Berserker : RoleBase
             Main.AllPlayerKillCooldown[killer.PlayerId] = BerserkerOneKillCooldown.GetFloat();
         }
 
-        if (BerserkerKillMax[killer.PlayerId] == BerserkerScavengerLevel.GetInt() && BerserkerTwoCanScavenger.GetBool())
+        if (BerserkerKillMax[killer.PlayerId] >= BerserkerScavengerLevel.GetInt() && BerserkerTwoCanScavenger.GetBool())
         {
             killer.RpcTeleport(target.GetCustomPosition());
             RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
@@ -153,7 +131,7 @@ internal class Berserker : RoleBase
 
             killer.SetKillCooldownV2();
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), Translator.GetString("KilledByBerserker")));
-            return false;
+            noScav = false;
         }
 
         if (BerserkerKillMax[killer.PlayerId] >= BerserkerBomberLevel.GetInt() && BerserkerThreeCanBomber.GetBool())
@@ -176,13 +154,53 @@ internal class Berserker : RoleBase
                 }
             }
         }
-        if (BerserkerKillMax[killer.PlayerId] >= BerserkerImmortalLevel.GetInt() && BerserkerFourCanNotKill.GetBool())
+        if (BerserkerKillMax[killer.PlayerId] >= BerserkerImmortalLevel.GetInt() && BerserkerFourCanNotKill.GetBool()&& !killer.Is(CustomRoles.War))
         {
             killer.RpcSetCustomRole(CustomRoles.War);
             killer.Notify(GetString("BerserkerToWar"));
             Main.AllPlayerKillCooldown[killer.PlayerId] = WarKillCooldown.GetFloat();
         }
 
-        return true;
+        return noScav;
+    }
+}
+internal class War : RoleBase
+{
+    //===========================SETUP================================\\
+    public static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
+    //==================================================================\\
+
+    public override void Init()
+    {
+        playerIdList.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        playerIdList.Add(playerId);
+
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
+    }
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) 
+        => KnowRoleTarget(seer, target);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
+        => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Berserker.WarKillCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(Berserker.WarHasImpostorVision.GetBool());
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => Berserker.WarCanVent.GetBool();
+
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        return false;
+    }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        return CustomRoles.Berserker.GetStaticRoleClass().OnCheckMurderAsKiller(killer, target);
     }
 }

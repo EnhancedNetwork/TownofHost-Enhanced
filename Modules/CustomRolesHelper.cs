@@ -244,9 +244,7 @@ public static class CustomRolesHelper
     }
     public static bool IsNA(this CustomRoles role)
     {
-        return role.GetStaticRoleClass().ThisRoleType
-          is Custom_RoleType.NeutralApocalypse
-          || role.IsTNA();
+        return role.GetStaticRoleClass().ThisRoleType is Custom_RoleType.NeutralApocalypse;
     }
     public static bool IsTNA(this CustomRoles role) // Transformed Neutral Apocalypse
     {

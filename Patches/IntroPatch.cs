@@ -266,6 +266,17 @@ class BeginCrewmatePatch
             }
             teamToDisplay = lawyerTeam;
         }
+        if (PlayerControl.LocalPlayer.IsNeutralApocalypse())
+        {
+            var apocTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            apocTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.IsNeutralApocalypse() && pc != PlayerControl.LocalPlayer)
+                    apocTeam.Add(pc);
+            }
+            teamToDisplay = apocTeam;
+        }
         if (PlayerControl.LocalPlayer.Is(CustomRoles.SerialKiller))
         {
             var serialkillerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
@@ -400,6 +411,14 @@ class BeginCrewmatePatch
                 __instance.ImpostorText.gameObject.SetActive(true);
                 __instance.ImpostorText.text = GetString("SubText.Madmate");
         }
+        if (PlayerControl.LocalPlayer.IsNeutralApocalypse())
+        {
+            __instance.TeamTitle.text = GetString("Apocalypse");
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Death);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = GetString("SubText.Apocalypse");
+        }
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
             __instance.TeamTitle.text = "FREE FOR ALL";
@@ -483,6 +502,19 @@ class BeginImpostorPatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
+        else if (role.IsNA())
+        {
+            yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            yourTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner).ToArray())
+            {
+                if (pc.IsNeutralApocalypse())
+                    yourTeam.Add(pc);
+            }
+            __instance.BeginCrewmate(yourTeam);
+            __instance.overlayHandle.color = Utils.GetRoleColor(CustomRoles.Death);
+            return false;
+        }
         else if (role is CustomRoles.Vigilante or CustomRoles.Sheriff or CustomRoles.Jailer or CustomRoles.Investigator or CustomRoles.Knight or CustomRoles.Medic or CustomRoles.Deceiver or CustomRoles.Witness or CustomRoles.Monarch or CustomRoles.Overseer or CustomRoles.Reverie or CustomRoles.Admirer or CustomRoles.Deputy or CustomRoles.Crusader or CustomRoles.CopyCat)
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
@@ -495,7 +527,7 @@ class BeginImpostorPatch
             __instance.overlayHandle.color = Palette.CrewmateBlue;
             return false;
         }
-        else if (role is CustomRoles.Romantic or CustomRoles.Doppelganger or CustomRoles.Pyromaniac or CustomRoles.Huntsman or CustomRoles.RuthlessRomantic or CustomRoles.VengefulRomantic or CustomRoles.SerialKiller or CustomRoles.Jackal or CustomRoles.Seeker or CustomRoles.Pixie or CustomRoles.Agitater or CustomRoles.CursedSoul or CustomRoles.Pirate or CustomRoles.Amnesiac or CustomRoles.Arsonist or CustomRoles.Sidekick or CustomRoles.Innocent or CustomRoles.Pelican or CustomRoles.Pursuer or CustomRoles.Revolutionist or CustomRoles.Hater or CustomRoles.Demon or CustomRoles.Glitch or CustomRoles.Juggernaut or CustomRoles.Stalker or CustomRoles.Provocateur or CustomRoles.BloodKnight or CustomRoles.SerialKiller or CustomRoles.Werewolf or CustomRoles.Maverick or CustomRoles.Shroud or CustomRoles.Follower or CustomRoles.Cultist or CustomRoles.Pelican or CustomRoles.Infectious or CustomRoles.Virus or CustomRoles.Pickpocket or CustomRoles.Traitor or CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Death or CustomRoles.Baker or CustomRoles.Famine or CustomRoles.SoulCollector or CustomRoles.Death or CustomRoles.Berserker or CustomRoles.War or CustomRoles.Spiritcaller or CustomRoles.Necromancer or CustomRoles.Medusa or CustomRoles.HexMaster or CustomRoles.Wraith or CustomRoles.Jinx or CustomRoles.Poisoner or CustomRoles.PotionMaster) //or CustomRoles.Occultist 
+        else if (role is CustomRoles.Romantic or CustomRoles.Doppelganger or CustomRoles.Pyromaniac or CustomRoles.Huntsman or CustomRoles.RuthlessRomantic or CustomRoles.VengefulRomantic or CustomRoles.SerialKiller or CustomRoles.Jackal or CustomRoles.Seeker or CustomRoles.Pixie or CustomRoles.Agitater or CustomRoles.CursedSoul or CustomRoles.Pirate or CustomRoles.Amnesiac or CustomRoles.Arsonist or CustomRoles.Sidekick or CustomRoles.Innocent or CustomRoles.Pelican or CustomRoles.Pursuer or CustomRoles.Revolutionist or CustomRoles.Hater or CustomRoles.Demon or CustomRoles.Glitch or CustomRoles.Juggernaut or CustomRoles.Stalker or CustomRoles.Provocateur or CustomRoles.BloodKnight or CustomRoles.SerialKiller or CustomRoles.Werewolf or CustomRoles.Maverick or CustomRoles.Shroud or CustomRoles.Follower or CustomRoles.Cultist or CustomRoles.Pelican or CustomRoles.Infectious or CustomRoles.Virus or CustomRoles.Pickpocket or CustomRoles.Traitor or  CustomRoles.Spiritcaller or CustomRoles.Necromancer or CustomRoles.Medusa or CustomRoles.HexMaster or CustomRoles.Wraith or CustomRoles.Jinx or CustomRoles.Poisoner or CustomRoles.PotionMaster) //or CustomRoles.Occultist 
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
