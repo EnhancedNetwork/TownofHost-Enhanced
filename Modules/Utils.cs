@@ -853,21 +853,8 @@ public static class Utils
                 break;
         }
         string lr = sb.ToString();
-        try{
-            if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
-            {
-                lr = lr.Replace("<color=", "<");
-                lr.SplitMessage(899).Do(x => SendMessage("\n", PlayerId, $"<size=75%>" + x + "</size>")); //Since it will always capture a newline, there's more than enough space to put this in
-            }
-            else
-            {
-                SendMessage("\n", PlayerId,  "<size=75%>" + lr + "</size>");
-            }
-        }
-        catch (Exception err)
-        {
-            Logger.Warn($"Error after try split the msg {lr} at: {err}", "Utils.ShowLastRoles..LastRoles");
-        }
+        SendMessage("\n", PlayerId,  "<size=75%>" + lr + "</size>"); // The limit for title is like 2400 and even with like 10 addons for each player it ads up only to like  1370 chars so we guuuuuuuuuuuuuuuuud
+           
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
     {
