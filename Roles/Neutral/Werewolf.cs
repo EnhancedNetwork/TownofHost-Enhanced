@@ -65,8 +65,8 @@ internal class Werewolf : RoleBase
                 if (Vector2.Distance(killer.transform.position, player.transform.position) <= Werewolf.MaulRadius.GetFloat())
                 {
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Mauled;
-                    player.SetRealKiller(killer);
                     player.RpcMurderPlayer(player);
+                    player.SetRealKiller(killer);
                 }
             }
         }, 0.1f, "Werewolf Maul Bug Fix");

@@ -86,8 +86,8 @@ internal class Bomber : RoleBase
             if (dis > BomberRadius.GetFloat()) continue;
 
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-            target.SetRealKiller(shapeshifter);
             target.RpcMurderPlayer(target);
+            target.SetRealKiller(shapeshifter);
         }
 
         if (BomberDiesInExplosion.GetBool() && playerRole is CustomRoles.Bomber)
