@@ -31,11 +31,7 @@ public static class Credentials
                     CheckIsModHost = false;
                 }
 
-                var sw = new System.Diagnostics.Stopwatch();
-                sw.Start();
                 __instance.text.text = sb.ToString();
-                sw.Stop();
-                Logger.Info($"Time: {sw.Elapsed}", "Time Code");
                 return false;
             }
 
