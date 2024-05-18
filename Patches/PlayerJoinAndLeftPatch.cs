@@ -9,7 +9,6 @@ using TOHE.Patches;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
-using MS.Internal.Xml.XPath;
 
 namespace TOHE;
 
