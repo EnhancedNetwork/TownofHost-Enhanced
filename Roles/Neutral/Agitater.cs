@@ -70,7 +70,7 @@ internal class Agitater : RoleBase
         AgitaterHasBombed = false;
         SendRPC(CurrentBombedPlayer, LastBombedPlayer);
     }
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AgiTaterBombCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 
@@ -121,17 +121,17 @@ internal class Agitater : RoleBase
         var killer = Utils.GetPlayerById(playerIdList.First());
         if (target == null || killer == null) return;
         
-        target.SetRealKiller(killer);
         Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
         Main.PlayerStates[CurrentBombedPlayer].SetDead();
         target.RpcExileV2();
+        target.SetRealKiller(killer);
         MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
         ResetBomb();
         Logger.Info($"{killer.GetRealName()} bombed {target.GetRealName()} on report", "Agitater");
     }
     private static void OnFixedUpdateOthers(PlayerControl player)
     {
-        if (!AgitaterHasBombed) return;
+        if (!AgitaterHasBombed || CurrentBombedPlayer != player.PlayerId) return;
 
         if (!player.IsAlive())
         {
