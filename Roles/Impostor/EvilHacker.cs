@@ -206,13 +206,13 @@ internal class EvilHacker : RoleBase
             if (DateTime.Now - notify.CreatedAt > NotifyDuration)
             {
                 activeNotifies.Remove(notify);
-                SendRPC(0, SystemTypes.Hallway);
                 doNotifyRoles = true;
             }
         }
         if (doNotifyRoles)
         {
             Utils.NotifyRoles(SpecifySeer: evilHackerPlayer);
+            SendRPC(0, SystemTypes.Hallway);
         }
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
