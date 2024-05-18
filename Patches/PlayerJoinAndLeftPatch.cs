@@ -479,7 +479,7 @@ class CreatePlayerPatch
                         writer.Write(false);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                     }
-                }, 3f, "RPC Timer");
+                }, 3f, "Send RPC Lobby Timer For Vanilla");
             }
 
             if (Options.GradientTagsOpt.GetBool())
