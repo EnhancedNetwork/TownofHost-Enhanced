@@ -568,6 +568,7 @@ public enum CustomRoles
     Eraser,
     Escapist,
     EvilGuesser,
+    EvilHacker,
     EvilMini,
     EvilTracker,
     Fireworker,
