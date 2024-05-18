@@ -93,12 +93,12 @@ internal class Blackmailer : RoleBase
             foreach(var plr in ForBlackmailer)
             {
                 Prevname[plr] = Main.AllPlayerNames[plr];
-                Main.AllPlayerNames[plr] = "<line-height=75%><size=225%><#000000>█████████\n█████████\n█████████</color></size></line-height>";
+                Main.AllPlayerNames[plr] = "<line-height=80%><size=225%><#000000>█████████\n█████████\n█████████\n█████████</color></size></line-height>"; // Masks the text by englufing it in text color.
                 var PC = Utils.GetPlayerById(plr);
                 if (PC != null)
                 {
                     PC.MarkDirtySettings();
-                    PC.RpcSetNameEx(PC.GetRealName(isMeeting: true));
+                    PC.RpcSetNameEx(PC.GetRealName(isMeeting: true)); // resets the playername so it isn't just a blob of black blocks
 
                 }
             }
