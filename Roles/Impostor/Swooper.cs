@@ -174,8 +174,8 @@ internal class Swooper : RoleBase
         killer.RpcGuardAndKill(target);
         killer.SetKillCooldown();
 
-        target.SetRealKiller(killer);
         target.RpcCheckAndMurder(target);
+        target.SetRealKiller(killer);
         return false;
     }
 
