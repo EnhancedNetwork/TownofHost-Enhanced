@@ -813,6 +813,7 @@ class ReportDeadBodyPatch
         Main.AllKillers.Clear();
 
 
+
         foreach (var playerStates in Main.PlayerStates.Values.ToArray())
         {
             playerStates.RoleClass?.OnReportDeadBody(player, target?.Object);

@@ -79,10 +79,30 @@ internal class Blackmailer : RoleBase
     {
         ClearBlackmaile();
     }
-
-    private static void ClearBlackmaile() => ForBlackmailer.Clear();
+    private static readonly Dictionary<byte, string> Prevname = [];
+    private static void ClearBlackmaile()
+    {
+        if (Prevname.Any()) Prevname.Do(x => Main.AllPlayerNames[x.Key] = x.Value);
+        ForBlackmailer.Clear();
+    }
     public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && ForBlackmailer.Contains(player.PlayerId);
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    {
+        Prevname.Clear();
+        if (ForBlackmailer.Any())
+            foreach(var plr in ForBlackmailer)
+            {
+                Prevname[plr] = Main.AllPlayerNames[plr];
+                Main.AllPlayerNames[plr] = "<line-height=75%><size=225%><#000000>█████████\n█████████\n█████████</color></size></line-height>";
+                var PC = Utils.GetPlayerById(plr);
+                if (PC != null)
+                {
+                    PC.MarkDirtySettings();
+                    PC.RpcSetNameEx(PC.GetRealName(isMeeting: true));
 
+                }
+            }
+    }
     private string GetMarkOthers(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (!isForMeeting) return string.Empty;
