@@ -70,10 +70,10 @@ internal class CursedWolf : RoleBase
 
         if (KillAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
         {
-            killer.SetRealKiller(target);
             Logger.Info($"{target.GetNameWithRole()} Spell Count: {SpellCount[target.PlayerId]}", "Cursed Wolf");
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Curse;
             killer.RpcMurderPlayer(killer);
+            killer.SetRealKiller(target);
         }
         return false;
     }

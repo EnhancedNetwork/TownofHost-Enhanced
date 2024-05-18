@@ -127,15 +127,15 @@ internal class Crewpostor : RoleBase
             {
                 if (!LungeKill.GetBool())
                 {
-                    target.SetRealKiller(player);
                     target.RpcCheckAndMurder(target);
+                    target.SetRealKiller(player);
                     player.RpcGuardAndKill();
                     Logger.Info("No lunge mode kill", "Crewpostor");
                 }
                 else
                 {
-                    target.SetRealKiller(player);
                     player.RpcMurderPlayer(target);
+                    target.SetRealKiller(player);
                     player.RpcGuardAndKill();
                     Logger.Info("lunge mode kill", "Crewpostor");
                 }
@@ -143,8 +143,8 @@ internal class Crewpostor : RoleBase
             }
             else if (target.Is(CustomRoles.Pestilence))
             {
-                player.SetRealKiller(target);
                 target.RpcMurderPlayer(player);
+                target.SetRealKiller(player);
                 player.RpcGuardAndKill();
                 Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Pestilence Reflect");
             }

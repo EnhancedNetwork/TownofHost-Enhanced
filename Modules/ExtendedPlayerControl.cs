@@ -625,8 +625,6 @@ static class ExtendedPlayerControl
     /// </summary>
     public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
     {
-        var RealKiller = target.GetRealKiller() ? target.GetRealKiller() : killer;
-        target.SetRealKiller(RealKiller);
         killer.RpcMurderPlayer(target, true);
     }
 

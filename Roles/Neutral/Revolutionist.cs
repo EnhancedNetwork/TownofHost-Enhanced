@@ -231,9 +231,9 @@ internal class Revolutionist : RoleBase
                     ResetCurrentDrawTarget(playerId);
                     if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt())
                     {
-                        rv_target.SetRealKiller(player);
                         Main.PlayerStates[rvTargetId].deathReason = PlayerState.DeathReason.Sacrifice;
                         player.RpcMurderPlayer(rv_target);
+                        rv_target.SetRealKiller(player);
                         Main.PlayerStates[rvTargetId].SetDead();
                         Logger.Info($"Revolutionist: {player.GetNameWithRole()} killed by {rv_target.GetNameWithRole()}", "Revolutionist");
                     }

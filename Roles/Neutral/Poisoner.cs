@@ -109,8 +109,8 @@ internal class Poisoner : RoleBase
         if (target.IsAlive())
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Poison;
-            target.SetRealKiller(poisoner);
             target.RpcMurderPlayer(target);
+            target.SetRealKiller(poisoner);
             Logger.Info($"{target.GetRealName()} Died by Poison", "Poisoner");
             if (!isButton && poisoner.IsAlive())
             {

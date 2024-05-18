@@ -13,7 +13,6 @@ public static class Credentials
     class PingTrackerUpdatePatch
     {
         private static int DelayUpdate = 0;
-        private static string TempPing;
         private static bool CheckIsModHost = true;
         private static readonly StringBuilder sb = new();
 
@@ -27,12 +26,12 @@ public static class Credentials
 
                 if (CheckIsModHost && GameStates.IsModHost)
                 {
-                    sb.Remove(2, $"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}".Length);
+                    var WarningNoModHost = $"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}".Length;
+                    sb.Remove(sb.Length - WarningNoModHost, WarningNoModHost);
                     CheckIsModHost = false;
                 }
 
-                __instance.text.text = TempPing;
-
+                __instance.text.text = sb.ToString();
                 return false;
             }
 
@@ -87,8 +86,7 @@ public static class Credentials
             if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; // Additional offsets if friend list button is present
             __instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(offset_x, 0f, 0f);
 
-            TempPing = sb.ToString();
-            __instance.text.text = TempPing;
+            __instance.text.text = sb.ToString();
 
             return false;
         }

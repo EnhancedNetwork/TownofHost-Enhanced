@@ -146,6 +146,7 @@ internal class Infectious : RoleBase
             {
                 Main.PlayerStates[alivePlayer.PlayerId].deathReason = PlayerState.DeathReason.Infected;
                 alivePlayer.RpcMurderPlayer(alivePlayer);
+                alivePlayer.SetRealKiller(Utils.GetPlayerById(PlayerIds.First()));
             }
         }
     }

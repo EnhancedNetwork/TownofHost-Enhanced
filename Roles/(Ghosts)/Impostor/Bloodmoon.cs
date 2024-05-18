@@ -112,6 +112,7 @@ internal class Bloodmoon : RoleBase
                 LastTime.Remove(playerid);
                 player.SetDeathReason(PlayerState.DeathReason.BloodLet);
                 player.RpcMurderPlayer(player);
+                player.SetRealKiller(Utils.GetPlayerById(PlayerIds.First())); 
             }
         }
 
