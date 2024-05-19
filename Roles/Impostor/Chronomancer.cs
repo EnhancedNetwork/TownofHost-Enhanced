@@ -89,7 +89,7 @@ internal class Chronomancer : RoleBase
         Color32 percentcolor = GetPercentColor(ChargedTime);
         var sb = new StringBuilder(Utils.ColorString(percentcolor, $"{(int)Math.Round(((double)ChargedTime / FullCharge) * 100)}% "));
         var ChargeToColor = GetChargeToColor();
-        var CHcol = IsInMassacre ? "#9e1139" : "#0cb339";
+        var CHcol = IsInMassacre ? "#630303" : "#0cb339";
 
         sb.Append($"<size=75%>");
         for (int i = 0; i < Charges; i++)
@@ -167,7 +167,6 @@ internal class Chronomancer : RoleBase
 
         countnowF += Time.deltaTime;
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl pc) => Utils.NotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         bool ismeeting = GameStates.IsMeeting || isForMeeting;
