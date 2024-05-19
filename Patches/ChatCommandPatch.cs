@@ -2539,7 +2539,7 @@ class ChatUpdatePatch
                      ?? player;
         }
         if (player == null) return;
-        
+
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
         Main.MessagesToSend.RemoveAt(0);
         

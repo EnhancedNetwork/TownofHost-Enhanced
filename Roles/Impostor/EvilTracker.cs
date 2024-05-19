@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
-using Il2CppSystem.Text;
+using System.Text;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;

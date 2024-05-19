@@ -146,8 +146,8 @@ internal class Fireworker : RoleBase
                         else
                         {
                             Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                            player.SetRealKiller(shapeshifter);
                             player.RpcMurderPlayer(player);
+                            player.SetRealKiller(shapeshifter);
                         }
                     }
                 }

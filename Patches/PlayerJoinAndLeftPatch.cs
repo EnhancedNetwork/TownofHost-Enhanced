@@ -171,7 +171,6 @@ public static class OnPlayerJoinedPatch
                 {
                     RPC.RpcVersionCheck();
                 }
-
                 if (AmongUsClient.Instance.AmHost && !client.IsDisconnected() && client.Character == null)
                 {
                     Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");

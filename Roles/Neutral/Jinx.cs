@@ -56,10 +56,10 @@ internal class Jinx : RoleBase
 
         if (killAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
         {
-            killer.SetRealKiller(target);
-            Logger.Info($"{target.GetNameWithRole()} : {AbilityLimit}回目", "Jinx");
+            Logger.Info($"{target.GetNameWithRole()} : {JinxSpellCount[target.PlayerId]}回目", "Jinx");
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
             killer.RpcMurderPlayer(killer);
+            killer.SetRealKiller(target);
         }
         return false;
     }

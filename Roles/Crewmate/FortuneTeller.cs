@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using System;
 using System.Text;
 using TOHE.Roles.Core;

@@ -193,8 +193,8 @@ internal class Alchemist : RoleBase
                     {
                         var bloodlustId = BloodlustList[player.PlayerId];
                         RPC.PlaySoundRPC(bloodlustId, Sounds.KillSound);
-                        target.SetRealKiller(Utils.GetPlayerById(bloodlustId));
                         player.RpcMurderPlayer(target);
+                        target.SetRealKiller(Utils.GetPlayerById(bloodlustId));
                         player.MarkDirtySettings();
                         target.MarkDirtySettings();
                         BloodlustList.Remove(player.PlayerId);

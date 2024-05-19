@@ -30,6 +30,8 @@ public static class NameColorManager
     }
     private static bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target, bool isMeeting, out string color)
     {
+        target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
+
         color = seer.GetRoleClass()?.PlayerKnowTargetColor(seer, target); // returns "" unless overriden
         
         // Impostor & Madmate

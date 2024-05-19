@@ -101,6 +101,7 @@ internal class Butcher : RoleBase
                 Vector2 location = new(ops.x + ((float)(rd.Next(1, 200) - 100) / 100), ops.y + ((float)(rd.Next(1, 200) - 100) / 100));
                 target.RpcTeleport(location);
                 target.RpcMurderPlayer(target);
+                target.SetRealKiller(Utils.GetPlayerById(PlayerIds.First()), true);
                 MurderTargetLateTask[target.PlayerId] = (0, MurderTargetLateTask[target.PlayerId].Item2 + 1, ops);
             }
             else MurderTargetLateTask.Remove(target.PlayerId);

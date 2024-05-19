@@ -2,11 +2,11 @@
 
 namespace TOHE;
 
-[HarmonyPatch(typeof(LobbyBehaviour), nameof(LobbyBehaviour.FixedUpdate))]
-public class LobbyFixedUpdatePatch
+[HarmonyPatch(typeof(LobbyBehaviour), nameof(LobbyBehaviour.Start))]
+public class LobbyStartPatch
 {
     private static GameObject Paint;
-    public static void Postfix()
+    public static void Postfix(LobbyBehaviour __instance)
     {
         if (Paint == null)
         {

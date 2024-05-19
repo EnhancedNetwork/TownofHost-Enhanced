@@ -134,7 +134,7 @@ public class GameStartManagerPatch
                             if ((GameData.Instance.PlayerCount >= Options.StartWhenPlayersReach.GetInt() && Options.StartWhenPlayersReach.GetInt() > 1) ||
                                 (timer <= Options.StartWhenTimerLowerThan.GetInt() && Options.StartWhenTimerLowerThan.GetInt() > 0))
                             {
-                                BeginAutoStart(Options.ImmediateStartTimer.GetInt());
+                                BeginAutoStart(Options.AutoStartTimer.GetInt());
                                 return;
                             }
                         }

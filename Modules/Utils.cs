@@ -396,6 +396,18 @@ public static class Utils
 
         var targetMainRole = Main.PlayerStates[targetId].MainRole;
         var targetSubRoles = Main.PlayerStates[targetId].SubRoles;
+        
+        // If a player is possessed by the Dollmaster swap each other's role and add-ons for display for every other client other than Dollmaster and target.
+        if (DollMaster.IsControllingPlayer)
+        {
+            if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
+            {
+                if (seerId != DollMaster.DollMasterTarget.PlayerId && targetId == DollMaster.DollMasterTarget.PlayerId)
+                    targetSubRoles = Main.PlayerStates[DollMaster.controllingTarget.PlayerId].SubRoles;
+                else if (seerId != DollMaster.controllingTarget.PlayerId && targetId == DollMaster.controllingTarget.PlayerId)
+                    targetSubRoles = Main.PlayerStates[DollMaster.DollMasterTarget.PlayerId].SubRoles;
+            }
+        }
 
         RoleText = GetRoleName(targetMainRole);
         RoleColor = GetRoleColor(targetMainRole);
@@ -1741,7 +1753,7 @@ public static class Utils
                 }
 
                 // Camouflage
-                if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))
+                if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                     SelfName = $"<size=0%>{SelfName}</size>";
 
 
@@ -1901,7 +1913,7 @@ public static class Utils
                         }
 
                         // Camouflage
-                        if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))
+                        if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                             TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                         // Target Name

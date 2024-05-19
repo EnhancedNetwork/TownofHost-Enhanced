@@ -486,7 +486,8 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
-        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
+        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return false;
+        if (DollMaster.IsDoll(pc.PlayerId)) return false;
         if (pc.Is(CustomRoles.Killer) || Mastermind.PlayerIsManipulated(pc)) return true;
 
         var playerRoleClass = pc.GetRoleClass();
@@ -513,12 +514,12 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
-        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
+        if (!pc.IsAlive()) return false;
         if (GameStates.IsHideNSeek) return true;
+        if (DollMaster.IsDoll(pc.PlayerId) || Circumvent.CantUseVent(pc)) return false;
+        if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
         if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
         if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
-        if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
-        if (Circumvent.CantUseVent(pc)) return false;
 
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseImpostorVentButton(pc)) return true;
@@ -527,7 +528,6 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseSabotage(this PlayerControl pc)
     {
-        if (pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
         if (pc.Is(Custom_Team.Impostor) && !pc.IsAlive() && Options.DeadImpCantSabotage.GetBool()) return false;
 
         var playerRoleClass = pc.GetRoleClass();
@@ -624,8 +624,6 @@ static class ExtendedPlayerControl
     /// </summary>
     public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
     {
-        var RealKiller = target.GetRealKiller() ? target.GetRealKiller() : killer;
-        target.SetRealKiller(RealKiller);
         killer.RpcMurderPlayer(target, true);
     }
 

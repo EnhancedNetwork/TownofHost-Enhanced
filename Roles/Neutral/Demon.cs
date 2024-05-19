@@ -104,7 +104,7 @@ internal class Demon : RoleBase
         Utils.NotifyRoles(SpecifySeer: killer);
 
         Logger.Info($"{killer.GetNameWithRole()} 对玩家 {target.GetNameWithRole()} 造成了 {Damage.GetInt()} 点伤害", "Demon");
-        return true;
+        return false;
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
