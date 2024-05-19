@@ -46,6 +46,7 @@ enum CustomRPC : byte
     NemesisRevenge,
     RetributionistRevenge,
     SetFriendCode,
+    SyncLobbyTimer,
 
     //Roles
     SetBountyTarget,
@@ -276,14 +277,31 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncCustomSettings:
                 if (AmongUsClient.Instance.AmHost) break;
 
+                List<OptionItem> listOptions = [];
+                List<OptionItem> allOptionsList = [.. OptionItem.AllOptions];
+
+                var startAmount = reader.ReadPackedInt32();
+                var lastAmount = reader.ReadPackedInt32();
+
+                var countAllOptions = OptionItem.AllOptions.Count;
+
+                // Add Options
+                for (var option = startAmount; option < countAllOptions && option <= lastAmount; option++)
+                {
+                    listOptions.Add(allOptionsList[option]);
+                }
+
+                var countOptions = listOptions.Count;
+                Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countOptions}/{countAllOptions}", "CustomRPC.SyncCustomSettings");
+
                 // Sync Settings
-                foreach (var option in OptionItem.AllOptions.ToArray())
+                foreach (var option in listOptions.ToArray())
                 {
                     // Set Value Options
                     option.SetValue(reader.ReadPackedInt32());
 
                     // Set Preset 5 for modded non-host players
-                    if (option.Name == "Preset" && option.CurrentValue != 4)
+                    if (startAmount == 0 && option.Name == "Preset" && option.CurrentValue != 4)
                     {
                         option.SetValue(4); // 4 => Preset 5
                     }
@@ -312,6 +330,9 @@ internal class RPCHandlerPatch
                 byte CustomRoleTargetId = reader.ReadByte();
                 CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
                 RPC.SetCustomRole(CustomRoleTargetId, role);
+                break;
+            case CustomRPC.SyncLobbyTimer:
+                GameStartManagerPatch.timer = reader.ReadPackedInt32();
                 break;
             case CustomRPC.SyncRoleSkill:
                 RPC.SyncRoleSkillReader(reader, __instance);
@@ -595,14 +616,60 @@ internal static class RPC
                 return;
             }
         }
+        if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null))
+        {
+            return;
+        }
+
+        var amount = OptionItem.AllOptions.Count;
+        int divideBy = amount / 10;
+
+        for (var i = 0; i <= 10; i++)
+        {
+            SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, amount, targetId);
+        }
+    }
+
+    static void SyncOptionsBetween(int startAmount, int lastAmount, int amountAllOptions, int targetId = -1)
+    {
+        if (targetId != -1)
+        {
+            var client = Utils.GetClientById(targetId);
+            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Id))
+            {
+                return;
+            }
+        }
 
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null))
         {
             return;
         }
 
+        if (amountAllOptions != OptionItem.AllOptions.Count)
+        {
+            amountAllOptions = OptionItem.AllOptions.Count;
+        }
+
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncCustomSettings, SendOption.Reliable, targetId);
-        foreach (var option in OptionItem.AllOptions.ToArray())
+
+        writer.WritePacked(startAmount);
+        writer.WritePacked(lastAmount);
+
+        List<OptionItem> listOptions = [];
+        List<OptionItem> allOptionsList = [.. OptionItem.AllOptions];
+
+        // Add Options
+        for (var option = startAmount; option < amountAllOptions && option <= lastAmount; option++)
+        {
+            listOptions.Add(allOptionsList[option]);
+        }
+
+        var countListOptions = listOptions.Count;
+        //Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
+
+        // Sync Settings
+        foreach (var option in listOptions.ToArray())
         {
             // Send by index value for all custom options
             writer.WritePacked(option.GetValue());
