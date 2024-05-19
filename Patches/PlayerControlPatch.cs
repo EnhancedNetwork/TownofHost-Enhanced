@@ -35,21 +35,15 @@ class PlayerControlOnEnablePatch
                 return;
             }
 
-            //if (AmongUsClient.Instance.AmHost && __instance.PlayerId != PlayerControl.LocalPlayer.PlayerId)
-            //{
-            //    Logger.Info("Host send version check, target player id is " + __instance.PlayerId, "PlayerControlOnEnable");
-            //    RPC.RpcVersionCheck();
-            //}
+            if (AmongUsClient.Instance.AmHost && __instance.PlayerId != PlayerControl.LocalPlayer.PlayerId)
+            {
+                Logger.Info("Host send version check, target player id is " + __instance.PlayerId, "PlayerControlOnEnable");
+                RPC.RpcVersionCheck();
+            }
         }, 0.2f, "Player Spawn LateTask ", false);
 
         //This late task happens where a playercontrol spawns, it will cause huge logs, so we have to hide it.
         //Its for host and joining client to recognize each other. Client and client recognize should be put in playerjoin latetask
-
-        //if (AmongUsClient.Instance.AmHost && __instance.OwnedByHost())
-        //{
-        //    RPC.RpcVersionCheck();
-        //    Logger.Info("am owner version check, local player id is " + __instance.PlayerId, "PlayerControlOnEnable");
-        //}
     }
 }
 
@@ -67,9 +61,9 @@ class CheckProtectPatch
 
         if (angel.Is(CustomRoles.EvilSpirit))
         {
-            if (target.Is(CustomRoles.Spiritcaller))
+            if (target.GetRoleClass() is Spiritcaller sp)
             {
-                Spiritcaller.ProtectSpiritcaller();
+                sp.ProtectSpiritcaller();
             }
             else
             {
@@ -125,9 +119,6 @@ class CheckMurderPatch
             return false;
         }
 
-        // Set kill cooldown for Chronomancer
-        if (killerRole is Chronomancer)
-            Chronomancer.OnCheckMurder(killer);
 
         killer.ResetKillCooldown();
         Logger.Info($"Kill Cooldown Resets", "CheckMurder");
@@ -224,9 +215,9 @@ class CheckMurderPatch
         }
 
         // if player hacked by Glitch
-        if (Glitch.HasEnabled && !Glitch.OnCheckMurderOthers(killer, target))
+        if (Glitch.HasEnabled && Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target)))
         {
-            Logger.Info("Is hacked by Glitch, it cannot kill", "Pelican.CheckMurder");
+            Logger.Info($"Is hacked by Glitch, it cannot kill ", "Glitch.CheckMurder");
             return false;
         }
 
@@ -238,11 +229,15 @@ class CheckMurderPatch
         }
 
         // Penguin's victim unable to kill
-        if (Penguin.AbductVictim != null && killer.PlayerId == Penguin.AbductVictim.PlayerId)
+        List<PlayerControl> penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
+        if (Penguin.HasEnabled && penguins != null && penguins.Any())
         {
-            killer.Notify(GetString("PenguinTargetOnCheckMurder"));
-            killer.SetKillCooldown(5);
-            return false;
+            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && killer.PlayerId == pg.AbductVictim.PlayerId))
+            {
+                killer.Notify(GetString("PenguinTargetOnCheckMurder"));
+                killer.SetKillCooldown(5);
+                return false;
+            }
         }
 
         return true;
@@ -819,6 +814,7 @@ class ReportDeadBodyPatch
         Main.AllKillers.Clear();
 
 
+
         foreach (var playerStates in Main.PlayerStates.Values.ToArray())
         {
             playerStates.RoleClass?.OnReportDeadBody(player, target?.Object);
@@ -893,7 +889,7 @@ class FixedUpdateInNormalGamePatch
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
         {
-            if(!Glitch.OnCheckFixedUpdateReport(__instance, id))
+            if(Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckFixedUpdateReport(__instance, id)))
             { }
             else
             {
@@ -987,68 +983,63 @@ class FixedUpdateInNormalGamePatch
 
         if (AmongUsClient.Instance.AmHost)
         {
-            if (player.AmOwner)
+            if (GameStates.IsLobby)
             {
-                if (GameStates.IsLobby)
+                bool shouldChangeGamePublic = (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || ModUpdater.isBroken || !Main.AllowPublicRoom || !VersionChecker.IsSupported;
+                if (shouldChangeGamePublic && AmongUsClient.Instance.IsGamePublic)
                 {
-                    bool shouldChangeGamePublic = (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || ModUpdater.isBroken || !Main.AllowPublicRoom || !VersionChecker.IsSupported;
-                    if (shouldChangeGamePublic && AmongUsClient.Instance.IsGamePublic)
-                    {
-                        AmongUsClient.Instance.ChangeGamePublic(false);
-                    }
+                    AmongUsClient.Instance.ChangeGamePublic(false);
+                }
 
-                    bool playerInAllowList = false;
-                    if (Options.ApplyAllowList.GetBool())
-                    {
-                        playerInAllowList = BanManager.CheckAllowList(player.Data.FriendCode);
-                    }
+                bool playerInAllowList = false;
+                if (Options.ApplyAllowList.GetBool())
+                {
+                    playerInAllowList = BanManager.CheckAllowList(player.Data.FriendCode);
+                }
 
-                    if (!playerInAllowList)
-                    {
-                        bool shouldKickLowLevelPlayer = !lowLoad && !player.AmOwner && Options.KickLowLevelPlayer.GetInt() != 0 && player.Data.PlayerLevel != 0 && player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt();
+                if (!playerInAllowList)
+                {
+                    bool shouldKickLowLevelPlayer = !lowLoad && !player.AmOwner && Options.KickLowLevelPlayer.GetInt() != 0 && player.Data.PlayerLevel != 0 && player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt();
 
-                        if (shouldKickLowLevelPlayer)
+                    if (shouldKickLowLevelPlayer)
+                    {
+                        LevelKickBufferTime--;
+
+                        if (LevelKickBufferTime <= 0)
                         {
-                            LevelKickBufferTime--;
-
-                            if (LevelKickBufferTime <= 0)
+                            LevelKickBufferTime = 20;
+                            if (!Options.TempBanLowLevelPlayer.GetBool())
                             {
-                                LevelKickBufferTime = 20;
-                                if (!Options.TempBanLowLevelPlayer.GetBool())
+                                AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
+                                string msg = string.Format(GetString("KickBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
+                                Logger.SendInGame(msg);
+                                Logger.Info(msg, "Low Level Kick");
+                            }
+                            else
+                            {
+                                if (player.GetClient().ProductUserId != "")
                                 {
-                                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
-                                    string msg = string.Format(GetString("KickBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
-                                    Logger.SendInGame(msg);
-                                    Logger.Info(msg, "Low Level Kick");
+                                    if (!BanManager.TempBanWhiteList.Contains(player.GetClient().GetHashedPuid()))
+                                        BanManager.TempBanWhiteList.Add(player.GetClient().GetHashedPuid());
                                 }
-                                else
-                                {
-                                    if (player.GetClient().ProductUserId != "")
-                                    {
-                                        if (!BanManager.TempBanWhiteList.Contains(player.GetClient().GetHashedPuid()))
-                                            BanManager.TempBanWhiteList.Add(player.GetClient().GetHashedPuid());
-                                    }
-                                    string msg = string.Format(GetString("TempBannedBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
-                                    Logger.SendInGame(msg);
-                                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
-                                    Logger.Info(msg, "Low Level Temp Ban");
-                                }
+                                string msg = string.Format(GetString("TempBannedBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
+                                Logger.SendInGame(msg);
+                                AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                                Logger.Info(msg, "Low Level Temp Ban");
                             }
                         }
                     }
+                }
 
-                    if (KickPlayerPatch.AttemptedKickPlayerList.Any())
+                if (KickPlayerPatch.AttemptedKickPlayerList.Any())
+                {
+                    foreach (var item in KickPlayerPatch.AttemptedKickPlayerList)
                     {
-                        foreach (var item in KickPlayerPatch.AttemptedKickPlayerList)
-                        {
-                            KickPlayerPatch.AttemptedKickPlayerList[item.Key]++;
+                        KickPlayerPatch.AttemptedKickPlayerList[item.Key]++;
 
-                            if (item.Value > 11)
-                                KickPlayerPatch.AttemptedKickPlayerList.Remove(item.Key);
-                        }
+                        if (item.Value > 11)
+                            KickPlayerPatch.AttemptedKickPlayerList.Remove(item.Key);
                     }
-
-                    PlayerTimeOutManager.OnFixedUpdate();
                 }
             }
 
@@ -1172,6 +1163,9 @@ class FixedUpdateInNormalGamePatch
                 var seer = PlayerControl.LocalPlayer;
                 var seerRoleClass = seer.GetRoleClass();
                 var target = __instance;
+
+                if (seer != target)
+                    target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
 
                 string RealName = target.GetRealName();
 

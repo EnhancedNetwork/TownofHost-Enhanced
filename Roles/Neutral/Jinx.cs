@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using UnityEngine;
 using Hazel;
 using static TOHE.Options;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -9,9 +10,7 @@ internal class Jinx : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16800;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jinx);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -21,8 +20,6 @@ internal class Jinx : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem JinxSpellTimes;
     private static OptionItem killAttacker;
-
-    private static readonly Dictionary<byte, int> JinxSpellCount = [];
 
     public override void SetupCustomOption()
     {
@@ -37,51 +34,29 @@ internal class Jinx : RoleBase
         killAttacker = BooleanOptionItem.Create(Id + 15, "Jinx/CursedWolf___KillAttacker", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jinx]);
 
     }
-    public override void Init()
-    {
-        playerIdList.Clear();
-        JinxSpellCount.Clear();
-    }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        JinxSpellCount.Add(playerId, JinxSpellTimes.GetInt());
+        AbilityLimit = JinxSpellTimes.GetInt();
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void SendRPCJinxSpellCount(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetJinxSpellCount, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.WritePacked(JinxSpellCount[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte JinxId = reader.ReadByte();
-        int JinxGuardNum = reader.ReadInt32();
-        if (JinxSpellCount.ContainsKey(JinxId))
-            JinxSpellCount[JinxId] = JinxGuardNum;
-        else
-            JinxSpellCount.Add(JinxId, JinxSpellTimes.GetInt());
-    }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (JinxSpellCount[target.PlayerId] <= 0) return true;
+        if (AbilityLimit <= 0) return true;
         if (killer.IsTransformedNeutralApocalypse()) return true;
         if (killer == target) return true;
         
         killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(target);
        
-        JinxSpellCount[target.PlayerId] -= 1;
-        SendRPCJinxSpellCount(target.PlayerId);
+        AbilityLimit -= 1;
+        SendSkillRPC();
 
         if (killAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
         {
-            Logger.Info($"{target.GetNameWithRole()} : {JinxSpellCount[target.PlayerId]}回目", "Jinx");
+            Logger.Info($"{target.GetNameWithRole()} : {AbilityLimit}回目", "Jinx");
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
             killer.RpcMurderPlayer(killer);
             killer.SetRealKiller(target);
@@ -95,7 +70,7 @@ internal class Jinx : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl player) => CanVent.GetBool();
 
     public override string GetProgressText(byte playerId, bool comms) 
-        => Utils.ColorString(CanJinx(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, JinxSpellCount.TryGetValue(playerId, out var recruitLimit) ? $"({recruitLimit})" : "Invalid");
+        => Utils.ColorString(CanJinx(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     
-    private static bool CanJinx(byte id) => JinxSpellCount.TryGetValue(id, out var x) && x > 0;
+    private bool CanJinx(byte id) => AbilityLimit > 0;
 }

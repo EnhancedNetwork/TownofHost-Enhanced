@@ -1,32 +1,57 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using TOHE.Roles.Core;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 
 namespace TOHE;
 
 public abstract class RoleBase
 {
+    public PlayerState _state;
+#pragma warning disable IDE1006
+    public PlayerControl _Player => Utils.GetPlayerById(_state.PlayerId);
+    public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
+#pragma warning restore IDE1006
+
+    public float AbilityLimit { get; set; } = -100;
+    public virtual bool IsEnable { get; set; } = false;
+    public void OnInit() // CustomRoleManager.RoleClass executes this
+    {
+        IsEnable = false;
+        Init();
+    }
+
+    public void OnAdd(byte playerid) // The player with the class executes this
+    {
+        _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
+        try {
+            CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;
+            this.IsEnable = true; // Not supposed to be used, but some methods may have still implemented that check.
+        } catch { } // temporary try catch
+
+
+        Add(playerid);
+    }
+
+
     /// <summary>
     /// Variable resets when the game starts.
     /// </summary>
-    public abstract void Init();
-
+    public virtual void Init()
+    { }
     /// <summary>
     /// When role is applied in the game, beginning or during the game.
     /// </summary>
-    public abstract void Add(byte playerId);
+    public virtual void Add(byte playerId)
+    { }
 
     /// <summary>
     /// If role has to be removed from player
     /// </summary>
     public virtual void Remove(byte playerId)
     { }
-
-    /// <summary>
-    /// Make A HashSet(byte) PlayerIdList = []; and check PlayerIdList.Any();
-    /// </summary>
-    public abstract bool IsEnable { get; }
 
     /// <summary>
     /// Used to Determine the CustomRole's BASE
@@ -100,7 +125,7 @@ public abstract class RoleBase
     /// The role's tasks are needed for a task win
     /// </summary>
     public virtual bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (!ForRecompute || !player.Object.IsAnySubRole(x => x.IsConverted()));
-    
+
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
@@ -333,6 +358,13 @@ public abstract class RoleBase
     // otherwise make some list or byte or smt of sorts to only get the target.
     // not needed if both should have it.
     public virtual string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
+
+    public virtual float SetModdedLowerText(out Color32? FaceColor)
+    {
+        FaceColor = null;
+        return 2.8f;
+    }
+    
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
@@ -341,6 +373,21 @@ public abstract class RoleBase
     public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
+
+
+    public void OnReceiveRPC(MessageReader reader) 
+    {
+        float Limit = reader.ReadSingle();
+        AbilityLimit = Limit;
+    }
+    public void SendSkillRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.Write(AbilityLimit);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
     public virtual void ReceiveRPC(MessageReader reader, PlayerControl pc)
-    { }
+    {
+        OnReceiveRPC(reader); // Default implementation
+    }
 }

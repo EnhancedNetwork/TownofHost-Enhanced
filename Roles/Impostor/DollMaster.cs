@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
@@ -8,24 +9,22 @@ namespace TOHE.Roles.Impostor;
 
 internal class DollMaster : RoleBase
 {
-    private static readonly HashSet<byte> ReducedVisionPlayers = [];
-    private static bool IsControllingPlayer = false;
-    private static bool ResetPlayerSpeed = false;
-    private static bool WaitToUnPossess = false;
-    private static PlayerControl controllingTarget = null; // Personal possessed player identifier for reference.
-    private static PlayerControl DollMasterTarget = null; // Personal possessed player identifier for reference.
-    private static float originalSpeed = float.MinValue;
-    private static Vector2 controllingTargetPos = new(0, 0);
-    private static Vector2 DollMasterPos = new(0, 0);
     //===========================SETUP================================\\
-    private const int Id = 28300;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
+    private const int Id = 28500;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.DollMaster);
     public override bool IsExperimental => true;
-    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
+    private static readonly HashSet<byte> ReducedVisionPlayers = [];
+    public static bool IsControllingPlayer = false;
+    private static bool ResetPlayerSpeed = false;
+    private static bool WaitToUnPossess = false;
+    public static PlayerControl controllingTarget = null; // Personal possessed player identifier for reference.
+    public static PlayerControl DollMasterTarget = null; // Personal possessed player identifier for reference.
+    private static float originalSpeed = float.MinValue;
+    private static Vector2 controllingTargetPos = new(0, 0);
+    private static Vector2 DollMasterPos = new(0, 0);
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ShapeshiftCooldown;
@@ -35,28 +34,29 @@ internal class DollMaster : RoleBase
 
     public override void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.DollMaster);
-        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
+        SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.DollMaster);
+        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DollMasterPossessionCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
+        ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DollMasterPossessionCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "DollMasterPossessionDuration", new(0f, 180f, 2.5f), 10f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
+        ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "DollMasterPossessionDuration", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
-        CanKillAsMainBody = BooleanOptionItem.Create(Id + 13, "DollMasterCanKillAsMainBody", true, TabGroup.OtherRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
-        TargetDiesAfterPossession = BooleanOptionItem.Create(Id + 14, "DollMasterTargetDiesAfterPossession", false, TabGroup.OtherRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
+        CanKillAsMainBody = BooleanOptionItem.Create(Id + 13, "DollMasterCanKillAsMainBody", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
+        TargetDiesAfterPossession = BooleanOptionItem.Create(Id + 14, "DollMasterTargetDiesAfterPossession", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
     }
 
     public override void Init()
     {
         ReducedVisionPlayers.Clear();
-        PlayerIds.Clear();
+        DollMasterTarget = null;
+        controllingTarget = null;
     }
 
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
         DollMasterTarget = Utils.GetPlayerById(playerId);
         IsControllingPlayer = false;
+        CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -70,10 +70,10 @@ internal class DollMaster : RoleBase
     // A quick check if a player is being possessed.
     public static bool IsDoll(byte id) => ReducedVisionPlayers.Contains(id);
 
-    // Set Vision to 0 for possessed Target.
+    // Set Vision and Speed to 0 for possessed Target.
     public static void SetVision(IGameOptions opt, PlayerControl target)
     {
-        if (IsDoll(target.PlayerId))
+        if (ReducedVisionPlayers.Contains(target.PlayerId))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, 0f * 0);
@@ -81,35 +81,38 @@ internal class DollMaster : RoleBase
         }
     }
 
-    public override void OnFixedUpdate(PlayerControl pc) // Setup settings for main body when possessing and booting from vent.
+    public override void OnFixedUpdate(PlayerControl pc)
     {
         if (controllingTarget != null && DollMasterTarget != null)
         {
-            // Set settings.
-            SetSettingsUpdate(controllingTarget);
-            // Boot Possessed Player from vent if inside of a vent and if waiting.
-            BootPossessedPlayerFromVentUpdate(controllingTarget);
             // If DollMaster can't be teleported start waiting to unpossess.
             WaitToUnPossessUpdate(DollMasterTarget, controllingTarget);
         }
     }
 
-    private static void SetSettingsUpdate(PlayerControl target) // Set settings.
+    private static void OnFixedUpdateOthers(PlayerControl target)
     {
-        if (IsControllingPlayer)
+        if (controllingTarget != null && target == controllingTarget)
         {
-            Main.AllPlayerSpeed[target.PlayerId] = Main.MinSpeed;
-            target.MarkDirtySettings();
+            // Boot Possessed Player from vent if inside of a vent and if waiting.
+            BootPossessedPlayerFromVentUpdate(target);
+
+            // Set speed
+            if (IsControllingPlayer && Main.AllPlayerSpeed[target.PlayerId] >= Main.MinSpeed)
+            {
+                Main.AllPlayerSpeed[target.PlayerId] = Main.MinSpeed;
+                target.MarkDirtySettings();
+            }
+            else if (ResetPlayerSpeed)
+            {
+                Main.AllPlayerSpeed[target.PlayerId] = originalSpeed;
+                target.MarkDirtySettings();
+            }
         }
-        else if (ResetPlayerSpeed)
-        {
-            Main.AllPlayerSpeed[target.PlayerId] = originalSpeed;
-            target.MarkDirtySettings();
-        }
-        ReducedVisionPlayers.Remove(DollMasterTarget.PlayerId);
     }
 
-    private static void BootPossessedPlayerFromVentUpdate(PlayerControl target) // Boot Possessed Player from vent if inside of a vent and if waiting.
+    // Boot Possessed Player from vent if inside of a vent and if waiting.
+    private static void BootPossessedPlayerFromVentUpdate(PlayerControl target)
     {
         if (IsControllingPlayer && target.inVent && !target.walkingToVent)
         {
@@ -121,7 +124,8 @@ internal class DollMaster : RoleBase
         }
     }
 
-    private static void WaitToUnPossessUpdate(PlayerControl pc, PlayerControl target) // If DollMaster can't be teleported start waiting to unpossess.
+    // If DollMaster can't be teleported start waiting to unpossess.
+    private static void WaitToUnPossessUpdate(PlayerControl pc, PlayerControl target)
     {
         if (IsControllingPlayer && WaitToUnPossess)
         {
@@ -134,8 +138,9 @@ internal class DollMaster : RoleBase
                     pc.MyPhysics.RpcBootFromVent(GetPlayerVentId(pc));
                 }, 0.3f, "Boot DollMaster from vent: " + GetPlayerVentId(pc));
             }
+
             // Unpossessed after waiting for DollMaster.
-            if (pc.CanBeTeleported())
+            if (pc.CanBeTeleported() && target.CanBeTeleported())
             {
                 _ = new LateTask(() =>
                 {
@@ -172,38 +177,113 @@ internal class DollMaster : RoleBase
         }
     }
 
-
-    // Prevent possessed player from reporting body.
+    // If Dollmaster reports a body or is forced to while possessing redirect it to possessed player
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
-        => !IsDoll(reporter.PlayerId);
-
-    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target) // Swap player kill interactions to each other when possessing.
     {
-        if (!IsControllingPlayer || controllingTarget == null || DollMasterTarget == null) return false;
+        if (controllingTarget == null || DollMasterTarget == null) return false;
 
-        // If Target as DollMaster Main Body gets killed, kill DollMaster instead.
-        if (target.PlayerId == controllingTarget.PlayerId)
+        if (IsControllingPlayer && IsDoll(reporter.PlayerId)) return false; // Prevent possessed player from reporting body.
+
+        if (IsControllingPlayer && reporter.Is(CustomRoles.DollMaster))
         {
-            DollMasterTarget.RpcRemovePet();
             UnPossess(DollMasterTarget, controllingTarget);
             GetPlayersPositions(DollMasterTarget);
             SwapPlayersPositions(DollMasterTarget);
-            if (killer == DollMasterTarget) controllingTarget.RpcTeleport(DollMasterTarget.GetCustomPosition());
-            killer.RpcMurderPlayer(DollMasterTarget);
-            return true;
+            controllingTarget.CmdReportDeadBody(deadBody);
+            return false;
         }
-        // If DollMaster gets killed as possessed Target, kill possessed Target instead.
-        else if (target.PlayerId == DollMasterTarget.PlayerId)
+
+        return true;
+    }
+
+    // If Dollmaster starts a meeting while possessing redirect it to possessed player
+    public override bool OnCheckStartMeeting(PlayerControl reporter)
+    {
+        if (controllingTarget == null || DollMasterTarget == null) return false;
+
+        if (IsControllingPlayer && IsDoll(reporter.PlayerId)) return false; // Prevent possessed player from starting meeting.
+
+        if (IsControllingPlayer && reporter.Is(CustomRoles.DollMaster))
+        {
+            UnPossess(DollMasterTarget, controllingTarget);
+            GetPlayersPositions(DollMasterTarget);
+            SwapPlayersPositions(DollMasterTarget);
+            controllingTarget.CmdReportDeadBody(null);
+            return false;
+        }
+
+        return true;
+    }
+
+    // Prevent Dollmaster from killing main body
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => (!(IsControllingPlayer && target == DollMasterTarget));
+
+    // Handle specific killing roles when interacting with a Dollmaster or Player while possessing.
+    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (IsControllingPlayer)
+        {
+            if (!CanKillerUseAbility(killer)) return true;
+
+            if (killer.Is(CustomRoles.Sheriff) && killer != DollMasterTarget && target == DollMasterTarget)
+            {
+                CheckMurderAsPossessed(killer, target);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Check if Killer can use Ability on Target.
+    // This is a list of roles that are Buggy when interacting with a possessed player, therefore their ability will be canceled out.
+    private static bool CanKillerUseAbility(PlayerControl player)
+    {
+        var CanUseAbility = true;
+        var cRole = player.GetCustomRole();
+        var subRoles = player.GetCustomSubRoles(); // May use later on!
+
+        switch (cRole) // Check role.
+        {
+            case CustomRoles.Pelican:
+                CanUseAbility = false;
+                break;
+            case CustomRoles.Penguin:
+                CanUseAbility = false;
+                break;
+            default:
+                break;
+        }
+
+        if (!CanUseAbility) player.Notify(Utils.ColorString(player.GetRoleColor(), GetString("DollMaster_UnableToUseAbility")));
+
+        return CanUseAbility;
+    }
+
+    // Uno reverse kill.
+    public static void CheckMurderAsPossessed(PlayerControl killer, PlayerControl target) // Swap player kill interactions to each other when possessing.
+    {
+        if (!IsControllingPlayer || controllingTarget == null || DollMasterTarget == null) return;
+
+        // If Target as DollMaster Main Body gets killed, kill DollMaster instead.
+        if (target == controllingTarget)
         {
             target.RpcRemovePet();
             UnPossess(DollMasterTarget, controllingTarget);
             GetPlayersPositions(DollMasterTarget);
             SwapPlayersPositions(DollMasterTarget);
             killer.RpcMurderPlayer(controllingTarget);
-            return true;
+            return;
         }
-
-        return false;
+        // If DollMaster gets killed as possessed Target, kill possessed Target instead.
+        else if (target == DollMasterTarget)
+        {
+            DollMasterTarget.RpcRemovePet();
+            UnPossess(DollMasterTarget, controllingTarget);
+            GetPlayersPositions(DollMasterTarget);
+            SwapPlayersPositions(DollMasterTarget);
+            killer.RpcMurderPlayer(DollMasterTarget);
+            return;
+        }
     }
 
     public override bool CanUseKillButton(PlayerControl pc) => CanKillAsMainBody.GetBool() || IsControllingPlayer;
@@ -216,7 +296,14 @@ internal class DollMaster : RoleBase
         resetCooldown = false;
 
         // If DollMaster can't be tp wait to UnPosses.
-        if (IsControllingPlayer && !pc.CanBeTeleported())
+        if (!pc.CanBeTeleported() && IsControllingPlayer)
+        {
+            WaitToUnPossess = true;
+            return false;
+        }
+
+        // If Target can't be tp wait to UnPosses.
+        if (controllingTarget != null && !controllingTarget.CanBeTeleported() && IsControllingPlayer)
         {
             WaitToUnPossess = true;
             return false;
@@ -231,7 +318,7 @@ internal class DollMaster : RoleBase
         }
 
         // If players can be taken over.
-        if (!target.IsAlive() || !target.CanBeTeleported() || Pelican.IsEaten(pc.PlayerId) || Pelican.IsEaten(target.PlayerId))
+        if (!target.CanBeTeleported() || Pelican.IsEaten(pc.PlayerId) || Pelican.IsEaten(target.PlayerId))
         {
             AURoleOptions.ShapeshifterCooldown = 0;
             pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), target.IsAlive() ? GetString("CouldNotSwapWithTarget") : GetString("CanNotSwapWithDeadTarget")));
@@ -264,6 +351,46 @@ internal class DollMaster : RoleBase
         return false;
     }
 
+    // A fix when the DollMaster or Possessed Player DC's from the game.
+    // Untested!
+    /*
+    public override void OnPlayerLeft(InnerNet.ClientData clientData)
+    {
+        if (DollMasterTarget == null || controllingTarget == null) return;
+        var player = Utils.GetPlayerById(clientData.Character.PlayerId);
+        var target = controllingTarget;
+        var pc = DollMasterTarget;
+        var shouldAnimate = false;
+
+        if (IsControllingPlayer && (clientData.Character.PlayerId == pc.PlayerId || clientData.Character.PlayerId == target.PlayerId))
+        {
+            if (clientData.Character.PlayerId == pc.PlayerId)
+                if (target.inVent)
+                    target.MyPhysics.RpcBootFromVent(GetPlayerVentId(target));
+
+            if (clientData.Character.PlayerId == target.PlayerId)
+                if (pc.inVent)
+                    pc.MyPhysics.RpcBootFromVent(GetPlayerVentId(pc));
+
+            WaitToUnPossess = false;
+
+            SwapPlayersPositions(pc);
+
+            pc.RpcShapeshift(pc, shouldAnimate);
+            target.RpcShapeshift(target, shouldAnimate);
+            pc.RpcResetAbilityCooldown();
+
+            IsControllingPlayer = false;
+            ResetPlayerSpeed = true;
+
+            _ = new LateTask(() =>
+            {
+                ReducedVisionPlayers.Clear();
+            }, 0.35f);
+        }
+    }
+    */
+
     // Possess Player
     private static void Possess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
     {
@@ -289,6 +416,23 @@ internal class DollMaster : RoleBase
             ReducedVisionPlayers.Clear();
             if (TargetDiesAfterPossession.GetBool() && !GameStates.IsMeeting) target.RpcMurderPlayer(target);
         }, 0.35f);
+    }
+
+    // Swap Dollmaster and possessed player info for functions.
+    public static PlayerControl SwapPlayerInfo(PlayerControl player)
+    {
+        if (IsControllingPlayer)
+        {
+            if (!(DollMasterTarget == null || controllingTarget == null))
+            {
+                if (player == DollMasterTarget)
+                    return controllingTarget;
+                else if (player == controllingTarget)
+                    return DollMasterTarget;
+            }
+        }
+
+        return player;
     }
 
     // Get players locations.
@@ -318,7 +462,7 @@ internal class DollMaster : RoleBase
 
         if (seer.PlayerId == target.PlayerId && target.PlayerId == DollMasterTarget.PlayerId)
             return "<color=#ffea00>" + GetString("DollMaster_Doll") + "</color>";
-        
+
         return string.Empty;
     }
 

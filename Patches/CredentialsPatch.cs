@@ -18,77 +18,88 @@ public static class Credentials
 
         private static bool Prefix(PingTracker __instance)
         {
-            DelayUpdate--;
-
-            if (DelayUpdate > 0 && sb.Length > 0)
+            try
             {
-                __instance.text.alignment = TextAlignmentOptions.TopRight;
+                DelayUpdate--;
 
-                if (CheckIsModHost && GameStates.IsModHost)
+                if (DelayUpdate > 0 && sb.Length > 0)
                 {
-                    var WarningNoModHost = $"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}".Length;
-                    sb.Remove(sb.Length - WarningNoModHost, WarningNoModHost);
-                    CheckIsModHost = false;
+                    __instance.text.alignment = TextAlignmentOptions.TopRight;
+
+                    if (CheckIsModHost && GameStates.IsModHost)
+                    {
+                        var WarningNoModHost = $"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}".Length;
+                        sb.Remove(247, WarningNoModHost);
+                        CheckIsModHost = false;
+                    }
+
+                    __instance.text.text = sb.ToString();
+                    return false;
                 }
 
+                DelayUpdate = 500;
+
+                __instance.text.alignment = TextAlignmentOptions.TopRight;
+
+                sb.Clear();
+
+                sb.Append(Main.credentialsText);
+
+                var ping = AmongUsClient.Instance.Ping;
+                string pingcolor = "#ff4500";
+                if (ping < 30) pingcolor = "#44dfcc";
+                else if (ping < 100) pingcolor = "#7bc690";
+                else if (ping < 200) pingcolor = "#f3920e";
+                else if (ping < 400) pingcolor = "#ff146e";
+                sb.Append($"\r\n<color={pingcolor}>Ping: {ping} ms</color>");
+
+                if (!GameStates.IsModHost)
+                {
+                    CheckIsModHost = true;
+                    sb.Append($"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}");
+                }
+
+                if (Main.ShowFPS.Value)
+                {
+                    var FPSGame = 1.0f / Time.deltaTime;
+                    Color fpscolor = Color.green;
+
+                    if (FPSGame < 20f) fpscolor = Color.red;
+                    else if (FPSGame < 40f) fpscolor = Color.yellow;
+
+                    sb.Append($"\r\n{Utils.ColorString(fpscolor, Utils.ColorString(Color.cyan, GetString("FPSGame")) + ((int)FPSGame).ToString())}");
+                }
+
+                if (Main.ShowTextOverlay.Value)
+                {
+                    var sbOverlay = new StringBuilder();
+                    if (Options.LowLoadMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode"))}");
+                    if (Options.NoGameEnd.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd"))}");
+                    if (Options.GuesserMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode"))}");
+                    if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.AllowConsole"))}");
+                    if (DebugModeManager.IsDebugMode) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.DebugMode"))}");
+
+                    if (sbOverlay.Length > 0)
+                        sb.Append(sbOverlay);
+                }
+
+                var offset_x = 1.2f; //Offset from right edge
+                if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.active) offset_x += 0.9f; // Additional offsets for chat button if present
+                if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; // Additional offsets if friend list button is present
+                __instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(offset_x, 0f, 0f);
+
                 __instance.text.text = sb.ToString();
+
                 return false;
             }
-
-            DelayUpdate = 500;
-
-            __instance.text.alignment = TextAlignmentOptions.TopRight;
-
-            sb.Clear();
-
-            sb.Append(Main.credentialsText);
-
-            var ping = AmongUsClient.Instance.Ping;
-            string pingcolor = "#ff4500";
-            if (ping < 30) pingcolor = "#44dfcc";
-            else if (ping < 100) pingcolor = "#7bc690";
-            else if (ping < 200) pingcolor = "#f3920e";
-            else if (ping < 400) pingcolor = "#ff146e";
-            sb.Append($"\r\n<color={pingcolor}>Ping: {ping} ms</color>");
-
-            if (!GameStates.IsModHost)
+            catch
             {
-                CheckIsModHost = true;
-                sb.Append($"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}");
+                DelayUpdate = 0;
+                CheckIsModHost = false;
+                sb.Clear();
+
+                return false;
             }
-
-            if (Main.ShowFPS.Value)
-            {
-                var FPSGame = 1.0f / Time.deltaTime;
-                Color fpscolor = Color.green;
-
-                if (FPSGame < 20f) fpscolor = Color.red;
-                else if (FPSGame < 40f) fpscolor = Color.yellow;
-
-                sb.Append($"\r\n{Utils.ColorString(fpscolor, Utils.ColorString(Color.cyan, GetString("FPSGame")) + ((int)FPSGame).ToString())}");
-            }
-
-            if (Main.ShowTextOverlay.Value)
-            {
-                var sbOverlay = new StringBuilder();
-                if (Options.LowLoadMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode"))}");
-                if (Options.NoGameEnd.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd"))}");
-                if (Options.GuesserMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode"))}");
-                if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.AllowConsole"))}");
-                if (DebugModeManager.IsDebugMode) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.DebugMode"))}");
-
-                if (sbOverlay.Length > 0)
-                    sb.Append(sbOverlay);
-            }
-
-            var offset_x = 1.2f; //Offset from right edge
-            if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.active) offset_x += 0.8f; // Additional offsets for chat button if present
-            if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; // Additional offsets if friend list button is present
-            __instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(offset_x, 0f, 0f);
-
-            __instance.text.text = sb.ToString();
-
-            return false;
         }
     }
     [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
@@ -97,7 +108,7 @@ public static class Credentials
         static TextMeshPro SpecialEventText;
         private static void Postfix(VersionShower __instance)
         {
-            Main.credentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}";
+            Main.credentialsText = $"\r\n<size=70%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}";
             var buildtype = "";
 
 #if RELEASE

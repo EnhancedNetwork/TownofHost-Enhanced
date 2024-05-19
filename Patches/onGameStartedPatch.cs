@@ -143,6 +143,8 @@ internal class ChangeRoleSettings
                 Main.clientIdList.Add(pc.GetClientId());
             }
 
+            
+
             Main.VisibleTasksCount = true;
             if (__instance.AmHost)
             {
@@ -154,7 +156,7 @@ internal class ChangeRoleSettings
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>().Where(role => role < CustomRoles.NotAssigned).ToArray())
             {
                 var RoleClass = CustomRoleManager.GetStaticRoleClass(role);
-                RoleClass?.Init();
+                RoleClass?.OnInit();
             }
 
             LastImpostor.Init();
@@ -400,7 +402,7 @@ internal class SelectRolesPatch
             {
                 if (pc.Data.Role.Role == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
 
-                pc.GetRoleClass()?.Add(pc.PlayerId);
+                pc.GetRoleClass()?.OnAdd(pc.PlayerId);
 
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())
                 {

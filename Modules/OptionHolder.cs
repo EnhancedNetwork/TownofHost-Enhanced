@@ -690,6 +690,17 @@ public static class Options
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorVanilla).ForEach(r => r.SetupCustomOption());
+       
+        if (CustomRoleManager.RoleClass.Where(x => x.Key.IsImpostor()).Any(r => r.Value.IsExperimental))
+        {
+            TextOptionItem.Create(10000020, "Experimental.Roles", TabGroup.ImpostorRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(141, 70, 49, byte.MaxValue));
+
+            CustomRoleManager.GetExperimentalOptions(Custom_Team.Impostor).ForEach(r => r.SetupCustomOption());
+
+
+        }
 
         TextOptionItem.Create(10000001, "RoleType.ImpKilling", TabGroup.ImpostorRoles) // KILLING
             .SetGameMode(CustomGameMode.Standard)
@@ -756,6 +767,17 @@ public static class Options
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanilla).ForEach(r => r.SetupCustomOption());
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanillaGhosts).ForEach(r => r.SetupCustomOption());
 
+        if (CustomRoleManager.RoleClass.Where(x => x.Key.IsCrewmate()).Any(r => r.Value.IsExperimental))
+        {
+            TextOptionItem.Create(10000021, "Experimental.Roles", TabGroup.CrewmateRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(141, 70, 49, byte.MaxValue));
+
+            CustomRoleManager.GetExperimentalOptions(Custom_Team.Crewmate).ForEach(r => r.SetupCustomOption());
+
+
+        }
+
         /*
          * BASIC ROLES
          */
@@ -810,6 +832,18 @@ public static class Options
         #endregion
 
         #region Neutrals Settings
+
+
+        if (CustomRoleManager.RoleClass.Where(x => x.Key.IsNeutral()).Any(r => r.Value.IsExperimental))
+        {
+            TextOptionItem.Create(10000022, "Experimental.Roles", TabGroup.NeutralRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(141, 70, 49, byte.MaxValue));
+
+            CustomRoleManager.GetExperimentalOptions(Custom_Team.Neutral).ForEach(r => r.SetupCustomOption());
+
+
+        }
         // Neutral
         TextOptionItem.Create(10000011, "RoleType.NeutralBenign", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -1012,6 +1046,9 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
+
+        Youtuber.SetupCustomOptions();
+
         Egoist.SetupCustomOption();
 
         SetupLoversRoleOptionsToggle(23600);
@@ -1022,41 +1059,19 @@ public static class Options
 
         Workhorse.SetupCustomOption();
 
-        #endregion
-
-        #region Experimental Roles/Add-ons Settings
-        TextOptionItem.Create(10000020, "OtherRoles.ImpostorRoles", TabGroup.OtherRoles)
+        TextOptionItem.Create(10000023, "Experimental.Roles", TabGroup.Addons)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(247, 70, 49, byte.MaxValue));
-
-        CustomRoleManager.GetExperimentalOptions(Custom_Team.Impostor).ForEach(r => r.SetupCustomOption());
-
-        //Disperser.SetupCustomOption();        
-
-        // Crewmate roles
-        TextOptionItem.Create(10000021, "OtherRoles.CrewmateRoles", TabGroup.OtherRoles)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(140, 255, 255, byte.MaxValue));
-
-        CustomRoleManager.GetExperimentalOptions(Custom_Team.Crewmate).ForEach(r => r.SetupCustomOption());
-
-        // Neutral roles
-        TextOptionItem.Create(10000022, "OtherRoles.NeutralRoles", TabGroup.OtherRoles)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(127, 140, 141, byte.MaxValue));
-
-        CustomRoleManager.GetExperimentalOptions(Custom_Team.Neutral).ForEach(r => r.SetupCustomOption());
-
-
-        // addons
-        TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 154, 206, byte.MaxValue));
+            .SetColor(new Color32(141, 140, 141, byte.MaxValue));
 
 
         Glow.SetupCustomOptions();
 
-        Youtuber.SetupCustomOptions();
+
+        #endregion
+
+        #region Experimental Roles/Add-ons Settings
+
+
 
         #endregion
 

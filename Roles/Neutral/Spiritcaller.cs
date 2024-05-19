@@ -11,9 +11,7 @@ internal class Spiritcaller : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 25200;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled = playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled = CustomRoleManager.HasEnabled(CustomRoles.Spiritcaller);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -30,8 +28,7 @@ internal class Spiritcaller : RoleBase
 
     private static readonly Dictionary<byte, long> PlayersHaunted = [];
 
-    private static long ProtectTimeStamp = new();
-    private static int SpiritLimit = new();
+    private long? ProtectTimeStamp = new();
 
     public override void SetupCustomOption()
     {
@@ -56,15 +53,11 @@ internal class Spiritcaller : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
-        SpiritLimit = new();
-        ProtectTimeStamp = new();
         PlayersHaunted.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        SpiritLimit = SpiritMax.GetInt();
+        AbilityLimit = SpiritMax.GetInt();
         ProtectTimeStamp = 0;
 
         if (AmongUsClient.Instance.AmHost)
@@ -76,20 +69,7 @@ internal class Spiritcaller : RoleBase
         }
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    private static bool InProtect(PlayerControl player) => player.Is(CustomRoles.Spiritcaller) && ProtectTimeStamp > Utils.GetTimeStamp();
-
-    private static void SendRPC()
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Spiritcaller);
-        writer.Write(SpiritLimit);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        SpiritLimit = reader.ReadInt32();
-    }
+    private bool InProtect(PlayerControl player) => player.Is(CustomRoles.Spiritcaller) && ProtectTimeStamp > Utils.GetTimeStamp();
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(ImpostorVision.GetBool());
 
@@ -97,10 +77,10 @@ internal class Spiritcaller : RoleBase
     {
         if (!target.GetCustomRole().IsAbleToBeSidekicked() && !target.GetCustomRole().IsImpostor())
         {
-            if (SpiritLimit < 1) return true;
+            if (AbilityLimit < 1) return true;
 
-            SpiritLimit--;
-            SendRPC();
+            AbilityLimit--;
+            SendSkillRPC();
 
             target.RpcSetCustomRole(CustomRoles.EvilSpirit);
 
@@ -121,7 +101,7 @@ internal class Spiritcaller : RoleBase
         return true;
     }
 
-    private static void OnFixedUpdateOthers(PlayerControl pc)
+    private void OnFixedUpdateOthers(PlayerControl pc)
     {
         if (pc.Is(CustomRoles.Spiritcaller))
         {
@@ -137,7 +117,7 @@ internal class Spiritcaller : RoleBase
         }
     }
 
-    public override string GetProgressText(byte PlayerId, bool cooooms) => Utils.ColorString(SpiritLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Spiritcaller) : Color.gray, $"({SpiritLimit})");
+    public override string GetProgressText(byte PlayerId, bool cooooms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Spiritcaller) : Color.gray, $"({AbilityLimit})");
 
     public static void HauntPlayer(PlayerControl target)
     {
@@ -190,7 +170,7 @@ internal class Spiritcaller : RoleBase
         }
     }
 
-    public static void ProtectSpiritcaller()
+    public void ProtectSpiritcaller()
     {
         ProtectTimeStamp = Utils.GetTimeStamp() + (long)SpiritProtectTime.GetFloat();
     }

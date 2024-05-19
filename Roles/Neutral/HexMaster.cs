@@ -15,7 +15,7 @@ internal class HexMaster : RoleBase
     private const int Id = 16400;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -72,21 +72,23 @@ internal class HexMaster : RoleBase
     {
         if (doHex)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoHex, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+            writer.WritePacked(1);
             writer.Write(hexId);
             writer.Write(target);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillOrHex, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+            writer.WritePacked(2);
             writer.Write(hexId);
             writer.Write(HexMode[hexId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
 
         }
     }
-    public static void ReceiveRPC(MessageReader reader, bool doHex)
+    public void ReceiveRPC(MessageReader reader, bool doHex)
     {
         if (doHex)
         {

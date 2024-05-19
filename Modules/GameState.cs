@@ -12,7 +12,7 @@ namespace TOHE;
 
 public class PlayerState(byte playerId)
 {
-    readonly byte PlayerId = playerId;
+    public readonly byte PlayerId = playerId;
     public RoleBase RoleClass = new DefaultSetup();
     public CustomRoles MainRole = CustomRoles.NotAssigned;
     public List<CustomRoles> SubRoles = [];

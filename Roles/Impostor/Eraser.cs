@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Translator;
@@ -10,9 +11,7 @@ internal class Eraser : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 24200;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Eraser);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -22,8 +21,7 @@ internal class Eraser : RoleBase
 
     private static readonly HashSet<byte> didVote = [];
     private static readonly HashSet<byte> PlayerToErase = [];
-    private static readonly Dictionary<byte, int> EraseLimit = [];
-    private static readonly Dictionary<byte, int> TempEraseLimit = [];
+    private static int TempEraseLimit;
     public static readonly Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
 
     public override void SetupCustomOption()
@@ -35,49 +33,22 @@ internal class Eraser : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
-        EraseLimit.Clear();
         PlayerToErase.Clear();
         didVote.Clear();
-        TempEraseLimit.Clear();
         ErasedRoleStorage.Clear();
     }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-        EraseLimit.Add(playerId, EraseLimitOpt.GetInt());
-    }
-    private static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Eraser);
-        writer.Write(playerId);
-        writer.Write(EraseLimit[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        byte playerId = reader.ReadByte();
-        int limit = reader.ReadInt32();
-        if (!EraseLimit.ContainsKey(playerId))
-        {
-            EraseLimit.Add(playerId , limit);
-        }
-        else
-            EraseLimit[playerId] = limit;
-    }
     public override string GetProgressText(byte playerId, bool comms)
-        => Utils.ColorString(EraseLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, EraseLimit.TryGetValue(playerId, out var x) ? $"({x})" : "Invalid");
+        => Utils.ColorString(AbilityLimit <= 0 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, $"({AbilityLimit})");
 
     public override bool HideVote(PlayerVoteArea votedPlayer)
-        => CheckForEndVotingPatch.CheckRole(votedPlayer.TargetPlayerId, CustomRoles.Eraser) && HideVoteOpt.GetBool() && TempEraseLimit[votedPlayer.TargetPlayerId] > 0;
+        => CheckForEndVotingPatch.CheckRole(votedPlayer.TargetPlayerId, CustomRoles.Eraser) && HideVoteOpt.GetBool() && TempEraseLimit <= 0;
 
     public override void OnVote(PlayerControl player, PlayerControl target)
     {
         if (!HasEnabled) return;
         if (player == null || target == null) return;
         if (target.Is(CustomRoles.Eraser)) return;
-        if (EraseLimit[player.PlayerId] <= 0) return;
+        if (AbilityLimit <= 0) return;
 
         if (didVote.Contains(player.PlayerId)) return;
         didVote.Add(player.PlayerId);
@@ -97,8 +68,8 @@ internal class Eraser : RoleBase
             return;
         }
 
-        EraseLimit[player.PlayerId]--;
-        SendRPC(player.PlayerId);
+        AbilityLimit--;
+        SendSkillRPC();
 
         if (!PlayerToErase.Contains(target.PlayerId))
             PlayerToErase.Add(target.PlayerId);
@@ -109,10 +80,7 @@ internal class Eraser : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        foreach (var eraserId in playerIdList.ToArray())
-        {
-            TempEraseLimit[eraserId] = EraseLimit[eraserId];
-        }
+        TempEraseLimit = (int)AbilityLimit;
 
         PlayerToErase.Clear();
         didVote.Clear();

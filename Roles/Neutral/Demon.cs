@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -10,9 +11,7 @@ internal class Demon : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16200;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Demon);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -46,13 +45,11 @@ internal class Demon : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         DemonHealth.Clear();
         PlayerHealth.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         DemonHealth.TryAdd(playerId, SelfHealthMax.GetInt());
 
         foreach (var pc in Main.AllAlivePlayerControls)

@@ -9,9 +9,7 @@ internal class Lawyer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 13100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Lawyer);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -65,12 +63,10 @@ internal class Lawyer : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         Target.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         CustomRoleManager.MarkOthers.Add(LawyerMark);
 
         if (AmongUsClient.Instance.AmHost)
@@ -112,7 +108,7 @@ internal class Lawyer : RoleBase
             Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()}:{SelectedTarget.GetNameWithRole()}", "Lawyer");
         }
     }
-    public static void SendRPC(byte lawyerId, byte targetId = 0x73, bool SetTarget = false)
+    private static void SendRPC(byte lawyerId, byte targetId = 0x73, bool SetTarget = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
         writer.WritePacked((int)CustomRoles.Lawyer);

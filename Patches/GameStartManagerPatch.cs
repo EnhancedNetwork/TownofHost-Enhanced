@@ -22,7 +22,7 @@ public static class GameStartManagerUpdatePatch
 public class GameStartManagerPatch
 {
     private static SpriteRenderer cancelButton;
-    private static float timer = 600f;
+    public static float timer = 600f;
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Start))]
     public class GameStartManagerStartPatch
     {
@@ -126,31 +126,16 @@ public class GameStartManagerPatch
                     {
                         if ((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait)
                         {
-                            if (PlayerTimeOutManager.IsAllReady())
-                            {
-                                BeginAutoStart(Options.AutoStartTimer.GetInt());
-                                return;
-                            }
-                            else
-                            {
-                                Main.updateTime = 0;
-                            }
+                            BeginAutoStart(Options.AutoStartTimer.GetInt());
+                            return;
                         }
                         else if (Options.ImmediateAutoStart.GetBool())
                         {
                             if ((GameData.Instance.PlayerCount >= Options.StartWhenPlayersReach.GetInt() && Options.StartWhenPlayersReach.GetInt() > 1) ||
                                 (timer <= Options.StartWhenTimerLowerThan.GetInt() && Options.StartWhenTimerLowerThan.GetInt() > 0))
                             {
-                                if (PlayerTimeOutManager.IsAllReady())
-                                {                                    
-                                    BeginAutoStart(Options.ImmediateStartTimer.GetInt());
-                                    return;
-                                }
-                                else
-                                {
-                                    PlayerTimeOutManager.KickAllNotReady();
-                                    Main.updateTime = 25;
-                                }
+                                BeginAutoStart(Options.AutoStartTimer.GetInt());
+                                return;
                             }
                         }
                     }
@@ -289,7 +274,7 @@ public class GameStartRandomMap
     public static bool Prefix(GameStartManager __instance)
     {
         var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-        if (!PlayerTimeOutManager.IsAllReady() ||  invalidColor.Any())
+        if (invalidColor.Any())
         {
             Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
             var msg = GetString("Error.InvalidColor");

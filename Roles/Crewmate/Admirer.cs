@@ -1,6 +1,7 @@
 using Hazel;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -13,9 +14,7 @@ internal class Admirer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 24800;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Admired);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -24,7 +23,6 @@ internal class Admirer : RoleBase
     private static OptionItem KnowTargetRole;
     private static OptionItem SkillLimit;
 
-    private static readonly Dictionary<byte, int> AdmirerLimit = [];
     public static readonly Dictionary<byte, List<byte>> AdmiredList = [];
 
     public override void SetupCustomOption()
@@ -38,14 +36,11 @@ internal class Admirer : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
-        AdmirerLimit.Clear();
         AdmiredList.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        AdmirerLimit.Add(playerId, SkillLimit.GetInt());
+        AbilityLimit =  SkillLimit.GetInt();
         AdmiredList.Add(playerId, []);
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -54,27 +49,26 @@ internal class Admirer : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
-        AdmirerLimit.Remove(playerId);
         AdmiredList.Remove(playerId);
     }
 
-    private static void SendRPC(byte playerId)
+    private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Admirer);
+        writer.WritePacked(1);
         writer.Write(playerId);
-        writer.Write(AdmirerLimit[playerId]);
+        writer.Write(AbilityLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SendRPC(byte playerId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAdmiredList, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked(2);
         writer.Write(playerId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, bool isList)
+    public void ReceiveRPC(MessageReader reader, bool isList)
     {
         byte playerId = reader.ReadByte();
         byte targetId;
@@ -82,9 +76,7 @@ internal class Admirer : RoleBase
         if (!isList)
         {
             Limit = reader.ReadInt32();
-            if (!AdmirerLimit.ContainsKey(playerId))
-                AdmirerLimit.Add(playerId, Limit);
-            else AdmirerLimit[playerId] = Limit;
+            AbilityLimit = Limit;
         }
         else
         {
@@ -95,23 +87,22 @@ internal class Admirer : RoleBase
         }
     }
     
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AdmirerLimit[id] >= 1 ? AdmireCooldown.GetFloat() : 300f;
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (AdmirerLimit.TryGetValue(player.PlayerId, out var x) ? x : 1) >= 1;
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? AdmireCooldown.GetFloat() : 300f;
+    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && AbilityLimit >= 1;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AdmirerLimit[killer.PlayerId] < 1) return false;
+        if (AbilityLimit < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-        if (!AdmirerLimit.ContainsKey(killer.PlayerId))
-            Add(killer.PlayerId);
+
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 
-        if (AdmirerLimit[killer.PlayerId] < 1) return false;
+        if (AbilityLimit< 1) return false;
         if (CanBeAdmired(target, killer))
         {
             if (KnowTargetRole.GetBool())
@@ -165,7 +156,7 @@ internal class Admirer : RoleBase
             }
             else goto AdmirerFailed;
 
-            AdmirerLimit[killer.PlayerId]--;
+            AbilityLimit--;
             SendRPC(killer.PlayerId); //Sync skill
 
             killer.ResetKillCooldown();
@@ -178,7 +169,7 @@ internal class Admirer : RoleBase
             target.SetKillCooldown(forceAnime: true);
             
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Admirer.ToString(), "Assign " + CustomRoles.Admirer.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
+            Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次仰慕机会", "Admirer");
             
             return false;
         }
@@ -188,7 +179,7 @@ internal class Admirer : RoleBase
         
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerInvalidTarget")));
         
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
+        Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次仰慕机会", "Admirer");
         return false;
     }
 
@@ -211,7 +202,7 @@ internal class Admirer : RoleBase
     }
 
     public override string GetProgressText(byte playerId, bool comms)
-        => Utils.ColorString(AdmirerLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Admirer).ShadeColor(0.25f) : Color.gray, $"({AdmirerLimit[playerId]})");
+        => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Admirer).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
     public static bool CanBeAdmired(PlayerControl pc, PlayerControl admirer)
     {

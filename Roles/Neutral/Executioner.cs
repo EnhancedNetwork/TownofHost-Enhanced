@@ -12,7 +12,7 @@ internal class Executioner : RoleBase
     private const int Id = 14200;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
@@ -112,14 +112,16 @@ internal class Executioner : RoleBase
         switch (Progress)
         {
             case "SetTarget":
-                writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetExecutionerTarget, SendOption.Reliable);
+                writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+                writer.WritePacked(1);
                 writer.Write(executionerId);
                 writer.Write(targetId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 break;
             case "":
                 if (!AmongUsClient.Instance.AmHost) return;
-                writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveExecutionerTarget, SendOption.Reliable);
+                writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+                writer.WritePacked(2);
                 writer.Write(executionerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 break;
@@ -133,7 +135,7 @@ internal class Executioner : RoleBase
                 break;
         }
     }
-    public static void ReceiveRPC(MessageReader reader, bool SetTarget)
+    public void ReceiveRPC(MessageReader reader, bool SetTarget)
     {
         if (SetTarget)
         {
@@ -144,7 +146,7 @@ internal class Executioner : RoleBase
         else
             Target.Remove(reader.ReadByte());
     }
-    public static void ChangeRoleByTarget(PlayerControl target)
+    public void ChangeRoleByTarget(PlayerControl target)
     {
         byte Executioner = 0x73;
         Target.Do(x =>
@@ -165,7 +167,7 @@ internal class Executioner : RoleBase
         var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), Translator.GetString(""));
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         executioner.Notify(text);
-        try { executioner.GetRoleClass().Add(executioner.PlayerId); } 
+        try { executioner.GetRoleClass().OnAdd(executioner.PlayerId); } 
         catch (Exception err) 
         { Logger.Warn($"Error after attempting to RoleCLass.Add({executioner.GetCustomRole().ToString().RemoveHtmlTags() + ", " + executioner.GetRealName()}.PlayerId): {err}", "Executioner.ChangeRole.Add"); }
     }

@@ -12,7 +12,7 @@ internal class RiftMaker : RoleBase
     private const int Id = 27200;
     private static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -60,7 +60,7 @@ internal class RiftMaker : RoleBase
 
     private static void SendRPC(byte riftID, int operate)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RiftMakerSyncData, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.Write(operate);
         if (operate == 3)
         {
@@ -83,7 +83,7 @@ internal class RiftMaker : RoleBase
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public void ReceiveRPC(MessageReader reader)
     {
         int operate = reader.ReadInt32();
         if (operate == 3)

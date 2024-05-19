@@ -5,6 +5,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -12,9 +13,7 @@ internal class TimeMaster : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 9900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.TimeMaster);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -25,7 +24,6 @@ internal class TimeMaster : RoleBase
     private static OptionItem TimeMasterAbilityUseGainWithEachTaskCompleted;
 
     private static readonly Dictionary<byte, Vector2> TimeMasterBackTrack = [];
-    private static readonly Dictionary<byte, float> TimeMasterNumOfUsed = [];
     private static readonly Dictionary<byte, int> TimeMasterNum = [];
     private static readonly Dictionary<byte, long> TimeMasterInProtect = [];
 
@@ -45,13 +43,12 @@ internal class TimeMaster : RoleBase
     {
         TimeMasterBackTrack.Clear();
         TimeMasterNum.Clear();
-        TimeMasterNumOfUsed.Clear();
         TimeMasterInProtect.Clear();
     }
     public override void Add(byte playerId)
     {
         TimeMasterNum.TryAdd(playerId, 0);
-        TimeMasterNumOfUsed.TryAdd(playerId, TimeMasterMaxUses.GetInt());
+        AbilityLimit = TimeMasterMaxUses.GetInt();
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -61,7 +58,7 @@ internal class TimeMaster : RoleBase
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player.IsAlive())
-            TimeMasterNumOfUsed[player.PlayerId] += TimeMasterAbilityUseGainWithEachTaskCompleted.GetFloat();
+            AbilityLimit += TimeMasterAbilityUseGainWithEachTaskCompleted.GetFloat();
 
         return true;
     }
@@ -102,9 +99,9 @@ internal class TimeMaster : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent AirConditioning)
     {
-        if (TimeMasterNumOfUsed[pc.PlayerId] >= 1)
+        if (AbilityLimit >= 1)
         {
-            TimeMasterNumOfUsed[pc.PlayerId] -= 1;
+            AbilityLimit -= 1;
             TimeMasterInProtect.Remove(pc.PlayerId);
             TimeMasterInProtect.Add(pc.PlayerId, GetTimeStamp());
 
@@ -147,10 +144,10 @@ internal class TimeMaster : RoleBase
         TextColor6 = comms ? Color.gray : NormalColor6;
         string Completed6 = comms ? "?" : $"{taskState6.CompletedTasksCount}";
         Color TextColor61;
-        if (TimeMasterNumOfUsed[playerId] < 1) TextColor61 = Color.red;
+        if (AbilityLimit < 1) TextColor61 = Color.red;
         else TextColor61 = Color.white;
         ProgressText.Append(ColorString(TextColor6, $"({Completed6}/{taskState6.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor61, $" <color=#ffffff>-</color> {Math.Round(TimeMasterNumOfUsed[playerId], 1)}"));
+        ProgressText.Append(ColorString(TextColor61, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
         return ProgressText.ToString();
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Time Master");

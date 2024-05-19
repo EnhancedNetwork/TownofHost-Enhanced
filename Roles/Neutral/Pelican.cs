@@ -1,6 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -13,9 +15,7 @@ internal class Pelican : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17300;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pelican);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -40,7 +40,6 @@ internal class Pelican : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         eatenList.Clear();
         originalSpeed.Clear();
         PelicanLastPosition.Clear();
@@ -49,7 +48,6 @@ internal class Pelican : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -109,9 +107,15 @@ internal class Pelican : RoleBase
 
         var target = Utils.GetPlayerById(id);
 
-        if (Penguin.AbductVictim != null)
-            if (target.Is(CustomRoles.Penguin) || id == Penguin.AbductVictim.PlayerId)
+        var penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
+        if (penguins != null && penguins.Any())
+        {
+            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && pg.AbductVictim != null && (target.PlayerId == pg.AbductVictim.PlayerId 
+            || id == pg.AbductVictim.PlayerId)))
+            {
                 return false;
+            }
+        }
 
         return target != null && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
     }

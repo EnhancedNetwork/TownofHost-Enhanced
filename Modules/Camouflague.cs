@@ -184,6 +184,7 @@ public static class Camouflage
             }
 
             // if game not end and Doppelganger clone skins
+
             if (!GameEnd && Doppelganger.DoppelPresentSkin.TryGetValue(id, out var playerOutfit)) newOutfit = playerOutfit;
             else
             {
@@ -196,6 +197,9 @@ public static class Camouflage
                 // Set Outfit
                 newOutfit = PlayerSkins[id];
             }
+
+
+
         }
 
         // if the current Outfit is the same, return it

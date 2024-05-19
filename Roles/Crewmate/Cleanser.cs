@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -9,9 +10,7 @@ internal class Cleanser : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6600;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Cleanser);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -21,10 +20,9 @@ internal class Cleanser : RoleBase
     private static OptionItem HidesVote;
     //private static OptionItem AbilityUseGainWithEachTaskCompleted;
 
-    private static readonly HashSet<byte> CleansedPlayers = [];
-    private static readonly Dictionary<byte,byte> CleanserTarget = [];
-    private static readonly Dictionary<byte, int> CleanserUses = [];
-    private static readonly Dictionary<byte, bool> DidVote = [];
+    private readonly HashSet<byte> CleansedPlayers = [];
+    private readonly Dictionary<byte,byte> CleanserTarget = [];
+    private bool DidVote;
 
     public override void SetupCustomOption()
     {
@@ -37,65 +35,29 @@ internal class Cleanser : RoleBase
     //        .SetValueFormat(OptionFormat.Times);
 
     }
-    public override void Init()
-    {
-        playerIdList.Clear();
-        CleanserTarget.Clear();
-        CleanserUses.Clear();
-        CleansedPlayers.Clear();
-        DidVote.Clear();
-    }
-
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         CleanserTarget.Add(playerId, byte.MaxValue);
-        CleanserUses.Add(playerId, 0);
-        DidVote.Add(playerId, false);
-    }
-    public override void Remove(byte playerId)
-    {
-        playerIdList.Remove(playerId);
-        CleanserTarget.Remove(playerId);
-        CleanserUses.Remove(playerId);
-        DidVote.Remove(playerId);
+        AbilityLimit = CleanserUsesOpt.GetInt();
+        DidVote = false;
     }
     public static bool CantGetAddon() => !CleansedCanGetAddon.GetBool();
-    public override bool HideVote(PlayerVoteArea ps) => HidesVote.GetBool() && CleanserUses[ps.TargetPlayerId] > 0;
+    public override bool HideVote(PlayerVoteArea ps) => HidesVote.GetBool() && AbilityLimit > 0;
     public override string GetProgressText(byte playerId, bool comms)
     {
-        if (!CleanserUses.ContainsKey(playerId)) return "Invalid";
         Color x;
-        if (CleanserUsesOpt.GetInt() - CleanserUses[playerId] > 0)
+        if (AbilityLimit > 0)
             x = Utils.GetRoleColor(CustomRoles.Cleanser);
         else x = Color.gray;
-        return (Utils.ColorString(x, $"({CleanserUsesOpt.GetInt() - CleanserUses[playerId]})"));
-    }
-    private static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Cleanser);
-        writer.Write(playerId);
-        writer.Write(CleanserUses[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        byte CleanserId = reader.ReadByte();
-        int Limit = reader.ReadInt32();
-        if (CleanserUses.ContainsKey(CleanserId))
-            CleanserUses[CleanserId] = Limit;
-        else
-            CleanserUses.Add(CleanserId, 0);
+        return (Utils.ColorString(x, $"({AbilityLimit})"));
     }
 
     public override void OnVote(PlayerControl voter, PlayerControl target)
     {
         if (!voter.Is(CustomRoles.Cleanser)) return;
-        if (DidVote[voter.PlayerId]) return;
-        DidVote[voter.PlayerId] = true;
-        if (CleanserUses[voter.PlayerId] >= CleanserUsesOpt.GetInt()) return;
+        if (DidVote) return;
+        DidVote = true;
+        if (AbilityLimit >= CleanserUsesOpt.GetInt()) return;
         if (target.PlayerId == voter.PlayerId)
         {
             Utils.SendMessage(GetString("CleanserRemoveSelf"), voter.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
@@ -108,12 +70,12 @@ internal class Cleanser : RoleBase
         }
         if (CleanserTarget[voter.PlayerId] != byte.MaxValue) return;
 
-        CleanserUses[voter.PlayerId]++;
+        AbilityLimit--;
         CleanserTarget[voter.PlayerId] = target.PlayerId;
         Logger.Info($"{voter.GetNameWithRole()} cleansed {target.GetNameWithRole()}", "Cleansed");
         CleansedPlayers.Add(target.PlayerId);
         Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser),GetString("CleanserTitle")));
-        SendRPC(voter.PlayerId);
+        SendSkillRPC();
     }
     public override void OnReportDeadBody(PlayerControl baba, PlayerControl lilelam)
     {
@@ -138,7 +100,7 @@ internal class Cleanser : RoleBase
     {
         foreach (var pid in CleanserTarget.Keys.ToArray())
         {
-            DidVote[pid] = false;
+            DidVote = false;
             if (pid == byte.MaxValue) continue;
             var targetid = CleanserTarget[pid];
             if (targetid == byte.MaxValue) continue;

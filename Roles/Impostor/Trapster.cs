@@ -6,7 +6,7 @@ internal class Trapster : RoleBase
     private const int Id = 2600;
     private static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -55,7 +55,6 @@ internal class Trapster : RoleBase
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
         var target  = deadBody?.Object;
-        var Trapsters = Playerids.GetPlayerListByIds();
 
         // if trapster dead
         if (target.Is(CustomRoles.Trapster) && TrapTrapsterBody.GetBool() && !reporter.IsTransformedNeutralApocalypse())
@@ -78,7 +77,7 @@ internal class Trapster : RoleBase
 
         // if reporter try reported trap body
         if (BoobyTrapBody.Contains(target.PlayerId) && reporter.IsAlive()
-            && !reporter.IsTransformedNeutralApocalypse() && Trapsters.All(Trapi => Trapi.RpcCheckAndMurder(reporter, true)))
+            && !reporter.IsTransformedNeutralApocalypse() && _Player.RpcCheckAndMurder(target, true))
         {
             var killerId = target.PlayerId;
             

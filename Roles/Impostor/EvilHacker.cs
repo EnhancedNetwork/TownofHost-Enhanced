@@ -13,9 +13,7 @@ internal class EvilHacker : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 28400;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.EvilHacker);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -54,7 +52,6 @@ internal class EvilHacker : RoleBase
     }
     public override void Init()
     {
-        PlayerIds.Clear();
         evilHackerPlayer = null;
 
         canSeeDeadMark = OptionCanSeeDeadMark.GetBool();
@@ -64,7 +61,6 @@ internal class EvilHacker : RoleBase
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
         evilHackerPlayer = Utils.GetPlayerById(playerId);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(HandleMurderRoomNotify);
@@ -141,13 +137,13 @@ internal class EvilHacker : RoleBase
         CreateMurderNotify(room);
         if (AmongUsClient.Instance.AmHost)
         {
-            SendRPC(2, room);
+            SendRPC(0, room);
         }
     }
     private static void SendRPC(byte RpcTypeId, SystemTypes room)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.EvilHacker);
+        writer.WritePacked(1);
         writer.Write(RpcTypeId);
         writer.Write((byte)room);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -155,10 +151,14 @@ internal class EvilHacker : RoleBase
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
         var RpcTypeId = reader.ReadByte();
+        var room = (SystemTypes)reader.ReadByte();
 
         switch (RpcTypeId)
         {
             case 0:
+                CreateMurderNotify(room);
+                break;
+            case 1:
                 foreach (var notify in activeNotifies)
                 {
                     if (DateTime.Now - notify.CreatedAt > NotifyDuration)
@@ -166,16 +166,6 @@ internal class EvilHacker : RoleBase
                         activeNotifies.Remove(notify);
                     }
                 }
-                break;
-            case 1:
-                activeNotifies.Add(new()
-                {
-                    CreatedAt = DateTime.Now,
-                    Room = (SystemTypes)reader.ReadByte(),
-                });
-                break;
-            case 2:
-                CreateMurderNotify((SystemTypes)reader.ReadByte());
                 break;
         }
     }
@@ -190,7 +180,6 @@ internal class EvilHacker : RoleBase
         if (AmongUsClient.Instance.AmHost)
         {
             Utils.NotifyRoles(SpecifySeer: evilHackerPlayer);
-            SendRPC(1, room);
         }
     }
     public override void OnFixedUpdateLowLoad(PlayerControl pc)
@@ -212,12 +201,15 @@ internal class EvilHacker : RoleBase
         if (doNotifyRoles)
         {
             Utils.NotifyRoles(SpecifySeer: evilHackerPlayer);
-            SendRPC(0, SystemTypes.Hallway);
+            SendRPC(1, SystemTypes.Hallway);
         }
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (!canSeeMurderRoom || seer.PlayerId != seen.PlayerId || isForMeeting || activeNotifies.Count <= 0)
+        if (!AmongUsClient.Instance.AmHost)
+        Logger.Info($"{canSeeMurderRoom} - {activeNotifies.Count}", "EvilHacker.GetSuffix");
+
+        if (!canSeeMurderRoom || seer.PlayerId != seen.PlayerId || isForMeeting || !activeNotifies.Any())
         {
             return string.Empty;
         }

@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using TOHE.Roles.Core;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
@@ -7,9 +8,7 @@ internal class Seeker : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14600;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Seeker);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
@@ -32,7 +31,6 @@ internal class Seeker : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         Targets.Clear();
         TotalPoints.Clear();
         DefaultSpeed.Clear();
@@ -40,7 +38,6 @@ internal class Seeker : RoleBase
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
 
         TotalPoints.Add(playerId, 0);
         DefaultSpeed[playerId] = Main.AllPlayerSpeed[playerId];
@@ -115,10 +112,7 @@ internal class Seeker : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        foreach (var playerId in playerIdList)
-        {
-            Main.AllPlayerSpeed[playerId] = DefaultSpeed[playerId];
-        }
+       Main.AllPlayerSpeed[_state.PlayerId] = DefaultSpeed[_state.PlayerId];
     }
 
     public override void OnFixedUpdateLowLoad(PlayerControl player)
@@ -201,26 +195,22 @@ internal class Seeker : RoleBase
 
     public override void AfterMeetingTasks()
     {
-        foreach (var id in playerIdList.ToArray())
+        var player = _Player;
+        if (player.IsAlive())
         {
-            var player = Utils.GetPlayerById(id);
-            if (player.IsAlive())
-            {
-                FreezeSeeker(player);
-            }
+            FreezeSeeker(player);
         }
     }
     public override void NotifyAfterMeeting()
     {
-        foreach (var id in playerIdList.ToArray())
+        var player = _Player;
+        if (player.IsAlive())
         {
-            var player = Utils.GetPlayerById(id);
-            if (player.IsAlive())
-            {
-                var targetId = GetTarget(player);
-                player.Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
-                Utils.GetPlayerById(targetId)?.Notify(GetString("SeekerTargetNotify"));
-            }
+            var targetId = GetTarget(player);
+            player.Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
+            Utils.GetPlayerById(targetId)?.Notify(GetString("SeekerTargetNotify"));
         }
+
+
     }
 }
