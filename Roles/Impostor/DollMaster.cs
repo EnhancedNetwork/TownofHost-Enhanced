@@ -219,17 +219,48 @@ internal class DollMaster : RoleBase
         return true;
     }
 
+    // Prevent Dollmaster from killing main body
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => (!(IsControllingPlayer && target == DollMasterTarget));
 
-    // Handle Sheriff killing Dollmaster while possessing.
+    // Handle specific killing roles when interacting with a Dollmaster or Player while possessing.
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (IsControllingPlayer && killer.Is(CustomRoles.Sheriff) && killer != DollMasterTarget && target == DollMasterTarget)
+        if (IsControllingPlayer)
         {
-            CheckMurderAsPossessed(killer, target);
-            return true;
+            if (!CanKillerUseAbility(killer)) return true;
+
+            if (killer.Is(CustomRoles.Sheriff) && killer != DollMasterTarget && target == DollMasterTarget)
+            {
+                CheckMurderAsPossessed(killer, target);
+                return true;
+            }
         }
         return false;
+    }
+
+    // Check if Killer can use Ability on Target.
+    // This is a list of roles that are Buggy when interacting with a possessed player, therefore their ability will be canceled out.
+    private static bool CanKillerUseAbility(PlayerControl player)
+    {
+        var CanUseAbility = true;
+        var cRole = player.GetCustomRole();
+        var subRoles = player.GetCustomSubRoles(); // May use later on!
+
+        switch (cRole) // Check role.
+        {
+            case CustomRoles.Pelican:
+                CanUseAbility = false;
+                break;
+            case CustomRoles.Penguin:
+                CanUseAbility = false;
+                break;
+            default:
+                break;
+        }
+
+        if (!CanUseAbility) player.Notify(Utils.ColorString(player.GetRoleColor(), GetString("DollMaster_UnableToUseAbility")));
+
+        return CanUseAbility;
     }
 
     // Uno reverse kill.
