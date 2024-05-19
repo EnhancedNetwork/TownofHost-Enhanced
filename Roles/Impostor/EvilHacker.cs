@@ -13,9 +13,7 @@ internal class EvilHacker : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 28400;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.EvilHacker);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -54,7 +52,6 @@ internal class EvilHacker : RoleBase
     }
     public override void Init()
     {
-        PlayerIds.Clear();
         evilHackerPlayer = null;
 
         canSeeDeadMark = OptionCanSeeDeadMark.GetBool();
@@ -64,7 +61,6 @@ internal class EvilHacker : RoleBase
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
         evilHackerPlayer = Utils.GetPlayerById(playerId);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(HandleMurderRoomNotify);
