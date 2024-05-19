@@ -61,9 +61,9 @@ class CheckProtectPatch
 
         if (angel.Is(CustomRoles.EvilSpirit))
         {
-            if (target.Is(CustomRoles.Spiritcaller))
+            if (target.GetRoleClass() is Spiritcaller sp)
             {
-                Spiritcaller.ProtectSpiritcaller();
+                sp.ProtectSpiritcaller();
             }
             else
             {
@@ -218,9 +218,9 @@ class CheckMurderPatch
         }
 
         // if player hacked by Glitch
-        if (Glitch.HasEnabled && !Glitch.OnCheckMurderOthers(killer, target))
+        if (Glitch.HasEnabled && Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target)))
         {
-            Logger.Info("Is hacked by Glitch, it cannot kill", "Pelican.CheckMurder");
+            Logger.Info($"Is hacked by Glitch, it cannot kill ", "Glitch.CheckMurder");
             return false;
         }
 
@@ -232,11 +232,15 @@ class CheckMurderPatch
         }
 
         // Penguin's victim unable to kill
-        if (Penguin.AbductVictim != null && killer.PlayerId == Penguin.AbductVictim.PlayerId)
+        List<PlayerControl> penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
+        if (Penguin.HasEnabled && penguins != null && penguins.Any())
         {
-            killer.Notify(GetString("PenguinTargetOnCheckMurder"));
-            killer.SetKillCooldown(5);
-            return false;
+            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && killer.PlayerId == pg.AbductVictim.PlayerId))
+            {
+                killer.Notify(GetString("PenguinTargetOnCheckMurder"));
+                killer.SetKillCooldown(5);
+                return false;
+            }
         }
 
         return true;
@@ -887,7 +891,7 @@ class FixedUpdateInNormalGamePatch
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
         {
-            if(!Glitch.OnCheckFixedUpdateReport(__instance, id))
+            if(Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckFixedUpdateReport(__instance, id)))
             { }
             else
             {

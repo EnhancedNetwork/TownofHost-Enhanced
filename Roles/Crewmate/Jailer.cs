@@ -12,7 +12,7 @@ internal class Jailer : RoleBase
     private const int Id = 10600;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -84,7 +84,8 @@ internal class Jailer : RoleBase
         MessageWriter writer;
         if (!setTarget)
         {
-            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetJailerExeLimit, SendOption.Reliable, -1);
+            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+            writer.WritePacked(1);
             writer.Write(jailerId);
             writer.Write(JailerExeLimit[jailerId]);
             writer.Write(JailerHasExe[jailerId]);
@@ -92,13 +93,14 @@ internal class Jailer : RoleBase
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             return;
         }
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetJailerTarget, SendOption.Reliable, -1);
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked(2);
         writer.Write(jailerId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void ReceiveRPC(MessageReader reader, bool setTarget = true)
+    public void ReceiveRPC(MessageReader reader, bool setTarget = true)
     {
         byte jailerId = reader.ReadByte();
         if (!setTarget)

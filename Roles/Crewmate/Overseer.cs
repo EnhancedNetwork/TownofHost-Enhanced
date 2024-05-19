@@ -15,7 +15,7 @@ internal class Overseer : RoleBase
     private const int Id = 12200;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -132,13 +132,13 @@ internal class Overseer : RoleBase
 
     private static void SetRevealtPlayerRPC(PlayerControl player, PlayerControl target, bool isRevealed)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRevealedPlayer, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isRevealed);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveSetRevealedPlayerRPC(MessageReader reader)
+    public void ReceiveSetRevealedPlayerRPC(MessageReader reader)
     {
         byte OverseerId = reader.ReadByte();
         byte RevealId = reader.ReadByte();

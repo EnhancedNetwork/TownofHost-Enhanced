@@ -869,7 +869,7 @@ public static class Utils
             if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
             {
                 lr = lr.Replace("<color=", "<");
-                lr.SplitMessage(899).Do(x => SendMessage("\n", PlayerId, $"<size=75%>" + x + "</size>")); //Since it will always capture a newline, there's more than enough space to put this in
+                lr.SplitMessage().Do(x => SendMessage("\n", PlayerId, $"<size=75%>" + x + "</size>")); //Since it will always capture a newline, there's more than enough space to put this in
             }
             else
             {
@@ -892,7 +892,8 @@ public static class Utils
         {
             string kl = EndGamePatch.KillLog;
             kl = Options.OldKillLog.GetBool() ? kl.RemoveHtmlTags() : kl.Replace("<color=", "<");
-            SendSpesificMessage(kl, PlayerId, NewLineIndex: 899);
+            var tytul = !Options.OldKillLog.GetBool() ? ColorString(new Color32(102, 16, 16, 255),  "《 " + GetString("KillLog") + " 》") : "";
+            SendSpesificMessage(kl, PlayerId, tytul);
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
@@ -1222,7 +1223,7 @@ public static class Utils
         //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
             , ID);
     }
-    public static string[] SplitMessage(this string LongMsg, int NewLineRange = 1169)
+    public static string[] SplitMessage(this string LongMsg)
     {
         List<string> result = [];
         string forqueue = "";
@@ -1246,7 +1247,7 @@ public static class Utils
 
             didDo = false;
 
-            if (indx1 > NewLineRange && partmsg.Length > 1200) // If a newline after NewLineRange can be found send it to the queue
+            if (indx1 != -1 && partmsg.Length > 1200) // If a newline can be found send the last one to the queue
             {
                 forqueue = LongMsg[..1201][(indx1+1)..1200]; // substring.substring;
                 result.Add(LongMsg[..indx1]);
@@ -1297,21 +1298,26 @@ public static class Utils
     private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
     
     
-    public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "", int NewLineIndex = 1679) 
+    public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "") 
     {
         // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
-
-
-        if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
+        bool isfirst = true;
+        if (text.Length > 1200 && !(Utils.GetPlayerById(sendTo).IsModClient()))
         {
-            foreach(var txt in text.SplitMessage(NewLineIndex))
+            foreach(var txt in text.SplitMessage())
             {
+                var titleW = isfirst ? title : "<alpha=#00>.";
                 var m = Regex.Replace(txt, "^<voffset=[-]?\\d+em>", ""); // replaces the first instance of voffset, if any.
-                SendMessage(m, sendTo, title);
+                m += $"<voffset=-1.3em><alpha=#00>.</voffset>"; // fix text clipping OOB
+                if (m.IndexOf("\n") <= 4) m = m[(m.IndexOf("\n")+1)..m.Length];
+                SendMessage(m, sendTo, titleW);
+                isfirst = false;
             }
         }
         else 
         {
+            text += $"<voffset=-1.3em><alpha=#00>.</voffset>";
+            if (text.IndexOf("\n") <= 4) text = text[(text.IndexOf("\n") + 1)..text.Length];
             SendMessage(text, sendTo, title);
         }
 
@@ -1581,8 +1587,14 @@ public static class Utils
     }
     public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
     {
-        return PlayerIdList.ToList().Select(x => GetPlayerById(x)).ToList();
+        var PlayerList = PlayerIdList?.ToList().Select(x => GetPlayerById(x)).ToList();
+
+        return PlayerList.Any() ? PlayerList : null;
     }
+
+    public static List<PlayerControl> GetPlayerListByRole(this CustomRoles role)
+        => GetPlayerListByIds(Main.PlayerStates.Values.Where(x => x.MainRole == role)?.Select(r => r.PlayerId));
+    
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();

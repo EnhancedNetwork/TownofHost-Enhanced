@@ -7,6 +7,7 @@ using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -14,9 +15,7 @@ internal class Pacifist : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 9200;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pacifist);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -24,8 +23,6 @@ internal class Pacifist : RoleBase
     private static OptionItem PacifistCooldown;
     private static OptionItem PacifistMaxOfUseage;
     private static OptionItem PacifistAbilityUseGainWithEachTaskCompleted;
-
-    private static readonly Dictionary<byte, float> PacifistNumOfUsed = [];
 
     public override void SetupCustomOption()
     {
@@ -37,26 +34,20 @@ internal class Pacifist : RoleBase
         PacifistAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(9204, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pacifist])
             .SetValueFormat(OptionFormat.Times);
     }
-    public override void Init()
-    {
-        playerIdList.Clear();
-        PacifistNumOfUsed.Clear();
-    }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        PacifistNumOfUsed.Add(playerId, PacifistMaxOfUseage.GetInt());
+        AbilityLimit = PacifistMaxOfUseage.GetInt();
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (PacifistNumOfUsed[pc.PlayerId] < 1)
+        if (AbilityLimit < 1)
         {
             pc?.MyPhysics?.RpcBootFromVent(vent.Id);
             pc.Notify(GetString("PacifistMaxUsage"));
         }
         else
         {
-            PacifistNumOfUsed[pc.PlayerId] -= 1;
+            AbilityLimit -= 1;
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
             
             Main.AllAlivePlayerControls.Where(x =>
@@ -75,16 +66,16 @@ internal class Pacifist : RoleBase
                 x.Notify(ColorString(GetRoleColor(CustomRoles.Pacifist), GetString("PacifistSkillNotify")));
             });
             pc.RPCPlayCustomSound("Dove");
-            pc.Notify(string.Format(GetString("PacifistOnGuard"), PacifistNumOfUsed[pc.PlayerId]));
+            pc.Notify(string.Format(GetString("PacifistOnGuard"), AbilityLimit));
         }
     }
     public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
-        => PacifistNumOfUsed.TryGetValue(physics.myPlayer.PlayerId, out var count) && count < 1;
+        => AbilityLimit < 1;
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player.IsAlive())
-            PacifistNumOfUsed[player.PlayerId] += PacifistAbilityUseGainWithEachTaskCompleted.GetFloat();
+            AbilityLimit += PacifistAbilityUseGainWithEachTaskCompleted.GetFloat();
         
         return true;
     }
@@ -104,10 +95,10 @@ internal class Pacifist : RoleBase
         TextColor5 = comms ? Color.gray : NormalColor5;
         string Completed5 = comms ? "?" : $"{taskState5.CompletedTasksCount}";
         Color TextColor51;
-        if (PacifistNumOfUsed[playerId] < 1) TextColor51 = Color.red;
+        if (AbilityLimit < 1) TextColor51 = Color.red;
         else TextColor51 = Color.white;
         ProgressText.Append(ColorString(TextColor5, $"({Completed5}/{taskState5.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor51, $" <color=#ffffff>-</color> {Math.Round(PacifistNumOfUsed[playerId], 1)}"));
+        ProgressText.Append(ColorString(TextColor51, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
         return ProgressText.ToString();
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)

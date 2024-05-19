@@ -54,11 +54,15 @@ class ExileControllerWrapUpPatch
         bool DecidedWinner = false;
         if (!AmongUsClient.Instance.AmHost) return;
         AntiBlackout.RestoreIsDead(doSend: false);
-        
-        Logger.Info($"{!Collector.CollectorWin(false)}", "!Collector.CollectorWin(false)");
-        Logger.Info($"{exiled != null}", "exiled != null");
 
-        if (!Collector.CollectorWin(false) && exiled != null)
+        var collectors = Utils.GetPlayerListByRole(CustomRoles.Collector);
+        List<Collector> collectorCL = collectors?.Select(x => x.GetRoleClass()).Cast<Collector>().ToList();
+
+        if (collectorCL != null && collectorCL.Any()) Logger.Info($"{!collectorCL.Any(x => x.CollectorWin(false))}", "!Collector.CollectorWin(false)");
+        Logger.Info($"{exiled != null}", "exiled != null");
+        bool CLThingy = collectorCL != null && collectorCL.Any() ? !collectorCL.Any(x => x.CollectorWin(false)) : true;
+
+        if (CLThingy && exiled != null)
         {
             // Reset player cam for exiled desync impostor
             if (Main.ResetCamPlayerList.Contains(exiled.PlayerId))

@@ -13,9 +13,7 @@ internal class Shroud : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18000;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Shroud);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -36,12 +34,10 @@ internal class Shroud : RoleBase
     }
     public override void Init()
     {
-        PlayerIds.Clear();
         ShroudList.Clear();
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
         CustomRoleManager.MarkOthers.Add(GetShroudMark);
 
@@ -165,7 +161,7 @@ internal class Shroud : RoleBase
 
             Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
             shrouded.RpcMurderPlayer(shrouded);
-            shrouded.SetRealKiller(Utils.GetPlayerById(PlayerIds.First()));
+            shrouded.SetRealKiller(_Player);
 
             ShroudList.Remove(shrouded.PlayerId);
             SendRPC(byte.MaxValue, shrouded.PlayerId, 2);

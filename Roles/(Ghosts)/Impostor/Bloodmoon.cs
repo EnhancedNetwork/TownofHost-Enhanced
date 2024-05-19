@@ -12,9 +12,7 @@ internal class Bloodmoon : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 28100;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Bloodmoon);
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorGhosts;
     //==================================================================\\
@@ -23,9 +21,8 @@ internal class Bloodmoon : RoleBase
     public static OptionItem CanKillNum;
     private static OptionItem TimeTilDeath;
     
-    public static readonly Dictionary<byte, int> KillCount = [];
-    public static readonly Dictionary<byte, int> PlayerDie = [];
-    public static readonly Dictionary<byte, long> LastTime = [];
+    public readonly Dictionary<byte, int> PlayerDie = [];
+    public readonly Dictionary<byte, long> LastTime = [];
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Bloodmoon);
@@ -36,33 +33,11 @@ internal class Bloodmoon : RoleBase
         TimeTilDeath = IntegerOptionItem.Create(Id + 12, "BloodMoonTimeTilDie", new(1, 120, 1), 60, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
         .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
-    {
-        KillCount.Clear();
-        PlayerIds.Clear();
-        PlayerDie.Clear();
-        LastTime.Clear();
-    }
     public override void Add(byte PlayerId)
     {
-        KillCount.Add(PlayerId, CanKillNum.GetInt());
-        PlayerIds.Add(PlayerId);
+        AbilityLimit = CanKillNum.GetInt();
         CustomRoleManager.LowerOthers.Add(OthersNameText);
 
-    }
-    private static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Bloodmoon);
-        writer.Write(playerId);
-        writer.Write(KillCount[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        byte PlayerId = reader.ReadByte();
-        int Limit = reader.ReadInt32();
-        KillCount[PlayerId] = Limit;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -71,30 +46,19 @@ internal class Bloodmoon : RoleBase
     }
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
-        if (KillCount[killer.PlayerId] > 0 
+        if (AbilityLimit > 0 
             && killer.RpcCheckAndMurder(target, true)
             && !PlayerDie.ContainsKey(target.PlayerId))
         {
             PlayerDie.Add(target.PlayerId, TimeTilDeath.GetInt());
             LastTime.Add(target.PlayerId, GetTimeStamp());
             killer.RpcResetAbilityCooldown();
-            KillCount[killer.PlayerId]--;
-            SendRPC(killer.PlayerId);
+            AbilityLimit--;
+            SendSkillRPC();
         }
         return false;
     }
-    private static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
-    public override string GetProgressText(byte playerId, bool cooms) => ColorString(CanKill(playerId) ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
-    public override void OnOtherTargetsReducedToAtoms(PlayerControl target)
-    {
-        var targetid = target.PlayerId;
-
-        if (PlayerDie.ContainsKey(targetid))
-            PlayerDie.Remove(targetid);
-
-        if (LastTime.ContainsKey(targetid))
-            LastTime.Remove(targetid);
-    }
+    public override string GetProgressText(byte playerId, bool cooms) => ColorString(AbilityLimit > 0  ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting, bool isforhud = false) 
     {
         var IsMeeting = GameStates.IsMeeting || IsForMeeting;
@@ -111,7 +75,7 @@ internal class Bloodmoon : RoleBase
                 LastTime.Remove(playerid);
                 player.SetDeathReason(PlayerState.DeathReason.BloodLet);
                 player.RpcMurderPlayer(player);
-                player.SetRealKiller(Utils.GetPlayerById(PlayerIds.First())); 
+                player.SetRealKiller(_Player); 
             }
         }
 

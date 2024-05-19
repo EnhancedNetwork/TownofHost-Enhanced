@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using System;
+using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using UnityEngine;
 
@@ -123,9 +124,9 @@ class RandomSpawn
         Logger.Info($"Spawn: {player.GetRealName()}", "RandomSpawn");
         if (AmongUsClient.Instance.AmHost)
         {
-            if (player.Is(CustomRoles.Penguin))
+            if (player.GetRoleClass() is Penguin pg)
             {
-                Penguin.OnSpawnAirship();
+                pg.OnSpawnAirship();
             }
             if (GameStates.IsNormalGame)
             {

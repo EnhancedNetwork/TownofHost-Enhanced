@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
@@ -7,9 +8,7 @@ internal class CursedWolf : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 1100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.CursedWolf);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -17,7 +16,6 @@ internal class CursedWolf : RoleBase
     private static OptionItem GuardSpellTimes;
     private static OptionItem KillAttacker;
 
-    private static readonly Dictionary<byte, int> SpellCount = [];
 
     public override void SetupCustomOption()
     {
@@ -28,49 +26,24 @@ internal class CursedWolf : RoleBase
         KillAttacker = BooleanOptionItem.Create(Id + 3, "Jinx/CursedWolf___KillAttacker", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.CursedWolf]);
     }
-
-    public override void Init()
-    {
-        playerIdList.Clear();
-        SpellCount.Clear();
-    }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        SpellCount[playerId] = GuardSpellTimes.GetInt();
+        AbilityLimit = GuardSpellTimes.GetInt();
     }
-
-    private static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCursedWolfSpellCount, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.WritePacked(SpellCount[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte CursedWolfId = reader.ReadByte();
-        int GuardNum = reader.ReadInt32();
-        if (SpellCount.ContainsKey(CursedWolfId))
-            SpellCount[CursedWolfId] = GuardNum;
-        else
-            SpellCount.Add(CursedWolfId, GuardSpellTimes.GetInt());
-    }
-
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == target || SpellCount[target.PlayerId] <= 0) return true;
+        if (killer == target || AbilityLimit <= 0) return true;
         if (killer.Is(CustomRoles.Pestilence)) return true;
 
         killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(target);
 
-        SpellCount[target.PlayerId] -= 1;
-        SendRPC(target.PlayerId);
+        AbilityLimit -= 1;
+        SendSkillRPC();
 
         if (KillAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
         {
-            Logger.Info($"{target.GetNameWithRole()} Spell Count: {SpellCount[target.PlayerId]}", "Cursed Wolf");
+            Logger.Info($"{target.GetNameWithRole()} Spell Count: {AbilityLimit}", "Cursed Wolf");
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Curse;
             killer.RpcMurderPlayer(killer);
             killer.SetRealKiller(target);
@@ -78,5 +51,5 @@ internal class CursedWolf : RoleBase
         return false;
     }
 
-    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedWolf), $"({SpellCount[PlayerId]})");
+    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedWolf), $"({AbilityLimit})");
 }
