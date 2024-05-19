@@ -89,11 +89,12 @@ internal class Chronomancer : RoleBase
         Color32 percentcolor = GetPercentColor(ChargedTime);
         var sb = new StringBuilder(Utils.ColorString(percentcolor, $"{(int)Math.Round(((double)ChargedTime / FullCharge) * 100)}% "));
         var ChargeToColor = GetChargeToColor();
+        var CHcol = IsInMassacre ? "#9e1139" : "#0cb339";
 
         sb.Append($"<size=75%>");
         for (int i = 0; i < Charges; i++)
         {
-            string box = ChargeToColor > 0 ? $"<#0cb339>█ </color>" : "<#666666>█ </color>";
+            string box = ChargeToColor > 0 ? $"<{CHcol}>█ </color>" : "<#666666>█ </color>";
             ChargeToColor--;
             sb.Append(box);
         }
