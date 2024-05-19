@@ -239,6 +239,11 @@ internal class Pestilence : RoleBase
         target.RpcMurderPlayer(killer);
         return false;
     }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        if (target.IsNeutralApocalypse()) return false;
+        return true;
+    }
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {

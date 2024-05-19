@@ -182,19 +182,12 @@ internal class Baker : RoleBase
 internal class Famine : RoleBase
 {
     //===========================SETUP================================\\
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Baker);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
