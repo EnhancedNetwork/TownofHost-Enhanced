@@ -6,8 +6,6 @@ using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
 using AmongUs.GameOptions;
-using TOHE.Roles.Core;
-using Rewired.Libraries.SharpDX.RawInput;
 
 namespace TOHE.Roles.Impostor;
 
