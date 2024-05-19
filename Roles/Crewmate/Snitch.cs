@@ -1,8 +1,8 @@
 using TOHE.Roles.Core;
+using Hazel;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
-
 namespace TOHE.Roles.Crewmate;
 
 internal class Snitch : RoleBase
@@ -110,6 +110,7 @@ internal class Snitch : RoleBase
                 TargetArrow.Add(target.PlayerId, snitchId);
             }
             IsExposed[snitchId] = true;
+            SendRPC(0, snitchId);
         }
 
         if (IsComplete[snitchId] || !snitchTask.IsTaskFinished) return;
@@ -137,6 +138,7 @@ internal class Snitch : RoleBase
         snitch.Notify(GetString("SnitchDoneTasks"));
 
         IsComplete[snitchId] = true;
+        SendRPC(1, snitchId);
     }
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
@@ -147,6 +149,53 @@ internal class Snitch : RoleBase
         return true;
     }
 
+    private static void SendRPC(byte RpcTypeId, byte snitchId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked(1);
+        writer.Write(RpcTypeId);
+        writer.Write(snitchId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        var RpcTypeId = reader.ReadByte();
+        var snitchId = reader.ReadByte();
+
+        switch (RpcTypeId)
+        {
+            case 0:
+                foreach (var target in Main.AllAlivePlayerControls)
+                {
+                    if (!IsSnitchTarget(target)) continue;
+
+                    TargetArrow.Add(target.PlayerId, snitchId);
+                }
+                IsExposed[snitchId] = true;
+                break;
+            case 1:
+                if (EnableTargetArrow)
+                {
+                    foreach (var target in Main.AllAlivePlayerControls)
+                    {
+                        if (!IsSnitchTarget(target)) continue;
+                        
+                        var targetId = target.PlayerId;
+                        TargetArrow.Add(snitchId, targetId);
+
+                        if (!TargetList.Contains(targetId))
+                        {
+                            TargetList.Add(targetId);
+
+                            if (CanGetColoredArrow)
+                                TargetColorlist.Add(targetId, target.GetRoleColor());
+                        }
+                    }
+                }
+                IsComplete[snitchId] = true;
+                break;
+        }
+    }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (seen == seer) return string.Empty;
