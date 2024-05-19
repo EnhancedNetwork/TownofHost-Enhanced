@@ -484,7 +484,7 @@ class CreatePlayerPatch
             {
                 _ = new LateTask(() =>
                 {
-                    if (client.Character != null && LobbyBehaviour.Instance != null)
+                    if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null)
                     {
                         // Only for vanilla
                         if (!client.Character.OwnedByHost() && !client.Character.IsModClient())
