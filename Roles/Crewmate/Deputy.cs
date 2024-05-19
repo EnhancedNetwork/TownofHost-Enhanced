@@ -41,7 +41,7 @@ internal class Deputy : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.SerialKiller)) return true;
+        if (target.Is(CustomRoles.SerialKiller)) return false;
         if (AbilityLimit < 1) return false;
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} : Limit {AbilityLimit}", "Deputy");
@@ -58,7 +58,7 @@ internal class Deputy : RoleBase
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
             if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill(target);
 
-            return true;
+            return false;
         }
         
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyInvalidTarget")));
