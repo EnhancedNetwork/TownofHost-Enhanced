@@ -142,6 +142,14 @@ public static class CustomRoleManager
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
 
+        // If Target is possessed by Dollmaster swap controllers.
+        if (DollMaster.HasEnabled && DollMaster.IsControllingPlayer)
+        {
+            if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
+                if (target == DollMaster.DollMasterTarget || target == DollMaster.controllingTarget)
+                    target = target == DollMaster.controllingTarget? DollMaster.DollMasterTarget : DollMaster.controllingTarget;
+        }
+
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
         if (PlagueBearer.HasEnabled)
@@ -214,6 +222,26 @@ public static class CustomRoleManager
             return false;
         }
 
+        // Swap controllers if Sheriff shots Dollmasters main body.
+        if (DollMaster.HasEnabled && DollMaster.IsControllingPlayer)
+        {
+            if (killer.Is(CustomRoles.Sheriff) && target == DollMaster.DollMasterTarget)
+            {
+                if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
+                    if (target == DollMaster.DollMasterTarget || target == DollMaster.controllingTarget)
+                        target = target == DollMaster.controllingTarget ? DollMaster.DollMasterTarget : DollMaster.controllingTarget;
+            }
+        }
+
+        // Check if killer is a true killing role and Target is possessed by Dollmaster
+        if (DollMaster.HasEnabled && DollMaster.IsControllingPlayer)
+            if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
+                if (target == DollMaster.DollMasterTarget || target == DollMaster.controllingTarget)
+                {
+                    DollMaster.CheckMurderAsPossessed(killer, target);
+                    return false;
+                }
+                
         return true;
     }
     /// <summary>
