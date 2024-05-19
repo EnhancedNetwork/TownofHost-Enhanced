@@ -375,8 +375,8 @@ internal class Swapper : RoleBase
     {
         public static void Postfix(MeetingHud __instance)
         {
-            if (PlayerControl.LocalPlayer.Is(CustomRoles.Swapper) && PlayerControl.LocalPlayer.IsAlive())
-                CreateSwapperButton(__instance);
+            if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sp && PlayerControl.LocalPlayer.IsAlive())
+                sp.CreateSwapperButton(__instance);
 
             if (AmongUsClient.Instance.AmHost)
             {
@@ -397,7 +397,7 @@ internal class Swapper : RoleBase
             }
         }
     }
-    public static void CreateSwapperButton(MeetingHud __instance)
+    public void CreateSwapperButton(MeetingHud __instance)
     {
         foreach (var pva in __instance.playerStates)
         {
@@ -424,7 +424,7 @@ internal class Swapper : RoleBase
 
             button.OnClick.RemoveAllListeners();
             button.OnClick.AddListener((Action)(() => { 
-                if (pc.GetRoleClass() is Swapper sw) sw.SwapperOnClick(pva.TargetPlayerId, __instance); 
+                 SwapperOnClick(pva.TargetPlayerId, __instance); 
             }));
         }
     }
