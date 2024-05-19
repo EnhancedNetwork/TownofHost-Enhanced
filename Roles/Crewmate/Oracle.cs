@@ -1,5 +1,5 @@
 using Hazel;
-using Il2CppSystem.Text;
+using System.Text;
 using System;
 using TOHE.Roles.Core;
 using UnityEngine;

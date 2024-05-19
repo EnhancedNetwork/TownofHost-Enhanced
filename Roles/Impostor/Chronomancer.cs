@@ -1,8 +1,4 @@
-﻿using Hazel;
-using System;
-using System.Text;
-using UnityEngine;
-using static TOHE.Options;
+﻿using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
 using AmongUs.GameOptions;
@@ -82,9 +78,7 @@ internal class Chronomancer : RoleBase
         int percent = (int)Math.Round(((double)ChargedTime / FullCharge) * 100);
         int ToColor = (Charges * percent) / 100;
 
-        return ToColor;
-    }
-    private string GetCharge()
+    private static void OnSetKillCooldown(byte id)
     {
         Color32 percentcolor = GetPercentColor(ChargedTime);
         var sb = new StringBuilder(Utils.ColorString(percentcolor, $"{(int)Math.Round(((double)ChargedTime / FullCharge) * 100)}% "));
@@ -136,7 +130,8 @@ internal class Chronomancer : RoleBase
         killer.SetKillCooldown();
         return true;
     }
-    public override void OnFixedUpdate(PlayerControl pc)
+
+    public override void AfterMeetingTasks()
     {
         if (GameStates.IsMeeting) return;
 

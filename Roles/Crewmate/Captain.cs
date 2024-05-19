@@ -66,8 +66,8 @@ internal class Captain : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.Write(targetId);
         writer.WritePacked(0);
+        writer.Write(targetId);
         writer.Write(OriginalSpeed[targetId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
@@ -82,8 +82,8 @@ internal class Captain : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.Write(targetId);
         writer.WritePacked(1);
+        writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
@@ -109,9 +109,9 @@ internal class Captain : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked(3);
         writer.Write(playerId);
         writer.Write(targetId);
-        writer.WritePacked(3);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
@@ -126,8 +126,8 @@ internal class Captain : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.Write(captainTarget);
         writer.WritePacked(4);
+        writer.Write(captainTarget);
         if (captainTarget != byte.MaxValue) writer.Write((int)SelectedAddon);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;

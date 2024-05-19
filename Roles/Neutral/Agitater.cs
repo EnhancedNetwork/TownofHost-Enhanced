@@ -70,7 +70,7 @@ internal class Agitater : RoleBase
         AgitaterHasBombed = false;
         SendRPC(CurrentBombedPlayer, LastBombedPlayer);
     }
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AgiTaterBombCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 
@@ -103,9 +103,9 @@ internal class Agitater : RoleBase
                 if (pc != null && pc.IsAlive() && killer != null)
                 {
                     Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
-                    pc.SetRealKiller(Utils.GetPlayerById(playerIdList[0]));
                     pc.RpcMurderPlayer(pc);
-                    Logger.Info($"{killer.GetNameWithRole()}  bombed {pc.GetNameWithRole()} bomb cd complete", "Agitater");
+                    pc.SetRealKiller(killer);
+                    Logger.Info($"{killer.GetNameWithRole()} bombed {pc.GetNameWithRole()} - bomb cd complete", "Agitater");
                     ResetBomb();
                 }
 
@@ -118,20 +118,20 @@ internal class Agitater : RoleBase
     {
         if (CurrentBombedPlayer == byte.MaxValue) return;
         var target = Utils.GetPlayerById(CurrentBombedPlayer);
-        var killer = Utils.GetPlayerById(playerIdList[0]);
+        var killer = Utils.GetPlayerById(playerIdList.First());
         if (target == null || killer == null) return;
         
-        target.SetRealKiller(killer);
         Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
         Main.PlayerStates[CurrentBombedPlayer].SetDead();
         target.RpcExileV2();
+        target.SetRealKiller(killer);
         MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
         ResetBomb();
         Logger.Info($"{killer.GetRealName()} bombed {target.GetRealName()} on report", "Agitater");
     }
     private void OnFixedUpdateOthers(PlayerControl player)
     {
-        if (!AgitaterHasBombed) return;
+        if (!AgitaterHasBombed || CurrentBombedPlayer != player.PlayerId) return;
 
         if (!player.IsAlive())
         {

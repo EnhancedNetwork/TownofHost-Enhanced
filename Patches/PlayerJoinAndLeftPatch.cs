@@ -171,7 +171,6 @@ public static class OnPlayerJoinedPatch
                 {
                     RPC.RpcVersionCheck();
                 }
-
                 if (AmongUsClient.Instance.AmHost && !client.IsDisconnected() && client.Character == null)
                 {
                     Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");
@@ -480,6 +479,31 @@ class CreatePlayerPatch
                 if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
                 else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
             }, 3f, "Welcome Message");
+
+            if (GameStates.IsOnlineGame)
+            {
+                _ = new LateTask(() =>
+                {
+                    if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null)
+                    {
+                        // Only for vanilla
+                        if (!client.Character.OwnedByHost() && !client.Character.IsModClient())
+                        {
+                            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(LobbyBehaviour.Instance.NetId, (byte)RpcCalls.LobbyTimeExpiring, SendOption.None, client.Id);
+                            writer.WritePacked((int)GameStartManagerPatch.timer);
+                            writer.Write(false);
+                            AmongUsClient.Instance.FinishRpcImmediately(writer);
+                        }
+                        // Non-host modded client
+                        else if (!client.Character.OwnedByHost() && client.Character.IsModClient())
+                        {
+                            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncLobbyTimer, SendOption.Reliable, client.Id);
+                            writer.WritePacked((int)GameStartManagerPatch.timer);
+                            AmongUsClient.Instance.FinishRpcImmediately(writer);
+                        }
+                    }
+                }, 3f, "Send RPC or Sync Lobby Timer");
+            }
 
             if (Options.GradientTagsOpt.GetBool())
             {

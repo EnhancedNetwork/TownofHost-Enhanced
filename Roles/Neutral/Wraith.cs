@@ -216,12 +216,11 @@ internal class Wraith : RoleBase
     {
         if (!IsInvis(killer.PlayerId) || target.Is(CustomRoles.Bait)) return true;
 
-        if (killer.RpcCheckAndMurder(target, check: true))
-        {
-            killer.SetKillCooldown();
-            target.RpcMurderPlayer(target);
-            target.SetRealKiller(killer);
-        }
+        killer.RpcGuardAndKill(target);
+        killer.SetKillCooldown();
+
+        target.RpcMurderPlayer(target);
+        target.SetRealKiller(killer);
         return false;
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("invisible");

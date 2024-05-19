@@ -2,14 +2,16 @@
 
 namespace TOHE;
 
-[HarmonyPatch(typeof(LobbyBehaviour), nameof(LobbyBehaviour.FixedUpdate))]
-public class LobbyFixedUpdatePatch
+[HarmonyPatch(typeof(LobbyBehaviour), nameof(LobbyBehaviour.Start))]
+public class LobbyStartPatch
 {
     private static GameObject Paint;
     public static void Postfix()
     {
-        if (Paint == null)
+        _ = new LateTask(() =>
         {
+            if (!GameStates.IsLobby || Paint != null) return;
+            
             var LeftBox = GameObject.Find("Leftbox");
             if (LeftBox != null)
             {
@@ -19,6 +21,6 @@ public class LobbyFixedUpdatePatch
                 SpriteRenderer renderer = Paint.GetComponent<SpriteRenderer>();
                 renderer.sprite = Utils.LoadSprite("TOHE.Resources.Images.LobbyPaint.png", 290f);
             }
-        }
+        }, 3f, "LobbyPaint", shoudLog: false);
     }
 }

@@ -1,4 +1,4 @@
-using Il2CppSystem.Text;
+using System.Text;
 using System;
 using TMPro;
 using TOHE.Roles.Core;

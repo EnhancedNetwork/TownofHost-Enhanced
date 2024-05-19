@@ -92,12 +92,12 @@ internal class Bastion : RoleBase
             {
                 foreach (var bastion in Main.AllAlivePlayerControls.Where(bastion => bastion.Is(CustomRoles.Bastion)).ToArray())
                 {
-                    pc.SetRealKiller(bastion);
                     bastion.Notify(GetString("BastionNotify"));
                     pc.Notify(GetString("EnteredBombedVent"));
 
                     Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                     pc.RpcMurderPlayer(pc);
+                    pc.SetRealKiller(bastion);
                     BombedVents.Remove(ventId);
                 }
             }, 0.5f, "Player bombed by Bastion");

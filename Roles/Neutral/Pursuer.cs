@@ -99,9 +99,9 @@ internal class Pursuer : RoleBase
         if (killer == null) return false;
         
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-        target.SetRealKiller(killer);
         target.RpcMurderPlayer(target);
-        
+        target.SetRealKiller(killer);
+
         Logger.Info($"赝品商 {pc.GetRealName()} 的客户 {target.GetRealName()} 因使用赝品走火自杀", "Pursuer");
         return true;
     }

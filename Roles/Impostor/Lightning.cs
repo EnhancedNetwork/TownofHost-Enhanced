@@ -142,8 +142,8 @@ internal class Lightning : RoleBase
 
                 deList.Add(gs.PlayerId);
                 Main.PlayerStates[gs.PlayerId].deathReason = PlayerState.DeathReason.Quantization;
-                gs.SetRealKiller(RealKiller[gs.PlayerId]);
                 gs.RpcMurderPlayer(gs);
+                gs.SetRealKiller(RealKiller[gs.PlayerId]);
 
                 Logger.Info($"{gs.GetNameWithRole()} As a quantum ghost dying from a collision", "Lightning");
                 break;

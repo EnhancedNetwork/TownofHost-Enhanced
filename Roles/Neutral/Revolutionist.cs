@@ -111,8 +111,8 @@ internal class Revolutionist : RoleBase
     private static void SetDrawPlayerRPC(PlayerControl player, PlayerControl target, bool isDrawed)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.Write(player.PlayerId);
         writer.WritePacked(1);
+        writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isDrawed);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -134,8 +134,8 @@ internal class Revolutionist : RoleBase
         else
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-            writer.Write(arsonistId);
             writer.WritePacked(2);
+            writer.Write(arsonistId);
             writer.Write(targetId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
@@ -233,9 +233,9 @@ internal class Revolutionist : RoleBase
                     ResetCurrentDrawTarget(playerId);
                     if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt())
                     {
-                        rv_target.SetRealKiller(player);
                         Main.PlayerStates[rvTargetId].deathReason = PlayerState.DeathReason.Sacrifice;
                         player.RpcMurderPlayer(rv_target);
+                        rv_target.SetRealKiller(player);
                         Main.PlayerStates[rvTargetId].SetDead();
                         Logger.Info($"Revolutionist: {player.GetNameWithRole()} killed by {rv_target.GetNameWithRole()}", "Revolutionist");
                     }

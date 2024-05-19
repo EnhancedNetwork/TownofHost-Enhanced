@@ -73,16 +73,16 @@ internal class HexMaster : RoleBase
         if (doHex)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-            writer.Write(hexId);
             writer.WritePacked(1);
+            writer.Write(hexId);
             writer.Write(target);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         else
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+            writer.WritePacked(2);
             writer.Write(hexId);
-            writer.WritePacked(1);
             writer.Write(HexMode[hexId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
 

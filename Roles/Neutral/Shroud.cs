@@ -5,6 +5,7 @@ using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -130,9 +131,9 @@ internal class Shroud : RoleBase
                     {
                         var shroudId = ShroudList[shroud.PlayerId];
                         RPC.PlaySoundRPC(shroudId, Sounds.KillSound);
-                        target.SetRealKiller(Utils.GetPlayerById(shroudId));
                         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
                         shroud.RpcMurderPlayer(target);
+                        target.SetRealKiller(Utils.GetPlayerById(shroudId));
                         Utils.MarkEveryoneDirtySettings();
                         ShroudList.Remove(shroud.PlayerId);
                         SendRPC(byte.MaxValue, shroud.PlayerId, 2);
@@ -160,6 +161,7 @@ internal class Shroud : RoleBase
 
             Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
             shrouded.RpcMurderPlayer(shrouded);
+            shrouded.SetRealKiller(_Player);
 
             ShroudList.Remove(shrouded.PlayerId);
             SendRPC(byte.MaxValue, shrouded.PlayerId, 2);

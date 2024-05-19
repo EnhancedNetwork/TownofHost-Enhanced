@@ -119,6 +119,10 @@ class CheckMurderPatch
             return false;
         }
 
+        // Set kill cooldown for Chronomancer
+        if (killerRole is Chronomancer)
+            Chronomancer.OnCheckMurder(killer);
+
         killer.ResetKillCooldown();
         Logger.Info($"Kill Cooldown Resets", "CheckMurder");
 
@@ -875,6 +879,7 @@ class FixedUpdateInNormalGamePatch
     private static readonly StringBuilder Mark = new(20);
     private static readonly StringBuilder Suffix = new(120);
     private static readonly Dictionary<int, int> BufferTime = [];
+    private static readonly Dictionary<int, int> BufferTimeForVeryLowLoad = [];
     private static int LevelKickBufferTime = 20;
 
     public static async void Postfix(PlayerControl __instance)
@@ -909,15 +914,20 @@ class FixedUpdateInNormalGamePatch
 
     public static Task DoPostfix(PlayerControl __instance)
     {
+        // FixedUpdate is called 30 times every 1 second
+        // If count only one player
+        // For example: 15 players will called 450 times every 1 second
+
         var player = __instance;
 
+        // The code is called once every 1 second (by one player)
         bool lowLoad = false;
         if (Options.LowLoadMode.GetBool())
         {
             if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
             {
-                BufferTime.TryAdd(player.PlayerId, 10);
-                timerLowLoad = 10;
+                BufferTime.TryAdd(player.PlayerId, 30);
+                timerLowLoad = 30;
             }
 
             timerLowLoad--;
@@ -928,11 +938,32 @@ class FixedUpdateInNormalGamePatch
             }
             else
             {
-                timerLowLoad = 10;
+                timerLowLoad = 30;
             }
 
             BufferTime[player.PlayerId] = timerLowLoad;
         }
+
+        // The code is called once every 5 second (by one player)
+        bool veryLowLoad = false;
+        if (!BufferTimeForVeryLowLoad.TryGetValue(player.PlayerId, out var timerVeryLowLoad))
+        {
+            BufferTimeForVeryLowLoad.TryAdd(player.PlayerId, 90);
+            timerVeryLowLoad = 90;
+        }
+
+        timerVeryLowLoad--;
+
+        if (timerVeryLowLoad > 0)
+        {
+            veryLowLoad = true;
+        }
+        else
+        {
+            timerVeryLowLoad = 90;
+        }
+
+        BufferTimeForVeryLowLoad[player.PlayerId] = timerVeryLowLoad;
 
         if (!lowLoad)
         {
@@ -1088,8 +1119,9 @@ class FixedUpdateInNormalGamePatch
 
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
         var RoleText = RoleTextTransform.GetComponent<TMPro.TextMeshPro>();
+        bool runCode = !veryLowLoad || (!lowLoad && __instance.AmOwner && (LocateArrow.HasLocateArrows(__instance) || TargetArrow.HasTargetArrows(__instance) || Camouflage.IsCamouflage));
 
-        if (RoleText != null && __instance != null && !lowLoad)
+        if (RoleText != null && __instance != null && runCode)
         {
             if (GameStates.IsLobby)
             {
@@ -1133,6 +1165,9 @@ class FixedUpdateInNormalGamePatch
                 var seer = PlayerControl.LocalPlayer;
                 var seerRoleClass = seer.GetRoleClass();
                 var target = __instance;
+
+                if (seer != target)
+                    target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
 
                 string RealName = target.GetRealName();
 
@@ -1205,7 +1240,7 @@ class FixedUpdateInNormalGamePatch
                 }
 
                 // Camouflage
-                if ((Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated)
+                if (Camouflage.IsCamouflage)
                     RealName = $"<size=0%>{RealName}</size> ";
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
@@ -1326,27 +1361,18 @@ class CoEnterVentPatch
         }
 
         var playerRoleClass = __instance.myPlayer.GetRoleClass();
-        
-        // Fix Vent Stuck
+
+        // Prevent vanilla players from enter vents if their current role does not allow it
         if ((__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer && !__instance.myPlayer.CanUseImpostorVentButton())
             || (playerRoleClass != null && playerRoleClass.CheckBootFromVent(__instance, id))
         )
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, -1);
-            writer.WritePacked(127);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-            
             _ = new LateTask(() =>
             {
-                int clientId = __instance.myPlayer.GetClientId();
-                MessageWriter writer2 = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, clientId);
-                writer2.Write(id);
-                AmongUsClient.Instance.FinishRpcImmediately(writer2);
-            }, 0.5f, "Fix DesyncImpostor Stuck");
+                __instance.RpcBootFromVent(id);
+            }, 0.5f, "Fix Vent Stuck");
             return false;
         }
-
-        
 
         playerRoleClass?.OnCoEnterVent(__instance, id);
 

@@ -46,6 +46,7 @@ enum CustomRPC : byte // (150/255 USED)
     NemesisRevenge,
     RetributionistRevenge,
     SetFriendCode,
+    SyncLobbyTimer,
 
     //Roles
     SetLoversPlayers,
@@ -107,7 +108,7 @@ internal class RPCHandlerPatch
                 Logger.Info($"{__instance.GetNameWithRole()} => {p?.GetNameWithRole() ?? "null"}", "StartMeeting");
                 break;
         }
-        if (__instance.OwnerId != AmongUsClient.Instance.HostId &&
+        if (!__instance.OwnedByHost() &&
             ((Enum.IsDefined(typeof(CustomRPC), callId) && !TrustedRpc(callId)) // Is Custom RPC
             || (!Enum.IsDefined(typeof(CustomRPC), callId) && !Enum.IsDefined(typeof(RpcCalls), callId)))) //Is not Custom RPC and not Vanilla RPC
         {
@@ -248,7 +249,9 @@ internal class RPCHandlerPatch
                         option.SetValue(4); // 4 => Preset 5
                     }
                 }
-                OptionShower.GetText();
+
+                if (GameStates.IsLobby)
+                    OptionShower.GetText();
                 break;
 
             case CustomRPC.SetDeathReason:
@@ -273,6 +276,9 @@ internal class RPCHandlerPatch
                 byte CustomRoleTargetId = reader.ReadByte();
                 CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
                 RPC.SetCustomRole(CustomRoleTargetId, role);
+                break;
+            case CustomRPC.SyncLobbyTimer:
+                GameStartManagerPatch.timer = reader.ReadPackedInt32();
                 break;
             case CustomRPC.SyncRoleSkill:
                 RPC.SyncRoleSkillReader(reader, __instance);
@@ -378,16 +384,15 @@ internal static class RPC
                 return;
             }
         }
-
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null))
         {
             return;
         }
 
         var amount = OptionItem.AllOptions.Count;
-        int divideBy = amount / 4;
+        int divideBy = amount / 10;
 
-        for (var i = 0; i <= 4; i++)
+        for (var i = 0; i <= 10; i++)
         {
             SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, amount, targetId);
         }
@@ -429,24 +434,15 @@ internal static class RPC
         }
 
         var countListOptions = listOptions.Count;
-        Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
+        //Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
 
         // Sync Settings
         foreach (var option in listOptions.ToArray())
         {
+            // Send by index value for all custom options
             writer.WritePacked(option.GetValue());
         }
-
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-
-    // Not Used
-    public static void SyncCustomSettingsRPCforOneOption(OptionItem option)
-    {
-        List<OptionItem> allOptions = new(OptionItem.AllOptions);
-        var placement = allOptions.IndexOf(option);
-        if (placement != -1)
-            SyncOptionsBetween(placement, placement, OptionItem.AllOptions.Count);
     }
     public static void PlaySoundRPC(byte PlayerID, Sounds sound)
     {
@@ -645,10 +641,23 @@ internal static class RPC
 
         if (PlayerControl.LocalPlayer.PlayerId == targetId) RemoveDisableDevicesPatch.UpdateDisableDevices();
     }
+    private static int Lastrpc = -1;
     public static void SyncRoleSkillReader(MessageReader reader, PlayerControl pc)
     {
-        int RpcInx = reader.ReadPackedInt32();
+        int RpcInx = Lastrpc;
 
+        try
+        {
+            RpcInx = reader.ReadPackedInt32();
+        }
+        catch { }
+
+        if (RpcInx != -1)
+        {
+            Lastrpc = RpcInx;
+        }
+
+        Logger.Info($"Recieved Rpc for role: {pc.GetRoleClass().GetType().Name} | With Rpcinx?: {(RpcInx != -1 ? RpcInx : false)} | Ishost?: {AmongUsClient.Instance.AmHost} ", "SyncRoleSkillReader");
 
         try
         {

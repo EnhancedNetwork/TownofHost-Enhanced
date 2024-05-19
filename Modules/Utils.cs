@@ -396,6 +396,18 @@ public static class Utils
 
         var targetMainRole = Main.PlayerStates[targetId].MainRole;
         var targetSubRoles = Main.PlayerStates[targetId].SubRoles;
+        
+        // If a player is possessed by the Dollmaster swap each other's role and add-ons for display for every other client other than Dollmaster and target.
+        if (DollMaster.IsControllingPlayer)
+        {
+            if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
+            {
+                if (seerId != DollMaster.DollMasterTarget.PlayerId && targetId == DollMaster.DollMasterTarget.PlayerId)
+                    targetSubRoles = Main.PlayerStates[DollMaster.controllingTarget.PlayerId].SubRoles;
+                else if (seerId != DollMaster.controllingTarget.PlayerId && targetId == DollMaster.controllingTarget.PlayerId)
+                    targetSubRoles = Main.PlayerStates[DollMaster.DollMasterTarget.PlayerId].SubRoles;
+            }
+        }
 
         RoleText = GetRoleName(targetMainRole);
         RoleColor = GetRoleColor(targetMainRole);
@@ -1289,15 +1301,17 @@ public static class Utils
     public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "") 
     {
         // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
-
-        if (text.Length > 1200 && !GetPlayerById(sendTo).IsModClient())
+        bool isfirst = true;
+        if (text.Length > 1200 && !(Utils.GetPlayerById(sendTo).IsModClient()))
         {
             foreach(var txt in text.SplitMessage())
             {
+                var titleW = isfirst ? title : "<alpha=#00>.";
                 var m = Regex.Replace(txt, "^<voffset=[-]?\\d+em>", ""); // replaces the first instance of voffset, if any.
                 m += $"<voffset=-1.3em><alpha=#00>.</voffset>"; // fix text clipping OOB
                 if (m.IndexOf("\n") <= 4) m = m[(m.IndexOf("\n")+1)..m.Length];
-                SendMessage(m, sendTo, title);
+                SendMessage(m, sendTo, titleW);
+                isfirst = false;
             }
         }
         else 
@@ -1741,7 +1755,7 @@ public static class Utils
                 }
 
                 // Camouflage
-                if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))
+                if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                     SelfName = $"<size=0%>{SelfName}</size>";
 
 
@@ -1901,7 +1915,7 @@ public static class Utils
                         }
 
                         // Camouflage
-                        if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))
+                        if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                             TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                         // Target Name

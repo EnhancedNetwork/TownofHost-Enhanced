@@ -22,7 +22,7 @@ public static class GameStartManagerUpdatePatch
 public class GameStartManagerPatch
 {
     private static SpriteRenderer cancelButton;
-    private static float timer = 600f;
+    public static float timer = 600f;
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Start))]
     public class GameStartManagerStartPatch
     {
@@ -134,7 +134,7 @@ public class GameStartManagerPatch
                             if ((GameData.Instance.PlayerCount >= Options.StartWhenPlayersReach.GetInt() && Options.StartWhenPlayersReach.GetInt() > 1) ||
                                 (timer <= Options.StartWhenTimerLowerThan.GetInt() && Options.StartWhenTimerLowerThan.GetInt() > 0))
                             {
-                                BeginAutoStart(Options.ImmediateStartTimer.GetInt());
+                                BeginAutoStart(Options.AutoStartTimer.GetInt());
                                 return;
                             }
                         }

@@ -113,8 +113,8 @@ internal class Kamikaze : RoleBase
             PlayerControl pc = Utils.GetPlayerById(kamiTarget);
             if (pc == null || !pc.IsAlive()) continue;
             Main.PlayerStates[kamiTarget].deathReason = PlayerState.DeathReason.Targeted;
-            pc.SetRealKiller(target);
             pc.RpcMurderPlayer(pc);
+            pc.SetRealKiller(target);
         }
         KamikazedList.Remove(target.PlayerId);
         SendRPC(KamiId: target.PlayerId, checkMurder: false);

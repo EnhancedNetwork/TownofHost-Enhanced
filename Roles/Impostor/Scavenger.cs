@@ -38,8 +38,8 @@ internal class Scavenger : RoleBase
         _ = new LateTask(
             () =>
             {
-                target.SetRealKiller(killer);
                 target.RpcMurderPlayer(target);
+                target.SetRealKiller(killer);
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), Translator.GetString("KilledByScavenger")), time: 8f);
             },
