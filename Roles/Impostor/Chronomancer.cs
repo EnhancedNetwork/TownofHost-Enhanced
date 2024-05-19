@@ -1,4 +1,8 @@
-﻿using static TOHE.Options;
+﻿using Hazel;
+using System;
+using System.Text;
+using UnityEngine;
+using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
 using AmongUs.GameOptions;
@@ -27,8 +31,8 @@ internal class Chronomancer : RoleBase
 
     private string LastCD;
 
-    private static Color32 OrangeColor = new (255, 190, 92, 255); // The lest color
-    private static Color32 GreenColor = new (0, 128, 0, 255); // The final color
+    private static Color32 OrangeColor = new(255, 190, 92, 255); // The lest color
+    private static Color32 GreenColor = new(0, 128, 0, 255); // The final color
 
     private static int Charges;
 
@@ -71,14 +75,16 @@ internal class Chronomancer : RoleBase
     {
         float chargeRatio = Mathf.Clamp01((float)val / FullCharge);
         return Color32.Lerp(OrangeColor, GreenColor, chargeRatio);
-    
+
     }
     private int GetChargeToColor()
-    { 
+    {
         int percent = (int)Math.Round(((double)ChargedTime / FullCharge) * 100);
         int ToColor = (Charges * percent) / 100;
 
-    private static void OnSetKillCooldown(byte id)
+        return ToColor;
+    }
+    private string GetCharge()
     {
         Color32 percentcolor = GetPercentColor(ChargedTime);
         var sb = new StringBuilder(Utils.ColorString(percentcolor, $"{(int)Math.Round(((double)ChargedTime / FullCharge) * 100)}% "));
@@ -130,8 +136,7 @@ internal class Chronomancer : RoleBase
         killer.SetKillCooldown();
         return true;
     }
-
-    public override void AfterMeetingTasks()
+    public override void OnFixedUpdate(PlayerControl pc)
     {
         if (GameStates.IsMeeting) return;
 
@@ -141,19 +146,19 @@ internal class Chronomancer : RoleBase
             Utils.NotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
         }
 
-        if (ChargedTime != FullCharge 
+        if (ChargedTime != FullCharge
             && now + 1 <= Utils.GetTimeStamp() && !IsInMassacre)
         {
             now = Utils.GetTimeStamp();
             ChargedTime++;
         }
-        else if(IsInMassacre && ChargedTime > 0 && countnowF >= LastNowF)
+        else if (IsInMassacre && ChargedTime > 0 && countnowF >= LastNowF)
         {
             LastNowF = countnowF + Dtime.GetFloat();
             ChargedTime--;
         }
 
-        if(IsInMassacre && ChargedTime < 1)
+        if (IsInMassacre && ChargedTime < 1)
         {
             IsInMassacre = false;
             pc.MarkDirtySettings();
@@ -168,7 +173,7 @@ internal class Chronomancer : RoleBase
         if (seer == seen && !ismeeting)
         {
             if (!seer.IsModClient()) return GetCharge();
-            else if(isForHud) return GetModdedCharge();
+            else if (isForHud) return GetModdedCharge();
         }
         return "";
     }
