@@ -223,5 +223,5 @@ internal class Wraith : RoleBase
         target.SetRealKiller(killer);
         return false;
     }
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("invisible");
+    public override Sprite ImpostorVentButtonSprite(PlayerControl player) => CustomButton.Get("invisible");
 }

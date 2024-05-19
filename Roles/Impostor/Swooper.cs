@@ -1,5 +1,4 @@
-﻿using AsmResolver.DotNet.Signatures;
-using Hazel;
+﻿using Hazel;
 using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -12,7 +11,7 @@ internal class Swooper : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 4700;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Swooper);
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Chameleon);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -21,11 +20,9 @@ internal class Swooper : RoleBase
     private static OptionItem SwooperDuration;
     private static OptionItem SwooperVentNormallyOnCooldown;
 
-    private long? InvisTime;
-    private long? lastTime;
-    private int? ventedId;
-
-    private static long lastFixedTime = 0;
+    private static readonly Dictionary<byte, int> ventedId = [];
+    private static readonly Dictionary<byte, long> InvisCooldown = [];
+    private static readonly Dictionary<byte, long> InvisDuration = [];
 
     public override void SetupCustomOption()
     {
@@ -38,37 +35,47 @@ internal class Swooper : RoleBase
     }
     public override void Init()
     {
-        lastFixedTime = 0;
+        InvisCooldown.Clear();
+        InvisDuration.Clear();
+        ventedId.Clear();
     }
-    private  void SendRPC(PlayerControl pc)
+    public override void Add(byte playerId)
+    {
+        InvisCooldown[playerId] = Utils.GetTimeStamp();
+    }
+    private static void SendRPC(PlayerControl pc)
     {
         if (pc.AmOwner) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
         writer.WritePacked((int)CustomRoles.Swooper);
-        writer.Write((InvisTime).ToString());
-        writer.Write((lastTime).ToString());
+        writer.Write((InvisCooldown.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
+        writer.Write((InvisDuration.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        InvisTime = new();
-        lastTime = new();
+        InvisCooldown.Clear();
+        InvisDuration.Clear();
+        long cooldown = long.Parse(reader.ReadString());
         long invis = long.Parse(reader.ReadString());
-        long last = long.Parse(reader.ReadString());
-        if (invis > 0) InvisTime = invis;
-        if (last > 0) lastTime = last;
+        if (cooldown > 0) InvisCooldown.Add(PlayerControl.LocalPlayer.PlayerId, cooldown);
+        if (invis > 0) InvisCooldown.Add(PlayerControl.LocalPlayer.PlayerId, invis);
     }
-    private bool CanGoInvis(byte id)
-        => GameStates.IsInTask && InvisTime == null && lastTime == null;
-    private bool IsInvis(byte id) => InvisTime != null;
+
+    private static bool CanGoInvis(byte id)
+        => GameStates.IsInTask && !InvisCooldown.ContainsKey(id);
+
+    private static bool IsInvis(byte id)
+        => InvisDuration.ContainsKey(id);
 
     public override void OnEnterVent(PlayerControl swooper, Vent vent)
     {
         var swooperId = swooper.PlayerId;
         if (!IsInvis(swooperId)) return;
 
-        InvisTime = new();
-        lastTime = Utils.GetTimeStamp();
+        InvisDuration.Remove(swooperId);
+        InvisCooldown.Remove(swooperId);
+        InvisCooldown.Add(swooperId, Utils.GetTimeStamp());
         SendRPC(swooper);
 
         swooper?.MyPhysics?.RpcBootFromVent(vent.Id);
@@ -85,13 +92,15 @@ internal class Swooper : RoleBase
         {
             if (CanGoInvis(swooperId))
             {
-                ventedId = ventId;
+                ventedId.Remove(swooperId);
+                ventedId.Add(swooperId, ventId);
 
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, swooper.GetClientId());
                 writer.WritePacked(ventId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
 
-                InvisTime = Utils.GetTimeStamp();
+                InvisDuration.Remove(swooperId);
+                InvisDuration.Add(swooperId, Utils.GetTimeStamp());
                 SendRPC(swooper);
                 
                 swooper.Notify(GetString("SwooperInvisState"), SwooperDuration.GetFloat());
@@ -107,59 +116,44 @@ internal class Swooper : RoleBase
         }, 0.5f, "Swooper Vent");
     }
 
-    private static Dictionary<byte, long> newList = [];
-    private static List<byte> refreshList = [];
     public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        var now = Utils.GetTimeStamp();
+        var nowTime = Utils.GetTimeStamp();
         var playerId = player.PlayerId;
 
-        if (lastTime + (long)SwooperCooldown.GetFloat() < now)
+        if (InvisCooldown.TryGetValue(playerId, out var oldTime) && (oldTime + (long)SwooperCooldown.GetFloat() - nowTime) < 0)
         {
-            lastTime = new();
+            InvisCooldown.Remove(playerId);
             if (!player.IsModClient()) player.Notify(GetString("SwooperCanVent"));
             SendRPC(player);
         }
 
-        if (lastFixedTime != now)
+        foreach (var swoopInfo in InvisDuration)
         {
-            lastFixedTime = now;
-
-
-            var swooperId = _state.PlayerId;
+            var swooperId = swoopInfo.Key;
             var swooper = Utils.GetPlayerById(swooperId);
-            if (swooper == null) return;
+            if (swooper == null) continue;
 
-            var remainTime = InvisTime + (long)SwooperDuration.GetFloat() - now;
+            var remainTime = swoopInfo.Value + (long)SwooperDuration.GetFloat() - nowTime;
 
             if (remainTime < 0)
             {
-                lastTime = now;
+                swooper?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(swooperId, out var id) ? id : Main.LastEnteredVent[swooperId].Id);
 
-                swooper?.MyPhysics?.RpcBootFromVent(ventedId != null ? ventedId.Value : Main.LastEnteredVent[swooperId].Id);
-
-                ventedId = new();
+                ventedId.Remove(swooperId);
+                InvisDuration.Remove(swooperId);
+                InvisCooldown.Add(swooperId, nowTime);
                 SendRPC(swooper);
 
                 swooper.Notify(GetString("SwooperInvisStateOut"));
-                return;
+                continue;
             }
             else if (remainTime <= 10)
             {
                 if (!swooper.IsModClient())
-                    swooper.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime + 1), sendInLog: false);
+                    swooper.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), sendInLog: false);
             }
-            newList[player.PlayerId] = InvisTime.Value;
         }
-        if (!newList.ContainsKey(playerId))
-        {
-            refreshList.Add(playerId);
-        }
-        else
-            InvisTime = newList[playerId];
-
-        refreshList.Do(x => SendRPC(Utils.GetPlayerById(x)));
-
     }
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -176,29 +170,34 @@ internal class Swooper : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        lastTime = new();
-        InvisTime = new();
+        InvisCooldown.Clear();
+        InvisDuration.Clear();
 
-        if (ventedId == null) return;
-        var swooper = _Player;
-        if (swooper == null) return;
+        foreach (var swooperId in _playerIdList)
+        {
+            if (!ventedId.ContainsKey(swooperId)) continue;
+            var swooper = Utils.GetPlayerById(swooperId);
+            if (swooper == null) continue;
 
-        swooper?.MyPhysics?.RpcBootFromVent(ventedId != null ? ventedId.Value : Main.LastEnteredVent[_state.PlayerId].Id);
-        SendRPC(swooper);
+            swooper?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(swooperId, out var id) ? id : Main.LastEnteredVent[swooperId].Id);
+            SendRPC(swooper);
+        }
 
-        ventedId = new();
+        ventedId.Clear();
     }
     public override void AfterMeetingTasks()
     {
-        lastTime = new();
-        InvisTime = new();
+        InvisCooldown.Clear();
+        InvisDuration.Clear();
 
-        var swooper = _Player;
-        if (swooper == null) return;
+        foreach (var swooperId in _playerIdList)
+        {
+            var swooper = Utils.GetPlayerById(swooperId);
+            if (swooper == null) continue;
 
-        lastTime = Utils.GetTimeStamp();
-        SendRPC(swooper);
-
+            InvisCooldown.Add(swooperId, Utils.GetTimeStamp());
+            SendRPC(swooper);
+        }
     }
 
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
@@ -211,12 +210,12 @@ internal class Swooper : RoleBase
 
         if (IsInvis(seerId))
         {
-            var remainTime = InvisTime + (long)SwooperDuration.GetFloat() - Utils.GetTimeStamp();
+            var remainTime = InvisDuration[seerId] + (long)SwooperDuration.GetFloat() - Utils.GetTimeStamp();
             str.Append(string.Format(GetString("SwooperInvisStateCountdown"), remainTime + 1));
         }
-        else if (lastTime != null)
+        else if (InvisCooldown.TryGetValue(seerId, out var time))
         {
-            var cooldown = lastTime + (long)SwooperCooldown.GetFloat() - Utils.GetTimeStamp();
+            var cooldown = time + (long)SwooperCooldown.GetFloat() - Utils.GetTimeStamp();
             str.Append(string.Format(GetString("SwooperInvisCooldownRemain"), cooldown + 1));
         }
         else
@@ -230,5 +229,5 @@ internal class Swooper : RoleBase
     {
         hud.ImpostorVentButton?.OverrideText(GetString(IsInvis(playerId) ? "SwooperRevertVentButtonText" : "SwooperVentButtonText"));
     }
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("invisible");
+    public override Sprite ImpostorVentButtonSprite(PlayerControl player) => CustomButton.Get("invisible");
 }
