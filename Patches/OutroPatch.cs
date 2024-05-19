@@ -10,6 +10,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -71,6 +72,8 @@ class EndGamePatch
 
             SummaryText[id] = Utils.SummaryTexts(id, disableColor: false);
         }
+
+        CustomRoleManager.RoleClass.Values.Where(x => x.IsEnable).Do(x => x.IsEnable = false);
 
         var sb = new StringBuilder(GetString("KillLog") + ":");
         if (Options.OldKillLog.GetBool())
