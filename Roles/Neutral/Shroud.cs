@@ -161,7 +161,7 @@ internal class Shroud : RoleBase
 
             Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
             shrouded.RpcMurderPlayer(shrouded);
-            shrouded.SetRealKiller(Utils.GetPlayerById(PlayerIds.First()));
+            shrouded.SetRealKiller(_Player);
 
             ShroudList.Remove(shrouded.PlayerId);
             SendRPC(byte.MaxValue, shrouded.PlayerId, 2);
