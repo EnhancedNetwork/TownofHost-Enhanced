@@ -2539,29 +2539,6 @@ class ChatUpdatePatch
         }
         if (player == null) return;
 
-        var timeoutStatus = player.GetTimeOutStatus();
-
-        if (timeoutStatus != null) // Should not be null though
-        {
-            if (!timeoutStatus.Ready)
-            {
-                if (timeoutStatus.Disconnected)
-                {
-                    Main.MessagesToSend.RemoveAt(0);
-                    return;
-                }
-                else
-                {
-                    // Delay the message
-                    var newmessage = Main.MessagesToSend[0];
-                    Main.MessagesToSend.RemoveAt(0);
-                    Main.MessagesToSend.Add(newmessage);
-                    return;
-                }
-            }
-        }
-
-
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
         Main.MessagesToSend.RemoveAt(0);
         
