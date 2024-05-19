@@ -27,7 +27,7 @@ public static class Credentials
                 if (CheckIsModHost && GameStates.IsModHost)
                 {
                     var WarningNoModHost = $"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}".Length;
-                    sb.Remove(sb.Length - WarningNoModHost, WarningNoModHost);
+                    sb.Remove(247, WarningNoModHost);
                     CheckIsModHost = false;
                 }
 
