@@ -181,9 +181,43 @@ internal class DollMaster : RoleBase
         }
     }
 
+    // If Dollmaster reports a body or is forced to while possessing redirect it to possessed player
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    {
+        if (controllingTarget == null || DollMasterTarget == null) return false;
 
-    // Prevent possessed player from reporting body.
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => !(IsControllingPlayer && IsDoll(reporter.PlayerId));
+        if (IsControllingPlayer && IsDoll(reporter.PlayerId)) return false; // Prevent possessed player from reporting body.
+
+        if (IsControllingPlayer && reporter.Is(CustomRoles.DollMaster))
+        {
+            UnPossess(DollMasterTarget, controllingTarget);
+            GetPlayersPositions(DollMasterTarget);
+            SwapPlayersPositions(DollMasterTarget);
+            controllingTarget.CmdReportDeadBody(deadBody);
+            return false;
+        }
+
+        return true;
+    }
+
+    // If Dollmaster starts a meeting while possessing redirect it to possessed player
+    public override bool OnCheckStartMeeting(PlayerControl reporter)
+    {
+        if (controllingTarget == null || DollMasterTarget == null) return false;
+
+        if (IsControllingPlayer && IsDoll(reporter.PlayerId)) return false; // Prevent possessed player from starting meeting.
+
+        if (IsControllingPlayer && reporter.Is(CustomRoles.DollMaster))
+        {
+            UnPossess(DollMasterTarget, controllingTarget);
+            GetPlayersPositions(DollMasterTarget);
+            SwapPlayersPositions(DollMasterTarget);
+            controllingTarget.CmdReportDeadBody(null);
+            return false;
+        }
+
+        return true;
+    }
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => (!(IsControllingPlayer && target == DollMasterTarget));
 
@@ -356,19 +390,20 @@ internal class DollMaster : RoleBase
     }
 
     // Swap Dollmaster and possessed player info for functions.
-    public static PlayerControl SwapPlayerInfo(PlayerControl target)
+    public static PlayerControl SwapPlayerInfo(PlayerControl player)
     {
-        if (DollMaster.IsControllingPlayer)
+        if (IsControllingPlayer)
         {
-            if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
+            if (!(DollMasterTarget == null || controllingTarget == null))
             {
-                if (target == DollMaster.DollMasterTarget)
-                    return DollMaster.controllingTarget;
-                else if (target == DollMaster.controllingTarget)
-                    return DollMaster.DollMasterTarget;
+                if (player == DollMasterTarget)
+                    return controllingTarget;
+                else if (player == controllingTarget)
+                    return DollMasterTarget;
             }
         }
-        return target;
+
+        return player;
     }
 
     // Get players locations.
@@ -398,7 +433,7 @@ internal class DollMaster : RoleBase
 
         if (seer.PlayerId == target.PlayerId && target.PlayerId == DollMasterTarget.PlayerId)
             return "<color=#ffea00>" + GetString("DollMaster_Doll") + "</color>";
-        
+
         return string.Empty;
     }
 
