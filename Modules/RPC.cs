@@ -281,7 +281,7 @@ internal class RPCHandlerPatch
                 GameStartManagerPatch.timer = reader.ReadPackedInt32();
                 break;
             case CustomRPC.SyncRoleSkill:
-                RPC.SyncRoleSkillReader(reader, __instance);
+                RPC.SyncRoleSkillReader(reader, PlayerControl.LocalPlayer);
                 break;
             case CustomRPC.SetNameColorData:
                 NameColorManager.ReceiveRPC(reader);
