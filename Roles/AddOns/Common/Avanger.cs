@@ -27,8 +27,8 @@ public static class Avanger
         {
             PlayerControl rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
             Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
-            rp.SetRealKiller(target);
             rp.RpcMurderPlayer(rp);
+            rp.SetRealKiller(target);
         }
     }
 }
