@@ -357,6 +357,7 @@ internal class DollMaster : RoleBase
 
     // A fix when the DollMaster or Possessed Player DC's from the game.
     // Untested!
+    /*
     public override void OnPlayerLeft(InnerNet.ClientData clientData)
     {
         if (DollMasterTarget == null || controllingTarget == null) return;
@@ -392,6 +393,7 @@ internal class DollMaster : RoleBase
             }, 0.35f);
         }
     }
+    */
 
     // Possess Player
     private static void Possess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
