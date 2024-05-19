@@ -73,16 +73,34 @@ internal class Blackmailer : RoleBase
 
     public override void AfterMeetingTasks()
     {
+        if (Prevname.Any()) Prevname.Do(x => Main.AllPlayerNames[x.Key] = x.Value);
         ClearBlackmaile();
     }
     public override void OnCoEndGame()
     {
         ClearBlackmaile();
     }
-
+    private static readonly Dictionary<byte, string> Prevname = [];
     private static void ClearBlackmaile() => ForBlackmailer.Clear();
+    
     public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && ForBlackmailer.Contains(player.PlayerId);
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    {
+        Prevname.Clear();
+        if (ForBlackmailer.Any())
+            foreach(var plr in ForBlackmailer)
+            {
+                Prevname[plr] = Main.AllPlayerNames[plr];
+                Main.AllPlayerNames[plr] = "<line-height=80%><size=225%><#000000>█████████\n█████████\n█████████\n█████████</color></size></line-height>"; // Masks the text by englufing it in text color.
+                var PC = Utils.GetPlayerById(plr);
+                if (PC != null)
+                {
+                    PC.MarkDirtySettings();
+                    PC.RpcSetNameEx(PC.GetRealName(isMeeting: true)); // resets the playername so it isn't just a blob of black blocks
 
+                }
+            }
+    }
     private string GetMarkOthers(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (!isForMeeting) return string.Empty;

@@ -69,8 +69,6 @@ internal class ChatCommands
 
         if (Blackmailer.CheckBlackmaile(PlayerControl.LocalPlayer) && PlayerControl.LocalPlayer.IsAlive())
         {
-            ChatManager.SendPreviousMessagesToAll();
-            ChatManager.cancel = false;
             goto Canceled;
         }
         switch (args[0])
@@ -1553,14 +1551,14 @@ internal class ChatCommands
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
-        if (Blackmailer.CheckBlackmaile(player) && player.IsAlive() && !player.OwnedByHost())
+        /*if (Blackmailer.CheckBlackmaile(player) && player.IsAlive() && !player.OwnedByHost())
         {
             Logger.Info($"This player (id {player.PlayerId}) was Blackmailed", "OnReceiveChat");
             ChatManager.SendPreviousMessagesToAll();
             ChatManager.cancel = false;
             canceled = true; 
             return; 
-        }
+        }*/
 
         switch (args[0])
         {
