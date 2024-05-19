@@ -36,6 +36,7 @@ internal class Glitch : RoleBase
     public long LastKill;
     public long LastMimic;
 
+
     private bool isShifted = false;
     private long lastRpcSend = 0;
 
@@ -72,6 +73,7 @@ internal class Glitch : RoleBase
         LastHack = ts;
         LastMimic = ts;
         lastRpcSend = ts;
+
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -214,18 +216,10 @@ internal class Glitch : RoleBase
 
         if (!player.IsModClient())
         {
-            var sb = new StringBuilder();
-
-            if (MimicDurTimer > 0) sb.Append($"\n{string.Format(GetString("MimicDur"), MimicDurTimer)}");
-            if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"\n{string.Format(GetString("MimicCD"), MimicCDTimer)}");
-            if (HackCDTimer > 0) sb.Append($"\n{string.Format(GetString("HackCD"), HackCDTimer)}");
-            if (KCDTimer > 0) sb.Append($"\n{string.Format(GetString("KCD"), KCDTimer)}");
-
-            string ns = sb.ToString();
-
-            if ((!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != ns) && ns != string.Empty) player.Notify(ns, 1.1f);
+            var Pname = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Glitch), player.GetRealName(isMeeting: true));
+            if ((!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != Pname)) player.Notify(Pname, 1.1f);
         }
-        else if (!player.AmOwner) // For mooded non host players, sync kcd per second
+        if (!player.AmOwner) // For mooded non host players, sync kcd per second
         {
             if (lastRpcSend < Utils.GetTimeStamp())
             {
@@ -234,13 +228,13 @@ internal class Glitch : RoleBase
             }
         }
     }
+
     public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         if (player == null) return string.Empty;
-        if (!player.Is(CustomRoles.Glitch)) return string.Empty;
         if (!player.IsAlive()) return string.Empty;
 
-        var sb = new StringBuilder();
+        var sb = new StringBuilder(string.Empty);
 
         if (MimicDurTimer > 0) sb.Append($"{string.Format(GetString("Glitch_MimicDur"), MimicDurTimer)}\n");
         if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"{string.Format(GetString("Glitch_MimicCD"), MimicCDTimer)}\n");
@@ -248,6 +242,7 @@ internal class Glitch : RoleBase
         if (KCDTimer > 0) sb.Append($"{string.Format(GetString("Glitch_KCD"), KCDTimer)}\n");
 
         return sb.ToString();
+
     }
     public override void AfterMeetingTasks()
     {
