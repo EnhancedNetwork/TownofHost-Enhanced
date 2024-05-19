@@ -84,7 +84,7 @@ public static class Credentials
                 }
 
                 var offset_x = 1.2f; //Offset from right edge
-                if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.active) offset_x += 0.8f; // Additional offsets for chat button if present
+                if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.active) offset_x += 0.9f; // Additional offsets for chat button if present
                 if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; // Additional offsets if friend list button is present
                 __instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(offset_x, 0f, 0f);
 
@@ -108,7 +108,7 @@ public static class Credentials
         static TextMeshPro SpecialEventText;
         private static void Postfix(VersionShower __instance)
         {
-            Main.credentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}";
+            Main.credentialsText = $"\r\n<size=70%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}";
             var buildtype = "";
 
 #if RELEASE
