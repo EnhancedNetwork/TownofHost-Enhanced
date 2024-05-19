@@ -11,8 +11,7 @@ internal class Blackmailer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 24600;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Blackmailer);
     
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
@@ -32,12 +31,10 @@ internal class Blackmailer : RoleBase
     }
     public override void Init()
     {
-        PlayerIds.Clear();
         ForBlackmailer.Clear();
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
 
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
