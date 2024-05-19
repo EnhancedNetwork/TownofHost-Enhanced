@@ -46,7 +46,7 @@ internal class Deputy : RoleBase
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} : Limit {AbilityLimit}", "Deputy");
 
-        if (!target.Is(CustomRoles.Deputy))
+        if (target != _Player)
         {
             AbilityLimit--;
             SendSkillRPC();
