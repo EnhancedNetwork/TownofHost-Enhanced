@@ -6,10 +6,12 @@ namespace TOHE;
 public class LobbyStartPatch
 {
     private static GameObject Paint;
-    public static void Postfix(LobbyBehaviour __instance)
+    public static void Postfix()
     {
-        if (Paint == null)
+        _ = new LateTask(() =>
         {
+            if (!GameStates.IsLobby || Paint != null) return;
+            
             var LeftBox = GameObject.Find("Leftbox");
             if (LeftBox != null)
             {
@@ -19,6 +21,6 @@ public class LobbyStartPatch
                 SpriteRenderer renderer = Paint.GetComponent<SpriteRenderer>();
                 renderer.sprite = Utils.LoadSprite("TOHE.Resources.Images.LobbyPaint.png", 290f);
             }
-        }
+        }, 3f, "LobbyPaint", shoudLog: false);
     }
 }

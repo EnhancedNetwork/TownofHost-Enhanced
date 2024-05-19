@@ -22,7 +22,7 @@ public static class GameStartManagerUpdatePatch
 public class GameStartManagerPatch
 {
     private static SpriteRenderer cancelButton;
-    private static float timer = 600f;
+    public static float timer = 600f;
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Start))]
     public class GameStartManagerStartPatch
     {
