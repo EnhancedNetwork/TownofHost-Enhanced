@@ -1301,15 +1301,17 @@ public static class Utils
     public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "") 
     {
         // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
-
+        bool isfirst = true;
         if (text.Length > 1200 && !GetPlayerById(sendTo).IsModClient())
         {
             foreach(var txt in text.SplitMessage())
             {
+                var titleW = isfirst ? title : "<alpha=#00>.";
                 var m = Regex.Replace(txt, "^<voffset=[-]?\\d+em>", ""); // replaces the first instance of voffset, if any.
                 m += $"<voffset=-1.3em><alpha=#00>.</voffset>"; // fix text clipping OOB
                 if (m.IndexOf("\n") <= 4) m = m[(m.IndexOf("\n")+1)..m.Length];
                 SendMessage(m, sendTo, title);
+                isfirst = false;
             }
         }
         else 
