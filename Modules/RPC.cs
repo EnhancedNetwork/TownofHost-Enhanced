@@ -684,14 +684,6 @@ internal static class RPC
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    // Not Used
-    public static void SyncCustomSettingsRPCforOneOption(OptionItem option)
-    {
-        List<OptionItem> allOptions = new(OptionItem.AllOptions);
-        var placement = allOptions.IndexOf(option);
-        if (placement != -1)
-            SyncOptionsBetween(placement, placement, OptionItem.AllOptions.Count);
-    }
     public static void PlaySoundRPC(byte PlayerID, Sounds sound)
     {
         if (AmongUsClient.Instance.AmHost)
@@ -906,13 +898,6 @@ internal static class RPC
         {
             Logger.Error($"Role {pc.GetRoleClass().GetType().Name} - error RPC:{error}", "SyncRoleSkillReader");
         }
-    }
-    public static void RpcDoSpell(byte targetId, byte killerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoSpell, SendOption.Reliable, -1);
-        writer.Write(targetId);
-        writer.Write(killerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SyncLoversPlayers()
     {
