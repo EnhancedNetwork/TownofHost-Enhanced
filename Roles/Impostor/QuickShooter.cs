@@ -37,6 +37,7 @@ internal class QuickShooter : RoleBase
     private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.Write(_state.PlayerId);
         writer.Write(ShotLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

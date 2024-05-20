@@ -75,6 +75,7 @@ internal class Coroner : RoleBase
     private void SendRPCLimit(byte playerId, int operate, byte targetId = 0xff)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked(_state.PlayerId);
         writer.Write(playerId);
         writer.Write(operate);
         writer.Write(AbilityLimit);

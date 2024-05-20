@@ -347,7 +347,7 @@ internal class RPCHandlerPatch
                 GameStartManagerPatch.timer = reader.ReadPackedInt32();
                 break;
             case CustomRPC.SyncRoleSkill:
-                RPC.SyncRoleSkillReader(reader, __instance);
+                RPC.SyncRoleSkillReader(reader);
                 break;
             case CustomRPC.SetBountyTarget:
                 BountyHunter.ReceiveRPC(reader);
@@ -889,8 +889,9 @@ internal static class RPC
 
         if (PlayerControl.LocalPlayer.PlayerId == targetId) RemoveDisableDevicesPatch.UpdateDisableDevices();
     }
-    public static void SyncRoleSkillReader(MessageReader reader, PlayerControl pc)
+    public static void SyncRoleSkillReader(MessageReader reader)
     {
+        var pc = Utils.GetPlayerById(reader.ReadPackedInt32());
 
         try
         {
