@@ -68,7 +68,7 @@ internal class Kamikaze : RoleBase
         if (checkMurder)
         {
             var targetId = reader.ReadByte();
-            int Limit = reader.ReadInt32();
+            float Limit = reader.ReadSingle();
             if (!KamikazedList.ContainsKey(kamiId)) KamikazedList[kamiId] = [];
             KamikazedList[kamiId].Add(targetId);
             Main.PlayerStates[kamiId].RoleClass.AbilityLimit = Limit;

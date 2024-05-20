@@ -49,7 +49,7 @@ enum CustomRPC : byte // 194/255 USED
     SetFriendCode,
     SyncLobbyTimer,
 
-    //Roles
+    //Roles 
     SetBountyTarget,
     SyncPuppet,
     SyncKami,
@@ -674,7 +674,7 @@ internal static class RPC
         }
 
         var countListOptions = listOptions.Count;
-        Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
+        //Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
 
         // Sync Settings
         foreach (var option in listOptions.ToArray())
