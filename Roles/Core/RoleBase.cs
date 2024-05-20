@@ -337,6 +337,12 @@ public abstract class RoleBase
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
 
+    public virtual float SetModdedLowerText(out Color32? FaceColor)
+    {
+        FaceColor = null;
+        return 2.8f;
+    }
+
     // Player know role target, color role target
     public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;

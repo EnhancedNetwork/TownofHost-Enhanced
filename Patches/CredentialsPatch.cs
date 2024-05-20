@@ -13,7 +13,7 @@ public static class Credentials
     class PingTrackerUpdatePatch
     {
         private static int DelayUpdate = 0;
-        private static bool CheckIsModHost = true;
+        //private static bool CheckIsModHost = true;
         private static readonly StringBuilder sb = new();
 
         private static bool Prefix(PingTracker __instance)
@@ -26,12 +26,12 @@ public static class Credentials
                 {
                     __instance.text.alignment = TextAlignmentOptions.TopRight;
 
-                    if (CheckIsModHost && GameStates.IsModHost)
-                    {
-                        var WarningNoModHost = $"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}".Length;
-                        sb.Remove(247, WarningNoModHost);
-                        CheckIsModHost = false;
-                    }
+                    //if (CheckIsModHost && GameStates.IsModHost)
+                    //{
+                    //    var WarningNoModHost = $"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}".Length;
+                    //    sb.Remove(247, WarningNoModHost);
+                    //    CheckIsModHost = false;
+                    //}
 
                     __instance.text.text = sb.ToString();
                     return false;
@@ -55,7 +55,7 @@ public static class Credentials
 
                 if (!GameStates.IsModHost)
                 {
-                    CheckIsModHost = true;
+                    //CheckIsModHost = true;
                     sb.Append($"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}");
                 }
 
@@ -95,7 +95,7 @@ public static class Credentials
             catch
             {
                 DelayUpdate = 0;
-                CheckIsModHost = false;
+                //CheckIsModHost = false;
                 sb.Clear();
 
                 return false;

@@ -103,7 +103,24 @@ class HudManagerPatch
                 {
                     case CustomGameMode.Standard:
                         var roleClass = player.GetRoleClass();
-                        LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empty;
+
+                        LowerInfoText.text = roleClass?.GetLowerText(player, player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empt
+
+                        if (roleClass != null)
+                        {
+                            float size = roleClass.SetModdedLowerText(out Color32? faceColor);
+
+                            if (faceColor != null)
+                            {
+                                LowerInfoText.SetFaceColor(faceColor.Value);
+                                LowerInfoText.SetOutlineColor(new Color32(0, 0, 0, 255));
+                            }
+                            if (LowerInfoText.fontSizeMin != size)
+                            {
+                                LowerInfoText.fontSizeMin = size;
+                                LowerInfoText.fontSizeMax = size;
+                            }
+                        }
                         break;
                 }
                 LowerInfoText.enabled = LowerInfoText.text != "" && LowerInfoText.text != string.Empty;
