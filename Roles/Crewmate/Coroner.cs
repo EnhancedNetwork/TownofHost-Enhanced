@@ -61,7 +61,7 @@ internal class Coroner : RoleBase
 
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCoronerArrow, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(add);
         if (add)
