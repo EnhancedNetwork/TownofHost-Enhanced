@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using TOHE.Roles.Core;
 using UnityEngine;
 
 namespace TOHE.Roles.Crewmate;
@@ -9,13 +8,17 @@ internal class Knight : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 10800;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Knight);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
     private static OptionItem CanVent;
     private static OptionItem KillCooldown;
+
+    private static readonly HashSet<byte> killed = [];
 
     public override void SetupCustomOption()
     {
@@ -24,13 +27,22 @@ internal class Knight : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Knight]);
     }
+    public override void Init()
+    {
+        playerIdList.Clear();
+        killed.Clear();
+    }
     public override void Add(byte playerId)
     {
-        AbilityLimit = 1;
+        playerIdList.Add(playerId);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
+    }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
@@ -42,15 +54,30 @@ internal class Knight : RoleBase
         => !IsKilled(pc.PlayerId);
 
     public override string GetProgressText(byte id, bool comms)
-        => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+        => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, !IsKilled(id) ? "(1)" : "(0)");
     
-    private bool IsKilled(byte playerId) => AbilityLimit > 0;
+    private static bool IsKilled(byte playerId) => killed.Contains(playerId);
+
+    private static void SendRPC(byte playerId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Knight);
+        writer.Write(playerId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        byte KnightId = reader.ReadByte();
+        if (!killed.Contains(KnightId))
+            killed.Add(KnightId);
+    }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl banana)
     {
-        AbilityLimit--;
-        SendSkillRPC(); 
-        Logger.Info($"{killer.GetNameWithRole()} : " + "Kill chance used", "Knight");
+        SendRPC(killer.PlayerId);
+        killed.Add(killer.PlayerId);
+        Logger.Info($"{killer.GetNameWithRole()} : " + (IsKilled(killer.PlayerId) ? "Kill chance used" : "Kill chance not used"), "Knight");
         killer.ResetKillCooldown();
+        Utils.NotifyRoles(SpecifySeer: killer);
         return true;
     }
 }

@@ -12,7 +12,7 @@ internal class Amnesiac : RoleBase
     private const int Id = 12700;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled = playerIdList.Any();
-    
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -61,7 +61,7 @@ internal class Amnesiac : RoleBase
 
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAmnesaicArrows, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(add);
         if (add)
@@ -73,7 +73,7 @@ internal class Amnesiac : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         bool add = reader.ReadBoolean();
@@ -129,7 +129,7 @@ internal class Amnesiac : RoleBase
                 if (tar.IsAmneCrew())
                 {
                     __instance.RpcSetCustomRole(tar.GetCustomRole());
-                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
+                    __instance.GetRoleClass().Add(__instance.PlayerId);
                     __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                     tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                     Main.TasklessCrewmate.Add(__instance.PlayerId);
@@ -137,7 +137,7 @@ internal class Amnesiac : RoleBase
                 else
                 {
                     __instance.RpcSetCustomRole(CustomRoles.EngineerTOHE);
-                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
+                    __instance.GetRoleClass().Add(__instance.PlayerId);
                     __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                     tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                     Main.TasklessCrewmate.Add(__instance.PlayerId);
@@ -146,7 +146,7 @@ internal class Amnesiac : RoleBase
             if (tar.GetCustomRole().IsAmneNK())
             {
                 __instance.RpcSetCustomRole(tar.GetCustomRole());
-                __instance.GetRoleClass().OnAdd(__instance.PlayerId);
+                __instance.GetRoleClass().Add(__instance.PlayerId);
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                 tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
             }
@@ -181,7 +181,7 @@ internal class Amnesiac : RoleBase
                         break;
                 }
                 if (__instance.GetCustomRole() != CustomRoles.Amnesiac) 
-                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
+                    __instance.GetRoleClass().Add(__instance.PlayerId);
             }         
             return false;
         }

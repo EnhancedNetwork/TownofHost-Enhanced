@@ -21,20 +21,20 @@ public static class Glow
 
     public static void SetupCustomOptions()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Glow, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeGlow = BooleanOptionItem.Create(Id + 10, "ImpCanBeGlow", true, TabGroup.Addons, false)
+        SetupAdtRoleOptions(Id, CustomRoles.Glow, canSetNum: true, tab: TabGroup.NeutralRoles);
+        ImpCanBeGlow = BooleanOptionItem.Create(Id + 10, "ImpCanBeGlow", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        CrewCanBeGlow = BooleanOptionItem.Create(Id + 11, "CrewCanBeGlow", true, TabGroup.Addons, false)
+        CrewCanBeGlow = BooleanOptionItem.Create(Id + 11, "CrewCanBeGlow", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        NeutralCanBeGlow = BooleanOptionItem.Create(Id + 12, "NeutralCanBeGlow", true, TabGroup.Addons, false)
+        NeutralCanBeGlow = BooleanOptionItem.Create(Id + 12, "NeutralCanBeGlow", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        GlowRadius = FloatOptionItem.Create(Id + 13, "GlowRadius", new(0.1f, 5f, 0.05f), 0.5f, TabGroup.Addons, false)
+        GlowRadius = FloatOptionItem.Create(Id + 13, "GlowRadius", new(0.1f, 5f, 0.05f), 0.5f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow])
             .SetValueFormat(OptionFormat.Multiplier);
-        GlowVisionOthers = FloatOptionItem.Create(Id + 14, "GlowVisionOthers", new(0.1f, 5f, 0.05f), 0.15f, TabGroup.Addons, false)
+        GlowVisionOthers = FloatOptionItem.Create(Id + 14, "GlowVisionOthers", new(0.1f, 5f, 0.05f), 0.15f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow])
             .SetValueFormat(OptionFormat.Multiplier);
-        GlowVisionSelf = FloatOptionItem.Create(Id + 15, "GlowVisionSelf", new(0.1f, 5f, 0.05f), 0.15f, TabGroup.Addons, false)
+        GlowVisionSelf = FloatOptionItem.Create(Id + 15, "GlowVisionSelf", new(0.1f, 5f, 0.05f), 0.15f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow])
             .SetValueFormat(OptionFormat.Multiplier);
     }

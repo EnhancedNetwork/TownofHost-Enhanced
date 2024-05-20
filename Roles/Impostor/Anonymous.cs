@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -12,7 +11,9 @@ internal class Anonymous : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 5300;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Anonymous);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -21,6 +22,7 @@ internal class Anonymous : RoleBase
     private static OptionItem HackLimitOpt;
     private static OptionItem KillCooldown;
 
+    private static readonly Dictionary<byte, int> HackLimit = [];
     private static readonly List<byte> DeadBodyList = [];
 
     public override void SetupCustomOption()
@@ -33,11 +35,34 @@ internal class Anonymous : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
+        HackLimit.Clear();
         DeadBodyList.Clear();
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = HackLimitOpt.GetInt();
+        playerIdList.Add(playerId);
+        HackLimit.TryAdd(playerId, HackLimitOpt.GetInt());
+    }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        HackLimit.Remove(playerId);
+    }
+    private static void SendRPC(byte playerId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Anonymous);
+        writer.Write(playerId);
+        writer.Write(HackLimit[playerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        byte PlayerId = reader.ReadByte();
+        int Limit = reader.ReadInt32();
+        HackLimit.TryAdd(PlayerId, HackLimitOpt.GetInt());
+        HackLimit[PlayerId] = Limit;
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -45,15 +70,15 @@ internal class Anonymous : RoleBase
         AURoleOptions.ShapeshifterCooldown = 1f;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
-    public override string GetProgressText(byte playerId, bool coomsd) => Utils.ColorString((AbilityLimit > 0) ? Utils.GetRoleColor(CustomRoles.Anonymous).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    public override string GetProgressText(byte playerId, bool coomsd) => Utils.ColorString((HackLimit.TryGetValue(playerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Anonymous).ShadeColor(0.25f) : Color.gray, HackLimit.TryGetValue(playerId, out var hackLimit) ? $"({hackLimit})" : "Invalid");
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
 
-        if (AbilityLimit > 0)
+        if (HackLimit.TryGetValue(playerId, out var x) && x >= 1)
         {
             hud.AbilityButton.OverrideText(GetString("AnonymousShapeshiftText"));
-            hud.AbilityButton.SetUsesRemaining((int)AbilityLimit);
+            hud.AbilityButton.SetUsesRemaining(x);
         }
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => DeadBodyList.Clear();
@@ -66,9 +91,9 @@ internal class Anonymous : RoleBase
     }
     public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl ssTarget, bool IsAnimate, bool shapeshifting)
     {
-        if (!shapeshifting || AbilityLimit <= 0 || ssTarget == null || ssTarget.Is(CustomRoles.LazyGuy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
-        AbilityLimit--;
-        SendSkillRPC();
+        if (!shapeshifting || !HackLimit.TryGetValue(shapeshifter.PlayerId, out var x) || x < 1 || ssTarget == null || ssTarget.Is(CustomRoles.LazyGuy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
+        HackLimit[shapeshifter.PlayerId]--;
+        SendRPC(shapeshifter.PlayerId);
 
         var targetId = byte.MaxValue;
 

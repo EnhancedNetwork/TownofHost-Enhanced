@@ -12,6 +12,7 @@ internal class CursedSoul : RoleBase
     private const int Id = 14000;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
@@ -21,8 +22,8 @@ internal class CursedSoul : RoleBase
     private static OptionItem CurseMax;
     private static OptionItem KnowTargetRole;
     private static OptionItem CanCurseNeutral;
-
-    private int CurseLimit;
+    
+    private static int CurseLimit = new();
 
     public override void SetupCustomOption()
     {
@@ -51,13 +52,13 @@ internal class CursedSoul : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    private void SendRPC()
+    private static void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCursedSoulCurseLimit, SendOption.Reliable, -1);
         writer.Write(CurseLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         CurseLimit = reader.ReadInt32();
     }

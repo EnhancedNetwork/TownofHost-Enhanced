@@ -6,7 +6,6 @@ using TOHE.Roles.AddOns.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -14,7 +13,9 @@ internal class Virus : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18300;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Virus);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -31,6 +32,8 @@ internal class Virus : RoleBase
     private static readonly HashSet<byte> InfectedBodies = [];
     private static readonly HashSet<byte> InfectedPlayer = [];
     private static readonly Dictionary<byte, string> VirusNotify = [];
+
+    private static int InfectLimit = new();
 
     private enum ContagiousCountModeSelect
     {
@@ -56,12 +59,15 @@ internal class Virus : RoleBase
 
     public override void Init()
     {
+        playerIdList.Clear();
         InfectedBodies.Clear();
         VirusNotify.Clear();
+        InfectLimit = new();
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = InfectMax.GetInt();
+        playerIdList.Add(playerId);
+        InfectLimit = InfectMax.GetInt();
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -74,19 +80,30 @@ internal class Virus : RoleBase
             AddMsg(VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
     }
     public override void MeetingHudClear() => VirusNotify.Clear();
-    
+    private static void SendRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Virus); //SetVirusInfectLimit
+        writer.Write(InfectLimit);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
 
     private static void SendRPCInfectKill(byte virusId, byte target = 255)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoSpell, SendOption.Reliable, -1);
         writer.Write(virusId);
         writer.Write(target);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        InfectLimit = reader.ReadInt32();
+    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(ImpostorVision.GetBool());
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit < 1) return true;
+        if (InfectLimit < 1) return true;
         InfectedBodies.Add(target.PlayerId);
         return true;
     }
@@ -96,8 +113,8 @@ internal class Virus : RoleBase
         if (target == null || !target.CanBeInfected()) return;
         if (!InfectedBodies.Contains(target.PlayerId)) return;
 
-        AbilityLimit--;
-        SendSkillRPC();
+        InfectLimit--;
+        SendRPC();
 
         if (KillInfectedPlayerAfterMeeting.GetBool())
         {
@@ -174,7 +191,7 @@ internal class Virus : RoleBase
         if (seer.Is(CustomRoles.Contagious) && target.Is(CustomRoles.Contagious) && Virus.TargetKnowOtherTarget.GetBool()) return Main.roleColors[CustomRoles.Virus];
         return "";
     }
-    public override string GetProgressText(byte id, bool coooms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Virus).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    public override string GetProgressText(byte id, bool coooms) => Utils.ColorString(InfectLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Virus).ShadeColor(0.25f) : Color.gray, $"({InfectLimit})");
 
 }
 public static class VirusPlayerControls

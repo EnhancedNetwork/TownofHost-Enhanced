@@ -11,8 +11,10 @@ internal class DollMaster : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 28500;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.DollMaster);
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
     public override bool IsExperimental => true;
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -48,12 +50,14 @@ internal class DollMaster : RoleBase
     public override void Init()
     {
         ReducedVisionPlayers.Clear();
+        PlayerIds.Clear();
         DollMasterTarget = null;
         controllingTarget = null;
     }
 
     public override void Add(byte playerId)
     {
+        PlayerIds.Add(playerId);
         DollMasterTarget = Utils.GetPlayerById(playerId);
         IsControllingPlayer = false;
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);

@@ -73,7 +73,7 @@ class EndGamePatch
             SummaryText[id] = Utils.SummaryTexts(id, disableColor: false);
         }
 
-        CustomRoleManager.RoleClass.Values.Where(x => x.IsEnable).Do(x => x.IsEnable = false);
+        //CustomRoleManager.RoleClass.Values.Where(x => x.IsEnable).Do(x => x.IsEnable = false);
 
         var sb = new StringBuilder(GetString("KillLog") + ":");
         if (Options.OldKillLog.GetBool())

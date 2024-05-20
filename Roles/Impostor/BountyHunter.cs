@@ -13,7 +13,7 @@ internal class BountyHunter : RoleBase
     private const int Id = 800;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -73,17 +73,19 @@ internal class BountyHunter : RoleBase
 
     private static void SendRPC(byte bountyId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBountyTarget, SendOption.Reliable, -1);
+        writer.Write(bountyId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
+        byte bountyId = reader.ReadByte();
         byte targetId = reader.ReadByte();
 
-        Targets[_state.PlayerId] = targetId;
-        if (ShowTargetArrow) TargetArrow.Add(_state.PlayerId, targetId);
+        Targets[bountyId] = targetId;
+        if (ShowTargetArrow) TargetArrow.Add(bountyId, targetId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

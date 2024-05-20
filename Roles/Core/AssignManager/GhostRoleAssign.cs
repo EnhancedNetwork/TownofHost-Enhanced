@@ -74,7 +74,7 @@ public static class GhostRoleAssign
                 getCount[ChosenRole]--; // Only deduct if role has been set.
                 player.GetRoleClass().Remove(player.PlayerId);
                 player.RpcSetCustomRole(ChosenRole);
-                player.GetRoleClass().OnAdd(player.PlayerId);
+                player.GetRoleClass().Add(player.PlayerId);
             }
             return;
         }
@@ -94,7 +94,7 @@ public static class GhostRoleAssign
                 getCount[ChosenRole]--;
                 player.GetRoleClass().Remove(player.PlayerId);
                 player.RpcSetCustomRole(ChosenRole);
-                player.GetRoleClass().OnAdd(player.PlayerId);
+                player.GetRoleClass().Add(player.PlayerId);
             }
             return;
         }

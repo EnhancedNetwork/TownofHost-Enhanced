@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using TOHE.Modules;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -11,7 +10,9 @@ internal class Twister : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 5700;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Twister);
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -33,7 +34,12 @@ internal class Twister : RoleBase
     }
     public override void Init()
     {
+        PlayerIds.Clear();
         changePositionPlayers.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

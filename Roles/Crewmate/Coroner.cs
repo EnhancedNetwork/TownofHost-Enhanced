@@ -13,13 +13,16 @@ internal class Coroner : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7700;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Coroner);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static readonly HashSet<byte> UnreportablePlayers = [];
     private static readonly Dictionary<byte, HashSet<byte>> CoronerTargets = [];
+    private static readonly Dictionary<byte, float> UseLimit = [];
 
     private static OptionItem ArrowsPointingToDeadBody;
     private static OptionItem UseLimitOpt;
@@ -41,12 +44,15 @@ internal class Coroner : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
+        UseLimit.Clear();
         UnreportablePlayers.Clear();
         CoronerTargets.Clear();
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = UseLimitOpt.GetInt();
+        playerIdList.Add(playerId);
+        UseLimit.Add(playerId, UseLimitOpt.GetInt());
         CoronerTargets.Add(playerId, []);
 
         if (AmongUsClient.Instance.AmHost)
@@ -56,13 +62,14 @@ internal class Coroner : RoleBase
     }
     public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
+        UseLimit.Remove(playerId);
         CoronerTargets.Remove(playerId);
     }
 
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCoronerArrow, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(add);
         if (add)
@@ -73,12 +80,13 @@ internal class Coroner : RoleBase
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    private void SendRPCLimit(byte playerId, int operate, byte targetId = 0xff)
+    private static void SendRPCLimit(byte playerId, int operate, byte targetId = 0xff)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Coroner);
         writer.Write(playerId);
         writer.Write(operate);
-        writer.Write(AbilityLimit);
+        writer.Write(UseLimit[playerId]);
         if (operate != 2) writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -87,7 +95,7 @@ internal class Coroner : RoleBase
         byte pid = reader.ReadByte();
         int opt = reader.ReadInt32();
         float limit = reader.ReadSingle();
-        AbilityLimit = limit;
+        UseLimit[pid] = limit;
         if (opt != 2)
         {
             byte tid = reader.ReadByte();
@@ -98,15 +106,14 @@ internal class Coroner : RoleBase
     }
     private static void SendRPCKiller(byte playerId, byte killerId, bool add)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(2);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCoronerkKillerArrow, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(killerId);
         writer.Write(add);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
 
     }
-    public void ReceiveRPCKiller(MessageReader reader)
+    public static void ReceiveRPCKiller(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         byte killerId = reader.ReadByte();
@@ -123,7 +130,7 @@ internal class Coroner : RoleBase
         }
     }
 
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         bool add = reader.ReadBoolean();
@@ -140,7 +147,7 @@ internal class Coroner : RoleBase
     {
         if (player.IsAlive())
         {
-            AbilityLimit += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
+            UseLimit[player.PlayerId] += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
             SendRPCLimit(player.PlayerId, operate: 2);
         }
         return true;
@@ -165,7 +172,7 @@ internal class Coroner : RoleBase
         return true;
     }
 
-    private bool FindKiller(PlayerControl pc, GameData.PlayerInfo deadBody, PlayerControl killer)
+    private static bool FindKiller(PlayerControl pc, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
         if (CoronerTargets.TryGetValue(pc.PlayerId, out var target) && target.Contains(killer.PlayerId))
         {
@@ -175,14 +182,14 @@ internal class Coroner : RoleBase
         LocateArrow.Remove(pc.PlayerId, deadBody.Object.transform.position);
         SendRPC(pc.PlayerId, false);
 
-        if (AbilityLimit >= 1)
+        if (UseLimit[pc.PlayerId] >= 1)
         {
             CoronerTargets[pc.PlayerId].Add(killer.PlayerId);
             TargetArrow.Add(pc.PlayerId, killer.PlayerId);
             SendRPCKiller(pc.PlayerId, killer.PlayerId, add: true);
 
             pc.Notify(GetString("CoronerTrackRecorded"));
-            AbilityLimit -= 1;
+            UseLimit[pc.PlayerId] -= 1;
             int operate = 0;
             if (LeaveDeadBodyUnreportable.GetBool())
             {
@@ -205,7 +212,7 @@ internal class Coroner : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        foreach (var apc in _playerIdList.ToArray())
+        foreach (var apc in playerIdList.ToArray())
         {
             LocateArrow.RemoveAllTarget(apc);
             SendRPC(apc, false);
@@ -227,7 +234,7 @@ internal class Coroner : RoleBase
     {
         if (!ArrowsPointingToDeadBody.GetBool()) return;
 
-        foreach (var pc in _playerIdList.ToArray())
+        foreach (var pc in playerIdList.ToArray())
         {
             var player = GetPlayerById(pc);
             if (player == null || !player.IsAlive()) continue;
@@ -264,10 +271,10 @@ internal class Coroner : RoleBase
         TextColor12 = comms ? Color.gray : NormalColor12;
         string Completed12 = comms ? "?" : $"{taskState12.CompletedTasksCount}";
         Color TextColor121;
-        if (AbilityLimit < 1) TextColor121 = Color.red;
+        if (UseLimit[playerId] < 1) TextColor121 = Color.red;
         else TextColor121 = Color.white;
         ProgressText.Append(ColorString(TextColor12, $"({Completed12}/{taskState12.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor121, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
+        ProgressText.Append(ColorString(TextColor121, $" <color=#ffffff>-</color> {Math.Round(UseLimit[playerId], 1)}"));
         return ProgressText.ToString();
     }
 }

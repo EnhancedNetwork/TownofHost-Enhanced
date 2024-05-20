@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -11,7 +10,9 @@ internal class BloodKnight : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16100;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.BloodKnight);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -21,7 +22,7 @@ internal class BloodKnight : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem ProtectDuration;
 
-    private long? TimeStamp;
+    private static readonly Dictionary<byte, long> TimeStamp = [];
 
     public override void SetupCustomOption()
     {
@@ -33,33 +34,40 @@ internal class BloodKnight : RoleBase
         ProtectDuration = FloatOptionItem.Create(Id + 14, "BKProtectDuration", new(1f, 180f, 1f), 15f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.BloodKnight])
             .SetValueFormat(OptionFormat.Seconds);
     }
+    public override void Init()
+    {
+        playerIdList.Clear();
+        TimeStamp.Clear();
+    }
     public override void Add(byte playerId)
     {
-        TimeStamp = 0;
+        playerIdList.Add(playerId);
+        TimeStamp.TryAdd(playerId, 0);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    private void SendRPC(byte playerId)
+    private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WritePacked((int)CustomRoles.BloodKnight);
         writer.Write(playerId);
-        writer.Write(TimeStamp.ToString());
+        writer.Write(TimeStamp[playerId].ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         string Time = reader.ReadString();
-        TimeStamp = long.Parse(Time);
+        TimeStamp.TryAdd(PlayerId, long.Parse(Time));
+        TimeStamp[PlayerId] = long.Parse(Time);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 
-    private bool InProtect(byte playerId) => TimeStamp > Utils.GetTimeStamp();
+    private static bool InProtect(byte playerId) => TimeStamp.TryGetValue(playerId, out var time) && time > Utils.GetTimeStamp();
     
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
@@ -77,7 +85,7 @@ internal class BloodKnight : RoleBase
     {
         if (inMeeting || isSuicide) return;
 
-        TimeStamp = Utils.GetTimeStamp() + (long)ProtectDuration.GetFloat();
+        TimeStamp[killer.PlayerId] = Utils.GetTimeStamp() + (long)ProtectDuration.GetFloat();
         SendRPC(killer.PlayerId);
         killer.Notify(GetString("BKInProtect"));
     }
@@ -87,9 +95,9 @@ internal class BloodKnight : RoleBase
 
     public override void OnFixedUpdateLowLoad(PlayerControl pc)
     {
-        if (TimeStamp < Utils.GetTimeStamp() && TimeStamp != 0)
+        if (TimeStamp[pc.PlayerId] < Utils.GetTimeStamp() && TimeStamp[pc.PlayerId] != 0)
         {
-            TimeStamp = 0;
+            TimeStamp[pc.PlayerId] = 0;
             pc.Notify(GetString("BKProtectOut"), sendInLog: false);
         }
     }
@@ -100,7 +108,7 @@ internal class BloodKnight : RoleBase
         var str = new StringBuilder();
         if (InProtect(pc.PlayerId))
         {
-            var remainTime = TimeStamp - Utils.GetTimeStamp();
+            var remainTime = TimeStamp[pc.PlayerId] - Utils.GetTimeStamp();
             str.Append(string.Format(GetString("BKSkillTimeRemain"), remainTime));
         }
         else

@@ -10,6 +10,9 @@ internal class Deputy : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7800;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -17,6 +20,8 @@ internal class Deputy : RoleBase
     private static OptionItem HandcuffCooldown;
     private static OptionItem HandcuffMax;
     private static OptionItem DeputyHandcuffCDForTarget;
+    
+    private static int HandcuffLimit = new();
 
     public override void SetupCustomOption()
     {
@@ -28,28 +33,50 @@ internal class Deputy : RoleBase
         HandcuffMax = IntegerOptionItem.Create(Id + 12, "DeputyHandcuffMax", new(1, 30, 1), 15, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deputy])
             .SetValueFormat(OptionFormat.Times);
     }
+    public override void Init()
+    {
+        playerIdList.Clear();
+        HandcuffLimit = new();
+    }
     public override void Add(byte playerId)
     {
-        AbilityLimit = HandcuffMax.GetInt();
+        playerIdList.Add(playerId);
+        HandcuffLimit = HandcuffMax.GetInt();
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+    }
+
+    private static void SendRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Deputy);
+        writer.Write(HandcuffLimit);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        HandcuffLimit = reader.ReadInt32();
+    }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = HandcuffCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && AbilityLimit >= 1;
+    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && HandcuffLimit >= 1;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.SerialKiller)) return false;
-        if (AbilityLimit < 1) return false;
+        if (HandcuffLimit < 1) return false;
 
-        Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} : Limit {AbilityLimit}", "Deputy");
+        Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} : Limit {HandcuffLimit}", "Deputy");
 
-        if (target != _Player)
+        if (!target.Is(CustomRoles.Deputy))
         {
-            AbilityLimit--;
-            SendSkillRPC();
+            HandcuffLimit--;
+            SendRPC();
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyHandcuffedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("HandcuffedByDeputy")));
@@ -58,13 +85,13 @@ internal class Deputy : RoleBase
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
             if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill(target);
 
-            return false;
+            return true;
         }
         
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyInvalidTarget")));
         return false;
     }
-    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Deputy) : Color.gray, $"({AbilityLimit})");
+    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(HandcuffLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Deputy) : Color.gray, $"({HandcuffLimit})");
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
         hud.KillButton.OverrideText(GetString("DeputyHandcuffText"));

@@ -1,6 +1,5 @@
 ﻿using Hazel;
 using System.Text;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -11,7 +10,9 @@ internal class Swooper : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 4700;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Swooper);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -35,12 +36,14 @@ internal class Swooper : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         InvisCooldown.Clear();
         InvisDuration.Clear();
         ventedId.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         InvisCooldown[playerId] = Utils.GetTimeStamp();
     }
     private static void SendRPC(PlayerControl pc)
@@ -173,7 +176,7 @@ internal class Swooper : RoleBase
         InvisCooldown.Clear();
         InvisDuration.Clear();
 
-        foreach (var swooperId in _playerIdList)
+        foreach (var swooperId in playerIdList)
         {
             if (!ventedId.ContainsKey(swooperId)) continue;
             var swooper = Utils.GetPlayerById(swooperId);
@@ -190,7 +193,7 @@ internal class Swooper : RoleBase
         InvisCooldown.Clear();
         InvisDuration.Clear();
 
-        foreach (var swooperId in _playerIdList)
+        foreach (var swooperId in playerIdList)
         {
             var swooper = Utils.GetPlayerById(swooperId);
             if (swooper == null) continue;

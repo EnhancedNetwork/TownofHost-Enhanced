@@ -91,7 +91,7 @@ public static class Oiiai
                 if (changeValue != 0)
                 {
                     killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
-                    killer.GetRoleClass().OnAdd(killer.PlayerId);
+                    killer.GetRoleClass().Add(killer.PlayerId);
 
                     Logger.Info($"Oiiai {killer.GetNameWithRole()} with Neutrals with kill button assign.", "Oiiai");
                 }

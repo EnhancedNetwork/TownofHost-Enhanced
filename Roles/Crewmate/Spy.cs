@@ -12,7 +12,7 @@ internal class Spy : RoleBase
     private const int Id = 9700;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -22,6 +22,7 @@ internal class Spy : RoleBase
     private static OptionItem SpyAbilityUseGainWithEachTaskCompleted;
     private static OptionItem SpyInteractionBlocked;
 
+    private static readonly Dictionary<byte, float> UseLimit = [];
     private static readonly Dictionary<byte, long> SpyRedNameList = [];
     private static bool change = false;
 
@@ -40,38 +41,54 @@ internal class Spy : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
+        UseLimit.Clear();
         SpyRedNameList.Clear();
         change = false;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        AbilityLimit = UseLimitOpt.GetInt();
+        UseLimit.Add(playerId, UseLimitOpt.GetInt());
     }
     public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
+        UseLimit.Remove(playerId);
     }
     public static void SendRPC(byte susId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyRedNameSync, SendOption.Reliable, -1);
         writer.Write(susId);
         writer.Write(SpyRedNameList[susId].ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void SendRPC(byte susId, bool changeColor)
+    public static void SendAbilityRPC(byte spyId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(2);
+        writer.WritePacked((int)CustomRoles.Spy);
+        writer.Write(spyId);
+        writer.Write(UseLimit[spyId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+    }
+    public static void SendRPC(byte susId, bool changeColor)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyRedNameRemove, SendOption.Reliable, -1);
+        //writer.Write(spyId);
         writer.Write(susId);
         writer.Write(changeColor);
         Logger.Info($"RPC to remove player {susId} from red name list and change `change` to {changeColor}", "Spy");
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader, bool isRemove = false)
+    public static void ReceiveRPC(MessageReader reader, bool isRemove = false, bool isAbility = false)
     {
-        if (isRemove)
+        if (isAbility)
+        {
+            byte spyId = reader.ReadByte();
+            UseLimit[spyId] = reader.ReadSingle();
+            return;
+        }
+        else if (isRemove)
         {
             SpyRedNameList.Remove(reader.ReadByte());
             change = reader.ReadBoolean();
@@ -81,15 +98,15 @@ internal class Spy : RoleBase
         string stimeStamp = reader.ReadString();
         if (long.TryParse(stimeStamp, out long timeStamp)) SpyRedNameList[susId] = timeStamp;
     }
-    public bool OnKillAttempt(PlayerControl killer, PlayerControl target)
+    public static bool OnKillAttempt(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
         if (killer.PlayerId == target.PlayerId) return true;
 
-        if (AbilityLimit >= 1)
+        if (UseLimit[target.PlayerId] >= 1)
         {
-            AbilityLimit -= 1;
-            SendSkillRPC();
+            UseLimit[target.PlayerId] -= 1;
+            SendAbilityRPC(target.PlayerId);
             SpyRedNameList.TryAdd(killer.PlayerId, GetTimeStamp());
             SendRPC(killer.PlayerId);                
             if (SpyInteractionBlocked.GetBool()) 
@@ -126,8 +143,8 @@ internal class Spy : RoleBase
     {
         if (player.IsAlive())
         {
-            AbilityLimit += SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
-            SendSkillRPC();
+            UseLimit[player.PlayerId] += SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
+            SendAbilityRPC(player.PlayerId);
         }
         return true;
     }
@@ -144,11 +161,11 @@ internal class Spy : RoleBase
         string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
 
         Color TextColor1;
-        if (AbilityLimit < 1) TextColor1 = Color.red;
+        if (UseLimit[playerId] < 1) TextColor1 = Color.red;
         else TextColor1 = Color.white;
 
         sb += ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})");
-        sb += ColorString(TextColor1, $" <color=#777777>-</color> {Math.Round(AbilityLimit, 1)}");
+        sb += ColorString(TextColor1, $" <color=#777777>-</color> {Math.Round(UseLimit[playerId], 1)}");
 
         return sb;
     }

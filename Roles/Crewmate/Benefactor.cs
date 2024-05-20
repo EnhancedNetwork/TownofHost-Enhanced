@@ -10,7 +10,7 @@ internal class Benefactor : RoleBase
     private const int Id = 26400;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -57,7 +57,7 @@ internal class Benefactor : RoleBase
 
     private static void SendRPC(int type, byte benefactorId = 0xff, byte targetId = 0xff, int taskIndex = -1)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BenefactorRPC, SendOption.Reliable, -1);
         writer.Write(type);
         if (type == 0)
         {
@@ -84,7 +84,7 @@ internal class Benefactor : RoleBase
 
     }
 
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         int type = reader.ReadInt32();
         if (type == 0)
@@ -148,7 +148,7 @@ internal class Benefactor : RoleBase
         if (!AmongUsClient.Instance.AmHost) return;
         
         if (!HasEnabled) return;
-        if (player == null || _Player == null) return;
+        if (player == null) return;
         if (!player.IsAlive()) return;
         
         byte playerId = player.PlayerId;

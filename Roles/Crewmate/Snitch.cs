@@ -11,7 +11,7 @@ internal class Snitch : RoleBase
     private const int Id = 9500;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -152,7 +152,7 @@ internal class Snitch : RoleBase
     private static void SendRPC(byte RpcTypeId, byte snitchId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
+        writer.WritePacked((int)CustomRoles.Snitch);
         writer.Write(RpcTypeId);
         writer.Write(snitchId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

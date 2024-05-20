@@ -61,9 +61,9 @@ class CheckProtectPatch
 
         if (angel.Is(CustomRoles.EvilSpirit))
         {
-            if (target.GetRoleClass() is Spiritcaller sp)
+            if (target.Is(CustomRoles.Spiritcaller))
             {
-                sp.ProtectSpiritcaller();
+                Spiritcaller.ProtectSpiritcaller();
             }
             else
             {
@@ -119,6 +119,9 @@ class CheckMurderPatch
             return false;
         }
 
+        // Set kill cooldown for Chronomancer
+        if (killerRole is Chronomancer)
+            Chronomancer.OnCheckMurder(killer);
 
         killer.ResetKillCooldown();
         Logger.Info($"Kill Cooldown Resets", "CheckMurder");
@@ -215,9 +218,9 @@ class CheckMurderPatch
         }
 
         // if player hacked by Glitch
-        if (Glitch.HasEnabled && Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target)))
+        if (Glitch.HasEnabled && !Glitch.OnCheckMurderOthers(killer, target))
         {
-            Logger.Info($"Is hacked by Glitch, it cannot kill ", "Glitch.CheckMurder");
+            Logger.Info("Is hacked by Glitch, it cannot kill", "Pelican.CheckMurder");
             return false;
         }
 
@@ -229,15 +232,11 @@ class CheckMurderPatch
         }
 
         // Penguin's victim unable to kill
-        List<PlayerControl> penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
-        if (Penguin.HasEnabled && penguins != null && penguins.Any())
+        if (Penguin.AbductVictim != null && killer.PlayerId == Penguin.AbductVictim.PlayerId)
         {
-            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && killer.PlayerId == pg.AbductVictim.PlayerId))
-            {
-                killer.Notify(GetString("PenguinTargetOnCheckMurder"));
-                killer.SetKillCooldown(5);
-                return false;
-            }
+            killer.Notify(GetString("PenguinTargetOnCheckMurder"));
+            killer.SetKillCooldown(5);
+            return false;
         }
 
         return true;
@@ -814,7 +813,6 @@ class ReportDeadBodyPatch
         Main.AllKillers.Clear();
 
 
-
         foreach (var playerStates in Main.PlayerStates.Values.ToArray())
         {
             playerStates.RoleClass?.OnReportDeadBody(player, target?.Object);
@@ -889,7 +887,7 @@ class FixedUpdateInNormalGamePatch
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
         {
-            if(Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckFixedUpdateReport(__instance, id)))
+            if(!Glitch.OnCheckFixedUpdateReport(__instance, id))
             { }
             else
             {

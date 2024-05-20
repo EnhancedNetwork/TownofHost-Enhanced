@@ -93,9 +93,9 @@ class HudManagerPatch
                     LowerInfoText.transform.parent = __instance.transform;
                     LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
                     LowerInfoText.alignment = TextAlignmentOptions.Center;
-                    LowerInfoText.color = Palette.EnabledColor;
                     LowerInfoText.overflowMode = TextOverflowModes.Overflow;
                     LowerInfoText.enableWordWrapping = false;
+                    LowerInfoText.color = Palette.EnabledColor;
                     LowerInfoText.fontSizeMin = 2.8f;
                     LowerInfoText.fontSizeMax = 2.8f;
                 }
@@ -103,29 +103,9 @@ class HudManagerPatch
                 {
                     case CustomGameMode.Standard:
                         var roleClass = player.GetRoleClass();
-                        LowerInfoText.text = roleClass?.GetLowerText(player, player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empty;
-                        
-
-                        if (roleClass != null)
-                        {
-                            float size = roleClass.SetModdedLowerText(out Color32? faceColor);
-
-                            if (faceColor != null)
-                            {
-                                LowerInfoText.SetFaceColor(faceColor.Value);
-                                LowerInfoText.SetOutlineColor(new Color32(0, 0, 0, 255));
-                            }
-                            if (LowerInfoText.fontSizeMin != size)
-                            {
-                                LowerInfoText.fontSizeMin = size;
-                                LowerInfoText.fontSizeMax = size;
-                            }
-                        }
-
-                        
+                        LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empty;
                         break;
                 }
-
                 LowerInfoText.enabled = LowerInfoText.text != "" && LowerInfoText.text != string.Empty;
 
                 if ((!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay) || GameStates.IsMeeting)

@@ -11,7 +11,9 @@ internal class Quizmaster : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 27000;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Quizmaster);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => CanKillsAfterMark() ? Custom_RoleType.NeutralKilling : Custom_RoleType.NeutralChaos;
@@ -50,8 +52,8 @@ internal class Quizmaster : RoleBase
         TabGroup tab = TabGroup.NeutralRoles;
 
         SetupSingleRoleOptions(Id, tab, CustomRoles.Quizmaster, 1);
-        QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.QuestionDifficulty", new(1, 4, 1), 1, tab, false).SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-
+        QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.QuestionDifficulty", new(1, 4, 1), 1, tab, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         CanVentAfterMark = BooleanOptionItem.Create(Id + 11, "QuizmasterSettings.CanVentAfterMark", true, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         CanKillAfterMarkOpt = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
@@ -64,6 +66,7 @@ internal class Quizmaster : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         Player = null;
         firstSabotageOfRound = Sabotages.None;
         //killsForRound = 0;
@@ -90,6 +93,7 @@ internal class Quizmaster : RoleBase
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         MarkedPlayer = byte.MaxValue;
 
         if (AmongUsClient.Instance.AmHost)
@@ -216,9 +220,9 @@ internal class Quizmaster : RoleBase
         DoQuestion();
     }
 
-    private void DoQuestion()
+    private static void DoQuestion()
     {
-        Player = _Player;
+        Player = Utils.GetPlayerById(playerIdList.ToList().First());
         if (MarkedPlayer != byte.MaxValue)
         {
             CustomRoles randomRole = GetRandomRole([.. CustomRolesHelper.AllRoles], false);

@@ -1,7 +1,6 @@
 using Hazel;
 using System.Text;
 using System;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -13,7 +12,9 @@ internal class Oracle : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 9100;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Oracle);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -25,6 +26,7 @@ internal class Oracle : RoleBase
     private static OptionItem ChangeRecruitTeam;
 
     private readonly HashSet<byte> DidVote = [];
+    private static readonly Dictionary<byte, float> CheckLimit = [];
     private static readonly Dictionary<byte, float> TempCheckLimit = [];
 
     public override void SetupCustomOption()
@@ -47,20 +49,29 @@ internal class Oracle : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
+        CheckLimit.Clear();
         TempCheckLimit.Clear();
+        DidVote.Clear();
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = CheckLimitOpt.GetFloat();
+        playerIdList.Add(playerId);
+        CheckLimit.TryAdd(playerId, CheckLimitOpt.GetInt());
+    }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        CheckLimit.Remove(playerId);
     }
     public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && TempCheckLimit[pva.TargetPlayerId] > 0;
-    public void SendRPC(byte playerId, bool isTemp = false)
+    public static void SendRPC(byte playerId, bool isTemp = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WritePacked((int)CustomRoles.Oracle);
         writer.Write(playerId);
         writer.Write(isTemp);
-        if (!isTemp) writer.Write(AbilityLimit);
+        if (!isTemp) writer.Write(CheckLimit[playerId]);
         else writer.Write(TempCheckLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -71,7 +82,7 @@ internal class Oracle : RoleBase
         if (!isTemp)
         {
             float checkLimit = reader.ReadSingle();
-            AbilityLimit = checkLimit;
+            CheckLimit[pid] = checkLimit;
         }
         else
         {
@@ -85,18 +96,18 @@ internal class Oracle : RoleBase
         if (DidVote.Contains(player.PlayerId)) return;
         DidVote.Add(player.PlayerId);
 
-        if (AbilityLimit < 1)
+        if (CheckLimit[player.PlayerId] < 1)
         {
             SendMessage(GetString("OracleCheckReachLimit"), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
             return;
         }
 
-        AbilityLimit -= 1;
+        CheckLimit[player.PlayerId] -= 1;
         SendRPC(player.PlayerId);
 
         if (player.PlayerId == target.PlayerId)
         {
-            SendMessage(GetString("OracleCheckSelfMsg") + "\n\n" + string.Format(GetString("OracleCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+            SendMessage(GetString("OracleCheckSelfMsg") + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
             return;
         }
 
@@ -146,14 +157,14 @@ internal class Oracle : RoleBase
                 msg = string.Format(GetString("OracleCheck." + text), target.GetRealName());
             }
 
-            SendMessage(GetString("OracleCheck") + "\n" + msg + "\n\n" + string.Format(GetString("OracleCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+            SendMessage(GetString("OracleCheck") + "\n" + msg + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
         }
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player.IsAlive())
         {
-            AbilityLimit += OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
+            CheckLimit[player.PlayerId] += OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
             SendRPC(player.PlayerId);
         }
         return true;
@@ -161,10 +172,11 @@ internal class Oracle : RoleBase
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl tagret)
     {
         DidVote.Clear();
-            
-        TempCheckLimit[_state.PlayerId] = AbilityLimit;
-        SendRPC(_state.PlayerId, isTemp: true);
-        
+        foreach (var oracleId in CheckLimit.Keys)
+        {
+            TempCheckLimit[oracleId] = CheckLimit[oracleId];
+            SendRPC(oracleId, isTemp: true);
+        }
     }
     public override string GetProgressText(byte playerId, bool comms)
     {
@@ -177,10 +189,10 @@ internal class Oracle : RoleBase
         TextColor9 = comms ? Color.gray : NormalColor9;
         string Completed9 = comms ? "?" : $"{taskState9.CompletedTasksCount}";
         Color TextColor91;
-        if (AbilityLimit < 1) TextColor91 = Color.red;
+        if (CheckLimit[playerId] < 1) TextColor91 = Color.red;
         else TextColor91 = Color.white;
         ProgressText.Append(ColorString(TextColor9, $"({Completed9}/{taskState9.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor91, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
+        ProgressText.Append(ColorString(TextColor91, $" <color=#ffffff>-</color> {Math.Round(CheckLimit[playerId], 1)}"));
         return ProgressText.ToString();
     }
 }

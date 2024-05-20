@@ -3,7 +3,6 @@ using AmongUs.GameOptions;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
-using TOHE.Roles.Core;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Impostor/Penguin.cs
 namespace TOHE.Roles.Impostor;
@@ -12,7 +11,9 @@ internal class Penguin : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 27500;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Penguin);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -21,11 +22,11 @@ internal class Penguin : RoleBase
     private static OptionItem OptionMeetingKill;
 
 
-    public PlayerControl AbductVictim;
-    private float AbductTimer;
-    private float AbductTimerLimit;
-    private bool stopCount;
-    private bool MeetingKill;
+    public static PlayerControl AbductVictim;
+    private static float AbductTimer;
+    private static float AbductTimerLimit;
+    private static bool stopCount;
+    private static bool MeetingKill;
 
     // Measures to prevent the opponent who is about to be killed during abduction from using their abilities
 
@@ -38,10 +39,16 @@ internal class Penguin : RoleBase
         OptionMeetingKill = BooleanOptionItem.Create(Id + 12, "PenguinMeetingKill", false, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Penguin]);
     }
+    public override void Init()
+    {
+        playerIdList.Clear();
+    }
     public override void Add(byte playerId)
     {
         AbductTimerLimit = OptionAbductTimerLimit.GetFloat();
         MeetingKill = OptionMeetingKill.GetBool();
+
+        playerIdList.Add(playerId);
 
         AbductTimer = 255f;
         stopCount = false;
@@ -53,7 +60,7 @@ internal class Penguin : RoleBase
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
-    private void SendRPC()
+    private static void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WritePacked((int)CustomRoles.Penguin);
@@ -76,7 +83,7 @@ internal class Penguin : RoleBase
         }
     }
 
-    private void AddVictim(PlayerControl penguin, PlayerControl target)
+    private static void AddVictim(PlayerControl penguin, PlayerControl target)
     {
         //Prevent using of moving platform??
         AbductVictim = target;
@@ -85,7 +92,7 @@ internal class Penguin : RoleBase
         penguin?.RpcResetAbilityCooldown();
         SendRPC();
     }
-    private void RemoveVictim()
+    private static void RemoveVictim()
     {
         if (AbductVictim != null)
         {
@@ -94,8 +101,8 @@ internal class Penguin : RoleBase
         }
         //MyState.CanUseMovingPlatform = true;
         AbductTimer = 255f;
-        _Player?.MarkDirtySettings();
-        _Player?.RpcResetAbilityCooldown();
+        Utils.GetPlayerById(playerIdList.First())?.MarkDirtySettings();
+        Utils.GetPlayerById(playerIdList.First())?.RpcResetAbilityCooldown();
         SendRPC();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -139,13 +146,13 @@ internal class Penguin : RoleBase
         // If you meet a meeting with time running out, kill it even if you're on a ladder.
         if (AbductVictim != null && AbductTimer <= 0f)
         {
-            _Player?.RpcMurderPlayer(AbductVictim);
+            Utils.GetPlayerById(playerIdList.First())?.RpcMurderPlayer(AbductVictim);
         }
         if (MeetingKill)
         {
             if (!AmongUsClient.Instance.AmHost) return;
             if (AbductVictim == null) return;
-            _Player?.RpcMurderPlayer(AbductVictim);
+            Utils.GetPlayerById(playerIdList.First())?.RpcMurderPlayer(AbductVictim);
             RemoveVictim();
         }
     }
@@ -156,17 +163,17 @@ internal class Penguin : RoleBase
         //Maps other than Airship
         RestartAbduct();
     }
-    public void OnSpawnAirship()
+    public static void OnSpawnAirship()
     {
         RestartAbduct();
     }
-    private void RestartAbduct()
+    private static void RestartAbduct()
     {
         if (!HasEnabled) return;
         if (AbductVictim != null)
         {
-            _Player?.MarkDirtySettings();
-            _Player?.RpcResetAbilityCooldown();
+            Utils.GetPlayerById(playerIdList.First())?.MarkDirtySettings();
+            Utils.GetPlayerById(playerIdList.First())?.RpcResetAbilityCooldown();
             stopCount = false;
         }
     }

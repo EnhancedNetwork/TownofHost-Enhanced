@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -13,7 +12,9 @@ internal class Hawk : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 28000;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Hawk);
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateGhosts;
     //==================================================================\\
@@ -24,8 +25,9 @@ internal class Hawk : RoleBase
     public static OptionItem MissChance;
     public static OptionItem IncreaseByOneIfConvert;
     
-    public readonly Dictionary<byte, float> KillerChanceMiss = [];
-    public int KeepCount = 0;
+    public static readonly Dictionary<byte, int> KillCount = [];
+    public static readonly Dictionary<byte, float> KillerChanceMiss = [];
+    public static int KeepCount = 0;
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Hawk);
@@ -40,9 +42,15 @@ internal class Hawk : RoleBase
         IncreaseByOneIfConvert = BooleanOptionItem.Create(Id + 14, "IncreaseByOneIfConvert", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk]);
     }
 
+    public override void Init()
+    {
+        KeepCount = 0;
+        KillerChanceMiss.Clear();
+        KillCount.Clear();
+    }
     public override void Add(byte PlayerId)
     {
-        AbilityLimit = HawkCanKillNum.GetInt();
+        KillCount.Add(PlayerId, HawkCanKillNum.GetInt());
 
         foreach (var pc in Main.AllPlayerControls)
         {
@@ -65,9 +73,24 @@ internal class Hawk : RoleBase
         if (ThisCount > KeepCount && IncreaseByOneIfConvert.GetBool())
         {
             KeepCount++;
-            AbilityLimit += ThisCount - KeepCount;
+            var hawk = PlayerIds.ToList().First();
+            KillCount[hawk] += ThisCount - KeepCount;
         }
 
+    }
+    private static void SendRPC(byte playerId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Hawk);
+        writer.Write(playerId);
+        writer.Write(KillCount[playerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        byte PlayerId = reader.ReadByte();
+        int Limit = reader.ReadInt32();
+        KillCount[PlayerId] = Limit;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -79,21 +102,21 @@ internal class Hawk : RoleBase
         if (!KillerChanceMiss.ContainsKey(target.PlayerId))
             KillerChanceMiss.Add(target.PlayerId, MissChance.GetFloat());
 
-        if (CheckRetriConflicts(target) && killer.RpcCheckAndMurder(target, true))
+        if (CheckRetriConflicts(killer, target) && killer.RpcCheckAndMurder(target, true))
         {
             killer.RpcMurderPlayer(target);
             killer.RpcResetAbilityCooldown();
             target.SetDeathReason(PlayerState.DeathReason.Slice);
-            AbilityLimit--;
-            SendSkillRPC();
+            KillCount[killer.PlayerId]--;
+            SendRPC(killer.PlayerId);
         }
-        else if (AbilityLimit <= 0) killer.Notify(GetString("HawkKillMax"));
+        else if (KillCount[killer.PlayerId] <= 0) killer.Notify(GetString("HawkKillMax"));
         else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkKillTooManyDead"));
         else
         {
             killer.RpcResetAbilityCooldown();
-            AbilityLimit--;
-            SendSkillRPC();
+            KillCount[killer.PlayerId]--;
+            SendRPC(killer.PlayerId);
             killer.Notify(ColorString(GetRoleColor(CustomRoles.Hawk), GetString("HawkMissed")));
         }
 
@@ -102,18 +125,19 @@ internal class Hawk : RoleBase
         return false;
     }
 
-    private bool CheckRetriConflicts(PlayerControl target)
+    private static bool CheckRetriConflicts(PlayerControl killer, PlayerControl target)
     {
         var rnd = IRandom.Instance;
 
         return target != null && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
-            && AbilityLimit > 0
+            && KillCount[killer.PlayerId] > 0
             && rnd.Next(100) >= KillerChanceMiss[target.PlayerId]
             && !target.Is(CustomRoles.Pestilence)
             && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18);
     }
+    public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
     public override string GetProgressText(byte playerId, bool coms) 
-        => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Hawk).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+        => ColorString(CanKill(playerId) ? GetRoleColor(CustomRoles.Hawk).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
 
 }
 

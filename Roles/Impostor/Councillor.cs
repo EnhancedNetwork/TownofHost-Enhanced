@@ -2,7 +2,6 @@
 using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
-using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -14,7 +13,9 @@ internal class Councillor : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 1000;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Councillor);
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -26,7 +27,8 @@ internal class Councillor : RoleBase
     private static OptionItem CanMurderImpostor;
     private static OptionItem KillCooldown;
     
-    private int MurderLimitMeeting;
+    private static Dictionary<byte, int> MurderLimitMeeting = [];
+    private static Dictionary<byte, int> MurderLimitGame = [];
 
 
     public override void SetupCustomOption()
@@ -43,14 +45,39 @@ internal class Councillor : RoleBase
         TryHideMsg = BooleanOptionItem.Create(Id + 15, "CouncillorTryHideMsg", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
             .SetColor(Color.green);
     }
+    public override void Init()
+    {
+        MurderLimitMeeting = [];
+        MurderLimitGame = [];
+        PlayerIds.Clear();
+    }
     public override void Add(byte playerId)
     {
-        MurderLimitMeeting = MurderLimitPerMeeting.GetInt();
-        AbilityLimit = MurderLimitPerGame.GetInt();
+        MurderLimitMeeting.Add(playerId, MurderLimitPerMeeting.GetInt());
+        MurderLimitGame[playerId] = MurderLimitPerGame.GetInt();
+        PlayerIds.Add(playerId);
+    }
+
+    private static void SendLimitRPC(byte playerId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Councillor);
+        writer.Write(playerId);
+        writer.Write(MurderLimitGame[playerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        byte councillorId = reader.ReadByte();
+        int Limit = reader.ReadInt32();
+        MurderLimitGame[councillorId] = Limit;
     }
     public override void AfterMeetingTasks()
     {
-        MurderLimitMeeting = MurderLimitPerMeeting.GetInt();
+        foreach (byte playerId in MurderLimitMeeting.Keys)
+        {
+            MurderLimitMeeting[playerId] = MurderLimitPerMeeting.GetInt();
+        }
     }
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
@@ -59,13 +86,13 @@ internal class Councillor : RoleBase
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
-    public bool MurderMsg(string msg, bool isUI = false)
+    public static bool MurderMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsMeeting || _Player == null || GameStates.IsExilling) return false;
-        var pc = _Player;
+        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
+        if (!pc.Is(CustomRoles.Councillor)) return false;
 
         int operate = 0; // 1:ID 2:猜测
         msg = msg.ToLower().TrimStart().TrimEnd();
@@ -106,13 +133,15 @@ internal class Councillor : RoleBase
             {
                 Logger.Info($"{pc.GetNameWithRole()} 审判了 {target.GetNameWithRole()}", "Councillor");
                 bool CouncillorSuicide = true;
-                if (MurderLimitMeeting <= 0)
+                if (!MurderLimitMeeting.ContainsKey(pc.PlayerId)) MurderLimitMeeting[pc.PlayerId] = MurderLimitPerMeeting.GetInt();
+                if (!MurderLimitGame.ContainsKey(pc.PlayerId)) MurderLimitGame[pc.PlayerId] = MurderLimitPerGame.GetInt();
+                if (MurderLimitMeeting[pc.PlayerId] < 1)
                 {
                     if (!isUI) Utils.SendMessage(GetString("CouncillorMurderMaxMeeting"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("CouncillorMurderMaxMeeting"));
                     return true;
                 }
-                else if (AbilityLimit <= 0)
+                else if (MurderLimitGame[pc.PlayerId] < 1)
                 {
                     if (!isUI) Utils.SendMessage(GetString("CouncillorMurderMaxGame"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("CouncillorMurderMaxGame"));
@@ -167,9 +196,9 @@ internal class Councillor : RoleBase
 
                 string Name = dp.GetRealName();
 
-                MurderLimitMeeting--;
-                AbilityLimit--;
-                SendSkillRPC();
+                MurderLimitMeeting[pc.PlayerId]--;
+                MurderLimitGame[pc.PlayerId]--;
+                SendLimitRPC(pc.PlayerId);
 
                 if (!GameStates.IsProceeding)
                 _ = new LateTask(() =>
@@ -259,7 +288,7 @@ internal class Councillor : RoleBase
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
         int PlayerId = reader.ReadByte();
-        if (pc.GetRoleClass() is Councillor cl) cl.MurderMsg($"/tl {PlayerId}", true);
+        MurderMsg(pc, $"/tl {PlayerId}", true);
     }
 
     private static void CouncillorOnClick(byte playerId/*, MeetingHud __instance*/)
@@ -267,7 +296,7 @@ internal class Councillor : RoleBase
         Logger.Msg($"Click: ID {playerId}", "Councillor UI");
         var pc = Utils.GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
-        if (AmongUsClient.Instance.AmHost && pc.GetRoleClass() is Councillor cl) cl.MurderMsg($"/tl {playerId}", true);
+        if (AmongUsClient.Instance.AmHost) MurderMsg(PlayerControl.LocalPlayer, $"/tl {playerId}", true);
         else SendRPC(playerId);
     }
 
@@ -302,6 +331,7 @@ internal class Councillor : RoleBase
     {
         var player = Utils.GetPlayerById(playerId);
         if (player == null) return "Invalid";
-        return Utils.ColorString(AbilityLimit <= 0 ? Color.gray : Utils.GetRoleColor(CustomRoles.Councillor), $"({AbilityLimit})");
+        if (!MurderLimitGame.ContainsKey(playerId)) MurderLimitGame[playerId] = MurderLimitPerGame.GetInt();
+        return Utils.ColorString(MurderLimitGame[playerId] < 1 ? Color.gray : Utils.GetRoleColor(CustomRoles.Councillor), $"({MurderLimitGame[playerId]})");
     }
 }

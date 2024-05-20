@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System;
-using TOHE.Roles.Core;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
@@ -10,7 +9,9 @@ internal class Taskinator : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 13700;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Taskinator);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -33,12 +34,14 @@ internal class Taskinator : RoleBase
 
     public override void Init()
     {
+        playerIdList.Clear();
         taskIndex.Clear(); 
         TaskMarkPerRound.Clear();
         maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         TaskMarkPerRound[playerId] = 0;
     }
 
@@ -106,9 +109,10 @@ internal class Taskinator : RoleBase
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if(!HasEnabled) return;
-        if (player == null || _Player == null) return;
+        if (player == null) return;
         if (!player.IsAlive()) return;
         byte playerId = player.PlayerId;
+        var Taskinators = playerIdList.GetPlayerListByIds();
         if (player.Is(CustomRoles.Taskinator))
         {
             if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
@@ -124,7 +128,7 @@ internal class Taskinator : RoleBase
             SendRPC(taskinatorID: playerId, taskIndex: task.Index);
             player.Notify(GetString("TaskinatorBombPlanted"));
         }
-        else if (_Player.RpcCheckAndMurder(player, true))
+        else if (Taskinators.All(Inator => Inator.RpcCheckAndMurder(player, true)))
         {
             foreach (var taskinatorId in taskIndex.Keys)
             { 

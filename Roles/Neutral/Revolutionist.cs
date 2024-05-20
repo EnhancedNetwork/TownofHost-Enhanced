@@ -15,7 +15,7 @@ internal class Revolutionist : RoleBase
     private const int Id = 15200;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -110,14 +110,13 @@ internal class Revolutionist : RoleBase
     }
     private static void SetDrawPlayerRPC(PlayerControl player, PlayerControl target, bool isDrawed)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDrawPlayer, SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isDrawed);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveDrawPlayerRPC(MessageReader reader)
+    public static void ReceiveDrawPlayerRPC(MessageReader reader)
     {
         byte RevolutionistId = reader.ReadByte();
         byte DrawId = reader.ReadByte();
@@ -133,14 +132,13 @@ internal class Revolutionist : RoleBase
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-            writer.WritePacked(2);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDrawTarget, SendOption.Reliable, -1);
             writer.Write(arsonistId);
             writer.Write(targetId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public void ReceiveSetCurrentDrawTarget(MessageReader reader)
+    public static void ReceiveSetCurrentDrawTarget(MessageReader reader)
     {
         byte RevolutionistId = reader.ReadByte();
         byte doTargetId = reader.ReadByte();

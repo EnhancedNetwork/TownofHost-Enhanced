@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.Text;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
@@ -11,7 +10,9 @@ internal class Wildling : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 5200;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Wildling);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -20,7 +21,7 @@ internal class Wildling : RoleBase
     private static OptionItem ShapeshiftCD;
     private static OptionItem ShapeshiftDur;
 
-    private long? TimeStamp;
+    private static readonly Dictionary<byte, long> TimeStamp = [];
 
     public override void SetupCustomOption()
     {
@@ -32,20 +33,31 @@ internal class Wildling : RoleBase
         ShapeshiftDur = FloatOptionItem.Create(Id + 16, "ShapeshiftDuration", new(1f, 180f, 1f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Wildling])
             .SetValueFormat(OptionFormat.Seconds);
     }
+    public override void Init()
+    {
+        playerIdList.Clear();
+        TimeStamp.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        playerIdList.Add(playerId);
+        TimeStamp.TryAdd(playerId, 0);
+    }
 
-    private void SendRPC(byte playerId)
+    private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WritePacked((int)CustomRoles.Wildling);
         writer.Write(playerId);
-        writer.Write(TimeStamp.ToString());
+        writer.Write(TimeStamp[playerId].ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         string Time = reader.ReadString();
-        TimeStamp = long.Parse(Time);
+        TimeStamp.TryAdd(PlayerId, long.Parse(Time));
+        TimeStamp[PlayerId] = long.Parse(Time);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -54,7 +66,7 @@ internal class Wildling : RoleBase
         AURoleOptions.ShapeshifterDuration = ShapeshiftDur.GetFloat();
     }
 
-    private bool InProtect(byte playerId) => TimeStamp > Utils.GetTimeStamp(DateTime.Now);
+    private static bool InProtect(byte playerId) => TimeStamp.TryGetValue(playerId, out var time) && time > Utils.GetTimeStamp(DateTime.Now);
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
@@ -72,16 +84,16 @@ internal class Wildling : RoleBase
     {
         if (inMeeting || isSuicide) return;
 
-        TimeStamp = Utils.GetTimeStamp(DateTime.Now) + (long)ProtectDuration.GetFloat();
+        TimeStamp[killer.PlayerId] = Utils.GetTimeStamp(DateTime.Now) + (long)ProtectDuration.GetFloat();
         SendRPC(killer.PlayerId);
 
         killer.Notify(Translator.GetString("BKInProtect"));
     }
     public override void OnFixedUpdateLowLoad(PlayerControl pc)
     {
-        if (TimeStamp != null && TimeStamp < Utils.GetTimeStamp(DateTime.Now))
+        if (TimeStamp.TryGetValue(pc.PlayerId, out var time) && time != 0 && time < Utils.GetTimeStamp(DateTime.Now))
         {
-            TimeStamp = 0;
+            TimeStamp[pc.PlayerId] = 0;
             pc.Notify(Translator.GetString("BKProtectOut"));
         }
     }
@@ -92,7 +104,7 @@ internal class Wildling : RoleBase
         var str = new StringBuilder();
         if (InProtect(seer.PlayerId))
         {
-            var remainTime = TimeStamp - Utils.GetTimeStamp(DateTime.Now);
+            var remainTime = TimeStamp[seer.PlayerId] - Utils.GetTimeStamp(DateTime.Now);
             str.Append(string.Format(Translator.GetString("BKSkillTimeRemain"), remainTime));
         }
         else

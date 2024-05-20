@@ -222,10 +222,10 @@ static class ExtendedPlayerControl
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
-        if (player.GetRoleClass() is Glitch gc)
+        if (player.Is(CustomRoles.Glitch))
         {
-            gc.LastKill = Utils.GetTimeStamp() + ((int)(time / 2) - Glitch.KillCooldown.GetInt());
-            gc.KCDTimer = (int)(time / 2);
+            Glitch.LastKill = Utils.GetTimeStamp() + ((int)(time / 2) - Glitch.KillCooldown.GetInt());
+            Glitch.KCDTimer = (int)(time / 2);
         }
         else if (forceAnime || !player.IsModClient() || !Options.DisableShieldAnimations.GetBool())
         {
@@ -339,12 +339,12 @@ static class ExtendedPlayerControl
     {
         if (!AmongUsClient.Instance.AmHost) return; // Nothing happens when run by anyone other than the host.
         Logger.Info($"Ability cooldown reset: {target.name}({target.PlayerId})", "RpcResetAbilityCooldown");
-        if (target.GetRoleClass() is Glitch gc)
+        if (target.Is(CustomRoles.Glitch))
         {
-            gc.LastHack = Utils.GetTimeStamp();
-            gc.LastMimic = Utils.GetTimeStamp();
-            gc.MimicCDTimer = 10;
-            gc.HackCDTimer = 10;
+            Glitch.LastHack = Utils.GetTimeStamp();
+            Glitch.LastMimic = Utils.GetTimeStamp();
+            Glitch.MimicCDTimer = 10;
+            Glitch.HackCDTimer = 10;
         }
         else if (PlayerControl.LocalPlayer == target && !target.GetCustomRole().IsGhostRole() && !target.IsAnySubRole(x => x.IsGhostRole()))
         {
@@ -581,15 +581,9 @@ static class ExtendedPlayerControl
         if (!player.HasImpKillButton(considerVanillaShift: false))
             Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
 
-        if (player.GetRoleClass() is Chronomancer ch)
-        {
-            ch.realcooldown = Main.AllPlayerKillCooldown[player.PlayerId];
-            ch.SetCooldown();
-        }
-
-
         if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
         {
+            if (player.Is(CustomRoles.Chronomancer)) return;
             Main.AllPlayerKillCooldown[player.PlayerId] = 0.3f;
         }
     }

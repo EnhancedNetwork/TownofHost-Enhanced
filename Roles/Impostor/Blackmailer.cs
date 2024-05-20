@@ -10,8 +10,9 @@ internal class Blackmailer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 24600;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Blackmailer);
-    
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -30,10 +31,12 @@ internal class Blackmailer : RoleBase
     }
     public override void Init()
     {
+        PlayerIds.Clear();
         ForBlackmailer.Clear();
     }
     public override void Add(byte playerId)
     {
+        PlayerIds.Add(playerId);
 
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
@@ -76,9 +79,10 @@ internal class Blackmailer : RoleBase
     {
         ClearBlackmaile();
     }
+
     private static void ClearBlackmaile() => ForBlackmailer.Clear();
-    
-    public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && GameStates.IsInGame && ForBlackmailer.Contains(player.PlayerId);
+    public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && ForBlackmailer.Contains(player.PlayerId);
+
     private string GetMarkOthers(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (!isForMeeting) return string.Empty;
@@ -91,7 +95,7 @@ internal class Blackmailer : RoleBase
         if (CheckBlackmaile(pc))
         {
             var playername = pc.GetRealName();
-            if( Doppelganger.DoppelVictim.TryGetValue(pc.PlayerId, out var doppelPlayerName)) playername = doppelPlayerName; 
+            if (Doppelganger.DoppelVictim.TryGetValue(pc.PlayerId, out var doppelPlayerName)) playername = doppelPlayerName;
             AddMsg(string.Format(GetString("BlackmailerDead"), playername, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
         }
     }

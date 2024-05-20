@@ -15,7 +15,7 @@ internal class Arsonist : RoleBase
     private const int id = 15900;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled = PlayerIds.Any();
-    
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => CanIgniteAnytime() ? Custom_RoleType.NeutralKilling : Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -71,14 +71,13 @@ internal class Arsonist : RoleBase
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-            writer.WritePacked(1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDousingTarget, SendOption.Reliable, -1);
             writer.Write(arsonistId);
             writer.Write(targetId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public void ReceiveCurrentDousingTargetRPC(MessageReader reader)
+    public static void ReceiveCurrentDousingTargetRPC(MessageReader reader)
     {
         byte arsonistId = reader.ReadByte();
         byte dousingTargetId = reader.ReadByte();
@@ -89,14 +88,13 @@ internal class Arsonist : RoleBase
 
     private static void SendSetDousedPlayerRPC(PlayerControl player, PlayerControl target, bool isDoused)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);//RPCによる同期
-        writer.WritePacked(2);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDousedPlayer, SendOption.Reliable, -1);//RPCによる同期
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isDoused);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveSetDousedPlayerRPC(MessageReader reader)
+    public static void ReceiveSetDousedPlayerRPC(MessageReader reader)
     {
         byte ArsonistId = reader.ReadByte();
         byte DousedId = reader.ReadByte();

@@ -679,16 +679,20 @@ public static class Options
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorVanilla).ForEach(r => r.SetupCustomOption());
-       
+
+        bool titleAdded = false;
         if (CustomRoleManager.RoleClass.Where(x => x.Key.IsImpostor()).Any(r => r.Value.IsExperimental))
         {
-            TextOptionItem.Create(10000020, "Experimental.Roles", TabGroup.ImpostorRoles)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(141, 70, 49, byte.MaxValue));
+            if (!titleAdded)
+            {
+                TextOptionItem.Create(10000020, "Experimental.Roles", TabGroup.ImpostorRoles)
+                    .SetGameMode(CustomGameMode.Standard)
+                    .SetColor(new Color32(141, 70, 49, byte.MaxValue));
+
+                titleAdded = true;
+            }
 
             CustomRoleManager.GetExperimentalOptions(Custom_Team.Impostor).ForEach(r => r.SetupCustomOption());
-
-
         }
 
         TextOptionItem.Create(10000001, "RoleType.ImpKilling", TabGroup.ImpostorRoles) // KILLING
@@ -756,15 +760,19 @@ public static class Options
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanilla).ForEach(r => r.SetupCustomOption());
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanillaGhosts).ForEach(r => r.SetupCustomOption());
 
+        titleAdded = false;
         if (CustomRoleManager.RoleClass.Where(x => x.Key.IsCrewmate()).Any(r => r.Value.IsExperimental))
         {
-            TextOptionItem.Create(10000021, "Experimental.Roles", TabGroup.CrewmateRoles)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(141, 70, 49, byte.MaxValue));
+            if (!titleAdded)
+            {
+                TextOptionItem.Create(10000021, "Experimental.Roles", TabGroup.CrewmateRoles)
+                    .SetGameMode(CustomGameMode.Standard)
+                    .SetColor(new Color32(141, 70, 49, byte.MaxValue));
+
+                titleAdded = true;
+            }
 
             CustomRoleManager.GetExperimentalOptions(Custom_Team.Crewmate).ForEach(r => r.SetupCustomOption());
-
-
         }
 
         /*
@@ -822,17 +830,22 @@ public static class Options
 
         #region Neutrals Settings
 
-
+        titleAdded = false;
         if (CustomRoleManager.RoleClass.Where(x => x.Key.IsNeutral()).Any(r => r.Value.IsExperimental))
         {
-            TextOptionItem.Create(10000022, "Experimental.Roles", TabGroup.NeutralRoles)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(141, 70, 49, byte.MaxValue));
+            if (!titleAdded)
+            {
+                TextOptionItem.Create(10000022, "Experimental.Roles", TabGroup.NeutralRoles)
+                    .SetGameMode(CustomGameMode.Standard)
+                    .SetColor(new Color32(141, 70, 49, byte.MaxValue));
+
+                titleAdded = true;
+            }
 
             CustomRoleManager.GetExperimentalOptions(Custom_Team.Neutral).ForEach(r => r.SetupCustomOption());
-
-
         }
+        titleAdded = false;
+
         // Neutral
         TextOptionItem.Create(10000011, "RoleType.NeutralBenign", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -956,15 +969,6 @@ public static class Options
 
         Ghoul.SetupCustomOptions();
 
-        //BYE GLOW, SEE YOU NEVER - LOOOOOL
-        // SetupAdtRoleOptions(22000, CustomRoles.Glow, canSetNum: true);
-        //ImpCanBeGlow = BooleanOptionItem.Create(22003, "ImpCanBeGlow", true, TabGroup.Addons, false)
-        //.SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        //CrewCanBeGlow = BooleanOptionItem.Create(22004, "CrewCanBeGlow", true, TabGroup.Addons, false)
-        //.SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        //NeutralCanBeGlow = BooleanOptionItem.Create(22005, "NeutralCanBeGlow", true, TabGroup.Addons, false)
-        //.SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-
         Gravestone.SetupCustomOptions();
 
         Guesser.SetupCustomOptions();
@@ -1028,7 +1032,7 @@ public static class Options
 
 
         Youtuber.SetupCustomOptions();
-
+        
         Egoist.SetupCustomOption();
 
         SetupLoversRoleOptionsToggle(23600);
@@ -1044,13 +1048,6 @@ public static class Options
             .SetColor(new Color32(141, 140, 141, byte.MaxValue));
 
         Glow.SetupCustomOptions();
-
-
-        #endregion
-
-        #region Experimental Roles/Add-ons Settings
-
-
 
         #endregion
 

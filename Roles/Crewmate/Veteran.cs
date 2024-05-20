@@ -6,7 +6,6 @@ using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -14,7 +13,9 @@ internal class Veteran : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 11350;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Veteran);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -25,6 +26,7 @@ internal class Veteran : RoleBase
     private static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
 
     private static readonly Dictionary<byte, long> VeteranInProtect = [];
+    private static readonly Dictionary<byte, float> VeteranNumOfUsed = [];
 
     public override void SetupCustomOption()
     {
@@ -40,11 +42,14 @@ internal class Veteran : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         VeteranInProtect.Clear();
+        VeteranNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = VeteranSkillMaxOfUseage.GetInt();
+        playerIdList.Add(playerId);
+        VeteranNumOfUsed.Add(playerId, VeteranSkillMaxOfUseage.GetInt());
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -54,8 +59,7 @@ internal class Veteran : RoleBase
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player.IsAlive())
-            AbilityLimit += VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendSkillRPC();
+            VeteranNumOfUsed[player.PlayerId] += VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
         
         return true;
     }
@@ -96,13 +100,13 @@ internal class Veteran : RoleBase
                 pc.RpcResetAbilityCooldown();
             }
 
-            pc.Notify(string.Format(GetString("VeteranOffGuard"), AbilityLimit));
+            pc.Notify(string.Format(GetString("VeteranOffGuard"), VeteranNumOfUsed[pc.PlayerId]));
         }
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
         // Ability use limit reached
-        if (AbilityLimit <= 0)
+        if (VeteranNumOfUsed[pc.PlayerId] <= 0)
         {
             pc.Notify(GetString("VeteranMaxUsage"));
             return;
@@ -113,15 +117,14 @@ internal class Veteran : RoleBase
         {
             VeteranInProtect.Remove(pc.PlayerId);
             VeteranInProtect.Add(pc.PlayerId, GetTimeStamp(DateTime.Now));
-            AbilityLimit -= 1;
-            SendSkillRPC();
+            VeteranNumOfUsed[pc.PlayerId] -= 1;
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
             pc.RPCPlayCustomSound("Gunload");
             pc.Notify(GetString("VeteranOnGuard"), VeteranSkillDuration.GetFloat());
         }
     }
     public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
-        => AbilityLimit < 1;
+        => VeteranNumOfUsed.TryGetValue(physics.myPlayer.PlayerId, out var count) && count < 1;
 
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => VeteranInProtect.Clear();
     
@@ -136,10 +139,10 @@ internal class Veteran : RoleBase
         TextColor2 = comms ? Color.gray : NormalColor2;
         string Completed2 = comms ? "?" : $"{taskState2.CompletedTasksCount}";
         Color TextColor21;
-        if (AbilityLimit < 1) TextColor21 = Color.red;
+        if (VeteranNumOfUsed[playerId] < 1) TextColor21 = Color.red;
         else TextColor21 = Color.white;
         ProgressText.Append(ColorString(TextColor2, $"({Completed2}/{taskState2.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor21, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
+        ProgressText.Append(ColorString(TextColor21, $" <color=#ffffff>-</color> {Math.Round(VeteranNumOfUsed[playerId], 1)}"));
         return ProgressText.ToString();
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)

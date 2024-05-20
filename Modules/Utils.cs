@@ -1587,14 +1587,8 @@ public static class Utils
     }
     public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
     {
-        var PlayerList = PlayerIdList?.ToList().Select(x => GetPlayerById(x)).ToList();
-
-        return PlayerList.Any() ? PlayerList : null;
+        return PlayerIdList.ToList().Select(x => GetPlayerById(x)).ToList();
     }
-
-    public static List<PlayerControl> GetPlayerListByRole(this CustomRoles role)
-        => GetPlayerListByIds(Main.PlayerStates.Values.Where(x => x.MainRole == role)?.Select(r => r.PlayerId));
-    
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();

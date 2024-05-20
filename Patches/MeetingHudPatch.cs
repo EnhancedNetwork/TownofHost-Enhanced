@@ -203,7 +203,7 @@ class CheckForEndVotingPatch
                 });
 
                 // Swapper swap votes
-                 if(voter.GetRoleClass() is Swapper sw) sw.SwapVotes(__instance);
+                Swapper.SwapVotes(__instance);
 
                 playerRoleClass?.AddVisualVotes(ps, ref statesList);
             }
@@ -288,8 +288,8 @@ class CheckForEndVotingPatch
                     braked = true;
                 }
             }
-            List<Collector> CollectorCL = Utils.GetPlayerListByRole(CustomRoles.Collector)?.Select(x => x.GetRoleClass()).Cast<Collector>().ToList();
-            if (Collector.HasEnabled && CollectorCL != null) CollectorCL?.Do(x => { x.CollectAmount(VotingData, __instance); });
+
+            Collector.CollectAmount(VotingData, __instance);
 
             if (Options.VoteMode.GetBool() && Options.WhenTie.GetBool() && tie)
             {
@@ -649,10 +649,7 @@ static class ExtendedMeetingHud
         Logger.Info("===Start of vote counting processing===", "Vote");
         
         Dictionary<byte, int> dic = [];
-
         Collector.Clear();
-
-
         Tiebreaker.Clear();
 
         // |Voted By| Number of Times Voted For

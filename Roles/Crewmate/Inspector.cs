@@ -3,7 +3,6 @@ using System;
 using System.Text;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -14,8 +13,9 @@ internal class Inspector : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 8300;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Inspector);
-    
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -52,23 +52,26 @@ internal class Inspector : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         MaxCheckLimit.Clear();
         RoundCheckLimit.Clear();
     }
 
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         MaxCheckLimit.Add(playerId, InspectCheckLimitMax.GetInt());
         RoundCheckLimit.Add(playerId, InspectCheckLimitPerMeeting.GetInt());
     }
     public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
         MaxCheckLimit.Remove(playerId);
         RoundCheckLimit.Remove(playerId);
     }
     public static void SendRPC(byte playerId, int operate)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetInspectorLimit, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(operate);
         // reset round limit
@@ -83,7 +86,7 @@ internal class Inspector : RoleBase
         if (operate == 3) writer.Write(MaxCheckLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte pid = reader.ReadByte();
         int operate = reader.ReadInt32();

@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -8,7 +7,9 @@ internal class Pixie : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 25900;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pirate);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -34,12 +35,14 @@ internal class Pixie : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         PixieTargets.Clear();
         PixiePoints.Clear();
     }
 
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         PixieTargets[playerId] = [];
         PixiePoints.Add(playerId, 0);
 
@@ -50,6 +53,7 @@ internal class Pixie : RoleBase
 
     public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
         PixieTargets.Remove(playerId);
         PixiePoints.Remove(playerId);
     }

@@ -5,7 +5,6 @@ using System.Text;
 using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -13,7 +12,9 @@ internal class Tracker : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 10000;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Tracker);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -26,6 +27,7 @@ internal class Tracker : RoleBase
 
     private static bool CanSeeLastRoomInMeeting;
 
+    private static readonly Dictionary<byte, float> TrackLimit = [];
     private static readonly Dictionary<byte, List<byte>> TrackerTarget = [];
     private static readonly Dictionary<byte, float> TempTrackLimit = [];
 
@@ -45,31 +47,36 @@ internal class Tracker : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
+        TrackLimit.Clear();
         TrackerTarget.Clear();
         CanSeeLastRoomInMeeting = OptionCanSeeLastRoomInMeeting.GetBool();
         TempTrackLimit.Clear();
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = TrackLimitOpt.GetInt();
+        playerIdList.Add(playerId);
+        TrackLimit.Add(playerId, TrackLimitOpt.GetInt());
         TrackerTarget.Add(playerId, []);
     }
     public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
+        TrackLimit.Remove(playerId);
         TrackerTarget.Remove(playerId);
     }
     public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && TempTrackLimit[pva.TargetPlayerId] > 0;
-    public void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
+    public static void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetTrackerTarget, SendOption.Reliable, -1);
         writer.Write(trackerId);
         writer.Write(operate);
         if (operate == 0) writer.Write(targetId);
-        if (operate == 2) writer.Write(AbilityLimit);
+        if (operate == 2) writer.Write(TrackLimit[trackerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte trackerId = reader.ReadByte();
         int operate = reader.ReadInt32();
@@ -77,18 +84,18 @@ internal class Tracker : RoleBase
         {
             byte targetId = reader.ReadByte();
 
-            AbilityLimit--;
+            TrackLimit[trackerId]--;
             TrackerTarget[trackerId].Add(targetId);
             TargetArrow.Add(trackerId, targetId);
         }
         if (operate == 1)
         {
-            TempTrackLimit[trackerId] = AbilityLimit;
+            TempTrackLimit[trackerId] = TrackLimit[trackerId];
         }
         if (operate == 2)
         {
             float limit = reader.ReadSingle();
-            AbilityLimit = limit;
+            TrackLimit[trackerId] = limit;
         }
     }
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false) => !(seer == null || target == null) && TrackerTarget.ContainsKey(seer.PlayerId) && TrackerTarget[seer.PlayerId].Contains(target.PlayerId) ? Utils.ColorString(seer.GetRoleColor(), "◀") : "";
@@ -96,11 +103,11 @@ internal class Tracker : RoleBase
     public override void OnVote(PlayerControl player, PlayerControl target)
     {
         if (player == null || target == null) return;
-        if (AbilityLimit < 1) return;
+        if (TrackLimit[player.PlayerId] < 1) return;
         if (player.PlayerId == target.PlayerId) return;
         if (TrackerTarget[player.PlayerId].Contains(target.PlayerId)) return;
 
-        AbilityLimit--;
+        TrackLimit[player.PlayerId]--;
 
         TrackerTarget[player.PlayerId].Add(target.PlayerId);
         TargetArrow.Add(player.PlayerId, target.PlayerId);
@@ -110,9 +117,9 @@ internal class Tracker : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reported, PlayerControl repoted)
     {
-        foreach (var trackerId in _playerIdList) 
+        foreach (var trackerId in playerIdList) 
         {
-            TempTrackLimit[trackerId] = AbilityLimit;
+            TempTrackLimit[trackerId] = TrackLimit[trackerId];
             SendRPC(1, trackerId);
         }
     }
@@ -136,8 +143,8 @@ internal class Tracker : RoleBase
         }
     }
 
-    private bool IsTrackTarget(PlayerControl seer, PlayerControl target)
-        => seer.IsAlive() && seer == _Player
+    private static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
+        => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
             && TrackerTarget[seer.PlayerId].Contains(target.PlayerId)
             && target.IsAlive();
 
@@ -145,7 +152,7 @@ internal class Tracker : RoleBase
     {
         if (player.IsAlive())
         {
-            AbilityLimit += TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
+            TrackLimit[player.PlayerId] += TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
             SendRPC(2, player.PlayerId);
         }
         return true;
@@ -193,10 +200,10 @@ internal class Tracker : RoleBase
         TextColor11 = comms ? Color.gray : NormalColor11;
         string Completed11 = comms ? "?" : $"{taskState11.CompletedTasksCount}";
         Color TextColor111;
-        if (AbilityLimit < 1) TextColor111 = Color.red;
+        if (TrackLimit[playerId] < 1) TextColor111 = Color.red;
         else TextColor111 = Color.white;
         ProgressText.Append(ColorString(TextColor11, $"({Completed11}/{taskState11.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor111, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
+        ProgressText.Append(ColorString(TextColor111, $" <color=#ffffff>-</color> {Math.Round(TrackLimit[playerId], 1)}"));
         return ProgressText.ToString();
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Track");

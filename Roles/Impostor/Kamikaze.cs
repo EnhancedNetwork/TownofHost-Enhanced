@@ -13,7 +13,7 @@ internal class Kamikaze : RoleBase
 
     private static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-    
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -22,6 +22,7 @@ internal class Kamikaze : RoleBase
     private static OptionItem OptMaxMarked;
 
     private static readonly Dictionary<byte, HashSet<byte>> KamikazedList = [];
+    private static readonly Dictionary<byte, int> MarkedLim = [];
 
     public override void SetupCustomOption()
     {
@@ -34,11 +35,12 @@ internal class Kamikaze : RoleBase
     }
     public override void Init()
     {
+        MarkedLim.Clear();
         KamikazedList.Clear();
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = OptMaxMarked.GetInt();
+        MarkedLim.Add(playerId, OptMaxMarked.GetInt());
         KamikazedList[playerId] = [];
 
         // Double Trigger
@@ -48,20 +50,20 @@ internal class Kamikaze : RoleBase
         Playerids.Add(playerId);
     }
 
-    private void SendRPC(byte KamiId, byte targetId = byte.MaxValue, bool checkMurder = false)
+    private static void SendRPC(byte KamiId, byte targetId = byte.MaxValue, bool checkMurder = false)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncKami, SendOption.Reliable, -1);
         writer.Write(checkMurder);
         writer.Write(KamiId);
 
         if (checkMurder) 
         { 
             writer.Write(targetId);
-            writer.Write(AbilityLimit);
+            writer.Write(MarkedLim[KamiId]);
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         var checkMurder = reader.ReadBoolean();
         var kamiId = reader.ReadByte();
@@ -71,7 +73,7 @@ internal class Kamikaze : RoleBase
             int Limit = reader.ReadInt32();
             if (!KamikazedList.ContainsKey(kamiId)) KamikazedList[kamiId] = [];
             KamikazedList[kamiId].Add(targetId);
-            AbilityLimit = Limit;
+            MarkedLim[kamiId] = Limit;
         }
         else KamikazedList.Remove(kamiId);
     }
@@ -89,13 +91,13 @@ internal class Kamikaze : RoleBase
         return killer.CheckDoubleTrigger(target, () =>
         {
 
-            if (AbilityLimit > 0) 
+            if (MarkedLim[killer.PlayerId] > 0) 
             {
                 if (!KamikazedList.ContainsKey(killer.PlayerId)) KamikazedList[killer.PlayerId] = [];
                 KamikazedList[killer.PlayerId].Add(target.PlayerId);
                 killer.SetKillCooldown(KillCooldown.GetFloat());
                 Utils.NotifyRoles(SpecifySeer: killer);
-                AbilityLimit--;
+                MarkedLim[killer.PlayerId]--;
                 SendRPC(KamiId: killer.PlayerId, targetId: target.PlayerId, checkMurder: true);
             } 
             else
@@ -145,11 +147,11 @@ internal class Kamikaze : RoleBase
     //    }
     //}
 
-    private bool CanMark(byte id) => AbilityLimit > 0;
+    private static bool CanMark(byte id) => MarkedLim.TryGetValue(id, out var x) && x > 0;
     
     public override string GetProgressText(byte playerId, bool comms)
         => Utils.ColorString(CanMark(playerId)
             ? Utils.GetRoleColor(CustomRoles.Kamikaze).ShadeColor(0.25f) 
-            : Color.gray, $"({AbilityLimit})");
+            : Color.gray, MarkedLim.TryGetValue(playerId, out var MarkedLimiter) ? $"({MarkedLimiter})" : "Invalid");
 }
 

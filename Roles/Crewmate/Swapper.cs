@@ -13,7 +13,9 @@ internal class Swapper : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 12400;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Swapper);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -26,8 +28,7 @@ internal class Swapper : RoleBase
     private static readonly HashSet<byte> ResultSent = [];
     private static readonly Dictionary<byte, byte> Vote = [];
     private static readonly Dictionary<byte, byte> VoteTwo = [];
-
-    private static List<byte> playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Swapper).Select(p => p.PlayerId).ToList();
+    private static readonly Dictionary<byte, int> Swappermax = [];
 
     public override void SetupCustomOption()
     {
@@ -40,16 +41,24 @@ internal class Swapper : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         Vote.Clear();
         VoteTwo.Clear();
+        Swappermax.Clear();
         ResultSent.Clear();
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = SwapMax.GetInt();
+        playerIdList.Add(playerId);
+        Swappermax.TryAdd(playerId, SwapMax.GetInt());
+    }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        Swappermax.Remove(playerId);
     }
     public override bool OnCheckStartMeeting(PlayerControl reporter) => OptCanStartMeeting.GetBool();
-    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString((AbilityLimit > 0) ? Utils.GetRoleColor(CustomRoles.Swapper).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString((Swappermax.TryGetValue(PlayerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Swapper).ShadeColor(0.25f) : Color.gray, Swappermax.TryGetValue(PlayerId, out var changermax) ? $"({changermax})" : "Invalid");
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting && seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
@@ -57,13 +66,13 @@ internal class Swapper : RoleBase
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
-    public bool SwapMsg(string msg, bool isUI = false)
+    public static bool SwapMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsMeeting || _Player == null || GameStates.IsExilling) return false;
-        var pc = _Player;
+        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
+        if (!pc.Is(CustomRoles.Swapper)) return false;
 
         int operate;
         msg = msg.ToLower().TrimStart().TrimEnd();
@@ -114,7 +123,7 @@ internal class Swapper : RoleBase
 
             if (target != null)
             {
-                if (AbilityLimit <= 0)
+                if (Swappermax[pc.PlayerId] < 1)
                 {
                     if (!isUI) Utils.SendMessage(GetString("SwapperTrialMax"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                     else pc.ShowPopUp(GetString("SwapperTrialMax"));
@@ -122,8 +131,10 @@ internal class Swapper : RoleBase
                 }
                 //Swapper skill limit is changed in after meeting task
 
-                if (!Vote.ContainsKey(pc.PlayerId) || !VoteTwo.ContainsKey(pc.PlayerId))
+                if (!Vote.ContainsKey(pc.PlayerId) || !VoteTwo.ContainsKey(pc.PlayerId) || !playerIdList.Contains(pc.PlayerId))
                 {
+                    if (!playerIdList.Contains(pc.PlayerId))
+                        playerIdList.Add(pc.PlayerId);
                     Vote.TryAdd(pc.PlayerId, 253);
                     VoteTwo.TryAdd(pc.PlayerId, 253);
                     Vote[pc.PlayerId] = 253;
@@ -225,8 +236,6 @@ internal class Swapper : RoleBase
     public static void CheckSwapperTarget(byte deadid)
     {
         if (deadid == 253) return;
-
-
         foreach (var pid in playerIdList)
         {
             if (!Vote.TryGetValue(pid, out var tid1) || !VoteTwo.TryGetValue(pid, out var tid2)) continue;
@@ -242,49 +251,50 @@ internal class Swapper : RoleBase
         }
     }
 
-    public void SwapVotes(MeetingHud __instance)
+    public static void SwapVotes(MeetingHud __instance)
     {
-        var pid = _state.PlayerId;
-        if (ResultSent.Contains(pid)) return;
-
-        //idk why this would be triggered repeatedly.
-        var pc = Utils.GetPlayerById(pid);
-        if (pc == null || !pc.IsAlive()) return;
-
-        if (!Vote.TryGetValue(pc.PlayerId, out var tid1) || !VoteTwo.TryGetValue(pc.PlayerId, out var tid2)) return;
-        if (tid1 == 253 || tid2 == 253 || tid1 == tid2) return;
-
-        var target1 = Utils.GetPlayerById(tid1);
-        var target2 = Utils.GetPlayerById(tid2);
-
-        if (target1 == null || target2 == null || !target1.IsAlive() || !target2.IsAlive()) return;
-
-        List<byte> templist = [];
-
-        foreach (var pva in __instance.playerStates.ToArray())
+        foreach (var pid in playerIdList)
         {
-            if (pva.VotedFor != target1.PlayerId || pva.AmDead) continue;
-            templist.Add(pva.TargetPlayerId);
-            pva.VotedFor = target2.PlayerId;
-            ReturnChangedPva(pva);
-        }
+            if (ResultSent.Contains(pid)) continue;
 
-        foreach (var pva in __instance.playerStates.ToArray())
-        {
-            if (pva.VotedFor != target2.PlayerId || pva.AmDead) continue;
-            if (templist.Contains(pva.TargetPlayerId)) continue;
-            pva.VotedFor = target1.PlayerId;
-            ReturnChangedPva(pva);
-        }
+            //idk why this would be triggered repeatedly.
+            var pc = Utils.GetPlayerById(pid);
+            if (pc == null || !pc.IsAlive()) continue;
 
-        if (!ResultSent.Contains(pid))
-        {
-            ResultSent.Add(pid);
-            Utils.SendMessage(string.Format(GetString("SwapVote"), target1.GetRealName(), target2.GetRealName()), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
-            AbilityLimit -= 1;
-            SendSkillRPC();
-        }
+            if (!Vote.TryGetValue(pc.PlayerId, out var tid1) || !VoteTwo.TryGetValue(pc.PlayerId, out var tid2)) continue;
+            if (tid1 == 253 || tid2 == 253 || tid1 == tid2) continue;
 
+            var target1 = Utils.GetPlayerById(tid1);
+            var target2 = Utils.GetPlayerById(tid2);
+
+            if (target1 == null || target2 == null || !target1.IsAlive() || !target2.IsAlive()) continue;
+
+            List<byte> templist = [];
+
+            foreach (var pva in __instance.playerStates.ToArray())
+            {
+                if (pva.VotedFor != target1.PlayerId || pva.AmDead) continue;
+                templist.Add(pva.TargetPlayerId);
+                pva.VotedFor = target2.PlayerId;
+                ReturnChangedPva(pva);
+            }
+
+            foreach (var pva in __instance.playerStates.ToArray())
+            {
+                if (pva.VotedFor != target2.PlayerId || pva.AmDead) continue;
+                if (templist.Contains(pva.TargetPlayerId)) continue;
+                pva.VotedFor = target1.PlayerId;
+                ReturnChangedPva(pva);
+            }
+
+            if (!ResultSent.Contains(pid))
+            {
+                ResultSent.Add(pid);
+                Utils.SendMessage(string.Format(GetString("SwapVote"), target1.GetRealName(), target2.GetRealName()), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                Swappermax[pid] -= 1;
+                SendSkillRPC(pid);
+            }
+        }
     }
 
     private static bool MsgToPlayerAndRole(string msg, out byte id, out string error)
@@ -346,22 +356,40 @@ internal class Swapper : RoleBase
     }
     private static void SendSwapRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSwapperVotes, SendOption.Reliable, -1);
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveSwapRPC(MessageReader reader, PlayerControl pc)
+    public static void SendSkillRPC(byte playerId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Swapper);
+        writer.Write(playerId);
+        writer.Write(Swappermax[playerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveSwapRPC(MessageReader reader, PlayerControl pc)
     {
         byte PlayerId = reader.ReadByte();
-        SwapMsg($"/sw {PlayerId}");
+        SwapMsg(pc, $"/sw {PlayerId}");
     }
-    private void SwapperOnClick(byte playerId, MeetingHud __instance)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        byte playerId = reader.ReadByte();
+        int skillLimit = reader.ReadInt32();
+
+        if (!Swappermax.ContainsKey(playerId))
+            Swappermax.Add(playerId, skillLimit);
+        else
+            Swappermax[playerId] = skillLimit;
+    }
+    private static void SwapperOnClick(byte playerId, MeetingHud __instance)
     {
         Logger.Msg($"Click: ID {playerId}", "Swapper UI");
         var pc = Utils.GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
         
-        if (AmongUsClient.Instance.AmHost) SwapMsg($"/sw {playerId}", true);
+        if (AmongUsClient.Instance.AmHost) SwapMsg(PlayerControl.LocalPlayer, $"/sw {playerId}", true);
         else SendSwapRPC(playerId);
 
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Swapper) && PlayerControl.LocalPlayer.IsAlive())
@@ -375,8 +403,8 @@ internal class Swapper : RoleBase
     {
         public static void Postfix(MeetingHud __instance)
         {
-            if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sp && PlayerControl.LocalPlayer.IsAlive())
-                sp.CreateSwapperButton(__instance);
+            if (PlayerControl.LocalPlayer.Is(CustomRoles.Swapper) && PlayerControl.LocalPlayer.IsAlive())
+                CreateSwapperButton(__instance);
 
             if (AmongUsClient.Instance.AmHost)
             {
@@ -386,18 +414,20 @@ internal class Swapper : RoleBase
                 {
                     if (!pc.Is(CustomRoles.Swapper) || !pc.IsAlive()) continue;
 
+                    if (!playerIdList.Contains(pc.PlayerId))
+                        pc.GetRoleClass()?.Add(pc.PlayerId);
+
                     Vote.Add(pc.PlayerId, 253);
                     VoteTwo.Add(pc.PlayerId, 253);
 
                     MeetingHudStartPatch.msgToSend.Add((GetString("SwapHelp"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle"))));
-                    if (pc.GetRoleClass() is Swapper sw) sw.SendSkillRPC();
-
+                    SendSkillRPC(pc.PlayerId);
                     ResultSent.Clear();
                 }
             }
         }
     }
-    public void CreateSwapperButton(MeetingHud __instance)
+    public static void CreateSwapperButton(MeetingHud __instance)
     {
         foreach (var pva in __instance.playerStates)
         {
@@ -423,9 +453,7 @@ internal class Swapper : RoleBase
             renderer.sprite = CustomButton.Get("SwapNo");
 
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => { 
-                 SwapperOnClick(pva.TargetPlayerId, __instance); 
-            }));
+            button.OnClick.AddListener((Action)(() => SwapperOnClick(pva.TargetPlayerId, __instance)));
         }
     }
 }

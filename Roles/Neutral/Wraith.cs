@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -12,7 +11,9 @@ internal class Wraith : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18500;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Wraith);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -40,12 +41,14 @@ internal class Wraith : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         InvisTime.Clear();
         lastTime.Clear();
         ventedId.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -79,7 +82,7 @@ internal class Wraith : RoleBase
         lastTime.Clear();
         InvisTime.Clear();
 
-        foreach (var wraithId in _playerIdList.ToArray())
+        foreach (var wraithId in playerIdList.ToArray())
         {
             if (!ventedId.ContainsKey(wraithId)) continue;
             var wraith = Utils.GetPlayerById(wraithId);
@@ -95,7 +98,7 @@ internal class Wraith : RoleBase
     {
         lastTime.Clear();
         InvisTime.Clear();
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => _playerIdList.Contains(x.PlayerId)).ToArray())
+        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
         {
             lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());
             SendRPC(pc);

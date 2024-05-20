@@ -2,7 +2,6 @@
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -10,16 +9,18 @@ internal class Doomsayer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14100;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doomsayer);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
 
-    private readonly HashSet<CustomRoles> GuessedRoles = [];
-    private readonly Dictionary<byte, int> GuessingToWin = [];
+    private static readonly HashSet<CustomRoles> GuessedRoles = [];
+    private static readonly Dictionary<byte, int> GuessingToWin = [];
 
-    private int GuessesCount = 0;
-    private int GuessesCountPerMeeting = 0;
+    private static int GuessesCount = 0;
+    private static int GuessesCountPerMeeting = 0;
     private static bool CantGuess = false;
 
     private static OptionItem DoomsayerAmountOfGuessesToWin;
@@ -69,10 +70,16 @@ internal class Doomsayer : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
+        GuessedRoles.Clear();
+        GuessingToWin.Clear();
+        GuessesCount = 0;
+        GuessesCountPerMeeting = 0;
         CantGuess = false;
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         GuessingToWin.TryAdd(playerId, GuessesCount);
     }
     public static void SendRPC(PlayerControl player)
@@ -88,7 +95,7 @@ internal class Doomsayer : RoleBase
         byte DoomsayerId = reader.ReadByte();
         GuessingToWin[DoomsayerId]++;
     }
-    private (int, int) GuessedPlayerCount(byte doomsayerId)
+    private static (int, int) GuessedPlayerCount(byte doomsayerId)
     {
         int GuessesToWin = GuessingToWin[doomsayerId], AmountOfGuessesToWin = DoomsayerAmountOfGuessesToWin.GetInt();
 
@@ -104,7 +111,7 @@ internal class Doomsayer : RoleBase
     public static bool CheckCantGuess = CantGuess;
     public static bool NeedHideMsg(PlayerControl pc) => pc.Is(CustomRoles.Doomsayer) && DoomsayerTryHideMsg.GetBool();
     
-    private void CheckCountGuess(PlayerControl doomsayer)
+    private static void CheckCountGuess(PlayerControl doomsayer)
     {
         if (!(GuessingToWin[doomsayer.PlayerId] >= DoomsayerAmountOfGuessesToWin.GetInt())) return;
 
@@ -246,7 +253,7 @@ internal class Doomsayer : RoleBase
         return false;
     }
 
-    public void SendMessageAboutGuess(PlayerControl guesser, PlayerControl playerMisGuessed, CustomRoles role)
+    public static void SendMessageAboutGuess(PlayerControl guesser, PlayerControl playerMisGuessed, CustomRoles role)
     {
         if (guesser.Is(CustomRoles.Doomsayer) && guesser.PlayerId != playerMisGuessed.PlayerId)
         {

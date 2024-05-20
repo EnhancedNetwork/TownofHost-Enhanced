@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -11,7 +10,9 @@ internal class Huntsman : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16500;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Huntsman);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -25,8 +26,8 @@ internal class Huntsman : RoleBase
     private static OptionItem MinKCD;
     private static OptionItem MaxKCD;
 
-    private readonly HashSet<byte> Targets = [];
-    private float KCD = 25;
+    private static readonly HashSet<byte> Targets = [];
+    private static float KCD = 25;
 
     public override void SetupCustomOption()
     {
@@ -47,8 +48,14 @@ internal class Huntsman : RoleBase
         MinKCD = FloatOptionItem.Create(Id + 17, "HHMinKCD", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Huntsman])
             .SetValueFormat(OptionFormat.Seconds);
     }
+    public override void Init()
+    {
+        playerIdList.Clear();
+        Targets.Clear();
+    }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
 
         _ = new LateTask(() =>
         {
@@ -121,7 +128,7 @@ internal class Huntsman : RoleBase
         }
         return targetId != 0xff ? GetString("Targets") + $"<b><color=#ff1919>{output}</color></b>" : string.Empty;
     }
-    private void ResetTargets(bool isStartedGame = false)
+    private static void ResetTargets(bool isStartedGame = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 

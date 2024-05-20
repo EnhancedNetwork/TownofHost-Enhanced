@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -8,18 +7,20 @@ internal class Collector : RoleBase
 
     //===========================SETUP================================\\
     private const int Id = 14700;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Collector);
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
 
     private static OptionItem CollectorCollectAmount;
 
-    private static Dictionary<byte, byte> CollectorVoteFor = [];
-    private int CollectVote;
-    private int NewVote;
+    private static readonly Dictionary<byte, byte> CollectorVoteFor = [];
+    private static readonly Dictionary<byte, int> CollectVote = [];
+    private static readonly Dictionary<byte, int> NewVote = [];
 
-    private bool calculated = false;
+    private static bool calculated = false;
 
     public override void SetupCustomOption()
     {
@@ -29,25 +30,34 @@ internal class Collector : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
+        CollectorVoteFor.Clear();
+        CollectVote.Clear();
         calculated = false;
     }
-    private void SendRPC(byte playerId)
+    public override void Add(byte playerId)
+    {
+        playerIdList.Add(playerId);
+        CollectVote.TryAdd(playerId, 0);
+    }
+    private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WritePacked((int)CustomRoles.Collector);
         writer.Write(playerId);
-        writer.Write(CollectVote);
+        writer.Write(CollectVote[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlayerId = reader.ReadByte();
         int Num = reader.ReadInt32();
-        CollectVote = Num;
+        CollectVote.TryAdd(PlayerId, 0);
+        CollectVote[PlayerId] = Num;
     }
     public override string GetProgressText(byte playerId, bool cooms)
     {
-        int VoteAmount = CollectVote;
+        int VoteAmount = CollectVote[playerId];
         int CollectNum = CollectorCollectAmount.GetInt();
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Collector).ShadeColor(0.25f), $"({VoteAmount}/{CollectNum})");
     }
@@ -55,7 +65,7 @@ internal class Collector : RoleBase
     {
         CollectorVoteFor.Clear();
     }
-    public bool CollectorWin(bool check = true)
+    public static bool CollectorWin(bool check = true)
     {
         var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Collector) && x.IsAlive() && CollectDone(x)).ToArray();
         if (pcArray.Any())
@@ -81,12 +91,12 @@ internal class Collector : RoleBase
         }
         return false;
     }
-    private bool CollectDone(PlayerControl player)
+    private static bool CollectDone(PlayerControl player)
     {
         if (player.Is(CustomRoles.Collector))
         {
             var pcid = player.PlayerId;
-            int VoteAmount = CollectVote;
+            int VoteAmount = CollectVote[pcid];
             int CollectNum = CollectorCollectAmount.GetInt();
             if (VoteAmount >= CollectNum) return true;
         }
@@ -98,7 +108,7 @@ internal class Collector : RoleBase
             CollectorVoteFor.TryAdd(target.PlayerId, ps.TargetPlayerId);
     }
     public override void AfterMeetingTasks() => calculated = false;
-    public void CollectAmount(Dictionary<byte, int> VotingData, MeetingHud __instance)//得到集票者收集到的票
+    public static void CollectAmount(Dictionary<byte, int> VotingData, MeetingHud __instance)//得到集票者收集到的票
     {
         if (calculated) return;
         int VoteAmount;
@@ -112,12 +122,13 @@ internal class Collector : RoleBase
                 if (CollectorVoteFor.ContainsKey(data.Key) && pc.PlayerId == CollectorVoteFor[data.Key] && pc.Is(CustomRoles.Collector))
                 {
                     VoteAmount = data.Value;
-                    CollectVote = CollectVote + VoteAmount;
+                    CollectVote.TryAdd(pc.PlayerId, 0);
+                    CollectVote[pc.PlayerId] = CollectVote[pc.PlayerId] + VoteAmount;
                     SendRPC(pc.PlayerId);
                     Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()}, collected {VoteAmount} votes from {Utils.GetPlayerById(data.Key).GetNameWithRole().RemoveHtmlTags()}", "Collected votes");
                 }
             }
-            Logger.Info($"Total amount of votes collected {CollectVote}", "Collector total amount");
+            if (CollectVote.ContainsKey(pc.PlayerId)) Logger.Info($"Total amount of votes collected {CollectVote[pc.PlayerId]}", "Collector total amount");
         }
         calculated = true;
     }

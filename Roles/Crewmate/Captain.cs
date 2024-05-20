@@ -12,7 +12,7 @@ internal class Captain : RoleBase
     private const int Id = 26300;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -65,14 +65,13 @@ internal class Captain : RoleBase
     private static void SendRPCSetSpeed(byte targetId)
     {
         MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(0);
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCaptainTargetSpeed, SendOption.Reliable, -1);
         writer.Write(targetId);
         writer.Write(OriginalSpeed[targetId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public void ReceiveRPCSetSpeed(MessageReader reader)
+    public static void ReceiveRPCSetSpeed(MessageReader reader)
     {
         byte targetId = reader.ReadByte();
         float speed = reader.ReadSingle();
@@ -81,13 +80,12 @@ internal class Captain : RoleBase
     private static void SendRPCRevertSpeed(byte targetId)
     {
         MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevertCaptainTargetSpeed, SendOption.Reliable, -1);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public void ReceiveRPCRevertSpeed(MessageReader reader)
+    public static void ReceiveRPCRevertSpeed(MessageReader reader)
     {
         byte targetId = reader.ReadByte();
         if (OriginalSpeed.ContainsKey(targetId)) OriginalSpeed.Remove(targetId);
@@ -95,12 +93,11 @@ internal class Captain : RoleBase
     private static void SendRPCRevertAllSpeed()
     {
         MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(2);
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevertCaptainAllTargetSpeed, SendOption.Reliable, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public void ReceiveRPCRevertAllSpeed()
+    public static void ReceiveRPCRevertAllSpeed()
     {
         OriginalSpeed.Clear();
     }
@@ -108,14 +105,13 @@ internal class Captain : RoleBase
     public static void SendRPCVoteAdd(byte playerId, byte targetId)
     {
         MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(3);
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCaptainVotedTarget, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public void ReceiveRPCVoteAdd(MessageReader reader)
+    public static void ReceiveRPCVoteAdd(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         byte targetId = reader.ReadByte();
@@ -125,14 +121,13 @@ internal class Captain : RoleBase
     private static void SendRPCVoteRemove(byte captainTarget = byte.MaxValue, CustomRoles? SelectedAddon = null)
     {
         MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(4);
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevertCaptainVoteRemove, SendOption.Reliable, -1);
         writer.Write(captainTarget);
         if (captainTarget != byte.MaxValue) writer.Write((int)SelectedAddon);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public void ReceiveRPCVoteRemove(MessageReader reader)
+    public static void ReceiveRPCVoteRemove(MessageReader reader)
     {
         byte captainTarget = reader.ReadByte();
         if (captainTarget != byte.MaxValue) 
