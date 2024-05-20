@@ -62,7 +62,7 @@ internal class Tracker : RoleBase
     public void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetTrackerTarget, SendOption.Reliable, -1);
         writer.Write(trackerId);
         writer.Write(operate);
         if (operate == 0) writer.Write(targetId);
