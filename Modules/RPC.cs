@@ -46,6 +46,7 @@ enum CustomRPC : byte
     NemesisRevenge,
     RetributionistRevenge,
     SetFriendCode,
+    SyncLobbyTimer,
 
     //Roles
     SetBountyTarget,
@@ -151,7 +152,7 @@ internal class RPCHandlerPatch
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
         if (EAC.ReceiveRpc(__instance, callId, reader)) return false;
-        Logger.Info($"{__instance?.Data?.PlayerId}({(__instance?.Data?.PlayerId == 0 ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
+        Logger.Info($"{__instance?.Data?.PlayerId}({(__instance.OwnedByHost() ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
         switch (rpcType)
         {
             case RpcCalls.SetName: //SetNameRPC
@@ -174,7 +175,7 @@ internal class RPCHandlerPatch
                 Logger.Info($"{__instance.GetNameWithRole()} => {p?.GetNameWithRole() ?? "null"}", "StartMeeting");
                 break;
         }
-        if (__instance.OwnerId != AmongUsClient.Instance.HostId &&
+        if (!__instance.OwnedByHost() &&
             ((Enum.IsDefined(typeof(CustomRPC), callId) && !TrustedRpc(callId)) // Is Custom RPC
             || (!Enum.IsDefined(typeof(CustomRPC), callId) && !Enum.IsDefined(typeof(RpcCalls), callId)))) //Is not Custom RPC and not Vanilla RPC
         {
@@ -315,7 +316,8 @@ internal class RPCHandlerPatch
                         option.SetValue(4); // 4 => Preset 5
                     }
                 }
-                OptionShower.GetText();
+                if (GameStates.IsLobby)
+                    OptionShower.GetText();
                 break;
 
             case CustomRPC.SetDeathReason:
@@ -323,6 +325,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.EndGame:
                 RPC.EndGame(reader);
+                break;
+            case CustomRPC.SetRadarArrow:
+                Radar.ReceiveRPC(reader);
                 break;
             case CustomRPC.PlaySound:
                 byte playerID = reader.ReadByte();
@@ -337,6 +342,9 @@ internal class RPCHandlerPatch
                 byte CustomRoleTargetId = reader.ReadByte();
                 CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
                 RPC.SetCustomRole(CustomRoleTargetId, role);
+                break;
+            case CustomRPC.SyncLobbyTimer:
+                GameStartManagerPatch.timer = reader.ReadPackedInt32();
                 break;
             case CustomRPC.SyncRoleSkill:
                 RPC.SyncRoleSkillReader(reader, __instance);
@@ -561,9 +569,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetVultureArrow:
                 Vulture.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetRadarArrow:
-                Radar.ReceiveRPC(reader);
-                break;
             case CustomRPC.SyncVultureBodyAmount:
                 Vulture.ReceiveBodyRPC(reader);
                 break;
@@ -624,9 +629,9 @@ internal static class RPC
         }
 
         var amount = OptionItem.AllOptions.Count;
-        int divideBy = amount / 4;
+        int divideBy = amount / 10;
 
-        for (var i = 0; i <= 4; i++)
+        for (var i = 0; i <= 10; i++)
         {
             SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, amount, targetId);
         }
