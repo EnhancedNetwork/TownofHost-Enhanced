@@ -60,10 +60,10 @@ internal class Follower : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    private static void SendRPC(byte playerId)
+    private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Follower); //SyncFollowerTargetAndTimes
+        writer.WritePacked(_state.PlayerId); //SyncFollowerTargetAndTimes
         writer.Write(playerId);
         writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : MaxBetTimes.GetInt());
         writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);

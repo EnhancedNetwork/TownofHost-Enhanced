@@ -52,7 +52,7 @@ internal class FortuneTeller : RoleBase
     public void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.FortuneTeller);
+        writer.WritePacked(_state.PlayerId);
         writer.Write(isTemp);
 
         if (!isTemp)

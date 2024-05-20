@@ -65,10 +65,10 @@ internal class Demon : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl player) => CanVent.GetBool();
 
-    private static void SendRPC(byte playerId)
+    private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Demon);
+        writer.WritePacked(_state.PlayerId);
         writer.Write(playerId);
         if (DemonHealth.ContainsKey(playerId))
             writer.Write(DemonHealth[playerId]);

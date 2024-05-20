@@ -152,7 +152,6 @@ internal class Snitch : RoleBase
     private static void SendRPC(byte RpcTypeId, byte snitchId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
         writer.Write(RpcTypeId);
         writer.Write(snitchId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

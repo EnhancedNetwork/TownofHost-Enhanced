@@ -97,10 +97,10 @@ internal class Quizmaster : RoleBase
             CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
         }
     }
-    private static void SendRPC(byte targetId)
+    private void SendRPC(byte targetId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Quizmaster);
+        writer.WritePacked((int)_state.PlayerId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

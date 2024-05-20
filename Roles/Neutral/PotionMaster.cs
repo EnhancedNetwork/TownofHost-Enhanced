@@ -52,7 +52,7 @@ internal class PotionMaster : RoleBase
     private void SendRPC(byte playerId, byte targetId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.PotionMaster);
+        writer.WritePacked((int)_state.PlayerId);
         writer.Write(playerId);
         writer.Write(AbilityLimit);
         writer.Write(targetId);

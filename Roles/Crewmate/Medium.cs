@@ -47,7 +47,7 @@ internal class Medium : RoleBase
     public void SendRPC(byte playerId, byte targetId = 0xff, bool isUsed = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Medium);
+        writer.WritePacked(_state.PlayerId);
         writer.Write(playerId);
         writer.Write(AbilityLimit);
         writer.Write(isUsed);

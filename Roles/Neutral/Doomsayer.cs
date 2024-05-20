@@ -75,11 +75,11 @@ internal class Doomsayer : RoleBase
     {
         GuessingToWin.TryAdd(playerId, GuessesCount);
     }
-    public static void SendRPC(PlayerControl player)
+    public void SendRPC(PlayerControl player)
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Doomsayer);
+        writer.WritePacked(_state.PlayerId);
         writer.Write(player.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

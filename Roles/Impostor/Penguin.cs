@@ -56,7 +56,7 @@ internal class Penguin : RoleBase
     private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Penguin);
+        writer.WritePacked(_state.PlayerId);
         writer.Write(AbductVictim?.PlayerId ?? 255);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

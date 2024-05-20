@@ -34,7 +34,7 @@ internal class Collector : RoleBase
     private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Collector);
+        writer.WritePacked(_state.PlayerId);
         writer.Write(playerId);
         writer.Write(CollectVote);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

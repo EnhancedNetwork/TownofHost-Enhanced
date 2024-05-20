@@ -39,7 +39,7 @@ internal class Monarch : RoleBase
     private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Monarch);
+        writer.WritePacked(_state.PlayerId);
         writer.Write(playerId);
         writer.Write(AbilityLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

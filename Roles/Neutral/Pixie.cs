@@ -71,10 +71,10 @@ internal class Pixie : RoleBase
         if (seer.Is(CustomRoles.Pixie) && PixieTargets[seer.PlayerId].Contains(target.PlayerId)) color = Main.roleColors[CustomRoles.Pixie];
         return color;
     }
-    public static void SendRPC(byte pixieId, bool operate, byte targetId = 0xff)
+    public void SendRPC(byte pixieId, bool operate, byte targetId = 0xff)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Pixie); //SetPixieTargets
+        writer.WritePacked(_state.PlayerId); //SetPixieTargets
         writer.Write(pixieId);
         writer.Write(operate);
         if (!operate) // false = 0

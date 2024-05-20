@@ -66,7 +66,6 @@ internal class Captain : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCaptainTargetSpeed, SendOption.Reliable, -1);
-        writer.WritePacked(0);
         writer.Write(targetId);
         writer.Write(OriginalSpeed[targetId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -82,7 +81,6 @@ internal class Captain : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevertCaptainTargetSpeed, SendOption.Reliable, -1);
-        writer.WritePacked(1);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
@@ -96,7 +94,6 @@ internal class Captain : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevertCaptainAllTargetSpeed, SendOption.Reliable, -1);
-        writer.WritePacked(2);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
@@ -109,7 +106,6 @@ internal class Captain : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCaptainVotedTarget, SendOption.Reliable, -1);
-        writer.WritePacked(3);
         writer.Write(playerId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -126,7 +122,6 @@ internal class Captain : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevertCaptainVoteRemove, SendOption.Reliable, -1);
-        writer.WritePacked(4);
         writer.Write(captainTarget);
         if (captainTarget != byte.MaxValue) writer.Write((int)SelectedAddon);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

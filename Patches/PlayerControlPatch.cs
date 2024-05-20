@@ -1046,10 +1046,10 @@ class FixedUpdateInNormalGamePatch
             DoubleTrigger.OnFixedUpdate(player);
 
             //Mini's count down needs to be done outside if intask if we are counting meeting time
-            if (GameStates.IsInGame && player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini))
+            if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
             {
                 if (!player.Data.IsDead)
-                    Mini.OnFixedUpdates(player);
+                    min.OnFixedUpdates(player);
             }
 
             if (GameStates.IsInTask)

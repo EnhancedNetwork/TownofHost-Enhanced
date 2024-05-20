@@ -23,6 +23,8 @@ internal class EvilHacker : RoleBase
     private static OptionItem OptionCanSeeKillFlash;
     private static OptionItem OptionCanSeeMurderRoom;
 
+    private static byte player = 0;
+
     public enum OptionName
     {
         EvilHackerCanSeeDeadMark,
@@ -61,6 +63,7 @@ internal class EvilHacker : RoleBase
     }
     public override void Add(byte playerId)
     {
+        player = playerId;
         evilHackerPlayer = Utils.GetPlayerById(playerId);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(HandleMurderRoomNotify);
@@ -143,7 +146,7 @@ internal class EvilHacker : RoleBase
     private static void SendRPC(byte RpcTypeId, SystemTypes room)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
+        writer.WritePacked(player);
         writer.Write(RpcTypeId);
         writer.Write((byte)room);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

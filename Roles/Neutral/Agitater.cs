@@ -194,10 +194,10 @@ internal class Agitater : RoleBase
         Logger.Msg($"{player.GetNameWithRole()} passed bomb to {target.GetNameWithRole()}", "Agitater Pass");
     }
 
-    public static void SendRPC(byte newbomb, byte oldbomb)
+    public void SendRPC(byte newbomb, byte oldbomb)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Agitater);
+        writer.WritePacked(_state.PlayerId);
         writer.Write(newbomb);
         writer.Write(oldbomb);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

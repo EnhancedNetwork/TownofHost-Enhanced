@@ -109,7 +109,7 @@ internal class Solsticer : RoleBase
 
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), warning);
     }
-    private static void ActiveWarning(PlayerControl pc)
+    private void ActiveWarning(PlayerControl pc)
     {
         foreach (var target in Main.AllAlivePlayerControls.Where(x => IsSolsticerTarget(x, onlyKiller: true)).ToArray())
         {
@@ -190,10 +190,10 @@ internal class Solsticer : RoleBase
             }
         }
     }
-    public static void SendRPC()
+    public void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Solsticer); //SyncSolsticerNotify
+        writer.WritePacked((int)_state.PlayerId); //SyncSolsticerNotify
         var taskState = Utils.GetPlayerById(playerid).GetPlayerTaskState();
         if (taskState != null)
         {
@@ -235,7 +235,7 @@ internal class Solsticer : RoleBase
     {
         return pc.IsAlive() && (!onlyKiller || pc.HasImpKillButton());
     }
-    public static void ResetTasks(PlayerControl pc)
+    public void ResetTasks(PlayerControl pc)
     {
         SetShortTasksToAdd();
         var taskState = pc.GetPlayerTaskState();

@@ -52,11 +52,11 @@ internal class Wraith : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
 
     }
-    private static void SendRPC(PlayerControl pc)
+    private void SendRPC(PlayerControl pc)
     {
         if (pc.AmOwner) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
-        writer.WritePacked((int)CustomRoles.Wraith); //SetWraithTimer
+        writer.WritePacked((int)_state.PlayerId); //SetWraithTimer
         writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
         writer.Write((lastTime.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);

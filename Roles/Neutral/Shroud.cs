@@ -45,10 +45,10 @@ internal class Shroud : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    private static void SendRPC(byte shroudId, byte targetId, byte typeId)
+    private void SendRPC(byte shroudId, byte targetId, byte typeId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Shroud); // syncShroud
+        writer.WritePacked((int)_state.PlayerId); // syncShroud
         writer.Write(typeId);
         writer.Write(shroudId);
         writer.Write(targetId);
@@ -99,7 +99,7 @@ internal class Shroud : RoleBase
         return false;
     }
 
-    private static void OnFixedUpdateOthers(PlayerControl shroud)
+    private void OnFixedUpdateOthers(PlayerControl shroud)
     {
         if (!ShroudList.ContainsKey(shroud.PlayerId)) return;
 

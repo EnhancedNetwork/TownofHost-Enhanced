@@ -43,10 +43,10 @@ internal class Taskinator : RoleBase
     }
 
 
-    private static void SendRPC(byte taskinatorID, int taskIndex = -1, bool isKill = false, bool clearAll = false)
+    private void SendRPC(byte taskinatorID, int taskIndex = -1, bool isKill = false, bool clearAll = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Taskinator); //TaskinatorMarkedTask
+        writer.WritePacked((int)_state.PlayerId); //TaskinatorMarkedTask
         writer.Write(taskinatorID);
         writer.Write(taskIndex);
         writer.Write(isKill);

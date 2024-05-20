@@ -300,7 +300,7 @@ internal class Glitch : RoleBase
     private void SendRPC()
     {
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, Hazel.SendOption.None, -1);
-        writer.WritePacked((int)CustomRoles.Glitch);
+        writer.WritePacked(_state.PlayerId);
         writer.Write(HackCDTimer);
         writer.Write(KCDTimer);
         writer.Write(MimicCDTimer);

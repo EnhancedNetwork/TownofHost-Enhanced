@@ -57,7 +57,7 @@ internal class Oracle : RoleBase
     public void SendRPC(byte playerId, bool isTemp = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Oracle);
+        writer.WritePacked(_state.PlayerId);
         writer.Write(playerId);
         writer.Write(isTemp);
         if (!isTemp) writer.Write(AbilityLimit);

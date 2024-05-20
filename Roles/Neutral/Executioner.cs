@@ -110,7 +110,6 @@ internal class Executioner : RoleBase
         {
             case "SetTarget":
                 writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetExecutionerTarget, SendOption.Reliable);
-                writer.WritePacked(1);
                 writer.Write(executionerId);
                 writer.Write(targetId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -118,7 +117,6 @@ internal class Executioner : RoleBase
             case "":
                 if (!AmongUsClient.Instance.AmHost) return;
                 writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveExecutionerTarget, SendOption.Reliable);
-                writer.WritePacked(2);
                 writer.Write(executionerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 break;
