@@ -144,13 +144,7 @@ internal class RPCHandlerPatch
         or CustomRPC.PresidentEnd
         or CustomRPC.SetSwapperVotes
         or CustomRPC.DumpLog
-        or CustomRPC.SetFriendCode
-        or CustomRPC.SyncKami
-        or CustomRPC.SetTrackerTarget
-        or CustomRPC.SyncAdmiredList
-        or CustomRPC.SetChameleonTimer
-        or CustomRPC.SetTrackerTarget
-        or CustomRPC.SyncRoleSkill;
+        or CustomRPC.SetFriendCode;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
