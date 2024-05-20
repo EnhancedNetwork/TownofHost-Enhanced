@@ -83,7 +83,7 @@ internal class Inspector : RoleBase
         if (operate == 3) writer.Write(MaxCheckLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte pid = reader.ReadByte();
         int operate = reader.ReadInt32();

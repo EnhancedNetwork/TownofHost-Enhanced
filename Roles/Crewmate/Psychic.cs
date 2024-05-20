@@ -53,7 +53,7 @@ internal class Psychic : RoleBase
             writer.Write(pc);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         int count = reader.ReadInt32();
         RedPlayer.Clear();

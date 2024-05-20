@@ -88,7 +88,7 @@ internal class HexMaster : RoleBase
 
         }
     }
-    public void ReceiveRPC(MessageReader reader, bool doHex)
+    public static void ReceiveRPC(MessageReader reader, bool doHex)
     {
         if (doHex)
         {

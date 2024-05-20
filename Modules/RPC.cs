@@ -352,8 +352,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncPuppet:
                 Puppeteer.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SyncKami when __instance.GetRoleClass() is Kamikaze km:
-                km.ReceiveRPC(reader);
+            case CustomRPC.SyncKami:
+                Kamikaze.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetKillOrSpell:
                 Witch.ReceiveRPC(reader, false);
@@ -445,8 +445,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SetCrewpostorTasksDone:
                 Crewpostor.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SyncAdmiredList when __instance.GetRoleClass() is Admirer ad:
-                ad.ReceiveRPC(reader, true);
+            case CustomRPC.SyncAdmiredList:
+                Admirer.ReceiveRPC(reader, true);
                 break;
             case CustomRPC.PlayCustomSound:
                 CustomSoundsManager.ReceiveRPC(reader);

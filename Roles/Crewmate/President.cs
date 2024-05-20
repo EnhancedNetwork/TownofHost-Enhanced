@@ -214,7 +214,7 @@ internal class President : RoleBase
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader, PlayerControl pc, bool isEnd = true)
+    public static void ReceiveRPC(MessageReader reader, PlayerControl pc, bool isEnd = true)
     {
         byte PlayerId = reader.ReadByte();
         if (!isEnd) 

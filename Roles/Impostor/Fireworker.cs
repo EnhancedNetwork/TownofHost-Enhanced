@@ -78,7 +78,7 @@ internal class Fireworker : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public void ReceiveRPC(MessageReader msg)
+    public static void ReceiveRPC(MessageReader msg)
     {
         var playerId = msg.ReadByte();
         nowFireworkerCount[playerId] = msg.ReadInt32();

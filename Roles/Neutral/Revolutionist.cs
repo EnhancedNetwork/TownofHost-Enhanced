@@ -117,7 +117,7 @@ internal class Revolutionist : RoleBase
         writer.Write(isDrawed);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveDrawPlayerRPC(MessageReader reader)
+    public static void ReceiveDrawPlayerRPC(MessageReader reader)
     {
         byte RevolutionistId = reader.ReadByte();
         byte DrawId = reader.ReadByte();
@@ -140,7 +140,7 @@ internal class Revolutionist : RoleBase
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public void ReceiveSetCurrentDrawTarget(MessageReader reader)
+    public static void ReceiveSetCurrentDrawTarget(MessageReader reader)
     {
         byte RevolutionistId = reader.ReadByte();
         byte doTargetId = reader.ReadByte();

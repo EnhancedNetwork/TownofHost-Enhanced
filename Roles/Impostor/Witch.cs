@@ -76,7 +76,7 @@ internal class Witch : RoleBase
 
         }
     }
-    public void ReceiveRPC(MessageReader reader, bool doSpell)
+    public static void ReceiveRPC(MessageReader reader, bool doSpell)
     {
         if (doSpell)
         {

@@ -69,7 +69,7 @@ internal class Spy : RoleBase
         Logger.Info($"RPC to remove player {susId} from red name list and change `change` to {changeColor}", "Spy");
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader, bool isRemove = false)
+    public static void ReceiveRPC(MessageReader reader, bool isRemove = false)
     {
         if (isRemove)
         {

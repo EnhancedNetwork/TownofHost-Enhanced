@@ -59,7 +59,7 @@ internal class Puppeteer : RoleBase
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         var typeId = reader.ReadByte();
         var puppetId = reader.ReadByte();

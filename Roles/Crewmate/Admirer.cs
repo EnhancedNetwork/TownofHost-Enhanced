@@ -68,7 +68,7 @@ internal class Admirer : RoleBase
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader, bool isList)
+    public static void ReceiveRPC(MessageReader reader, bool isList)
     {
         byte playerId = reader.ReadByte();
         byte targetId;
@@ -76,7 +76,7 @@ internal class Admirer : RoleBase
         if (!isList)
         {
             Limit = reader.ReadInt32();
-            AbilityLimit = Limit;
+            Main.PlayerStates[playerId].RoleClass.AbilityLimit = Limit;
         }
         else
         {

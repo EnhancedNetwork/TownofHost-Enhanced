@@ -132,7 +132,7 @@ internal class Executioner : RoleBase
                 break;
         }
     }
-    public void ReceiveRPC(MessageReader reader, bool SetTarget)
+    public static void ReceiveRPC(MessageReader reader, bool SetTarget)
     {
         if (SetTarget)
         {

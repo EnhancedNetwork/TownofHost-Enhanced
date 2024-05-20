@@ -144,7 +144,7 @@ internal class Alchemist : RoleBase
         writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         InvisTime.Clear();
         long invis = long.Parse(reader.ReadString());

@@ -72,7 +72,7 @@ internal class Captain : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public void ReceiveRPCSetSpeed(MessageReader reader)
+    public static void ReceiveRPCSetSpeed(MessageReader reader)
     {
         byte targetId = reader.ReadByte();
         float speed = reader.ReadSingle();
@@ -87,7 +87,7 @@ internal class Captain : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public void ReceiveRPCRevertSpeed(MessageReader reader)
+    public static void ReceiveRPCRevertSpeed(MessageReader reader)
     {
         byte targetId = reader.ReadByte();
         if (OriginalSpeed.ContainsKey(targetId)) OriginalSpeed.Remove(targetId);
@@ -100,7 +100,7 @@ internal class Captain : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public void ReceiveRPCRevertAllSpeed()
+    public static void ReceiveRPCRevertAllSpeed()
     {
         OriginalSpeed.Clear();
     }
@@ -115,7 +115,7 @@ internal class Captain : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public void ReceiveRPCVoteAdd(MessageReader reader)
+    public static void ReceiveRPCVoteAdd(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         byte targetId = reader.ReadByte();
@@ -132,7 +132,7 @@ internal class Captain : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    public void ReceiveRPCVoteRemove(MessageReader reader)
+    public static void ReceiveRPCVoteRemove(MessageReader reader)
     {
         byte captainTarget = reader.ReadByte();
         if (captainTarget != byte.MaxValue) 

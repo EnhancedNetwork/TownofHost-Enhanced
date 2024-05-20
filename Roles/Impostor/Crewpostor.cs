@@ -77,7 +77,7 @@ internal class Crewpostor : RoleBase
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte PlayerId = reader.ReadByte();
         int tasksDone = reader.ReadInt32();

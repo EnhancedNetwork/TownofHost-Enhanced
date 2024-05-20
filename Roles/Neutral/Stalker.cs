@@ -55,7 +55,7 @@ internal class Stalker : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    public void ReceiveRPC(MessageReader msg)
+    public static void ReceiveRPC(MessageReader msg)
     {
         byte StalkerrId = msg.ReadByte();
         bool IsKillerKill = msg.ReadBoolean();

@@ -53,7 +53,7 @@ internal class Lightning : RoleBase
         writer.Write(IsGhost(playerId));
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte GhostId = reader.ReadByte();
         bool isGhost = reader.ReadBoolean();

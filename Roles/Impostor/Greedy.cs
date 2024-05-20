@@ -48,7 +48,7 @@ internal class Greedy : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         IsOdd[playerId] = reader.ReadBoolean();

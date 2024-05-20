@@ -78,7 +78,7 @@ internal class Arsonist : RoleBase
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public void ReceiveCurrentDousingTargetRPC(MessageReader reader)
+    public static void ReceiveCurrentDousingTargetRPC(MessageReader reader)
     {
         byte arsonistId = reader.ReadByte();
         byte dousingTargetId = reader.ReadByte();
@@ -96,7 +96,7 @@ internal class Arsonist : RoleBase
         writer.Write(isDoused);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveSetDousedPlayerRPC(MessageReader reader)
+    public static void ReceiveSetDousedPlayerRPC(MessageReader reader)
     {
         byte ArsonistId = reader.ReadByte();
         byte DousedId = reader.ReadByte();

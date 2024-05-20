@@ -76,7 +76,7 @@ internal class Investigator : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         int operate = reader.ReadInt32();
         if (operate == 0)

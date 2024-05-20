@@ -100,7 +100,7 @@ internal class Jailer : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public void ReceiveRPC(MessageReader reader, bool setTarget = true)
+    public static void ReceiveRPC(MessageReader reader, bool setTarget = true)
     {
         byte jailerId = reader.ReadByte();
         if (!setTarget)

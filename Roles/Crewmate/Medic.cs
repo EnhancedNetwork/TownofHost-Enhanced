@@ -85,7 +85,7 @@ internal class Medic : RoleBase
             writer.Write(ProtectList[i]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPCForProtectList(MessageReader reader)
+    public static void ReceiveRPCForProtectList(MessageReader reader)
     {
         int count = reader.ReadInt32();
         ProtectList.Clear();

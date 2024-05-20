@@ -102,7 +102,7 @@ internal class Vulture : RoleBase
         writer.Write(BodyReportCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         bool add = reader.ReadBoolean();
@@ -111,7 +111,7 @@ internal class Vulture : RoleBase
         else
             LocateArrow.RemoveAllTarget(playerId);
     }
-    public void ReceiveBodyRPC(MessageReader reader)
+    public static void ReceiveBodyRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         int body = reader.ReadInt32();

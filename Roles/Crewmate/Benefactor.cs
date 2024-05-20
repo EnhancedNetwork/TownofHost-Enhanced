@@ -84,7 +84,7 @@ internal class Benefactor : RoleBase
 
     }
 
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         int type = reader.ReadInt32();
         if (type == 0)

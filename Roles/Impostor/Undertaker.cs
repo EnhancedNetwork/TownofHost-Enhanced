@@ -65,7 +65,7 @@ internal class Undertaker : RoleBase
         writer.Write(yLoc);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte PlayerId = reader.ReadByte();
         float xLoc = reader.ReadSingle();

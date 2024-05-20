@@ -106,7 +106,7 @@ internal class Coroner : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
 
     }
-    public void ReceiveRPCKiller(MessageReader reader)
+    public static void ReceiveRPCKiller(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         byte killerId = reader.ReadByte();
@@ -123,7 +123,7 @@ internal class Coroner : RoleBase
         }
     }
 
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         bool add = reader.ReadBoolean();

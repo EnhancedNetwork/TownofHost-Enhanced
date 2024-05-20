@@ -104,7 +104,7 @@ internal class Sniper : RoleBase
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader msg)
+    public static void ReceiveRPC(MessageReader msg)
     {
         var playerId = msg.ReadByte();
         shotNotify[playerId].Clear();
