@@ -104,7 +104,7 @@ class HudManagerPatch
                     case CustomGameMode.Standard:
                         var roleClass = player.GetRoleClass();
 
-                        LowerInfoText.text = roleClass?.GetLowerText(player, player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empt
+                        LowerInfoText.text = roleClass?.GetLowerText(player, player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empty;
 
                         if (roleClass != null)
                         {
