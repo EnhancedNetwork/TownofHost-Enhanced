@@ -206,9 +206,6 @@ internal class EvilHacker : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (!AmongUsClient.Instance.AmHost)
-        Logger.Info($"{canSeeMurderRoom} - {activeNotifies.Count}", "EvilHacker.GetSuffix");
-
         if (!canSeeMurderRoom || seer.PlayerId != seen.PlayerId || isForMeeting || !activeNotifies.Any())
         {
             return string.Empty;
