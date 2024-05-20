@@ -642,9 +642,9 @@ internal static class RPC
         if (PlayerControl.LocalPlayer.PlayerId == targetId) RemoveDisableDevicesPatch.UpdateDisableDevices();
     }
     private static int Lastrpc = -1;
-    public static void SyncRoleSkillReader(MessageReader reader, PlayerControl pc)
+    public static void SyncRoleSkillReader(MessageReader reader, PlayerControl pc) // going to fix or revert this
     {
-        int RpcInx = Lastrpc;
+        int RpcInx = Lastrpc; 
 
         try
         {
