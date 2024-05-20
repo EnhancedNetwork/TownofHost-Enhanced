@@ -5,6 +5,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
+using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 
@@ -193,7 +194,7 @@ internal class Solsticer : RoleBase
     public void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)_state.PlayerId); //SyncSolsticerNotify
+        writer.WriteNetObject(_Player); //SyncSolsticerNotify
         var taskState = Utils.GetPlayerById(playerid).GetPlayerTaskState();
         if (taskState != null)
         {

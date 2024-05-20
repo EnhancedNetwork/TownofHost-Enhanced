@@ -1,4 +1,5 @@
 using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -52,7 +53,7 @@ internal class SoulCollector : RoleBase
     private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)_state.PlayerId); //SetSoulCollectorLimit
+        writer.WriteNetObject(_Player); //SetSoulCollectorLimit
         writer.Write(playerId);
         writer.Write(SoulCollectorPoints[playerId]);
         writer.Write(SoulCollectorTarget[playerId]);

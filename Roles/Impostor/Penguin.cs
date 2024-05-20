@@ -4,6 +4,7 @@ using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
 using TOHE.Roles.Core;
+using InnerNet;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Impostor/Penguin.cs
 namespace TOHE.Roles.Impostor;
@@ -56,7 +57,7 @@ internal class Penguin : RoleBase
     private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(_state.PlayerId);
+        writer.WriteNetObject(_Player);
         writer.Write(AbductVictim?.PlayerId ?? 255);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 
@@ -59,7 +60,7 @@ internal class Seeker : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)_state.PlayerId); // SetSeekerTarget
+        writer.WriteNetObject(_Player); // SetSeekerTarget
         writer.Write(setTarget);
 
 

@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using InnerNet;
 using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
@@ -76,7 +77,7 @@ internal class Pirate : RoleBase
     public void SendRPC(int operate, byte target = byte.MaxValue, int points = -1)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(_state.PlayerId);
+        writer.WriteNetObject(_Player);
         writer.Write(operate);
         writer.Write(target);
         if (operate == 1)

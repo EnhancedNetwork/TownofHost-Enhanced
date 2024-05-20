@@ -1,4 +1,5 @@
 using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -108,7 +109,7 @@ internal class Lawyer : RoleBase
     private void SendRPC(byte lawyerId, byte targetId = 0x73, bool SetTarget = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WritePacked(_state.PlayerId);
+        writer.WriteNetObject(_Player);
         writer.Write(SetTarget);
 
         if (SetTarget)

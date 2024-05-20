@@ -1,4 +1,5 @@
 using Hazel;
+using InnerNet;
 using System;
 using System.Text;
 using TOHE.Roles.Core;
@@ -52,7 +53,7 @@ internal class FortuneTeller : RoleBase
     public void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(_state.PlayerId);
+        writer.WriteNetObject(_Player);
         writer.Write(isTemp);
 
         if (!isTemp)

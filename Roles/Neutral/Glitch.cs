@@ -4,6 +4,7 @@ using static TOHE.Translator;
 using static TOHE.Options;
 using Hazel;
 using TOHE.Roles.Core;
+using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 
@@ -300,7 +301,7 @@ internal class Glitch : RoleBase
     private void SendRPC()
     {
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, Hazel.SendOption.None, -1);
-        writer.WritePacked(_state.PlayerId);
+        writer.WriteNetObject(_Player);
         writer.Write(HackCDTimer);
         writer.Write(KCDTimer);
         writer.Write(MimicCDTimer);

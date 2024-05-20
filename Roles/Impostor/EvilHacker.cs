@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Hazel;
+using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -146,7 +147,7 @@ internal class EvilHacker : RoleBase
     private static void SendRPC(byte RpcTypeId, SystemTypes room)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(player);
+        writer.WriteNetObject(Utils.GetPlayerById(player));
         writer.Write(RpcTypeId);
         writer.Write((byte)room);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

@@ -1,4 +1,5 @@
 using Hazel;
+using InnerNet;
 using System;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
@@ -67,7 +68,7 @@ internal class Mini : RoleBase
     public void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(_state.PlayerId);
+        writer.WriteNetObject(_Player);
         writer.Write(Age);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

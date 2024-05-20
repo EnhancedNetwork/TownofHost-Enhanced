@@ -4,6 +4,7 @@ using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
 using TOHE.Roles.Core;
+using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 
@@ -100,7 +101,7 @@ internal class Quizmaster : RoleBase
     private void SendRPC(byte targetId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)_state.PlayerId);
+        writer.WriteNetObject(_Player);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

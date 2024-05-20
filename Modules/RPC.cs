@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using System;
 using System.Threading.Tasks;
 using TOHE.Modules;
@@ -883,7 +884,7 @@ internal static class RPC
     }
     public static void SyncRoleSkillReader(MessageReader reader)
     {
-        var pc = Utils.GetPlayerById(reader.ReadPackedInt32());
+        var pc = reader.ReadNetObject<PlayerControl>();
 
         try
         {

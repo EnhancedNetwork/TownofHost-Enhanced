@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -106,7 +107,7 @@ internal class Stealth : RoleBase
     private void SendRPC(SystemTypes? roomType)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(_state.PlayerId);
+        writer.WriteNetObject(_Player);
         writer.Write((byte?)roomType ?? byte.MaxValue);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

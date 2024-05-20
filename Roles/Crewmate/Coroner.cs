@@ -6,6 +6,7 @@ using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -75,7 +76,7 @@ internal class Coroner : RoleBase
     private void SendRPCLimit(byte playerId, int operate, byte targetId = 0xff)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(_state.PlayerId);
+        writer.WriteNetObject(_Player);
         writer.Write(playerId);
         writer.Write(operate);
         writer.Write(AbilityLimit);

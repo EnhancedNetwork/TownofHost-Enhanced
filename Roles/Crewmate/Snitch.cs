@@ -3,6 +3,7 @@ using Hazel;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
+using InnerNet;
 namespace TOHE.Roles.Crewmate;
 
 internal class Snitch : RoleBase
@@ -152,7 +153,7 @@ internal class Snitch : RoleBase
     private void SendRPC(byte RpcTypeId, byte snitchId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(_state.PlayerId);
+        writer.WriteNetObject(_Player);
         writer.Write(RpcTypeId);
         writer.Write(snitchId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
