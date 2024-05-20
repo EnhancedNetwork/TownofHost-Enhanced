@@ -70,10 +70,10 @@ internal class Admirer : RoleBase
     {
         byte playerId = reader.ReadByte();
         byte targetId;
-        int Limit;
+        float Limit;
         if (!isList)
         {
-            Limit = reader.ReadInt32();
+            Limit = reader.ReadSingle();
             Main.PlayerStates[playerId].RoleClass.AbilityLimit = Limit;
         }
         else
