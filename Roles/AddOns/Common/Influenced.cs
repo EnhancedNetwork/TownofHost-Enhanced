@@ -1,12 +1,8 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace TOHE.Roles.AddOns.Common;
+﻿namespace TOHE.Roles.AddOns.Common;
 
 public static class Influenced
 {
-    private static readonly int Id = 21200;
+    private const int Id = 21200;
     public static OptionItem CanBeOnCrew;
     public static OptionItem CanBeOnImp;
     public static OptionItem CanBeOnNeutral;

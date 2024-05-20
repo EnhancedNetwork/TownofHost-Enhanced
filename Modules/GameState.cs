@@ -1,20 +1,19 @@
 using AmongUs.GameOptions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using TOHE.Modules;
-using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Neutral;
 using UnityEngine;
+using TOHE.Roles.Core;
+using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
+using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Impostor;
+using static TOHE.Utils;
 
 namespace TOHE;
 
 public class PlayerState(byte playerId)
 {
-    readonly byte PlayerId = playerId;
+    public readonly byte PlayerId = playerId;
+    public RoleBase RoleClass = new DefaultSetup();
     public CustomRoles MainRole = CustomRoles.NotAssigned;
     public List<CustomRoles> SubRoles = [];
     public CountTypes countTypes = CountTypes.OutOfGame;
@@ -31,7 +30,7 @@ public class PlayerState(byte playerId)
 
     public CustomRoles GetCustomRoleFromRoleType()
     {
-        var RoleInfo = Utils.GetPlayerInfoById(PlayerId);
+        var RoleInfo = GetPlayerInfoById(PlayerId);
         return RoleInfo.Role == null
             ? MainRole
             : RoleInfo.Role.Role switch
@@ -49,7 +48,9 @@ public class PlayerState(byte playerId)
     {
         MainRole = role;
         countTypes = role.GetCountTypes();
-        var pc = Utils.GetPlayerById(PlayerId);
+        RoleClass = role.CreateRoleClass();
+
+        var pc = GetPlayerById(PlayerId);
 
         if (role == CustomRoles.Opportunist)
         {
@@ -81,10 +82,10 @@ public class PlayerState(byte playerId)
         }
         if (pc.Is(CustomRoles.Charmed))
         {
-            countTypes = Succubus.CharmedCountMode.GetInt() switch
+            countTypes = Cultist.CharmedCountMode.GetInt() switch
             {
                 0 => CountTypes.OutOfGame,
-                1 => CountTypes.Succubus,
+                1 => CountTypes.Cultist,
                 2 => countTypes,
                 _ => throw new NotImplementedException()
             };
@@ -112,10 +113,6 @@ public class PlayerState(byte playerId)
                 2 => countTypes,
                 _ => throw new NotImplementedException()
             };
-        }
-        if (pc.Is(CustomRoles.Rogue))
-        {
-            countTypes = CountTypes.Rogue;
         }
         if (pc.Is(CustomRoles.Admired))
         {
@@ -146,12 +143,19 @@ public class PlayerState(byte playerId)
                 }
                 SubRoles.Remove(subRole);
 
-                if (sync) Utils.MarkEveryoneDirtySettings();
+                if (sync) MarkEveryoneDirtySettings();
             }
         }
 
         if (!SubRoles.Contains(role))
             SubRoles.Add(role);
+        if (role.IsConverted())
+        {
+            SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
+            SubRoles.Remove(CustomRoles.Rascal);
+            SubRoles.Remove(CustomRoles.Loyal);
+            SubRoles.Remove(CustomRoles.Admired);
+        }
 
         switch (role)
         {
@@ -167,34 +171,16 @@ public class PlayerState(byte playerId)
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
 
             case CustomRoles.Charmed:
-                countTypes = Succubus.CharmedCountMode.GetInt() switch
+                countTypes = Cultist.CharmedCountMode.GetInt() switch
                 {
                     0 => CountTypes.OutOfGame,
-                    1 => CountTypes.Succubus,
+                    1 => CountTypes.Cultist,
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
 
             case CustomRoles.Recruit:
@@ -205,29 +191,10 @@ public class PlayerState(byte playerId)
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
 
             case CustomRoles.Infected:
                 countTypes = CountTypes.Infectious;
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
 
             case CustomRoles.Contagious:
@@ -238,28 +205,6 @@ public class PlayerState(byte playerId)
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
-                break;
-
-            case CustomRoles.Rogue:
-                countTypes = CountTypes.Rogue;
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
 
             // This exist as it would be possible for them to exist on the same player via Bandit
@@ -270,28 +215,13 @@ public class PlayerState(byte playerId)
 
             case CustomRoles.Admired:
                 countTypes = CountTypes.Crew;
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
+                SubRoles.Where(AddON => AddON != role && AddON.IsConverted()).Do(x => SubRoles.Remove(x));
                 SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Soulless);
                 SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Rogue);
                 break;
 
             case CustomRoles.Soulless:
                 countTypes = CountTypes.OutOfGame;
-                SubRoles.Remove(CustomRoles.Madmate);
-                SubRoles.Remove(CustomRoles.Recruit);
-                SubRoles.Remove(CustomRoles.Charmed);
-                SubRoles.Remove(CustomRoles.Infected);
-                SubRoles.Remove(CustomRoles.Contagious);
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Rogue);
-                SubRoles.Remove(CustomRoles.Loyal);
-                SubRoles.Remove(CustomRoles.Admired);
                 break;
         }
     }
@@ -307,7 +237,7 @@ public class PlayerState(byte playerId)
         var callerMethod = caller.GetMethod();
         string callerMethodName = callerMethod.Name;
         string callerClassName = callerMethod.DeclaringType.FullName;
-        Logger.Msg($"Player was dead, activated from: {callerClassName}.{callerMethodName}", "PlayerState.SetDead()");
+        Logger.Msg($"Player {PlayerId} was dead, activated from: {callerClassName}.{callerMethodName}", "PlayerState.SetDead()");
 
         IsDead = true;
         if (AmongUsClient.Instance.AmHost)
@@ -366,9 +296,11 @@ public class PlayerState(byte playerId)
         Trap,
         Targeted,
         Retribution,
+        Slice,
+        BloodLet,
         WrongAnswer,
 
-        //Please add all new roles with deathreason & new deathreason in Susceptible.CallEnabledAndChange
+        //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
     }
 
@@ -400,13 +332,36 @@ public class TaskState
         this.hasTasks = false;
     }
 
+    public static string GetTaskState()
+    {
+        var playersWithTasks = Main.PlayerStates.Where(a => a.Value.TaskState.hasTasks).ToArray();
+        if (playersWithTasks.Length == 0)
+        {
+            return "\r\n";
+        }
+
+        var rd = IRandom.Instance;
+        var randomPlayer = playersWithTasks[rd.Next(0, playersWithTasks.Length)];
+        var taskState = randomPlayer.Value.TaskState;
+
+        Color TextColor;
+        var TaskCompleteColor = Color.green;
+        var NonCompleteColor = Color.yellow;
+        var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+
+        TextColor = Camouflager.AbilityActivated || Camouflage.IsCamouflage ? Color.gray : NormalColor;
+        string Completed = Camouflager.AbilityActivated || Camouflage.IsCamouflage ? "?" : $"{taskState.CompletedTasksCount}";
+
+        return $" <size={1.5}>" + ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})") + "</size>\r\n";
+    }
+
     public void Init(PlayerControl player)
     {
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: InitTask", "TaskState.Init");
 
         if (player == null || player.Data == null || player.Data.Tasks == null) return;
 
-        if (!Utils.HasTasks(player.Data, false))
+        if (!HasTasks(player.Data, false))
         {
             AllTasksCount = 0;
             return;
@@ -420,261 +375,17 @@ public class TaskState
     public void Update(PlayerControl player)
     {
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: UpdateTask", "TaskState.Update");
-        GameData.Instance.RecomputeTaskCounts();
-        Logger.Info($"TotalTaskCounts = {GameData.Instance.CompletedTasks}/{GameData.Instance.TotalTasks}", "TaskState.Update");
 
         // If not initialized, initialize it
         if (AllTasksCount == -1) Init(player);
 
         if (!hasTasks) return;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            var playerRole = player.GetCustomRole();
-            var playerSubRoles = player.GetCustomSubRoles();
-
-            switch (playerRole)
-            {
-                //case CustomRoles.SpeedBooster when player.IsAlive():
-                //    if ((CompletedTasksCount + 1) <= Options.SpeedBoosterTimes.GetInt())
-                //    {
-                //        Logger.Info($"Speed Booster: {player.GetNameWithRole().RemoveHtmlTags()} completed the task", "SpeedBooster");
-                //        Main.AllPlayerSpeed[player.PlayerId] += Options.SpeedBoosterUpSpeed.GetFloat();
-                //        if (Main.AllPlayerSpeed[player.PlayerId] > 3) player.Notify(Translator.GetString("SpeedBoosterSpeedLimit"));
-                //        else player.Notify(string.Format(Translator.GetString("SpeedBoosterTaskDone"), Main.AllPlayerSpeed[player.PlayerId].ToString("0.0#####")));
-                //    }
-                //    break;
-
-                case CustomRoles.Transporter when player.IsAlive():
-                    if ((CompletedTasksCount + 1) <= Options.TransporterTeleportMax.GetInt())
-                    {
-                        Logger.Info($"Transporter: {player.GetNameWithRole().RemoveHtmlTags()} completed the task", "Transporter");
-
-                        var rd = IRandom.Instance;
-                        List<PlayerControl> AllAlivePlayer = Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()).ToList();
-
-                        if (AllAlivePlayer.Count >= 2)
-                        {
-                            var target1 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
-                            var positionTarget1 = target1.GetCustomPosition();
-
-                            AllAlivePlayer.Remove(target1);
-
-                            var target2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
-                            var positionTarget2 = target2.GetCustomPosition();
-
-                            target1.RpcTeleport(positionTarget2);
-                            target2.RpcTeleport(positionTarget1);
-
-                            AllAlivePlayer.Clear();
-
-                            target1.RPCPlayCustomSound("Teleport");
-                            target2.RPCPlayCustomSound("Teleport");
-
-                            target1.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), target2.GetRealName())));
-                            target2.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), target1.GetRealName())));
-                        }
-                        else
-                        {
-                            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), Translator.GetString("ErrorTeleport")));
-                        }
-                    }
-                    break;
-
-                case CustomRoles.Veteran when player.IsAlive():
-                    Main.VeteranNumOfUsed[player.PlayerId] += Options.VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.Grenadier when player.IsAlive():
-                    Main.GrenadierNumOfUsed[player.PlayerId] += Options.GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.Alchemist when player.IsAlive():
-                    Alchemist.OnTaskComplete(player);
-                    break;
-
-                case CustomRoles.Bastion when player.IsAlive():
-                    Main.BastionNumberOfAbilityUses += Options.BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.Captain when player.IsAlive():
-                    Captain.OnTaskComplete(player);
-                    break;
-
-                case CustomRoles.Divinator when player.IsAlive():
-                    Divinator.CheckLimit[player.PlayerId] += Divinator.AbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Divinator.SendRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Lighter when player.IsAlive():
-                    Main.LighterNumOfUsed[player.PlayerId] += Options.LighterAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.DovesOfNeace when player.IsAlive():
-                    Main.DovesOfNeaceNumOfUsed[player.PlayerId] += Options.DovesOfNeaceAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.TimeMaster when player.IsAlive():
-                    Main.TimeMasterNumOfUsed[player.PlayerId] += Options.TimeMasterAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.Mediumshiper when player.IsAlive():
-                    Mediumshiper.ContactLimit[player.PlayerId] += Mediumshiper.MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Mediumshiper.SendRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Inspector when player.IsAlive():
-                    Inspector.MaxCheckLimit[player.PlayerId] += Inspector.InspectAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Inspector.SendRPC(player.PlayerId, 2);
-                    break;
-
-                case CustomRoles.Oracle when player.IsAlive():
-                    Oracle.CheckLimit[player.PlayerId] += Oracle.OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Oracle.SendRPC(player.PlayerId);
-                    break;
-
-                //case CustomRoles.Cleanser when player.IsAlive():
-                //    Cleanser.CleanserUses[player.PlayerId] += Cleanser.AbilityUseGainWithEachTaskCompleted.GetInt();
-                //    break;
-
-                case CustomRoles.SabotageMaster when player.IsAlive():
-                    SabotageMaster.UsedSkillCount[player.PlayerId] -= SabotageMaster.SMAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    SabotageMaster.SendRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Tracker when player.IsAlive():
-                    Tracker.TrackLimit[player.PlayerId] += Tracker.TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Tracker.SendRPC(2, player.PlayerId);
-                    break;
-
-                case CustomRoles.Bloodhound when player.IsAlive():
-                    Bloodhound.UseLimit[player.PlayerId] += Bloodhound.BloodhoundAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Bloodhound.SendRPCLimit(player.PlayerId, operate: 2);
-                    break;
-
-                case CustomRoles.Chameleon when player.IsAlive():
-                    Chameleon.UseLimit[player.PlayerId] += Chameleon.ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Chameleon.SendRPC(player, isLimit: true);
-                    break;
-
-                case CustomRoles.Spy when player.IsAlive():
-                    Spy.UseLimit[player.PlayerId] += Spy.SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Spy.SendAbilityRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Merchant when player.IsAlive():
-                    Merchant.OnTaskFinished(player);
-                    break;
-
-                case CustomRoles.Workaholic when (CompletedTasksCount + 1) >= AllTasksCount && !(Options.WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()):
-                    Logger.Info("The Workaholic task is done", "Workaholic");
-
-                    RPC.PlaySoundRPC(player.PlayerId, Sounds.KillSound);
-                    foreach (var pc in Main.AllAlivePlayerControls)
-                    {
-                        if (pc.PlayerId != player.PlayerId)
-                        {
-                            Main.PlayerStates[pc.PlayerId].deathReason = pc.PlayerId == player.PlayerId ?
-                                PlayerState.DeathReason.Overtired : PlayerState.DeathReason.Ashamed;
-
-                            pc.RpcMurderPlayerV3(pc);
-                            Main.PlayerStates[pc.PlayerId].SetDead();
-                            pc.SetRealKiller(player);
-                        }
-                    }
-
-                    if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
-                    {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic win
-                        CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-                    }
-                    break;
-
-                case CustomRoles.Crewpostor:
-                    if (Main.CrewpostorTasksDone.ContainsKey(player.PlayerId))
-                        Main.CrewpostorTasksDone[player.PlayerId]++;
-                    else
-                        Main.CrewpostorTasksDone[player.PlayerId] = 0;
-
-                    RPC.CrewpostorTasksSendRPC(player.PlayerId, Main.CrewpostorTasksDone[player.PlayerId]);
-                    List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && (Options.CrewpostorCanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
-
-                    if (list.Count <= 0)
-                    {
-                        Logger.Info($"No target to kill", "Crewpostor");
-                    }
-                    else if (Main.CrewpostorTasksDone[player.PlayerId] % Options.CrewpostorKillAfterTask.GetInt() != 0 && Main.CrewpostorTasksDone[player.PlayerId] != 0)
-                    {
-                        Logger.Info($"Crewpostor task done but kill skipped, tasks completed {Main.CrewpostorTasksDone[player.PlayerId]}, but it kills after {Options.CrewpostorKillAfterTask.GetInt()} tasks", "Crewpostor");
-                    }
-                    else
-                    {
-                        list = [.. list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position))];
-                        var target = list[0];
-
-                        if (!target.Is(CustomRoles.Pestilence))
-                        {
-                            if (!Options.CrewpostorLungeKill.GetBool())
-                            {
-                                target.SetRealKiller(player);
-                                target.RpcCheckAndMurder(target);
-                                player.RpcGuardAndKill();
-                                Logger.Info("No lunge mode kill", "Crewpostor");
-                            }
-                            else
-                            {
-                                target.SetRealKiller(player);
-                                player.RpcMurderPlayerV3(target);
-                                player.RpcGuardAndKill();
-                                Logger.Info("lunge mode kill", "Crewpostor");
-                            }
-                            Logger.Info($"Crewpostor completed task to kill：{player.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "Crewpostor");
-                        }
-                        else
-                        {
-                            player.SetRealKiller(target);
-                            target.RpcMurderPlayerV3(player);
-                            player.RpcGuardAndKill();
-                            Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Pestilence Reflect");
-                        }
-                    }
-                    break;
-            }
-
-
-            // Add-Ons
-            if (playerSubRoles.Count > 0)
-            {
-                foreach (var subRole in playerSubRoles)
-                {
-                    switch (subRole)
-                    {
-                        case CustomRoles.Unlucky when player.IsAlive():
-                            Unlucky.SuicideRand(player);
-                            break;
-                        
-                        case CustomRoles.Tired when player.IsAlive():
-                             Tired.AfterActionTasks(player);
-                            break;
-
-                        case CustomRoles.Bloodlust when player.IsAlive():
-                            Bloodlust.OnTaskComplete(player);
-                            break;
-
-                        case CustomRoles.Ghoul when (CompletedTasksCount + 1) >= AllTasksCount:
-                            Ghoul.OnTaskComplete(player);
-                            break;
-                    }
-                }
-            }
-        }
-
         // if it's clear, it doesn't count
         if (CompletedTasksCount >= AllTasksCount) return;
 
         //Solsticer task state is updated by host rpc
         if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return;
-
 
         CompletedTasksCount++;
 
@@ -719,13 +430,23 @@ public static class GameStates
     public static bool IsEnded => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Ended;
     public static bool IsNotJoined => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.NotJoined;
     public static bool IsOnlineGame => AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame;
+    public static bool IsVanillaServer
+    {
+        get
+        {
+            if (!IsOnlineGame) return false;
+
+            string region = ServerManager.Instance.CurrentRegion.Name;
+            return (region == "North America" || region == "Europe" || region == "Asia");
+        }
+    }
     public static bool IsLocalGame => AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;
     public static bool IsFreePlay => AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay;
     public static bool IsInTask => InGame && !MeetingHud.Instance;
     public static bool IsMeeting => InGame && MeetingHud.Instance;
     public static bool IsVoting => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Voted or MeetingHud.VoteStates.NotVoted;
     public static bool IsProceeding => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Proceeding;
-    public static bool IsExilling => ExileController.Instance != null && !(AirshipIsActive && SpawnInMinigame.Instance.isActiveAndEnabled);
+    public static bool IsExilling => ExileController.Instance != null && !(AirshipIsActive && Minigame.Instance != null && Minigame.Instance.isActiveAndEnabled);
     public static bool IsCountDown => GameStartManager.InstanceExists && GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown;
     /**********TOP ZOOM.cs***********/
     public static bool IsShip => ShipStatus.Instance != null;
@@ -737,7 +458,7 @@ public static class MeetingStates
     public static DeadBody[] DeadBodies = null;
     public static GameData.PlayerInfo ReportTarget = null;
     public static bool IsEmergencyMeeting => ReportTarget == null;
-    public static bool IsExistDeadBody => DeadBodies.Length > 0;
+    public static bool IsExistDeadBody => DeadBodies.Any();
     public static bool MeetingCalled = false;
     public static bool FirstMeeting = true;
 }

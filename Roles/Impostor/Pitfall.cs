@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
-using System.Linq;
+using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
@@ -8,37 +7,43 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Pitfall
+internal class Pitfall : RoleBase
 {
-    private static readonly int Id = 5600;
-
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
-
-    private static List<PitfallTrap> Traps = [];
-    private static List<byte> ReducedVisionPlayers = [];
+    //===========================SETUP================================\\
+    private const int Id = 5600;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
+    //==================================================================\\
 
     private static OptionItem ShapeshiftCooldown;
-    public static OptionItem MaxTrapCount;
-    public static OptionItem TrapMaxPlayerCount;
-    public static OptionItem TrapDuration;
+    private static OptionItem MaxTrapCount;
+    private static OptionItem TrapMaxPlayerCountOpt;
+    private static OptionItem TrapDurationOpt;
     private static OptionItem TrapRadius;
     private static OptionItem TrapFreezeTime;
     private static OptionItem TrapCauseVision;
     private static OptionItem TrapCauseVisionTime;
 
-    private static float DefaultSpeed = new();
+    private static HashSet<PitfallTrap> Traps = [];
+    private static readonly HashSet<byte> ReducedVisionPlayers = [];
 
-    public static void SetupCustomOption()
+    private static float DefaultSpeed = new();
+    public static float TrapMaxPlayerCount = new();
+    public static float TrapDuration = new();
+
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Pitfall);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 10, "PitfallTrapCooldown", new(1f, 180f, 1f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Seconds);
         MaxTrapCount = FloatOptionItem.Create(Id + 11, "PitfallMaxTrapCount", new(1f, 5f, 1f), 1f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Times);
-        TrapMaxPlayerCount = FloatOptionItem.Create(Id + 12, "PitfallTrapMaxPlayerCount", new(1f, 15f, 1f), 3f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
+        TrapMaxPlayerCountOpt = FloatOptionItem.Create(Id + 12, "PitfallTrapMaxPlayerCount", new(1f, 15f, 1f), 3f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Times);
-        TrapDuration = FloatOptionItem.Create(Id + 13, "PitfallTrapDuration", new(5f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pitfall])
+        TrapDurationOpt = FloatOptionItem.Create(Id + 13, "PitfallTrapDuration", new(5f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Seconds);
         TrapRadius = FloatOptionItem.Create(Id + 14, "PitfallTrapRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Multiplier);
@@ -49,30 +54,41 @@ public static class Pitfall
         TrapCauseVisionTime = FloatOptionItem.Create(Id + 17, "PitfallTrapCauseVisionTime", new(0f, 45f, 1f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void ApplyGameOptions()
+    public override void Init()
+    {
+        playerIdList.Clear();
+        Traps.Clear();
+        ReducedVisionPlayers.Clear();
+        DefaultSpeed = new();
+        TrapMaxPlayerCount = new();
+        TrapDuration = new();
+    }
+    public override void Add(byte playerId)
+    {
+        playerIdList.Add(playerId);
+        DefaultSpeed = Main.AllPlayerSpeed[playerId];
+
+        TrapMaxPlayerCount = TrapMaxPlayerCountOpt.GetFloat();
+        TrapDuration = TrapDurationOpt.GetFloat();
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
+        }
+    }
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
-    public static void Init()
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        playerIdList = [];
-        Traps = [];
-        ReducedVisionPlayers = [];
-        IsEnable = false;
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-        DefaultSpeed = Main.AllPlayerSpeed[playerId];
-        IsEnable = true;
-    }
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
-    public static void OnShapeshift(PlayerControl shapeshifter)
-    {
         // Remove inactive traps so there is room for new traps
-        Traps = Traps.Where(a => a.IsActive).ToList();
+        Traps = Traps.Where(a => a.IsActive).ToHashSet();
 
         Vector2 position = shapeshifter.transform.position;
         var playerTraps = Traps.Where(a => a.PitfallPlayerId == shapeshifter.PlayerId).ToArray();
@@ -93,9 +109,13 @@ public static class Pitfall
                 Timer = 0
             });
         }
+
+        shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+
+        return false;
     }
 
-    public static void OnFixedUpdate(PlayerControl player)
+    private void OnFixedUpdateOthers(PlayerControl player)
     {
         if (Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;
 
@@ -185,7 +205,7 @@ public class PitfallTrap
     {
         get
         {
-            return Timer <= Pitfall.TrapDuration.GetFloat() && PlayersTrapped.Count < Pitfall.TrapMaxPlayerCount.GetInt();
+            return Timer <= Pitfall.TrapDuration && PlayersTrapped.Count < Pitfall.TrapMaxPlayerCount;
         }
     }
 }

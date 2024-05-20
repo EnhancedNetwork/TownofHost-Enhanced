@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Nimble
 {
-    private static readonly int Id = 19700;
+    private const int Id = 19700;
 
     public static void SetupCustomOptions()
     {

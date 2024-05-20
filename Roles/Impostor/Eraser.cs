@@ -1,76 +1,54 @@
-﻿using Hazel;
-using System.Collections.Generic;
+﻿using AmongUs.GameOptions;
+using Hazel;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-internal static class Eraser
+internal class Eraser : RoleBase
 {
-    private static readonly int Id = 24200;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 24200;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Eraser);
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
+    //==================================================================\\
 
     private static OptionItem EraseLimitOpt;
-    public static OptionItem HideVote;
+    public static OptionItem HideVoteOpt;
 
-    private static List<byte> didVote = [];
-    public static Dictionary<byte, int> EraseLimit = [];
-    private static List<byte> PlayerToErase = [];
-    public static Dictionary<byte, int> TempEraseLimit = [];
+    private static readonly HashSet<byte> didVote = [];
+    private static readonly HashSet<byte> PlayerToErase = [];
+    private static int TempEraseLimit;
+    public static readonly Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Eraser);
         EraseLimitOpt = IntegerOptionItem.Create(Id + 10, "EraseLimit", new(1, 15, 1), 2, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser])
             .SetValueFormat(OptionFormat.Times);
-        HideVote = BooleanOptionItem.Create(Id + 11, "EraserHideVote", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser]);
+        HideVoteOpt = BooleanOptionItem.Create(Id + 11, "EraserHideVote", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser]);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        EraseLimit = [];
-        PlayerToErase = [];
-        didVote = [];
-        TempEraseLimit = [];
-        IsEnable = false;
+        PlayerToErase.Clear();
+        didVote.Clear();
+        ErasedRoleStorage.Clear();
     }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-        EraseLimit.Add(playerId, EraseLimitOpt.GetInt());
-        IsEnable = true;
+    public override string GetProgressText(byte playerId, bool comms)
+        => Utils.ColorString(AbilityLimit <= 0 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, $"({AbilityLimit})");
 
-        Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()} : 剩余{EraseLimit[playerId]}次", "Eraser");
-    }
-    private static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Eraser);
-        writer.Write(playerId);
-        writer.Write(EraseLimit[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte playerId = reader.ReadByte();
-        int limit = reader.ReadInt32();
-        if (!EraseLimit.ContainsKey(playerId))
-        {
-            EraseLimit.Add(playerId , limit);
-        }
-        else
-            EraseLimit[playerId] = limit;
-    }
-    public static string GetProgressText(byte playerId) => Utils.ColorString(EraseLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, EraseLimit.TryGetValue(playerId, out var x) ? $"({x})" : "Invalid");
+    public override bool HideVote(PlayerVoteArea votedPlayer)
+        => CheckForEndVotingPatch.CheckRole(votedPlayer.TargetPlayerId, CustomRoles.Eraser) && HideVoteOpt.GetBool() && TempEraseLimit <= 0;
 
-    public static void OnVote(PlayerControl player, PlayerControl target)
+    public override void OnVote(PlayerControl player, PlayerControl target)
     {
-        if (!IsEnable) return;
+        if (!HasEnabled) return;
         if (player == null || target == null) return;
         if (target.Is(CustomRoles.Eraser)) return;
-        if (EraseLimit[player.PlayerId] <= 0) return;
+        if (AbilityLimit <= 0) return;
 
         if (didVote.Contains(player.PlayerId)) return;
         didVote.Add(player.PlayerId);
@@ -90,8 +68,8 @@ internal static class Eraser
             return;
         }
 
-        EraseLimit[player.PlayerId]--;
-        SendRPC(player.PlayerId);
+        AbilityLimit--;
+        SendSkillRPC();
 
         if (!PlayerToErase.Contains(target.PlayerId))
             PlayerToErase.Add(target.PlayerId);
@@ -100,50 +78,60 @@ internal static class Eraser
 
         Utils.NotifyRoles(SpecifySeer: player);
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        foreach (var eraserId in playerIdList.ToArray())
-        {
-            TempEraseLimit[eraserId] = EraseLimit[eraserId];
-        }
+        TempEraseLimit = (int)AbilityLimit;
 
-        PlayerToErase = [];
-        didVote = [];
+        PlayerToErase.Clear();
+        didVote.Clear();
     }
-    public static void AfterMeetingTasks(bool notifyPlayer = false)
+    public override void NotifyAfterMeeting()
     {
-        if (notifyPlayer)
+        foreach (var pc in PlayerToErase.ToArray())
         {
-            foreach (var pc in PlayerToErase.ToArray())
-            {
-                var player = Utils.GetPlayerById(pc);
-                if (player == null) continue;
+            var player = Utils.GetPlayerById(pc);
+            if (player == null) continue;
 
-                player.Notify(GetString("LostRoleByEraser"));
-            }
+            player.Notify(GetString("LostRoleByEraser"));
         }
-        else
+    }
+    public override void AfterMeetingTasks()
+    {
+        foreach (var pc in PlayerToErase.ToArray())
         {
-            foreach (var pc in PlayerToErase.ToArray())
+            var player = Utils.GetPlayerById(pc);
+            if (player == null) continue;
+            if (!ErasedRoleStorage.ContainsKey(player.PlayerId))
             {
-                var player = Utils.GetPlayerById(pc);
-                if (player == null) continue;
-                if (!Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
-                {
-                    Main.ErasedRoleStorage.Add(player.PlayerId, player.GetCustomRole());
-                    Logger.Info($"Added {player.GetNameWithRole()} to ErasedRoleStorage", "Eraser");
-                }
-                else
-                {
-                    Logger.Info($"Canceled {player.GetNameWithRole()} Eraser bcz already erased.", "Eraser");
-                    return;
-                }
-                player.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
-                player.ResetKillCooldown();
-                player.SetKillCooldown();
-                Logger.Info($"{player.GetNameWithRole()} Erase by Eraser", "Eraser");
+                ErasedRoleStorage.Add(player.PlayerId, player.GetCustomRole());
+                Logger.Info($"Added {player.GetNameWithRole()} to ErasedRoleStorage", "Eraser");
             }
-            Utils.MarkEveryoneDirtySettings();
+            else
+            {
+                Logger.Info($"Canceled {player.GetNameWithRole()} Eraser bcz already erased.", "Eraser");
+                return;
+            }
+            player.RpcSetCustomRole(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
+            player.ResetKillCooldown();
+            player.SetKillCooldown();
+            Logger.Info($"{player.GetNameWithRole()} Erase by Eraser", "Eraser");
         }
+        Utils.MarkEveryoneDirtySettings();
+    }
+
+    // Erased RoleType - Impostor, Shapeshifter, Crewmate, Engineer, Scientist (Not Neutrals)
+    public static CustomRoles GetErasedRole(RoleTypes roleType, CustomRoles role)
+    {
+        return role.IsVanilla()
+            ? role
+            : roleType switch
+            {
+                RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
+                RoleTypes.Scientist => CustomRoles.ScientistTOHE,
+                RoleTypes.Engineer => CustomRoles.EngineerTOHE,
+                RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
+                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
+                _ => role,
+            };
     }
 }

@@ -3,7 +3,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public static class Circumvent
 {
-    private static readonly int Id = 22600;
+    private const int Id = 22600;
 
     public static void SetupCustomOption()
     {

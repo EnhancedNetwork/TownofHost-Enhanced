@@ -1,11 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using InnerNet;
 using static TOHE.Translator;
-using TOHE.Modules.ChatManager;
 
 namespace TOHE;
 
@@ -189,12 +186,55 @@ internal class EAC
             }
             switch (callId)
             {
-                case 101:
-                    var AUMChat = sr.ReadString();
-                    WarnHost();
-                    Report(pc, "AUM");
-                    HandleCheat(pc, GetString("EAC.CheatDetected.EAC"));
-                    return true;
+                case 101: // Aum Chat
+                    try
+                    {
+                        var firstString = sr.ReadString();
+                        var secondString = sr.ReadString();
+                        sr.ReadInt32();
+
+                        var flag = string.IsNullOrEmpty(firstString) && string.IsNullOrEmpty(secondString);
+
+                        if (!flag)
+                        {
+                            Report(pc, "Aum Chat RPC");
+                            HandleCheat(pc, "Aum Chat RPC");
+                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送AUM聊天，已驳回", "EAC");
+                            return true;
+                        }
+                    }
+                    catch
+                    {
+                        // Do nothing
+                    }
+                    break;
+                case unchecked((byte)42069): // 85 AUM
+                    try
+                    {
+                        var aumid = sr.ReadByte();
+
+                        if (aumid == pc.PlayerId)
+                        {
+                            Report(pc, "Aum RPC");
+                            HandleCheat(pc, "Aum RPC");
+                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送AUM RPC，已驳回", "EAC");
+                            return true;
+                        }
+                    }
+                    catch
+                    {
+                        // Do nothing
+                    }
+                    break;
+                case unchecked((byte)420): // 164 Sicko
+                    if (sr.BytesRemaining == 0)
+                    {
+                        Report(pc, "Sicko RPC");
+                        HandleCheat(pc, "Sicko RPC");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送Sicko RPC，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
                 case 7:
                 case 8:
                     if (!GameStates.IsLobby)
@@ -298,6 +338,13 @@ internal class EAC
         var Mapid = Utils.GetActiveMapId();
         Logger.Info("Check sabotage RPC" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + systemType.ToString() + ", amount: " + amount.ToString(), "EAC");
         if (!AmongUsClient.Instance.AmHost) return false;
+
+        if (player == null)
+        {
+            Logger.Warn("PlayerControl is null", "EAC RpcUpdateSystemCheck");
+            return true;
+        }
+
         if (systemType == SystemTypes.Sabotage) //Normal sabotage using buttons
         {
             if (!player.HasImpKillButton(true))
@@ -423,30 +470,26 @@ internal class EAC
     }
     public static void Report(PlayerControl pc, string reason)
     {
+        if (pc == null)
+        {
+            Logger.Warn("Report PlayerControl is null", "EAC Report");
+            return;
+        }
+
         string msg = $"{pc.GetClientId()}|{pc.FriendCode}|{pc.Data.PlayerName}|{pc.GetClient().GetHashedPuid()}|{reason}";
         //Cloud.SendData(msg);
         Logger.Fatal($"EAC报告：{msg}", "EAC Cloud");
         if (Options.CheatResponses.GetInt() != 5)
             Logger.SendInGame(string.Format(GetString("Message.NoticeByEAC"), $"{pc?.Data?.PlayerName} | {pc.GetClient().GetHashedPuid()}", reason));
     }
-    public static bool ReceiveInvalidRpc(PlayerControl pc, byte callId)
-    {
-        if (Options.CheatResponses.GetInt() == 5)
-        {
-            Logger.Info("Cancel action bcz cheat response is cancel.", "MalumMenu on top!");
-            return false;
-        }
-        switch (callId)
-        {
-            case unchecked((byte)42069):
-                Report(pc, "AUM");
-                HandleCheat(pc, GetString("EAC.CheatDetected.EAC"));
-                return true;
-        }
-        return true;
-    }
     public static void HandleCheat(PlayerControl pc, string text)
     {
+        if (pc == null)
+        {
+            Logger.Warn("Target PlayerControl is null", "EAC HandleCheat");
+            return;
+        }
+
         switch (Options.CheatResponses.GetInt())
         {
             case 0:

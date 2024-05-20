@@ -1,5 +1,3 @@
-using HarmonyLib;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace TOHE;
@@ -14,7 +12,7 @@ public class FallFromLadder
     }
     public static void OnClimbLadder(PlayerPhysics player, Ladder source)
     {
-        if (!Options.LadderDeath.GetBool()) return;
+        if (!Options.LadderDeath.GetBool() || player.myPlayer.Is(CustomRoles.Solsticer)) return;
         var sourcePos = source.transform.position;
         var targetPos = source.Destination.transform.position;
         //降りているのかを検知
@@ -56,7 +54,6 @@ public class FallFromLadder
                     player.NetTransform.SnapTo(targetPos);
                     player.MurderPlayer(player, ExtendedPlayerControl.ResultFlags);
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Fall;
-                    Main.PlayerStates[player.PlayerId].SetDead();
                 }, 0.05f, "Ladder Fall Task");
             }
         }
@@ -65,7 +62,7 @@ public class FallFromLadder
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.ClimbLadder))]
 class LadderPatch
 {
-    public static void Postfix(PlayerPhysics __instance, Ladder source, byte climbLadderSid)
+    public static void Postfix(PlayerPhysics __instance, Ladder source)
     {
         FallFromLadder.OnClimbLadder(__instance, source);
     }
