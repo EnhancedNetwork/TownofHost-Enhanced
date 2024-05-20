@@ -110,7 +110,7 @@ internal class Revolutionist : RoleBase
     }
     private static void SetDrawPlayerRPC(PlayerControl player, PlayerControl target, bool isDrawed)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDrawPlayer, SendOption.Reliable, -1);
         writer.WritePacked(1);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
@@ -133,7 +133,7 @@ internal class Revolutionist : RoleBase
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDrawTarget, SendOption.Reliable, -1);
             writer.WritePacked(2);
             writer.Write(arsonistId);
             writer.Write(targetId);

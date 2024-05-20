@@ -54,7 +54,7 @@ internal class Spy : RoleBase
     }
     public static void SendRPC(byte susId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyRedNameSync, SendOption.Reliable, -1);
         writer.WritePacked(1);
         writer.Write(susId);
         writer.Write(SpyRedNameList[susId].ToString());
@@ -62,7 +62,7 @@ internal class Spy : RoleBase
     }
     public static void SendRPC(byte susId, bool changeColor)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyRedNameRemove, SendOption.Reliable, -1);
         writer.WritePacked(2);
         writer.Write(susId);
         writer.Write(changeColor);

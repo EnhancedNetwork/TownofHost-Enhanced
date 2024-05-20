@@ -68,7 +68,7 @@ internal class Stalker : RoleBase
     private static void DRpcSetKillCount(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetStalkerrKillCount, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         writer.Write(IsWinKill[player.PlayerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

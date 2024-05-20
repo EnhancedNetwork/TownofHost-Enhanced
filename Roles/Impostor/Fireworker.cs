@@ -71,7 +71,7 @@ internal class Fireworker : RoleBase
     private static void SendRPC(byte playerId)
     {
         Logger.Info($"Player{playerId}:SendRPC", "Fireworker");
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SendFireworkerState, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(nowFireworkerCount[playerId]);
         writer.Write((int)state[playerId]);

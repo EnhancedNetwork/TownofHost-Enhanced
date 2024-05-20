@@ -69,7 +69,7 @@ internal class Tracker : RoleBase
         if (operate == 2) writer.Write(AbilityLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte trackerId = reader.ReadByte();
         int operate = reader.ReadInt32();
@@ -77,18 +77,18 @@ internal class Tracker : RoleBase
         {
             byte targetId = reader.ReadByte();
 
-            AbilityLimit--;
+            Main.PlayerStates[trackerId].RoleClass.AbilityLimit--; 
             TrackerTarget[trackerId].Add(targetId);
             TargetArrow.Add(trackerId, targetId);
         }
         if (operate == 1)
         {
-            TempTrackLimit[trackerId] = AbilityLimit;
+            TempTrackLimit[trackerId] = Main.PlayerStates[trackerId].RoleClass.AbilityLimit;
         }
         if (operate == 2)
         {
             float limit = reader.ReadSingle();
-            AbilityLimit = limit;
+            Main.PlayerStates[trackerId].RoleClass.AbilityLimit = limit;
         }
     }
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false) => !(seer == null || target == null) && TrackerTarget.ContainsKey(seer.PlayerId) && TrackerTarget[seer.PlayerId].Contains(target.PlayerId) ? Utils.ColorString(seer.GetRoleColor(), "◀") : "";

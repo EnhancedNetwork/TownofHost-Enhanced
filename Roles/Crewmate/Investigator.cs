@@ -63,7 +63,7 @@ internal class Investigator : RoleBase
 
     private static void SendRPC(int operate, byte playerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetInvestgatorLimit, SendOption.Reliable, -1);
         writer.Write(operate);
         if (operate == 0)
         {

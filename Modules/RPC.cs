@@ -114,6 +114,7 @@ enum CustomRPC : byte
     SpyRedNameRemove,
     SetChameleonTimer,
     SyncAdmiredList,
+    SyncAdmiredAbility,
     SetImitateLimit,
     SetStalkerrKillCount,
     //FFA
@@ -427,8 +428,8 @@ internal class RPCHandlerPatch
                 byte killerId = reader.ReadByte();
                 RPC.SetRealKiller(targetId, killerId);
                 break;
-            case CustomRPC.SetTrackerTarget when __instance.GetRoleClass() is Tracker tr:
-                tr.ReceiveRPC(reader);
+            case CustomRPC.SetTrackerTarget:
+                Tracker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetJailerExeLimit:
                 Jailer.ReceiveRPC(reader, setTarget: false);
@@ -441,6 +442,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncAdmiredList:
                 Admirer.ReceiveRPC(reader, true);
+                break;
+            case CustomRPC.SyncAdmiredAbility:
+                Admirer.ReceiveRPC(reader, false);
                 break;
             case CustomRPC.PlayCustomSound:
                 CustomSoundsManager.ReceiveRPC(reader);
@@ -522,8 +526,8 @@ internal class RPCHandlerPatch
             case CustomRPC.RetributionistRevenge:
                 Retributionist.ReceiveRPC_Custom(reader, __instance);
                 break;
-            case CustomRPC.SetChameleonTimer when __instance.GetRoleClass() is Chameleon cl:
-                cl.ReceiveRPC_Custom(reader);
+            case CustomRPC.SetChameleonTimer:
+                Chameleon.ReceiveRPC_Custom(reader);
                 break;
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
@@ -578,8 +582,8 @@ internal class RPCHandlerPatch
             case CustomRPC.KeeperRPC:
                 Keeper.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetSwapperVotes when __instance.GetRoleClass() is Swapper sw:
-                sw.ReceiveSwapRPC(reader, __instance);
+            case CustomRPC.SetSwapperVotes:
+                Swapper.ReceiveSwapRPC(reader, __instance);
                 break;
         }
     }
@@ -887,10 +891,6 @@ internal static class RPC
         {
             switch (pc.GetRoleClass())
             {
-                //Crew Roles
-                case Admirer ad:
-                    ad.ReceiveRPC(reader, false);
-                    break;
                 default:
                     pc.GetRoleClass().ReceiveRPC(reader, pc);
                     break;

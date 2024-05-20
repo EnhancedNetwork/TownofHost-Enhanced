@@ -62,7 +62,6 @@ internal class Coroner : RoleBase
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
         writer.Write(playerId);
         writer.Write(add);
         if (add)
@@ -98,8 +97,7 @@ internal class Coroner : RoleBase
     }
     private static void SendRPCKiller(byte playerId, byte killerId, bool add)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(2);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCoronerkKillerArrow, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(killerId);
         writer.Write(add);

@@ -82,7 +82,7 @@ internal class Vulture : RoleBase
 
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetVultureArrow, SendOption.Reliable, -1);
         writer.WritePacked(1);
         writer.Write(playerId);
         writer.Write(add);
@@ -96,7 +96,7 @@ internal class Vulture : RoleBase
     }
     private static void SendBodyRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncVultureBodyAmount, SendOption.Reliable, -1);
         writer.WritePacked(2);
         writer.Write(playerId);
         writer.Write(BodyReportCount[playerId]);
