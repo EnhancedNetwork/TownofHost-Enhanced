@@ -108,7 +108,7 @@ internal class Tracker : RoleBase
         TargetArrow.Add(player.PlayerId, target.PlayerId);
 
         SendRPC(0, player.PlayerId, target.PlayerId);
-        SendMessage(ColorString(GetRoleColor(CustomRoles.Tracker), string.Format(GetString("VoteAbilityUsed"), CustomRoles.Tracker)), player.PlayerId, title: GetString("VoteHasReturned"));
+        SendMessage(ColorString(GetRoleColor(CustomRoles.Tracker), string.Format(GetString("VoteAbilityUsed"), GetString("Tracker"))), player.PlayerId, title: GetString("VoteHasReturned"));
         return false;
     }
 

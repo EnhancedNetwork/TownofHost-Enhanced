@@ -65,7 +65,7 @@ internal class Godfather : RoleBase
         Didvote = true;
 
         GodfatherTarget.Add(voteTarget.PlayerId);
-        SendMessage(ColorString(GetRoleColor(CustomRoles.Godfather), string.Format(GetString("VoteAbilityUsed"), CustomRoles.Godfather)), votePlayer.PlayerId, title: GetString("VoteHasReturned"));
+        SendMessage(ColorString(GetRoleColor(CustomRoles.Godfather), string.Format(GetString("VoteAbilityUsed"), GetString("Godfather"))), votePlayer.PlayerId, title: GetString("VoteHasReturned"));
         return false;
     }
 }
