@@ -1812,8 +1812,6 @@ public static class Options
         WhenTie = StringOptionItem.Create(60745, "WhenTie", tieModes, 0, TabGroup.GameSettings, false)
             .SetParent(VoteMode)
             .SetGameMode(CustomGameMode.Standard);
-
-
         EnableVoteCommand  = BooleanOptionItem.Create(60746, "EnableVote", true, TabGroup.GameSettings, false)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);

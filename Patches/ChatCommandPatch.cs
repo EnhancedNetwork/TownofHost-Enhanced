@@ -361,7 +361,6 @@ internal class ChatCommands
                         break;
                     }
 
-                    if (Options.ShouldVoteCmdsSpamChat.GetBool()) ChatManager.SendPreviousMessagesToAll();
                     if (!Options.EnableVoteCommand.GetBool())
                     {
                         Utils.SendMessage(GetString("VoteDisabled"), PlayerControl.LocalPlayer.PlayerId);
