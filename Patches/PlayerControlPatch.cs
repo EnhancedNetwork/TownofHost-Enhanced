@@ -877,7 +877,6 @@ class FixedUpdateInNormalGamePatch
     private static readonly StringBuilder Mark = new(20);
     private static readonly StringBuilder Suffix = new(120);
     private static readonly Dictionary<int, int> BufferTime = [];
-    private static readonly Dictionary<int, int> BufferTimeForVeryLowLoad = [];
     private static int LevelKickBufferTime = 20;
 
     public static async void Postfix(PlayerControl __instance)
@@ -941,27 +940,6 @@ class FixedUpdateInNormalGamePatch
 
             BufferTime[player.PlayerId] = timerLowLoad;
         }
-
-        // The code is called once every 5 second (by one player)
-        bool veryLowLoad = false;
-        if (!BufferTimeForVeryLowLoad.TryGetValue(player.PlayerId, out var timerVeryLowLoad))
-        {
-            BufferTimeForVeryLowLoad.TryAdd(player.PlayerId, 90);
-            timerVeryLowLoad = 90;
-        }
-
-        timerVeryLowLoad--;
-
-        if (timerVeryLowLoad > 0)
-        {
-            veryLowLoad = true;
-        }
-        else
-        {
-            timerVeryLowLoad = 90;
-        }
-
-        BufferTimeForVeryLowLoad[player.PlayerId] = timerVeryLowLoad;
 
         if (!lowLoad)
         {
@@ -1046,10 +1024,10 @@ class FixedUpdateInNormalGamePatch
             DoubleTrigger.OnFixedUpdate(player);
 
             //Mini's count down needs to be done outside if intask if we are counting meeting time
-            if (GameStates.IsInGame && player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini))
+            if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
             {
                 if (!player.Data.IsDead)
-                    Mini.OnFixedUpdates(player);
+                    min.OnFixedUpdates(player);
             }
 
             if (GameStates.IsInTask)
@@ -1117,9 +1095,8 @@ class FixedUpdateInNormalGamePatch
 
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
         var RoleText = RoleTextTransform.GetComponent<TMPro.TextMeshPro>();
-        bool runCode = !veryLowLoad || (!lowLoad && __instance.AmOwner && (LocateArrow.HasLocateArrows(__instance) || TargetArrow.HasTargetArrows(__instance) || Camouflage.IsCamouflage));
 
-        if (RoleText != null && __instance != null && runCode)
+        if (RoleText != null && __instance != null && !lowLoad)
         {
             if (GameStates.IsLobby)
             {

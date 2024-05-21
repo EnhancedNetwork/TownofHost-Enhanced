@@ -6,6 +6,7 @@ using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -61,8 +62,7 @@ internal class Coroner : RoleBase
 
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCoronerArrow, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(add);
         if (add)
@@ -76,6 +76,7 @@ internal class Coroner : RoleBase
     private void SendRPCLimit(byte playerId, int operate, byte targetId = 0xff)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
         writer.Write(playerId);
         writer.Write(operate);
         writer.Write(AbilityLimit);
@@ -98,15 +99,14 @@ internal class Coroner : RoleBase
     }
     private static void SendRPCKiller(byte playerId, byte killerId, bool add)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(2);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCoronerkKillerArrow, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(killerId);
         writer.Write(add);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
 
     }
-    public void ReceiveRPCKiller(MessageReader reader)
+    public static void ReceiveRPCKiller(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         byte killerId = reader.ReadByte();
@@ -123,7 +123,7 @@ internal class Coroner : RoleBase
         }
     }
 
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         bool add = reader.ReadBoolean();

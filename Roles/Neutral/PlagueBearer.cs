@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -74,7 +75,7 @@ internal class PlagueBearer : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.PlagueBearer); // setPlaguedPlayer
+        writer.WriteNetObject(Utils.GetPlayerById(playerIdList.First())); // setPlaguedPlayer
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

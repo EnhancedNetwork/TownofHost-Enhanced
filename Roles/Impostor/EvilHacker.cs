@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Hazel;
+using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -22,6 +23,8 @@ internal class EvilHacker : RoleBase
     private static OptionItem OptionCanSeeImpostorMark;
     private static OptionItem OptionCanSeeKillFlash;
     private static OptionItem OptionCanSeeMurderRoom;
+
+    private static byte player = 0;
 
     public enum OptionName
     {
@@ -61,6 +64,7 @@ internal class EvilHacker : RoleBase
     }
     public override void Add(byte playerId)
     {
+        player = playerId;
         evilHackerPlayer = Utils.GetPlayerById(playerId);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(HandleMurderRoomNotify);
@@ -143,7 +147,7 @@ internal class EvilHacker : RoleBase
     private static void SendRPC(byte RpcTypeId, SystemTypes room)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
+        writer.WriteNetObject(Utils.GetPlayerById(player));
         writer.Write(RpcTypeId);
         writer.Write((byte)room);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -206,9 +210,6 @@ internal class EvilHacker : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (!AmongUsClient.Instance.AmHost)
-        Logger.Info($"{canSeeMurderRoom} - {activeNotifies.Count}", "EvilHacker.GetSuffix");
-
         if (!canSeeMurderRoom || seer.PlayerId != seen.PlayerId || isForMeeting || !activeNotifies.Any())
         {
             return string.Empty;

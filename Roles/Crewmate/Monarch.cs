@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -39,7 +40,7 @@ internal class Monarch : RoleBase
     private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Monarch);
+        writer.WriteNetObject(_Player);
         writer.Write(playerId);
         writer.Write(AbilityLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -50,8 +51,7 @@ internal class Monarch : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KnightCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl player) => player.IsAlive() 
-                                                                    && AbilityLimit > 0;
+    public override bool CanUseKillButton(PlayerControl player) => AbilityLimit > 0;
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {

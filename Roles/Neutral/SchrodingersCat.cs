@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
@@ -29,10 +30,10 @@ internal class SchrodingersCat : RoleBase
         teammate[playerId] = byte.MaxValue;
     }
 
-    private static void SendRPC(byte catID)
+    private void SendRPC(byte catID)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.SchrodingersCat);
+        writer.WriteNetObject(_Player);
         writer.Write(catID);
         writer.Write(teammate[catID]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

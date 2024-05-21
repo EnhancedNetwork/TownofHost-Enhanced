@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using System;
 using TOHE.Roles.Core;
 using static TOHE.Options;
@@ -62,10 +63,10 @@ internal class Huntsman : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    public static void SendRPC(bool isSetTarget, byte targetId = byte.MaxValue)
+    public void SendRPC(bool isSetTarget, byte targetId = byte.MaxValue)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Huntsman);
+        writer.WriteNetObject(_Player);
         writer.Write(isSetTarget);
         if (isSetTarget)
         {

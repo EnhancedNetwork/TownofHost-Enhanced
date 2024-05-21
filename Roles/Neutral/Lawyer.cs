@@ -1,4 +1,5 @@
 using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -108,10 +109,10 @@ internal class Lawyer : RoleBase
             Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()}:{SelectedTarget.GetNameWithRole()}", "Lawyer");
         }
     }
-    private static void SendRPC(byte lawyerId, byte targetId = 0x73, bool SetTarget = false)
+    private void SendRPC(byte lawyerId, byte targetId = 0x73, bool SetTarget = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WritePacked((int)CustomRoles.Lawyer);
+        writer.WriteNetObject(_Player);
         writer.Write(SetTarget);
 
         if (SetTarget)
@@ -200,7 +201,7 @@ internal class Lawyer : RoleBase
             }
         });
     }
-    private static void ChangeRole(PlayerControl lawyer)
+    private void ChangeRole(PlayerControl lawyer)
     {
         // Called only in after meeting tasks when target death is impossible to check.
         if (!ShouldChangeRoleAfterTargetDeath.GetBool())

@@ -166,7 +166,7 @@ internal class EvilTracker : RoleBase
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte trackerId = reader.ReadByte();
         byte targetId = reader.ReadByte();
