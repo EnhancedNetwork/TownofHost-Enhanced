@@ -75,7 +75,7 @@ static class ExtendedPlayerControl
 
         if (AmongUsClient.Instance.AmHost)
         {
-            MeetingHud.Instance.CastVote(playerId, suspectIdx);
+            MeetingHud.Instance.CmdCastVote(playerId, suspectIdx);
         }
         else
         {
