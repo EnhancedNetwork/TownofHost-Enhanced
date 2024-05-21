@@ -1,5 +1,4 @@
 using AmongUs.Data;
-using System.Collections.Generic;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
@@ -136,7 +135,7 @@ public static class Camouflage
     }
     public static void CheckCamouflage()
     {
-        if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.IsEnable))) return;
+        if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.HasEnabled))) return;
 
         var oldIsCamouflage = IsCamouflage;
 
@@ -158,7 +157,7 @@ public static class Camouflage
     }
     public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false, bool GameEnd = false)
     {
-        if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.IsEnable))) return;
+        if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.HasEnabled))) return;
         if (target == null) return;
 
         var id = target.PlayerId;
@@ -185,18 +184,22 @@ public static class Camouflage
             }
 
             // if game not end and Doppelganger clone skins
-            if (!GameEnd && Doppelganger.DoppelPresentSkin.ContainsKey(id)) newOutfit = Doppelganger.DoppelPresentSkin[id];
+
+            if (!GameEnd && Doppelganger.DoppelPresentSkin.TryGetValue(id, out var playerOutfit)) newOutfit = playerOutfit;
             else
             {
                 // if game end, set normal name
-                if (GameEnd && Doppelganger.DoppelVictim.ContainsKey(id))
+                if (GameEnd && Doppelganger.DoppelVictim.TryGetValue(id, out var playerName))
                 {
-                    Utils.GetPlayerById(id)?.RpcSetName(Doppelganger.DoppelVictim[id]);
+                    Utils.GetPlayerById(id)?.RpcSetName(playerName);
                 }
 
                 // Set Outfit
                 newOutfit = PlayerSkins[id];
             }
+
+
+
         }
 
         // if the current Outfit is the same, return it

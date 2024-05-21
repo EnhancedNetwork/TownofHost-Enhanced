@@ -5,8 +5,10 @@ namespace TOHE.Modules;
 
 public class NormalGameOptionsSender : GameOptionsSender
 {
-    public override IGameOptions BasedGameOptions =>
-        GameOptionsManager.Instance.CurrentGameOptions;
+    private LogicOptions _logicOptions;
+    public override IGameOptions BasedGameOptions
+        => GameOptionsManager.Instance.CurrentGameOptions;
+
     public override bool IsDirty
     {
         get
@@ -15,7 +17,7 @@ public class NormalGameOptionsSender : GameOptionsSender
             {
                 if (_logicOptions == null || !GameManager.Instance.LogicComponents.Contains(_logicOptions))
                 {
-                    foreach (var glc in GameManager.Instance?.LogicComponents)
+                    foreach (var glc in GameManager.Instance?.LogicComponents.GetFastEnumerator())
                         if (glc.TryCast<LogicOptions>(out var lo))
                             _logicOptions = lo;
                 }
@@ -39,7 +41,6 @@ public class NormalGameOptionsSender : GameOptionsSender
             }
         }
     }
-    private LogicOptions _logicOptions;
 
     public override IGameOptions BuildGameOptions()
         => BasedGameOptions;

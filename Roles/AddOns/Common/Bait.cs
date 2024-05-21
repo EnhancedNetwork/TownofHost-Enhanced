@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using TOHE.Modules;
 using static TOHE.Translator;
 using static TOHE.Options;
@@ -8,7 +7,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Bait
 {
-    private static readonly int Id = 18700;
+    private const int Id = 18700;
 
     public static OptionItem ImpCanBeBait;
     public static OptionItem CrewCanBeBait;
@@ -42,7 +41,7 @@ public static class Bait
     }
     public static void BaitAfterDeathTasks(PlayerControl killer, PlayerControl target)
     {
-        if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith or CustomRoles.KillingMachine) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Oblivious.ObliviousBaitImmune.GetBool()))
+        if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith) || !killer.Is(CustomRoles.KillingMachine) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Oblivious.ObliviousBaitImmune.GetBool()))
         {
             killer.RPCPlayCustomSound("Congrats");
             target.RPCPlayCustomSound("Congrats");

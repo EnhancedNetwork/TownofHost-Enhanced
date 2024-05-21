@@ -1,103 +1,190 @@
-using Hazel;
-using System.Collections.Generic;
+using UnityEngine;
+using static TOHE.Translator;
 using static TOHE.Options;
+using static TOHE.Roles.Core.CustomRoleManager;
+using Hazel;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Amnesiac
+internal class Amnesiac : RoleBase
 {
-    private static readonly int Id = 12700;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 12700;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled = playerIdList.Any();
+    
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
+    //==================================================================\\
 
-    public static OptionItem RememberCooldown;
-    public static OptionItem RefugeeKillCD;
-    public static OptionItem IncompatibleNeutralMode;
-    public static readonly string[] amnesiacIncompatibleNeutralMode =
-    [
-        "Role.Amnesiac",
-        "Role.Pursuer",
-        "Role.Follower",
-        "Role.Maverick",
-        "Role.Imitator",
-    ];
+    private static OptionItem IncompatibleNeutralMode;
+    private static OptionItem ShowArrows;
 
-    private static Dictionary<byte, int> RememberLimit = [];
-
-    public static void SetupCustomOption()
+    private enum AmnesiacIncompatibleNeutralModeSelect
+    {
+        Role_Amnesiac,
+        Role_Pursuer,
+        Role_Follower,
+        Role_Maverick,
+        Role_Imitator,
+    }
+    
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Amnesiac);
-        //    RememberCooldown = FloatOptionItem.Create(Id + 10, "RememberCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac])
-        //        .SetValueFormat(OptionFormat.Seconds);
-        /*   RefugeeKillCD = FloatOptionItem.Create(Id + 11, "RefugeeKillCD", new(0f, 180f, 2.5f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac])
-               .SetValueFormat(OptionFormat.Seconds); */
-        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", amnesiacIncompatibleNeutralMode, 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
+        IncompatibleNeutralMode = StringOptionItem.Create(Id + 10, "IncompatibleNeutralMode", EnumHelper.GetAllNames<AmnesiacIncompatibleNeutralModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
+        ShowArrows = BooleanOptionItem.Create(Id + 11, "ShowArrows", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Amnesiac]);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        RememberLimit = [];
-        IsEnable = false;
+        playerIdList.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        RememberLimit.Add(playerId, 1);
-        IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
+        if (ShowArrows.GetBool())
+        {
+            CheckDeadBodyOthers.Add(CheckDeadBody);
+        }
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-
-    private static void SendRPC(byte playerId)
+    
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRememberLimit, SendOption.Reliable, -1);
+        hud.ReportButton.OverrideText(GetString("RememberButtonText"));
+    }
+    public override Sprite ReportButtonSprite => CustomButton.Get("Amnesiac");
+
+    private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.Write(playerId);
-        writer.Write(RememberLimit[playerId]);
+        writer.Write(add);
+        if (add)
+        {
+            writer.Write(loc.x);
+            writer.Write(loc.y);
+            writer.Write(loc.z);
+        }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    
+    public void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
-        int Limit = reader.ReadInt32();
-
-        if (!RememberLimit.ContainsKey(playerId))
-        {
-            RememberLimit.Add(playerId, Limit);
-        }
+        bool add = reader.ReadBoolean();
+        if (add)
+            LocateArrow.Add(playerId, new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
         else
+            LocateArrow.RemoveAllTarget(playerId);
+    }
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
+    {
+        if (inMeeting) return;
+        foreach (var pc in playerIdList.ToArray())
         {
-            RememberLimit[playerId] = Limit;
+            var player = Utils.GetPlayerById(pc);
+            if (player == null || !player.IsAlive()) continue;
+            LocateArrow.Add(pc, target.transform.position);
+            SendRPC(pc, true, target.transform.position);
         }
     }
-    //public static string GetRememberLimit() => Utils.ColorString(RememberLimit[] >= 1 ? Utils.GetRoleColor(CustomRoles.Amnesiac) : Color.gray, $"({RememberLimit})");
-    public static bool KnowRole(PlayerControl player, PlayerControl target)
-    {
-        if (!playerIdList.Contains(player.PlayerId)) return false; //Add this next time you copy paste
 
-        if (player.Is(CustomRoles.Infectious) && target.Is(CustomRoles.Infectious)) return true;
-        if (player.Is(CustomRoles.Glitch) && target.Is(CustomRoles.Glitch)) return true;
-        if (player.Is(CustomRoles.Wraith) && target.Is(CustomRoles.Wraith)) return true;
-        if (player.Is(CustomRoles.Medusa) && target.Is(CustomRoles.Medusa)) return true;
-        if (player.Is(CustomRoles.Pelican) && target.Is(CustomRoles.Pelican)) return true;
-        if (player.Is(CustomRoles.Refugee) && target.Is(CustomRoles.Refugee)) return true;
-        if (player.Is(CustomRoles.Parasite) && target.Is(CustomRoles.Parasite)) return true;
-        if (player.Is(CustomRoles.SerialKiller) && target.Is(CustomRoles.SerialKiller)) return true;
-        if (player.Is(CustomRoles.Pickpocket) && target.Is(CustomRoles.Pickpocket)) return true;
-        if (player.Is(CustomRoles.Traitor) && target.Is(CustomRoles.Traitor)) return true;
-        if (player.Is(CustomRoles.Virus) && target.Is(CustomRoles.Virus)) return true;
-        if (player.Is(CustomRoles.Spiritcaller) && target.Is(CustomRoles.Spiritcaller)) return true;
-        if (player.Is(CustomRoles.Succubus) && target.Is(CustomRoles.Succubus)) return true;
-        if (player.Is(CustomRoles.Poisoner) && target.Is(CustomRoles.Poisoner)) return true;
-        if (player.Is(CustomRoles.Shroud) && target.Is(CustomRoles.Shroud)) return true;
-        if (player.Is(CustomRoles.Pyromaniac) && target.Is(CustomRoles.Pyromaniac)) return true;
-        if (player.Is(CustomRoles.Refugee) && target.Is(CustomRoles.Refugee)) return true;
-        if (player.Is(CustomRoles.Werewolf) && target.Is(CustomRoles.Werewolf)) return true;
-        //if (player.Is(CustomRoles.Occultist) && target.Is(CustomRoles.Occultist)) return true;
-        if (player.Is(CustomRoles.Refugee) && target.Is(CustomRoleTypes.Impostor)) return true;
-        if (player.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Refugee)) return true;
-        return false;
+    public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    {
+        if (isForMeeting) return string.Empty;
+
+        if (ShowArrows.GetBool())
+        {
+            if (!seer.Is(CustomRoles.Amnesiac)) return "";
+            if (target != null && seer.PlayerId != target.PlayerId) return "";
+            if (GameStates.IsMeeting) return "";
+            return Utils.ColorString(Color.white, LocateArrow.GetArrows(seer));
+        }
+        else return "";
     }
 
+    public override bool OnCheckReportDeadBody(PlayerControl __instance, GameData.PlayerInfo deadBody, PlayerControl killer)
+    {
+        var tar = deadBody.Object;
+        foreach (var apc in playerIdList.ToArray())
+        {
+            LocateArrow.RemoveAllTarget(apc);
+            SendRPC(apc, false);
+        }
+        if (__instance.Is(CustomRoles.Amnesiac))
+        {
+            if (tar.GetCustomRole().IsImpostor() || tar.GetCustomRole().IsMadmate() || tar.Is(CustomRoles.Madmate))
+            {
+                __instance.RpcSetCustomRole(CustomRoles.Refugee);
+                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+            }
+            if (tar.GetCustomRole().IsCrewmate() && !tar.Is(CustomRoles.Madmate))
+            {
+                if (tar.IsAmneCrew())
+                {
+                    __instance.RpcSetCustomRole(tar.GetCustomRole());
+                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
+                    __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                    tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+                    Main.TasklessCrewmate.Add(__instance.PlayerId);
+                }
+                else
+                {
+                    __instance.RpcSetCustomRole(CustomRoles.EngineerTOHE);
+                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
+                    __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                    tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+                    Main.TasklessCrewmate.Add(__instance.PlayerId);
+                }
+            }
+            if (tar.GetCustomRole().IsAmneNK())
+            {
+                __instance.RpcSetCustomRole(tar.GetCustomRole());
+                __instance.GetRoleClass().OnAdd(__instance.PlayerId);
+                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+            }
+            if (tar.GetCustomRole().IsAmneMaverick())
+            {
+                switch (IncompatibleNeutralMode.GetValue())
+                {
+                    case 0: // Amnesiac
+                        __instance.RpcSetCustomRole(CustomRoles.Amnesiac);
+                        __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                        tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+                        break;
+                    case 1: // Pursuer
+                        __instance.RpcSetCustomRole(CustomRoles.Pursuer);
+                        __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                        tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+                        break;
+                    case 2: // Follower
+                        __instance.RpcSetCustomRole(CustomRoles.Follower);
+                        __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                        tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+                        break;
+                    case 3: // Maverick
+                        __instance.RpcSetCustomRole(CustomRoles.Maverick);
+                        __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                        tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+                        break;
+                    case 4: // Imitator..........................................................................kill me
+                        __instance.RpcSetCustomRole(CustomRoles.Imitator);
+                        __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                        tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+                        break;
+                }
+                if (__instance.GetCustomRole() != CustomRoles.Amnesiac) 
+                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
+            }         
+            return false;
+        }
+        return true;
+    }
 }

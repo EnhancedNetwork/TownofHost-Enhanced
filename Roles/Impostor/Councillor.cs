@@ -1,9 +1,8 @@
-﻿using HarmonyLib;
-using Hazel;
+﻿using Hazel;
 using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -11,61 +10,62 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Councillor
+internal class Councillor : RoleBase
 {
-    private static readonly int Id = 1000;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 1000;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Councillor);
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
+    //==================================================================\\
 
     private static OptionItem MurderLimitPerMeeting;
-  //  private static OptionItem MurderLimitPerGame;
+    private static OptionItem MurderLimitPerGame;
     private static OptionItem TryHideMsg;
     private static OptionItem CanMurderMadmate;
     private static OptionItem CanMurderImpostor;
-    public static OptionItem KillCooldown;
-    private static Dictionary<byte, int> MurderLimit = [];
-    // private static Dictionary<byte, int> MurderLimitGame;
+    private static OptionItem KillCooldown;
+    
+    private int MurderLimitMeeting;
 
-    public static void SetupCustomOption()
+
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Councillor);
-            KillCooldown = FloatOptionItem.Create(Id + 15, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
+            KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
                 .SetValueFormat(OptionFormat.Seconds);
-        MurderLimitPerMeeting = IntegerOptionItem.Create(Id + 10, "MurderLimitPerMeeting", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
+        MurderLimitPerMeeting = IntegerOptionItem.Create(Id + 11, "CouncillorMurderLimitPerMeeting", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
             .SetValueFormat(OptionFormat.Times);
-     //   MurderLimitPerGame = IntegerOptionItem.Create(Id + 13, "MurderLimitPerGame", new(1, 99, 1), 2, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
-       //     .SetValueFormat(OptionFormat.Times);
-        CanMurderMadmate = BooleanOptionItem.Create(Id + 12, "CouncillorCanMurderMadmate", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
-        CanMurderImpostor = BooleanOptionItem.Create(Id + 16, "CouncillorCanMurderImpostor", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
-        TryHideMsg = BooleanOptionItem.Create(Id + 11, "CouncillorTryHideMsg", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
+        MurderLimitPerGame = IntegerOptionItem.Create(Id + 12, "CouncillorMurderLimitPerGame", new(1, 15, 1), 4, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
+            .SetValueFormat(OptionFormat.Times);
+        CanMurderMadmate = BooleanOptionItem.Create(Id + 13, "CouncillorCanMurderMadmate", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
+        CanMurderImpostor = BooleanOptionItem.Create(Id + 14, "CouncillorCanMurderImpostor", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
+        TryHideMsg = BooleanOptionItem.Create(Id + 15, "CouncillorTryHideMsg", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
             .SetColor(Color.green);
     }
-    public static void Init()
+    public override void Add(byte playerId)
     {
-        playerIdList = [];
-        MurderLimit = [];
-        IsEnable = false;
+        MurderLimitMeeting = MurderLimitPerMeeting.GetInt();
+        AbilityLimit = MurderLimitPerGame.GetInt();
     }
-    public static void Add(byte playerId)
+    public override void AfterMeetingTasks()
     {
-        playerIdList.Add(playerId);
-        MurderLimit.Add(playerId, MurderLimitPerMeeting.GetInt());
-        IsEnable = true;
+        MurderLimitMeeting = MurderLimitPerMeeting.GetInt();
     }
-    public static void AfterMeetingTasks()
-    {
-        foreach (byte playerId in MurderLimit.Keys)
-        {
-            MurderLimit[playerId] = MurderLimitPerMeeting.GetInt();
-        }
-    }
-    public static bool MurderMsg(PlayerControl pc, string msg, bool isUI = false)
+
+    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
+        => IsForMeeting && seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
+
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
+        => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
+
+    public bool MurderMsg(string msg, bool isUI = false)
     {
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
-        if (!pc.Is(CustomRoles.Councillor)) return false;
+        if (!GameStates.IsMeeting || _Player == null || GameStates.IsExilling) return false;
+        var pc = _Player;
 
         int operate = 0; // 1:ID 2:猜测
         msg = msg.ToLower().TrimStart().TrimEnd();
@@ -106,14 +106,19 @@ public static class Councillor
             {
                 Logger.Info($"{pc.GetNameWithRole()} 审判了 {target.GetNameWithRole()}", "Councillor");
                 bool CouncillorSuicide = true;
-                if (!MurderLimit.ContainsKey(pc.PlayerId)) MurderLimit[pc.PlayerId] = MurderLimitPerMeeting.GetInt();
-                if (MurderLimit[pc.PlayerId] < 1)
+                if (MurderLimitMeeting <= 0)
                 {
-                    if (!isUI) Utils.SendMessage(GetString("CouncillorMurderMax"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("CouncillorMurderMax"));
+                    if (!isUI) Utils.SendMessage(GetString("CouncillorMurderMaxMeeting"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("CouncillorMurderMaxMeeting"));
                     return true;
                 }
-                if (Jailer.JailerTarget.ContainsValue(target.PlayerId))
+                else if (AbilityLimit <= 0)
+                {
+                    if (!isUI) Utils.SendMessage(GetString("CouncillorMurderMaxGame"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("CouncillorMurderMaxGame"));
+                    return true;
+                }
+                if (Jailer.IsTarget(target.PlayerId))
                 {
                     if (!isUI) Utils.SendMessage(GetString("CanNotTrialJailed"), pc.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
                     else pc.ShowPopUp(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")) + "\n" + GetString("CanNotTrialJailed"));
@@ -121,8 +126,8 @@ public static class Councillor
                 }
                 if (pc.PlayerId == target.PlayerId)
                 {
-                    if (!isUI) Utils.SendMessage(GetString("LaughToWhoMurderSelf"), pc.PlayerId, Utils.ColorString(Color.cyan, GetString("MessageFromKPD")));
-                    else pc.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("LaughToWhoMurderSelf"));
+                    if (!isUI) Utils.SendMessage(GetString("Councillor_LaughToWhoMurderSelf"), pc.PlayerId, Utils.ColorString(Color.cyan, GetString("MessageFromKPD")));
+                    else pc.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("Councillor_LaughToWhoMurderSelf"));
                     CouncillorSuicide = true;
                 }
                 if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
@@ -145,13 +150,12 @@ public static class Councillor
                 else if (target.Is(CustomRoles.Madmate) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
                 else if (target.Is(CustomRoles.Parasite) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
                 else if (target.Is(CustomRoles.Refugee) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
-                else if (target.Is(CustomRoles.Convict) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
                 else if (target.Is(CustomRoles.Crewpostor) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
                 else if (target.Is(CustomRoles.SuperStar)) CouncillorSuicide = true;
                 else if (target.Is(CustomRoles.Pestilence)) CouncillorSuicide = true;
                 else if (target.Is(CustomRoles.Marshall) && target.AllTasksCompleted()) CouncillorSuicide = true;
                 else if (target.Is(CustomRoles.Snitch) && target.AllTasksCompleted()) CouncillorSuicide = true;
-                else if (target.Is(CustomRoles.Guardian) && target.AllTasksCompleted()) CouncillorSuicide = true;
+                else if (Guardian.CannotBeKilled(target)) CouncillorSuicide = true;
                 else if (target.Is(CustomRoles.Merchant) && Merchant.IsBribedKiller(pc, target)) CouncillorSuicide = true;
                 else if ((target.GetCustomRole().IsImpostor()) && CanMurderImpostor.GetBool()) CouncillorSuicide = false;
                 else if (target.GetCustomRole().IsCrewmate()) CouncillorSuicide = false;
@@ -163,7 +167,9 @@ public static class Councillor
 
                 string Name = dp.GetRealName();
 
-                MurderLimit[pc.PlayerId]--;
+                MurderLimitMeeting--;
+                AbilityLimit--;
+                SendSkillRPC();
 
                 if (!GameStates.IsProceeding)
                 _ = new LateTask(() =>
@@ -173,11 +179,11 @@ public static class Councillor
                     GuessManager.RpcGuesserMurderPlayer(dp);
 
                     //死者检查
-                    Utils.AfterPlayerDeathTasks(dp, true);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
                     Utils.NotifyRoles(isForMeeting: false, NoCache: true);
 
-                    _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MurderKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("MurderKillTitle")), true); }, 0.6f, "Guess Msg");
+                    _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("Councillor_MurderKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("Councillor_MurderKillTitle")), true); }, 0.6f, "Guess Msg");
 
                 }, 0.2f, "Murder Kill");
             }
@@ -206,7 +212,7 @@ public static class Councillor
             //byte color = GetColorFromMsg(msg);
             //好吧我不知道怎么取某位玩家的颜色，等会了的时候再来把这里补上
             id = byte.MaxValue;
-            error = GetString("MurderHelp");
+            error = GetString("Councillor_MurderHelp");
             return false;
         }
 
@@ -214,19 +220,16 @@ public static class Councillor
         PlayerControl target = Utils.GetPlayerById(id);
         if (target == null || target.Data.IsDead)
         {
-            error = GetString("MurderNull");
+            error = GetString("Councillor_MurderNull");
             return false;
         }
 
         error = string.Empty;
         return true;
     }
-    public static void SetKillCooldown(byte id)
-        {
-            Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-        }
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
+    private static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
         for (int i = 0; i < comList.Length; i++)
@@ -249,22 +252,22 @@ public static class Councillor
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MeetingKill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CouncillorJudge, SendOption.Reliable, -1);
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
         int PlayerId = reader.ReadByte();
-        MurderMsg(pc, $"/tl {PlayerId}", true);
+        if (pc.GetRoleClass() is Councillor cl) cl.MurderMsg($"/tl {PlayerId}", true);
     }
 
-    private static void CouncillorOnClick(byte playerId, MeetingHud __instance)
+    private static void CouncillorOnClick(byte playerId/*, MeetingHud __instance*/)
     {
         Logger.Msg($"Click: ID {playerId}", "Councillor UI");
         var pc = Utils.GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
-        if (AmongUsClient.Instance.AmHost) MurderMsg(PlayerControl.LocalPlayer, $"/tl {playerId}", true);
+        if (AmongUsClient.Instance.AmHost && pc.GetRoleClass() is Councillor cl) cl.MurderMsg($"/tl {playerId}", true);
         else SendRPC(playerId);
     }
 
@@ -277,7 +280,7 @@ public static class Councillor
                 CreateCouncillorButton(__instance);
         }
     }
-    public static void CreateCouncillorButton(MeetingHud __instance)
+    private static void CreateCouncillorButton(MeetingHud __instance)
     {
         foreach (var pva in __instance.playerStates)
         {
@@ -291,7 +294,14 @@ public static class Councillor
             renderer.sprite = CustomButton.Get("MeetingKillButton");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => CouncillorOnClick(pva.TargetPlayerId, __instance)));
+            button.OnClick.AddListener((Action)(() => CouncillorOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
+    }
+
+    public override string GetProgressText(byte playerId, bool coooms)
+    {
+        var player = Utils.GetPlayerById(playerId);
+        if (player == null) return "Invalid";
+        return Utils.ColorString(AbilityLimit <= 0 ? Color.gray : Utils.GetRoleColor(CustomRoles.Councillor), $"({AbilityLimit})");
     }
 }

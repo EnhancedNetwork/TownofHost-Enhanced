@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.IO;
 using System.Reflection;
 using static TOHE.Translator;
-using System.Linq;
 using AmongUs.Data;
 using IEnumerator = System.Collections.IEnumerator;
 using UnityEngine.Networking;
@@ -136,6 +134,7 @@ public class dbConnect
                         code: userData["friendcode"].ToString(),
                         color: userData["color"].ToString(),
                         tag: ToAutoTranslate(userData["overhead_tag"]),
+                        userType: userData["type"].ToString(),
                         isUp: userData["isUP"].GetInt32() == 1,
                         isDev: userData["isDev"].GetInt32() == 1,
                         deBug: userData["debug"].GetInt32() == 1,

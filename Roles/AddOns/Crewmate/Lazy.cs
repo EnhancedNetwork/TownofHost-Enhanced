@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Lazy
 {
-    private static readonly int Id = 19300;
+    private const int Id = 19300;
 
     private static OptionItem TasklessCrewCanBeLazy;
     private static OptionItem TaskBasedCrewCanBeLazy;
@@ -21,7 +21,7 @@ public class Lazy
     public static bool CheckConflicts(PlayerControl player)
     {
         if (player.Is(CustomRoles.Ghoul)
-            || player.Is(CustomRoles.Needy))
+            || player.Is(CustomRoles.LazyGuy))
             return false;
 
         if (player.GetCustomRole().IsNeutral() 

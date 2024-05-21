@@ -1,9 +1,31 @@
 ﻿namespace TOHE.Roles.Impostor;
 
-class Bard
+internal class Bard: RoleBase
 {
-    public static void OnExileWrapUp(PlayerControl Bard, GameData.PlayerInfo exiled)
+    //===========================SETUP================================\\
+    public static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
+    //==================================================================\\
+    public override void Init()
     {
-        if (exiled != null) Main.AllPlayerKillCooldown[Bard.PlayerId] /= 2;
+        PlayerIds.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        PlayerIds.Add(playerId);
+    }
+
+    public static bool CheckSpawn()
+    {
+        var Rand = IRandom.Instance;
+        return Rand.Next(0, 100) < Arrogance.BardChance.GetInt();
+    }
+
+    public override void OnPlayerExiled(PlayerControl bard, GameData.PlayerInfo exiled)
+    {
+        if (exiled != null) Main.AllPlayerKillCooldown[bard.PlayerId] /= 2;
     }
 }

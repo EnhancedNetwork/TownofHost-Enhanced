@@ -1,8 +1,5 @@
-using HarmonyLib;
 using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Patches;
@@ -85,10 +82,6 @@ internal class ControllerManagerUpdatePatch
                     foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed).ToArray())
                     {
                         addDes.Add(GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
-                    }
-                    if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                    {
-                        addDes.Add(GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
                     }
 
                     addonIndex++;
@@ -194,7 +187,7 @@ internal class ControllerManagerUpdatePatch
             if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !HudManager.Instance.Chat.IsOpenOrOpening)
             {
                 var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-                if (invalidColor.Length > 0)
+                if (invalidColor.Any())
                 {
                     GameStartManager.Instance.ResetStartState(); //Hope this works
                     Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
@@ -245,8 +238,10 @@ internal class ControllerManagerUpdatePatch
             {
                 PlayerControl.LocalPlayer.Data.IsDead = true;
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason = PlayerState.DeathReason.etc;
+                PlayerControl.LocalPlayer.SetRealKiller(PlayerControl.LocalPlayer);
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
                 PlayerControl.LocalPlayer.RpcExileV2();
+                MurderPlayerPatch.AfterPlayerDeathTasks(PlayerControl.LocalPlayer, PlayerControl.LocalPlayer, GameStates.IsMeeting);
 
                 Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
             }
