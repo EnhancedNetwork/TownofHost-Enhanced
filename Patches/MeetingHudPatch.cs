@@ -607,6 +607,13 @@ class CastVotePatch
                 return false;
             }
 
+            if (!voter.GetRoleClass().CheckVote(voter, target))
+            {
+                Logger.Info($"Canceling vote for {voter.GetRealName()} because of {voter.GetCustomRole()}", "CastVotePatch..RoleBase.CheckVote");
+                __instance.RpcClearVote(voter.GetClientId());
+                return false;
+            }
+
             switch (voter.GetCustomRole())
             {
                 case CustomRoles.Dictator:
@@ -622,13 +629,6 @@ class CastVotePatch
                         __instance.RpcClearVote(voter.GetClientId());
                         return false;
                     } //patch here so checkend is not triggered
-                    break;
-                case CustomRoles.Keeper:
-                    if (!Keeper.OnVotes(voter, target))
-                    {
-                        __instance.RpcClearVote(voter.GetClientId());
-                        return false;
-                    }
                     break;
             }
         }

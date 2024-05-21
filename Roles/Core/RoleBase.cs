@@ -319,6 +319,13 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)
     { }
+
+    /// <summary>
+    /// If role wants to return the vote to the player
+    /// </summary>
+    public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter != null && target != null;
+
+
     /// <summary>
     /// When need hide vote
     /// </summary>
