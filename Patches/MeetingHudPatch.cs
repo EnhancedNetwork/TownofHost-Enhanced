@@ -607,6 +607,7 @@ class CastVotePatch
                 return false;
             }
 
+
             if (!voter.GetRoleClass().CheckVote(voter, target))
             {
                 Logger.Info($"Canceling vote for {voter.GetRealName()} because of {voter.GetCustomRole()}", "CastVotePatch..RoleBase.CheckVote");

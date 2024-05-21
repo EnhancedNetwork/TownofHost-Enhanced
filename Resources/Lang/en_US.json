@@ -2882,7 +2882,7 @@
   "CleanserTitle": "CLEANSER",
   "CleanserRemoveSelf": "You can not cleanse yourself",
   "CleanserCantRemove": "Oops! the player can not be cleansed.",
-  "CleanserRemovedRole": "<b>{0}</b> has been cleansed. All their Addons will be removed after the meeting.",
+  "CleanserRemovedRole": "<b>{0}</b> has been cleansed. All their Addons will be removed after the meeting.\n\nYour vote has been returned and you can vote for someone.",
   "LostAddonByCleanser": "All your Addons were removed by the cleanser",
 
   "MaxProtections": "Max protections",

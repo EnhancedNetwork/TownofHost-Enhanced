@@ -56,7 +56,7 @@ internal class Cleanser : RoleBase
         if (!voter.Is(CustomRoles.Cleanser)) return true;
         if (DidVote) return true;
         DidVote = true;
-        if (AbilityLimit >= CleanserUsesOpt.GetInt()) return true;
+        if (AbilityLimit < 1) return true;
         if (target.PlayerId == voter.PlayerId)
         {
             Utils.SendMessage(GetString("CleanserRemoveSelf"), voter.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
