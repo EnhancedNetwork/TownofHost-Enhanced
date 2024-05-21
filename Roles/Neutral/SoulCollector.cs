@@ -95,7 +95,7 @@ internal class SoulCollector : RoleBase
         SoulCollectorTarget.TryAdd(voter.PlayerId, target.PlayerId);
         Logger.Info($"{voter.GetNameWithRole()} predicted the death of {target.GetNameWithRole()}", "SoulCollector");
         Utils.SendMessage(string.Format(GetString("SoulCollectorTarget"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
-        SendMessage(ColorString(GetRoleColor(CustomRoles.SoulCollector), string.Format(GetString("VoteAbilityUsed"), CustomRoles.SoulCollector)), voter.PlayerId, title: GetString("VoteHasReturned"));
+        SendMessage(GetString("VoteHasReturned"), voter.PlayerId, title: ColorString(GetRoleColor(CustomRoles.SoulCollector), string.Format(GetString("VoteAbilityUsed"), GetString("SoulCollector"))));
         SendRPC(voter.PlayerId);
         return false;
     }

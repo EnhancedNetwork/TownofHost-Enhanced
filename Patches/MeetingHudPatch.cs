@@ -610,8 +610,15 @@ class CastVotePatch
 
             if (!voter.GetRoleClass().CheckVote(voter, target))
             {
-                Logger.Info($"Canceling vote for {voter.GetRealName()} because of {voter.GetCustomRole()}", "CastVotePatch..RoleBase.CheckVote");
+                Logger.Info($"Canceling {voter.GetRealName()}'s because of {voter.GetCustomRole()}", "CastVotePatch..RoleBase.CheckVote");
                 __instance.RpcClearVote(voter.GetClientId());
+                    if (target != null)
+                    {
+                    // Attempts to set thumbsdown color to the same as playerrole to signify player ability used on (only for modded client)
+                        PlayerVoteArea pva = MeetingHud.Instance.playerStates.FirstOrDefault(pva => pva.TargetPlayerId == target.PlayerId);
+                        Color color = Utils.GetRoleColor(voter.GetCustomRole()).ShadeColor(0.5f);
+                        pva.ThumbsDown.set_color_Injected(ref color);
+                    }
                 return false;
             }
 
