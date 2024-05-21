@@ -178,12 +178,8 @@ internal class FortuneTeller : RoleBase
         }
 
         SendMessage(GetString("FortuneTellerCheck") + "\n" + msg + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
-        SendMessage(ColorString(GetRoleColor(CustomRoles.FortuneTeller), string.Format(GetString("VoteAbilityUsed"), CustomRoles.FortuneTeller.ToString())), player.PlayerId, title: GetString("VoteHasReturned"));
+        SendMessage(ColorString(GetRoleColor(CustomRoles.FortuneTeller), string.Format(GetString("VoteAbilityUsed"), CustomRoles.FortuneTeller)), player.PlayerId, title: GetString("VoteHasReturned"));
         return false;
-    }
-    public override void OnVote(PlayerControl player, PlayerControl target)
-    {
-        
     }
     public override string GetProgressText(byte playerId, bool comms)
     {
