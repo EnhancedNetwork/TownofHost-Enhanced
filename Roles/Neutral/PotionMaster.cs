@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -52,7 +53,7 @@ internal class PotionMaster : RoleBase
     private void SendRPC(byte playerId, byte targetId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.PotionMaster);
+        writer.WriteNetObject(_Player);
         writer.Write(playerId);
         writer.Write(AbilityLimit);
         writer.Write(targetId);

@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
@@ -72,10 +73,10 @@ internal class Romantic : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    private static void SendRPC(byte playerId)
+    private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Romantic);
+        writer.WriteNetObject(_Player);
         writer.Write(playerId);
         writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : 1);
         writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
@@ -256,9 +257,9 @@ internal class Romantic : RoleBase
                 {
                     VengefulTargetId = killer.PlayerId;
 
-                    VengefulRomantic.SendRPC(pc.PlayerId);
                     pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
                     pc.GetRoleClass().OnAdd(pc.PlayerId);
+                    if (pc.GetRoleClass() is VengefulRomantic VR) VR.SendRPC(pc.PlayerId);
                     Logger.Info($"Vengeful romantic target: {killer.GetRealName().RemoveHtmlTags()}, [{VengefulTargetId}]", "Vengeful Romantic");
                 }
                 Utils.NotifyRoles(ForceLoop: true);
@@ -319,10 +320,10 @@ internal class VengefulRomantic : RoleBase
         if (player == null) return null;
         return Utils.ColorString(hasKilledKiller ? Color.green : Utils.GetRoleColor(CustomRoles.VengefulRomantic), $"<color=#777777>-</color> {((hasKilledKiller) ? "♥" : "♡")}");
     }
-    public static void SendRPC(byte playerId)
+    public void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.VengefulRomantic); //SyncVengefulRomanticTarget
+        writer.WriteNetObject(_Player); //SyncVengefulRomanticTarget
         writer.Write(playerId);
         //writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : MaxBetTimes);
         writer.Write(VengefulTarget.TryGetValue(playerId, out var player) ? player : byte.MaxValue);

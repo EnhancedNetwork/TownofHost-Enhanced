@@ -3,6 +3,7 @@ using Hazel;
 using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.Core;
+using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 internal class Agitater : RoleBase
@@ -194,10 +195,10 @@ internal class Agitater : RoleBase
         Logger.Msg($"{player.GetNameWithRole()} passed bomb to {target.GetNameWithRole()}", "Agitater Pass");
     }
 
-    public static void SendRPC(byte newbomb, byte oldbomb)
+    public void SendRPC(byte newbomb, byte oldbomb)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Agitater);
+        writer.WriteNetObject(_Player);
         writer.Write(newbomb);
         writer.Write(oldbomb);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

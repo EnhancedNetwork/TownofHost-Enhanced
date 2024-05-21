@@ -1,4 +1,5 @@
 using Hazel;
+using InnerNet;
 using System;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
@@ -64,10 +65,10 @@ internal class Mini : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void SendRPC()
+    public void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Mini);
+        writer.WriteNetObject(_Player);
         writer.Write(Age);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -87,7 +88,7 @@ internal class Mini : RoleBase
         }
         return true;
     }
-    public static void OnFixedUpdates(PlayerControl player)
+    public void OnFixedUpdates(PlayerControl player)
     {
         if (!GameStates.IsInGame) return;
         if (Age >= 18) return;

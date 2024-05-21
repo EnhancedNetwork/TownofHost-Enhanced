@@ -55,7 +55,7 @@ internal class Chameleon : RoleBase
     {
         if (isLimit)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, SendOption.Reliable, -1);
             writer.Write(pc.PlayerId);
             writer.Write(isLimit);
             writer.Write(AbilityLimit);
@@ -63,7 +63,7 @@ internal class Chameleon : RoleBase
         }
         else 
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, SendOption.Reliable, pc.GetClientId());
             writer.Write(pc.PlayerId);
             writer.Write(isLimit);
             writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
@@ -71,14 +71,14 @@ internal class Chameleon : RoleBase
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public void ReceiveRPC_Custom(MessageReader reader)
+    public static void ReceiveRPC_Custom(MessageReader reader)
     {
         byte pid = reader.ReadByte();
         bool isLimit = reader.ReadBoolean();
         if (isLimit)
         {
             float limit = reader.ReadSingle();
-            AbilityLimit = limit;
+            Main.PlayerStates[pid].RoleClass.AbilityLimit = limit;
         }
         else 
         {

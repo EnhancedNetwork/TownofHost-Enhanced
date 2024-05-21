@@ -61,17 +61,17 @@ internal class Kamikaze : RoleBase
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         var checkMurder = reader.ReadBoolean();
         var kamiId = reader.ReadByte();
         if (checkMurder)
         {
             var targetId = reader.ReadByte();
-            int Limit = reader.ReadInt32();
+            float Limit = reader.ReadSingle();
             if (!KamikazedList.ContainsKey(kamiId)) KamikazedList[kamiId] = [];
             KamikazedList[kamiId].Add(targetId);
-            AbilityLimit = Limit;
+            Main.PlayerStates[kamiId].RoleClass.AbilityLimit = Limit;
         }
         else KamikazedList.Remove(kamiId);
     }

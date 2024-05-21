@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
@@ -34,7 +35,7 @@ internal class Collector : RoleBase
     private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Collector);
+        writer.WriteNetObject(_Player);
         writer.Write(playerId);
         writer.Write(CollectVote);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
