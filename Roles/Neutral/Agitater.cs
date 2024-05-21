@@ -55,7 +55,7 @@ internal class Agitater : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
+        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
