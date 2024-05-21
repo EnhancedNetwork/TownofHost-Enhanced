@@ -309,6 +309,12 @@ public abstract class RoleBase
     public virtual void OnCoEndGame()
     { }
 
+
+    /// <summary>
+    /// If role wants to return the vote to the player during meeting. Can also work to check any abilities during meeting.
+    /// </summary>
+    public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter != null && target != null;
+
     /// <summary>
     /// A check for any role abilites of the player which voted, when the vote hasn't been canceled by any other means.
     /// </summary>
@@ -320,10 +326,6 @@ public abstract class RoleBase
     public virtual void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)
     { }
 
-    /// <summary>
-    /// If role wants to return the vote to the player during meeting. Can also work to check any abilities during meeting.
-    /// </summary>
-    public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter != null && target != null;
 
 
     /// <summary>
