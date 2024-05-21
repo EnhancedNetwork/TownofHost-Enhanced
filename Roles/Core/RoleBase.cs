@@ -310,12 +310,12 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// A check for any abilities that should happen at the end of the meeting as the person who voted.
+    /// A check for any role abilites of the player which voted, when the vote hasn't been canceled by any other means.
     /// </summary>
     public virtual void OnVote(PlayerControl votePlayer, PlayerControl voteTarget)
     { }
     /// <summary>
-    /// A check for any abilities that should happen at the end of the meeting as the person who got voted.
+    /// A check for any role abilites of the player that was voted, when the vote hasn't been canceled by any other means.
     /// </summary>
     public virtual void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)
     { }
