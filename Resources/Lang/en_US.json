@@ -1440,6 +1440,8 @@
   "MayorHideVote": "Hide additional vote(s)",
   "HideJesterVote": "Hide Jester's vote",
   "MeetingsNeededForWin": "Meetings needed to win",
+  "CannotVoteWhenDead": "Cannot cast a vote while dead",
+  "VoteDead":  "Cannot vote a dead player",
   "ExecutionerCanTargetImpostor": "Can Target <color=#ff1919>Impostors</color>",
   "ExecutionerCanTargetNeutralKiller": "Can Target <color=#7f8c8d>Neutral</color> <color=#ff1919>Killing</color>",
   "ExecutionerChangeRolesAfterTargetKilled": "When Target Dies, <color=#c0c0c0>Executioner</color> becomes",

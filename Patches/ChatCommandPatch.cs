@@ -2278,6 +2278,32 @@ internal class ChatCommands
                 player.RpcTeleport(new Vector2(-0.2f, 1.3f));
                 break;
 
+            case "/vote":
+                subArgs = args.Length != 2 ? "" : args[1];
+                if (subArgs == "" || !int.TryParse(subArgs, out int arg))
+                    break;
+                var plr = Utils.GetPlayerById(arg);
+                if (plr == null || !plr.IsAlive())
+                {
+                    Utils.SendMessage(GetString("VoteDead"), player.PlayerId);
+                    break;
+                }
+                if (GameStates.IsLobby)
+                {
+                    Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
+                    break;
+                }
+                if(!player.IsAlive())
+                {
+                    Utils.SendMessage(GetString("CannotVoteWhenDead"), player.PlayerId);
+                    break;
+                }
+                if (GameStates.IsMeeting)
+                {
+                    ExtendedPlayerControl.RPCCastVote(player.PlayerId, (byte)arg);
+                }
+                break;
+
             case "/say":
             case "/s":
                 if (player.FriendCode.GetDevUser().IsDev)
