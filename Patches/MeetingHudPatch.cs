@@ -610,7 +610,7 @@ class CastVotePatch
 
             if (!voter.GetRoleClass().CheckVote(voter, target))
             {
-                Logger.Info($"Canceling {voter.GetRealName()}'s because of {voter.GetCustomRole()}", "CastVotePatch..RoleBase.CheckVote");
+                Logger.Info($"Canceling {voter.GetRealName()}'s vote because of {voter.GetCustomRole()}", "CastVotePatch..RoleBase.CheckVote");
                 __instance.RpcClearVote(voter.GetClientId());
                     if (target != null)
                     {
