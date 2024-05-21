@@ -348,7 +348,43 @@ internal class ChatCommands
                         Utils.SendMessage(GetString("Remaining.ImpostorCount") + impnum + "\n\r" + GetString("Remaining.NeutralCount") + neutralnum, PlayerControl.LocalPlayer.PlayerId);
                     }
                     break;
+                case "/vote":
+                    canceled = true;
+                    subArgs = args.Length != 2 ? "" : args[1];
+                    if (subArgs == "" || !int.TryParse(subArgs, out int arg))
+                        break;
+                    var plr = Utils.GetPlayerById(arg);
 
+                    if (GameStates.IsLobby)
+                    {
+                        Utils.SendMessage(GetString("Message.CanNotUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+
+                    if (Options.ShouldVoteCmdsSpamChat.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                    if (!Options.EnableVoteCommand.GetBool())
+                    {
+                        Utils.SendMessage(GetString("VoteDisabled"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    if (arg != 253) // skip
+                    {
+                        if (plr == null || !plr.IsAlive())
+                        {
+                            Utils.SendMessage(GetString("VoteDead"), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }
+                    }
+                    if (!PlayerControl.LocalPlayer.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("CannotVoteWhenDead"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    if (GameStates.IsMeeting)
+                    {
+                        ExtendedPlayerControl.RPCCastVote(PlayerControl.LocalPlayer.PlayerId, (byte)arg);
+                    }
+                    break;
 
                 case "/d":
                 case "/death":

@@ -236,6 +236,7 @@ public static class Utils
     {
         Main.PlayerStates[target.PlayerId].deathReason = reason;
     }
+    public static void RPCCastVote(this PlayerControl voter, PlayerControl voteTarget) => ExtendedPlayerControl.RPCCastVote(voter.PlayerId, voteTarget.PlayerId);
     
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {

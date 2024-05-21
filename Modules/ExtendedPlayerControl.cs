@@ -65,7 +65,7 @@ static class ExtendedPlayerControl
             return null;
         }
     }
-    public static void RPCCastVote(byte playerId, byte suspectIdx)
+    public static void RPCCastVote(this byte playerId, byte suspectIdx)
     {
         if(!GameStates.IsMeeting)
         {
