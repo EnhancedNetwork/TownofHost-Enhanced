@@ -73,7 +73,7 @@ internal class BountyHunter : RoleBase
 
     private static void SendRPC(byte bountyId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBountyTarget, SendOption.Reliable, -1);
         writer.Write(bountyId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
