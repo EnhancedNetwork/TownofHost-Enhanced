@@ -2,6 +2,7 @@ using Hazel;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 internal class SoulCollector : RoleBase
@@ -75,28 +76,30 @@ internal class SoulCollector : RoleBase
         else
             SoulCollectorTarget.Add(SoulCollectorId, byte.MaxValue);
     }
-
-    public override void OnVote(PlayerControl voter, PlayerControl target)
+    public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
-        if (DidVote.TryGetValue(voter.PlayerId, out var voted) && voted) return;
-        if (SoulCollectorTarget[voter.PlayerId] != byte.MaxValue) return;
+        if (DidVote.TryGetValue(voter.PlayerId, out var voted) && voted) return true;
+        if (SoulCollectorTarget[voter.PlayerId] != byte.MaxValue) return true;
 
         DidVote[voter.PlayerId] = true;
-        
+
         if (!CollectOwnSoulOpt.GetBool() && voter.PlayerId == target.PlayerId)
         {
             Utils.SendMessage(GetString("SoulCollectorSelfVote"), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
             Logger.Info($"{voter.GetNameWithRole()} self vote not allowed", "SoulCollector");
             SoulCollectorTarget[voter.PlayerId] = byte.MaxValue;
-            return;
+            return true;
         }
 
         SoulCollectorTarget.Remove(voter.PlayerId);
         SoulCollectorTarget.TryAdd(voter.PlayerId, target.PlayerId);
         Logger.Info($"{voter.GetNameWithRole()} predicted the death of {target.GetNameWithRole()}", "SoulCollector");
         Utils.SendMessage(string.Format(GetString("SoulCollectorTarget"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
+        SendMessage(ColorString(GetRoleColor(CustomRoles.SoulCollector), string.Format(GetString("VoteAbilityUsed"), CustomRoles.SoulCollector)), voter.PlayerId, title: GetString("VoteHasReturned"));
         SendRPC(voter.PlayerId);
+        return false;
     }
+
 
     public override void OnReportDeadBody(PlayerControl ryuak, PlayerControl iscute)
     {

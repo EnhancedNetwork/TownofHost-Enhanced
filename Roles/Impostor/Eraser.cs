@@ -42,15 +42,15 @@ internal class Eraser : RoleBase
 
     public override bool HideVote(PlayerVoteArea votedPlayer)
         => CheckForEndVotingPatch.CheckRole(votedPlayer.TargetPlayerId, CustomRoles.Eraser) && HideVoteOpt.GetBool() && TempEraseLimit <= 0;
-
-    public override void OnVote(PlayerControl player, PlayerControl target)
+    public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
-        if (!HasEnabled) return;
-        if (player == null || target == null) return;
-        if (target.Is(CustomRoles.Eraser)) return;
-        if (AbilityLimit <= 0) return;
 
-        if (didVote.Contains(player.PlayerId)) return;
+        if (!HasEnabled) return true;
+        if (player == null || target == null) return true;
+        if (target.Is(CustomRoles.Eraser)) return true;
+        if (AbilityLimit <= 0) return true;
+
+        if (didVote.Contains(player.PlayerId)) return true;
         didVote.Add(player.PlayerId);
 
         Logger.Info($"{player.GetCustomRole()} votes for {target.GetCustomRole()}", "Vote Eraser");
@@ -58,14 +58,14 @@ internal class Eraser : RoleBase
         if (target.PlayerId == player.PlayerId)
         {
             Utils.SendMessage(GetString("EraserEraseSelf"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
-            return;
+            return true;
         }
 
         var targetRole = target.GetCustomRole();
         if (targetRole.IsTasklessCrewmate() || targetRole.IsNeutral() || Main.TasklessCrewmate.Contains(target.PlayerId) || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
         {
             Utils.SendMessage(string.Format(GetString("EraserEraseBaseImpostorOrNeutralRoleNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
-            return;
+            return true;
         }
 
         AbilityLimit--;
@@ -77,6 +77,7 @@ internal class Eraser : RoleBase
         Utils.SendMessage(string.Format(GetString("EraserEraseNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
 
         Utils.NotifyRoles(SpecifySeer: player);
+        return false;
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {

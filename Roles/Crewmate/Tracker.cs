@@ -28,6 +28,7 @@ internal class Tracker : RoleBase
 
     private static readonly Dictionary<byte, List<byte>> TrackerTarget = [];
     private static readonly Dictionary<byte, float> TempTrackLimit = [];
+    private bool Didvote = false;
 
     public override void SetupCustomOption()
     {
@@ -92,21 +93,25 @@ internal class Tracker : RoleBase
         }
     }
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false) => !(seer == null || target == null) && TrackerTarget.ContainsKey(seer.PlayerId) && TrackerTarget[seer.PlayerId].Contains(target.PlayerId) ? Utils.ColorString(seer.GetRoleColor(), "◀") : "";
-
-    public override void OnVote(PlayerControl player, PlayerControl target)
+    public override void AfterMeetingTasks() => Didvote = false;
+    public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
-        if (player == null || target == null) return;
-        if (AbilityLimit < 1) return;
-        if (player.PlayerId == target.PlayerId) return;
-        if (TrackerTarget[player.PlayerId].Contains(target.PlayerId)) return;
+        if (player == null || target == null) return true;
+        if (AbilityLimit < 1 || Didvote) return true;
+        if (player.PlayerId == target.PlayerId) return true;
+        if (TrackerTarget[player.PlayerId].Contains(target.PlayerId)) return true;
 
+        Didvote = true;
         AbilityLimit--;
 
         TrackerTarget[player.PlayerId].Add(target.PlayerId);
         TargetArrow.Add(player.PlayerId, target.PlayerId);
 
-        SendRPC(0,player.PlayerId, target.PlayerId);
+        SendRPC(0, player.PlayerId, target.PlayerId);
+        SendMessage(ColorString(GetRoleColor(CustomRoles.Tracker), string.Format(GetString("VoteAbilityUsed"), CustomRoles.Tracker)), player.PlayerId, title: GetString("VoteHasReturned"));
+        return false;
     }
+
 
     public override void OnReportDeadBody(PlayerControl reported, PlayerControl repoted)
     {

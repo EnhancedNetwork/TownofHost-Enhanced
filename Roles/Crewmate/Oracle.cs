@@ -79,16 +79,16 @@ internal class Oracle : RoleBase
             TempCheckLimit[pid] = tempLimit;
         }
     }
-    public override void OnVote(PlayerControl player, PlayerControl target)
+    public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
-        if (player == null || target == null) return;
-        if (DidVote.Contains(player.PlayerId)) return;
+        if (player == null || target == null) return true;
+        if (DidVote.Contains(player.PlayerId)) return true;
         DidVote.Add(player.PlayerId);
 
         if (AbilityLimit < 1)
         {
             SendMessage(GetString("OracleCheckReachLimit"), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
-            return;
+            return true;
         }
 
         AbilityLimit -= 1;
@@ -97,7 +97,7 @@ internal class Oracle : RoleBase
         if (player.PlayerId == target.PlayerId)
         {
             SendMessage(GetString("OracleCheckSelfMsg") + "\n\n" + string.Format(GetString("OracleCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
-            return;
+            return true;
         }
 
         {
@@ -113,13 +113,13 @@ internal class Oracle : RoleBase
                     else if (target.GetCustomRole().IsNeutralTeamV2() || target.GetCustomSubRoles().Any(role => role.IsNeutralTeamV2())) text = "Neutral";
                     else if (target.GetCustomRole().IsCrewmateTeamV2() && (target.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || (target.GetCustomSubRoles().Count == 0))) text = "Crewmate";
                 }
-                else 
-                { 
+                else
+                {
                     if (target.GetCustomRole().IsImpostor() && !target.Is(CustomRoles.Trickster)) text = "Impostor";
                     else if (target.GetCustomRole().IsNeutral()) text = "Neutral";
                     else text = "Crewmate";
                 }
-               
+
                 if (FailChance.GetInt() > 0)
                 {
                     int random_number_1 = HashRandom.Next(1, 100);
@@ -147,6 +147,8 @@ internal class Oracle : RoleBase
             }
 
             SendMessage(GetString("OracleCheck") + "\n" + msg + "\n\n" + string.Format(GetString("OracleCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+            SendMessage(ColorString(GetRoleColor(CustomRoles.Oracle), string.Format(GetString("VoteAbilityUsed"), CustomRoles.Oracle)), player.PlayerId, title: GetString("VoteHasReturned"));
+            return false;
         }
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)

@@ -51,31 +51,31 @@ internal class Cleanser : RoleBase
         else x = Color.gray;
         return (Utils.ColorString(x, $"({AbilityLimit})"));
     }
-
-    public override void OnVote(PlayerControl voter, PlayerControl target)
+    public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
-        if (!voter.Is(CustomRoles.Cleanser)) return;
-        if (DidVote) return;
+        if (!voter.Is(CustomRoles.Cleanser)) return true;
+        if (DidVote) return true;
         DidVote = true;
-        if (AbilityLimit >= CleanserUsesOpt.GetInt()) return;
+        if (AbilityLimit >= CleanserUsesOpt.GetInt()) return true;
         if (target.PlayerId == voter.PlayerId)
         {
             Utils.SendMessage(GetString("CleanserRemoveSelf"), voter.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
-            return;
+            return true;
         }
         if (target.Is(CustomRoles.Stubborn))
         {
             Utils.SendMessage(GetString("CleanserCantRemove"), voter.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
-            return;
+            return true;
         }
-        if (CleanserTarget[voter.PlayerId] != byte.MaxValue) return;
+        if (CleanserTarget[voter.PlayerId] != byte.MaxValue) return true;
 
         AbilityLimit--;
         CleanserTarget[voter.PlayerId] = target.PlayerId;
         Logger.Info($"{voter.GetNameWithRole()} cleansed {target.GetNameWithRole()}", "Cleansed");
         CleansedPlayers.Add(target.PlayerId);
-        Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser),GetString("CleanserTitle")));
+        Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
         SendSkillRPC();
+        return false;
     }
     public override void OnReportDeadBody(PlayerControl baba, PlayerControl lilelam)
     {
