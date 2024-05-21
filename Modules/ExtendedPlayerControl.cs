@@ -11,6 +11,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static Il2CppMono.Security.X509.X520;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -79,10 +80,12 @@ static class ExtendedPlayerControl
         }
         else
         {
-            MessageWriter msg = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.CastVote, SendOption.Reliable, -1);
-            msg.Write(playerId);
-            msg.Write(suspectIdx);
-            AmongUsClient.Instance.FinishRpcImmediately(msg);
+            var writer = CustomRpcSender.Create("Cast Vote", SendOption.Reliable);
+            writer.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.CastVote)
+                        .Write(playerId)
+                        .Write(suspectIdx)
+                        .EndRpc();
+            writer.SendMessage();
         }
     }
     public static int GetClientId(this PlayerControl player)

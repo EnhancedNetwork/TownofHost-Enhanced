@@ -2283,15 +2283,26 @@ internal class ChatCommands
                 if (subArgs == "" || !int.TryParse(subArgs, out int arg))
                     break;
                 var plr = Utils.GetPlayerById(arg);
-                if (plr == null || !plr.IsAlive())
-                {
-                    Utils.SendMessage(GetString("VoteDead"), player.PlayerId);
-                    break;
-                }
+
                 if (GameStates.IsLobby)
                 {
                     Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
                     break;
+                }
+
+                if (Options.ShouldVoteCmdsSpamChat.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                if (!Options.EnableVoteCommand.GetBool())
+                {
+                    Utils.SendMessage(GetString("VoteDisabled"), player.PlayerId);
+                    break;
+                }
+                if (arg != 253) // skip
+                {
+                    if (plr == null || !plr.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("VoteDead"), player.PlayerId);
+                        break;
+                    }
                 }
                 if(!player.IsAlive())
                 {
