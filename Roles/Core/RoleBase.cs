@@ -310,18 +310,18 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When player vote for target
+    /// A check for any abilities that should happen at the end of the meeting as the person who voted.
     /// </summary>
     public virtual void OnVote(PlayerControl votePlayer, PlayerControl voteTarget)
     { }
     /// <summary>
-    /// When the player was voted
+    /// A check for any abilities that should happen at the end of the meeting as the person who got voted.
     /// </summary>
     public virtual void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)
     { }
 
     /// <summary>
-    /// If role wants to return the vote to the player
+    /// If role wants to return the vote to the player during meeting. Can also work to check any abilities during meeting.
     /// </summary>
     public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter != null && target != null;
 
