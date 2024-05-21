@@ -2326,12 +2326,14 @@ internal class ChatCommands
                     break;
                 }
 
-                if (Options.ShouldVoteCmdsSpamChat.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                
                 if (!Options.EnableVoteCommand.GetBool())
                 {
                     Utils.SendMessage(GetString("VoteDisabled"), player.PlayerId);
                     break;
                 }
+                if (Options.ShouldVoteCmdsSpamChat.GetBool()) ChatManager.SendPreviousMessagesToAll();
+
                 if (arg != 253) // skip
                 {
                     if (plr == null || !plr.IsAlive())
