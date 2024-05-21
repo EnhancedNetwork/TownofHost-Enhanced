@@ -327,12 +327,6 @@ public abstract class RoleBase
     { }
 
 
-
-    /// <summary>
-    /// When need hide vote
-    /// </summary>
-    public virtual bool HideVote(PlayerVoteArea votedPlayer) => false;
-
     /// <summary>
     /// When need add visual votes
     /// </summary>
