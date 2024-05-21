@@ -2314,6 +2314,7 @@ internal class ChatCommands
                 break;
 
             case "/vote":
+                canceled = true;
                 subArgs = args.Length != 2 ? "" : args[1];
                 if (subArgs == "" || !int.TryParse(subArgs, out int arg))
                     break;
