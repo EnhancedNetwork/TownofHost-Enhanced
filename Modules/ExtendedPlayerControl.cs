@@ -80,7 +80,7 @@ static class ExtendedPlayerControl
         else
         {
             var writer = CustomRpcSender.Create("Cast Vote", SendOption.Reliable);
-            writer.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.CastVote)
+            writer.AutoStartRpc(MeetingHud.Instance.NetId, (byte)RpcCalls.CastVote)
                         .Write(playerId)
                         .Write(suspectIdx)
                         .EndRpc();
