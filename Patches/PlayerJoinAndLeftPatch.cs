@@ -160,6 +160,31 @@ public static class OnPlayerJoinedPatch
         return false;
         //When a client disconnects, it is removed from allClients in method amongusclient.removeplayer
     }
+    public static bool HasInvalidFriendCode(string friendcode)
+    {
+        if (string.IsNullOrEmpty(friendcode))
+        {
+            return true;
+        }
+
+        if (friendcode.Length < 7) // #1234 is 5 chars, and its impossible for a friend code to only have 3
+        {
+            return true;
+        }
+
+        if (friendcode.Count(c => c == '#') != 1)
+        {
+            return true;
+        }
+
+        string pattern = @"[\W\d]";
+        if (Regex.IsMatch(friendcode[..friendcode.IndexOf("#")], pattern))
+        {
+            return true;
+        }
+
+        return false;
+    }
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
@@ -186,9 +211,9 @@ public static class OnPlayerJoinedPatch
         }, 2.5f, "OnPlayerJoined Client <=> Client VersionCheck", false);
 
 
-        if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
+        if (AmongUsClient.Instance.AmHost && HasInvalidFriendCode(client.FriendCode) && Options.KickPlayerFriendCodeInvalid.GetBool() && !GameStates.IsLocalGame)
         {
-            if (!Options.TempBanPlayerFriendCodeNotExist.GetBool())
+            if (!Options.TempBanPlayerFriendCodeInvalid.GetBool())
             {
                 AmongUsClient.Instance.KickPlayer(client.Id, false);
                 Logger.SendInGame(string.Format(GetString("Message.KickedByNoFriendCode"), client.PlayerName));

@@ -154,32 +154,6 @@ public static class BanManager
         if (!AmongUsClient.Instance.AmHost || !Options.ApplyBanList.GetBool()) return;
 
         string friendcode = player?.FriendCode;
-        if (friendcode.Length < 7) // #1234 is 5 chars, and its impossible for a friend code to only have 3
-        {
-            AmongUsClient.Instance.KickPlayer(player.Id, true);
-            Logger.SendInGame(string.Format(GetString("Message.BannedByEACList"), player.PlayerName));
-            Logger.Info($"{player.PlayerName} Eac banned bc friend code is too short.", "BAN");
-            return;
-        }
-
-        if (friendcode.Count(c => c == '#') != 1)
-        {
-            // This is part of eac, so thats why it will say ban by EAC list.
-            AmongUsClient.Instance.KickPlayer(player.Id, true);
-            Logger.SendInGame(string.Format(GetString("Message.BannedByEACList"), player.PlayerName));
-            Logger.Info($"{player.PlayerName} EAC Banned bc friendcode contains more than 1 #", "BAN");
-            return;
-        }
-
-        // Contains any nonn-word character or digits
-        string pattern = @"[\W\d]";
-        if (Regex.IsMatch(friendcode[..friendcode.IndexOf("#")], pattern))
-        {
-            AmongUsClient.Instance.KickPlayer(player.Id, true);
-            Logger.SendInGame(string.Format(GetString("Message.BannedByEACList"), player.PlayerName));
-            Logger.Info($"{player.PlayerName}存在于EAC封禁名单", "BAN");
-            return;
-        }
 
         if (CheckBanList(friendcode, player?.GetHashedPuid()))
         {
