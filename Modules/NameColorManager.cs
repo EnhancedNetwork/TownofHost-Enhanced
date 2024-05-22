@@ -42,7 +42,7 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
 
         // Cultist
-        Cultist.NameRoleColor(seer, target);
+        color = Cultist.NameRoleColor(seer, target);
 
         // Admirer
         if (seer.Is(CustomRoles.Admirer) && (target.Is(CustomRoles.Admired))) color = Main.roleColors[CustomRoles.Admirer];
