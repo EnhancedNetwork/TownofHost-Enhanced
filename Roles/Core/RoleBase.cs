@@ -300,8 +300,8 @@ public abstract class RoleBase
     /// <summary>
     /// When player left the game
     /// </summary>
-    public virtual void OnPlayerLeft(ClientData clientData)
-    { }
+    //public virtual void OnPlayerLeft(ClientData clientData) Note: instead "OnPlayerLeft" use "OnMurderPlayer" and "isSuicide"
+    //{ }
 
     /// <summary>
     /// When the game starts to ending
