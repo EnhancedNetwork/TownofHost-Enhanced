@@ -325,6 +325,10 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)
     { }
+    /// <summary>
+    /// Hides the playervote
+    /// </summary>
+    public virtual bool HideVote(PlayerVoteArea PVA) => false;
 
 
     /// <summary>

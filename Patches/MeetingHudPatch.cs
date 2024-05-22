@@ -190,7 +190,9 @@ class CheckForEndVotingPatch
                 var player = Utils.GetPlayerById(ps.TargetPlayerId);
                 var playerRoleClass = player.GetRoleClass();
 
-                
+                //Hides vote
+                if (playerRoleClass.HideVote(ps)) continue;
+
                 // Assing Madmate Slef Vote
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) continue;
 
