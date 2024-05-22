@@ -230,7 +230,7 @@ class CheckMurderPatch
         List<PlayerControl> penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
         if (Penguin.HasEnabled && penguins != null && penguins.Any())
         {
-            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && killer.PlayerId == pg.AbductVictim.PlayerId))
+            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && killer.PlayerId == pg?.AbductVictim?.PlayerId))
             {
                 killer.Notify(GetString("PenguinTargetOnCheckMurder"));
                 killer.SetKillCooldown(5);
