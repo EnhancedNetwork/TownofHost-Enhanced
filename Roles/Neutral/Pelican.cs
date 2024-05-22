@@ -213,7 +213,6 @@ internal class Pelican : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-
         if (killer.Is(CustomRoles.Scavenger) || killer.Is(CustomRoles.Pelican))
         {
             PelicanLastPosition[target.PlayerId] = target.GetCustomPosition();
@@ -243,7 +242,7 @@ internal class Pelican : RoleBase
             Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
             ReportDeadBodyPatch.CanReport[tar] = true;
             
-            target.MarkDirtySettings();
+            target.SyncSettings();
             
             RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
             

@@ -55,7 +55,7 @@ internal class Cultist : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? CharmCooldown.GetFloat() + (CharmMax.GetInt() - AbilityLimit) * CharmCooldownIncrese.GetFloat() : 300f;
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && AbilityLimit >= 1;
+    public override bool CanUseKillButton(PlayerControl player) => AbilityLimit >= 1;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (AbilityLimit < 1) return false;
