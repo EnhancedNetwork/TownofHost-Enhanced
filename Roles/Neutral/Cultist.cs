@@ -107,13 +107,13 @@ internal class Cultist : RoleBase
             && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
-    public static string NameRoleColor(PlayerControl seer, PlayerControl target)
+    public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
     {
-        if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Cultist)) return Main.roleColors[CustomRoles.Cultist];
-        if (seer.Is(CustomRoles.Cultist) && target.Is(CustomRoles.Charmed)) return Main.roleColors[CustomRoles.Charmed];
-        if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && TargetKnowOtherTarget.GetBool()) return Main.roleColors[CustomRoles.Charmed];
+        if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Cultist)) return true;
+        if (seer.Is(CustomRoles.Cultist) && target.Is(CustomRoles.Charmed)) return true;
+        if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && TargetKnowOtherTarget.GetBool()) return true;
         
-        return string.Empty;
+        return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
