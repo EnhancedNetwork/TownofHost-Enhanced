@@ -283,7 +283,11 @@ public static class MainMenuManagerPatch
         howToPlayButton.transform.SetLocalX(0);
 
     }
-
+    [HarmonyPatch(nameof(MainMenuManager.LateUpdate)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
+    public static void LateUpdatePostfix(/*MainMenuManager __instance*/)
+    {
+        EFC.UpdateUnauthorizedFiles();
+    }
     public static PassiveButton CreateButton(string name, Vector3 localPosition, Color32 normalColor, Color32 hoverColor, Action action, string label, Vector2? scale = null)
     {
         var button = Object.Instantiate(template, MainMenuManagerStartPatch.ToheLogo.transform);

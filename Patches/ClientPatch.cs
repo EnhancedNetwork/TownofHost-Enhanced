@@ -105,6 +105,21 @@ internal class RunLoginPatch
         }
     }
 }
+[HarmonyPatch(typeof(AccountManager), nameof(AccountManager.CanPlayOnline))]
+internal class AccountManagerPatch
+{
+    public static void Postfix()
+    {
+        if (!EFC.HasShownPopUp && EFC.CheckIfUnauthorizedFiles())
+        {
+            var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
+            EFC.HasShownPopUp = true;
+            DisconnectPopup.Instance._textArea.enableWordWrapping = false;
+            DisconnectPopup.Instance.ShowCustom($"{lines}\n\n<b><size=200%><color=#660078>★<color=#d900ff>TOHE<color=#660078>★</size></b>\n<color=#757575><u><size=150%><color=#e60000>⚠<color=#8f0000>{EFC.UnauthorizedReason}<color=#e60000>⚠</size></u>\n\n<color=white>Online access has been temporarily disabled!\n\n{lines}");
+
+        }
+    }
+}
 [HarmonyPatch(typeof(BanMenu), nameof(BanMenu.SetVisible))]
 internal class BanMenuSetVisiblePatch
 {
