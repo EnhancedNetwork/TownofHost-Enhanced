@@ -91,7 +91,6 @@ internal class Enigma : RoleBase
 
     public override void OnReportDeadBody(PlayerControl player, PlayerControl target)
     {
-
         if (target == null) return;
 
         PlayerControl killer = target.GetRealKiller();
