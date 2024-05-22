@@ -79,9 +79,9 @@ namespace TOHE
             // Check for version.dll
             if (File.Exists(Path.Combine(Environment.CurrentDirectory, "version.dll")))
             {
-                var versiondll = "<color=#ffffff>'</color><color=#ffca2b>version.dll</color><color=#ffffff>'</color>";
+                string versiondll = "<color=#ffffff>'</color><color=#ffca2b>version.dll</color><color=#ffffff>'</color>";
                 if (!HasUnauthorizedFile) Logger.Warn("version.dll detected, disabling online play!", "UFC");
-                if (!HasUnauthorizedFile) UnauthorizedReason = $"{GetString("EFC.Unauthorized")} {versiondll} {GetString("EFC.Detected")}";
+                if (!HasUnauthorizedFile) UnauthorizedReason = string.Format(GetString("EFC.UnauthorizedVersionDllDetected"), versiondll);
                 if (!CheatTags.Contains("version.dll")) CheatTags.Add("version.dll");
                 HasUnauthorizedFile = true;
             }

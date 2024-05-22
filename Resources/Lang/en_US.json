@@ -2471,8 +2471,7 @@
   "EAC.CheatDetected.HighLevel": "Warning: EAC detected High Level of cheats.",
   "EAC.CheatDetected.LowLevel": "Warning: EAC detected Low Level of cheats. One of the players is hacking.",
   
-  "EFC.Unauthorized": "Unauthorized",
-  "EFC.Detected": "Detected",
+  "EFC.UnauthorizedVersionDllDetected": "Unauthorized {0} Detected",
   "EFC.UnauthorizedFileMsg": "Unauthorized Game Files Detected",
   "EFC.OnlineMsg": "Online access has been temporarily disabled!",
   "EFC.BepInExMod": "Unauthorized BepInEx Mod Detected",
