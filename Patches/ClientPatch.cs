@@ -113,9 +113,11 @@ internal class AccountManagerPatch
         if (!EFC.HasShownPopUp && EFC.CheckIfUnauthorizedFiles())
         {
             var lines = "<color=#ebbd34>----------------------------------------------------------------------------------------------</color>";
+            var star = "<color=#660078>★</color>";
+            var warning = "<color=#e60000>⚠</color>";
             EFC.HasShownPopUp = true;
             DisconnectPopup.Instance._textArea.enableWordWrapping = false;
-            DisconnectPopup.Instance.ShowCustom($"{lines}\n\n<b><size=200%><color=#660078>★<color=#d900ff>TOHE<color=#660078>★</size></b>\n<color=#757575><u><size=150%><color=#e60000>⚠<color=#8f0000>{EFC.UnauthorizedReason}<color=#e60000>⚠</size></u>\n\n<color=white>Online access has been temporarily disabled!\n\n{lines}");
+            DisconnectPopup.Instance.ShowCustom($"{lines}\n<b><size=200%>{star}<color=#d900ff>TOHE</color>{star}</size></b>\n<color=#757575><u><size=150%>{warning}<color=#8f0000>{EFC.UnauthorizedReason}</color>{warning}</size></u>\n\n<color=white>\n{GetString("EFC.OnlineMsg")}\n{lines}");
 
         }
     }

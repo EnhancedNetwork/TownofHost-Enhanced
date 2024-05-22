@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using UnityEngine;
+using static TOHE.Translator;
 
 namespace TOHE
 {
@@ -69,7 +70,7 @@ namespace TOHE
                 if (IsBepInExModLoaded(bannedMod))
                 {
                     if (!HasUnauthorizedFile) Logger.Warn($"{bannedMod} BepInEx Mod detected, disabling online play!", "UFC");
-                    if (!HasUnauthorizedFile) UnauthorizedReason = "Unauthorized BepInEx Mod Detected";
+                    if (!HasUnauthorizedFile) UnauthorizedReason = GetString("EFC.BepInExMod");
                     if (!CheatTags.Contains($"{bannedMod}-BepInEx")) CheatTags.Add($"{bannedMod}-BepInEx");
                     HasUnauthorizedFile = true;
                 }
@@ -78,8 +79,9 @@ namespace TOHE
             // Check for version.dll
             if (File.Exists(Path.Combine(Environment.CurrentDirectory, "version.dll")))
             {
+                var versiondll = "<color=#ffffff>'</color><color=#ffca2b>version.dll</color><color=#ffffff>'</color>";
                 if (!HasUnauthorizedFile) Logger.Warn("version.dll detected, disabling online play!", "UFC");
-                if (!HasUnauthorizedFile) UnauthorizedReason = "Unauthorized <color=#ffffff>'</color><color=#ffca2b>version.dll</color><color=#ffffff>'</color> Detected";
+                if (!HasUnauthorizedFile) UnauthorizedReason = $"{GetString("EFC.Unauthorized")} {versiondll} {GetString("EFC.Detected")}";
                 if (!CheatTags.Contains("version.dll")) CheatTags.Add("version.dll");
                 HasUnauthorizedFile = true;
             }
@@ -90,7 +92,7 @@ namespace TOHE
                 File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-prev-log.txt")))
             {
                 if (!HasUnauthorizedFile) Logger.Warn("Sicko files detected, disabling online play!", "UFC");
-                if (!HasUnauthorizedFile) UnauthorizedReason = "Unauthorized Game Files Detected";
+                if (!HasUnauthorizedFile) UnauthorizedReason = GetString("EFC.UnauthorizedFileMsg");
                 if (!CheatTags.Contains("Sicko-Menu")) CheatTags.Add("Sicko-Menu");
                 HasUnauthorizedFile = true;
             }
@@ -101,7 +103,7 @@ namespace TOHE
                 File.Exists(Path.Combine(Environment.CurrentDirectory, "aum-prev-log.txt")))
             {
                 if (!HasUnauthorizedFile) Logger.Warn("AUM files detected, disabling online play!", "UFC");
-                if (!HasUnauthorizedFile) UnauthorizedReason = "Unauthorized Game Files Detected";
+                if (!HasUnauthorizedFile) UnauthorizedReason = GetString("EFC.UnauthorizedFileMsg");
                 if (!CheatTags.Contains("AUM-Menu")) CheatTags.Add("AUM-Menu");
                 HasUnauthorizedFile = true;
             }
