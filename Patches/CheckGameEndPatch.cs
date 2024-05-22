@@ -460,8 +460,6 @@ class GameEndCheckerForNormal
     }
     private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
     {
-        if (Quizmaster.HasEnabled) Quizmaster.ResetMarkedPlayer();
-
         CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.OnCoEndGame());
 
         // Set ghost role
