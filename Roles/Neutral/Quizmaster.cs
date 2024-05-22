@@ -252,7 +252,7 @@ internal class Quizmaster : RoleBase
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
-        if (pc.PlayerId == Player.PlayerId && MarkedPlayer != byte.MinValue)
+        if (pc.PlayerId == Player.PlayerId && MarkedPlayer != byte.MaxValue)
         {
             AddMsg(GetString("QuizmasterChat.Marked").Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer)?.GetRealName(isMeeting: true)).Replace("{QMQUESTION}", Question.HasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), pc.PlayerId, GetString("QuizmasterChat.Title"));
         }
