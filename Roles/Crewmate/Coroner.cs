@@ -230,7 +230,7 @@ internal class Coroner : RoleBase
         foreach (var pc in _playerIdList.ToArray())
         {
             var player = GetPlayerById(pc);
-            if (player == null || !player.IsAlive() || player.PlayerId == target.PlayerId) continue;
+            if (player == null || !player.IsAlive()) continue;
             LocateArrow.Add(pc, target.transform.position);
             SendRPC(pc, true, target.transform.position);
         }

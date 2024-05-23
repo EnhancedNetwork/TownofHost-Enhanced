@@ -479,12 +479,11 @@ class MurderPlayerPatch
         if (!killer.Is(CustomRoles.Trickster))
             Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
 
-        AfterPlayerDeathTasks(killer, target, false);
-
         Main.PlayerStates[target.PlayerId].SetDead();
         target.SetRealKiller(killer, true);
         Utils.CountAlivePlayers(true);
 
+        AfterPlayerDeathTasks(killer, target, false);
         Utils.TargetDies(__instance, target);
 
         if (Options.LowLoadMode.GetBool())
