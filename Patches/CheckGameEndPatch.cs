@@ -310,7 +310,7 @@ class GameEndCheckerForNormal
                     //自爆卡车来咯
                     if (pc.Is(CustomRoles.Provocateur) && Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tar))
                     {
-                        if (!CustomWinnerHolder.WinnerIds.Contains(tar))
+                        if (CustomWinnerHolder.WinnerIds.Contains(tar))
                         {
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                             CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Provocateur);
@@ -472,8 +472,6 @@ class GameEndCheckerForNormal
     }
     private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
     {
-        if (Quizmaster.HasEnabled) Quizmaster.ResetMarkedPlayer();
-
         CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.OnCoEndGame());
 
         // Set ghost role

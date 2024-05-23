@@ -179,19 +179,14 @@ internal class Executioner : RoleBase
     }
     private void OnOthersDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (CheckTarget(target.PlayerId))
-            ChangeRoleByTarget(target);
-    }
-
-    public override void OnPlayerLeft(ClientData clientData)
-    {
-        if (Target.ContainsKey(clientData.Character.PlayerId))
+        if (Target.ContainsKey(target.PlayerId))
         {
-            ChangeRole(clientData.Character);
+            Target.Remove(target.PlayerId);
+            SendRPC(target.PlayerId);
         }
 
-        else if (CheckTarget(clientData.Character.PlayerId))
-            ChangeRoleByTarget(clientData.Character);
+        else if (CheckTarget(target.PlayerId))
+            ChangeRoleByTarget(target);
     }
 
     private static void ExecutionerWasDead(byte targetId)

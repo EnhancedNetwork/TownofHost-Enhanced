@@ -55,7 +55,7 @@ internal class Cultist : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? CharmCooldown.GetFloat() + (CharmMax.GetInt() - AbilityLimit) * CharmCooldownIncrese.GetFloat() : 300f;
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && AbilityLimit >= 1;
+    public override bool CanUseKillButton(PlayerControl player) => AbilityLimit >= 1;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (AbilityLimit < 1) return false;
@@ -107,12 +107,13 @@ internal class Cultist : RoleBase
             && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
-    public static string NameRoleColor(PlayerControl seer, PlayerControl target)
+    public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
     {
-        if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Cultist)) return Main.roleColors[CustomRoles.Cultist];
-        if (seer.Is(CustomRoles.Cultist) && target.Is(CustomRoles.Charmed)) return Main.roleColors[CustomRoles.Charmed];
-        if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && Cultist.TargetKnowOtherTarget.GetBool()) return Main.roleColors[CustomRoles.Charmed];
-        else return string.Empty;
+        if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Cultist)) return true;
+        if (seer.Is(CustomRoles.Cultist) && target.Is(CustomRoles.Charmed)) return true;
+        if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && TargetKnowOtherTarget.GetBool()) return true;
+        
+        return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

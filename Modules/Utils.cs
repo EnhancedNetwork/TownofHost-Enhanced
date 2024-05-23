@@ -1589,11 +1589,10 @@ public static class Utils
     {
         var PlayerList = PlayerIdList?.ToList().Select(x => GetPlayerById(x)).ToList();
 
-        return PlayerList.Any() ? PlayerList : null;
+        return PlayerList != null && PlayerList.Any() ? PlayerList : null;
     }
-
     public static List<PlayerControl> GetPlayerListByRole(this CustomRoles role)
-        => GetPlayerListByIds(Main.PlayerStates.Values.Where(x => x.MainRole == role)?.Select(r => r.PlayerId));
+        => GetPlayerListByIds(Main.PlayerStates.Values.Where(x => x.MainRole == role).Select(r => r.PlayerId));
     
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);

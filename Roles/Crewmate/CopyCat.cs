@@ -87,6 +87,8 @@ internal class CopyCat : RoleBase
             CustomRoles.Addict or
             CustomRoles.Chameleon or
             CustomRoles.Alchemist or
+            CustomRoles.Captain or
+            CustomRoles.Medic or // Bcz the medic is limited to only one player
             CustomRoles.TimeMaster or
             CustomRoles.Mole;
         //bcoz of single role
@@ -156,7 +158,7 @@ internal class CopyCat : RoleBase
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcSetCustomRole(role);
-                killer.GetRoleClass()?.Add(killer.PlayerId);
+                killer.GetRoleClass()?.OnAdd(killer.PlayerId);
             }
             if (CopyTeamChangingAddon.GetBool())
             {

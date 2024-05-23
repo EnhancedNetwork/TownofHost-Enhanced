@@ -288,7 +288,7 @@ class CheckForEndVotingPatch
                     braked = true;
                 }
             }
-            List<Collector> CollectorCL = Utils.GetPlayerListByRole(CustomRoles.Collector)?.Select(x => x.GetRoleClass()).Cast<Collector>().ToList();
+            List<Collector> CollectorCL = Utils.GetPlayerListByRole(CustomRoles.Collector)?.Select(x => x.GetRoleClass()).OfType<Collector>().ToList();
             if (Collector.HasEnabled && CollectorCL != null) CollectorCL?.Do(x => { x.CollectAmount(VotingData, __instance); });
 
             if (Options.VoteMode.GetBool() && Options.WhenTie.GetBool() && tie)

@@ -110,7 +110,6 @@ class CheckMurderPatch
         if (GameStates.IsHideNSeek) return true;
 
         var killer = __instance;
-        var killerRole = __instance.GetRoleClass();
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
@@ -118,7 +117,6 @@ class CheckMurderPatch
         {
             return false;
         }
-
 
         killer.ResetKillCooldown();
         Logger.Info($"Kill Cooldown Resets", "CheckMurder");
@@ -232,7 +230,7 @@ class CheckMurderPatch
         List<PlayerControl> penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
         if (Penguin.HasEnabled && penguins != null && penguins.Any())
         {
-            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && killer.PlayerId == pg.AbductVictim.PlayerId))
+            if (penguins.Select(x => x.GetRoleClass()).OfType<Penguin>().Any(x => killer.PlayerId == x?.AbductVictim?.PlayerId))
             {
                 killer.Notify(GetString("PenguinTargetOnCheckMurder"));
                 killer.SetKillCooldown(5);
@@ -481,12 +479,11 @@ class MurderPlayerPatch
         if (!killer.Is(CustomRoles.Trickster))
             Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
 
-        AfterPlayerDeathTasks(killer, target, false);
-
         Main.PlayerStates[target.PlayerId].SetDead();
         target.SetRealKiller(killer, true);
         Utils.CountAlivePlayers(true);
 
+        AfterPlayerDeathTasks(killer, target, false);
         Utils.TargetDies(__instance, target);
 
         if (Options.LowLoadMode.GetBool())
@@ -1040,6 +1037,7 @@ class FixedUpdateInNormalGamePatch
                 if (!lowLoad)
                 {
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
+                    
                     if (Glow.IsEnable)
                         Glow.OnFixedUpdate(player);
 
@@ -1141,7 +1139,7 @@ class FixedUpdateInNormalGamePatch
                 var seerRoleClass = seer.GetRoleClass();
                 var target = __instance;
 
-                if (seer != target)
+                if (seer != target && seer != DollMaster.DollMasterTarget)
                     target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
 
                 string RealName = target.GetRealName();
@@ -1215,7 +1213,7 @@ class FixedUpdateInNormalGamePatch
                 }
 
                 // Camouflage
-                if (Camouflage.IsCamouflage)
+                if ((Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated)
                     RealName = $"<size=0%>{RealName}</size> ";
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)

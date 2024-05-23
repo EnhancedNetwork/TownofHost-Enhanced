@@ -1,10 +1,11 @@
 ﻿using Hazel;
 using System;
+using InnerNet;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
-using InnerNet;
+using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Neutral;
 
@@ -93,10 +94,8 @@ internal class Quizmaster : RoleBase
     {
         MarkedPlayer = byte.MaxValue;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
-        }
+        CustomRoleManager.MarkOthers.Add(GetMarkForOthers);
+        CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
     private void SendRPC(byte targetId)
     {
@@ -249,26 +248,30 @@ internal class Quizmaster : RoleBase
             ];
             
             Question = GetRandomQuestion(Questions);
-            
-            _ = new LateTask(() =>
-            {
-                ShowQuestion(Main.AllPlayerControls[MarkedPlayer]);
-                Utils.SendMessage(GetString("QuizmasterChat.Marked").Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer).GetRealName()), Player.PlayerId, GetString("QuizmasterChat.Title"));
-                foreach (var plr in Main.AllPlayerControls)
-                {
-                    if (plr.PlayerId != Player.PlayerId && MarkedPlayer != plr.PlayerId)
-                    {
-                        Utils.SendMessage(GetString("QuizmasterChat.MarkedPublic").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer).GetRealName()), plr.PlayerId, GetString("QuizmasterChat.Title"));
-                    }
-                }
-            }, 7f, "Quizmaster Chat Notice");
         }
     }
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (pc.PlayerId == Player.PlayerId && MarkedPlayer != byte.MaxValue)
+        {
+            AddMsg(GetString("QuizmasterChat.Marked").Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer)?.GetRealName(isMeeting: true)).Replace("{QMQUESTION}", Question.HasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), pc.PlayerId, GetString("QuizmasterChat.Title"));
+        }
+    }
+    public override void OnOthersMeetingHudStart(PlayerControl pc)
+    {
+        if (!Utils.GetPlayerById(MarkedPlayer).IsAlive()) return;
 
+        if (pc.PlayerId == MarkedPlayer)
+        {
+            ShowQuestion(pc);
+        }
+        else if (pc.PlayerId != Player.PlayerId && pc.PlayerId != MarkedPlayer)
+        {
+            AddMsg(GetString("QuizmasterChat.MarkedPublic").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer)?.GetRealName(isMeeting: true)), pc.PlayerId, GetString("QuizmasterChat.Title"));
+        }
+    }
     public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
     {
-        ResetMarkedPlayer(false);
-
         if (exiled == null) return;
         lastExiledColor = exiled.GetPlayerColorString();
     }
@@ -290,6 +293,7 @@ internal class Quizmaster : RoleBase
     {
         if (canMarkAgain == true)
             AlreadyMarked = false;
+
         MarkedPlayer = byte.MaxValue;
     }
 
@@ -305,7 +309,11 @@ internal class Quizmaster : RoleBase
             => hud.KillButton.OverrideText(GetString(allowedKilling ? "KillButtonText" : "QuizmasterKillButtonText"));
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-            => (seer != null && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : "";
+        => (!isForMeeting && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+
+    private string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool isForMeeting)
+        => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+
     public static void OnSabotageCall(SystemTypes systemType)
     {
         if (!Main.MeetingIsStarted
@@ -346,9 +354,9 @@ internal class Quizmaster : RoleBase
 
     private static void KillPlayer(PlayerControl plrToKill)
     {
-        plrToKill.Data.IsDead = true;
         Main.PlayerStates[plrToKill.PlayerId].deathReason = PlayerState.DeathReason.WrongAnswer;
         Main.PlayerStates[plrToKill.PlayerId].SetDead();
+        plrToKill.Data.IsDead = true;
         plrToKill.RpcExileV2();
         ResetMarkedPlayer(true);
     }
