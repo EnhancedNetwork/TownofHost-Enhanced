@@ -180,7 +180,7 @@ internal class DollMaster : RoleBase
     // If Dollmaster reports a body or is forced to while possessing redirect it to possessed player
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
-        if (controllingTarget == null || DollMasterTarget == null) return false;
+        if (controllingTarget == null || DollMasterTarget == null) return true;
 
         if (IsControllingPlayer && IsDoll(reporter.PlayerId)) return false; // Prevent possessed player from reporting body.
 
