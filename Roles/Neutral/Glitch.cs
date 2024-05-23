@@ -17,9 +17,9 @@ internal class Glitch : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
-    private Dictionary<byte, long> hackedIdList = [];
+    private readonly Dictionary<byte, long> hackedIdList = [];
 
-    public static List<Glitch> Glitchs => Utils.GetPlayerListByRole(CustomRoles.Glitch)?.Select(x => x.GetRoleClass()).Cast<Glitch>().ToList(); 
+    public static List<Glitch> Glitchs => Utils.GetPlayerListByRole(CustomRoles.Glitch)?.Select(x => x.GetRoleClass()).OfType<Glitch>().ToList(); 
 
     public static OptionItem KillCooldown;
     private static OptionItem HackCooldown;
@@ -282,14 +282,12 @@ internal class Glitch : RoleBase
     }
     public bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
     {
-        if (killer == target || killer == null) { Logger.Info("returning true", "glitchcheck"); return true; }
+        if (killer == target || killer == null) return true; 
         if (hackedIdList.ContainsKey(killer.PlayerId))
         {
             killer.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchKill")));
-            Logger.Info("returning false", "glitchcheck"); 
             return false;
         }
-        Logger.Info("returning true", "glitchcheck");
         return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
