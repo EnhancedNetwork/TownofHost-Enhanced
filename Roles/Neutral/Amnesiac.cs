@@ -84,11 +84,11 @@ internal class Amnesiac : RoleBase
     }
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting || killer.PlayerId == target.PlayerId) return;
+        if (inMeeting) return;
         foreach (var pc in playerIdList.ToArray())
         {
             var player = Utils.GetPlayerById(pc);
-            if (player == null || !player.IsAlive()) continue;
+            if (player == null || !player.IsAlive() || player.PlayerId == target.PlayerId) continue;
             LocateArrow.Add(pc, target.transform.position);
             SendRPC(pc, true, target.transform.position);
         }

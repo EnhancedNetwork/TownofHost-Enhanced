@@ -225,12 +225,12 @@ internal class Coroner : RoleBase
 
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (!ArrowsPointingToDeadBody.GetBool() || inMeeting || killer.PlayerId == target.PlayerId) return;
+        if (!ArrowsPointingToDeadBody.GetBool() || inMeeting) return;
 
         foreach (var pc in _playerIdList.ToArray())
         {
             var player = GetPlayerById(pc);
-            if (player == null || !player.IsAlive()) continue;
+            if (player == null || !player.IsAlive() || player.PlayerId == target.PlayerId) continue;
             LocateArrow.Add(pc, target.transform.position);
             SendRPC(pc, true, target.transform.position);
         }
