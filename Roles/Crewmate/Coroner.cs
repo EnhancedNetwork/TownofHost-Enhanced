@@ -225,7 +225,7 @@ internal class Coroner : RoleBase
 
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (!ArrowsPointingToDeadBody.GetBool()) return;
+        if (!ArrowsPointingToDeadBody.GetBool() || inMeeting || killer.PlayerId == target.PlayerId) return;
 
         foreach (var pc in _playerIdList.ToArray())
         {

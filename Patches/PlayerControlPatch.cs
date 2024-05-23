@@ -1093,9 +1093,8 @@ class FixedUpdateInNormalGamePatch
 
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
         var RoleText = RoleTextTransform.GetComponent<TMPro.TextMeshPro>();
-        var runCode = !lowLoad || (Main.MeetingIsStarted && !GameStates.IsMeeting);
 
-        if (RoleText != null && __instance != null && runCode)
+        if (RoleText != null && __instance != null && !lowLoad)
         {
             if (GameStates.IsLobby)
             {
