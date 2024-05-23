@@ -1093,8 +1093,9 @@ class FixedUpdateInNormalGamePatch
 
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
         var RoleText = RoleTextTransform.GetComponent<TMPro.TextMeshPro>();
+        var runCode = !lowLoad || (Main.MeetingIsStarted && !GameStates.IsMeeting);
 
-        if (RoleText != null && __instance != null && !lowLoad)
+        if (RoleText != null && __instance != null && runCode)
         {
             if (GameStates.IsLobby)
             {
@@ -1213,7 +1214,7 @@ class FixedUpdateInNormalGamePatch
                 }
 
                 // Camouflage
-                if (Camouflage.IsCamouflage)
+                if ((Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated)
                     RealName = $"<size=0%>{RealName}</size> ";
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
