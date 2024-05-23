@@ -84,13 +84,17 @@ public static class CustomRoleManager
 
         player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
 
+        if (DollMaster.HasEnabled && DollMaster.IsDoll(player.PlayerId))
+        {
+            DollMaster.ApplySettingsToDoll(opt, player);
+            return;
+        }
 
         if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
         if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
         if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
-        if (DollMaster.HasEnabled) DollMaster.SetVision(opt, player);
 
         var playerSubRoles = player.GetCustomSubRoles();
 

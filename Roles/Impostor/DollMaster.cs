@@ -57,6 +57,7 @@ internal class DollMaster : RoleBase
         DollMasterTarget = Utils.GetPlayerById(playerId);
         IsControllingPlayer = false;
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
+        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(CheckIfPlayerDC);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -71,14 +72,11 @@ internal class DollMaster : RoleBase
     public static bool IsDoll(byte id) => ReducedVisionPlayers.Contains(id);
 
     // Set Vision and Speed to 0 for possessed Target.
-    public static void SetVision(IGameOptions opt, PlayerControl target)
+    public static void ApplySettingsToDoll(IGameOptions opt, PlayerControl target)
     {
-        if (ReducedVisionPlayers.Contains(target.PlayerId))
-        {
-            opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, 0f * 0);
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0f * 0);
-        }
+        opt.SetVision(false);
+        opt.SetFloat(FloatOptionNames.CrewLightMod, 0f * 0);
+        opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0f * 0);
     }
 
     public override void OnFixedUpdate(PlayerControl pc)
@@ -309,7 +307,7 @@ internal class DollMaster : RoleBase
             return false;
         }
 
-        // If target is on imp team retune.
+        // If target is on imp team return.
         if (!IsControllingPlayer && target.GetCustomRole().IsImpostorTeam())
         {
             AURoleOptions.ShapeshifterCooldown = 0;
@@ -336,6 +334,12 @@ internal class DollMaster : RoleBase
 
             _ = new LateTask(() =>
             {
+                if (GameStates.IsMeeting || GameStates.IsExilling)
+                {
+                    IsControllingPlayer = false;
+                    return;
+                }
+
                 Possess(pc, target);
                 GetPlayersPositions(pc);
                 SwapPlayersPositions(pc);
@@ -352,51 +356,32 @@ internal class DollMaster : RoleBase
     }
 
     // A fix when the DollMaster or Possessed Player DC's from the game.
-    // Untested!
-    /*
-    public override void OnPlayerLeft(InnerNet.ClientData clientData)
+    public static void CheckIfPlayerDC(PlayerControl player)
     {
-        if (DollMasterTarget == null || controllingTarget == null) return;
-        var player = Utils.GetPlayerById(clientData.Character.PlayerId);
-        var target = controllingTarget;
-        var pc = DollMasterTarget;
-        var shouldAnimate = false;
-
-        if (IsControllingPlayer && (clientData.Character.PlayerId == pc.PlayerId || clientData.Character.PlayerId == target.PlayerId))
+        if (IsControllingPlayer && (controllingTarget == null || DollMasterTarget == null))
         {
-            if (clientData.Character.PlayerId == pc.PlayerId)
-                if (target.inVent)
-                    target.MyPhysics.RpcBootFromVent(GetPlayerVentId(target));
+            ReducedVisionPlayers.Clear();
 
-            if (clientData.Character.PlayerId == target.PlayerId)
-                if (pc.inVent)
-                    pc.MyPhysics.RpcBootFromVent(GetPlayerVentId(pc));
+            if (controllingTarget != null)
+            {
+                Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
+                controllingTarget.MarkDirtySettings();
+            }
 
-            WaitToUnPossess = false;
-
-            SwapPlayersPositions(pc);
-
-            pc.RpcShapeshift(pc, shouldAnimate);
-            target.RpcShapeshift(target, shouldAnimate);
-            pc.RpcResetAbilityCooldown();
+            DollMasterTarget?.RpcShapeshift(DollMasterTarget, false);
+            controllingTarget?.RpcShapeshift(controllingTarget, false);
 
             IsControllingPlayer = false;
             ResetPlayerSpeed = true;
-
-            _ = new LateTask(() =>
-            {
-                ReducedVisionPlayers.Clear();
-            }, 0.35f);
         }
     }
-    */
 
     // Possess Player
     private static void Possess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc.RpcShapeshift(target, shouldAnimate);
-        target.RpcShapeshift(pc, shouldAnimate);
+        target?.RpcShapeshift(pc, shouldAnimate);
         pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
     }
 
@@ -406,7 +391,7 @@ internal class DollMaster : RoleBase
         WaitToUnPossess = false;
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc.RpcShapeshift(pc, shouldAnimate);
-        target.RpcShapeshift(target, shouldAnimate);
+        target?.RpcShapeshift(target, shouldAnimate);
         pc.RpcResetAbilityCooldown();
 
         IsControllingPlayer = false;
@@ -447,8 +432,8 @@ internal class DollMaster : RoleBase
     private static void SwapPlayersPositions(PlayerControl pc)
     {
         if (controllingTarget == null) return;
-        controllingTarget.RpcTeleport(DollMasterPos);
-        pc.RpcTeleport(controllingTargetPos);
+        controllingTarget?.RpcTeleport(DollMasterPos);
+        pc?.RpcTeleport(controllingTargetPos);
     }
 
     // Set name Suffix for Doll and Main Body under name.

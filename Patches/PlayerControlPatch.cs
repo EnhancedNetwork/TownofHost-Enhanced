@@ -1037,6 +1037,7 @@ class FixedUpdateInNormalGamePatch
                 if (!lowLoad)
                 {
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
+                    
                     if (Glow.IsEnable)
                         Glow.OnFixedUpdate(player);
 
@@ -1138,7 +1139,7 @@ class FixedUpdateInNormalGamePatch
                 var seerRoleClass = seer.GetRoleClass();
                 var target = __instance;
 
-                if (seer != target)
+                if (seer != target && seer != DollMaster.DollMasterTarget)
                     target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
 
                 string RealName = target.GetRealName();
