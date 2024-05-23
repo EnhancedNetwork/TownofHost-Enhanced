@@ -1,4 +1,5 @@
 ﻿using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using static TOHE.Translator;
 
@@ -76,11 +77,17 @@ public static class Oiiai
             return;
         }
 
-        if (!killer.GetCustomRole().IsNeutral())
+        var killerRole = killer.GetCustomRole();
+        if (killerRole.IsTasklessCrewmate() || Main.TasklessCrewmate.Contains(killer.PlayerId) || CopyCat.playerIdList.Contains(killer.PlayerId) || killer.Is(CustomRoles.Stubborn))
+        {
+            Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} cannot eraser crew imp-based role", "Oiiai");
+            return;
+        }
+        else if (!killer.GetCustomRole().IsNeutral())
         {
             //Use eraser here LOL
             killer.RpcSetCustomRole(Eraser.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
-            Logger.Info($"Oiiai {killer.GetNameWithRole()} with eraser assign.", "Oiiai");
+            Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with eraser assign.", "Oiiai");
         }
         else
         {
@@ -93,13 +100,13 @@ public static class Oiiai
                     killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
                     killer.GetRoleClass().OnAdd(killer.PlayerId);
 
-                    Logger.Info($"Oiiai {killer.GetNameWithRole()} with Neutrals with kill button assign.", "Oiiai");
+                    Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Neutrals with kill button assign.", "Oiiai");
                 }
             }
             else
             {
                 killer.RpcSetCustomRole(CustomRoles.Opportunist);
-                Logger.Info($"Oiiai {killer.GetNameWithRole()} with Neutrals without kill button assign.", "Oiiai");
+                Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Neutrals without kill button assign.", "Oiiai");
             }
         }
         killer.ResetKillCooldown();
