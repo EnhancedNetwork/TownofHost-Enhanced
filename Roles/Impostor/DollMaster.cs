@@ -57,6 +57,7 @@ internal class DollMaster : RoleBase
         DollMasterTarget = Utils.GetPlayerById(playerId);
         IsControllingPlayer = false;
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
+        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(CheckIfPlayerDC);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -355,8 +356,7 @@ internal class DollMaster : RoleBase
     }
 
     // A fix when the DollMaster or Possessed Player DC's from the game.
-    // Runing in PlayerContolPatch.cs
-    public static void CheckIfPlayerDC()
+    public static void CheckIfPlayerDC(PlayerControl player)
     {
         if (IsControllingPlayer && (controllingTarget == null || DollMasterTarget == null))
         {

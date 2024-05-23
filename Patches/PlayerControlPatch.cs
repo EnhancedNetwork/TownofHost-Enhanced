@@ -1038,9 +1038,6 @@ class FixedUpdateInNormalGamePatch
                 if (!lowLoad)
                 {
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
-
-                    if (DollMaster.HasEnabled)
-                        DollMaster.CheckIfPlayerDC();
                     
                     if (Glow.IsEnable)
                         Glow.OnFixedUpdate(player);
