@@ -2,7 +2,6 @@
 using static TOHE.Utils;
 using static TOHE.Translator;
 using Hazel;
-using static UnityEngine.GraphicsBuffer;
 using InnerNet;
 
 namespace TOHE.Roles.Neutral;
