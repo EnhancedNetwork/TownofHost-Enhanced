@@ -844,8 +844,10 @@ internal class ChatCommands
                         //Logger.Info(roleName, "2");
                         if (setRole == roleName)
                         {
+                            PlayerControl.LocalPlayer.GetRoleClass()?.Remove(PlayerControl.LocalPlayer.PlayerId);
                             PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes());
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
+                            PlayerControl.LocalPlayer.GetRoleClass().OnAdd(PlayerControl.LocalPlayer.PlayerId);
                             Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
                             Utils.NotifyRoles(NoCache: true);
                             Utils.MarkEveryoneDirtySettings();
