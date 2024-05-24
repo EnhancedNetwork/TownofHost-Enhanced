@@ -52,8 +52,8 @@ internal class Quizmaster : RoleBase
         TabGroup tab = TabGroup.NeutralRoles;
 
         SetupSingleRoleOptions(Id, tab, CustomRoles.Quizmaster, 1);
-        QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.QuestionDifficulty", new(1, 4, 1), 1, tab, false).SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-
+        QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.QuestionDifficulty", new(1, 4, 1), 1, tab, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         CanVentAfterMark = BooleanOptionItem.Create(Id + 11, "QuizmasterSettings.CanVentAfterMark", true, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         CanKillAfterMarkOpt = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
@@ -273,6 +273,11 @@ internal class Quizmaster : RoleBase
     public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
     {
         if (exiled == null) return;
+
+        if (exiled.Object.Is(CustomRoles.Quizmaster))
+        {
+            ResetMarkedPlayer(false);
+        }
         lastExiledColor = exiled.GetPlayerColorString();
     }
 
@@ -291,7 +296,7 @@ internal class Quizmaster : RoleBase
 
     public static void ResetMarkedPlayer(bool canMarkAgain = true)
     {
-        if (canMarkAgain == true)
+        if (canMarkAgain)
             AlreadyMarked = false;
 
         MarkedPlayer = byte.MaxValue;
