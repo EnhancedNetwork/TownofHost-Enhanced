@@ -1,6 +1,9 @@
 ﻿using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
+using Hazel;
+using static UnityEngine.GraphicsBuffer;
+using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 
@@ -36,14 +39,33 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
         PlayerIds.Add(playerId);
         MasochistMax.Add(playerId, 0);
     }
+
+    private void SendRPC(byte masochistId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(masochistId);
+        writer.Write(MasochistMax[masochistId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        var masochistId = reader.ReadByte();
+        var count = reader.ReadInt32();
+
+        MasochistMax[masochistId] = count;
+    }
+
     public override string GetProgressText(byte playerId, bool comms)
-        => ColorString(GetRoleColor(CustomRoles.Masochist).ShadeColor(0.25f), $"({(MasochistMax.TryGetValue(playerId, out var count3) ? count3 : 0)}/{MasochistKillMax.GetInt()})");
+        => ColorString(GetRoleColor(CustomRoles.Masochist).ShadeColor(0.25f), $"({(MasochistMax.TryGetValue(playerId, out var count) ? count : 0)}/{MasochistKillMax.GetInt()})");
     
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown(target: target, forceAnime: true);
+
         MasochistMax[target.PlayerId]++;
-        //    killer.RPCPlayCustomSound("DM");
+        SendRPC(target.PlayerId);
+
         target.Notify(string.Format(GetString("MasochistKill"), MasochistMax[target.PlayerId]));
         if (MasochistMax[target.PlayerId] >= MasochistKillMax.GetInt())
         {
@@ -57,12 +79,13 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-
         if (target.Is(CustomRoles.Masochist))
         {
             if (!isUI) SendMessage(GetString("GuessMasochist"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessMasochist"));
+
             MasochistMax[target.PlayerId]++;
+            SendRPC(target.PlayerId);
 
             if (MasochistMax[target.PlayerId] >= MasochistKillMax.GetInt())
             {
