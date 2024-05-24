@@ -96,7 +96,7 @@ internal class EvilTracker : RoleBase
         hud.AbilityButton.OverrideText(GetString("EvilTrackerChangeButtonText"));
     }
 
-    public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => seer?.PlayerId == _Player.PlayerId && CanSeeKillFlash;
+    public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => CanSeeKillFlash;
 
     private static bool CanTarget(byte playerId)
         => !Main.PlayerStates[playerId].IsDead && CanSetTarget.TryGetValue(playerId, out var value) && value;
