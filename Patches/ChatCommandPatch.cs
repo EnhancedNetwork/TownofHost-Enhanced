@@ -834,7 +834,7 @@ internal class ChatCommands
                     if (GameStates.IsHideNSeek) break;
                     if (!(DebugModeManager.AmDebugger && GameStates.IsInGame)) break;
                     if (GameStates.IsOnlineGame && !PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) break;
-                    try { subArgs = text.Remove(0, 11); } catch (Exception exx) { Logger.Error($"{exx}", "/changerole..subArgs"); };
+                    subArgs = text.Remove(0, 3); 
                     var setRole =  FixRoleNameInput(subArgs).ToLower().Trim().Replace(" ", string.Empty);
                     Logger.Info(setRole, "changerole Input");
                     foreach (var rl in CustomRolesHelper.AllRoles)
