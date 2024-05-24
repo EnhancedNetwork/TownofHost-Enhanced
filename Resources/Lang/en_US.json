@@ -1328,6 +1328,7 @@
   "KillCooldown": "Kill Cooldown",
   "AbilityCooldown": "Ability Cooldown",
   "VentCooldown": "Vent Cooldown",
+  "InVentMaxTime": "Max Time In Vents",
   "ControlCooldown": "Control Cooldown",
   "PoisonCooldown": "Poison Cooldown",
   "PoisonerKillDelay": "Poison Kill Delay",
