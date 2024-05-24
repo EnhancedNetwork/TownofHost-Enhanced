@@ -884,10 +884,10 @@ internal static class RPC
     }
     public static void SyncRoleSkillReader(MessageReader reader)
     {
-        var pc = reader.ReadNetObject<PlayerControl>();
-
         try
         {
+            var pc = reader.ReadNetObject<PlayerControl>();
+
             switch (pc.GetRoleClass())
             {
                 default:
@@ -897,7 +897,7 @@ internal static class RPC
         }
         catch (Exception error)
         {
-            Logger.Error($"Role {pc.GetRoleClass().GetType().Name} - error RPC:{error}", "SyncRoleSkillReader");
+            Logger.Error($" Error RPC:{error}", "SyncRoleSkillReader");
         }
     }
     public static void SyncLoversPlayers()
