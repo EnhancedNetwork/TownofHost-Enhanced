@@ -203,9 +203,14 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When the target role died and need run kill flash
+    /// When someone was died and need to run kill flash for specific role
     /// </summary>
     public virtual bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
+
+    /// <summary>
+    /// When the target role has died and kill flash needs to run globally
+    /// </summary>
+    public virtual bool GlobalKillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
 
     /// <summary>
     /// Shapeshift animation only from itself
