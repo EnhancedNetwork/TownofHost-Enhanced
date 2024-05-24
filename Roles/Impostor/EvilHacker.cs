@@ -70,11 +70,15 @@ internal class EvilHacker : RoleBase
         CustomRoleManager.CheckDeadBodyOthers.Add(HandleMurderRoomNotify);
     }
 
-    private static void HandleMurderRoomNotify(PlayerControl killer, PlayerControl target, bool inMeeting)
+    private void HandleMurderRoomNotify(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (canSeeMurderRoom)
         {
-            OnMurderPlayer(killer, target, inMeeting);
+            if (!evilHackerPlayer.IsAlive() || inMeeting || !CheckKillFlash(killer, target) || killer.PlayerId == evilHackerPlayer.PlayerId)
+            {
+                return;
+            }
+            RpcCreateMurderNotify(target.GetPlainShipRoom()?.RoomId ?? SystemTypes.Hallway);
         }
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
@@ -124,17 +128,9 @@ internal class EvilHacker : RoleBase
         }, 5f, "EvilHacker Admin Message");
         return;
     }
-    private static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting)
-    {
-        if (!evilHackerPlayer.IsAlive() || !CheckKillFlash(killer, target, inMeeting) || killer.PlayerId == evilHackerPlayer.PlayerId)
-        {
-            return;
-        }
-        RpcCreateMurderNotify(target.GetPlainShipRoom()?.RoomId ?? SystemTypes.Hallway);
-    }
 
     public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
-        => CheckKillFlash(killer, target, GameStates.IsMeeting);
+        => CheckKillFlash(killer, target) && killer.PlayerId != seer.PlayerId;
 
     private static void RpcCreateMurderNotify(SystemTypes room)
     {
@@ -218,8 +214,8 @@ internal class EvilHacker : RoleBase
         return Utils.ColorString(Color.green, $"{Translator.GetString("EvilHackerMurderNotify")}: {string.Join(", ", roomNames)}");
     }
 
-    public static bool CheckKillFlash(PlayerControl killer, PlayerControl target, bool inMeeting)
-        => canSeeKillFlash && killer.PlayerId != target.PlayerId && !inMeeting;
+    public static bool CheckKillFlash(PlayerControl killer, PlayerControl target)
+        => canSeeKillFlash && killer.PlayerId != target.PlayerId;
 
 
     private static readonly TimeSpan NotifyDuration = TimeSpan.FromSeconds(10);

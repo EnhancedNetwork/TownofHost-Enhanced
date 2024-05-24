@@ -5,6 +5,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using UnityEngine;
+using MS.Internal.Xml.XPath;
 
 namespace TOHE.Roles._Ghosts_.Crewmate
 {
@@ -167,6 +168,18 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
             return "";
         }
+        public override void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+        {
+            var tuple = killertarget;
+            if (DeadPlayer.PlayerId == tuple.Item1)
+            {
+                TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
+                LastTime.Remove(DeadPlayer.PlayerId);
+                KillerIsChosen = false;
+                killertarget = (byte.MaxValue, byte.MaxValue);
+            }
+        }
+
         public override string GetProgressText(byte playerId, bool cooms) => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
         
     }

@@ -57,7 +57,6 @@ internal class ChangeRoleSettings
             Main.clientIdList.Clear();
 
             PlayerControlSetRolePatch.DidSetGhost.Clear();
-            PlayerControlSetRolePatch.ghostRoles.Clear();
 
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();
