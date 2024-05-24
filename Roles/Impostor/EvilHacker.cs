@@ -134,7 +134,7 @@ internal class EvilHacker : RoleBase
     }
 
     public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
-        => CheckKillFlash(killer, target, GameStates.IsMeeting);
+        => CheckKillFlash(killer, target, GameStates.IsMeeting) && seer?.PlayerId == _Player.PlayerId;
 
     private static void RpcCreateMurderNotify(SystemTypes room)
     {
