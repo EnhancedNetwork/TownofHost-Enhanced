@@ -872,7 +872,7 @@ public static class Utils
         }
         string lr = sb.ToString();
         try{
-            if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
+            if (lr.Length > 2024 && (!GetPlayerById(PlayerId).IsModClient()))
             {
                 lr = lr.Replace("<color=", "<");
                 lr.SplitMessage().Do(x => SendMessage("\n", PlayerId, $"<size=75%>" + x + "</size>")); //Since it will always capture a newline, there's more than enough space to put this in
@@ -1232,72 +1232,25 @@ public static class Utils
     public static string[] SplitMessage(this string LongMsg)
     {
         List<string> result = [];
-        string forqueue = "";
-        bool capturedN = false;
-        bool didDo = true;
+        var lines = LongMsg.Split('\n');
+        var shortenedtext = string.Empty;
 
-        while (LongMsg != string.Empty)
+        foreach (var line in lines)
         {
-            if (forqueue != string.Empty)
+
+            if (shortenedtext.Length + line.Length < 1200)
             {
-                LongMsg = forqueue + LongMsg;
-                forqueue = string.Empty;
-            }
-            if (LongMsg.IndexOf(">") < LongMsg.IndexOf("<") && !capturedN) // color litter
-            {
-                LongMsg = LongMsg.Remove(0, LongMsg.IndexOf(">")+1);
+                shortenedtext += line + "\n";
+                continue;
             }
 
-            var partmsg = LongMsg.Length > 1200 ? LongMsg[..1201] : LongMsg;
-            var indx1 = partmsg.LastIndexOf("\n");
-
-            didDo = false;
-
-            if (indx1 != -1 && partmsg.Length > 1200) // If a newline can be found send the last one to the queue
-            {
-                forqueue = LongMsg[..1201][(indx1+1)..1200]; // substring.substring;
-                result.Add(LongMsg[..indx1]);
-                LongMsg = LongMsg.TryRemove();
-                capturedN = true;
-                didDo = true;
-            }
-            else if (partmsg.LastIndexOf("<") >= 1185 && partmsg.Length > 1200) // If /n isn't present remove the first color instance
-            {
-                if (!partmsg[partmsg.LastIndexOf("<")..1200].Contains('>'))
-                {
-                    result.Add(LongMsg[..partmsg.LastIndexOf("<")]);
-                    LongMsg = LongMsg.TryRemove();
-                    capturedN = false;
-                    didDo = true;
-                }
-            }
-            else if (partmsg.Length > 1200)
-            {
-                result.Add(LongMsg[..1200]);
-                LongMsg = LongMsg.TryRemove();
-                capturedN = true;
-                didDo = true;
-            }
-            else
-            {
-                result.Add(partmsg);
-                LongMsg = LongMsg.TryRemove();
-                capturedN = true;
-                break;
-            }
-
-            if (!didDo) // Incase compiler decides to be a fckn dumbass
-            {
-                var thismsg = partmsg.Length > 1200 ? partmsg[..1200] : partmsg;
-                Logger.Info(" Warning, compiler decided to be a fckn dumbass and check_absolute activated.", "Utils.SplitMessage..Check Absolute");
-                result.Add(thismsg);
-                LongMsg = LongMsg.TryRemove();
-                capturedN = true;
-                if (thismsg.Length < 1200) break;
-            }
-
+            if (shortenedtext.Length >= 1200) result.AddRange(shortenedtext.Chunk(1200).Select(x => new string(x)));
+            else result.Add(shortenedtext);
+            shortenedtext = line + "\n";
 
         }
+
+        if (shortenedtext.Length > 0) result.Add(shortenedtext);
 
         return [.. result];
     }
