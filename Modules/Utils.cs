@@ -2099,7 +2099,7 @@ public static class Utils
         }
         else { TaskCount = GetProgressText(id); }
 
-        var disconnectedText = playerState.deathReason != PlayerState.DeathReason.etc && playerState.Disconnected ? $" ({GetString("Disconnected")})" : string.Empty;
+        var disconnectedText = playerState.deathReason != PlayerState.DeathReason.etc && playerState.Disconnected ? $"({GetString("Disconnected")})" : string.Empty;
         string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} 『{GetVitalText(id, true)}』{disconnectedText}";
         switch (Options.CurrentGameMode)
         {
