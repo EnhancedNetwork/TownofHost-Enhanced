@@ -1,5 +1,4 @@
-﻿using Hazel;
-using TOHE.Roles.AddOns.Crewmate;
+﻿using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -94,8 +93,12 @@ internal class Cultist : RoleBase
     public static bool KnowRole(PlayerControl player, PlayerControl target)
     {
         if (player.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Cultist)) return true;
-        if (KnowTargetRole.GetBool() && player.Is(CustomRoles.Cultist) && target.Is(CustomRoles.Charmed)) return true;
-        if (TargetKnowOtherTarget.GetBool() && player.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed)) return true;
+
+        if (KnowTargetRole.GetBool())
+        {
+            if (player.Is(CustomRoles.Cultist) && target.Is(CustomRoles.Charmed)) return true;
+            if (TargetKnowOtherTarget.GetBool() && player.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed)) return true;
+        }
         return false;
     }
     public override string GetProgressText(byte playerid, bool cooms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Cultist).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
