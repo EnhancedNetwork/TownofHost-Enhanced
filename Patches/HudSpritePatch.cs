@@ -90,7 +90,7 @@ public static class AbilityButtonSetFromSettingsPatch
     public static bool Prefix(AbilityButton __instance, AbilityButtonSettings settings)
     {
         // When Custom Buttons is disabled run vanilla code
-        if (!Main.EnableCustomButton.Value) return true;
+        if (!Main.EnableCustomButton.Value || __instance == null || settings == null) return true;
 
         __instance.SetInfiniteUses();
 

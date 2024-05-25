@@ -136,6 +136,10 @@ internal class Lawyer : RoleBase
         else
             Target.Remove(reader.ReadByte());
     }
+
+    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute)
+        => !(ChangeRolesAfterTargetKilled.GetValue() is 1 or 2) && !ForRecompute;
+
     private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (!Target.ContainsValue(target.PlayerId)) return;
@@ -151,11 +155,11 @@ internal class Lawyer : RoleBase
             if (x.Value == target.PlayerId)
                 Lawyer = x.Key;
         });
-        Utils.GetPlayerById(Lawyer).RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
+        Utils.GetPlayerById(Lawyer)?.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         Target.Remove(Lawyer);
         SendRPC(Lawyer, SetTarget: false);
 
-        if (GameStates.IsMeeting)
+        if (inMeeting)
         {
             Utils.SendMessage(GetString("LawyerTargetDeadInMeeting"), sendTo: Lawyer, replay: true);
         }
