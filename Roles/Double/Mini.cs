@@ -183,22 +183,22 @@ internal class Mini : RoleBase
         return false;
     }
 
-    public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public override void CheckExile(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
         if (GetPlayerById(exiled.PlayerId).Is(CustomRoles.NiceMini) && Age < 18)
         {
-            if (isMeetingHud)
+            if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
             {
-                name = string.Format(GetString("ExiledNiceMini"), Main.LastVotedPlayer, GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
-                DecidedWinner = true;
-            }
-            else
-            {
-                if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
+                if (isMeetingHud)
+                {
+                    name = string.Format(GetString("ExiledNiceMini"), Main.LastVotedPlayer, GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                }
+                else
                 {
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
                     CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
                 }
+                DecidedWinner = true;
             }
         }
     }

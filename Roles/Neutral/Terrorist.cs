@@ -48,7 +48,7 @@ internal class Terrorist : RoleBase
         Logger.Info(target?.Data?.PlayerName + " was Terrorist", "AfterPlayerDeathTasks");
         CheckTerroristWin(target.Data);
     }
-    public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public override void CheckExile(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
         CheckTerroristWin(exiled);
     }

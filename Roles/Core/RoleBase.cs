@@ -263,8 +263,15 @@ public abstract class RoleBase
     /// <summary>
     /// Check exile role
     /// </summary>
+    public virtual void CheckExile(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    { }
+
+    /// <summary>
+    /// Check exile target
+    /// </summary>
     public virtual void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     { }
+
     /// <summary>
     /// When player was exiled
     /// </summary>

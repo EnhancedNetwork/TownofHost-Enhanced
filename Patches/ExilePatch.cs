@@ -73,12 +73,14 @@ class ExileControllerWrapUpPatch
             exiled.IsDead = true;
             Main.PlayerStates[exiled.PlayerId].deathReason = PlayerState.DeathReason.Vote;
 
-            var role = exiled.GetCustomRole();
-            var player = Utils.GetPlayerById(exiled.PlayerId);
-            var exiledRoleClass = player.GetRoleClass();
+            var exiledPC = Utils.GetPlayerById(exiled.PlayerId);
+            var exiledRoleClass = exiledPC.GetRoleClass();
            
             var emptyString = string.Empty;
-            exiledRoleClass?.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
+
+            exiledRoleClass?.CheckExile(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
+
+            CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString));
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
         }

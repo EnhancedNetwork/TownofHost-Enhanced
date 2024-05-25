@@ -437,7 +437,9 @@ class CheckForEndVotingPatch
         }
         var DecidedWinner = false;
 
-        player.GetRoleClass()?.CheckExileTarget(exiledPlayer, ref DecidedWinner, isMeetingHud: true, name: ref name);
+        player.GetRoleClass()?.CheckExile(exiledPlayer, ref DecidedWinner, isMeetingHud: true, name: ref name);
+
+        CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.CheckExileTarget(exiledPlayer, ref DecidedWinner, isMeetingHud: true, name: ref name));
 
         if (DecidedWinner) name += "<size=0>";
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
