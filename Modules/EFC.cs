@@ -1,4 +1,5 @@
-﻿using System;
+using Sentry.Internal.Extensions;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace TOHE
     // Enhanced File Checker.
     internal class EFC
     {
-        private static readonly ReadOnlyCollection<string> BannedBepInExMods = new(new List<string> { "MalumMenu", "AUnlocker" });
+        private static readonly ReadOnlyCollection<string> BannedBepInExMods = new(new List<string> { "MalumMenu", "AUnlocker" }); // Put BepInEx BepInPlugin name, not dll name lol.
         public static string UnauthorizedReason = string.Empty;
         public static List<string> CheatTags = []; // For API report
         public static bool HasUnauthorizedFile = false;
@@ -60,7 +61,7 @@ namespace TOHE
             if (DevManager.GetDevUser(EOSManager.Instance?.friendCode).IsDev) return false;
 
             // Get user info for later use with API.
-            string ClientName = GameObject.Find("AccountTab")?.GetComponent<AccountTab>()?.userName.text;
+            string ClientUserName = GameObject.Find("AccountTab")?.GetComponent<AccountTab>()?.userName.text;
             string ClientFriendCode = EOSManager.Instance.friendCode;
             string ClientPUID = EOSManager.Instance.ProductUserId;
 
@@ -86,34 +87,36 @@ namespace TOHE
                 HasUnauthorizedFile = true;
             }
 
-            // Check for Sicko
+            // Check for Sicko leftover files
             if (File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-settings.json")) ||
                 File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-log.txt")) ||
                 File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-prev-log.txt")))
             {
                 if (!HasUnauthorizedFile) Logger.Warn("Sicko files detected, disabling online play!", "UFC");
                 if (!HasUnauthorizedFile) UnauthorizedReason = GetString("EFC.UnauthorizedFileMsg");
-                if (!CheatTags.Contains("Sicko-Menu")) CheatTags.Add("Sicko-Menu");
+                if (!CheatTags.Contains("Sicko-Menu-Files")) CheatTags.Add("Sicko-Menu-Files");
                 HasUnauthorizedFile = true;
             }
 
-            // Check for AUM
+            // Check for AUM leftover files
             if (File.Exists(Path.Combine(Environment.CurrentDirectory, "settings.json")) ||
                 File.Exists(Path.Combine(Environment.CurrentDirectory, "aum-log.txt")) ||
                 File.Exists(Path.Combine(Environment.CurrentDirectory, "aum-prev-log.txt")))
             {
                 if (!HasUnauthorizedFile) Logger.Warn("AUM files detected, disabling online play!", "UFC");
                 if (!HasUnauthorizedFile) UnauthorizedReason = GetString("EFC.UnauthorizedFileMsg");
-                if (!CheatTags.Contains("AUM-Menu")) CheatTags.Add("AUM-Menu");
+                if (!CheatTags.Contains("AUM-Menu-Files")) CheatTags.Add("AUM-Menu-Files");
                 HasUnauthorizedFile = true;
             }
 
-            // Obfuscate player info
+            // ----------- Unused Until API support is added! -----------
+
+            // Combine Player information and Tags
             string tagsAsString = string.Join(" - ", CheatTags);
-            string ObfuscatedInfo = Obfuscator($"{ClientName}.{ClientFriendCode}.{ClientPUID} - {tagsAsString}");
+            string playerInfo = $"{ClientUserName}.{ClientFriendCode}.{ClientPUID} - {tagsAsString}"; // If Detection goes off send this information to the API database!
 
-            Logger.Test(ObfuscatedInfo);
-
+            // ----------------------------------------------------------
+            
             return HasUnauthorizedFile;
         }
 
@@ -128,22 +131,6 @@ namespace TOHE
                 }
             }
             return false;
-        }
-
-        // Obfuscate info that gets set to the API.
-        public static string Obfuscator(string i)
-        {
-            if (string.IsNullOrEmpty(i)) return i;
-            var f = i.ToCharArray();
-            Array.Reverse(f);
-            var s = new char[f.Length];
-            for (int j = 0; j < f.Length; j += 2)
-            {
-                s[j] = f[Math.Min(j + 1, f.Length - 1)];
-                if (j + 1 < f.Length) s[j + 1] = f[j];
-            }
-            for (int j = 0; j < s.Length; j++) s[j] = (char)(s[j] + 5 + 5 + 5 + 55 + 504);
-            return new string(s);
         }
     }
 }
