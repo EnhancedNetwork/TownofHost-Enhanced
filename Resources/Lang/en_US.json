@@ -13,8 +13,6 @@
   "Website": "Website",
   "PlayerNameForRoleInfo": "Hi {0}, your role is:- \n",
 
-  "HostIconInMeeting": "HOST: {0}",
-
   "SubText.Crewmate": "Find and exile the <color=#ff1919>Impostors</color>",
   "SubText.Impostor": "Sabotage and kill everyone",
   "SubText.Neutral": "Work alone to achieve your victory",
@@ -2561,24 +2559,6 @@
 
   "RandCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/rand X Y</b> to get a number between X and Y, inclusive. \nX and Y can be any number between 0 and 2147483647, including both numbers.\nX must be less than Y.\n\nExample:- <b>/rand 0 99</b>",
   "RandResult": "Congratulations, your random number is {0}! Wasn't that fun?",
-
-  "8BallTitle": "The Magic 8 Ball Reveals...",
-  "8BallYes": "Yes",
-  "8BallNo": "No",
-  "8BallMaybe": "Maybe",
-  "8BallTryAgainLater": "Ask again later",
-  "8BallCertain": "It is certain",
-  "8BallNotLikely": "Outlook not so good",
-  "8BallLikely": "Outlook good",
-  "8BallDontCount": "Don't count on it",
-  "8BallStop": "Stop using an 8Ball in an Among Us mod",
-  "8BallPossibly": "Possibly",
-  "8BallProbably": "Probably",
-  "8BallProbablyNot": "Probably not",
-  "8BallBetterNotTell": "Better not tell you now",
-  "8BallCantPredict": "Cannot predict now",
-  "8BallWithoutDoubt": "Without a doubt",
-  "8BallWithDoubt": "Very doubtful",
 
   "ChanceToMiss": "Chance to miss a kill",
 
