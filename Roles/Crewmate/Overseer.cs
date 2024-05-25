@@ -1,8 +1,9 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
+using UnityEngine;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -112,27 +113,42 @@ internal class Overseer : RoleBase
         RandomRole.Remove(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    // RPC broken (Loonie moment)
 
-    //private static void SendCurrentRevealTargetRPC(byte overseertId, byte targetId)
-    //{
-    //    if (PlayerControl.LocalPlayer.PlayerId == overseertId)
-    //    {
-    //        CurrentRevealTarget = targetId;
-    //    }
-    //    else
-    //    {
-    //        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentRevealTarget, SendOption.Reliable, -1);
-    //        writer.Write(overseertId);
-    //        writer.Write(targetId);
-    //        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    //    }
-    //}
+    private static void SendTimerRPC(byte RpcType, byte overseertId, PlayerControl target = null, float timer = 0)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOverseerTimer, SendOption.Reliable, -1);
+        writer.Write(RpcType);
+        writer.Write(overseertId);
+        if (target != null && RpcType == 1)
+        {
+            writer.WriteNetObject(target);
+            writer.Write(timer);
+        }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveTimerRPC(MessageReader reader)
+    {
+        var RpcType = reader.ReadByte();
+        var overseertId = reader.ReadByte();
 
-
+        switch (RpcType)
+        {
+            case 0:
+                OverseerTimer.Clear();
+                break;
+            case 1:
+                var target = reader.ReadNetObject<PlayerControl>();
+                var timer = reader.ReadSingle();
+                OverseerTimer.TryAdd(overseertId, (target, timer));
+                break;
+            case 2:
+                OverseerTimer.Remove(overseertId);
+                break;
+        }
+    }
     private static void SetRevealtPlayerRPC(PlayerControl player, PlayerControl target, bool isRevealed)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRevealedPlayer, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOverseerRevealedPlayer, SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isRevealed);
@@ -168,8 +184,8 @@ internal class Overseer : RoleBase
         if (!IsRevealed[(killer.PlayerId, target.PlayerId)] && !OverseerTimer.ContainsKey(killer.PlayerId))
         {
             OverseerTimer.TryAdd(killer.PlayerId, (target, 0f));
+            SendTimerRPC(1, killer.PlayerId, target, 0f);
             NotifyRoles(SpecifySeer: killer);
-            //SendCurrentRevealTargetRPC(killer.PlayerId, target.PlayerId);
         }
         return false;
     }
@@ -181,8 +197,8 @@ internal class Overseer : RoleBase
         if (!player.IsAlive() || Pelican.IsEaten(playerId))
         {
             OverseerTimer.Remove(playerId);
+            SendTimerRPC(2, playerId);
             NotifyRoles(SpecifySeer: player);
-            //ResetCurrentRevealTarget(playerId);
         }
         else
         {
@@ -191,15 +207,19 @@ internal class Overseer : RoleBase
             if (!farTarget.IsAlive())
             {
                 OverseerTimer.Remove(playerId);
+                SendTimerRPC(2, playerId);
             }
             else if (farTime >= OverseerRevealTime.GetFloat())
             {
                 player.SetKillCooldown();
+
                 OverseerTimer.Remove(playerId);
+                SendTimerRPC(2, playerId);
+
                 IsRevealed[(playerId, farTarget.PlayerId)] = true;
                 SetRevealtPlayerRPC(player, farTarget, true);
+
                 NotifyRoles(SpecifySeer: player);
-                //ResetCurrentRevealTarget(playerId);
             }
             else
             {
@@ -209,23 +229,25 @@ internal class Overseer : RoleBase
                 if (dis <= range)
                 {
                     OverseerTimer[playerId] = (farTarget, farTime + Time.fixedDeltaTime);
+                    SendTimerRPC(1, playerId, farTarget, farTime + Time.fixedDeltaTime);
                 }
                 else
                 {
                     OverseerTimer.Remove(playerId);
+                    SendTimerRPC(2, playerId);
+
                     NotifyRoles(SpecifySeer: player, SpecifyTarget: farTarget, ForceLoop: true);
-                    //ResetCurrentRevealTarget(playerId);
 
                     Logger.Info($"Canceled: {player.GetNameWithRole()}", "Overseer");
                 }
             }
         }
     }
-    //public static void ResetCurrentRevealTarget(byte overseerId) => SendCurrentRevealTargetRPC(overseerId, 255);
 
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         OverseerTimer.Clear();
+        SendTimerRPC(0, byte.MaxValue);
     }
 
     private static string GetRandomCrewRoleString() // Random role for trickster
@@ -241,7 +263,6 @@ internal class Overseer : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (seer.Is(CustomRoles.Overseer))
         if (OverseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == seen)
             return $"<color={GetRoleColorCode(CustomRoles.Overseer)}>○</color>";
 
