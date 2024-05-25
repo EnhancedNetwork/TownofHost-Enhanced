@@ -87,8 +87,10 @@ internal class Romantic : RoleBase
         byte PlayerId = reader.ReadByte();
         int Times = reader.ReadInt32();
         byte Target = reader.ReadByte();
+
         BetTimes.Remove(PlayerId);
         BetPlayer.Remove(PlayerId);
+
         BetTimes.Add(PlayerId, Times);
         if (Target != byte.MaxValue)
             BetPlayer.Add(PlayerId, Target);
@@ -146,8 +148,7 @@ internal class Romantic : RoleBase
             if (BetTargetKnowRomantic.GetBool())
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), GetString("RomanticBetOnYou")));
 
-            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
-            Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
+            Utils.NotifyRoles();
 
             Logger.Info($"Romantic：{killer.GetNameWithRole().RemoveHtmlTags()} bet player => {target.GetNameWithRole().RemoveHtmlTags()}", "Romantic");
         }
@@ -176,29 +177,36 @@ internal class Romantic : RoleBase
 
         return false;
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-    {
-        if (seer == null || seer.Is(CustomRoles.Romantic)) return string.Empty;
-        if (!BetPlayer.ContainsValue(seer.PlayerId)) return string.Empty;
-        if (!BetTargetKnowRomantic.GetBool()) return string.Empty;
-
-        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
-    }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
         => isPartnerProtected && BetPlayer.ContainsValue(target.PlayerId);
 
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide) => isRomanticAlive = false;
-    
-    private static string TargetMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
+
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Romantic))
+        if (seer == seen) return string.Empty; 
+
+        return BetPlayer.ContainsValue(seen.PlayerId)
+            ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥") : string.Empty;
+    }
+    private string TargetMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
+    {
+        if (!seer.Is(CustomRoles.Romantic) && BetTargetKnowRomantic.GetBool())
         {
-            if (!BetTargetKnowRomantic.GetBool()) return "";
-            return (BetPlayer.TryGetValue(target.PlayerId, out var x) && seer.PlayerId == x) ?
-                Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥") : "";
+            if (seer == target && seer.IsAlive() && BetPlayer.ContainsValue(seer.PlayerId))
+            {
+                return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
+            }
+            else if (seer != target && seer.IsAlive() && BetPlayer.ContainsKey(target.PlayerId) && BetPlayer.ContainsValue(seer.PlayerId))
+            {
+                return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
+            }
+            else if (seer != target && !seer.IsAlive() && BetPlayer.ContainsValue(target.PlayerId))
+            {
+                return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
+            }
         }
-        var GetValue = BetPlayer.TryGetValue(seer.PlayerId, out var targetId);
-        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥") : "";
+        return string.Empty;
     }
     public override string GetProgressText(byte playerId, bool cooms)
     {
