@@ -521,19 +521,19 @@ class DeathReasonQuestion : QuizQuestionBase
         {
             PossibleAnswers.Add("None");
             PossibleAnswers.Add(PlayerState.DeathReason.etc.ToString());
-            PossibleAnswers.Add(PlayerState.DeathReason.Vote.ToString());
+            PossibleAnswers.Add(GetString("DeathReason.Vote"));
         }
         else if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathMethodQuestion)
         {
-            PossibleAnswers.Add(PlayerState.DeathReason.Disconnected.ToString());
-            PossibleAnswers.Add(PlayerState.DeathReason.Vote.ToString());
-            PossibleAnswers.Add(PlayerState.DeathReason.Kill.ToString());
+            PossibleAnswers.Add(GetString("Disconnected"));
+            PossibleAnswers.Add(GetString("DeathReason.Vote"));
+            PossibleAnswers.Add(GetString("DeathReason.Kill"));
         }
         else if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathKillerFactionQuestion)
         {
             PossibleAnswers.Add("");
-            PossibleAnswers.Add(PlayerState.DeathReason.Vote.ToString());
-            PossibleAnswers.Add(PlayerState.DeathReason.Kill.ToString());
+            PossibleAnswers.Add(GetString("DeathReason.Vote"));
+            PossibleAnswers.Add(GetString("DeathReason.Kill"));
         }
 
         chosenPlayer = Main.AllPlayerControls[rnd.Next(Main.AllPlayerControls.Length)];
@@ -557,7 +557,7 @@ class DeathReasonQuestion : QuizQuestionBase
         Answer = QuizmasterQuestionType switch
         {
             QuizmasterQuestionType.PlrDeathReasonQuestion => chosenPlayer.Data.IsDead ? Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString() : "None",
-            QuizmasterQuestionType.PlrDeathMethodQuestion => chosenPlayer.Data.Disconnected ? PlayerState.DeathReason.Disconnected.ToString() : (Main.PlayerStates[chosenPlayer.PlayerId].deathReason == PlayerState.DeathReason.Vote ? PlayerState.DeathReason.Vote.ToString() : PlayerState.DeathReason.Kill.ToString()),
+            QuizmasterQuestionType.PlrDeathMethodQuestion => chosenPlayer.Data.Disconnected ? GetString("Disconnected") : (Main.PlayerStates[chosenPlayer.PlayerId].deathReason == PlayerState.DeathReason.Vote ? GetString("DeathReason.Vote") : GetString("DeathReason.Kill")),
             QuizmasterQuestionType.PlrDeathKillerFactionQuestion => CustomRolesHelper.GetRoleTypes(chosenPlayer.GetRealKiller().GetCustomRole()).ToString(),
             _ => "None"
         };

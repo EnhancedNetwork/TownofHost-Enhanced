@@ -1873,7 +1873,6 @@
   "DeathReason.Torched": "Burned",
   "DeathReason.Sniped": "Sniped",
   "DeathReason.Execution": "Executed",
-  "DeathReason.Disconnected": "Disconnected",
   "DeathReason.Fall": "Fall",
   "DeathReason.Revenge": "Revenge",
   "DeathReason.Eaten": "Eaten",
@@ -1902,6 +1901,7 @@
   "DeathReason.BloodLet": "Bleed",
   "OnlyEnabledDeathReasons": "Only Enabled Death Reasons",
   "Alive": "Alive",
+  "Disconnected": "Disconnected",
   "Win": " Wins!",
 
   "Last-": "Last ",

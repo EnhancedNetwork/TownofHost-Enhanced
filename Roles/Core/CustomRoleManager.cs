@@ -75,7 +75,7 @@ public static class CustomRoleManager
     /// <summary>
     /// Builds Modified GameOptions
     /// </summary>
-    public static void BuildCustomGameOptions(this PlayerControl player, ref IGameOptions opt, CustomRoles role)
+    public static void BuildCustomGameOptions(this PlayerControl player, ref IGameOptions opt)
     {
         if (player.IsAnySubRole(x => x is CustomRoles.EvilSpirit))
         {
