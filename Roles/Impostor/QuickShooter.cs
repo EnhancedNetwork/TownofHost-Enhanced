@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using System;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -37,6 +38,7 @@ internal class QuickShooter : RoleBase
     private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
         writer.Write(ShotLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

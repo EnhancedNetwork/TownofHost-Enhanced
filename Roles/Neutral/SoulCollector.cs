@@ -1,4 +1,5 @@
 using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -49,10 +50,10 @@ internal class SoulCollector : RoleBase
 
     public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), SoulCollectorPoints.TryGetValue(playerId, out var x) ? $"({x}/{SoulCollectorPointsOpt.GetInt()})" : "Invalid");
 
-    private static void SendRPC(byte playerId)
+    private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Collector); //SetSoulCollectorLimit
+        writer.WriteNetObject(_Player); //SetSoulCollectorLimit
         writer.Write(playerId);
         writer.Write(SoulCollectorPoints[playerId]);
         writer.Write(SoulCollectorTarget[playerId]);
@@ -112,7 +113,8 @@ internal class SoulCollector : RoleBase
         {
             if (targetId == byte.MaxValue) continue;
 
-            if (targetId == deadPlayer.PlayerId && Main.PlayerStates[targetId].deathReason != PlayerState.DeathReason.Disconnected)
+            Main.PlayerStates.TryGetValue(targetId, out var playerState);
+            if (targetId == deadPlayer.PlayerId && playerState.IsDead && playerState.deathReason != PlayerState.DeathReason.etc) // if player death reason is "ect", then player was left the game
             {
                 SoulCollectorTarget[playerId] = byte.MaxValue;
                 SoulCollectorPoints[playerId]++;

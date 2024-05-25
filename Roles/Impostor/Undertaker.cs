@@ -57,7 +57,7 @@ internal class Undertaker : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UndertakerLocationSync, SendOption.Reliable, -1);
         writer.Write(playerId);
         var xLoc = MarkedLocation[playerId].x;
         writer.Write(xLoc);
@@ -65,7 +65,7 @@ internal class Undertaker : RoleBase
         writer.Write(yLoc);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte PlayerId = reader.ReadByte();
         float xLoc = reader.ReadSingle();

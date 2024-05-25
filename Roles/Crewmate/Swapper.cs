@@ -346,14 +346,14 @@ internal class Swapper : RoleBase
     }
     private static void SendSwapRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSwapperVotes, SendOption.Reliable, -1);
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveSwapRPC(MessageReader reader, PlayerControl pc)
+    public static void ReceiveSwapRPC(MessageReader reader)
     {
         byte PlayerId = reader.ReadByte();
-        SwapMsg($"/sw {PlayerId}");
+        if (Main.PlayerStates[PlayerId].RoleClass is Swapper sw) sw.SwapMsg($"/sw {PlayerId}");
     }
     private void SwapperOnClick(byte playerId, MeetingHud __instance)
     {

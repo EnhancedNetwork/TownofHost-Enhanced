@@ -56,7 +56,7 @@ class ExileControllerWrapUpPatch
         AntiBlackout.RestoreIsDead(doSend: false);
 
         var collectors = Utils.GetPlayerListByRole(CustomRoles.Collector);
-        List<Collector> collectorCL = collectors?.Select(x => x.GetRoleClass()).Cast<Collector>().ToList();
+        List<Collector> collectorCL = collectors?.Select(x => x.GetRoleClass()).OfType<Collector>().ToList();
 
         if (collectorCL != null && collectorCL.Any()) Logger.Info($"{!collectorCL.Any(x => x.CollectorWin(false))}", "!Collector.CollectorWin(false)");
         Logger.Info($"{exiled != null}", "exiled != null");
@@ -73,12 +73,14 @@ class ExileControllerWrapUpPatch
             exiled.IsDead = true;
             Main.PlayerStates[exiled.PlayerId].deathReason = PlayerState.DeathReason.Vote;
 
-            var role = exiled.GetCustomRole();
-            var player = Utils.GetPlayerById(exiled.PlayerId);
-            var exiledRoleClass = player.GetRoleClass();
+            var exiledPC = Utils.GetPlayerById(exiled.PlayerId);
+            var exiledRoleClass = exiledPC.GetRoleClass();
            
             var emptyString = string.Empty;
-            exiledRoleClass?.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
+
+            exiledRoleClass?.CheckExile(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
+
+            CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString));
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
         }

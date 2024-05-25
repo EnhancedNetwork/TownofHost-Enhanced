@@ -6,6 +6,7 @@ using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
+using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -47,7 +48,7 @@ internal class Medium : RoleBase
     public void SendRPC(byte playerId, byte targetId = 0xff, bool isUsed = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Medium);
+        writer.WriteNetObject(_Player);
         writer.Write(playerId);
         writer.Write(AbilityLimit);
         writer.Write(isUsed);

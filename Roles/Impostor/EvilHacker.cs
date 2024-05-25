@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Hazel;
+using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -22,6 +23,8 @@ internal class EvilHacker : RoleBase
     private static OptionItem OptionCanSeeImpostorMark;
     private static OptionItem OptionCanSeeKillFlash;
     private static OptionItem OptionCanSeeMurderRoom;
+
+    private static byte player = 0;
 
     public enum OptionName
     {
@@ -61,16 +64,21 @@ internal class EvilHacker : RoleBase
     }
     public override void Add(byte playerId)
     {
+        player = playerId;
         evilHackerPlayer = Utils.GetPlayerById(playerId);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(HandleMurderRoomNotify);
     }
 
-    private static void HandleMurderRoomNotify(PlayerControl killer, PlayerControl target, bool inMeeting)
+    private void HandleMurderRoomNotify(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (canSeeMurderRoom)
         {
-            OnMurderPlayer(killer, target, inMeeting);
+            if (!evilHackerPlayer.IsAlive() || inMeeting || !CheckKillFlash(killer, target) || killer.PlayerId == evilHackerPlayer.PlayerId)
+            {
+                return;
+            }
+            RpcCreateMurderNotify(target.GetPlainShipRoom()?.RoomId ?? SystemTypes.Hallway);
         }
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
@@ -120,17 +128,9 @@ internal class EvilHacker : RoleBase
         }, 5f, "EvilHacker Admin Message");
         return;
     }
-    private static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting)
-    {
-        if (!evilHackerPlayer.IsAlive() || !CheckKillFlash(killer, target, inMeeting) || killer.PlayerId == evilHackerPlayer.PlayerId)
-        {
-            return;
-        }
-        RpcCreateMurderNotify(target.GetPlainShipRoom()?.RoomId ?? SystemTypes.Hallway);
-    }
 
     public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
-        => CheckKillFlash(killer, target, GameStates.IsMeeting);
+        => CheckKillFlash(killer, target) && killer.PlayerId != seer.PlayerId;
 
     private static void RpcCreateMurderNotify(SystemTypes room)
     {
@@ -143,7 +143,7 @@ internal class EvilHacker : RoleBase
     private static void SendRPC(byte RpcTypeId, SystemTypes room)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
+        writer.WriteNetObject(Utils.GetPlayerById(player));
         writer.Write(RpcTypeId);
         writer.Write((byte)room);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -206,9 +206,6 @@ internal class EvilHacker : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (!AmongUsClient.Instance.AmHost)
-        Logger.Info($"{canSeeMurderRoom} - {activeNotifies.Count}", "EvilHacker.GetSuffix");
-
         if (!canSeeMurderRoom || seer.PlayerId != seen.PlayerId || isForMeeting || !activeNotifies.Any())
         {
             return string.Empty;
@@ -217,8 +214,8 @@ internal class EvilHacker : RoleBase
         return Utils.ColorString(Color.green, $"{Translator.GetString("EvilHackerMurderNotify")}: {string.Join(", ", roomNames)}");
     }
 
-    public static bool CheckKillFlash(PlayerControl killer, PlayerControl target, bool inMeeting)
-        => canSeeKillFlash && killer.PlayerId != target.PlayerId && !inMeeting;
+    public static bool CheckKillFlash(PlayerControl killer, PlayerControl target)
+        => canSeeKillFlash && killer.PlayerId != target.PlayerId;
 
 
     private static readonly TimeSpan NotifyDuration = TimeSpan.FromSeconds(10);

@@ -37,6 +37,10 @@ internal class Eraser : RoleBase
         didVote.Clear();
         ErasedRoleStorage.Clear();
     }
+    public override void Add(byte playerId)
+    {
+        AbilityLimit = EraseLimitOpt.GetInt();
+    }
     public override string GetProgressText(byte playerId, bool comms)
         => Utils.ColorString(AbilityLimit <= 0 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, $"({AbilityLimit})");
 

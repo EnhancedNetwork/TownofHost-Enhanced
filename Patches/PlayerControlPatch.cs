@@ -110,7 +110,6 @@ class CheckMurderPatch
         if (GameStates.IsHideNSeek) return true;
 
         var killer = __instance;
-        var killerRole = __instance.GetRoleClass();
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
@@ -118,7 +117,6 @@ class CheckMurderPatch
         {
             return false;
         }
-
 
         killer.ResetKillCooldown();
         Logger.Info($"Kill Cooldown Resets", "CheckMurder");
@@ -232,7 +230,7 @@ class CheckMurderPatch
         List<PlayerControl> penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
         if (Penguin.HasEnabled && penguins != null && penguins.Any())
         {
-            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && killer.PlayerId == pg.AbductVictim.PlayerId))
+            if (penguins.Select(x => x.GetRoleClass()).OfType<Penguin>().Any(x => killer.PlayerId == x?.AbductVictim?.PlayerId))
             {
                 killer.Notify(GetString("PenguinTargetOnCheckMurder"));
                 killer.SetKillCooldown(5);
@@ -481,12 +479,11 @@ class MurderPlayerPatch
         if (!killer.Is(CustomRoles.Trickster))
             Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
 
-        AfterPlayerDeathTasks(killer, target, false);
-
         Main.PlayerStates[target.PlayerId].SetDead();
         target.SetRealKiller(killer, true);
         Utils.CountAlivePlayers(true);
 
+        AfterPlayerDeathTasks(killer, target, false);
         Utils.TargetDies(__instance, target);
 
         if (Options.LowLoadMode.GetBool())
@@ -877,7 +874,6 @@ class FixedUpdateInNormalGamePatch
     private static readonly StringBuilder Mark = new(20);
     private static readonly StringBuilder Suffix = new(120);
     private static readonly Dictionary<int, int> BufferTime = [];
-    private static readonly Dictionary<int, int> BufferTimeForVeryLowLoad = [];
     private static int LevelKickBufferTime = 20;
 
     public static async void Postfix(PlayerControl __instance)
@@ -941,27 +937,6 @@ class FixedUpdateInNormalGamePatch
 
             BufferTime[player.PlayerId] = timerLowLoad;
         }
-
-        // The code is called once every 5 second (by one player)
-        bool veryLowLoad = false;
-        if (!BufferTimeForVeryLowLoad.TryGetValue(player.PlayerId, out var timerVeryLowLoad))
-        {
-            BufferTimeForVeryLowLoad.TryAdd(player.PlayerId, 90);
-            timerVeryLowLoad = 90;
-        }
-
-        timerVeryLowLoad--;
-
-        if (timerVeryLowLoad > 0)
-        {
-            veryLowLoad = true;
-        }
-        else
-        {
-            timerVeryLowLoad = 90;
-        }
-
-        BufferTimeForVeryLowLoad[player.PlayerId] = timerVeryLowLoad;
 
         if (!lowLoad)
         {
@@ -1046,10 +1021,10 @@ class FixedUpdateInNormalGamePatch
             DoubleTrigger.OnFixedUpdate(player);
 
             //Mini's count down needs to be done outside if intask if we are counting meeting time
-            if (GameStates.IsInGame && player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini))
+            if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
             {
                 if (!player.Data.IsDead)
-                    Mini.OnFixedUpdates(player);
+                    min.OnFixedUpdates(player);
             }
 
             if (GameStates.IsInTask)
@@ -1062,6 +1037,7 @@ class FixedUpdateInNormalGamePatch
                 if (!lowLoad)
                 {
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
+                    
                     if (Glow.IsEnable)
                         Glow.OnFixedUpdate(player);
 
@@ -1117,9 +1093,8 @@ class FixedUpdateInNormalGamePatch
 
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
         var RoleText = RoleTextTransform.GetComponent<TMPro.TextMeshPro>();
-        bool runCode = !veryLowLoad || (!lowLoad && __instance.AmOwner && (LocateArrow.HasLocateArrows(__instance) || TargetArrow.HasTargetArrows(__instance) || Camouflage.IsCamouflage));
 
-        if (RoleText != null && __instance != null && runCode)
+        if (RoleText != null && __instance != null && !lowLoad)
         {
             if (GameStates.IsLobby)
             {
@@ -1164,7 +1139,7 @@ class FixedUpdateInNormalGamePatch
                 var seerRoleClass = seer.GetRoleClass();
                 var target = __instance;
 
-                if (seer != target)
+                if (seer != target && seer != DollMaster.DollMasterTarget)
                     target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
 
                 string RealName = target.GetRealName();
@@ -1195,13 +1170,13 @@ class FixedUpdateInNormalGamePatch
                 Mark.Append(seerRoleClass?.GetMark(seer, target, false));
                 Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
 
-                Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target));
+                Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, false, false));
 
 
                 if (Radar.IsEnable) Suffix.Append(Radar.GetPlayerArrow(seer, target, isForMeeting: false));
 
-                Suffix.Append(seerRoleClass?.GetSuffix(seer, target));
-                Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
+                Suffix.Append(seerRoleClass?.GetSuffix(seer, target, false));
+                Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, false));
 
 
                 if (seerRole.IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
@@ -1238,7 +1213,7 @@ class FixedUpdateInNormalGamePatch
                 }
 
                 // Camouflage
-                if (Camouflage.IsCamouflage)
+                if ((Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated)
                     RealName = $"<size=0%>{RealName}</size> ";
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
@@ -1564,7 +1539,7 @@ public static class PlayerControlDiePatch
 class PlayerControlSetRolePatch
 {
     public static readonly Dictionary<byte, bool> DidSetGhost = [];
-    public static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
+    private static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType)
     {
         if (GameStates.IsHideNSeek || __instance == null) return true;
@@ -1589,15 +1564,14 @@ class PlayerControlSetRolePatch
             }
 
             var targetIsKiller = target.Is(Custom_Team.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
+            ghostRoles.Clear();
 
             foreach (var seer in Main.AllPlayerControls)
             {
                 var self = seer.PlayerId == target.PlayerId;
                 var seerIsKiller = seer.Is(Custom_Team.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
-                if (!ghostRoles.ContainsKey(seer))
-                    ghostRoles.Add(seer, roleType);
 
-                if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
+                if (target.GetCustomRole().IsGhostRole() || target.IsAnySubRole(x => x.IsGhostRole()))
                 {
                     ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
@@ -1610,16 +1584,19 @@ class PlayerControlSetRolePatch
                     ghostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
-            if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
+            // If all players see player as Guardian Angel
+            if (ghostRoles.All(kvp => kvp.Value == RoleTypes.GuardianAngel))
             {
                 roleType = RoleTypes.GuardianAngel;
                 return true;
             }
+            // If all players see player as Crewmate Ghost
             else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
             {
                 roleType = RoleTypes.CrewmateGhost;
                 return true;
             }
+            // If all players see player as Impostor Ghost
             else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
             {
                 roleType = RoleTypes.ImpostorGhost;

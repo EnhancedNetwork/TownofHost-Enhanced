@@ -91,7 +91,6 @@ internal class Enigma : RoleBase
 
     public override void OnReportDeadBody(PlayerControl player, PlayerControl target)
     {
-
         if (target == null) return;
 
         PlayerControl killer = target.GetRealKiller();
@@ -149,7 +148,11 @@ internal class Enigma : RoleBase
                 MsgToSendTitle.Add(playerId, title);
         }
     }
-
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
+    {
+        MsgToSend.Remove(target.PlayerId);
+        MsgToSendTitle.Remove(target.PlayerId);
+    }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
         if (MsgToSend.ContainsKey(pc.PlayerId))
