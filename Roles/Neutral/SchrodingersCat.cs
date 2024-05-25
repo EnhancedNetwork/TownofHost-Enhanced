@@ -65,6 +65,16 @@ internal class SchrodingersCat : RoleBase
         return false;
     }
 
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+    {
+        if (teammate.TryGetValue(seer.PlayerId, out var temmate) && target.PlayerId == temmate)
+        {
+            if (target.GetCustomRole().IsCrewmate()) return Main.roleColors[CustomRoles.CrewmateTOHE];
+            else return Main.roleColors[target.GetCustomRole()];
+        }
+        return string.Empty;
+    }
+
     public static void SchrodingerWinCondition(PlayerControl pc)
     {
         if (!HasEnabled) return;
