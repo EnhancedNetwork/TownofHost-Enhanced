@@ -250,7 +250,7 @@ internal class Solsticer : RoleBase
     }
     public static void SetShortTasksToAdd()
     {
-        var TotalPlayer = Main.PlayerStates.Count(x => x.Value.deathReason != PlayerState.DeathReason.Disconnected);
+        var TotalPlayer = Main.PlayerStates.Count(x => x.Value.Disconnected == false);
         var AlivePlayer = Main.AllAlivePlayerControls.Length;
 
         AddShortTasks = (int)((TotalPlayer - AlivePlayer) * AddTasksPreDeadPlayer.GetFloat());

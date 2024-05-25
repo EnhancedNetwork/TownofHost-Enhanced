@@ -350,7 +350,7 @@ internal class Swapper : RoleBase
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveSwapRPC(MessageReader reader, PlayerControl pc)
+    public static void ReceiveSwapRPC(MessageReader reader)
     {
         byte PlayerId = reader.ReadByte();
         if (Main.PlayerStates[PlayerId].RoleClass is Swapper sw) sw.SwapMsg($"/sw {PlayerId}");

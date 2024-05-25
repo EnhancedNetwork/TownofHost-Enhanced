@@ -501,12 +501,12 @@ public static class Utils
     public static string GetVitalText(byte playerId, bool RealKillerColor = false)
     {
         var state = Main.PlayerStates[playerId];
-        string deathReason = state.IsDead ? GetString("DeathReason." + state.deathReason) : GetString("Alive");
+        string deathReason = state.IsDead ? state.deathReason == PlayerState.DeathReason.etc && state.Disconnected ? GetString("Disconnected") : GetString("DeathReason." + state.deathReason) : GetString("Alive");
         if (RealKillerColor)
         {
             var KillerId = state.GetRealKiller();
             Color color = KillerId != byte.MaxValue ? GetRoleColor(Main.PlayerStates[KillerId].MainRole) : GetRoleColor(CustomRoles.Doctor);
-            if (state.deathReason == PlayerState.DeathReason.Disconnected) color = new Color(255, 255, 255, 50);
+            if (state.deathReason == PlayerState.DeathReason.etc && state.Disconnected) color = new Color(255, 255, 255, 50);
             deathReason = ColorString(color, deathReason);
         }
         return deathReason;
@@ -1692,7 +1692,7 @@ public static class Utils
 
                 string SelfTaskText = GetProgressText(seer);
                 string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, false)}{SelfTaskText}</size>";
-                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : "";
+                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : string.Empty;
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
@@ -1862,7 +1862,7 @@ public static class Utils
 
                         // ====== Target Death Reason for target (Death Reason visible ​​only to the seer) ======
                         string TargetDeathReason = seer.KnowDeathReason(target) 
-                            ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})" : "";
+                            ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})" : string.Empty;
 
                         // Devourer
                         if (CustomRoles.Devourer.HasEnabled())
@@ -1900,11 +1900,9 @@ public static class Utils
     }
     public static bool DeathReasonIsEnable(this PlayerState.DeathReason reason, bool checkbanned = false)
     {
-        
         static bool BannedReason(PlayerState.DeathReason rso)
         {
-            return rso is PlayerState.DeathReason.Disconnected 
-                or PlayerState.DeathReason.Overtired 
+            return rso is PlayerState.DeathReason.Overtired 
                 or PlayerState.DeathReason.etc
                 or PlayerState.DeathReason.Vote 
                 or PlayerState.DeathReason.Gambled;
@@ -2075,6 +2073,9 @@ public static class Utils
         else name = GetPlayerById(id)?.Data.PlayerName ?? name;
 
         var taskState = Main.PlayerStates?[id].TaskState;
+
+        Main.PlayerStates.TryGetValue(id, out var playerState);
+
         string TaskCount;
 
         if (taskState.hasTasks)
@@ -2088,17 +2089,18 @@ public static class Utils
 
             CurrentСolor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
 
-            if (Main.PlayerStates.TryGetValue(id, out var ps) && ps.MainRole is CustomRoles.Crewpostor)
+            if (playerState.MainRole is CustomRoles.Crewpostor)
                 CurrentСolor = Color.red;
 
-            if (ps.SubRoles.Contains(CustomRoles.Workhorse))
-                GetRoleColor(ps.MainRole).ShadeColor(0.5f);
+            if (playerState.SubRoles.Contains(CustomRoles.Workhorse))
+                GetRoleColor(playerState.MainRole).ShadeColor(0.5f);
 
             TaskCount = ColorString(CurrentСolor, $" ({taskState.CompletedTasksCount}/{taskState.AllTasksCount})");
         }
         else { TaskCount = GetProgressText(id); }
 
-        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} 『{GetVitalText(id, true)}』";
+        var disconnectedText = playerState.deathReason != PlayerState.DeathReason.etc && playerState.Disconnected ? $"({GetString("Disconnected")})" : string.Empty;
+        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} 『{GetVitalText(id, true)}』 {disconnectedText}";
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:

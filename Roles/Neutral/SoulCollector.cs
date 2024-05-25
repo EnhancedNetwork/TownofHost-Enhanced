@@ -113,7 +113,8 @@ internal class SoulCollector : RoleBase
         {
             if (targetId == byte.MaxValue) continue;
 
-            if (targetId == deadPlayer.PlayerId && Main.PlayerStates[targetId].deathReason != PlayerState.DeathReason.Disconnected)
+            Main.PlayerStates.TryGetValue(targetId, out var playerState);
+            if (targetId == deadPlayer.PlayerId && playerState.IsDead && playerState.deathReason != PlayerState.DeathReason.etc) // "ect" if player not left
             {
                 SoulCollectorTarget[playerId] = byte.MaxValue;
                 SoulCollectorPoints[playerId]++;

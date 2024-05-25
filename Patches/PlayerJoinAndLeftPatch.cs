@@ -307,11 +307,8 @@ class OnPlayerLeftPatch
 
                 if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
 
-                if (Main.PlayerStates[data.Character.PlayerId].deathReason == PlayerState.DeathReason.etc) // If no cause of death was established
-                {
-                    Main.PlayerStates[data.Character.PlayerId].deathReason = PlayerState.DeathReason.Disconnected;
-                    Main.PlayerStates[data.Character.PlayerId].SetDead();
-                }
+                Main.PlayerStates[data.Character.PlayerId].Disconnected = true;
+                Main.PlayerStates[data.Character.PlayerId].SetDead();
 
                 // if the player left while he had a Notice message, clear it
                 if (NameNotifyManager.Notifying(data.Character))
