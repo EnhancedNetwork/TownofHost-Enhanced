@@ -146,8 +146,11 @@ public static class CustomRoleManager
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
 
-        // If Target is possessed by Dollmaster swap controllers.
-        target = DollMaster.SwapPlayerInfo(target);
+        if (DollMaster.HasEnabled)
+        {
+            // If Target is possessed by Dollmaster swap controllers.
+            target = DollMaster.SwapPlayerInfo(target);   
+        }
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
@@ -222,7 +225,7 @@ public static class CustomRoleManager
         }
 
         // Swap controllers if Sheriff shots Dollmasters main body.
-        if (killer.Is(CustomRoles.Sheriff) && target == DollMaster.DollMasterTarget)
+        if (DollMaster.HasEnabled && killer.Is(CustomRoles.Sheriff) && target == DollMaster.DollMasterTarget)
         {
             target = DollMaster.SwapPlayerInfo(target);
         }
