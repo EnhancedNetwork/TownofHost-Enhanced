@@ -10,6 +10,8 @@ public static class GhostRoleAssign
     private static int ImpCount = 0;
     private static int CrewCount = 0;
 
+    public static Dictionary<byte, CustomRoles> forceRole = [];
+
     private static readonly List<CustomRoles> HauntedList = [];
     private static readonly List<CustomRoles> ImpHauntedList = [];
     public static void GhostAssignPatch(PlayerControl player)

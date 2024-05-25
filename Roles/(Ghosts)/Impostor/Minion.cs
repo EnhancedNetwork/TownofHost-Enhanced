@@ -1,5 +1,7 @@
 ﻿using AmongUs.GameOptions;
+using TOHE.Roles.Core;
 using static TOHE.Options;
+using static TOHE.Utils;
 
 namespace TOHE.Roles._Ghosts_.Impostor;
 
@@ -32,11 +34,21 @@ internal class Minion : RoleBase
     public override void Add(byte playerId)
     {
         Playerids.Add(playerId);
+        CustomRoleManager.LowerOthers.Add(GetLowerTextOther);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.GuardianAngelCooldown = AbilityCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
+    }
+    private string GetLowerTextOther(PlayerControl seer, PlayerControl target, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (seer.GetCustomRole().IsImpostorTeam() && Main.PlayerStates[target.PlayerId].IsBlackOut && !isForMeeting)
+        {
+            var blinded = Translator.GetString("blind");
+            return ColorString(GetRoleColor(CustomRoles.Minion), $"『{blinded}』");
+        }
+        return string.Empty;
     }
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
