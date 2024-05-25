@@ -1,4 +1,3 @@
-using Sentry.Internal.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
