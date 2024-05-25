@@ -68,7 +68,7 @@ class TextBoxTMPSetTextPatch
     }
 }
 /* Originally by KARPED1EM. Reference: https://github.com/KARPED1EM/TownOfNext/blob/TONX/TONX/Patches/TextBoxPatch.cs */
-[HarmonyPatch(typeof(TextBoxTMP))]
+/*[HarmonyPatch(typeof(TextBoxTMP))]
 public class TextBoxPatch
 {
     [HarmonyPatch(nameof(TextBoxTMP.SetText)), HarmonyPrefix]
@@ -76,4 +76,4 @@ public class TextBoxPatch
     {
         __instance.characterLimit = 1200;
     }
-}
+}*/
