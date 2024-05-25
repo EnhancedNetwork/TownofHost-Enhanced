@@ -634,6 +634,13 @@ static class ExtendedPlayerControl
     /// </summary>
     public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
     {
+        // If Target is Dollmaster or Possessed Player run Dollmasters kill check instead.
+        if (DollMaster.SwapPlayerInfo(target) != target)
+        {
+            DollMaster.CheckMurderAsPossessed(killer, target);
+            return;
+        }
+        
         killer.RpcMurderPlayer(target, true);
     }
 
