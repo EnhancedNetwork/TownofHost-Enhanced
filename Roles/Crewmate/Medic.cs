@@ -38,9 +38,9 @@ internal class Medic : RoleBase
 
     private enum ShieldDeactivationIsVisible
     {
-        MedicShieldDeactivationIsVisible_DeactivationImmediately,
-        MedicShieldDeactivationIsVisible_DeactivationAfterMeeting,
-        MedicShieldDeactivationIsVisible_DeactivationIsVisibleOFF
+        MedicShieldDeactivationIsVisible_Immediately,
+        MedicShieldDeactivationIsVisible_AfterMeeting,
+        MedicShieldDeactivationIsVisible_OFF
     }
 
     public override void SetupCustomOption()
