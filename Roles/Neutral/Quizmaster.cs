@@ -1,9 +1,11 @@
 ﻿using Hazel;
 using System;
+using InnerNet;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
+using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Neutral;
 
@@ -50,8 +52,8 @@ internal class Quizmaster : RoleBase
         TabGroup tab = TabGroup.NeutralRoles;
 
         SetupSingleRoleOptions(Id, tab, CustomRoles.Quizmaster, 1);
-        QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.QuestionDifficulty", new(1, 4, 1), 1, tab, false).SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-
+        QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.QuestionDifficulty", new(1, 4, 1), 1, tab, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         CanVentAfterMark = BooleanOptionItem.Create(Id + 11, "QuizmasterSettings.CanVentAfterMark", true, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         CanKillAfterMarkOpt = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
@@ -92,15 +94,13 @@ internal class Quizmaster : RoleBase
     {
         MarkedPlayer = byte.MaxValue;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
-        }
+        CustomRoleManager.MarkOthers.Add(GetMarkForOthers);
+        CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
-    private static void SendRPC(byte targetId)
+    private void SendRPC(byte targetId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Quizmaster);
+        writer.WriteNetObject(_Player);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -248,27 +248,36 @@ internal class Quizmaster : RoleBase
             ];
             
             Question = GetRandomQuestion(Questions);
-            
-            _ = new LateTask(() =>
-            {
-                ShowQuestion(Main.AllPlayerControls[MarkedPlayer]);
-                Utils.SendMessage(GetString("QuizmasterChat.Marked").Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer).GetRealName()), Player.PlayerId, GetString("QuizmasterChat.Title"));
-                foreach (var plr in Main.AllPlayerControls)
-                {
-                    if (plr.PlayerId != Player.PlayerId && MarkedPlayer != plr.PlayerId)
-                    {
-                        Utils.SendMessage(GetString("QuizmasterChat.MarkedPublic").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer).GetRealName()), plr.PlayerId, GetString("QuizmasterChat.Title"));
-                    }
-                }
-            }, 7f, "Quizmaster Chat Notice");
         }
     }
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (pc.PlayerId == Player.PlayerId && MarkedPlayer != byte.MaxValue)
+        {
+            AddMsg(GetString("QuizmasterChat.Marked").Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer)?.GetRealName(isMeeting: true)).Replace("{QMQUESTION}", Question.HasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), pc.PlayerId, GetString("QuizmasterChat.Title"));
+        }
+    }
+    public override void OnOthersMeetingHudStart(PlayerControl pc)
+    {
+        if (!Utils.GetPlayerById(MarkedPlayer).IsAlive()) return;
 
+        if (pc.PlayerId == MarkedPlayer)
+        {
+            ShowQuestion(pc);
+        }
+        else if (pc.PlayerId != Player.PlayerId && pc.PlayerId != MarkedPlayer)
+        {
+            AddMsg(GetString("QuizmasterChat.MarkedPublic").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer)?.GetRealName(isMeeting: true)), pc.PlayerId, GetString("QuizmasterChat.Title"));
+        }
+    }
     public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
     {
-        ResetMarkedPlayer(false);
-
         if (exiled == null) return;
+
+        if (exiled.Object.Is(CustomRoles.Quizmaster))
+        {
+            ResetMarkedPlayer(false);
+        }
         lastExiledColor = exiled.GetPlayerColorString();
     }
 
@@ -287,8 +296,9 @@ internal class Quizmaster : RoleBase
 
     public static void ResetMarkedPlayer(bool canMarkAgain = true)
     {
-        if (canMarkAgain == true)
+        if (canMarkAgain)
             AlreadyMarked = false;
+
         MarkedPlayer = byte.MaxValue;
     }
 
@@ -304,7 +314,11 @@ internal class Quizmaster : RoleBase
             => hud.KillButton.OverrideText(GetString(allowedKilling ? "KillButtonText" : "QuizmasterKillButtonText"));
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-            => (seer != null && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : "";
+        => (!isForMeeting && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+
+    private string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool isForMeeting)
+        => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+
     public static void OnSabotageCall(SystemTypes systemType)
     {
         if (!Main.MeetingIsStarted
@@ -345,9 +359,9 @@ internal class Quizmaster : RoleBase
 
     private static void KillPlayer(PlayerControl plrToKill)
     {
-        plrToKill.Data.IsDead = true;
         Main.PlayerStates[plrToKill.PlayerId].deathReason = PlayerState.DeathReason.WrongAnswer;
         Main.PlayerStates[plrToKill.PlayerId].SetDead();
+        plrToKill.Data.IsDead = true;
         plrToKill.RpcExileV2();
         ResetMarkedPlayer(true);
     }

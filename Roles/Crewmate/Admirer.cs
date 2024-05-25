@@ -54,29 +54,27 @@ internal class Admirer : RoleBase
 
     private void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAdmiredAbility, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(AbilityLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SendRPC(byte playerId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked(2);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAdmiredList, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader, bool isList)
+    public static void ReceiveRPC(MessageReader reader, bool isList)
     {
         byte playerId = reader.ReadByte();
         byte targetId;
-        int Limit;
+        float Limit;
         if (!isList)
         {
-            Limit = reader.ReadInt32();
-            AbilityLimit = Limit;
+            Limit = reader.ReadSingle();
+            Main.PlayerStates[playerId].RoleClass.AbilityLimit = Limit;
         }
         else
         {

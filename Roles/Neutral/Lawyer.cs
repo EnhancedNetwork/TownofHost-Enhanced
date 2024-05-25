@@ -1,4 +1,5 @@
 using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -105,10 +106,10 @@ internal class Lawyer : RoleBase
             Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()}:{SelectedTarget.GetNameWithRole()}", "Lawyer");
         }
     }
-    private static void SendRPC(byte lawyerId, byte targetId = 0x73, bool SetTarget = false)
+    private void SendRPC(byte lawyerId, byte targetId = 0x73, bool SetTarget = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WritePacked((int)CustomRoles.Lawyer);
+        writer.WriteNetObject(_Player);
         writer.Write(SetTarget);
 
         if (SetTarget)
@@ -135,6 +136,10 @@ internal class Lawyer : RoleBase
         else
             Target.Remove(reader.ReadByte());
     }
+
+    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute)
+        => !(ChangeRolesAfterTargetKilled.GetValue() is 1 or 2) && !ForRecompute;
+
     private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (!Target.ContainsValue(target.PlayerId)) return;
@@ -150,11 +155,11 @@ internal class Lawyer : RoleBase
             if (x.Value == target.PlayerId)
                 Lawyer = x.Key;
         });
-        Utils.GetPlayerById(Lawyer).RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
+        Utils.GetPlayerById(Lawyer)?.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         Target.Remove(Lawyer);
         SendRPC(Lawyer, SetTarget: false);
 
-        if (GameStates.IsMeeting)
+        if (inMeeting)
         {
             Utils.SendMessage(GetString("LawyerTargetDeadInMeeting"), sendTo: Lawyer, replay: true);
         }
@@ -197,7 +202,7 @@ internal class Lawyer : RoleBase
             }
         });
     }
-    private static void ChangeRole(PlayerControl lawyer)
+    private void ChangeRole(PlayerControl lawyer)
     {
         // Called only in after meeting tasks when target death is impossible to check.
         if (!ShouldChangeRoleAfterTargetDeath.GetBool())

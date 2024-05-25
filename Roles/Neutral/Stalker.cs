@@ -55,7 +55,7 @@ internal class Stalker : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    public void ReceiveRPC(MessageReader msg)
+    public static void ReceiveRPC(MessageReader msg)
     {
         byte StalkerrId = msg.ReadByte();
         bool IsKillerKill = msg.ReadBoolean();
@@ -68,7 +68,7 @@ internal class Stalker : RoleBase
     private static void DRpcSetKillCount(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetStalkerrKillCount, Hazel.SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         writer.Write(IsWinKill[player.PlayerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

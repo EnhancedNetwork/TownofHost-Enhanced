@@ -14,9 +14,18 @@ internal class EngineerTOHE : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
     //==================================================================\\
 
+    private static OptionItem EngineerCD;
+    private static OptionItem EngineerInVentTime;
+
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.EngineerTOHE);
+        EngineerCD = FloatOptionItem.Create(Id + 2, "VentCooldown", new(0f, 250f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EngineerTOHE])
+            .SetValueFormat(OptionFormat.Seconds);
+        EngineerInVentTime = FloatOptionItem.Create(Id + 3, "InVentMaxTime", new(0f, 250f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EngineerTOHE])
+            .SetValueFormat(OptionFormat.Seconds);
     }
 
     public override void Init()
@@ -30,7 +39,9 @@ internal class EngineerTOHE : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.EngineerCooldown = 0f;
-        AURoleOptions.EngineerInVentMaxTime = 0f;
+        AURoleOptions.EngineerCooldown = EngineerCD.GetFloat();
+        AURoleOptions.EngineerInVentMaxTime = EngineerInVentTime.GetFloat();
     }
+
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 300f;
 }

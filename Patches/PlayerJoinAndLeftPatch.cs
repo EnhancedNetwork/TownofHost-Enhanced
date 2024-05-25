@@ -157,6 +157,31 @@ public static class OnPlayerJoinedPatch
         return false;
         //When a client disconnects, it is removed from allClients in method amongusclient.removeplayer
     }
+    public static bool HasInvalidFriendCode(string friendcode)
+    {
+        if (string.IsNullOrEmpty(friendcode))
+        {
+            return true;
+        }
+
+        if (friendcode.Length < 7) // #1234 is 5 chars, and its impossible for a friend code to only have 3
+        {
+            return true;
+        }
+
+        if (friendcode.Count(c => c == '#') != 1)
+        {
+            return true;
+        }
+
+        string pattern = @"[\W\d]";
+        if (Regex.IsMatch(friendcode[..friendcode.IndexOf("#")], pattern))
+        {
+            return true;
+        }
+
+        return false;
+    }
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
@@ -182,21 +207,21 @@ public static class OnPlayerJoinedPatch
         }, 2.5f, "OnPlayerJoined Client <=> Client VersionCheck", false);
 
 
-        if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
+        if (AmongUsClient.Instance.AmHost && HasInvalidFriendCode(client.FriendCode) && Options.KickPlayerFriendCodeInvalid.GetBool() && !GameStates.IsLocalGame)
         {
-            if (!Options.TempBanPlayerFriendCodeNotExist.GetBool())
+            if (!Options.TempBanPlayerFriendCodeInvalid.GetBool())
             {
                 AmongUsClient.Instance.KickPlayer(client.Id, false);
-                Logger.SendInGame(string.Format(GetString("Message.KickedByNoFriendCode"), client.PlayerName));
-                Logger.Info($"Kicked a player {client?.PlayerName} without a friend code", "Kick");
+                Logger.SendInGame(string.Format(GetString("Message.KickedByInvalidFriendCode"), client.PlayerName));
+                Logger.Info($"Kicked a player {client?.PlayerName} because of invalid friend code", "Kick");
             }
             else
             {
                 if (!BanManager.TempBanWhiteList.Contains(client.GetHashedPuid()))
                     BanManager.TempBanWhiteList.Add(client.GetHashedPuid());
                 AmongUsClient.Instance.KickPlayer(client.Id, true);
-                Logger.SendInGame(string.Format(GetString("Message.TempBannedByNoFriendCode"), client.PlayerName));
-                Logger.Info($"TempBanned a player {client?.PlayerName} without a friend code", "Temp Ban");
+                Logger.SendInGame(string.Format(GetString("Message.TempBannedByInvalidFriendCode"), client.PlayerName));
+                Logger.Info($"TempBanned a player {client?.PlayerName} because of invalid friend code", "Temp Ban");
             }
         }
 

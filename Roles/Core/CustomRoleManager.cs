@@ -84,13 +84,17 @@ public static class CustomRoleManager
 
         player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
 
+        if (DollMaster.HasEnabled && DollMaster.IsDoll(player.PlayerId))
+        {
+            DollMaster.ApplySettingsToDoll(opt, player);
+            return;
+        }
 
         if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
         if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
         if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
-        if (DollMaster.HasEnabled) DollMaster.SetVision(opt, player);
 
         var playerSubRoles = player.GetCustomSubRoles();
 
@@ -142,12 +146,10 @@ public static class CustomRoleManager
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
 
-        // If Target is possessed by Dollmaster swap controllers.
-        if (DollMaster.HasEnabled && DollMaster.IsControllingPlayer)
+        if (DollMaster.HasEnabled)
         {
-            if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
-                if (target == DollMaster.DollMasterTarget || target == DollMaster.controllingTarget)
-                    target = target == DollMaster.controllingTarget? DollMaster.DollMasterTarget : DollMaster.controllingTarget;
+            // If Target is possessed by Dollmaster swap controllers.
+            target = DollMaster.SwapPlayerInfo(target);   
         }
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
@@ -223,14 +225,9 @@ public static class CustomRoleManager
         }
 
         // Swap controllers if Sheriff shots Dollmasters main body.
-        if (DollMaster.HasEnabled && DollMaster.IsControllingPlayer)
+        if (DollMaster.HasEnabled && killer.Is(CustomRoles.Sheriff) && target == DollMaster.DollMasterTarget)
         {
-            if (killer.Is(CustomRoles.Sheriff) && target == DollMaster.DollMasterTarget)
-            {
-                if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
-                    if (target == DollMaster.DollMasterTarget || target == DollMaster.controllingTarget)
-                        target = target == DollMaster.controllingTarget ? DollMaster.DollMasterTarget : DollMaster.controllingTarget;
-            }
+            target = DollMaster.SwapPlayerInfo(target);
         }
 
         // Check if killer is a true killing role and Target is possessed by Dollmaster
@@ -253,6 +250,9 @@ public static class CustomRoleManager
         // When using this code, keep in mind that killer and target can be equal (Suicide)
         // And the player can also die during the Meeting
         // ################################
+
+        PlayerControl trueDMKiller = killer; // Save real killer.
+        killer = DollMaster.SwapPlayerInfo(killer); // If "killer" is possessed by the Dollmaster swap each other's controllers.
 
         var killerRoleClass = killer.GetRoleClass();
         var targetRoleClass = target.GetRoleClass();
@@ -277,7 +277,7 @@ public static class CustomRoleManager
                         break;
 
                     case CustomRoles.Bait when !inMeeting:
-                        Bait.BaitAfterDeathTasks(killer, target);
+                        Bait.BaitAfterDeathTasks(trueDMKiller, target); // Use trueDMKiller to any roles that needs the Dollmaster to be the killer!
                         break;
 
                     case CustomRoles.Trapper when !inMeeting && !isSuicide && !killer.Is(CustomRoles.KillingMachine):

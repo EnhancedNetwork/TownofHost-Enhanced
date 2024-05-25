@@ -148,8 +148,8 @@ public static class Options
     public static OptionItem OptKickPlayStationPlayer;
     public static OptionItem OptKickNintendoPlayer;
 
-    public static OptionItem KickPlayerFriendCodeNotExist;
-    public static OptionItem TempBanPlayerFriendCodeNotExist;
+    public static OptionItem KickPlayerFriendCodeInvalid;
+    public static OptionItem TempBanPlayerFriendCodeInvalid;
 
     public static OptionItem AutoKickStart;
     public static OptionItem AutoKickStartTimes;
@@ -1087,9 +1087,9 @@ public static class Options
             .SetParent(KickOtherPlatformPlayer);
         OptKickNintendoPlayer = BooleanOptionItem.Create(60075, "OptKickNintendoPlayer", false, TabGroup.SystemSettings, false)
             .SetParent(KickOtherPlatformPlayer); //Switch
-        KickPlayerFriendCodeNotExist = BooleanOptionItem.Create(60080, "KickPlayerFriendCodeNotExist", true, TabGroup.SystemSettings, false);
-        TempBanPlayerFriendCodeNotExist = BooleanOptionItem.Create(60081, "TempBanPlayerFriendCodeNotExist", false, TabGroup.SystemSettings, false)
-            .SetParent(KickPlayerFriendCodeNotExist);
+        KickPlayerFriendCodeInvalid = BooleanOptionItem.Create(60080, "KickPlayerFriendCodeInvalid", true, TabGroup.SystemSettings, false);
+        TempBanPlayerFriendCodeInvalid = BooleanOptionItem.Create(60081, "TempBanPlayerFriendCodeInvalid", false, TabGroup.SystemSettings, false)
+            .SetParent(KickPlayerFriendCodeInvalid);
         AutoKickStart = BooleanOptionItem.Create(60140, "AutoKickStart", false, TabGroup.SystemSettings, false);
         AutoKickStartTimes = IntegerOptionItem.Create(60141, "AutoKickStartTimes", new(0, 99, 1), 1, TabGroup.SystemSettings, false)
             .SetParent(AutoKickStart)

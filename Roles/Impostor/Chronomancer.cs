@@ -122,7 +122,7 @@ internal class Chronomancer : RoleBase
     {
         ChargedTime = 0;
         IsInMassacre = false;
-        _Player.MarkDirtySettings();
+        _Player?.MarkDirtySettings();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
