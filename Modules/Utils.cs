@@ -872,7 +872,7 @@ public static class Utils
         }
         string lr = sb.ToString();
         try{
-            if (lr.Length > 1200 && (!GetPlayerById(PlayerId).IsModClient()))
+            if (lr.Length > 2024 && (!GetPlayerById(PlayerId).IsModClient()))
             {
                 lr = lr.Replace("<color=", "<");
                 lr.SplitMessage().Do(x => SendMessage("\n", PlayerId, $"<size=75%>" + x + "</size>")); //Since it will always capture a newline, there's more than enough space to put this in
