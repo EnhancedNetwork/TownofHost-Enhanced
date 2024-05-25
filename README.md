@@ -96,7 +96,9 @@
 ### :star: [Mini.RegionInstall](https://github.com/miniduikboot/Mini.RegionInstall)
 >
 > - Using Mini.RegionInstall to add modded server regions
-
+### :star: [TOU-R](https://github.com/eDonnes124/Town-Of-Us-R)
+>
+> - Host icon during the meeting
 ---
 
 # Legal License Notice
