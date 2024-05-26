@@ -55,7 +55,7 @@ internal class Telecommunication : RoleBase
     private static int Count = 0;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
     public override void OnFixedUpdateLowLoad(PlayerControl player)

@@ -49,7 +49,7 @@ internal class Jester : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
 
         opt.SetVision(JesterHasImpostorVision.GetBool());

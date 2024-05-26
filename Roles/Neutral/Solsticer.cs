@@ -72,7 +72,7 @@ internal class Solsticer : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id)
     {
-        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
         AURoleOptions.PlayerSpeedMod = !patched ? SolsticerSpeed.GetFloat() : 0.5f;
     } //Enabled Solsticer can vent
