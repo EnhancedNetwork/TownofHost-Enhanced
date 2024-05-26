@@ -2612,6 +2612,8 @@
   "AutoPlayAgainCountdown": "Delay before re-entering lobby",
   "AutoPlayAgain": "Auto Play Again",
   "AutoRehost": "Auto Re-Host on Bad Disconnect",
+  "UseVersionProtocol": "Use +25 Protocol",
+  "FreezeMessageToSend": "Disable auto chats",
   "CountdownText": "Rejoining lobby in {0}s",
   "TimeMasterSkillDuration": "<color=#44baff>Time Shield</color> Duration",
   "TimeMasterSkillCooldown": "<color=#44baff>Time Shield</color> Cooldown",

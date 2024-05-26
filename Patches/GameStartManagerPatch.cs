@@ -255,7 +255,7 @@ public class GameStartManagerPatch
         {
             if (!Main.playerVersion.TryGetValue(clientId, out var version)) return acceptVanilla;
             return Main.ForkId == version.forkId
-                && Main.fakeVersion.CompareTo(version.version) == 0
+                && Main.FakeVersion.CompareTo(version.version) == 0
                 && version.tag == Main.FakeGitInfo;
         }
     }

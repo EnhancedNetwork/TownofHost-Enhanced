@@ -604,7 +604,7 @@ internal class RPCHandlerPatch
         string tag = Main.playerVersion[ClientId].tag;
         string forkId = Main.playerVersion[ClientId].forkId;
         
-        if (version != Main.fakeVersion
+        if (version != Main.FakeVersion
             || tag != Main.FakeGitInfo
             || forkId != Main.ForkId)
             return false;
@@ -718,9 +718,17 @@ internal static class RPC
     }
     public static void ExileAsync(PlayerControl player)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
         player.Exiled();
+
+        if (Main.UseVersionProtocol.Value)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        else
+        {
+            AntiBlackout.SendGameData("ExileAsync");
+        }
     }
     public static void RpcSetFriendCode(string fc)
     {

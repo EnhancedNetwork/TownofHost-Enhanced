@@ -48,6 +48,7 @@ public class ModUpdater
         InfoPopup.name = "InfoPopup";
         InfoPopup.TextAreaTMP.GetComponent<RectTransform>().sizeDelta = new(2.5f, 2f);
 
+        isChecked = true;
         if (!isChecked)
         {
             yield return CheckReleaseFromGithub(Main.BetaBuildURL.Value != "");
