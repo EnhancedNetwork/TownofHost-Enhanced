@@ -161,7 +161,7 @@ internal class Glitch : RoleBase
         if (player == null) return;
         if (!player.Is(CustomRoles.Glitch)) return;
 
-        if (change) { Utils.NotifyRoles(SpecifySeer: player); }
+        if (change) { Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false); }
 
         if (!player.IsAlive())
         {
@@ -211,14 +211,14 @@ internal class Glitch : RoleBase
         catch { KCDTimer = 0; }
         if (KCDTimer > 180 || KCDTimer < 0) KCDTimer = 0;
 
-        try { MimicCDTimer = (int)(MimicCooldown.GetInt() + MimicDuration.GetInt() - (Utils.GetTimeStamp() - LastMimic)); }
+        try { MimicCDTimer = (int)(MimicCooldown.GetInt() - (Utils.GetTimeStamp() - LastMimic)); }
         catch { MimicCDTimer = 0; }
         if (MimicCDTimer > 180 || MimicCDTimer < 0) MimicCDTimer = 0;
 
         if (!player.IsModClient())
         {
             var Pname = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Glitch), player.GetRealName(isMeeting: true));
-            if ((!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != Pname)) player.Notify(Pname, 1.1f);
+            if (!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != Pname) player.Notify(Pname, 1.1f);
         }
         if (!player.AmOwner) // For mooded non host players, sync kcd per second
         {
@@ -298,7 +298,7 @@ internal class Glitch : RoleBase
 
     private void SendRPC()
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, Hazel.SendOption.None, -1);
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.None, -1);
         writer.WriteNetObject(_Player);
         writer.Write(HackCDTimer);
         writer.Write(KCDTimer);
