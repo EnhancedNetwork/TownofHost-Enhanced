@@ -55,7 +55,6 @@ internal class Crusader : RoleBase
         AbilityLimit--;
         SendSkillRPC();
 
-        killer.ResetKillCooldown();
         killer.SetKillCooldown();
         
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
@@ -69,12 +68,11 @@ internal class Crusader : RoleBase
 
         foreach (var crusader in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Crusader)).ToArray())
         {
-            if (!killer.Is(CustomRoles.Pestilence) && !killer.Is(CustomRoles.KillingMachine)
-                && killer.CheckForInvalidMurdering(target) && crusader.RpcCheckAndMurder(killer, true))
+            if (crusader.CheckForInvalidMurdering(killer) && crusader.RpcCheckAndMurder(killer, true))
             {
+                killer.RpcGuardAndKill(target);
                 crusader.RpcMurderPlayer(killer);
                 ForCrusade.Remove(target.PlayerId);
-                killer.RpcGuardAndKill(target);
                 return true;
             }
 
