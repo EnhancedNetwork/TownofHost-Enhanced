@@ -79,13 +79,13 @@ internal class Medic : RoleBase
     }
     private static void SendRPCForProtectList()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMedicalerProtectList, SendOption.Reliable, -1);
         writer.Write(ProtectList.Count);
         for (int i = 0; i < ProtectList.Count; i++)
             writer.Write(ProtectList[i]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPCForProtectList(MessageReader reader)
+    public static void ReceiveRPCForProtectList(MessageReader reader)
     {
         int count = reader.ReadInt32();
         ProtectList.Clear();

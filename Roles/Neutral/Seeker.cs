@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 
@@ -55,11 +56,11 @@ internal class Seeker : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TagCooldownOpt.GetFloat();
     
-    private static void SendRPC(byte seekerId, byte targetId = 0xff, bool setTarget = true)
+    private void SendRPC(byte seekerId, byte targetId = 0xff, bool setTarget = true)
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Seeker); // SetSeekerTarget
+        writer.WriteNetObject(_Player); // SetSeekerTarget
         writer.Write(setTarget);
 
 
@@ -138,7 +139,7 @@ internal class Seeker : RoleBase
             }
         }
     }
-    private static byte GetTarget(PlayerControl player)
+    private byte GetTarget(PlayerControl player)
     {
         if (player == null || Targets == null) return 0xff;
 
@@ -159,7 +160,7 @@ internal class Seeker : RoleBase
             player.MarkDirtySettings();
         }, 5f, "Freeze Seeker");
     }
-    private static byte ResetTarget(PlayerControl player)
+    private byte ResetTarget(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return 0xff;
 

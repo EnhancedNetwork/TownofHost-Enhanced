@@ -3,6 +3,7 @@ using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
 using TOHE.Roles.Core;
+using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 
@@ -75,11 +76,11 @@ internal class Doomsayer : RoleBase
     {
         GuessingToWin.TryAdd(playerId, GuessesCount);
     }
-    public static void SendRPC(PlayerControl player)
+    public void SendRPC(PlayerControl player)
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Doomsayer);
+        writer.WriteNetObject(_Player);
         writer.Write(player.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

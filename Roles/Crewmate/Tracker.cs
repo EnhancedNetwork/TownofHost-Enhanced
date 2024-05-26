@@ -61,14 +61,14 @@ internal class Tracker : RoleBase
     public void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetTrackerTarget, SendOption.Reliable, -1);
         writer.Write(trackerId);
         writer.Write(operate);
         if (operate == 0) writer.Write(targetId);
         if (operate == 2) writer.Write(AbilityLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte trackerId = reader.ReadByte();
         int operate = reader.ReadInt32();
@@ -76,18 +76,18 @@ internal class Tracker : RoleBase
         {
             byte targetId = reader.ReadByte();
 
-            AbilityLimit--;
+            Main.PlayerStates[trackerId].RoleClass.AbilityLimit--; 
             TrackerTarget[trackerId].Add(targetId);
             TargetArrow.Add(trackerId, targetId);
         }
         if (operate == 1)
         {
-            TempTrackLimit[trackerId] = AbilityLimit;
+            TempTrackLimit[trackerId] = Main.PlayerStates[trackerId].RoleClass.AbilityLimit;
         }
         if (operate == 2)
         {
             float limit = reader.ReadSingle();
-            AbilityLimit = limit;
+            Main.PlayerStates[trackerId].RoleClass.AbilityLimit = limit;
         }
     }
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false) => !(seer == null || target == null) && TrackerTarget.ContainsKey(seer.PlayerId) && TrackerTarget[seer.PlayerId].Contains(target.PlayerId) ? Utils.ColorString(seer.GetRoleColor(), "◀") : "";

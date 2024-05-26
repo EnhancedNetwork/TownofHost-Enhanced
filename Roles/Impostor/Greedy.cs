@@ -42,13 +42,13 @@ internal class Greedy : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGreedy, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(IsOdd[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
         IsOdd[playerId] = reader.ReadBoolean();

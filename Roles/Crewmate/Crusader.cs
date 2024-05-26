@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using Hazel;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -41,8 +40,7 @@ internal class Crusader : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown : 300f;
 
-    public override bool CanUseKillButton(PlayerControl pc)
-        => AbilityLimit > 0;
+    public override bool CanUseKillButton(PlayerControl pc) => AbilityLimit > 0;
     
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     

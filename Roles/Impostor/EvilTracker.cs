@@ -96,7 +96,7 @@ internal class EvilTracker : RoleBase
         hud.AbilityButton.OverrideText(GetString("EvilTrackerChangeButtonText"));
     }
 
-    public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => CanSeeKillFlash;
+    public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => CanSeeKillFlash && killer.PlayerId != seer.PlayerId;
 
     private static bool CanTarget(byte playerId)
         => !Main.PlayerStates[playerId].IsDead && CanSetTarget.TryGetValue(playerId, out var value) && value;
@@ -166,7 +166,7 @@ internal class EvilTracker : RoleBase
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte trackerId = reader.ReadByte();
         byte targetId = reader.ReadByte();

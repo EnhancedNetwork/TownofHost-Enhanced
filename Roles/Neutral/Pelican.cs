@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using MS.Internal.Xml.XPath;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -53,16 +54,16 @@ internal class Pelican : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    private static void SyncEatenList()
+    private void SyncEatenList()
     {
         SendRPC(byte.MaxValue);
         foreach (var el in eatenList)
             SendRPC(el.Key);
     }
-    private static void SendRPC(byte playerId)
+    private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Pelican); // SetPelicanEatenNum
+        writer.WriteNetObject(_Player); // SetPelicanEatenNum
         writer.Write(playerId);
         if (playerId != byte.MaxValue)
         {
@@ -110,8 +111,8 @@ internal class Pelican : RoleBase
         var penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
         if (penguins != null && penguins.Any())
         {
-            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && pg.AbductVictim != null && (target.PlayerId == pg.AbductVictim.PlayerId 
-            || id == pg.AbductVictim.PlayerId)))
+            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && pg.AbductVictim != null && (target.PlayerId == pg.AbductVictim?.PlayerId 
+            || id == pg.AbductVictim?.PlayerId)))
             {
                 return false;
             }
@@ -143,7 +144,7 @@ internal class Pelican : RoleBase
             eatenNum = eatenList[playerId].Count;
         return Utils.ColorString(eatenNum < 1 ? Color.gray : Utils.GetRoleColor(CustomRoles.Pelican), $"({eatenNum})");
     }
-    private static void EatPlayer(PlayerControl pc, PlayerControl target)
+    private void EatPlayer(PlayerControl pc, PlayerControl target)
     {
         if (pc == null || target == null || !target.CanBeTeleported()) return;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
@@ -212,7 +213,6 @@ internal class Pelican : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-
         if (killer.Is(CustomRoles.Scavenger) || killer.Is(CustomRoles.Pelican))
         {
             PelicanLastPosition[target.PlayerId] = target.GetCustomPosition();
@@ -242,7 +242,7 @@ internal class Pelican : RoleBase
             Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
             ReportDeadBodyPatch.CanReport[tar] = true;
             
-            target.MarkDirtySettings();
+            target.SyncSettings();
             
             RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
             

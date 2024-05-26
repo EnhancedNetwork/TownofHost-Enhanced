@@ -45,9 +45,9 @@ internal class Innocent : RoleBase
     public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
         var role = exiled.GetCustomRole();
-        var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
+        var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId);
 
-        if (pcArray.Length <= 0) return;
+        if (!pcArray.Any()) return;
 
         if (!InnocentCanWinByImp.GetBool() && role.IsImpostor())
         {

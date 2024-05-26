@@ -1235,7 +1235,7 @@ public static class CustomRolesHelper
             CustomRoles.RuthlessRomantic => CustomWinner.RuthlessRomantic,
             CustomRoles.Mini => CustomWinner.NiceMini,
             CustomRoles.Doppelganger => CustomWinner.Doppelganger,
-            _ => throw new System.NotImplementedException()
+            _ => throw new NotImplementedException()
 
         };
     public static CustomRoles GetNeutralCustomRoleFromCountType(this CountTypes type) //only to be used for NKs

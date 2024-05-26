@@ -1,5 +1,4 @@
-﻿using Hazel;
-using TOHE.Roles.Core;
+﻿using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -75,7 +74,8 @@ internal class Cleanser : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl baba, PlayerControl lilelam)
     {
-        foreach (var pid in CleanserTarget.Keys.ToArray())
+        DidVote = false;
+        foreach (var pid in CleanserTarget.Keys)
         {
             CleanserTarget[pid] = byte.MaxValue;
         }
@@ -96,7 +96,6 @@ internal class Cleanser : RoleBase
     {
         foreach (var pid in CleanserTarget.Keys.ToArray())
         {
-            DidVote = false;
             if (pid == byte.MaxValue) continue;
             var targetid = CleanserTarget[pid];
             if (targetid == byte.MaxValue) continue;

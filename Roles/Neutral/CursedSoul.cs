@@ -53,13 +53,16 @@ internal class CursedSoul : RoleBase
 
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCursedSoulCurseLimit, SendOption.Reliable, -1);
+        writer.Write(_state.PlayerId);
         writer.Write(CurseLimit);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void ReceiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
-        CurseLimit = reader.ReadInt32();
+        var pID = reader.ReadByte();
+        if (Main.PlayerStates[pID].RoleClass is CursedSoul cs) 
+            cs.CurseLimit = reader.ReadInt32();
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CurseLimit >= 1 ? CurseCooldown.GetFloat() + (CurseMax.GetInt() - CurseLimit) * CurseCooldownIncrese.GetFloat() : 300f;

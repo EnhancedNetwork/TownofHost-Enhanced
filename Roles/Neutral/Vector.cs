@@ -3,6 +3,8 @@ using static TOHE.Utils;
 using static TOHE.Translator;
 using UnityEngine;
 using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 
@@ -42,6 +44,18 @@ internal class Vector : RoleBase
         VectorVentCount.Add(playerId, 0);
         PlayerIds.Add(playerId);
     }
+    private void SendRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(VectorVentCount[_Player.PlayerId]); 
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        int count = reader.ReadInt32();
+        VectorVentCount[_Player.PlayerId] = count;
+    }
     public override string GetProgressText(byte playerId, bool comms)
     {
         return ColorString(GetRoleColor(CustomRoles.Vector).ShadeColor(0.25f), $"({(VectorVentCount.TryGetValue(playerId, out var count) ? count : 0)}/{VectorVentNumWin.GetInt()})");
@@ -60,6 +74,7 @@ internal class Vector : RoleBase
     {
         VectorVentCount.TryAdd(pc.PlayerId, 0);
         VectorVentCount[pc.PlayerId]++;
+        SendRPC();
         NotifyRoles(SpecifySeer: pc);
         if (VectorVentCount[pc.PlayerId] >= VectorVentNumWin.GetInt())
         {
