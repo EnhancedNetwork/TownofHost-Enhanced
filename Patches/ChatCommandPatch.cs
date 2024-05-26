@@ -1559,6 +1559,7 @@ internal class ChatCommands
                     if (devMark == "▲")
                     {
                         byte pid = playerId == 255 ? (byte)0 : playerId;
+                        GhostRoleAssign.forceRole.Remove(pid);
                         RoleAssign.SetRoles.Remove(pid);
                         RoleAssign.SetRoles.Add(pid, rl);
                     }
