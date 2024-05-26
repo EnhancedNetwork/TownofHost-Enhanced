@@ -1556,7 +1556,7 @@ class PlayerControlSetRolePatch
 
             try
             {
-                GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
+               GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
             }
             catch (Exception error)
             {

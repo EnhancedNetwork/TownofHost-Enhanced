@@ -1562,6 +1562,22 @@ internal class ChatCommands
                         RoleAssign.SetRoles.Remove(pid);
                         RoleAssign.SetRoles.Add(pid, rl);
                     }
+                    if (rl.IsGhostRole() && !rl.IsAdditionRole() && isDev && (rl.GetCount() >= 1 || rl.GetMode() > 0))
+                    {
+                        byte pid = playerId == 255 ? (byte)0 : playerId;
+                        CustomRoles setrole = rl.GetCustomRoleTeam() switch
+                        {
+                            Custom_Team.Impostor => CustomRoles.ImpostorTOHE,
+                            _ => CustomRoles.CrewmateTOHE
+
+                        };
+                        RoleAssign.SetRoles.Remove(pid);
+                        RoleAssign.SetRoles.Add(pid, setrole);
+                        GhostRoleAssign.forceRole[pid] = rl;
+
+                        devMark = "▲";
+                    }
+
                     if (isUp) return;
                 }
                 var Des = rl.GetInfoLong();

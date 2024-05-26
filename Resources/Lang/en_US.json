@@ -3634,5 +3634,6 @@
   "WardenIncreaseSpeed": "Increase Speed By",
   "WardenWarn": "DANGER! RUN!",
 
-  "MinionAbilityTime": "Ability Duration"
+  "MinionAbilityTime": "Ability Duration",
+  "Minion_Blind": "blinded"
 }

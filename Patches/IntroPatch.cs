@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -551,13 +552,20 @@ class IntroCutsceneDestroyPatch
 
                 _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "Set Impostor For Server");
             }
-            var ghostUP = PlayerControl.LocalPlayer.GetCustomRole();
-            var checkGhostRole = CustomRolesHelper.IsGhostRole(ghostUP);
 
-            if (PlayerControl.LocalPlayer.Is(CustomRoles.GM) || checkGhostRole) // Incase user has /up access
+            if (PlayerControl.LocalPlayer.Is(CustomRoles.GM)) // Incase user has /up access
             {
                 PlayerControl.LocalPlayer.RpcExile();
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+            }
+            else if (GhostRoleAssign.forceRole.Any())
+            {
+                GhostRoleAssign.forceRole.Do(x => {
+                    var plr = Utils.GetPlayerById(x.Key);
+                    plr.RpcExile();
+                    Main.PlayerStates[x.Key].SetDead();
+
+                });
             }
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
