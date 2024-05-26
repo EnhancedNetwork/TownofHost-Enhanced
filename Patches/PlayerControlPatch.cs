@@ -1556,15 +1556,7 @@ class PlayerControlSetRolePatch
 
             try
             {
-                if (GhostRoleAssign.forceRole.TryGetValue(__instance.PlayerId, out CustomRoles role))
-                {
-                    __instance.GetRoleClass().Remove(__instance.PlayerId);
-                    __instance.RpcSetCustomRole(role);
-                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
-                    GhostRoleAssign.forceRole.Remove(__instance.PlayerId);
-                }
-                else
-                    GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
+               GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
             }
             catch (Exception error)
             {

@@ -17,6 +17,16 @@ public static class GhostRoleAssign
     public static void GhostAssignPatch(PlayerControl player)
     {
         if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
+        if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) {
+            Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");
+            var clas = player.GetRoleClass();
+            clas.Remove(player.PlayerId);
+            player.RpcSetCustomRole(forcerole);
+            clas.Add(player.PlayerId);
+            return;
+        }
+
+
 
         var getplrRole = player.GetCustomRole();
         if (getplrRole is CustomRoles.GM or CustomRoles.Nemesis or CustomRoles.Retributionist) return;
@@ -30,6 +40,7 @@ public static class GhostRoleAssign
         if (IsImpostor && ImpCount >= Options.MaxImpGhost.GetInt() || IsCrewmate && CrewCount >= Options.MaxCrewGhost.GetInt()) return;
 
             GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
+
 
         HauntedList.Clear();
         ImpHauntedList.Clear();
