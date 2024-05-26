@@ -1498,7 +1498,7 @@ internal class ChatCommands
                         RoleAssign.SetRoles.Remove(pid);
                         RoleAssign.SetRoles.Add(pid, rl);
                     }
-                    if (rl.IsGhostRole() && !rl.IsAdditionRole() && isDev)
+                    if (rl.IsGhostRole() && !rl.IsAdditionRole() && isDev && (rl.GetCount() >= 1 || rl.GetMode() > 0))
                     {
                         byte pid = playerId == 255 ? (byte)0 : playerId;
                         CustomRoles setrole = rl.GetCustomRoleTeam() switch
