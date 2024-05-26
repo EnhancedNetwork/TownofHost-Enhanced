@@ -2673,7 +2673,7 @@ class ChatUpdatePatch
     {
         if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 
             || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)
-            || (Main.UseVersionProtocol.Value == false && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
+            || (!Main.UseVersionProtocol.Value && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
         if (DoBlockChat) return;
 
         if (Main.FreezeMessageToSend.Value)
@@ -2767,6 +2767,7 @@ class ChatUpdatePatch
                 writer2.SendMessage();
             }
 
+            __instance.timeSinceLastMessage = 0f;
             return;
         }
 
