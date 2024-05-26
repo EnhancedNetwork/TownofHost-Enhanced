@@ -66,7 +66,7 @@ internal class Crusader : RoleBase
     {
         if (!ForCrusade.Contains(target.PlayerId)) return false;
 
-        var crusader = _Player; //this method is added by localplayer's instance, so the player will always be the current crusader running the code.
+        var crusader = _Player; //this method is added by localplayer's ROLEBASE instance, so the player will always be the current crusader running the code.
         if (crusader == null) return false;
 
 
