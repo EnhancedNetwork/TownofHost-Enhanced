@@ -43,6 +43,10 @@ public class Main : BasePlugin
     public const string PluginDisplayVersion = "2.0.0 Dev 22";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
+    public const string FakeGitInfo = "";
+    public const string FakePluginVersion = "";
+    public static Version fakeVersion = Version.Parse(FakePluginVersion);
+
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = false; // ACTIVE - Latest: V1.6.0 Canary 6
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
