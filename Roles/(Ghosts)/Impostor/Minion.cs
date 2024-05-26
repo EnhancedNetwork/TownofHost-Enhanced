@@ -45,7 +45,7 @@ internal class Minion : RoleBase
     {
         if (seer.GetCustomRole().IsImpostorTeam() && Main.PlayerStates[target.PlayerId].IsBlackOut && !isForMeeting)
         {
-            var blinded = Translator.GetString("blind");
+            var blinded = Translator.GetString("Minion_Blind");
             return ColorString(GetRoleColor(CustomRoles.Minion), $"『{blinded}』");
         }
         return string.Empty;
