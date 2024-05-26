@@ -111,7 +111,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
          */
         player.BuildCustomGameOptions(ref opt);
 
-        AURoleOptions.EngineerCooldown = Mathf.Max(0.01f, AURoleOptions.EngineerCooldown);
+        AURoleOptions.EngineerCooldown = Mathf.Max(1f, AURoleOptions.EngineerCooldown);
 
         if (Main.AllPlayerKillCooldown.TryGetValue(player.PlayerId, out var killCooldown))
         {
