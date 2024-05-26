@@ -23,6 +23,7 @@ public static class GhostRoleAssign
             clas?.Remove(player.PlayerId);
             player.RpcSetCustomRole(forcerole);
             clas.Add(player.PlayerId);
+            forceRole.Remove(player.PlayerId);
             return;
         }
 
