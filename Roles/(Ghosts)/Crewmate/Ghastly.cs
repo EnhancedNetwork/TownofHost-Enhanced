@@ -1,11 +1,9 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using UnityEngine;
-using MS.Internal.Xml.XPath;
 
 namespace TOHE.Roles._Ghosts_.Crewmate
 {

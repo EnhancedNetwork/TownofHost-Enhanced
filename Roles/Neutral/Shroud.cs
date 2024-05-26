@@ -6,7 +6,6 @@ using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -170,7 +169,7 @@ internal class Shroud : RoleBase
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-        => target != null && (ShroudList.ContainsValue(seer.PlayerId) && ShroudList.ContainsKey(target.PlayerId)) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
+        => target != null && ShroudList.ContainsValue(seer.PlayerId) && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
     
     private static string GetShroudMark(PlayerControl seer, PlayerControl target, bool isMeeting)
         => isMeeting && target != null && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;

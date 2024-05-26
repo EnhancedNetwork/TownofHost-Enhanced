@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;

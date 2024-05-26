@@ -2,7 +2,6 @@
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 
 namespace TOHE;

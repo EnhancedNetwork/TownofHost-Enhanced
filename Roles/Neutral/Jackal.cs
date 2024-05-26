@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using Hazel;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;

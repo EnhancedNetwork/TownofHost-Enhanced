@@ -27,7 +27,7 @@ internal class Swapper : RoleBase
     private static readonly Dictionary<byte, byte> Vote = [];
     private static readonly Dictionary<byte, byte> VoteTwo = [];
 
-    private static List<byte> playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Swapper).Select(p => p.PlayerId).ToList();
+    private static List<byte> PlayerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Swapper).Select(p => p.PlayerId).ToList();
 
     public override void SetupCustomOption()
     {
@@ -227,7 +227,7 @@ internal class Swapper : RoleBase
         if (deadid == 253) return;
 
 
-        foreach (var pid in playerIdList)
+        foreach (var pid in PlayerIdList)
         {
             if (!Vote.TryGetValue(pid, out var tid1) || !VoteTwo.TryGetValue(pid, out var tid2)) continue;
             if (tid1 == deadid || tid2 == deadid)
