@@ -151,7 +151,7 @@ public static class OptionsMenuBehaviourStartPatch
             }
             if ((FreezeMessageToSend == null || FreezeMessageToSend.ToggleButton == null) && DebugModeManager.AmDebugger)
             {
-                UseVersionProtocol = ClientOptionItem.Create("FreezeMessageToSend", Main.FreezeMessageToSend, __instance, ClearMessageToSend);
+                FreezeMessageToSend = ClientOptionItem.Create("FreezeMessageToSend", Main.FreezeMessageToSend, __instance, ClearMessageToSend);
                 static void ClearMessageToSend()
                 {
                     Main.MessagesToSend.Clear();
