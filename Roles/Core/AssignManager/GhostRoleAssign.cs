@@ -20,7 +20,7 @@ public static class GhostRoleAssign
         if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) {
             Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");
             var clas = player.GetRoleClass();
-            clas.Remove(player.PlayerId);
+            clas?.Remove(player.PlayerId);
             player.RpcSetCustomRole(forcerole);
             clas.Add(player.PlayerId);
             return;
