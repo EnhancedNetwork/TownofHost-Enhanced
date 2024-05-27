@@ -59,7 +59,7 @@ class ExileControllerWrapUpPatch
 
         if (collectorCL != null) Logger.Info($"{!collectorCL.Any(x => x.CollectorWin(false))}", "!Collector.CollectorWin(false)");
         Logger.Info($"{exiled != null}", "exiled != null");
-        bool CLThingy = collectorCL != null && !collectorCL.Any(x => x.CollectorWin(false));
+        bool CLThingy = collectorCL != null ? !collectorCL.Any(x => x.CollectorWin(false)) : true; //ignore the ide, it's stupid
 
         if (CLThingy && exiled != null)
         {
