@@ -1562,7 +1562,7 @@ public static class Utils
             if (cache.Any())
             {
                 var Get = cache.Select(x => x.RoleClass);
-                return Get.Any() ? Get.OfType<t>() : null;
+                return Get.OfType<t>().Any() ? Get.OfType<t>() : null;
             }
         }
         catch (Exception exx)
