@@ -58,25 +58,21 @@ internal class Collector : RoleBase
     }
     public bool CollectorWin(bool check = true)
     {
-        var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Collector) && x.IsAlive() && CollectDone(x)).ToArray();
-        if (pcArray.Any())
+        if (_Player != null && _Player.IsAlive() && CollectDone(_Player))
         {
             bool isWinConverted = false;
-            foreach (var x in pcArray)
+
+            if (CustomWinnerHolder.CheckForConvertedWinner(_Player.PlayerId))
             {
-                if (CustomWinnerHolder.CheckForConvertedWinner(x.PlayerId))
-                {
-                    isWinConverted = true;
-                    break;
-                }
+                isWinConverted = true;
             }
+
             if (check) return true;
 
             if (!isWinConverted)
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Collector);
-                foreach (var winner in pcArray)
-                    CustomWinnerHolder.WinnerIds.Add(winner.PlayerId);
+                CustomWinnerHolder.WinnerIds.Add(_Player.PlayerId);
             }
             return true;
         }
