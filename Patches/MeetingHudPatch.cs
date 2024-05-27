@@ -288,7 +288,7 @@ class CheckForEndVotingPatch
                     braked = true;
                 }
             }
-            List<Collector> CollectorCL = Utils.GetRoleBasesByType<Collector>().ToList();
+            List<Collector> CollectorCL = Utils.GetRoleBasesByType<Collector>()?.ToList();
             if (Collector.HasEnabled) CollectorCL?.Do(x => { x.CollectAmount(VotingData, __instance); });
 
             if (Options.VoteMode.GetBool() && Options.WhenTie.GetBool() && tie)
