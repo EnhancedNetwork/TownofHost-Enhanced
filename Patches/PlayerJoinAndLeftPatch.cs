@@ -32,6 +32,7 @@ class OnGameJoinedPatch
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
         Main.MessagesToSend.Clear();
+        EAC.Init();
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {

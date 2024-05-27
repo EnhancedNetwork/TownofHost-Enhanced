@@ -12,7 +12,7 @@ internal class EAC
     private static List<byte> LobbyDeadBodies = [];
     public static void Init()
     {
-        DeNum = new();
+        DeNum = 0;
         OriginalRoles = [];
         ReportTimes = [];
         LobbyDeadBodies = [];
