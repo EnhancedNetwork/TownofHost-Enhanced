@@ -885,7 +885,7 @@ class FixedUpdateInNormalGamePatch
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
         {
-            if(Glitch.HasEnabled && Glitch.OnCheckFixedUpdateReport(__instance, id))
+            if(Glitch.HasEnabled && !Glitch.OnCheckFixedUpdateReport(__instance, id))
             { }
             else
             {
