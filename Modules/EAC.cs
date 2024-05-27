@@ -9,6 +9,14 @@ namespace TOHE;
 internal class EAC
 {
     public static int DeNum = 0;
+    private static List<byte> LobbyDeadBodies = [];
+    public static void Init()
+    {
+        DeNum = new();
+        OriginalRoles = [];
+        ReportTimes = [];
+        LobbyDeadBodies = [];
+    }
     public static void WarnHost(int denum = 1)
     {
         DeNum += denum;
@@ -99,13 +107,22 @@ internal class EAC
                     Logger.Fatal($"非法设置玩家【{pc.GetClientId()}:{pc.GetRealName()}】的游戏名称，已驳回", "EAC");
                     return true;
                 case RpcCalls.ReportDeadBody:
+                    var bodyid = sr.ReadByte();
                     if (!GameStates.IsInGame)
                     {
-                        WarnHost();
-                        Report(pc, "Report body out of game A");
-                        HandleCheat(pc, "Report body out of game A");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非游戏内开会，已驳回", "EAC");
-                        return true;
+                        if (!LobbyDeadBodies.Contains(bodyid))
+                        {
+                            WarnHost();
+                            Report(pc, "Report body out of game A");
+                            HandleCheat(pc, "Report body out of game A");
+                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非游戏内开会，已驳回", "EAC");
+                            return true;
+                        }
+                        else
+                        {
+                            Report(pc, "Try to Report body out of game B (May be false)");
+                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】尝试举报可能被非法击杀的尸体，已驳回", "EAC");
+                        }
                     }
                     if (ReportTimes.TryGetValue(pc.PlayerId, out int rtimes))
                     {
@@ -160,6 +177,18 @@ internal class EAC
                     break;
                 case RpcCalls.MurderPlayer:
                     //Calls will only be sent by host(under protocol) / server(vanilla)
+                    var murdered = sr.ReadNetObject<PlayerControl>();
+                    if (GameStates.IsLobby)
+                    {
+                        Report(pc, "Directly Murder Player In Lobby");
+                        HandleCheat(pc, "Directly Murder Player In Lobby");
+                        if (murdered != null && !LobbyDeadBodies.Contains(murdered.PlayerId))
+                        {
+                            LobbyDeadBodies.Add(murdered.PlayerId);
+                        }
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】大厅直接击杀，已驳回", "EAC");
+                        return true;
+                    }
                     Report(pc, "Directly Murder Player");
                     HandleCheat(pc, "Directly Murder Player");
                     Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接击杀，已驳回", "EAC");
