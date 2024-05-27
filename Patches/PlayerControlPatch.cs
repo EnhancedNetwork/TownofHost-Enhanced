@@ -213,7 +213,7 @@ class CheckMurderPatch
         }
 
         // if player hacked by Glitch
-        if (Glitch.HasEnabled && Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target)))
+        if (Glitch.HasEnabled && !Glitch.OnCheckMurderOthers(killer, target))
         {
             Logger.Info($"Is hacked by Glitch, it cannot kill ", "Glitch.CheckMurder");
             return false;
@@ -885,7 +885,7 @@ class FixedUpdateInNormalGamePatch
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
         {
-            if(Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckFixedUpdateReport(__instance, id)))
+            if(Glitch.HasEnabled && Glitch.OnCheckFixedUpdateReport(__instance, id))
             { }
             else
             {
