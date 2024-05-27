@@ -2219,7 +2219,7 @@
   "TabGroup.ImpostorRoles": "Роли Предателей",
   "TabGroup.Addons": "Атрибуты",
   "TabGroup.TaskSettings": "Игровые Модификаторы",
-  "Experimental.Roles": "★ Экспериментальные роли <size=65%>(ЗАМЕТКА: Используйте их осторожно, так как они требуют тестирования)</size>",
+  "Experimental.Roles": "★ Экспериментальные роли <size=65%>(ЗАМЕТКА: Эти роли могут быть нестабильны)</size>",
   "ActiveRolesList": "Список Активных Ролей",
   "ForExample": "Например",
   "updateButton": "Обновление",
