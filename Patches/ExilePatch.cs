@@ -55,12 +55,11 @@ class ExileControllerWrapUpPatch
         if (!AmongUsClient.Instance.AmHost) return;
         AntiBlackout.RestoreIsDead(doSend: false);
 
-        var collectors = Utils.GetPlayerListByRole(CustomRoles.Collector);
-        List<Collector> collectorCL = collectors?.Select(x => x.GetRoleClass()).OfType<Collector>().ToList();
+        List<Collector> collectorCL = Utils.GetRoleBasesByType<Collector>().ToList();
 
-        if (collectorCL != null && collectorCL.Any()) Logger.Info($"{!collectorCL.Any(x => x.CollectorWin(false))}", "!Collector.CollectorWin(false)");
+        if (collectorCL != null) Logger.Info($"{!collectorCL.Any(x => x.CollectorWin(false))}", "!Collector.CollectorWin(false)");
         Logger.Info($"{exiled != null}", "exiled != null");
-        bool CLThingy = collectorCL != null && collectorCL.Any() ? !collectorCL.Any(x => x.CollectorWin(false)) : true;
+        bool CLThingy = collectorCL != null && !collectorCL.Any(x => x.CollectorWin(false));
 
         if (CLThingy && exiled != null)
         {

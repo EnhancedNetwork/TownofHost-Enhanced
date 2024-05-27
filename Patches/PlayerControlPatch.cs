@@ -227,10 +227,10 @@ class CheckMurderPatch
         }
 
         // Penguin's victim unable to kill
-        List<PlayerControl> penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
-        if (Penguin.HasEnabled && penguins != null && penguins.Any())
+        List<Penguin> penguins = Utils.GetRoleBasesByType<Penguin>().ToList();
+        if (Penguin.HasEnabled && penguins != null)
         {
-            if (penguins.Select(x => x.GetRoleClass()).OfType<Penguin>().Any(x => killer.PlayerId == x?.AbductVictim?.PlayerId))
+            if (penguins.Any(x => killer.PlayerId == x?.AbductVictim?.PlayerId))
             {
                 killer.Notify(GetString("PenguinTargetOnCheckMurder"));
                 killer.SetKillCooldown(5);
