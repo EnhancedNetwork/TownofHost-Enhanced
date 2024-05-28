@@ -32,6 +32,11 @@ public abstract class RoleBase
 
 
         Add(playerid);
+
+        if (CustomRoleManager.OtherCollectionsSet) // If a role is applied mid-game, filter them again jsut in-case
+        {
+            CustomRoleManager.Add();
+        }
     }
 
 
