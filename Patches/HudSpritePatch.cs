@@ -70,7 +70,9 @@ public static class HudSpritePatch
 
         // Set custom icon for ability button (Shapeshift, Vitals, Engineer Vent)
         __instance.AbilityButton.graphic.sprite = newAbilityButton;
-        __instance.AbilityButton.usesRemainingSprite.sprite = newAbilityButton;
+
+        // This code replaces the sprite that displays the quantity next to the button (for example, like the Engineer)
+        //__instance.AbilityButton.usesRemainingSprite.sprite = newAbilityButton;
 
         // Set custom icon for report button
         __instance.ReportButton.graphic.sprite = newReportButton;
