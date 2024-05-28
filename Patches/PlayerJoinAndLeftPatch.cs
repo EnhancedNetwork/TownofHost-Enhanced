@@ -187,6 +187,8 @@ public static class OnPlayerJoinedPatch
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
 
+        //Main.AssignRolesIsStarted = false;
+
         _ = new LateTask(() =>
         {
             try
