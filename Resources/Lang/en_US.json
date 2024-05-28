@@ -2457,7 +2457,7 @@
   "RpcAntiBlackOutIgnored": "Because of <b>{0}</b>, an unknown error occurred, RPC will be ignored.",
   "RpcAntiBlackOutEndGame": "Because of <b>{0}</b>, an unknown error occurred, game will end to prevent black screen.",
   "RpcAntiBlackOutNotifyInLobby": "Because of <b>{0}</b>, an unknown error occurred, to prevent black screen, turn off [{1}] in settings.",
-  "AntiBlackOutNotifyInLobby": "An unknown error occurred, to prevent black screen. Sadly, this error exists in all Town of Host versions. Automatic ending game is required, or the game will not start.",
+  "AntiBlackOutNotifyInLobby": "An error occurred , to prevent black screen. Do a “/dump” and send the logs to the discord server TOHE in “bug-reports” and we will try to fix it.",
   "AntiBlackOutLoggerSendInGame": "Because of an unknown error, the game will end to prevent black screen.",
   "AntiBlackOutRequestHostToForceEnd": "You were the reason of the black screen, you are asking the host to stop the game...",
   "AntiBlackOutHostRejectForceEnd": "You were the reason of the black screen, and the host is not going to end the game, we will disconnect you soon.",
