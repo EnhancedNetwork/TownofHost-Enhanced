@@ -4,7 +4,7 @@ using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
 using InnerNet;
-using static UnityEngine.GraphicsBuffer;
+
 namespace TOHE.Roles.Crewmate;
 
 internal class Snitch : RoleBase

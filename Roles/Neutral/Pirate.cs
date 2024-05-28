@@ -7,7 +7,7 @@ using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
+
 
 namespace TOHE.Roles.Neutral;
 internal class Pirate : RoleBase

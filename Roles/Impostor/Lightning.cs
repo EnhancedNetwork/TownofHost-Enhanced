@@ -4,7 +4,7 @@ using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
+
 
 namespace TOHE.Roles.Impostor;
 
