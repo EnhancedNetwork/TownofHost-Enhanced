@@ -381,8 +381,8 @@ internal class SelectRolesPatch
                 AssignCustomRole(kv.Value, kv.Key);
             }
 
-            AddonAssign.InitAndStartAssignLovers();
             AddonAssign.StartSortAndAssign();
+            AddonAssign.InitAndStartAssignLovers();
 
             // Sync by RPC
             foreach (var pair in Main.PlayerStates)
