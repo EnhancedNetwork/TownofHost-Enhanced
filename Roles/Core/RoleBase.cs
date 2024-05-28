@@ -382,7 +382,7 @@ public abstract class RoleBase
 
     // 
     // IMPORTANT note about otherIcons: 
-    // These are only called once in the method, so object attributes are banned (as 90% of roles only want the method to run once).
+    // These are only called once in the method, so object attributes are banned (as 99.99% of roles only want the method to run once).
     // You may use static attributes, tho you can simply just use utils.GetRoleBasesByType<> if need be.
     //
     public virtual string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
