@@ -59,7 +59,7 @@ internal class Bloodmoon : RoleBase
         return false;
     }
     public override string GetProgressText(byte playerId, bool cooms) => ColorString(AbilityLimit > 0  ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-    public void OnFixedUpdateOther(PlayerControl player)
+    private void OnFixedUpdateOther(PlayerControl player)
     {
         var IsMeeting = GameStates.IsMeeting;
         var playerid = player.PlayerId;
