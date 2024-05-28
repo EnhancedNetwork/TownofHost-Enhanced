@@ -16,6 +16,8 @@ public static class CustomRoleManager
     public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup();
     public static List<RoleBase> AllEnabledRoles => Main.PlayerStates.Values.Select(x => x.RoleClass).ToList(); //Since there are classes which use object attributes and playerstate is not removed.
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
+
+    public static bool OtherCollectionsSet = false;
     public static List<RoleBase> GetNormalOptions(Custom_RoleType type)
     {
         List<RoleBase> roles = [];
@@ -398,7 +400,7 @@ public static class CustomRoleManager
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (!MarkOthers.Any()) return string.Empty;
-
+        
         var sb = new StringBuilder(100);
         foreach (var marker in MarkOthers)
         {
@@ -439,11 +441,22 @@ public static class CustomRoleManager
 
     public static void Initialize()
     {
+        OtherCollectionsSet = false;
+
         MarkOthers.Clear();
         LowerOthers.Clear();
         SuffixOthers.Clear();
         OnFixedUpdateOthers.Clear();
         OnFixedUpdateLowLoadOthers.Clear();
         CheckDeadBodyOthers.Clear();
+    }
+
+    public static void Add()
+    {
+        MarkOthers = MarkOthers.FilterDuplicates();
+        LowerOthers = LowerOthers.FilterDuplicates();
+        SuffixOthers = SuffixOthers.FilterDuplicates();
+
+        OtherCollectionsSet = true;
     }
 }

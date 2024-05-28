@@ -357,7 +357,7 @@ internal class RuthlessRomantic : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
-    public override Custom_RoleType ThisRoleType => new Romantic().ThisRoleType;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
     public override void Init()
     {
