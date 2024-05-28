@@ -388,6 +388,13 @@ public static class CustomRoleManager
         return AllEnabledRoles.Any(RoleClass => RoleClass.OnCoEnterVentOthers(physics, ventId));
     }
 
+    private IEnumerable<tfunc> FilterDuplicates<tfunc>(this IEnumerable<tfunc> collection)
+    {
+        var getobject = collection.Where(x => x.tar)
+
+        return default;
+    }
+
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = [];
     public static HashSet<Func<PlayerControl, PlayerControl, bool, bool, string>> LowerOthers = [];
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> SuffixOthers = [];
