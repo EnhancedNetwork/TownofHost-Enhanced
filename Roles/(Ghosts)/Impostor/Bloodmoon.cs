@@ -85,7 +85,7 @@ internal class Bloodmoon : RoleBase
         if (PlayerDie.ContainsKey(DeadPlayer.PlayerId))
             PlayerDie.Remove(DeadPlayer.PlayerId);
     }
-}
+
     private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting, bool isforhud = false) 
     {
         if (GameStates.IsMeeting || IsForMeeting) return string.Empty;
