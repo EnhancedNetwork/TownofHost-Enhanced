@@ -399,8 +399,6 @@ public static class CustomRoleManager
     {
         if (!MarkOthers.Any()) return string.Empty;
         
-
-
         var sb = new StringBuilder(100);
         foreach (var marker in MarkOthers)
         {
