@@ -461,6 +461,7 @@ internal class SelectRolesPatch
                     }
                 }
             }
+            CustomRoleManager.Add(); // Has to be after all roles have run their "add" methods.
 
             EndOfSelectRolePatch:
 

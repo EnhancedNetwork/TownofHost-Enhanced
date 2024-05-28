@@ -398,7 +398,7 @@ public static class CustomRoleManager
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (!MarkOthers.Any()) return string.Empty;
-
+        
         var sb = new StringBuilder(100);
         foreach (var marker in MarkOthers)
         {
@@ -445,5 +445,12 @@ public static class CustomRoleManager
         OnFixedUpdateOthers.Clear();
         OnFixedUpdateLowLoadOthers.Clear();
         CheckDeadBodyOthers.Clear();
+    }
+
+    public static void Add()
+    {
+        MarkOthers = MarkOthers.FilterDuplicates();
+        LowerOthers = LowerOthers.FilterDuplicates();
+        SuffixOthers = SuffixOthers.FilterDuplicates();
     }
 }
