@@ -388,11 +388,18 @@ public static class CustomRoleManager
         return AllEnabledRoles.Any(RoleClass => RoleClass.OnCoEnterVentOthers(physics, ventId));
     }
 
-    private IEnumerable<tfunc> FilterDuplicates<tfunc>(this IEnumerable<tfunc> collection)
+    private static IEnumerable<TDelegate> FilterDuplicates<TDelegate>(this IEnumerable<TDelegate> collection) where TDelegate : Delegate
     {
-        var getobject = collection.Where(x => x.tar)
+        // Filter out delegates which do not have a object reference (static methods)
+        var filteredCollection = collection.Where(d => d.Target != null);
 
-        return default;
+        // Group by the target object (the instance the method belongs to) and select distinct
+        var distinctDelegates = filteredCollection
+            .GroupBy(d => d.Target)
+            .Select(g => g.First())
+            .Concat(collection.Where(x => x.Target == null)); // adds back static methods
+
+        return distinctDelegates;
     }
 
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = [];
@@ -452,5 +459,12 @@ public static class CustomRoleManager
         OnFixedUpdateOthers.Clear();
         OnFixedUpdateLowLoadOthers.Clear();
         CheckDeadBodyOthers.Clear();
+    }
+
+    public static void Add()
+    {
+        MarkOthers.FilterDuplicates();
+        LowerOthers.FilterDuplicates();
+        SuffixOthers.FilterDuplicates();
     }
 }
