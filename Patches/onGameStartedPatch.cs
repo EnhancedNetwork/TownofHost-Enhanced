@@ -272,7 +272,7 @@ internal class SelectRolesPatch
             Dictionary<(byte, byte), RoleTypes> rolesMap = [];
 
             // Assign desync roles
-            foreach (var kv in RoleAssign.RoleResult.Where(x => !(x.Key == null || x.Key.Data.Disconnected) && x.Value.IsDesyncRole()).ToArray())
+            foreach (var kv in RoleAssign.RoleResult.Where(x => !(x.Key == null || x.Key.Data.Disconnected) && x.Value.IsDesyncRole()))
                 AssignDesyncRole(kv.Value, kv.Key, senders, rolesMap, BaseRole: kv.Value.GetDYRole());
 
 
@@ -326,10 +326,10 @@ internal class SelectRolesPatch
             if (Main.EnableGM.Value) newList.Add((PlayerControl.LocalPlayer, RoleTypes.Crewmate));
             RpcSetRoleReplacer.StoragedData = newList;
 
-            RpcSetRoleReplacer.Release(); //保存していたSetRoleRpcを一気に書く
+            RpcSetRoleReplacer.Release(); //Write the saved SetRoleRpc at once
             RpcSetRoleReplacer.senders.Do(kvp => kvp.Value.SendMessage());
 
-            // 不要なオブジェクトの削除
+            // Delete unwanted objects
             RpcSetRoleReplacer.senders = null;
             RpcSetRoleReplacer.OverriddenSenderList = null;
             RpcSetRoleReplacer.StoragedData = null;
@@ -338,8 +338,8 @@ internal class SelectRolesPatch
 
             foreach (var pc in Main.AllPlayerControls)
             {
-                pc.Data.IsDead = false; //プレイヤーの死を解除する
-                if (Main.PlayerStates[pc.PlayerId].MainRole != CustomRoles.NotAssigned) continue; //既にカスタム役職が割り当てられていればスキップ
+                pc.Data.IsDead = false;
+                if (Main.PlayerStates[pc.PlayerId].MainRole != CustomRoles.NotAssigned) continue; // Skip if a custom role has already been assigned
                 var role = CustomRoles.NotAssigned;
                 switch (pc.Data.Role.Role)
                 {
@@ -384,8 +384,15 @@ internal class SelectRolesPatch
                 AssignCustomRole(kv.Value, kv.Key);
             }
 
-            AddonAssign.StartSortAndAssign();
-            AddonAssign.InitAndStartAssignLovers();
+            try
+            {
+                AddonAssign.StartSortAndAssign();
+                AddonAssign.InitAndStartAssignLovers();
+            }
+            catch (Exception error)
+            {
+                Logger.Warn($"Error after addons assign - error: {error}", "AddonAssign");
+            }
 
             // Sync by RPC
             foreach (var pair in Main.PlayerStates)
