@@ -18,7 +18,7 @@ internal class ChangeRoleSettings
     public static void Postfix(AmongUsClient __instance)
     {
         Main.OverrideWelcomeMsg = "";
-        Main.AssignRolesIsStarted = true;
+        //Main.AssignRolesIsStarted = true;
 
         Logger.Msg("Is Started", "AssignRoles");
 
@@ -271,8 +271,8 @@ internal class SelectRolesPatch
 
             Dictionary<(byte, byte), RoleTypes> rolesMap = [];
 
-            // 注册反职业
-            foreach (var kv in RoleAssign.RoleResult.Where(x => x.Value.IsDesyncRole()).ToArray())
+            // Assign desync roles
+            foreach (var kv in RoleAssign.RoleResult.Where(x => (x.Key != null || !x.Key.Data.Disconnected) && x.Value.IsDesyncRole()).ToArray())
                 AssignDesyncRole(kv.Value, kv.Key, senders, rolesMap, BaseRole: kv.Value.GetDYRole());
 
 
@@ -312,9 +312,11 @@ internal class SelectRolesPatch
             }
 
             List<(PlayerControl, RoleTypes)> newList = [];
-            foreach (var sd in RpcSetRoleReplacer.StoragedData.ToArray())
+            foreach (var sd in RpcSetRoleReplacer.StoragedData)
             {
-                var kp = RoleAssign.RoleResult.FirstOrDefault(x => x.Key.PlayerId == sd.Item1.PlayerId);
+                var kp = RoleAssign.RoleResult.FirstOrDefault(x => x.Key != null && sd.Item1 != null && x.Key.PlayerId == sd.Item1.PlayerId);
+                if (kp.Key == null) continue;
+
                 newList.Add((sd.Item1, kp.Value.GetRoleTypes()));
                 if (sd.Item2 == kp.Value.GetRoleTypes())
                     Logger.Warn($"Registered original Role => {sd.Item1.GetRealName()}: {sd.Item2}", "Override Role Select");
@@ -377,7 +379,8 @@ internal class SelectRolesPatch
 
             foreach (var kv in RoleAssign.RoleResult)
             {
-                if (kv.Value.IsDesyncRole()) continue;
+                if (kv.Key == null || kv.Value.IsDesyncRole()) continue;
+
                 AssignCustomRole(kv.Value, kv.Key);
             }
 
@@ -464,7 +467,7 @@ internal class SelectRolesPatch
 
             EndOfSelectRolePatch:
 
-            HudManager.Instance.SetHudActive(true);
+            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
             //HudManager.Instance.Chat.SetVisible(true);
             
             List<PlayerControl> AllPlayers = [];
@@ -538,16 +541,16 @@ internal class SelectRolesPatch
         var selfRole = player.PlayerId == hostId ? hostBaseRole : BaseRole;
         var othersRole = player.PlayerId == hostId ? RoleTypes.Crewmate : RoleTypes.Scientist;
 
-        //Desync役職視点
+        // Set Desync role for self and for others
         foreach (var target in Main.AllPlayerControls)
             rolesMap[(player.PlayerId, target.PlayerId)] = player.PlayerId != target.PlayerId ? othersRole : selfRole;
 
-        //他者視点
+        // Set Desync role for others
         foreach (var seer in Main.AllPlayerControls.Where(x => player.PlayerId != x.PlayerId).ToArray())
             rolesMap[(seer.PlayerId, player.PlayerId)] = othersRole;
 
         RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
-        //ホスト視点はロール決定
+        //Set role for host
         player.SetRole(othersRole);
         player.Data.IsDead = true;
 
@@ -557,11 +560,14 @@ internal class SelectRolesPatch
     {
         foreach (var seer in Main.AllPlayerControls)
         {
-            var sender = senders[seer.PlayerId];
+            senders.TryGetValue(seer.PlayerId, out var sender);
+            if (sender == null) continue;
+
             foreach (var target in Main.AllPlayerControls)
             {
                 if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var role))
                 {
+                    if (seer == null || target == null) continue;
                     sender.RpcSetRole(seer, role, target.GetClientId());
                 }
             }
@@ -645,8 +651,12 @@ internal class SelectRolesPatch
 
                 foreach (var pair in StoragedData)
                 {
-                    pair.Item1.SetRole(pair.Item2);
-                    sender.Value.AutoStartRpc(pair.Item1.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
+                    var seer = pair.Item1;
+                    var target = Utils.GetPlayerById(sender.Key);
+                    if (seer == null || target == null) continue;
+
+                    seer.SetRole(pair.Item2);
+                    sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, target.GetClientId())
                         .Write((ushort)pair.Item2)
                         .EndRpc();
                 }
