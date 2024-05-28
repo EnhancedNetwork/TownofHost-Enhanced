@@ -2,6 +2,7 @@
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles._Ghosts_.Impostor;
 
@@ -34,14 +35,13 @@ internal class Minion : RoleBase
     public override void Add(byte playerId)
     {
         Playerids.Add(playerId);
-        CustomRoleManager.LowerOthers.Add(GetLowerTextOther);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.GuardianAngelCooldown = AbilityCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
-    private string GetLowerTextOther(PlayerControl seer, PlayerControl target, bool isForMeeting = false, bool isForHud = false)
+    public override string GetLowerTextOthers(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false, bool isForHud = false)
     {
         if (seer.GetCustomRole().IsImpostorTeam() && Main.PlayerStates[target.PlayerId].IsBlackOut && !isForMeeting)
         {

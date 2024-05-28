@@ -3,6 +3,7 @@ using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -59,8 +60,6 @@ internal class Captain : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-
-        CustomRoleManager.MarkOthers.Add(GetMarkForOthers);
     }
     private static void SendRPCSetSpeed(byte targetId)
     {
@@ -231,7 +230,8 @@ internal class Captain : RoleBase
         OriginalSpeed.Clear();
         SendRPCRevertAllSpeed();
     }
-    private string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool isForMeeting)
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (target.Is(CustomRoles.Captain) && OptionCrewCanFindCaptain.GetBool() &&
                 (target.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) &&

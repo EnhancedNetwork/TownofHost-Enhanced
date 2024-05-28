@@ -4,6 +4,7 @@ using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -44,7 +45,6 @@ internal class Lightning : RoleBase
     {
         playerIdList.Add(playerId);
 
-        CustomRoleManager.MarkOthers.Add(GetMarkInGhostPlayer);
     }
     private static void SendRPC(byte playerId)
     {
@@ -171,12 +171,10 @@ internal class Lightning : RoleBase
         Utils.NotifyRoles();
     }
 
-    private string GetMarkInGhostPlayer(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (isForMeeting) return string.Empty;
-
         target ??= seer;
-
         return (!seer.IsAlive() && seer != target && IsGhost(target)) || IsGhost(target) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■") : string.Empty;
     }
 

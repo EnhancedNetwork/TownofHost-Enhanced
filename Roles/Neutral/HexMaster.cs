@@ -6,6 +6,7 @@ using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -60,8 +61,6 @@ internal class HexMaster : RoleBase
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
-
-        CustomRoleManager.MarkOthers.Add(GetHexedMark);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -234,7 +233,7 @@ internal class HexMaster : RoleBase
             SwitchHexMode(pc.PlayerId, false);
         }
     }
-    private string GetHexedMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         target ??= seer;
 

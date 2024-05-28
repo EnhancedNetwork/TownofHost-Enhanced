@@ -6,6 +6,7 @@ using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -54,8 +55,6 @@ internal class Follower : RoleBase
     {
         playerIdList.Add(playerId);
         BetTimes.Add(playerId, MaxBetTimes.GetInt());
-
-        CustomRoleManager.MarkOthers.Add(GetOthersMark);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -131,7 +130,7 @@ internal class Follower : RoleBase
         Logger.Info($" {killer.GetNameWithRole()} => {target.GetNameWithRole()}", "Follower");
         return false;
     }
-    private string GetOthersMark(PlayerControl seer, PlayerControl target = null, bool IsForMeeting = false)
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (target == null) return string.Empty;
 

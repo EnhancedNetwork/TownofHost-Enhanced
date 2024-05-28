@@ -85,9 +85,6 @@ internal class PlagueDoctor : RoleBase
             InfectInactiveTime += 5f;
 
 
-        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-        CustomRoleManager.LowerOthers.Add(GetLowerTextOthers);
-
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateOthers.Add(OnCheckPlayerPosition);
@@ -227,14 +224,14 @@ internal class PlagueDoctor : RoleBase
         InfectInactiveTime, "ResetInfectInactiveTime");
     }
 
-    private string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool Isformeetingguwno = false)
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool Isformeetingguwno = false)
     {
         seen ??= seer;
         if (!CanInfect(seen)) return string.Empty;
         if (!seer.Is(CustomRoles.PlagueDoctor) && seer.IsAlive()) return string.Empty;
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.PlagueDoctor), GetInfectRateCharactor(seen));
     }
-    private string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isformeetingguwno = false, bool znowupierdol = false)
+    public override string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isformeetingguwno = false, bool znowupierdol = false)
     {
         seen ??= seer;
         if (!seen.Is(CustomRoles.PlagueDoctor)) return string.Empty;
