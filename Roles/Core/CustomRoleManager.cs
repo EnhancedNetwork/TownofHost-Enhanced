@@ -395,7 +395,7 @@ public static class CustomRoleManager
 
         // Group by the target object (the instance the method belongs to) and select distinct
         var distinctDelegates = filteredCollection
-            .GroupBy(d => d.Target)
+            .GroupBy(d => d.Target.GetType())
             .Select(g => g.First())
             .Concat(collection.Where(x => x.Target == null)); // adds back static methods
 
@@ -412,6 +412,8 @@ public static class CustomRoleManager
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (!MarkOthers.Any()) return string.Empty;
+        
+
 
         var sb = new StringBuilder(100);
         foreach (var marker in MarkOthers)
@@ -463,8 +465,8 @@ public static class CustomRoleManager
 
     public static void Add()
     {
-        MarkOthers.FilterDuplicates();
-        LowerOthers.FilterDuplicates();
-        SuffixOthers.FilterDuplicates();
+        MarkOthers = MarkOthers.FilterDuplicates().ToHashSet();
+        LowerOthers = LowerOthers.FilterDuplicates().ToHashSet();
+        SuffixOthers = SuffixOthers.FilterDuplicates().ToHashSet();
     }
 }
