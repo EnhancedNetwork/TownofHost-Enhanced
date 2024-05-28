@@ -52,11 +52,11 @@ public static class CollectionExtensions
     }
 
     /// <summary>
-    /// Filters a Delegate HashSet of any object reference duplicates
+    /// Filters a IEnumerable(<typeparamref name="TDelegate"/>) of any duplicates
     /// </summary>
     /// <typeparam name="TDelegate">The type of the delegates in the collection</typeparam>
-    /// <returns>A HashSet containing all delegates without duplicate object references.</returns>
-    public static HashSet<TDelegate> FilterDuplicates<TDelegate>(this HashSet<TDelegate> collection) where TDelegate : Delegate
+    /// <returns>A HashSet containing all delegates without duplicate object references nor static duplicates.</returns>
+    public static HashSet<TDelegate> FilterDuplicates<TDelegate>(this IEnumerable<TDelegate> collection) where TDelegate : Delegate
     {
         // Filter out delegates which do not have a object reference (static methods)
         var filteredCollection = collection.Where(d => d.Target != null);
