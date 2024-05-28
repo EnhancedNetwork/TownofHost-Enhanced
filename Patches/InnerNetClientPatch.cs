@@ -35,6 +35,7 @@ internal class GameDataHandlerPatch
                         if (obj.AmOwner)
                         {
                             Logger.Warn(string.Format("Received DataFlag for object {0} {1} that we own.", netId.ToString(), obj.name), "GameDataHandlerPatch");
+                            EAC.WarnHost();
                             return false;
                         }
                     }
@@ -45,18 +46,21 @@ internal class GameDataHandlerPatch
                             if (obj == GameData.Instance)
                             {
                                 Logger.Warn(string.Format("Received DataFlag for GameData {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                EAC.WarnHost();
                                 return false;
                             }
 
                             if (obj == MeetingHud.Instance)
                             {
                                 Logger.Warn(string.Format("Received DataFlag for MeetingHud {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                EAC.WarnHost();
                                 return false;
                             }
 
                             if (obj == VoteBanSystem.Instance)
                             {
                                 Logger.Warn(string.Format("Received DataFlag for VoteBanSystem {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                EAC.WarnHost();
                                 return false;
                             }
                         }
@@ -91,12 +95,14 @@ internal class GameDataHandlerPatch
                     if (scene == string.Empty || scene == null)
                     {
                         Logger.Warn(string.Format("Client {0} ({1}) tried to send SceneChangeFlag with null scene.", client.PlayerName, client.Id), "GameDataHandlerPatch");
+                        EAC.WarnHost();
                         return false;
                     }
 
                     if (scene.ToLower() == "tutorial")
                     {
                         Logger.Warn(string.Format("Client {0} ({1}) tried to send SceneChangeFlag to Tutorial.", client.PlayerName, client.Id), "GameDataHandlerPatch");
+                        EAC.WarnHost(100);
 
                         if (GameStates.IsOnlineGame && AmongUsClient.Instance.AmHost)
                         {
@@ -116,6 +122,7 @@ internal class GameDataHandlerPatch
                     if (client == null)
                     {
                         Logger.Warn($"Received ReadyFlag for unknown client {clientId}.", "GameDataHandlerPatch");
+                        EAC.WarnHost();
                         return false;
                     }
 
@@ -124,6 +131,7 @@ internal class GameDataHandlerPatch
                         if (!StartGameHostPatch.isStartingAsHost)
                         {
                             Logger.Warn($"Received ReadyFlag while game is started from {clientId}.", "GameDataHandlerPatch");
+                            EAC.WarnHost();
                             return false;
                         }
                     }

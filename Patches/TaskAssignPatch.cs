@@ -271,6 +271,7 @@ class HandleRpcPatch
                 Logger.Error($"Received RpcSetTask for {dataid} with no playerdata, which is impossible.", "TaskAssignPatch");
             }
 
+            EAC.WarnHost();
             return false;
         }
 
