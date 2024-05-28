@@ -59,8 +59,6 @@ class CoBeginPatch
 
         var allPlayerControlsArray = Main.AllPlayerControls;
 
-        //Main.AssignRolesIsStarted = false;
-
         logger.Info("------------Player Names------------");
         foreach ( var pc in allPlayerControlsArray)
         {

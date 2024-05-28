@@ -161,7 +161,7 @@ public class Main : BasePlugin
     public const float MinSpeed = 0.0001f;
     public static int AliveImpostorCount;
     public static bool VisibleTasksCount = false;
-    //public static bool AssignRolesIsStarted = false;
+    public static bool AssignRolesIsStarted = false;
     public static string nickName = "";
     public static bool introDestroyed = false;
     public static int DiscussionTime;

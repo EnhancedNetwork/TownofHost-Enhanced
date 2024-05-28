@@ -9,6 +9,7 @@ using TOHE.Patches;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
+using static TOHE.SelectRolesPatch;
 
 namespace TOHE;
 
@@ -187,7 +188,7 @@ public static class OnPlayerJoinedPatch
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
 
-        //Main.AssignRolesIsStarted = false;
+        Main.AssignRolesIsStarted = false;
 
         _ = new LateTask(() =>
         {
@@ -286,6 +287,14 @@ class OnPlayerLeftPatch
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+
+        if (!Main.introDestroyed && !GameStates.IsLobby)
+        {
+            Logger.Warn($"Check", "OnPlayerLeft");
+            RoleAssign.RoleResult?.Remove(data.Character);
+            RpcSetRoleReplacer.senders?.Remove(data.Character.PlayerId);
+            RpcSetRoleReplacer.StoragedData?.Remove(data.Character);
+        }
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
             MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
@@ -406,10 +415,10 @@ class OnPlayerLeftPatch
             Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session OnPlayerLeftPatch");
 
             // End the game when a player exits game during assigning roles (AntiBlackOut Protect)
-            //if (Main.AssignRolesIsStarted)
-            //{
-            //    Utils.ErrorEnd("The player left the game during assigning roles");
-            //}
+            if (Main.AssignRolesIsStarted)
+            {
+                Utils.ErrorEnd("The player left the game during assigning roles");
+            }
 
 
             if (data != null)
