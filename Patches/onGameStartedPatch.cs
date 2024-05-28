@@ -244,8 +244,6 @@ internal class SelectRolesPatch
             }
             RpcSetRoleReplacer.StartReplace(senders);
 
-            AmongUsClient.Instance.KickPlayer(Utils.GetPlayerById(2).GetClientId(), false);
-
             if (Main.EnableGM.Value)
             {
                 PlayerControl.LocalPlayer.RpcSetCustomRole(CustomRoles.GM);
