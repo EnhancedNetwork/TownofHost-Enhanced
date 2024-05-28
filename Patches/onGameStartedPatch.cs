@@ -272,7 +272,7 @@ internal class SelectRolesPatch
             Dictionary<(byte, byte), RoleTypes> rolesMap = [];
 
             // Assign desync roles
-            foreach (var kv in RoleAssign.RoleResult.Where(x => (x.Key != null || !x.Key.Data.Disconnected) && x.Value.IsDesyncRole()).ToArray())
+            foreach (var kv in RoleAssign.RoleResult.Where(x => !(x.Key == null || x.Key.Data.Disconnected) && x.Value.IsDesyncRole()).ToArray())
                 AssignDesyncRole(kv.Value, kv.Key, senders, rolesMap, BaseRole: kv.Value.GetDYRole());
 
 
