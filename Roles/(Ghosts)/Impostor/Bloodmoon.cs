@@ -77,6 +77,15 @@ internal class Bloodmoon : RoleBase
             }
         }
     }
+    public override void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+    {
+        if (LastTime.ContainsKey(DeadPlayer.PlayerId))
+            LastTime.Remove(DeadPlayer.PlayerId);
+
+        if (PlayerDie.ContainsKey(DeadPlayer.PlayerId))
+            PlayerDie.Remove(DeadPlayer.PlayerId);
+    }
+}
     private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting, bool isforhud = false) 
     {
         if (GameStates.IsMeeting || IsForMeeting) return string.Empty;
