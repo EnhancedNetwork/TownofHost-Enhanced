@@ -43,10 +43,10 @@ internal class Minion : RoleBase
     }
     public override string GetLowerTextOthers(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if ((seer.GetCustomRole().IsImpostorTeam() || seer.Is(CustomRoles.Minion)) && Main.PlayerStates[target.PlayerId].IsBlackOut && !isForMeeting)
+        if ((seer.GetCustomRole().IsImpostorTeam()) && Main.PlayerStates[target.PlayerId].IsBlackOut && !isForMeeting)
         {
             var blinded = Translator.GetString("Minion_Blind");
-            return ColorString(GetRoleColor(CustomRoles.Minion), $"『{blinded}』");
+            return ColorString(GetRoleColor(CustomRoles.Minion), $"<size=75%><alpha=#CC>『{blinded}』</size>");
         }
         return string.Empty;
     }
