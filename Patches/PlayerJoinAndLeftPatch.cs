@@ -288,9 +288,9 @@ class OnPlayerLeftPatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (!Main.introDestroyed && !GameStates.IsLobby)
+        if (Main.AssignRolesIsStarted)
         {
-            Logger.Warn($"Check", "OnPlayerLeft");
+            Logger.Warn($"Assign roles not ended, try remove player {data.Character.PlayerId} from role assign", "OnPlayerLeft");
             RoleAssign.RoleResult?.Remove(data.Character);
             RpcSetRoleReplacer.senders?.Remove(data.Character.PlayerId);
             RpcSetRoleReplacer.StoragedData?.Remove(data.Character);

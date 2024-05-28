@@ -236,13 +236,7 @@ internal class SelectRolesPatch
 
         try
         {
-            Dictionary<byte, CustomRpcSender> senders = [];
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                senders[pc.PlayerId] = new CustomRpcSender($"{pc.name}'s SetRole Sender", SendOption.Reliable, false)
-                        .StartMessage(pc.GetClientId());
-            }
-            RpcSetRoleReplacer.StartReplace(senders);
+            RpcSetRoleReplacer.Initialization();
 
             if (Main.EnableGM.Value)
             {
@@ -258,7 +252,7 @@ internal class SelectRolesPatch
 
             RoleAssign.CalculateVanillaRoleCount();
 
-            //指定原版特殊职业数量
+            // Set Rate For Vanilla Roles
             var roleOpt = Main.NormalOptions.roleOptions;
             int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
             roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum + RoleAssign.addScientistNum, RoleAssign.addScientistNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Scientist));
@@ -280,7 +274,6 @@ internal class SelectRolesPatch
             Utils.ErrorEnd("Select Role Prefix");
             Logger.Fatal(e.Message, "Select Role Prefix");
         }
-        //以下、バニラ側の役職割り当てが入る
     }
 
     public static void Postfix()
@@ -327,6 +320,7 @@ internal class SelectRolesPatch
 
                 MakeDesyncSender(senders, rolesMap);
 
+                // Override RoleType
                 Dictionary<PlayerControl, RoleTypes> newList = [];
                 foreach (var sd in RpcSetRoleReplacer.StoragedData)
                 {
@@ -588,13 +582,11 @@ internal class SelectRolesPatch
 
         Logger.Info($"Registered Role: {player?.Data?.PlayerName} => {role} : RoleType => {othersRole}", "AssignDesyncRoles");
     }
-    public static void MakeDesyncSender(Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), RoleTypes> rolesMap)
+    private static void MakeDesyncSender(Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), RoleTypes> rolesMap)
     {
         foreach (var seer in Main.AllPlayerControls)
         {
-            senders.TryGetValue(seer.PlayerId, out var sender);
-            if (sender == null) continue;
-
+            if (!senders.TryGetValue(seer.PlayerId, out var sender)) continue;
             foreach (var target in Main.AllPlayerControls)
             {
                 if (seer == null || target == null) continue;
@@ -666,7 +658,7 @@ internal class SelectRolesPatch
         public static List<CustomRpcSender> OverriddenSenderList;
         public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes roleType)
         {
-            if (doReplace && senders != null && __instance != null)
+            if (doReplace && __instance != null)
             {
                 StoragedData.Add(__instance, roleType);
                 return false;
@@ -695,6 +687,12 @@ internal class SelectRolesPatch
                 sender.Value.EndMessage();
             }
             doReplace = false;
+        }
+        public static void Initialization()
+        {
+            StoragedData = [];
+            OverriddenSenderList = [];
+            doReplace = true;
         }
         public static void StartReplace(Dictionary<byte, CustomRpcSender> senders)
         {
