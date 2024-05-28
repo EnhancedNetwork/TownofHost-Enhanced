@@ -1553,6 +1553,25 @@ public static class Utils
     public static List<PlayerControl> GetPlayerListByRole(this CustomRoles role)
         => GetPlayerListByIds(Main.PlayerStates.Values.Where(x => x.MainRole == role).Select(r => r.PlayerId));
     
+    public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
+    {
+        try
+        {
+            var cache = Main.PlayerStates.Values.Where(x => x.RoleClass != null);
+
+            if (cache.Any())
+            {
+                var Get = cache.Select(x => x.RoleClass);
+                return Get.OfType<t>().Any() ? Get.OfType<t>() : null;
+            }
+        }
+        catch (Exception exx)
+        {
+            Logger.Exception(exx, "Utils.GetRoleBasesByType");
+        }
+        return null;
+    }
+
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
