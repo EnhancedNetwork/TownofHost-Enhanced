@@ -37,10 +37,10 @@ public static class CollectionExtensions
     /// <param name="collection">The collection to iterate over</param>
     /// <param name="action">The action to execute for each element</param>
     /// <typeparam name="T">The type of the elements in the collection</typeparam>
-    public static void Do<T>(this IEnumerable<T> collection, System.Action<T> action)
-    {
-        Parallel.ForEach(collection, action);
-    }
+    //public static void Do<T>(this IEnumerable<T> collection, System.Action<T> action)
+    //{
+    //    Parallel.ForEach(collection, action);
+    //}
 
     /// <summary>
     /// Executes an action for each element in a collection in parallel

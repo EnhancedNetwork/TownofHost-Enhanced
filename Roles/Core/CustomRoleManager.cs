@@ -453,9 +453,14 @@ public static class CustomRoleManager
 
     public static void Add()
     {
-        MarkOthers = MarkOthers.FilterDuplicates();
-        LowerOthers = LowerOthers.FilterDuplicates();
-        SuffixOthers = SuffixOthers.FilterDuplicates();
+        if (MarkOthers.Any())
+            MarkOthers = MarkOthers.FilterDuplicates();
+
+        if (LowerOthers.Any())
+            LowerOthers = LowerOthers.FilterDuplicates();
+
+        if (SuffixOthers.Any())
+            SuffixOthers = SuffixOthers.FilterDuplicates();
 
         OtherCollectionsSet = true;
     }
