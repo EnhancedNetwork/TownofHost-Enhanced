@@ -35,9 +35,7 @@ public abstract class RoleBase
 
         if (CustomRoleManager.OtherCollectionsSet) // If a role is applied mid-game, filter them again jsut in-case
         {
-            CustomRoleManager.MarkOthers = CustomRoleManager.MarkOthers.FilterDuplicates();
-            CustomRoleManager.LowerOthers = CustomRoleManager.LowerOthers.FilterDuplicates();
-            CustomRoleManager.SuffixOthers = CustomRoleManager.SuffixOthers.FilterDuplicates();
+            CustomRoleManager.Add();
         }
     }
 
