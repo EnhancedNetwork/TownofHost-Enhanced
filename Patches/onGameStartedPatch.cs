@@ -369,22 +369,22 @@ internal class SelectRolesPatch
                 switch (pc.Data.Role.Role)
                 {
                     case RoleTypes.Crewmate:
-                        role = CustomRoles.CrewmateTOHE;
+                        role = CustomRoles.Crewmate;
                         break;
                     case RoleTypes.Impostor:
-                        role = CustomRoles.ImpostorTOHE;
+                        role = CustomRoles.Impostor;
                         break;
                     case RoleTypes.Scientist:
-                        role = CustomRoles.ScientistTOHE;
+                        role = CustomRoles.Scientist;
                         break;
                     case RoleTypes.Engineer:
-                        role = CustomRoles.EngineerTOHE;
+                        role = CustomRoles.Engineer;
                         break;
                     case RoleTypes.GuardianAngel:
-                        role = CustomRoles.GuardianAngelTOHE;
+                        role = CustomRoles.GuardianAngel;
                         break;
                     case RoleTypes.Shapeshifter:
-                        role = CustomRoles.ShapeshifterTOHE;
+                        role = CustomRoles.Shapeshifter;
                         break;
                     default:
                         Logger.SendInGame(string.Format(GetString("Error.InvalidRoleAssignment"), pc?.Data?.PlayerName));
@@ -504,7 +504,6 @@ internal class SelectRolesPatch
             //HudManager.Instance.Chat.SetVisible(true);
             
             List<PlayerControl> AllPlayers = [];
-            //CustomRpcSender sender = CustomRpcSender.Create("SelectRoles Sender", SendOption.Reliable);
             
             foreach (var pc in Main.AllPlayerControls)
                 pc.ResetKillCooldown();
