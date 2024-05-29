@@ -16,6 +16,8 @@ public static class CustomRoleManager
     public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup();
     public static List<RoleBase> AllEnabledRoles => Main.PlayerStates.Values.Select(x => x.RoleClass).ToList(); //Since there are classes which use object attributes and playerstate is not removed.
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
+
+    public static bool OtherCollectionsSet = false;
     public static List<RoleBase> GetNormalOptions(Custom_RoleType type)
     {
         List<RoleBase> roles = [];
@@ -388,15 +390,12 @@ public static class CustomRoleManager
         return AllEnabledRoles.Any(RoleClass => RoleClass.OnCoEnterVentOthers(physics, ventId));
     }
 
-
+    private static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = [];
     /// <summary>
     /// If seer == seen then GetMarkOthers called from FixedUpadte or MeetingHud or NotifyRoles
     /// </summary>
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        var MarkOthers = new HashSet<Func<PlayerControl, PlayerControl, bool, string>>();
-        MarkOthers = AllEnabledRoles.Select(mark => (Func<PlayerControl, PlayerControl, bool, string>)mark.GetMarkOthers).FilterDuplicates();
-
         var sb = new StringBuilder(100);
         foreach (var marker in MarkOthers)
         {
@@ -405,14 +404,12 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+    private static HashSet<Func<PlayerControl, PlayerControl, bool, bool, string>> LowerOthers = [];
     /// <summary>
     /// If seer == seen then GetMarkOthers called from FixedUpadte or NotifyRoles
     /// </summary>
     public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
-        var LowerOthers = new HashSet<Func<PlayerControl, PlayerControl, bool, bool, string>>();
-        LowerOthers = AllEnabledRoles.Select(lower => (Func<PlayerControl, PlayerControl, bool, bool, string>)lower.GetLowerTextOthers).FilterDuplicates();
-
         var sb = new StringBuilder(100);
         foreach (var lower in LowerOthers)
         {
@@ -421,13 +418,12 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+    private static HashSet<Func<PlayerControl, PlayerControl, bool, string>> SuffixOthers = [];
     /// <summary>
     /// If seer == seen then GetMarkOthers called from FixedUpadte or NotifyRoles
     /// </summary>
     public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        var SuffixOthers = new HashSet<Func<PlayerControl, PlayerControl, bool, string>>();
-        SuffixOthers = AllEnabledRoles.Select(suffix => (Func<PlayerControl, PlayerControl, bool, string>)suffix.GetSuffixOthers).FilterDuplicates();
 
         var sb = new StringBuilder(100);
         foreach (var suffix in SuffixOthers)
@@ -439,8 +435,17 @@ public static class CustomRoleManager
 
     public static void Initialize()
     {
+        OtherCollectionsSet = false;
         OnFixedUpdateOthers.Clear();
         OnFixedUpdateLowLoadOthers.Clear();
         CheckDeadBodyOthers.Clear();
+    }
+
+    public static void Add()
+    {
+        MarkOthers = AllEnabledRoles.Select(mark => (Func<PlayerControl, PlayerControl, bool, string>)mark.GetMarkOthers).FilterDuplicates();
+        LowerOthers = AllEnabledRoles.Select(lower => (Func<PlayerControl, PlayerControl, bool, bool, string>)lower.GetLowerTextOthers).FilterDuplicates();
+        SuffixOthers = AllEnabledRoles.Select(suffix => (Func<PlayerControl, PlayerControl, bool, string>)suffix.GetSuffixOthers).FilterDuplicates();
+        OtherCollectionsSet = true;
     }
 }

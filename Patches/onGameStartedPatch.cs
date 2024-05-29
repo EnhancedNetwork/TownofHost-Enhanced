@@ -462,6 +462,8 @@ internal class SelectRolesPatch
                 }
             }
 
+            CustomRoleManager.Add();
+
             EndOfSelectRolePatch:
 
             HudManager.Instance.SetHudActive(true);
