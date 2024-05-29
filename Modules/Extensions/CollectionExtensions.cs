@@ -55,7 +55,7 @@ public static class CollectionExtensions
     /// Filters a IEnumerable(<typeparamref name="TDelegate"/>) of any duplicates
     /// </summary>
     /// <typeparam name="TDelegate">The type of the delegates in the collection</typeparam>
-    /// <returns>A HashSet containing all delegates without duplicate object references nor static duplicates.</returns>
+    /// <returns>A HashSet(<typeparamref name="TDelegate"/>) without duplicate object references nor static duplicates.</returns>
     public static HashSet<TDelegate> FilterDuplicates<TDelegate>(this IEnumerable<TDelegate> collection) where TDelegate : Delegate
     {
         // Filter out delegates which do not have a object reference (static methods)
