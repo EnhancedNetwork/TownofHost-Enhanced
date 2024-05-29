@@ -628,9 +628,9 @@ public enum CustomRoles
     GuardianAngelTOHE,
 
     //Crewmate Ghost
+    Ghastly,
     Hawk,
     Warden,
-    Ghastly,
 
     //Crewmate
     Addict,
