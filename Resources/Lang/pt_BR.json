@@ -1325,8 +1325,8 @@
   "BombCooldown": "Recarga de Bomba",
   "ImpostorVision": "Tem Visão de <color=#ff1919>Impostor</color>",
   "CanUseSabotage": "Pode Sabotar",
-  "Warlock_CanKillImpostors": "Can Kill <color=#ff1919>Impostors</color>",
-  "Warlock_CanKillSelf": "Can Kill Themselves",
+  "Warlock_CanKillImpostors": "Pode Matar <color=#ff1919>Impostores</color>",
+  "Warlock_CanKillSelf": "Podem se Matar",
   "CrewpostorKnowsAllies": "Conhece <color=#ff1919>Impostores</color>",
   "AlliesKnowCrewpostor": "Conhecido pelos <color=#ff1919>Impostores</color>",
   "CrewpostorLungeKill": "O Trimpostor tenta matar",
@@ -1586,8 +1586,8 @@
   "Medic_SeeNoOne": "Ninguém",
   "MedicShieldDeactivatesWhenMedicDies": "O escudo é desativado quando o <color=#00ff97>Guardião</color> morre",
   "MedicShielDeactivationIsVisible": "A desativação do escudo é visível",
-  "MedicShieldDeactivationIsVisible_Immediately": "Immediately",
-  "MedicShieldDeactivationIsVisible_AfterMeeting": "After Meeting",
+  "MedicShieldDeactivationIsVisible_Immediately": "Imediatamente",
+  "MedicShieldDeactivationIsVisible_AfterMeeting": "Após a Reunião",
   "MedicShieldDeactivationIsVisible_OFF": "<color=#ff0000>OFF</color>",
   "MedicResetCooldown": "Na tentativa de matar, redefina a recarga de abate do assassino para",
   "MedicShieldedCanBeGuessed": "Adivinhações ignoram o escudo do <color=#00ff97>Guardião</color>",
@@ -1862,7 +1862,7 @@
   "DeathReason.BloodLet": "Sangrou",
   "OnlyEnabledDeathReasons": "Apenas motivos de morte habilitados",
   "Alive": "Vivo",
-  "Disconnected": "Disconnected",
+  "Disconnected": "Desconectado",
   "Win": " Vence!",
   "Last-": "Último ",
   "Madmate-": "Cúmplice ",
@@ -3501,5 +3501,5 @@
   "WardenIncreaseSpeed": "Velocidade aumentada por",
   "WardenWarn": "PERIGO! CORRA!",
   "MinionAbilityTime": "Duração da Habilidade",
-  "Minion_Blind": "blinded"
+  "Minion_Blind": "cegado"
 }
