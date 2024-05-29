@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using System.Collections.Generic;
 using TOHE.Modules;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -161,7 +162,12 @@ public class RoleAssign
             RoleResult[PlayerControl.LocalPlayer] = CustomRoles.GM;
             AllPlayers.Remove(PlayerControl.LocalPlayer);
         }
-
+        if (Main.EnableGM.Value)
+        {
+            RoleResult[PlayerControl.LocalPlayer] = CustomRoles.GM;
+            AllPlayers.Remove(PlayerControl.LocalPlayer);
+            SetRoles.Remove(PlayerControl.LocalPlayer.PlayerId);
+        }
         // Pre-Assigned Roles By Host Are Selected First
         foreach (var item in SetRoles)
         {
