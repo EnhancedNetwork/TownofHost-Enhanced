@@ -395,9 +395,7 @@ public static class CustomRoleManager
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         var MarkOthers = new HashSet<Func<PlayerControl, PlayerControl, bool, string>>();
-        MarkOthers.UnionWith(AllEnabledRoles.Select(x => (Func<PlayerControl, PlayerControl, bool, string>)x.GetMarkOthers));
-        MarkOthers = MarkOthers.FilterDuplicates();
-
+        MarkOthers = AllEnabledRoles.Select(mark => (Func<PlayerControl, PlayerControl, bool, string>)mark.GetMarkOthers).FilterDuplicates();
 
         var sb = new StringBuilder(100);
         foreach (var marker in MarkOthers)
@@ -413,8 +411,7 @@ public static class CustomRoleManager
     public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
         var LowerOthers = new HashSet<Func<PlayerControl, PlayerControl, bool, bool, string>>();
-        LowerOthers.UnionWith(AllEnabledRoles.Select(x => (Func<PlayerControl, PlayerControl, bool, bool, string>)x.GetLowerTextOthers));
-        LowerOthers = LowerOthers.FilterDuplicates();
+        LowerOthers = AllEnabledRoles.Select(lower => (Func<PlayerControl, PlayerControl, bool, bool, string>)lower.GetLowerTextOthers).FilterDuplicates();
 
         var sb = new StringBuilder(100);
         foreach (var lower in LowerOthers)
@@ -430,8 +427,7 @@ public static class CustomRoleManager
     public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         var SuffixOthers = new HashSet<Func<PlayerControl, PlayerControl, bool, string>>();
-        SuffixOthers.UnionWith(AllEnabledRoles.Select(x => (Func<PlayerControl, PlayerControl, bool, string>)x.GetSuffixOthers));
-        SuffixOthers = SuffixOthers.FilterDuplicates();
+        SuffixOthers = AllEnabledRoles.Select(suffix => (Func<PlayerControl, PlayerControl, bool, string>)suffix.GetSuffixOthers).FilterDuplicates();
 
         var sb = new StringBuilder(100);
         foreach (var suffix in SuffixOthers)
