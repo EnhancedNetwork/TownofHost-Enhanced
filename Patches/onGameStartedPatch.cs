@@ -550,11 +550,12 @@ internal class SelectRolesPatch
         if (player == null) return;
 
         var hostId = PlayerControl.LocalPlayer.PlayerId;
+        var isHost = player.PlayerId == hostId;
 
         Main.PlayerStates[player.PlayerId].SetMainRole(role);
 
-        var selfRole = player.PlayerId == hostId ? hostBaseRole : BaseRole;
-        var othersRole = player.PlayerId == hostId ? RoleTypes.Crewmate : RoleTypes.Scientist;
+        var selfRole = isHost ? hostBaseRole : BaseRole;
+        var othersRole = isHost ? RoleTypes.Crewmate : RoleTypes.Scientist;
 
         // Set Desync role for self and for others
         foreach (var target in Main.AllPlayerControls)
