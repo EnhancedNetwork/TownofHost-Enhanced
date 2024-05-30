@@ -1,4 +1,3 @@
-using AmongUs.Data;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -11,7 +10,7 @@ namespace TOHE;
 internal class EFC
 {
     private static readonly ReadOnlyCollection<string> BannedBepInExMods = new(new List<string> { "MalumMenu", "AUnlocker" }); // Put BepInEx BepInPlugin name, not dll name lol.
-    private static readonly ReadOnlyCollection<string> KeyWordsInVersionInfo = new(new List<string> { "Malum", "Sicko" });
+    private static readonly ReadOnlyCollection<string> KeyWordsInVersionInfo = new(new List<string> { "Malum", "Sicko" }); // Banned words for version text
     public static string UnauthorizedReason = string.Empty;
     public static List<string> CheatTags = []; // For API report
     public static bool HasUnauthorizedFile = false;
@@ -21,6 +20,21 @@ internal class EFC
     // Set up if unauthorized files have been found.
     public static void UpdateUnauthorizedFiles()
     {
+        GameObject PlayButton = GameObject.Find("Main Buttons/PlayButton");
+
+        // Disable play button until all API information is gathered
+        if (PlayButton != null)
+        {
+            bool APIInfoCollected = BanManager.EACDict.Count > 0;
+
+            PlayButton.GetComponent<UnityEngine.BoxCollider2D>().enabled = APIInfoCollected;
+            if (!APIInfoCollected)
+                GameObject.Find("Main Buttons/PlayButton/Inactive").GetComponent<SpriteRenderer>().color = Color.gray;
+            else
+                GameObject.Find("Main Buttons/PlayButton/Inactive").GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f);
+        }
+
+        // Unauthorized file or ban detected.
         if (HasUnauthorizedFile)
         {
             GameObject playOnlineButton = GameObject.Find("PlayOnlineButton");
@@ -39,26 +53,34 @@ internal class EFC
                 }
             }
 
-            GameObject.Find("Account_CTA")?.SetActive(false);
-            GameObject.Find("AccountTab/GameHeader/LeftSide/FriendCode")?.SetActive(false);
-            if (GameObject.Find("Stats_CTA") != null) GameObject.Find("Stats_CTA").transform.position = new Vector2(1.7741f, -0.2442f);
+            GameObject SignInStatus = GameObject.Find("SignInStatus");
 
-            if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
+            if (SignInStatus != null)
+            {
+                SignInStatusComponent SignInStatusCom = SignInStatus.GetComponent<SignInStatusComponent>();
+                SignInStatusCom?.SetOffline();
+
+                GameObject.Find("Account_CTA")?.SetActive(false);
+                GameObject.Find("AccountTab/GameHeader/LeftSide/FriendCode")?.SetActive(false);
+                if (GameObject.Find("Stats_CTA") != null) GameObject.Find("Stats_CTA").transform.position = new Vector2(1.7741f, -0.2442f);
+            }
+
+            if (GameStates.IsOnlineGame && AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
             {
                 DisconnectPlayer();
             }
 
-            DataManager.Player.Account.LoginStatus = EOSManager.AccountLoginStatus.Offline;
-            DataManager.Player.Save();
-
             GameObject.Find("SplashArt")?.SetActive(false);
-            SoundManager.instance.ChangeMusicVolume(0);
+            SoundManager.instance?.ChangeMusicVolume(0);
             return;
         }
 
-        if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()) && GameStates.IsOnlineGame && AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
+        if (GameStates.IsOnlineGame && AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
         {
-            DisconnectPlayer();
+            if (BanManager.CheckEACList(PlayerControl.LocalPlayer?.FriendCode, PlayerControl.LocalPlayer?.GetClient().GetHashedPuid()))
+            {
+                DisconnectPlayer();
+            }
         }
     }
 
@@ -76,7 +98,7 @@ internal class EFC
         foreach (var user in BanManager.EACDict)
         {
             if ((user["friendcode"].ToString().ToLower().Trim() == ClientFriendCode.ToLower().Trim())
-                || (user["hashPUID"].ToString().ToLower().Trim() == ClientPUIDHash.ToLower().Trim())) //
+                || (user["hashPUID"].ToString().ToLower().Trim() == ClientPUIDHash.ToLower().Trim()))
             {
                 if (!HasUnauthorizedFile) Logger.Warn($"{ClientFriendCode}, {ClientPUIDHash} banned by EAC reason : {user["reason"]}", "EFC - CheckEACList");
                 if (!HasUnauthorizedFile) UnauthorizedReason = GetString("EFC.EACDetected");
