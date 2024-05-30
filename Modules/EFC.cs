@@ -66,7 +66,7 @@ internal class EFC
     public static bool CheckIfUnauthorizedFiles()
     {
         // Skip check if player is a dev for testing... I promise (- ‿◦ )
-        // if (DevManager.GetDevUser(EOSManager.Instance?.friendCode).IsDev) return false;
+        if (DevManager.GetDevUser(EOSManager.Instance?.friendCode).IsDev) return false;
 
         // Get user info for later use with API.
         string ClientUserName = GameObject.Find("AccountTab")?.GetComponent<AccountTab>()?.userName.text;
