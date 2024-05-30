@@ -32,6 +32,7 @@ class OnGameJoinedPatch
         ChatUpdatePatch.DoBlockChat = false;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
+        EAC.Init();
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
