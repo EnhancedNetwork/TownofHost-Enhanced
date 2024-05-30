@@ -2474,6 +2474,7 @@
   "EAC.CheatDetected.HighLevel": "Warning: EAC detected High Level of cheats.",
   "EAC.CheatDetected.LowLevel": "Warning: EAC detected Low Level of cheats. One of the players is hacking.",
   
+  "EFC.EACDetected": "You have been Banned from TOHE",
   "EFC.UnauthorizedTextDetected": "Unauthorized {0} Detected",
   "EFC.UnauthorizedFileMsg": "Unauthorized Game Files Detected",
   "EFC.OnlineMsg": "Online access has been temporarily disabled!",

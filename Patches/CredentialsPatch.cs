@@ -90,6 +90,12 @@ public static class Credentials
 
                 __instance.text.text = sb.ToString();
 
+                if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
+                {
+                    if (PlayerControl.LocalPlayer.GetClient() != null) EFC.ClientPUIDHash = PlayerControl.LocalPlayer.GetClient().GetHashedPuid();
+                    EFC.UpdateUnauthorizedFiles();
+                }
+
                 return false;
             }
             catch

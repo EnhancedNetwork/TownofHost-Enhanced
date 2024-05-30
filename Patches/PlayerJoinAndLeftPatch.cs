@@ -100,12 +100,14 @@ class OnGameJoinedPatch
                 if (!GameStates.IsOnlineGame) return;
                 if (!GameStates.IsModHost)
                     RPC.RpcRequestRetryVersionCheck();
+                /*
                 if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()) && GameStates.IsOnlineGame)
                 {
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
                     SceneChanger.ChangeScene("MainMenu");
                     return;
                 }
+                */
                 RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
                 var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
                 var host = AmongUsClient.Instance.GetHost();
