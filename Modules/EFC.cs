@@ -168,7 +168,6 @@ internal class EFC
         // Combine Player information and Tags
         string tagsAsString = string.Join(" - ", CheatTags);
         string playerInfo = $"{ClientUserName}.{ClientFriendCode}.{ClientPUIDHash} - {tagsAsString}"; // If Detection goes off send this information to the API database!
-        Logger.Test(playerInfo);
 
         // ----------------------------------------------------------
 
