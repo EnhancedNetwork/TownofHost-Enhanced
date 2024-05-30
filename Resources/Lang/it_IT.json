@@ -1325,8 +1325,8 @@
   "BombCooldown": "Ricarica Bomba",
   "ImpostorVision": "Ha il campo visivo <color=#ff1919>Impostore</color>",
   "CanUseSabotage": "Può Sabotare",
-  "Warlock_CanKillImpostors": "Can Kill <color=#ff1919>Impostors</color>",
-  "Warlock_CanKillSelf": "Can Kill Themselves",
+  "Warlock_CanKillImpostors": "Può Uccidere gli <color=#ff1919>Impostori</color>",
+  "Warlock_CanKillSelf": "Possono uccidersi",
   "CrewpostorKnowsAllies": "Conosce gli <color=#ff1919>Impostori</color>",
   "AlliesKnowCrewpostor": "È conosciuto dagli <color=#ff1919>Impostori</color>",
   "CrewpostorLungeKill": "Il Simulatore si muove all'uccisione",
@@ -1586,8 +1586,8 @@
   "Medic_SeeNoOne": "Nessuno",
   "MedicShieldDeactivatesWhenMedicDies": "Lo Scudo si disattiva quando il <color=#00ff97>Medico</color> muore",
   "MedicShielDeactivationIsVisible": "La disattivazione dello Scudo è visibile",
-  "MedicShieldDeactivationIsVisible_Immediately": "Immediately",
-  "MedicShieldDeactivationIsVisible_AfterMeeting": "After Meeting",
+  "MedicShieldDeactivationIsVisible_Immediately": "Immediatamente",
+  "MedicShieldDeactivationIsVisible_AfterMeeting": "Dopo Riunione",
   "MedicShieldDeactivationIsVisible_OFF": "<color=#ff0000>OFF</color>",
   "MedicResetCooldown": "Nel tentativo di uccisione, ripristina la ricarica dell'assassino a",
   "MedicShieldedCanBeGuessed": "Indovinare ignora lo scudo del <color=#00ff97>Medico</color>",
@@ -1862,7 +1862,7 @@
   "DeathReason.BloodLet": "Dissanguato",
   "OnlyEnabledDeathReasons": "Solo Cause di Morte Attive",
   "Alive": "Vivo",
-  "Disconnected": "Disconnected",
+  "Disconnected": "Disconnesso",
   "Win": " Vince!",
   "Last-": "Ultimo ",
   "Madmate-": "Follenauta ",
@@ -3501,5 +3501,5 @@
   "WardenIncreaseSpeed": "Incrementa Velocità Di",
   "WardenWarn": "PERICOLO! CORRI!",
   "MinionAbilityTime": "Durata Abilità",
-  "Minion_Blind": "blinded"
+  "Minion_Blind": "accecato"
 }
