@@ -3,7 +3,6 @@ using TOHE.Modules;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using static TOHE.Modules.ShuffleListExtension;
 
 namespace TOHE.Roles.Core.AssignManager;
 

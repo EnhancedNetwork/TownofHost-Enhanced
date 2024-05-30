@@ -84,7 +84,6 @@ internal class Sniper : RoleBase
         IsAim[playerId] = false;
         AimTime[playerId] = 0f;
 
-        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
 
     private static bool IsThisRole(byte playerId) => PlayerIdList.Contains(playerId);
@@ -347,7 +346,7 @@ internal class Sniper : RoleBase
         }
         return string.Empty;
     }
-    public string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (isForMeeting) return string.Empty;
 

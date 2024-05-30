@@ -4,6 +4,7 @@ using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
 using InnerNet;
+
 namespace TOHE.Roles.Crewmate;
 
 internal class Snitch : RoleBase
@@ -70,9 +71,6 @@ internal class Snitch : RoleBase
 
         IsExposed[playerId] = false;
         IsComplete[playerId] = false;
-
-        CustomRoleManager.MarkOthers.Add(GetWarningMark);
-        CustomRoleManager.SuffixOthers.Add(GetWarningArrow);
     }
     public override void Remove(byte playerId)
     {
@@ -217,13 +215,14 @@ internal class Snitch : RoleBase
         return arrows;
     }
 
-    private string GetWarningMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (target == null) return string.Empty;
 
         return IsSnitchTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "⚠") : string.Empty;
     }
-    private string GetWarningArrow(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+
+    public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
         if (!IsSnitchTarget(seer) || isForMeeting) return string.Empty;

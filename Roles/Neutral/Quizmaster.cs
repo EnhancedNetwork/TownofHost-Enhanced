@@ -7,6 +7,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
 
+
 namespace TOHE.Roles.Neutral;
 
 internal class Quizmaster : RoleBase
@@ -94,7 +95,6 @@ internal class Quizmaster : RoleBase
     {
         MarkedPlayer = byte.MaxValue;
 
-        CustomRoleManager.MarkOthers.Add(GetMarkForOthers);
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
     private void SendRPC(byte targetId)
@@ -316,8 +316,10 @@ internal class Quizmaster : RoleBase
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
         => (!isForMeeting && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
 
-    private string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool isForMeeting)
-        => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
+            => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+        
 
     public static void OnSabotageCall(SystemTypes systemType)
     {

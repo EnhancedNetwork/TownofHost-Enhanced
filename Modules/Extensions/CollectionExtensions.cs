@@ -32,71 +32,31 @@ public static class CollectionExtensions
     }
 
     /// <summary>
-    /// Executes an action for each element in a collection in parallel
+    /// Shuffles all elements in a collection randomly
     /// </summary>
-    /// <param name="collection">The collection to iterate over</param>
-    /// <param name="action">The action to execute for each element</param>
-    /// <typeparam name="T">The type of the elements in the collection</typeparam>
-    //public static void Do<T>(this IEnumerable<T> collection, System.Action<T> action)
-    //{
-    //    Parallel.ForEach(collection, action);
-    //}
-
-    /// <summary>
-    /// Executes an action for each element in a collection in parallel
-    /// </summary>
-    /// <param name="collection">The collection to iterate over</param>
-    /// <param name="action">The action to execute for each element</param>
-    /// <typeparam name="T">The type of the elements in the collection</typeparam>
-    public static void Do<T>(this ParallelQuery<T> collection, System.Action<T> action)
+    /// <typeparam name="T">The type of the collection</typeparam>
+    /// <param name="collection">The collection to be shuffled</param>
+    /// <param name="random">An instance of a randomizer algorithm</param>
+    /// <returns>The shuffled collection</returns>
+    public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> collection, IRandom random)
     {
-        collection.ForAll(action);
+        var list = collection.ToList();
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = random.Next(n + 1);
+            (list[n], list[k]) = (list[k], list[n]);
+        }
+        return list;
     }
 
     /// <summary>
-    /// Executes an action for each element in a collection in parallel if the predicate is true
-    /// </summary>
-    /// <param name="collection">The collection to iterate over</param>
-    /// <param name="predicate">The predicate to check for each element</param>
-    /// <param name="action">The action to execute for each element that satisfies the predicate</param>
-    /// <typeparam name="T">The type of the elements in the collection</typeparam>
-    public static void DoIf<T>(this IEnumerable<T> collection, System.Func<T, bool> predicate, System.Action<T> action)
-    {
-        var partitioner = Partitioner.Create(collection.Where(predicate));
-        Parallel.ForEach(partitioner, action);
-    }
-
-    /// <summary>
-    /// Executes an action for each element in a collection in parallel if the predicate is true
-    /// </summary>
-    /// <param name="collection">The collection to iterate over</param>
-    /// <param name="predicate">The predicate to check for each element</param>
-    /// <param name="action">The action to execute for each element that satisfies the predicate</param>
-    /// <typeparam name="T">The type of the elements in the collection</typeparam>
-    public static void DoIf<T>(this ParallelQuery<T> collection, System.Func<T, bool> predicate, System.Action<T> action)
-    {
-        collection.Where(predicate).ForAll(action);
-    }
-
-    /// <summary>
-    /// Removes an element from a collection
-    /// </summary>
-    /// <param name="collection">The collection to remove the element from</param>
-    /// <param name="element">The element to remove</param>
-    /// <typeparam name="T">The type of the elements in the collection</typeparam>
-    /// <returns>A collection containing all elements of <paramref name="collection"/> except for <paramref name="element"/></returns>
-    public static ParallelQuery<T> Remove<T>(this IEnumerable<T> collection, T element)
-    {
-        return collection.AsParallel().Where(x => !x.Equals(element));
-    }
-
-
-    /// <summary>
-    /// Filters a Delegate HashSet of any object reference duplicates
+    /// Filters a IEnumerable(<typeparamref name="TDelegate"/>) of any duplicates
     /// </summary>
     /// <typeparam name="TDelegate">The type of the delegates in the collection</typeparam>
-    /// <returns>A HashSet containing all delegates without duplicate object references.</returns>
-    public static HashSet<TDelegate> FilterDuplicates<TDelegate>(this HashSet<TDelegate> collection) where TDelegate : Delegate
+    /// <returns>A HashSet(<typeparamref name="TDelegate"/>) without duplicate object references nor static duplicates.</returns>
+    public static HashSet<TDelegate> FilterDuplicates<TDelegate>(this IEnumerable<TDelegate> collection) where TDelegate : Delegate
     {
         // Filter out delegates which do not have a object reference (static methods)
         var filteredCollection = collection.Where(d => d.Target != null);
