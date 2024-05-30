@@ -985,16 +985,12 @@ class MeetingHudStartPatch
             PlayerControl target = Utils.GetPlayerById(pva.TargetPlayerId);
             if (target == null) continue;
 
-            // if based role is Shapeshifter
-            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter)
+            // if based role is Shapeshifter and is Desync Shapeshifter
+            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && Main.ResetCamPlayerList.Contains(seer.PlayerId))
             {
-                // Is Desync Shapeshifter
-                if (Main.ResetCamPlayerList.Contains(seer.PlayerId))
-                {
-                    // When target is impostor, set name color as white
-                    target.cosmetics.SetNameColor(Color.white);
-                    pva.NameText.color = Color.white;
-                }
+                // When target is impostor, set name color as white
+                target.cosmetics.SetNameColor(Color.white);
+                pva.NameText.color = Color.white;
             }
 
             var sb = new StringBuilder();
