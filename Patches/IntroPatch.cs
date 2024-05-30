@@ -548,6 +548,7 @@ class IntroCutsceneDestroyPatch
                     }
                 }
 
+                // Not entirely sure if this is really necessary
                 _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "Set Impostor For Server");
             }
 
