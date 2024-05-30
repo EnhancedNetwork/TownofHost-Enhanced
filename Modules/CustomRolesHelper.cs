@@ -35,8 +35,8 @@ public static class CustomRolesHelper
     }
 
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
-        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor() || role is CustomRoles.Killer // FFA
-            ? RoleTypes.Impostor 
+        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter) && !role.IsImpostor() || role is CustomRoles.Killer // FFA
+            ? role.GetStaticRoleClass().ThisRoleBase.GetRoleTypes()
             : RoleTypes.GuardianAngel;
 
 

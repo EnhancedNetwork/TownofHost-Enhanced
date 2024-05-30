@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System;
+using UnityEngine;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
@@ -418,9 +419,28 @@ internal class SelectRolesPatch
 
             foreach (var pc in Main.AllPlayerControls)
             {
-                if (pc.GetRoleClass()?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
+                var roleClass = pc.GetRoleClass();
 
-                pc.GetRoleClass()?.OnAdd(pc.PlayerId);
+                roleClass?.OnAdd(pc.PlayerId);
+
+                // if based role is Shapeshifter
+                if (roleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter)
+                {
+                    // Is Desync Shapeshifter
+                    if (Main.ResetCamPlayerList.Contains(pc.PlayerId))
+                    {
+                        foreach (var target in Main.AllPlayerControls)
+                        {
+                            // Set all players as killable players
+                            target.Data.Role.CanBeKilled = true;
+
+                            // When target is impostor, set name color as white
+                            target.cosmetics.SetNameColor(Color.white);
+                            target.Data.Role.NameColor = Color.white;
+                        }
+                    }
+                    Main.CheckShapeshift.Add(pc.PlayerId, false);
+                }
 
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())
                 {
@@ -566,8 +586,17 @@ internal class SelectRolesPatch
             rolesMap[(seer.PlayerId, player.PlayerId)] = othersRole;
 
         RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
+
         //Set role for host
         player.SetRole(othersRole);
+
+        // Override RoleType for host
+        if (isHost && BaseRole == RoleTypes.Shapeshifter)
+        {
+            DestroyableSingleton<RoleManager>.Instance.SetRole(player, BaseRole);
+            DestroyableSingleton<RoleBehaviour>.Instance.CanBeKilled = true;
+        }
+
         player.Data.IsDead = true;
 
         Logger.Info($"Registered Role: {player?.Data?.PlayerName} => {role} : RoleType for self => {selfRole}, for others => {othersRole}", "AssignDesyncRoles");

@@ -13,7 +13,7 @@ internal class Glitch : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Glitch);
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
@@ -230,8 +230,7 @@ internal class Glitch : RoleBase
 
     public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (player == null) return string.Empty;
-        if (!player.IsAlive()) return string.Empty;
+        if (!player.IsAlive() || isForMeeting) return string.Empty;
 
         var sb = new StringBuilder(string.Empty);
 
