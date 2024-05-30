@@ -314,20 +314,20 @@ internal class SelectRolesPatch
 
             Dictionary<(byte, byte), RoleTypes> rolesMap = [];
             // Assign desync roles
-            foreach (var kv in RoleAssign.RoleResult.Where(x => x.Value.IsDesyncRole()))
-                AssignDesyncRole(kv.Value, kv.Key, senders, rolesMap, BaseRole: kv.Value.GetDYRole());
+            foreach (var (pc, role) in RoleAssign.RoleResult.Where(x => x.Value.IsDesyncRole()))
+                AssignDesyncRole(role, pc, senders, rolesMap, BaseRole: role.GetDYRole());
 
             // Set Desync RoleType by "RpcSetRole"
             MakeDesyncSender(senders, rolesMap);
 
             // Override RoleType for others players
-            foreach (var sd in RoleAssign.RoleResult)
+            foreach (var (pc, role) in RoleAssign.RoleResult)
             {
-                if (sd.Key == null || sd.Value.IsDesyncRole()) continue;
+                if (pc == null || role.IsDesyncRole()) continue;
 
-                RpcSetRoleReplacer.StoragedData.Add(sd.Key, sd.Value.GetRoleTypes());
+                RpcSetRoleReplacer.StoragedData.Add(pc, role.GetRoleTypes());
 
-                Logger.Warn($"Set original role type => {sd.Key.GetRealName()}: {sd.Value} => {sd.Value.GetRoleTypes()}", "Override Role Select");
+                Logger.Warn($"Set original role type => {pc.GetRealName()}: {role} => {role.GetRoleTypes()}", "Override Role Select");
             }
 
             // Set RoleType by "RpcSetRole"
@@ -403,7 +403,7 @@ internal class SelectRolesPatch
                 Logger.Warn($"Error after addons assign - error: {error}", "AddonAssign");
             }
 
-            // Sync for non-host moddedd by RPC
+            // Sync for non-host modded clients by RPC
             foreach (var pair in Main.PlayerStates)
             {
                 // Set roles
@@ -578,9 +578,9 @@ internal class SelectRolesPatch
             var sender = senders[seer.PlayerId];
             foreach (var target in Main.AllPlayerControls)
             {
-                if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var role))
+                if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var roleType))
                 {
-                    sender.RpcSetRole(seer, role, target.GetClientId());
+                    sender.RpcSetRole(seer, roleType, target.GetClientId());
                 }
             }
         }
@@ -614,14 +614,13 @@ internal class SelectRolesPatch
                 if (sender.Value.CurrentState != CustomRpcSender.State.InRootMessage)
                     throw new InvalidOperationException("A CustomRpcSender had Invalid State.");
 
-                foreach (var pair in StoragedData)
+                foreach (var (seer, roleType) in StoragedData)
                 {
-                    var seer = pair.Key;
                     var target = Utils.GetPlayerById(sender.Key);
 
-                    seer.SetRole(pair.Value);
+                    seer.SetRole(roleType);
                     sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, target.GetClientId())
-                        .Write((ushort)pair.Value)
+                        .Write((ushort)roleType)
                         .EndRpc();
                 }
                 sender.Value.EndMessage();
