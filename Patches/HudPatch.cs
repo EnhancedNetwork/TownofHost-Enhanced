@@ -253,12 +253,6 @@ class SetHudActivePatch
         __instance.KillButton.ToggleVisible(player.CanUseKillButton());
         __instance.ImpostorVentButton.ToggleVisible(player.CanUseImpostorVentButton());
         __instance.SabotageButton.ToggleVisible(player.CanUseSabotage());
-
-        if (player.GetRoleClass()?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter)
-        {
-            __instance.AbilityButton?.ToggleVisible(true);
-            __instance.AbilityButton?.Show();
-        }
     }
 }
 [HarmonyPatch(typeof(VentButton), nameof(VentButton.DoClick))]

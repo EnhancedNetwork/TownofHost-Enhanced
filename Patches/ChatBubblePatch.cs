@@ -1,8 +1,6 @@
 using AmongUs.GameOptions;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Patches;
 
