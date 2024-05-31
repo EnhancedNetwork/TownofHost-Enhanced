@@ -35,9 +35,9 @@ internal class Arsonist : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(id, TabGroup.NeutralRoles, CustomRoles.Arsonist);
-        ArsonistDouseTime = FloatOptionItem.Create(id + 10, "ArsonistDouseTime", new(0f, 10f, 1f), 0f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist])
+        ArsonistDouseTime = FloatOptionItem.Create("ArsonistDouseTime", new(0f, 10f, 1f), 0f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist])
             .SetValueFormat(OptionFormat.Seconds);
-        ArsonistCooldown = FloatOptionItem.Create(id + 11, "Cooldown", new(0f, 180f, 1f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist])
+        ArsonistCooldown = FloatOptionItem.Create("Cooldown", new(0f, 180f, 1f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist])
             .SetValueFormat(OptionFormat.Seconds);
         ArsonistCanIgniteAnytimeOpt = BooleanOptionItem.Create("ArsonistCanIgniteAnytime", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist]);
         ArsonistMinPlayersToIgnite = IntegerOptionItem.Create(id + 13, "ArsonistMinPlayersToIgnite", new(1, 14, 1), 1, TabGroup.NeutralRoles, false).SetParent(ArsonistCanIgniteAnytimeOpt);

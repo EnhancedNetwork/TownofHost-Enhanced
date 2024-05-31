@@ -31,7 +31,7 @@ internal class Demon : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Demon, 1, zeroOne: false);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "DemonKillCooldown", new(1f, 180f, 1f), 2f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon])
+        KillCooldown = FloatOptionItem.Create("DemonKillCooldown", new(1f, 180f, 1f), 2f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon])
             .SetValueFormat(OptionFormat.Seconds);
         CanVent = BooleanOptionItem.Create("CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon]);
         HasImpostorVision = BooleanOptionItem.Create("ImpostorVision", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon]);

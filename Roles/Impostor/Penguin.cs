@@ -33,7 +33,7 @@ internal class Penguin : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Penguin, 1);
-        OptionAbductTimerLimit = FloatOptionItem.Create(Id + 11, "PenguinAbductTimerLimit", new(1f, 20f, 1f), 10f, TabGroup.ImpostorRoles, false)
+        OptionAbductTimerLimit = FloatOptionItem.Create("PenguinAbductTimerLimit", new(1f, 20f, 1f), 10f, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Penguin])
             .SetValueFormat(OptionFormat.Seconds);
         OptionMeetingKill = BooleanOptionItem.Create("PenguinMeetingKill", false, TabGroup.ImpostorRoles, false)

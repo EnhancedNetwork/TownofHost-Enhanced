@@ -41,9 +41,9 @@ internal class Pitfall : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         MaxTrapCount = FloatOptionItem.Create("PitfallMaxTrapCount", new(1f, 5f, 1f), 1f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Times);
-        TrapMaxPlayerCountOpt = FloatOptionItem.Create(Id + 12, "PitfallTrapMaxPlayerCount", new(1f, 15f, 1f), 3f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
+        TrapMaxPlayerCountOpt = FloatOptionItem.Create("PitfallTrapMaxPlayerCount", new(1f, 15f, 1f), 3f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Times);
-        TrapDurationOpt = FloatOptionItem.Create(Id + 13, "PitfallTrapDuration", new(5f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
+        TrapDurationOpt = FloatOptionItem.Create("PitfallTrapDuration", new(5f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Seconds);
         TrapRadius = FloatOptionItem.Create(Id + 14, "PitfallTrapRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Multiplier);

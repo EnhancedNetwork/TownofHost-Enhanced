@@ -29,10 +29,10 @@ internal class PlagueBearer : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.PlagueBearer, 1, zeroOne: false);
-        PlagueBearerCooldownOpt = FloatOptionItem.Create(Id + 10, "PlagueBearerCooldown", new(0f, 180f, 2.5f), 22.5f, TabGroup.NeutralRoles, false)
+        PlagueBearerCooldownOpt = FloatOptionItem.Create("PlagueBearerCooldown", new(0f, 180f, 2.5f), 22.5f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer])
                 .SetValueFormat(OptionFormat.Seconds);
-        PestilenceCooldownOpt = FloatOptionItem.Create(Id + 11, "PestilenceCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
+        PestilenceCooldownOpt = FloatOptionItem.Create("PestilenceCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer])
                 .SetValueFormat(OptionFormat.Seconds);
         PestilenceCanVent = BooleanOptionItem.Create("PestilenceCanVent", true, TabGroup.NeutralRoles, false)

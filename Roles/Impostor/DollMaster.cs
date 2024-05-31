@@ -35,11 +35,11 @@ internal class DollMaster : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.DollMaster);
-        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
+        DefaultKillCooldown = FloatOptionItem.Create("KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DollMasterPossessionCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
+        ShapeshiftCooldown = FloatOptionItem.Create("DollMasterPossessionCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "DollMasterPossessionDuration", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
+        ShapeshiftDuration = FloatOptionItem.Create("DollMasterPossessionDuration", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
         CanKillAsMainBody = BooleanOptionItem.Create("DollMasterCanKillAsMainBody", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
         TargetDiesAfterPossession = BooleanOptionItem.Create("DollMasterTargetDiesAfterPossession", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);

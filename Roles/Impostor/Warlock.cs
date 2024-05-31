@@ -35,7 +35,7 @@ internal class Warlock : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Warlock]);
         WarlockCanKillSelf = BooleanOptionItem.Create("Warlock_CanKillSelf", false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Warlock]);
-        WarlockShiftDuration = FloatOptionItem.Create(Id + 4, "ShapeshiftDuration", new(1, 180, 1), 1, TabGroup.ImpostorRoles, false)
+        WarlockShiftDuration = FloatOptionItem.Create("ShapeshiftDuration", new(1, 180, 1), 1, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Warlock])
             .SetValueFormat(OptionFormat.Seconds);
     }

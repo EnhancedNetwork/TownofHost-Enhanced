@@ -36,7 +36,7 @@ internal class Follower : RoleBase
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Follower, 1, zeroOne: false);
         MaxBetTimes = IntegerOptionItem.Create(Id + 10, "FollowerMaxBetTimes", new(1, 20, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
             .SetValueFormat(OptionFormat.Times);
-        BetCooldown = FloatOptionItem.Create(Id + 12, "FollowerBetCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
+        BetCooldown = FloatOptionItem.Create("FollowerBetCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
             .SetValueFormat(OptionFormat.Seconds);
         BetCooldownIncrese = FloatOptionItem.Create(Id + 14, "FollowerBetCooldownIncrese", new(0f, 60f, 1f), 4f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
             .SetValueFormat(OptionFormat.Seconds);

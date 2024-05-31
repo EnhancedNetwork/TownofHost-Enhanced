@@ -34,9 +34,9 @@ internal class Cultist : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Cultist, 1, zeroOne: false);
-        CharmCooldown = FloatOptionItem.Create(Id + 10, "CultistCharmCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist])
+        CharmCooldown = FloatOptionItem.Create("CultistCharmCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist])
             .SetValueFormat(OptionFormat.Seconds);
-        CharmCooldownIncrese = FloatOptionItem.Create(Id + 11, "CultistCharmCooldownIncrese", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist])
+        CharmCooldownIncrese = FloatOptionItem.Create("CultistCharmCooldownIncrese", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist])
             .SetValueFormat(OptionFormat.Seconds);
         CharmMax = IntegerOptionItem.Create(Id + 12, "CultistCharmMax", new(1, 15, 1), 15, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist])
             .SetValueFormat(OptionFormat.Times);
