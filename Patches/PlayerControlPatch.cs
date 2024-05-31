@@ -543,6 +543,10 @@ public static class CheckShapeshiftPatch
             __instance.SyncSettings();
             Main.ForcedUnShapeshift[__instance.PlayerId] = false;
             Main.Synclist.Add(__instance.PlayerId);
+            _ = new LateTask(() => {
+                __instance.CheckShapeshift(__instance, false);
+            
+            }, 1f, "Sync UnShapeShifters");
             return false;
         }
 
@@ -550,6 +554,7 @@ public static class CheckShapeshiftPatch
         {
             Main.Synclist.Remove(__instance.PlayerId);
             __instance.SyncSettings();
+            return false;
         }
 
         // No called code if is invalid shapeshifting
