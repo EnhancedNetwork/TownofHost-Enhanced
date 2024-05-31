@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -116,7 +115,6 @@ class RpcSetTasksPatch
     [HarmonyArgument(0)] byte playerId,
     [HarmonyArgument(1)] ref Il2CppStructArray<byte> taskTypeIds)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
         if (GameStates.IsHideNSeek) return;
 
         // null measure
@@ -247,34 +245,5 @@ class RpcSetTasksPatch
             list[i] = list[rand];
             list[rand] = obj;
         }
-    }
-}
-
-[HarmonyPatch(typeof(GameData), nameof(GameData.HandleRpc))]
-class HandleRpcPatch
-{
-    public static bool Prefix([HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
-    {
-        MessageReader sr = MessageReader.Get(reader);
-        // var rpc = (RpcCalls)callId;
-
-        if (AmongUsClient.Instance.AmHost)
-        {
-            var dataid = sr.ReadByte();
-            var data = Utils.GetPlayerById(dataid);
-            if (data != null)
-            {
-                Logger.Error($"Received RpcSetTask for {data.GetRealName()}({data.PlayerId}), which is impossible.", "TaskAssignPatch");
-            }
-            else
-            {
-                Logger.Error($"Received RpcSetTask for {dataid} with no playerdata, which is impossible.", "TaskAssignPatch");
-            }
-
-            EAC.WarnHost();
-            return false;
-        }
-
-        return true;
     }
 }
