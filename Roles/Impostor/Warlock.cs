@@ -31,9 +31,9 @@ internal class Warlock : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Warlock);
-        WarlockCanKillAllies = BooleanOptionItem.Create(Id + 2, "Warlock_CanKillImpostors", true, TabGroup.ImpostorRoles, false)
+        WarlockCanKillAllies = BooleanOptionItem.Create("Warlock_CanKillImpostors", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Warlock]);
-        WarlockCanKillSelf = BooleanOptionItem.Create(Id + 3, "Warlock_CanKillSelf", false, TabGroup.ImpostorRoles, false)
+        WarlockCanKillSelf = BooleanOptionItem.Create("Warlock_CanKillSelf", false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Warlock]);
         WarlockShiftDuration = FloatOptionItem.Create(Id + 4, "ShapeshiftDuration", new(1, 180, 1), 1, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Warlock])

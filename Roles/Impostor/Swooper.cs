@@ -32,7 +32,7 @@ internal class Swooper : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         SwooperDuration = FloatOptionItem.Create(Id + 4, "SwooperDuration", new(1f, 60f, 1f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Swooper])
             .SetValueFormat(OptionFormat.Seconds);
-        SwooperVentNormallyOnCooldown = BooleanOptionItem.Create(Id + 5, "SwooperVentNormallyOnCooldown", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Swooper]);
+        SwooperVentNormallyOnCooldown = BooleanOptionItem.Create("SwooperVentNormallyOnCooldown", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Swooper]);
     }
     public override void Init()
     {

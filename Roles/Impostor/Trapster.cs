@@ -25,11 +25,11 @@ internal class Trapster : RoleBase
         TrapsterKillCooldown = FloatOptionItem.Create(Id + 2, "KillCooldown", new(2.5f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Trapster])
             .SetValueFormat(OptionFormat.Seconds);
-        TrapConsecutiveBodies = BooleanOptionItem.Create(Id + 3, "TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)
+        TrapConsecutiveBodies = BooleanOptionItem.Create("TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Trapster]);
-        TrapTrapsterBody = BooleanOptionItem.Create(Id + 4, "TrapTrapsterBody", true, TabGroup.ImpostorRoles, false)
+        TrapTrapsterBody = BooleanOptionItem.Create("TrapTrapsterBody", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Trapster]);
-        TrapConsecutiveTrapsterBodies = BooleanOptionItem.Create(Id + 5, "TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)
+        TrapConsecutiveTrapsterBodies = BooleanOptionItem.Create("TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)
             .SetParent(TrapTrapsterBody);
     }
 
