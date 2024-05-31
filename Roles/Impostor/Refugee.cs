@@ -18,7 +18,7 @@ internal class Refugee : RoleBase
 
     public override void SetupCustomOption()
     {
-        RefugeeKillCD = FloatOptionItem.Create(Id, "RefugeeKillCD", new(0f, 180f, 2.5f), 22.5f, TabGroup.ImpostorRoles, false)
+        RefugeeKillCD = FloatOptionItem.Create("RefugeeKillCD", new(0f, 180f, 2.5f), 22.5f, TabGroup.ImpostorRoles, false)
             .SetHeader(true)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);

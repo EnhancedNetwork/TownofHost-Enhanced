@@ -19,7 +19,7 @@ internal class Vigilante : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Vigilante);
-        VigilanteKillCooldown = FloatOptionItem.Create(Id + 2, "KillCooldown", new(5f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false)
+        VigilanteKillCooldown = FloatOptionItem.Create("KillCooldown", new(5f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Vigilante])
             .SetValueFormat(OptionFormat.Seconds);
     }

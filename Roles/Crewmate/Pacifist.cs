@@ -27,11 +27,11 @@ internal class Pacifist : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Pacifist);
-        PacifistCooldown = FloatOptionItem.Create(Id + 10, "PacifistCooldown", new(1f, 180f, 1f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pacifist])
+        PacifistCooldown = FloatOptionItem.Create("PacifistCooldown", new(1f, 180f, 1f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pacifist])
             .SetValueFormat(OptionFormat.Seconds);
         PacifistMaxOfUseage = IntegerOptionItem.Create(Id + 11, "PacifistMaxOfUseage", new(0, 20, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pacifist])
             .SetValueFormat(OptionFormat.Times);
-        PacifistAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(9204, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pacifist])
+        PacifistAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create("AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pacifist])
             .SetValueFormat(OptionFormat.Times);
     }
     public override void Add(byte playerId)
