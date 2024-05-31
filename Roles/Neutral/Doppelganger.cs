@@ -40,6 +40,7 @@ internal class Doppelganger : RoleBase
         DoppelVictim.Clear();
         PlayerControllerToIDRam.Clear();
         PlayerControllerToIDRom.Clear();
+        DoppelPresentSkin.Clear();
         CurrentIdToSwap = byte.MaxValue;
     }
     public override void Add(byte playerId)
