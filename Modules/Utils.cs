@@ -1801,10 +1801,18 @@ public static class Utils
                 || NoCache
                 || ForceLoop))
             {
-                foreach (var target in targetList)
+                foreach (var realTarget in targetList)
                 {
                     // if the target is the seer itself, do nothing
-                    if (target.PlayerId == seer.PlayerId) continue;
+                    if (realTarget.PlayerId == seer.PlayerId) continue;
+
+                    var target = realTarget;
+
+                    if (seer != target && seer != DollMaster.DollMasterTarget)
+                        target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
+
+                    if (seer != target && seer.IsAlive())
+                        target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
 
                     //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
@@ -1851,6 +1859,11 @@ public static class Utils
                         // ====== Target player name ======
 
                         string TargetPlayerName = target.GetRealName(isForMeeting);
+
+                        if (seer.Data.IsDead && target.Is(CustomRoles.Doppelganger))
+                        {
+                            TargetPlayerName = $"{Doppelganger.DoppelPresentSkin[realTarget.PlayerId].PlayerName}\r\n<size=75%>{TargetPlayerName}</size>";
+                        }
 
                         var tempNameText = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName, isForMeeting);
                         if (tempNameText != string.Empty)

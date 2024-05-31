@@ -1138,9 +1138,13 @@ class FixedUpdateInNormalGamePatch
                 var seer = PlayerControl.LocalPlayer;
                 var seerRoleClass = seer.GetRoleClass();
                 var target = __instance;
+                var realTarget = target;
 
                 if (seer != target && seer != DollMaster.DollMasterTarget)
                     target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
+
+                if (seer != target && seer.IsAlive())
+                    target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
 
                 string RealName = target.GetRealName();
 

@@ -32,6 +32,8 @@ public static class NameColorManager
     {
         target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
 
+        target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
+
         color = seer.GetRoleClass()?.PlayerKnowTargetColor(seer, target); // returns "" unless overriden
         
         // Impostor & Madmate
