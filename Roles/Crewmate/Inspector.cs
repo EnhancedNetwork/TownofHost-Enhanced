@@ -35,16 +35,16 @@ internal class Inspector : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Inspector);
-        TryHideMsg = BooleanOptionItem.Create(Id + 10, "InspectorTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
+        TryHideMsg = BooleanOptionItem.Create("InspectorTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
             .SetColor(Color.green);
         InspectCheckLimitMax = IntegerOptionItem.Create(Id + 11, "MaxInspectCheckLimit", new(0, 20, 1), 5, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
             .SetValueFormat(OptionFormat.Times);
-        InspectCheckLimitPerMeeting = IntegerOptionItem.Create(Id + 12, "InspectCheckLimitPerMeeting", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
+        InspectCheckLimitPerMeeting = IntegerOptionItem.Create(2134, "InspectCheckLimitPerMeeting", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
             .SetValueFormat(OptionFormat.Times);
-        InspectCheckBaitCountTypeOpt = BooleanOptionItem.Create(Id + 14, "InspectCheckBaitCountMode", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector]);
-        InspectCheckTargetKnow = BooleanOptionItem.Create(Id + 15, "InspectCheckTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector]);
-        InspectCheckOtherTargetKnow = BooleanOptionItem.Create(Id + 16, "InspectCheckOtherTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(InspectCheckTargetKnow);
-        InspectCheckRevealTargetTeam = BooleanOptionItem.Create(Id + 17, "InspectCheckRevealTarget", false, TabGroup.CrewmateRoles, false).SetParent(InspectCheckOtherTargetKnow);
+        InspectCheckBaitCountTypeOpt = BooleanOptionItem.Create("InspectCheckBaitCountMode", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector]);
+        InspectCheckTargetKnow = BooleanOptionItem.Create("InspectCheckTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector]);
+        InspectCheckOtherTargetKnow = BooleanOptionItem.Create("InspectCheckOtherTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(InspectCheckTargetKnow);
+        InspectCheckRevealTargetTeam = BooleanOptionItem.Create("InspectCheckRevealTarget", false, TabGroup.CrewmateRoles, false).SetParent(InspectCheckOtherTargetKnow);
         InspectAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 18, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
             .SetValueFormat(OptionFormat.Times);
