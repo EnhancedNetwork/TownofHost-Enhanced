@@ -2,6 +2,7 @@
 using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -63,12 +64,9 @@ internal class Bomber : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = BombCooldown.GetFloat();
-        AURoleOptions.ShapeshifterDuration = 2f;
     }
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl targetSS, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        if (shapeshifter.PlayerId == targetSS.PlayerId) return true;
-
         var playerRole = shapeshifter.GetCustomRole();
 
         Logger.Info("The bomb went off", playerRole.ToString());
@@ -103,8 +101,6 @@ internal class Bomber : RoleBase
                 Utils.NotifyRoles();
             }, 0.3f, $"{playerRole} was suicide");
         }
-
-        return false;
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
