@@ -17,7 +17,6 @@ public class dbConnect
     {
         Logger.Info("Begin dbConnect Login flow", "dbConnect.init");
 
-        InitOnce = true;
 
         if (!InitOnce)
         {
