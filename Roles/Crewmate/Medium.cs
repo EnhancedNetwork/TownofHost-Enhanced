@@ -33,7 +33,7 @@ internal class Medium : RoleBase
             .SetValueFormat(OptionFormat.Times);
         OnlyReceiveMsgFromCrew = BooleanOptionItem.Create("MediumOnlyReceiveMsgFromCrew", true, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medium]);
-        MediumAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 12, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
+        MediumAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create("AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medium])
             .SetValueFormat(OptionFormat.Times);
     }

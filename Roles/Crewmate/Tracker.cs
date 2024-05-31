@@ -39,7 +39,7 @@ internal class Tracker : RoleBase
         OptionCanSeeLastRoomInMeeting = BooleanOptionItem.Create("EvilTrackerCanSeeLastRoomInMeeting", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracker]);
         HidesVote = BooleanOptionItem.Create("TrackerHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tracker]);
-        TrackerAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 9, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
+        TrackerAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create("AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracker])
             .SetValueFormat(OptionFormat.Times);
     }

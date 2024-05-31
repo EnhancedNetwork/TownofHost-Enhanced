@@ -45,7 +45,7 @@ internal class Inspector : RoleBase
         InspectCheckTargetKnow = BooleanOptionItem.Create("InspectCheckTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector]);
         InspectCheckOtherTargetKnow = BooleanOptionItem.Create("InspectCheckOtherTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(InspectCheckTargetKnow);
         InspectCheckRevealTargetTeam = BooleanOptionItem.Create("InspectCheckRevealTarget", false, TabGroup.CrewmateRoles, false).SetParent(InspectCheckOtherTargetKnow);
-        InspectAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 18, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
+        InspectAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create("AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
             .SetValueFormat(OptionFormat.Times);
         OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Inspector);

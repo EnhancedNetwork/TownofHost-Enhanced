@@ -34,7 +34,7 @@ internal class Jailer : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Jailer);
-        JailCooldown = FloatOptionItem.Create(Id + 10, "JailerJailCooldown", new(0f, 999f, 1f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer])
+        JailCooldown = FloatOptionItem.Create("JailerJailCooldown", new(0f, 999f, 1f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer])
             .SetValueFormat(OptionFormat.Seconds);
         MaxExecution = IntegerOptionItem.Create(Id + 11, "JailerMaxExecution", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer])
             .SetValueFormat(OptionFormat.Times);

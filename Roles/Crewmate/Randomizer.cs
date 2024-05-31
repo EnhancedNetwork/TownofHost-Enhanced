@@ -26,11 +26,11 @@ internal class Randomizer : RoleBase
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Randomizer);
         BecomeBaitDelayNotify = BooleanOptionItem.Create("BecomeBaitDelayNotify", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
-        BecomeBaitDelayMin = FloatOptionItem.Create(2134, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+        BecomeBaitDelayMin = FloatOptionItem.Create("BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
-        BecomeBaitDelayMax = FloatOptionItem.Create(Id +12, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+        BecomeBaitDelayMax = FloatOptionItem.Create("BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
-        BecomeTrapperBlockMoveTime = FloatOptionItem.Create(Id + 13, "BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+        BecomeTrapperBlockMoveTime = FloatOptionItem.Create("BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()

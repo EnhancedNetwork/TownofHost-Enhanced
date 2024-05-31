@@ -57,11 +57,11 @@ internal class Enigma : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Enigma);
-        EnigmaClueStage1Tasks = FloatOptionItem.Create(Id + 11, "EnigmaClueStage1Tasks", new(0f, 10f, 1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Enigma])
+        EnigmaClueStage1Tasks = FloatOptionItem.Create("EnigmaClueStage1Tasks", new(0f, 10f, 1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Enigma])
             .SetValueFormat(OptionFormat.Times);
-        EnigmaClueStage2Tasks = FloatOptionItem.Create(Id + 12, "EnigmaClueStage2Tasks", new(0f, 10f, 1f), 3f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Enigma])
+        EnigmaClueStage2Tasks = FloatOptionItem.Create("EnigmaClueStage2Tasks", new(0f, 10f, 1f), 3f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Enigma])
             .SetValueFormat(OptionFormat.Times);
-        EnigmaClueStage3Tasks = FloatOptionItem.Create(Id + 13, "EnigmaClueStage3Tasks", new(0f, 10f, 1f), 7f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Enigma])
+        EnigmaClueStage3Tasks = FloatOptionItem.Create("EnigmaClueStage3Tasks", new(0f, 10f, 1f), 7f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Enigma])
             .SetValueFormat(OptionFormat.Times);
         EnigmaClueStage2Probability = IntegerOptionItem.Create(Id + 14, "EnigmaClueStage2Probability", new(0, 100, 5), 75, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Enigma])
             .SetValueFormat(OptionFormat.Percent);

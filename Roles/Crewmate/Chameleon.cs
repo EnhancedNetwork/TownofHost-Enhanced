@@ -37,7 +37,7 @@ internal class Chameleon : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         UseLimitOpt = IntegerOptionItem.Create(Id + 5, "AbilityUseLimit", new(0, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chameleon])
             .SetValueFormat(OptionFormat.Times);
-        ChameleonAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 6, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
+        ChameleonAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create("AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Chameleon])
         .SetValueFormat(OptionFormat.Times);
     }
