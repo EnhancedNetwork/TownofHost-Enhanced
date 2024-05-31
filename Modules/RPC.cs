@@ -637,24 +637,24 @@ internal static class RPC
 
         for (var i = 0; i <= 10; i++)
         {
-            Main.Instance.StartCoroutine(SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, amount, targetId));
+            SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, amount, targetId);
         }
     }
 
-    static System.Collections.IEnumerator SyncOptionsBetween(int startAmount, int lastAmount, int amountAllOptions, int targetId = -1)
+    static void SyncOptionsBetween(int startAmount, int lastAmount, int amountAllOptions, int targetId = -1)
     {
         if (targetId != -1)
         {
             var client = Utils.GetClientById(targetId);
             if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Id))
             {
-                yield break;
+                return;
             }
         }
 
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null))
         {
-            yield break;
+            return;
         }
 
         if (amountAllOptions != OptionItem.AllOptions.Count)
@@ -674,7 +674,6 @@ internal static class RPC
         for (var option = startAmount; option < amountAllOptions && option <= lastAmount; option++)
         {
             listOptions.Add(allOptionsList[option]);
-            yield return null;
         }
 
         var countListOptions = listOptions.Count;
@@ -684,7 +683,6 @@ internal static class RPC
         foreach (var option in listOptions.ToArray())
         {
             writer.WritePacked(option.GetValue());
-            yield return null;
         }
 
         AmongUsClient.Instance.FinishRpcImmediately(writer);

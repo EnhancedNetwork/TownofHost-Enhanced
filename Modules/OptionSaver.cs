@@ -1,14 +1,13 @@
-﻿using Newtonsoft.Json.Bson;
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 using UnityEngine;
-using static TOHE.Roles.Impostor.EvilHacker;
 
 namespace TOHE.Modules;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Modules/OptionSaver.cs
 public static class OptionSaver
 {
+    private static bool saving = false;
     private static readonly DirectoryInfo SaveDataDirectoryInfo = new("./TOHE-DATA/SaveData/");
     private static readonly FileInfo OptionSaverFileInfo = new($"{SaveDataDirectoryInfo.FullName}/Options.json");
 
@@ -27,6 +26,7 @@ public static class OptionSaver
     /// <summary>Generate object for json serialization from current options</summary>
     private static System.Collections.IEnumerator GenerateOptionsDataCoroutine(System.Action<SerializableOptionsData> onComplete)
     {
+        saving = true;
         Dictionary<string, int> singleOptions = [];
         Dictionary<string, int[]> presetOptions = [];
 
@@ -57,6 +57,7 @@ public static class OptionSaver
 
         Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
         onComplete?.Invoke(optionsData);
+        saving = false;
         yield break;
     }
     /// <summary>Read deserialized object and set option values</summary>
@@ -91,13 +92,17 @@ public static class OptionSaver
     {
         if (AmongUsClient.Instance != null && !AmongUsClient.Instance.AmHost) return;
 
-        Main.Instance.StopCoroutine(GenerateOptionsDataCoroutine(SaveAfterCoro));
+        if (saving)
+        {
+            Main.Instance.StopAllCoroutines();
+        }
         Main.Instance.StartCoroutine(GenerateOptionsDataCoroutine(SaveAfterCoro));
     }
     private static void SaveAfterCoro(SerializableOptionsData data)
     {
         var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true, });
         File.WriteAllText(OptionSaverFileInfo.FullName, json);
+        Logger.Info("Saved Options Successfully", "SaveAfterCoro");
     }
     /// <summary>Read options from json file</summary>
     public static void Load()

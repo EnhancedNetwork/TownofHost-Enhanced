@@ -108,8 +108,6 @@ public abstract class OptionItem
             }
         }
 
-        Logger.Info(Id.ToString(), "hi");
-
         _fastOptions.Add(this);
         _allOptions.Add(this);
         nameSettings.Add(name);
