@@ -17,7 +17,7 @@ public static class Trapper
         ImpCanBeTrapper = BooleanOptionItem.Create("ImpCanBeTrapper", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper]);
         CrewCanBeTrapper = BooleanOptionItem.Create("CrewCanBeTrapper", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper]);
         NeutralCanBeTrapper = BooleanOptionItem.Create("NeutralCanBeTrapper", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper]);
-        TrapperBlockMoveTime = FloatOptionItem.Create(1234, "TrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper])
+        TrapperBlockMoveTime = FloatOptionItem.Create("TrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public static void TrapperKilled(this PlayerControl killer, PlayerControl target)

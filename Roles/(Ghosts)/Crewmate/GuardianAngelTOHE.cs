@@ -23,7 +23,7 @@ internal class GuardianAngelTOHE : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.GuardianAngelTOHE);
-        AbilityCooldown = FloatOptionItem.Create(1234, "ProtectCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])
+        AbilityCooldown = FloatOptionItem.Create("ProtectCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])
             .SetValueFormat(OptionFormat.Seconds);
         ProtectDur = IntegerOptionItem.Create(1234, "ProtectDur", new(1, 120, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])
             .SetValueFormat(OptionFormat.Seconds);

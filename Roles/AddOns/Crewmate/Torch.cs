@@ -12,7 +12,7 @@ public class Torch
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id , CustomRoles.Torch, canSetNum: true);
-        TorchVision = FloatOptionItem.Create(Id +10, "TorchVision", new(0.5f, 5f, 0.25f), 1.25f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Torch])
+        TorchVision = FloatOptionItem.Create("TorchVision", new(0.5f, 5f, 0.25f), 1.25f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Torch])
             .SetValueFormat(OptionFormat.Multiplier);
         TorchAffectedByLights = BooleanOptionItem.Create("TorchAffectedByLights", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Torch]);
     }

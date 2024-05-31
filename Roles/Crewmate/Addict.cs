@@ -30,11 +30,11 @@ internal class Addict : RoleBase
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Addict);
         VentCooldown = FloatOptionItem.Create("VentCooldown", new(5f, 180f, 1f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Addict])
             .SetValueFormat(OptionFormat.Seconds);
-        TimeLimit = FloatOptionItem.Create(Id + 12, "AddictSuicideTimer", new(5f, 180f, 1f), 45f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Addict])
+        TimeLimit = FloatOptionItem.Create("AddictSuicideTimer", new(5f, 180f, 1f), 45f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Addict])
             .SetValueFormat(OptionFormat.Seconds);
-        ImmortalTimeAfterVent = FloatOptionItem.Create(Id + 13, "AddictInvulnerbilityTimeAfterVent", new(0f, 60f, 1f), 10f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Addict])
+        ImmortalTimeAfterVent = FloatOptionItem.Create("AddictInvulnerbilityTimeAfterVent", new(0f, 60f, 1f), 10f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Addict])
             .SetValueFormat(OptionFormat.Seconds);
-        FreezeTimeAfterImmortal = FloatOptionItem.Create(Id + 15, "AddictFreezeTimeAfterInvulnerbility", new(0f, 60f, 1f), 10f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Addict])
+        FreezeTimeAfterImmortal = FloatOptionItem.Create("AddictFreezeTimeAfterInvulnerbility", new(0f, 60f, 1f), 10f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Addict])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()
