@@ -15,9 +15,18 @@ namespace TOHE;
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
 class SetUpRoleTextPatch
 {
+    public static bool IsInIntro = false;
+
     public static void Postfix(IntroCutscene __instance)
     {
         if (!GameStates.IsModHost) return;
+
+        // After showing team for non-modded clients update player names.
+        _ = new LateTask(() =>
+        {
+            IsInIntro = false;
+            Utils.NotifyRoles();
+        }, 2f);
 
         _ = new LateTask(() =>
         {

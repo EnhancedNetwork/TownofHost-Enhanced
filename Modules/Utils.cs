@@ -390,6 +390,27 @@ public static class Utils
         _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
         return c;
     }
+    public static Color GetTeamColor(PlayerControl player)
+    {
+        string hexColor = string.Empty;
+        var Team = player.GetCustomRole().GetCustomRoleTeam();
+
+        switch (Team)
+        {
+            case Custom_Team.Crewmate:
+                hexColor = "#8cffff";
+                break;
+            case Custom_Team.Impostor:
+                hexColor = "#ff1919";
+                break;
+            case Custom_Team.Neutral:
+                hexColor = "#7f8c8d";
+                break;
+        }
+
+        _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
+        return c;
+    }
     public static string GetRoleColorCode(CustomRoles role)
     {
         if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
@@ -1634,6 +1655,23 @@ public static class Utils
             // Only non-modded players
             if (seer.IsModClient()) continue;
 
+            // During intro scene, set team name for non-modded clients and skip the rest.
+            if (SetUpRoleTextPatch.IsInIntro)
+            {
+                string IconText = "<color=#ffffff>|</color>";
+                string SelfTeamName = $"<size=450%>{IconText} <font=\"VCR SDF\" material=\"VCR Black Outline\">{Utils.ColorString(Utils.GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>";
+                string SelfRoleName = $"{seer.GetDisplayRoleAndSubName(seer, false)}";
+                string SeerRealName = seer.GetRealName();
+                string SelfName = $"{Utils.ColorString(seer.GetRoleColor(), SeerRealName)}";
+                string RoleNameUp = "</size><size=1350%>\n \n</size>";
+
+                SelfName = $"{SelfTeamName}\r\n{SelfRoleName}\r\n{SelfName}{RoleNameUp}";
+
+                // Privately sent name.
+                seer.RpcSetNamePrivate(SelfName, true, seer);
+                continue;
+            }
+            
             // Size of player roles
             string fontSize = "1.5";
             if (isForMeeting && (seer.GetClient().PlatformData.Platform == Platforms.Playstation || seer.GetClient().PlatformData.Platform == Platforms.Switch)) fontSize = "70%";
