@@ -1860,14 +1860,6 @@ public static class Utils
 
                         string TargetPlayerName = target.GetRealName(isForMeeting);
 
-                        if (seer.Data.IsDead)
-                        {
-                            if (target.Is(CustomRoles.Doppelganger))
-                                TargetPlayerName = $"{Doppelganger.DoppelPresentSkin[realTarget.PlayerId].PlayerName}\r\n<size=75%>{TargetPlayerName}</size>";
-                            else if (Doppelganger.CheckDoppelVictim(realTarget.PlayerId))
-                                TargetPlayerName = Doppelganger.DoppelPresentSkin[realTarget.PlayerId].PlayerName;
-                        }
-
                         var tempNameText = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName, isForMeeting);
                         if (tempNameText != string.Empty)
                             TargetPlayerName = tempNameText;
