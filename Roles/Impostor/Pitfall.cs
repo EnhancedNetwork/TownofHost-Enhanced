@@ -45,13 +45,13 @@ internal class Pitfall : RoleBase
             .SetValueFormat(OptionFormat.Times);
         TrapDurationOpt = FloatOptionItem.Create("PitfallTrapDuration", new(5f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Seconds);
-        TrapRadius = FloatOptionItem.Create(Id + 14, "PitfallTrapRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
+        TrapRadius = FloatOptionItem.Create("PitfallTrapRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Multiplier);
-        TrapFreezeTime = FloatOptionItem.Create(Id + 15, "PitfallTrapFreezeTime", new(0f, 30f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
+        TrapFreezeTime = FloatOptionItem.Create("PitfallTrapFreezeTime", new(0f, 30f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Seconds);
-        TrapCauseVision = FloatOptionItem.Create(Id + 16, "PitfallTrapCauseVision", new(0f, 5f, 0.05f), 0.2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
+        TrapCauseVision = FloatOptionItem.Create("PitfallTrapCauseVision", new(0f, 5f, 0.05f), 0.2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Multiplier);
-        TrapCauseVisionTime = FloatOptionItem.Create(Id + 17, "PitfallTrapCauseVisionTime", new(0f, 45f, 1f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
+        TrapCauseVisionTime = FloatOptionItem.Create("PitfallTrapCauseVisionTime", new(0f, 45f, 1f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()

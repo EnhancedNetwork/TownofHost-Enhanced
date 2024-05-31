@@ -22,7 +22,7 @@ internal class Trapster : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Trapster);
-        TrapsterKillCooldown = FloatOptionItem.Create(Id + 2, "KillCooldown", new(2.5f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
+        TrapsterKillCooldown = FloatOptionItem.Create("KillCooldown", new(2.5f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Trapster])
             .SetValueFormat(OptionFormat.Seconds);
         TrapConsecutiveBodies = BooleanOptionItem.Create("TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)

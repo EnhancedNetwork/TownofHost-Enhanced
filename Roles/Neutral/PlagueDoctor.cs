@@ -53,7 +53,7 @@ internal class PlagueDoctor : RoleBase
         OptionInfectDistance = FloatOptionItem.Create("PlagueDoctorInfectDistance", new(0.5f, 2f, 0.25f), 1.5f, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.PlagueDoctor])
             .SetValueFormat(OptionFormat.Multiplier);
-        OptionInfectInactiveTime = FloatOptionItem.Create(Id + 14, "PlagueDoctorInfectInactiveTime", new(0.5f, 10f, 0.5f), 3.5f, TabGroup.NeutralRoles, false)
+        OptionInfectInactiveTime = FloatOptionItem.Create("PlagueDoctorInfectInactiveTime", new(0.5f, 10f, 0.5f), 3.5f, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.PlagueDoctor])
             .SetValueFormat(OptionFormat.Seconds);
         OptionInfectCanInfectSelf = BooleanOptionItem.Create("PlagueDoctorCanInfectSelf", false, TabGroup.NeutralRoles, false)

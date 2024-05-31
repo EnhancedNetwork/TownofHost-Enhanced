@@ -67,7 +67,7 @@ internal class Jackal : RoleBase
                 .SetHidden(false);
         SidekickRecruitLimitOpt = IntegerOptionItem.Create(Id + 33, "JackalSidekickRecruitLimit", new(0, 15, 1), 2, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
                 .SetValueFormat(OptionFormat.Times);
-        KillCooldownSK = FloatOptionItem.Create(Id + 20, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
+        KillCooldownSK = FloatOptionItem.Create("KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
             .SetValueFormat(OptionFormat.Seconds);
         CanVentSK = BooleanOptionItem.Create("CanVent", true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         CanUseSabotageSK = BooleanOptionItem.Create("CanUseSabotage", true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);

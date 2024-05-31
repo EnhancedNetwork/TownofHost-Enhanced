@@ -49,7 +49,7 @@ internal class Deathpact : RoleBase
             .SetValueFormat(OptionFormat.Times);
         ShowArrowsToOtherPlayersInPact = BooleanOptionItem.Create("DeathpactShowArrowsToOtherPlayersInPact", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
         ReduceVisionWhileInPact = BooleanOptionItem.Create("DeathpactReduceVisionWhileInPact", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
-        VisionWhileInPact = FloatOptionItem.Create(Id + 17, "DeathpactVisionWhileInPact", new(0f, 5f, 0.05f), 0.65f, TabGroup.ImpostorRoles, false).SetParent(ReduceVisionWhileInPact)
+        VisionWhileInPact = FloatOptionItem.Create("DeathpactVisionWhileInPact", new(0f, 5f, 0.05f), 0.65f, TabGroup.ImpostorRoles, false).SetParent(ReduceVisionWhileInPact)
             .SetValueFormat(OptionFormat.Multiplier);
         KillDeathpactPlayersOnMeeting = BooleanOptionItem.Create("DeathpactKillPlayersInDeathpactOnMeeting", false, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);

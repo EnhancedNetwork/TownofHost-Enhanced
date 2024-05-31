@@ -45,11 +45,11 @@ internal class Solsticer : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
         SolsticerCanGuess = BooleanOptionItem.Create("CanGuess", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-        SolsticerSpeed = FloatOptionItem.Create(Id + 14, "SolsticerSpeed", new(0, 5, 0.1f), 1.5f, TabGroup.NeutralRoles, false)
+        SolsticerSpeed = FloatOptionItem.Create("SolsticerSpeed", new(0, 5, 0.1f), 1.5f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
         RemainingTasksToBeWarned = IntegerOptionItem.Create(Id + 15, "SolsticerRemainingTaskWarned", new(0, 10, 1), 1, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-        AddTasksPreDeadPlayer = FloatOptionItem.Create(Id + 16, "SAddTasksPreDeadPlayer", new(0, 15, 0.1f), 0.5f, TabGroup.NeutralRoles, false)
+        AddTasksPreDeadPlayer = FloatOptionItem.Create("SAddTasksPreDeadPlayer", new(0, 15, 0.1f), 0.5f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
         OverrideTasksData.Create(Id + 17, TabGroup.NeutralRoles, CustomRoles.Solsticer);
     }
