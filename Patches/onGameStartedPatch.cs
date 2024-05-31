@@ -538,6 +538,8 @@ internal class SelectRolesPatch
             Utils.SyncAllSettings();
 
             Logger.Msg("Ended", "AssignRoles");
+
+            Utils.NotifyRoles(NoCache: true);
         }
         catch (Exception ex)
         {
