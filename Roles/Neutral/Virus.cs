@@ -42,7 +42,7 @@ internal class Virus : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Virus, 1, zeroOne: false);
-        KillCooldown = FloatOptionItem.Create(1234, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Virus])
+        KillCooldown = FloatOptionItem.Create("KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Virus])
             .SetValueFormat(OptionFormat.Seconds);
         CanVent = BooleanOptionItem.Create("CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Virus]);
         ImpostorVision = BooleanOptionItem.Create("ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Virus]);

@@ -42,7 +42,7 @@ internal class Fireworker : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Fireworker);
         FireworkerCount = IntegerOptionItem.Create(Id + 10, "FireworkerMaxCount", new(1, 20, 1), 3, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
             .SetValueFormat(OptionFormat.Pieces);
-        FireworkerRadius = FloatOptionItem.Create(1234, "FireworkerRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
+        FireworkerRadius = FloatOptionItem.Create("FireworkerRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
             .SetValueFormat(OptionFormat.Multiplier);
         CanKill = BooleanOptionItem.Create("CanKill", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker]);
     }

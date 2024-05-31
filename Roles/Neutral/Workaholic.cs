@@ -31,7 +31,7 @@ internal class Workaholic : RoleBase
         SetupRoleOptions(15700, TabGroup.NeutralRoles, CustomRoles.Workaholic); //TOH_Y
         WorkaholicCannotWinAtDeath = BooleanOptionItem.Create("WorkaholicCannotWinAtDeath", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic]);
-        WorkaholicVentCooldown = FloatOptionItem.Create(15703, "VentCooldown", new(0f, 180f, 2.5f), 0f, TabGroup.NeutralRoles, false)
+        WorkaholicVentCooldown = FloatOptionItem.Create("VentCooldown", new(0f, 180f, 2.5f), 0f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic])
             .SetValueFormat(OptionFormat.Seconds);
         WorkaholicVisibleToEveryone = BooleanOptionItem.Create("WorkaholicVisibleToEveryone", true, TabGroup.NeutralRoles, false)

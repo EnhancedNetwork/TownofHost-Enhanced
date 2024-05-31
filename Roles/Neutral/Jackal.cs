@@ -58,7 +58,7 @@ internal class Jackal : RoleBase
         CanWinBySabotageWhenNoImpAlive = BooleanOptionItem.Create("JackalCanWinBySabotageWhenNoImpAlive", true, TabGroup.NeutralRoles, false).SetParent(CanUsesSabotage);
         HasImpostorVision = BooleanOptionItem.Create("ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         OptionResetKillCooldownWhenSbGetKilled = BooleanOptionItem.Create("JackalResetKillCooldownWhenPlayerGetKilled", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
-        ResetKillCooldownOn = FloatOptionItem.Create(Id + 28, "JackalResetKillCooldownOn", new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false)
+        ResetKillCooldownOn = FloatOptionItem.Create("JackalResetKillCooldownOn", new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(OptionResetKillCooldownWhenSbGetKilled)
             .SetValueFormat(OptionFormat.Seconds);
         JackalCanKillSidekick = BooleanOptionItem.Create("JackalCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
