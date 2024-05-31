@@ -592,7 +592,7 @@ internal class RPCHandlerPatch
                 Keeper.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetSwapperVotes:
-                Swapper.ReceiveSwapRPC(reader);
+                Swapper.ReceiveSwapRPC(reader, __instance);
                 break;
         }
     }
