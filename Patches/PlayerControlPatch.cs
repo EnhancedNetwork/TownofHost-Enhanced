@@ -538,6 +538,20 @@ public static class CheckShapeshiftPatch
             return false;
         }
 
+        if(Main.ForcedUnShapeshift.TryGetValue(__instance.PlayerId, out var isforced) && isforced && __instance == target)
+        {
+            __instance.SyncSettings();
+            Main.ForcedUnShapeshift[__instance.PlayerId] = false;
+            Main.Synclist.Add(__instance.PlayerId);
+            return false;
+        }
+
+        if (Main.Synclist.Contains(__instance.PlayerId))
+        {
+            Main.Synclist.Remove(__instance.PlayerId);
+            __instance.SyncSettings();
+        }
+
         // No called code if is invalid shapeshifting
         if (!CheckInvalidShapeshifting(__instance, target, shouldAnimate))
         {
@@ -609,6 +623,12 @@ public static class CheckShapeshiftPatch
         if (Pelican.IsEaten(instance.PlayerId))
         {
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is eaten by Pelican");
+            return false;
+        }
+        if (instance == target && Main.UnShapeShifter.ContainsKey(instance.PlayerId))
+        {
+            instance.GetRoleClass().UnShapeShiftButton(instance);
+            logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
             return false;
         }
         return true;
@@ -947,6 +967,12 @@ class FixedUpdateInNormalGamePatch
         if (GameStates.IsInGame)
         {
             Sniper.OnFixedUpdateGlobal(player);
+
+            if (Main.UnShapeShifterCount.TryGetValue(player.PlayerId, out var count) && count > 0)
+            {
+                Main.UnShapeShifterCount[player.PlayerId] -= Time.deltaTime;
+            }
+
 
             if (!lowLoad)
             {

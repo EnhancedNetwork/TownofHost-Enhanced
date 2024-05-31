@@ -153,6 +153,11 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
 
+    public static readonly Dictionary<byte, float> UnShapeShifter = []; // probably not needed
+    public static readonly Dictionary<byte, float> UnShapeShifterCount = []; // probably not needed
+    public static readonly Dictionary<byte, bool> ForcedUnShapeshift = [];
+    public static readonly HashSet<byte> Synclist = [];
+
     public static bool isLoversDead = true;
     public static readonly HashSet<PlayerControl> LoversPlayers = [];
 

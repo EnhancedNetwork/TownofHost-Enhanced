@@ -566,6 +566,22 @@ class IntroCutsceneDestroyPatch
                 });
             }
 
+            if (Main.UnShapeShifter.Any())
+            {
+                _ = new LateTask(() =>
+                {
+                 Main.UnShapeShifter.Do(x =>
+                    {
+                     var PC = Utils.GetPlayerById(x.Key);
+                     var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
+                     PC.RpcShapeshift(randomplayer, false);
+                     PC.RpcRejectShapeshift(); // It's a funny thing which just makes the button "shift" again but player is still in "ShapeShifted" state.
+                     PC.ResetPlayerOutfit();
+
+                    });
+                }, 3f, "Set UnShapeShift Button");
+            }
+
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
             {
                 RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch

@@ -61,6 +61,8 @@ internal class ChangeRoleSettings
             Main.ShapeshiftTarget.Clear();
             Main.AllKillers.Clear();
             Main.OverDeadPlayerList.Clear();
+            Main.UnShapeShifter.Clear();
+            Main.UnShapeShifterCount.Clear();
 
             Main.LastNotifyNames.Clear();
             Main.PlayerColors.Clear();
@@ -124,7 +126,11 @@ internal class ChangeRoleSettings
             {
                 var colorId = pc.Data.DefaultOutfit.ColorId;
                 if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
-                Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId);
+                Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
+                {
+                    NormalOutfit = pc.CurrentOutfit,
+                };
+
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
@@ -414,10 +420,24 @@ internal class SelectRolesPatch
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
 
+
+
             GhostRoleAssign.Add();
 
             foreach (var pc in Main.AllPlayerControls)
             {
+                if (Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
+                {
+                    
+                    Main.UnShapeShifter[pc.PlayerId] = 40f;
+                    Main.UnShapeShifterCount[pc.PlayerId] = 40f;
+                    Main.ForcedUnShapeshift[pc.PlayerId] = true;
+
+                    Logger.Info($"Added {pc.GetCustomRole()} because of typeof {pc.GetCustomRole()}", "UnShapeLoad");
+
+                    Logger.Info($"ABility: {Main.UnShapeShifter[pc.PlayerId]} Count: {Main.UnShapeShifterCount[pc.PlayerId]}" ,"UnSHapeShifter_Floats");
+                }
+
                 if (pc.GetRoleClass()?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
 
                 pc.GetRoleClass()?.OnAdd(pc.PlayerId);
