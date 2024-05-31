@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using TOHE.Modules;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -14,9 +15,18 @@ namespace TOHE;
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
 class SetUpRoleTextPatch
 {
+    public static bool IsInIntro = false;
+
     public static void Postfix(IntroCutscene __instance)
     {
         if (!GameStates.IsModHost) return;
+
+        // After showing team for non-modded clients update player names.
+        _ = new LateTask(() =>
+        {
+            IsInIntro = false;
+            Utils.NotifyRoles(NoCache: true);
+        }, 1f);
 
         _ = new LateTask(() =>
         {
@@ -55,11 +65,11 @@ class CoBeginPatch
 {
     public static void Prefix()
     {
+        if (RoleBasisChanger.IsChangeInProgress) return;
+
         var logger = Logger.Handler("Info");
 
         var allPlayerControlsArray = Main.AllPlayerControls;
-
-        Main.AssignRolesIsStarted = false;
 
         logger.Info("------------Player Names------------");
         foreach ( var pc in allPlayerControlsArray)
@@ -521,7 +531,7 @@ class IntroCutsceneDestroyPatch
 {
     public static void Postfix()
     {
-        if (!GameStates.IsInGame) return;
+        if (!GameStates.IsInGame || RoleBasisChanger.SkipTasksAfterAssignRole) return;
 
         Main.introDestroyed = true;
 

@@ -1,6 +1,7 @@
 ﻿using TOHE.Roles.Core;
 using UnityEngine;
 using System;
+using TOHE.Modules;
 
 namespace TOHE;
 
@@ -70,7 +71,9 @@ public static class HudSpritePatch
 
         // Set custom icon for ability button (Shapeshift, Vitals, Engineer Vent)
         __instance.AbilityButton.graphic.sprite = newAbilityButton;
-        __instance.AbilityButton.usesRemainingSprite.sprite = newAbilityButton;
+
+        // This code replaces the sprite that displays the quantity next to the button (for example, like the Engineer)
+        //__instance.AbilityButton.usesRemainingSprite.sprite = newAbilityButton;
 
         // Set custom icon for report button
         __instance.ReportButton.graphic.sprite = newReportButton;
@@ -95,7 +98,7 @@ public static class AbilityButtonSetFromSettingsPatch
         __instance.SetInfiniteUses();
 
         // When ability button is initialize or player is dead, set default image
-        if (!Main.introDestroyed || PlayerControl.LocalPlayer.Data.IsDead || AmongUsClient.Instance.IsGameOver)
+        if (!Main.introDestroyed || PlayerControl.LocalPlayer.Data.IsDead || AmongUsClient.Instance.IsGameOver || RoleBasisChanger.SkipTasksAfterAssignRole)
             __instance.graphic.sprite = settings.Image;
 
         __instance.graphic.SetCooldownNormalizedUvs();

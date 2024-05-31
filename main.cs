@@ -39,8 +39,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0526.200.221"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 Dev 22 Public Lobby";
+    public const string PluginVersion = "2024.0531.200.000240"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 Dev 24 Public Lobby";
     public static readonly string SupportedVersionAU = "2024.3.5";
 
     public static string FakeGitInfo = "";
@@ -50,7 +50,7 @@ public class Main : BasePlugin
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = false; // ACTIVE - Latest: V1.6.0 Canary 6
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
-    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 22
+    public static readonly bool devRelease = true; // INACTIVE - Latest: V2.0.0 Dev 24
 
     public static bool hasAccess = true;
 
@@ -647,9 +647,9 @@ public enum CustomRoles
     GuardianAngelTOHE,
 
     //Crewmate Ghost
+    Ghastly,
     Hawk,
     Warden,
-    Ghastly,
 
     //Crewmate
     Addict,

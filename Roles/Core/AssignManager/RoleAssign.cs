@@ -3,7 +3,6 @@ using TOHE.Modules;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using static TOHE.Modules.ShuffleListExtension;
 
 namespace TOHE.Roles.Core.AssignManager;
 
@@ -161,7 +160,12 @@ public class RoleAssign
             RoleResult[PlayerControl.LocalPlayer] = CustomRoles.GM;
             AllPlayers.Remove(PlayerControl.LocalPlayer);
         }
-
+        if (Main.EnableGM.Value)
+        {
+            RoleResult[PlayerControl.LocalPlayer] = CustomRoles.GM;
+            AllPlayers.Remove(PlayerControl.LocalPlayer);
+            SetRoles.Remove(PlayerControl.LocalPlayer.PlayerId);
+        }
         // Pre-Assigned Roles By Host Are Selected First
         foreach (var item in SetRoles)
         {

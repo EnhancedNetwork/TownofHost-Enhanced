@@ -16,7 +16,7 @@ public static class GhostRoleAssign
     private static readonly List<CustomRoles> ImpHauntedList = [];
     public static void GhostAssignPatch(PlayerControl player)
     {
-        if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
+        if (GameStates.IsHideNSeek  || Options.CurrentGameMode == CustomGameMode.FFA || player == null || player.Data.Disconnected || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
         if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) {
             Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");
             var clas = player.GetRoleClass();
@@ -24,6 +24,7 @@ public static class GhostRoleAssign
             player.RpcSetCustomRole(forcerole);
             clas.Add(player.PlayerId);
             forceRole.Remove(player.PlayerId);
+            getCount[forcerole]--;
             return;
         }
 
@@ -49,7 +50,7 @@ public static class GhostRoleAssign
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
 
 
-        foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys.Where(x => x.GetMode() > 0))
+        foreach (var ghostRole in getCount.Keys.Where(x => x.GetMode() > 0))
         { 
             if (ghostRole.IsCrewmate())
             {

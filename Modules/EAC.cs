@@ -2,6 +2,7 @@
 using Hazel;
 using System;
 using InnerNet;
+using TOHE.Modules;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -33,6 +34,7 @@ internal class EAC
     public static bool ReceiveRpc(PlayerControl pc, byte callId, MessageReader reader)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
+        if (RoleBasisChanger.IsChangeInProgress) return false;
         if (pc == null || reader == null) return false;
         try
         {
@@ -107,6 +109,7 @@ internal class EAC
                     Logger.Fatal($"非法设置玩家【{pc.GetClientId()}:{pc.GetRealName()}】的游戏名称，已驳回", "EAC");
                     return true;
                 case RpcCalls.ReportDeadBody:
+                    var bodyid = sr.ReadByte();
                     if (!GameStates.IsInGame)
                     {
                         var bodyid = sr.ReadByte();
@@ -178,7 +181,6 @@ internal class EAC
                 case RpcCalls.MurderPlayer:
                     //Calls will only be sent by host(under protocol) / server(vanilla)
                     var murdered = sr.ReadNetObject<PlayerControl>();
-
                     if (GameStates.IsLobby)
                     {
                         Report(pc, "Directly Murder Player In Lobby");

@@ -390,6 +390,27 @@ public static class Utils
         _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
         return c;
     }
+    public static Color GetTeamColor(PlayerControl player)
+    {
+        string hexColor = string.Empty;
+        var Team = player.GetCustomRole().GetCustomRoleTeam();
+
+        switch (Team)
+        {
+            case Custom_Team.Crewmate:
+                hexColor = "#8cffff";
+                break;
+            case Custom_Team.Impostor:
+                hexColor = "#ff1919";
+                break;
+            case Custom_Team.Neutral:
+                hexColor = "#7f8c8d";
+                break;
+        }
+
+        _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
+        return c;
+    }
     public static string GetRoleColorCode(CustomRoles role)
     {
         if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
@@ -1553,6 +1574,25 @@ public static class Utils
     public static List<PlayerControl> GetPlayerListByRole(this CustomRoles role)
         => GetPlayerListByIds(Main.PlayerStates.Values.Where(x => x.MainRole == role).Select(r => r.PlayerId));
     
+    public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
+    {
+        try
+        {
+            var cache = Main.PlayerStates.Values.Where(x => x.RoleClass != null);
+
+            if (cache.Any())
+            {
+                var Get = cache.Select(x => x.RoleClass);
+                return Get.OfType<t>().Any() ? Get.OfType<t>() : null;
+            }
+        }
+        catch (Exception exx)
+        {
+            Logger.Exception(exx, "Utils.GetRoleBasesByType");
+        }
+        return null;
+    }
+
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
@@ -1615,6 +1655,25 @@ public static class Utils
             // Only non-modded players
             if (seer.IsModClient()) continue;
 
+            // During intro scene, set team name for non-modded clients and skip the rest.
+            // Only for desync role, because their team is always shown as Impostor even though they may be in a Crewmate or Neutrals team
+            // Note: When Neutral is based on the Crewmate role then it is impossible to display the real team for it
+            if (SetUpRoleTextPatch.IsInIntro && seer.GetCustomRole().IsDesyncRole())
+            {
+                string IconText = "<color=#ffffff>|</color>";
+                string SelfTeamName = $"<size=450%>{IconText} <font=\"VCR SDF\" material=\"VCR Black Outline\">{ColorString(GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>";
+                string SelfRoleName = $"{seer.GetDisplayRoleAndSubName(seer, false)}";
+                string SeerRealName = seer.GetRealName();
+                string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}";
+                string RoleNameUp = "</size><size=1350%>\n \n</size>";
+
+                SelfName = $"{SelfTeamName}\r\n{SelfRoleName}\r\n{SelfName}{RoleNameUp}";
+
+                // Privately sent name.
+                seer.RpcSetNamePrivate(SelfName, true, seer);
+                continue;
+            }
+            
             // Size of player roles
             string fontSize = "1.5";
             if (isForMeeting && (seer.GetClient().PlatformData.Platform == Platforms.Playstation || seer.GetClient().PlatformData.Platform == Platforms.Switch)) fontSize = "70%";
@@ -2060,11 +2119,7 @@ public static class Utils
         ProcessStartInfo psi = new("Explorer.exe") { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
         Process.Start(psi);
     }
-    /// <summary>
-    /// Return the first byte of a HashSet(Byte)
-    /// </summary>
-    public static byte First(this HashSet<byte> source)
-        => source.ToArray().First();
+    
     
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
