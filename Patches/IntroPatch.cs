@@ -25,8 +25,8 @@ class SetUpRoleTextPatch
         _ = new LateTask(() =>
         {
             IsInIntro = false;
-            Utils.NotifyRoles();
-        }, 2f);
+            Utils.NotifyRoles(NoCache: true);
+        }, 1f);
 
         _ = new LateTask(() =>
         {

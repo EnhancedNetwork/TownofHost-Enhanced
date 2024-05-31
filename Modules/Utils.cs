@@ -1656,13 +1656,15 @@ public static class Utils
             if (seer.IsModClient()) continue;
 
             // During intro scene, set team name for non-modded clients and skip the rest.
-            if (SetUpRoleTextPatch.IsInIntro)
+            // Only for desync role, because their team is always shown as Impostor even though they may be in a Crewmate or Neutrals team
+            // Note: When Neutral is based on the Crewmate role then it is impossible to display the real team for it
+            if (SetUpRoleTextPatch.IsInIntro && seer.GetCustomRole().IsDesyncRole())
             {
                 string IconText = "<color=#ffffff>|</color>";
-                string SelfTeamName = $"<size=450%>{IconText} <font=\"VCR SDF\" material=\"VCR Black Outline\">{Utils.ColorString(Utils.GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>";
+                string SelfTeamName = $"<size=450%>{IconText} <font=\"VCR SDF\" material=\"VCR Black Outline\">{ColorString(GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>";
                 string SelfRoleName = $"{seer.GetDisplayRoleAndSubName(seer, false)}";
                 string SeerRealName = seer.GetRealName();
-                string SelfName = $"{Utils.ColorString(seer.GetRoleColor(), SeerRealName)}";
+                string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}";
                 string RoleNameUp = "</size><size=1350%>\n \n</size>";
 
                 SelfName = $"{SelfTeamName}\r\n{SelfRoleName}\r\n{SelfName}{RoleNameUp}";
