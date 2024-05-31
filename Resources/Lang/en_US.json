@@ -1921,6 +1921,9 @@
   "DeputyHandcuffCDForTarget": "Kill Cooldown for handcuffed player",
 
   "RejectShapeshift.AbilityWasUsed": "Ability was used",
+  "UnShape_Notify": "Please use shapeshift to sync Button",
+  "UnShape_Sync":  "Synced Button!!",
+
   "ShowShapeshiftAnimations": "Show <color=#ff1919>Shapeshift</color> animations",
 
   "EscapisMtarkedPosition": "You marked self position",

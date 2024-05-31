@@ -112,7 +112,6 @@ internal class Pitfall : RoleBase
             });
         }
 
-        ResetUnShapeshiftability();
         shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
     }
 

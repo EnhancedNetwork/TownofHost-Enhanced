@@ -62,7 +62,6 @@ internal class ChangeRoleSettings
             Main.AllKillers.Clear();
             Main.OverDeadPlayerList.Clear();
             Main.UnShapeShifter.Clear();
-            Main.UnShapeShifterCount.Clear();
 
             Main.LastNotifyNames.Clear();
             Main.PlayerColors.Clear();
@@ -428,14 +427,7 @@ internal class SelectRolesPatch
             {
                 if (Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
                 {
-                    
-                    Main.UnShapeShifter[pc.PlayerId] = 40f;
-                    Main.UnShapeShifterCount[pc.PlayerId] = 40f;
-                    Main.ForcedUnShapeshift[pc.PlayerId] = true;
-
-                    Logger.Info($"Added {pc.GetCustomRole()} because of typeof {pc.GetCustomRole()}", "UnShapeLoad");
-
-                    Logger.Info($"ABility: {Main.UnShapeShifter[pc.PlayerId]} Count: {Main.UnShapeShifterCount[pc.PlayerId]}" ,"UnSHapeShifter_Floats");
+                    Main.UnShapeShifter.Add(pc.PlayerId);
                 }
 
                 if (pc.GetRoleClass()?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);

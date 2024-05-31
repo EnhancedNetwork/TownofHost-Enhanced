@@ -416,13 +416,6 @@ public static class CustomRoleManager
             sb.Append(lower(seer, seen, isForMeeting, isForHud));
         }
 
-        /*if (seer == seen && Main.UnShapeShifterCount.TryGetValue(seer.PlayerId, out var count)) 
-        {
-            string Cooldown = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), 
-                $"Ability Cooldown: {(int)count}s</voffset>");
-            sb.Append(Cooldown);
-        }*/
-
         return sb.ToString();
     }
 

@@ -238,10 +238,7 @@ public abstract class RoleBase
 
     // NOTE: when using UnShapeshift button, it will not be possible to revert to normal state because of complications.
     // So OnCheckShapeShift and OnShapeshift are pointless when using it.
-    public bool CheckUnshapeshift => Main.UnShapeShifterCount[_Player.PlayerId] <= 0;
-    public void ResetUnShapeshiftability() => Main.UnShapeShifterCount[_Player.PlayerId] = Main.UnShapeShifter[_Player.PlayerId];
     
-
     /// <summary>
     /// A method which when implemented automatically makes the players always shapeshifted (as themselves). Inside you can put functions to happen when "Un-Shapeshift" button is pressed.
     /// </summary>
