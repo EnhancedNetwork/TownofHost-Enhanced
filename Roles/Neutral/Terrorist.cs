@@ -23,9 +23,9 @@ internal class Terrorist : RoleBase
     {
 
         SetupRoleOptions(15400, TabGroup.NeutralRoles, CustomRoles.Terrorist);
-        CanTerroristSuicideWin = BooleanOptionItem.Create(15402, "CanTerroristSuicideWin", false, TabGroup.NeutralRoles, false)
+        CanTerroristSuicideWin = BooleanOptionItem.Create("CanTerroristSuicideWin", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
-        TerroristCanGuess = BooleanOptionItem.Create(15403, "CanGuess", true, TabGroup.NeutralRoles, false)
+        TerroristCanGuess = BooleanOptionItem.Create("CanGuess", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
         OverrideTasksData.Create(15404, TabGroup.NeutralRoles, CustomRoles.Terrorist);
     }

@@ -28,7 +28,7 @@ internal class SoulCollector : RoleBase
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.SoulCollector);
         SoulCollectorPointsOpt = IntegerOptionItem.Create(Id + 10, "SoulCollectorPointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector])
             .SetValueFormat(OptionFormat.Times);
-        CollectOwnSoulOpt = BooleanOptionItem.Create(Id + 11, "SoulCollector_CollectOwnSoulOpt", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);
+        CollectOwnSoulOpt = BooleanOptionItem.Create("SoulCollector_CollectOwnSoulOpt", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector]);
     }
     public override void Init()
     {

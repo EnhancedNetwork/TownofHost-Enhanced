@@ -37,13 +37,13 @@ internal class Solsticer : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Solsticer, 1);
-        EveryOneKnowSolsticer = BooleanOptionItem.Create(Id + 10, "EveryOneKnowSolsticer", true, TabGroup.NeutralRoles, false)
+        EveryOneKnowSolsticer = BooleanOptionItem.Create("EveryOneKnowSolsticer", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-        SolsticerKnowKiller = BooleanOptionItem.Create(Id + 11, "SolsticerKnowItsKiller", true, TabGroup.NeutralRoles, false)
+        SolsticerKnowKiller = BooleanOptionItem.Create("SolsticerKnowItsKiller", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-        SolsticerCanVent = BooleanOptionItem.Create(Id + 12, "CanVent", false, TabGroup.NeutralRoles, false)
+        SolsticerCanVent = BooleanOptionItem.Create("CanVent", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-        SolsticerCanGuess = BooleanOptionItem.Create(Id + 13, "CanGuess", false, TabGroup.NeutralRoles, false)
+        SolsticerCanGuess = BooleanOptionItem.Create("CanGuess", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
         SolsticerSpeed = FloatOptionItem.Create(Id + 14, "SolsticerSpeed", new(0, 5, 0.1f), 1.5f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
