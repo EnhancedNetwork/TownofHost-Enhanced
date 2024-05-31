@@ -6,11 +6,11 @@ public class FloatOptionItem(int id, string name, float defaultValue, TabGroup t
 {
     public FloatValueRule Rule = rule;
 
-    public static FloatOptionItem Create(int id, string name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
+    public static FloatOptionItem Create(string name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
         return new FloatOptionItem(1, name, defaultValue, tab, isSingleValue, rule, vanillaText);
     }
-    public static FloatOptionItem Create(int id, Enum name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
+    public static FloatOptionItem Create(Enum name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
         return new FloatOptionItem(1, name.ToString(), defaultValue, tab, isSingleValue, rule, vanillaText);
     }
