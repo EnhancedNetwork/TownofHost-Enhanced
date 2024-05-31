@@ -1,6 +1,7 @@
 ﻿using TOHE.Roles.Core;
 using UnityEngine;
 using System;
+using TOHE.Modules;
 
 namespace TOHE;
 
@@ -97,7 +98,7 @@ public static class AbilityButtonSetFromSettingsPatch
         __instance.SetInfiniteUses();
 
         // When ability button is initialize or player is dead, set default image
-        if (!Main.introDestroyed || PlayerControl.LocalPlayer.Data.IsDead || AmongUsClient.Instance.IsGameOver)
+        if (!Main.introDestroyed || PlayerControl.LocalPlayer.Data.IsDead || AmongUsClient.Instance.IsGameOver || RoleBasisChanger.SkipTasksAfterAssignRole)
             __instance.graphic.sprite = settings.Image;
 
         __instance.graphic.SetCooldownNormalizedUvs();

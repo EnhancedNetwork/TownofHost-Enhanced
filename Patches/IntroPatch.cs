@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using TOHE.Modules;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -55,6 +56,8 @@ class CoBeginPatch
 {
     public static void Prefix()
     {
+        if (RoleBasisChanger.IsChangeInProgress) return;
+
         var logger = Logger.Handler("Info");
 
         var allPlayerControlsArray = Main.AllPlayerControls;
@@ -519,7 +522,7 @@ class IntroCutsceneDestroyPatch
 {
     public static void Postfix()
     {
-        if (!GameStates.IsInGame) return;
+        if (!GameStates.IsInGame || RoleBasisChanger.SkipTasksAfterAssignRole) return;
 
         Main.introDestroyed = true;
 
