@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using Newtonsoft.Json.Bson;
+using System.IO;
 using System.Text.Json;
+using UnityEngine;
+using static TOHE.Roles.Impostor.EvilHacker;
 
 namespace TOHE.Modules;
 
@@ -22,30 +25,39 @@ public static class OptionSaver
         }
     }
     /// <summary>Generate object for json serialization from current options</summary>
-    private static SerializableOptionsData GenerateOptionsData()
+    private static System.Collections.IEnumerator GenerateOptionsDataCoroutine(System.Action<SerializableOptionsData> onComplete)
     {
         Dictionary<string, int> singleOptions = [];
         Dictionary<string, int[]> presetOptions = [];
+
         foreach (var option in OptionItem.AllOptions)
         {
             if (option.IsSingleValue)
             {
-                if (!singleOptions.TryAdd(option.Name, option.SingleValue))
+                if (!singleOptions.TryAdd(option.FullName, option.SingleValue))
                 {
                     Logger.Warn($"Duplicate SingleOption Name: {option.Name}", "Option Saver");
                 }
             }
-            else if (!presetOptions.TryAdd(option.Name, option.AllValues))
+            else if (!presetOptions.TryAdd(option.FullName, option.AllValues))
             {
                 Logger.Warn($"Duplicate preset option Name: {option.Name}", "Option Saver");
             }
+
+            Application.targetFrameRate = -1;
+            yield return null; // Yield to prevent blocking the main thread
         }
-        return new SerializableOptionsData
+
+        var optionsData = new SerializableOptionsData
         {
             Version = Version,
             SingleOptions = singleOptions,
             PresetOptions = presetOptions,
         };
+
+        Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
+        onComplete?.Invoke(optionsData);
+        yield break;
     }
     /// <summary>Read deserialized object and set option values</summary>
     private static void LoadOptionsData(SerializableOptionsData serializableOptionsData)
@@ -63,14 +75,14 @@ public static class OptionSaver
         {
             var id = singleOption.Key;
             var value = singleOption.Value;
-            var optionItem = OptionItem.FastOptions.FirstOrDefault(x => x.Name == id);
+            var optionItem = OptionItem.FastOptions.FirstOrDefault(x => x.FullName == id);
             optionItem?.SetValue(value, doSave: false);
         }
         foreach (var presetOption in presetOptions)
         {
             var id = presetOption.Key;
             var values = presetOption.Value;
-            var optionItem = OptionItem.FastOptions.FirstOrDefault(x => x.Name == id);
+            var optionItem = OptionItem.FastOptions.FirstOrDefault(x => x.FullName == id);
             optionItem?.SetAllValues(values);
         }
     }
@@ -79,8 +91,13 @@ public static class OptionSaver
     {
         if (AmongUsClient.Instance != null && !AmongUsClient.Instance.AmHost) return;
 
-        var jsonString = JsonSerializer.Serialize(GenerateOptionsData(), new JsonSerializerOptions { WriteIndented = true, });
-        File.WriteAllText(OptionSaverFileInfo.FullName, jsonString);
+        Main.Instance.StopCoroutine(GenerateOptionsDataCoroutine(SaveAfterCoro));
+        Main.Instance.StartCoroutine(GenerateOptionsDataCoroutine(SaveAfterCoro));
+    }
+    private static void SaveAfterCoro(SerializableOptionsData data)
+    {
+        var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true, });
+        File.WriteAllText(OptionSaverFileInfo.FullName, json);
     }
     /// <summary>Read options from json file</summary>
     public static void Load()

@@ -18,6 +18,7 @@ public abstract class OptionItem
 
     // Constructor variables
     public int Id { get; }
+    public static int LastId { get; set; }
     public string Name { get; }
     public int DefaultValue { get; }
     public TabGroup Tab { get; }
@@ -33,6 +34,7 @@ public abstract class OptionItem
     public bool IsHidden { get; protected set; }
     public bool IsText { get; protected set; }
     public bool IsVanillaText { get; protected set; }
+    public string FullName => Name + Id;
     public Dictionary<string, string> ReplacementDictionary
     {
         get => _replacementDictionary;
@@ -64,7 +66,11 @@ public abstract class OptionItem
     public OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaStr)
     {
         // Info Setting
-        Id = id;
+        if (FastOptions.Exists(x => x.Id == Id))
+        {
+            LastId++;
+            Id = LastId;
+        }
         Name = name;
         DefaultValue = defaultValue;
         Tab = tab;
@@ -101,6 +107,8 @@ public abstract class OptionItem
                 AllValues[i] = DefaultValue;
             }
         }
+
+        Logger.Info(Id.ToString(), "hi");
 
         _fastOptions.Add(this);
         _allOptions.Add(this);
