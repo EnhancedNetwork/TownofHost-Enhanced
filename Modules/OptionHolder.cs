@@ -631,7 +631,7 @@ public static class Options
         //MadmateCanFixSabotage = BooleanOptionItem.Create(50010, "MadmateCanFixSabotage", false, TabGroup.ImpostorRoles, false)
         //.SetGameMode(CustomGameMode.Standard);
 
-        DefaultShapeshiftCooldown = FloatOptionItem.Create(60011, "DefaultShapeshiftCooldown", new(5f, 180f, 5f), 15f, TabGroup.ImpostorRoles, false)
+        DefaultShapeshiftCooldown = FloatOptionItem.Create("DefaultShapeshiftCooldown", new(5f, 180f, 5f), 15f, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetValueFormat(OptionFormat.Seconds);
@@ -1114,8 +1114,8 @@ public static class Options
         AutoKickStopWordsAsBan = BooleanOptionItem.Create(60162, "AutoKickStopWordsAsBan", false, TabGroup.SystemSettings, false)
             .SetParent(AutoKickStopWords);
         AutoWarnStopWords = BooleanOptionItem.Create(60163, "AutoWarnStopWords", false, TabGroup.SystemSettings, false); */
-        MinWaitAutoStart = FloatOptionItem.Create(60170, "MinWaitAutoStart", new(0f, 10f, 0.5f), 1.5f, TabGroup.SystemSettings, false).SetHeader(true);
-        MaxWaitAutoStart = FloatOptionItem.Create(60180, "MaxWaitAutoStart", new(0f, 10f, 0.5f), 1.5f, TabGroup.SystemSettings, false);
+        MinWaitAutoStart = FloatOptionItem.Create("MinWaitAutoStart", new(0f, 10f, 0.5f), 1.5f, TabGroup.SystemSettings, false).SetHeader(true);
+        MaxWaitAutoStart = FloatOptionItem.Create("MaxWaitAutoStart", new(0f, 10f, 0.5f), 1.5f, TabGroup.SystemSettings, false);
         PlayerAutoStart = IntegerOptionItem.Create(60190, "PlayerAutoStart", new(1, 100, 1), 14, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Players);
         AutoStartTimer = IntegerOptionItem.Create(60200, "AutoStartTimer", new(10, 600, 1), 20, TabGroup.SystemSettings, false)
@@ -1326,12 +1326,12 @@ public static class Options
         ChangeDecontaminationTime = BooleanOptionItem.Create("ChangeDecontaminationTime", false, TabGroup.GameSettings, false)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Decontamination time on MiraHQ
-        DecontaminationTimeOnMiraHQ = FloatOptionItem.Create(134, "DecontaminationTimeOnMiraHQ", new(0.5f, 10f, 0.25f), 3f, TabGroup.GameSettings, false)
+        DecontaminationTimeOnMiraHQ = FloatOptionItem.Create("DecontaminationTimeOnMiraHQ", new(0.5f, 10f, 0.25f), 3f, TabGroup.GameSettings, false)
             .SetParent(ChangeDecontaminationTime)
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Decontamination time on Polus
-        DecontaminationTimeOnPolus = FloatOptionItem.Create(699, "DecontaminationTimeOnPolus", new(0.5f, 10f, 0.25f), 3f, TabGroup.GameSettings, false)
+        DecontaminationTimeOnPolus = FloatOptionItem.Create("DecontaminationTimeOnPolus", new(0.5f, 10f, 0.25f), 3f, TabGroup.GameSettings, false)
             .SetParent(ChangeDecontaminationTime)
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
@@ -1373,7 +1373,7 @@ public static class Options
         SabotageCooldownControl = BooleanOptionItem.Create("SabotageCooldownControl", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(243, 96, 96, byte.MaxValue));
-        SabotageCooldown = FloatOptionItem.Create(60535, "SabotageCooldown", new(1f, 60f, 1f), 30f, TabGroup.GameSettings, false)
+        SabotageCooldown = FloatOptionItem.Create("SabotageCooldown", new(1f, 60f, 1f), 30f, TabGroup.GameSettings, false)
             .SetParent(SabotageCooldownControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
@@ -1382,39 +1382,39 @@ public static class Options
             .SetColor(new Color32(243, 96, 96, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);
         // The Skeld
-        SkeldReactorTimeLimit = FloatOptionItem.Create(60541, "SkeldReactorTimeLimit", new(5f, 90f, 1f), 30f, TabGroup.GameSettings, false)
+        SkeldReactorTimeLimit = FloatOptionItem.Create("SkeldReactorTimeLimit", new(5f, 90f, 1f), 30f, TabGroup.GameSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
-        SkeldO2TimeLimit = FloatOptionItem.Create(60542, "SkeldO2TimeLimit", new(5f, 90f, 1f), 30f, TabGroup.GameSettings, false)
+        SkeldO2TimeLimit = FloatOptionItem.Create("SkeldO2TimeLimit", new(5f, 90f, 1f), 30f, TabGroup.GameSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         // Mira HQ
-        MiraReactorTimeLimit = FloatOptionItem.Create(60543, "MiraReactorTimeLimit", new(5f, 90f, 1f), 45f, TabGroup.GameSettings, false)
+        MiraReactorTimeLimit = FloatOptionItem.Create("MiraReactorTimeLimit", new(5f, 90f, 1f), 45f, TabGroup.GameSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
-        MiraO2TimeLimit = FloatOptionItem.Create(60544, "MiraO2TimeLimit", new(5f, 90f, 1f), 45f, TabGroup.GameSettings, false)
+        MiraO2TimeLimit = FloatOptionItem.Create("MiraO2TimeLimit", new(5f, 90f, 1f), 45f, TabGroup.GameSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         // Polus
-        PolusReactorTimeLimit = FloatOptionItem.Create(60545, "PolusReactorTimeLimit", new(5f, 90f, 1f), 60f, TabGroup.GameSettings, false)
+        PolusReactorTimeLimit = FloatOptionItem.Create("PolusReactorTimeLimit", new(5f, 90f, 1f), 60f, TabGroup.GameSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         // The Airship
-        AirshipReactorTimeLimit = FloatOptionItem.Create(60546, "AirshipReactorTimeLimit", new(5f, 90f, 1f), 90f, TabGroup.GameSettings, false)
+        AirshipReactorTimeLimit = FloatOptionItem.Create("AirshipReactorTimeLimit", new(5f, 90f, 1f), 90f, TabGroup.GameSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         // The Fungle
-        FungleReactorTimeLimit = FloatOptionItem.Create(60547, "FungleReactorTimeLimit", new(5f, 90f, 1f), 60f, TabGroup.GameSettings, false)
+        FungleReactorTimeLimit = FloatOptionItem.Create("FungleReactorTimeLimit", new(5f, 90f, 1f), 60f, TabGroup.GameSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
-        FungleMushroomMixupDuration = FloatOptionItem.Create(6969, "FungleMushroomMixupDuration", new(5f, 90f, 1f), 10f, TabGroup.GameSettings, false)
+        FungleMushroomMixupDuration = FloatOptionItem.Create("FungleMushroomMixupDuration", new(5f, 90f, 1f), 10f, TabGroup.GameSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
@@ -1772,7 +1772,7 @@ public static class Options
         AllAliveMeeting = BooleanOptionItem.Create("AllAliveMeeting", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue));
-        AllAliveMeetingTime = FloatOptionItem.Create(2134, "AllAliveMeetingTime", new(1f, 300f, 1f), 10f, TabGroup.GameSettings, false)
+        AllAliveMeetingTime = FloatOptionItem.Create("AllAliveMeetingTime", new(1f, 300f, 1f), 10f, TabGroup.GameSettings, false)
             .SetParent(AllAliveMeeting)
             .SetValueFormat(OptionFormat.Seconds);
         // 附加紧急会议
@@ -1783,7 +1783,7 @@ public static class Options
             .SetParent(AdditionalEmergencyCooldown)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Players);
-        AdditionalEmergencyCooldownTime = FloatOptionItem.Create(60722, "AdditionalEmergencyCooldownTime", new(1f, 60f, 1f), 1f, TabGroup.GameSettings, false)
+        AdditionalEmergencyCooldownTime = FloatOptionItem.Create("AdditionalEmergencyCooldownTime", new(1f, 60f, 1f), 1f, TabGroup.GameSettings, false)
                 .SetParent(AdditionalEmergencyCooldown)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Seconds);
@@ -1824,7 +1824,7 @@ public static class Options
         FixFirstKillCooldown = BooleanOptionItem.Create("FixFirstKillCooldown", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
-        FixKillCooldownValue = FloatOptionItem.Create(60771, "FixKillCooldownValue", new(0f, 180f, 2.5f), 15f, TabGroup.GameSettings, false)
+        FixKillCooldownValue = FloatOptionItem.Create("FixKillCooldownValue", new(0f, 180f, 2.5f), 15f, TabGroup.GameSettings, false)
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(FixFirstKillCooldown);
         // 首刀保护
@@ -1833,7 +1833,7 @@ public static class Options
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
         // 杀戮闪烁持续
-        KillFlashDuration = FloatOptionItem.Create(60790, "KillFlashDuration", new(0.1f, 0.45f, 0.05f), 0.3f, TabGroup.GameSettings, false)
+        KillFlashDuration = FloatOptionItem.Create("KillFlashDuration", new(0.1f, 0.45f, 0.05f), 0.3f, TabGroup.GameSettings, false)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
@@ -1866,7 +1866,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Times)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        DefaultAngelCooldown = FloatOptionItem.Create(60870, "DefaultAngelCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.GameSettings, false)
+        DefaultAngelCooldown = FloatOptionItem.Create("DefaultAngelCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));

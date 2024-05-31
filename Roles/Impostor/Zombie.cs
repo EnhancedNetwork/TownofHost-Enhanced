@@ -20,10 +20,10 @@ internal class Zombie : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Zombie);
-        ZombieKillCooldown = FloatOptionItem.Create(Id + 3, "KillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.ImpostorRoles, false)
+        ZombieKillCooldown = FloatOptionItem.Create("KillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Zombie])
             .SetValueFormat(OptionFormat.Seconds);
-        ZombieSpeedReduce = FloatOptionItem.Create(Id + 4, "ZombieSpeedReduce", new(0.0f, 1.0f, 0.1f), 0.1f, TabGroup.ImpostorRoles, false)
+        ZombieSpeedReduce = FloatOptionItem.Create("ZombieSpeedReduce", new(0.0f, 1.0f, 0.1f), 0.1f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Zombie])
             .SetValueFormat(OptionFormat.Multiplier);
     }

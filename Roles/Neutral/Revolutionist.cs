@@ -38,13 +38,13 @@ internal class Revolutionist : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(15200, TabGroup.NeutralRoles, CustomRoles.Revolutionist);
-        RevolutionistDrawTime = FloatOptionItem.Create(15202, "RevolutionistDrawTime", new(0f, 10f, 1f), 3f, TabGroup.NeutralRoles, false)
+        RevolutionistDrawTime = FloatOptionItem.Create("RevolutionistDrawTime", new(0f, 10f, 1f), 3f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
             .SetValueFormat(OptionFormat.Seconds);
-        RevolutionistCooldown = FloatOptionItem.Create(15203, "RevolutionistCooldown", new(5f, 100f, 1f), 10f, TabGroup.NeutralRoles, false)
+        RevolutionistCooldown = FloatOptionItem.Create("RevolutionistCooldown", new(5f, 100f, 1f), 10f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
             .SetValueFormat(OptionFormat.Seconds);
-        RevolutionistDrawCount = IntegerOptionItem.Create(15204, "RevolutionistDrawCount", new(1, 14, 1), 6, TabGroup.NeutralRoles, false)
+        RevolutionistDrawCount = IntegerOptionItem.Create("RevolutionistDrawCount", new(1, 14, 1), 6, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
             .SetValueFormat(OptionFormat.Players);
         RevolutionistKillProbability = IntegerOptionItem.Create(15205, "RevolutionistKillProbability", new(0, 100, 5), 15, TabGroup.NeutralRoles, false)
