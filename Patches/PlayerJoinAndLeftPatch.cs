@@ -9,6 +9,7 @@ using TOHE.Patches;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
+using static TOHE.SelectRolesPatch;
 
 namespace TOHE;
 
@@ -287,6 +288,14 @@ class OnPlayerLeftPatch
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+
+        if (Main.AssignRolesIsStarted)
+        {
+            Logger.Warn($"Assign roles not ended, try remove player {data.Character.PlayerId} from role assign", "OnPlayerLeft");
+            RoleAssign.RoleResult?.Remove(data.Character);
+            RpcSetRoleReplacer.senders?.Remove(data.Character.PlayerId);
+            RpcSetRoleReplacer.StoragedData?.Remove(data.Character);
+        }
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
             MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);

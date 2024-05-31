@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -97,7 +98,7 @@ internal class Hawk : RoleBase
         }
 
         Logger.Info($" {target.GetRealName()}'s DieChance is :{100f - KillerChanceMiss[target.PlayerId]}%", "Hawk");
-        KillerChanceMiss[target.PlayerId] -= KillerChanceMiss[target.PlayerId] <= 35 ? 0 : 35f;
+        KillerChanceMiss[target.PlayerId] -= Math.Clamp(35, 0, KillerChanceMiss[target.PlayerId] - 10);
         return false;
     }
 

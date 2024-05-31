@@ -4,6 +4,7 @@ using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
+
 namespace TOHE.Roles.Neutral;
 
 internal class Lawyer : RoleBase
@@ -66,7 +67,6 @@ internal class Lawyer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        CustomRoleManager.MarkOthers.Add(LawyerMark);
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -174,7 +174,8 @@ internal class Lawyer : RoleBase
         if (!KnowTargetRole.GetBool()) return false;
         return player.Is(CustomRoles.Lawyer) && Target.TryGetValue(player.PlayerId, out var tar) && tar == target.PlayerId;
     }
-    private static string LawyerMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (seer == null || target == null) return "";
 

@@ -32,7 +32,6 @@ public abstract class RoleBase
 
 
         Add(playerid);
-
         if (CustomRoleManager.OtherCollectionsSet) // If a role is applied mid-game, filter them again jsut in-case
         {
             CustomRoleManager.Add();
@@ -374,16 +373,27 @@ public abstract class RoleBase
     // otherwise make some list or byte or smt of sorts to only get the target.
     // not needed if both should have it.
     public virtual string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
+    public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
+    public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
+    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
 
     public virtual float SetModdedLowerText(out Color32? FaceColor)
     {
         FaceColor = null;
         return 2.8f;
     }
+
+
+    // 
+    // IMPORTANT note about otherIcons: 
+    // These are only called once in the method, so object attributes are banned (as 99.99% of roles only want the method to run once).
+    // You may use static attributes, tho you can simply just use utils.GetRoleBasesByType<> if need be.
+    //
+    public virtual string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
+    public virtual string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
+    public virtual string GetSuffixOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     
-    public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
-    public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
-    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
+
 
     // Player know role target, color role target
     public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;

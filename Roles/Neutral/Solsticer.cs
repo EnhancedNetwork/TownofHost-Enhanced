@@ -68,7 +68,6 @@ internal class Solsticer : RoleBase
     {
         playerid = playerId;
 
-        CustomRoleManager.SuffixOthers.Add(GetSuffixOthers);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id)
     {
@@ -99,7 +98,8 @@ internal class Solsticer : RoleBase
 
         return true;
     }
-    private string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
+
+    public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {
         if (GameStates.IsMeeting || !warningActived) return "";
         if (seer.Is(CustomRoles.Solsticer)) return "";

@@ -20,8 +20,8 @@ internal class Bloodmoon : RoleBase
     public static OptionItem CanKillNum;
     private static OptionItem TimeTilDeath;
     
-    public readonly Dictionary<byte, int> PlayerDie = [];
-    public readonly Dictionary<byte, long> LastTime = [];
+    public static readonly Dictionary<byte, int> PlayerDie = [];
+    public static  readonly Dictionary<byte, long> LastTime = [];
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Bloodmoon);
@@ -32,10 +32,14 @@ internal class Bloodmoon : RoleBase
         TimeTilDeath = IntegerOptionItem.Create(Id + 12, "BloodMoonTimeTilDie", new(1, 120, 1), 60, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
         .SetValueFormat(OptionFormat.Seconds);
     }
+    public override void Init()
+    {
+        PlayerDie.Clear();
+        LastTime.Clear();
+    }
     public override void Add(byte PlayerId)
     {
         AbilityLimit = CanKillNum.GetInt();
-        CustomRoleManager.LowerOthers.Add(OthersNameText);
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOther);
 
     }
@@ -86,11 +90,12 @@ internal class Bloodmoon : RoleBase
             PlayerDie.Remove(DeadPlayer.PlayerId);
     }
 
-    private string OthersNameText(PlayerControl seer, PlayerControl player, bool IsForMeeting, bool isforhud = false) 
+    public override string GetLowerTextOthers(PlayerControl seer, PlayerControl player = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (GameStates.IsMeeting || IsForMeeting) return string.Empty;
-        var playerid = player.PlayerId;  
+        if (GameStates.IsMeeting || isForMeeting) return string.Empty;
+        var playerid = player.PlayerId;
 
         return PlayerDie.TryGetValue(playerid, out var DeathTimer) ? ColorString(GetRoleColor(CustomRoles.Bloodmoon), GetString("DeathTimer").Replace("{DeathTimer}", DeathTimer.ToString())) : "";
+
     }
 }
