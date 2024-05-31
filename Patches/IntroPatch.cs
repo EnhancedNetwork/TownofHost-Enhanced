@@ -575,7 +575,7 @@ class IntroCutsceneDestroyPatch
                      var PC = Utils.GetPlayerById(x);
                      var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
                      PC.RpcShapeshift(randomplayer, false);
-                     PC.RpcRejectShapeshift(); // It's a funny thing which just makes the button "shift" again but player is still in "ShapeShifted" state.
+                     PC.RpcRejectShapeshift(); 
                      PC.ResetPlayerOutfit();
 
                     });
