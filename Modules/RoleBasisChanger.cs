@@ -41,7 +41,7 @@ internal static class RoleBasisChanger
 
         ClientData pclient = player.GetClient();
 
-        player.RpcTeleport(Pelican.GetBlackRoomPSForPelican());
+        player.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
         AmongUsClient.Instance.Despawn(player);
         AmongUsClient.Instance.Spawn(newplayer, player.OwnerId);
         pclient.Character = newplayer;
