@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.Core;
+using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.Options;
@@ -22,7 +22,6 @@ internal class Doppelganger : RoleBase
 
     public static readonly Dictionary<byte, string> DoppelVictim = [];
     public static readonly Dictionary<PlayerControl, byte> PlayerControllerToIDRam = []; // Edit ids!
-    public static readonly Dictionary<PlayerControl, byte> PlayerControllerToIDRom = []; // Don't edit ids!
     public static readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = []; // Don't edit ids!
     public static byte CurrentIdToSwap = byte.MaxValue;
 
@@ -39,7 +38,6 @@ internal class Doppelganger : RoleBase
     {
         DoppelVictim.Clear();
         PlayerControllerToIDRam.Clear();
-        PlayerControllerToIDRom.Clear();
         DoppelPresentSkin.Clear();
         CurrentIdToSwap = byte.MaxValue;
     }
@@ -52,10 +50,10 @@ internal class Doppelganger : RoleBase
         // Read and write info for the rest of the game!
         foreach (PlayerControl allPlayers in Main.AllPlayerControls)
         {
-            PlayerControllerToIDRom[allPlayers] = allPlayers.PlayerId;
             PlayerControllerToIDRam[allPlayers] = allPlayers.PlayerId;
             DoppelPresentSkin[allPlayers.PlayerId] = allPlayers.CurrentOutfit;
         }
+
         CurrentIdToSwap = playerId;
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -102,6 +100,7 @@ internal class Doppelganger : RoleBase
         Logger.Info("Changed target skin", "Doppelganger");
         RpcChangeSkin(killer, targetOutfit, targetLvl);
         Logger.Info("Changed target skin", "Doppelganger");
+
         CurrentIdToSwap = targetId;
 
         killer.Notify(Utils.ColorString(killer.GetRoleColor(), string.Format(GetString("Doppelganger_RoleInfo"), target.GetDisplayRoleAndSubName(target, true))));
@@ -113,18 +112,28 @@ internal class Doppelganger : RoleBase
         killer.SetKillCooldown();
         return true;
     }
+
     public static PlayerControl SwapPlayerInfoFromRom(PlayerControl player)
     {
-        if (HasEnabled)
+        if (!HasEnabled || player == null)
+            return player; // No need for further processing if disabled or player is null
+
+        if (PlayerControllerToIDRam.ContainsKey(player))
         {
-            if (PlayerControllerToIDRom.ContainsKey(player) && PlayerControllerToIDRam.ContainsKey(player))
+            var RamId = PlayerControllerToIDRam[player];
+
+            if (player.PlayerId != RamId)
             {
-                if (PlayerControllerToIDRom[player] != PlayerControllerToIDRam[player])
-                    return Utils.GetPlayerById(PlayerControllerToIDRam[player]);
+                var newPlayer = Utils.GetPlayerById(RamId);
+                if (newPlayer != null)
+                {
+                    player = newPlayer; // Swap player only if a valid player is found by ID
+                }
             }
         }
         return player;
     }
+
     private static void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit, uint level)
     {
         var sender = CustomRpcSender.Create(name: $"Doppelganger.RpcChangeSkin({pc.Data.PlayerName})");
