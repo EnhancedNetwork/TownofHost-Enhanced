@@ -1649,37 +1649,29 @@ public static class Utils
         //target: seer updates nickname/role/mark of other targets
         foreach (var seer in seerList)
         {
-            // During intro scene to set team name for non-modded clients and skip the rest.
-            if (SetUpRoleTextPatch.IsInIntro)
-            {
-                var player = seer;
-                if (player.IsModClient()) continue; // Only non-modded players
-
-                string IconText = "<color=#ffffff>|</color>";
-                string SelfTeamName = $"<size=450%>{IconText} <font=\"VCR SDF\" material=\"VCR Black Outline\">{Utils.ColorString(Utils.GetTeamColor(player), $"{player.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>";
-                string SelfRoleName = $"{player.GetDisplayRoleAndSubName(player, false)}";
-                string SeerRealName = player.GetRealName();
-                string SelfName = $"{Utils.ColorString(player.GetRoleColor(), SeerRealName)}";
-                string RoleNameUp = "</size><size=1350%>\n \n</size>";
-
-                SelfName = $"{SelfTeamName}\r\n{SelfRoleName}\r\n{SelfName}{RoleNameUp}";
-
-                // Privately sent name.
-                var sender = CustomRpcSender.Create(name: $"SetNamePrivate");
-                sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, player.GetClientId())
-                    .Write(SelfName)
-                    .Write(true)
-                .EndRpc();
-                sender.SendMessage();
-                continue;
-            }
-
             // Do nothing when the seer is not present in the game
             if (seer == null || seer.Data.Disconnected) continue;
             
             // Only non-modded players
             if (seer.IsModClient()) continue;
 
+            // During intro scene, set team name for non-modded clients and skip the rest.
+            if (SetUpRoleTextPatch.IsInIntro)
+            {
+                string IconText = "<color=#ffffff>|</color>";
+                string SelfTeamName = $"<size=450%>{IconText} <font=\"VCR SDF\" material=\"VCR Black Outline\">{Utils.ColorString(Utils.GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>";
+                string SelfRoleName = $"{seer.GetDisplayRoleAndSubName(seer, false)}";
+                string SeerRealName = seer.GetRealName();
+                string SelfName = $"{Utils.ColorString(seer.GetRoleColor(), SeerRealName)}";
+                string RoleNameUp = "</size><size=1350%>\n \n</size>";
+
+                SelfName = $"{SelfTeamName}\r\n{SelfRoleName}\r\n{SelfName}{RoleNameUp}";
+
+                // Privately sent name.
+                seer.RpcSetNamePrivate(SelfName, true, seer);
+                continue;
+            }
+            
             // Size of player roles
             string fontSize = "1.5";
             if (isForMeeting && (seer.GetClient().PlatformData.Platform == Platforms.Playstation || seer.GetClient().PlatformData.Platform == Platforms.Switch)) fontSize = "70%";
