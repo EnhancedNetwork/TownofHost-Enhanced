@@ -12,9 +12,9 @@ public class Lazy
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Lazy, canSetNum: true);
-        TasklessCrewCanBeLazy = BooleanOptionItem.Create(Id + 10, "TasklessCrewCanBeLazy", false, TabGroup.Addons, false)
+        TasklessCrewCanBeLazy = BooleanOptionItem.Create("TasklessCrewCanBeLazy", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Lazy]);
-        TaskBasedCrewCanBeLazy = BooleanOptionItem.Create(Id + 11, "TaskBasedCrewCanBeLazy", false, TabGroup.Addons, false)
+        TaskBasedCrewCanBeLazy = BooleanOptionItem.Create("TaskBasedCrewCanBeLazy", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Lazy]);
     }
 

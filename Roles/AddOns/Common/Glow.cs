@@ -22,11 +22,11 @@ public static class Glow
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Glow, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeGlow = BooleanOptionItem.Create(Id + 10, "ImpCanBeGlow", true, TabGroup.Addons, false)
+        ImpCanBeGlow = BooleanOptionItem.Create("ImpCanBeGlow", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        CrewCanBeGlow = BooleanOptionItem.Create(Id + 11, "CrewCanBeGlow", true, TabGroup.Addons, false)
+        CrewCanBeGlow = BooleanOptionItem.Create("CrewCanBeGlow", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        NeutralCanBeGlow = BooleanOptionItem.Create(Id + 12, "NeutralCanBeGlow", true, TabGroup.Addons, false)
+        NeutralCanBeGlow = BooleanOptionItem.Create("NeutralCanBeGlow", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
         GlowRadius = FloatOptionItem.Create(Id + 13, "GlowRadius", new(0.1f, 5f, 0.05f), 0.5f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow])

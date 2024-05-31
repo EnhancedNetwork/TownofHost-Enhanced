@@ -12,8 +12,8 @@ public static class Seer
     public static void SetupCustomOptions()
     {
         Options.SetupAdtRoleOptions(Id, CustomRoles.Seer, canSetNum: true);
-        ImpCanBeSeer = BooleanOptionItem.Create(Id + 10, "ImpCanBeSeer", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Seer]);
-        CrewCanBeSeer = BooleanOptionItem.Create(Id + 11, "CrewCanBeSeer", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Seer]);
-        NeutralCanBeSeer = BooleanOptionItem.Create(Id + 12, "NeutralCanBeSeer", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Seer]);
+        ImpCanBeSeer = BooleanOptionItem.Create("ImpCanBeSeer", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Seer]);
+        CrewCanBeSeer = BooleanOptionItem.Create("CrewCanBeSeer", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Seer]);
+        NeutralCanBeSeer = BooleanOptionItem.Create("NeutralCanBeSeer", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Seer]);
     }
 }

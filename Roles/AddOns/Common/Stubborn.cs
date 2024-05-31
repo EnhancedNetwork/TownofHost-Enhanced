@@ -14,9 +14,9 @@ public static class Stubborn
     {
 
         SetupAdtRoleOptions(Id, CustomRoles.Stubborn, canSetNum: true);
-        ImpCanBeStubborn = BooleanOptionItem.Create(Id + 10, "ImpCanBeStubborn", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Stubborn]);
-        CrewCanBeStubborn = BooleanOptionItem.Create(Id + 11, "CrewCanBeStubborn", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Stubborn]);
-        NeutralCanBeStubborn = BooleanOptionItem.Create(Id + 12, "NeutralCanBeStubborn", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Stubborn]);
+        ImpCanBeStubborn = BooleanOptionItem.Create("ImpCanBeStubborn", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Stubborn]);
+        CrewCanBeStubborn = BooleanOptionItem.Create("CrewCanBeStubborn", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Stubborn]);
+        NeutralCanBeStubborn = BooleanOptionItem.Create("NeutralCanBeStubborn", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Stubborn]);
     }
 }
 

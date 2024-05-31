@@ -24,9 +24,9 @@ public static class Statue
              .SetValueFormat(OptionFormat.Multiplier);
         PeopleAmount = IntegerOptionItem.Create(Id + 11, "StatuePeopleToSlow", new(1, 5, 1), 3, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue])
              .SetValueFormat(OptionFormat.Times);
-        CanBeOnImp = BooleanOptionItem.Create(Id + 12, "ImpCanBeStatue", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue]);
-        CanBeOnCrew = BooleanOptionItem.Create(Id + 13, "CrewCanBeStatue", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue]);
-        CanBeOnNeutral = BooleanOptionItem.Create(Id + 14, "NeutralCanBeStatue", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue]);
+        CanBeOnImp = BooleanOptionItem.Create("ImpCanBeStatue", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue]);
+        CanBeOnCrew = BooleanOptionItem.Create("CrewCanBeStatue", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue]);
+        CanBeOnNeutral = BooleanOptionItem.Create("NeutralCanBeStatue", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue]);
     }
 
     public static void Init()

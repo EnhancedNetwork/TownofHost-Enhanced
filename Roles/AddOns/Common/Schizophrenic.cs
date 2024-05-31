@@ -13,9 +13,9 @@ public static class Schizophrenic
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Schizophrenic, canSetNum: true);
-        CanBeImp = BooleanOptionItem.Create(Id + 10, "ImpCanBeSchizophrenic", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Schizophrenic]);
-        CanBeCrew = BooleanOptionItem.Create(Id + 11, "CrewCanBeSchizophrenic", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Schizophrenic]);
-        DualVotes = BooleanOptionItem.Create(Id + 12, "DualVotes", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Schizophrenic]);
+        CanBeImp = BooleanOptionItem.Create("ImpCanBeSchizophrenic", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Schizophrenic]);
+        CanBeCrew = BooleanOptionItem.Create("CrewCanBeSchizophrenic", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Schizophrenic]);
+        DualVotes = BooleanOptionItem.Create("DualVotes", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Schizophrenic]);
     }
 
     public static bool IsExistInGame(PlayerControl player) => player.Is(CustomRoles.Schizophrenic);

@@ -1031,7 +1031,7 @@ public static class Options
 
         Egoist.SetupCustomOption();
 
-        SetupLoversRoleOptionsToggle(23600);
+        SetupLoversRoleOptionsToggle();
 
         Reach.SetupCustomOptions();
 

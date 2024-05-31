@@ -24,9 +24,9 @@ internal class Celebrity : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Celebrity);
-        ImpKnowCelebrityDead = BooleanOptionItem.Create(Id + 10, "ImpKnowCelebrityDead", false, TabGroup.CrewmateRoles, false)
+        ImpKnowCelebrityDead = BooleanOptionItem.Create("ImpKnowCelebrityDead", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Celebrity]);
-        NeutralKnowCelebrityDead = BooleanOptionItem.Create(Id + 11, "NeutralKnowCelebrityDead", false, TabGroup.CrewmateRoles, false)
+        NeutralKnowCelebrityDead = BooleanOptionItem.Create("NeutralKnowCelebrityDead", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Celebrity]);
 
     }

@@ -11,7 +11,7 @@ public class Rascal
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Rascal, canSetNum: true, tab: TabGroup.Addons);
-        RascalAppearAsMadmate = BooleanOptionItem.Create(Id + 10, "RascalAppearAsMadmate", true, TabGroup.Addons, false)
+        RascalAppearAsMadmate = BooleanOptionItem.Create("RascalAppearAsMadmate", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Rascal]);
     }
 
