@@ -714,7 +714,7 @@ public static class Utils
             var text = sb.ToString();
             sb.Clear().Append(text.RemoveHtmlTags());
         }
-        foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Id > 59999 && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
+        foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Id != 0 && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
         {
             if (opt.Name is "KillFlashDuration" or "RoleAssigningAlgorithm")
                 sb.Append($"\n【{opt.GetName(true)}: {opt.GetString()}】\n");
@@ -746,7 +746,7 @@ public static class Utils
             sb.Clear().Append(text.RemoveHtmlTags());
         }
         sb.Append($"━━━━━━━━━━━━【{GetString("Settings")}】━━━━━━━━━━━━");
-        foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Id > 59999 && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
+        foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Id != 0 && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
         {
             if (opt.Name == "KillFlashDuration")
                 sb.Append($"\n【{opt.GetName(true)}: {opt.GetString()}】\n");

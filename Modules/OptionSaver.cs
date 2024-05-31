@@ -24,20 +24,20 @@ public static class OptionSaver
     /// <summary>Generate object for json serialization from current options</summary>
     private static SerializableOptionsData GenerateOptionsData()
     {
-        Dictionary<int, int> singleOptions = [];
-        Dictionary<int, int[]> presetOptions = [];
+        Dictionary<string, int> singleOptions = [];
+        Dictionary<string, int[]> presetOptions = [];
         foreach (var option in OptionItem.AllOptions)
         {
             if (option.IsSingleValue)
             {
-                if (!singleOptions.TryAdd(option.Id, option.SingleValue))
+                if (!singleOptions.TryAdd(option.Name, option.SingleValue))
                 {
-                    Logger.Warn($"Duplicate SingleOption ID: {option.Id}", "Option Saver");
+                    Logger.Warn($"Duplicate SingleOption Name: {option.Name}", "Option Saver");
                 }
             }
-            else if (!presetOptions.TryAdd(option.Id, option.AllValues))
+            else if (!presetOptions.TryAdd(option.Name, option.AllValues))
             {
-                Logger.Warn($"Duplicate preset option ID: {option.Id}", "Option Saver");
+                Logger.Warn($"Duplicate preset option Name: {option.Name}", "Option Saver");
             }
         }
         return new SerializableOptionsData
@@ -57,25 +57,21 @@ public static class OptionSaver
             Save();
             return;
         }
-        Dictionary<int, int> singleOptions = serializableOptionsData.SingleOptions;
-        Dictionary<int, int[]> presetOptions = serializableOptionsData.PresetOptions;
+        Dictionary<string, int> singleOptions = serializableOptionsData.SingleOptions;
+        Dictionary<string, int[]> presetOptions = serializableOptionsData.PresetOptions;
         foreach (var singleOption in singleOptions)
         {
             var id = singleOption.Key;
             var value = singleOption.Value;
-            if (OptionItem.FastOptions.TryGetValue(id, out var optionItem))
-            {
-                optionItem.SetValue(value, doSave: false);
-            }
+            var optionItem = OptionItem.FastOptions.FirstOrDefault(x => x.Name == id);
+            optionItem?.SetValue(value, doSave: false);
         }
         foreach (var presetOption in presetOptions)
         {
             var id = presetOption.Key;
             var values = presetOption.Value;
-            if (OptionItem.FastOptions.TryGetValue(id, out var optionItem))
-            {
-                optionItem.SetAllValues(values);
-            }
+            var optionItem = OptionItem.FastOptions.FirstOrDefault(x => x.Name == id);
+            optionItem?.SetAllValues(values);
         }
     }
     /// <summary>Save current options to json file</summary>
@@ -105,9 +101,9 @@ public static class OptionSaver
     {
         public int Version { get; init; }
         /// <summary>Non-preset options</summary>
-        public Dictionary<int, int> SingleOptions { get; init; }
+        public Dictionary<string, int> SingleOptions { get; init; }
         /// <summary>Options in the preset</summary>
-        public Dictionary<int, int[]> PresetOptions { get; init; }
+        public Dictionary<string, int[]> PresetOptions { get; init; }
     }
 
     /// <summary>Raise the number here when making incompatible changes to the format of an option (e.g., changing the number of presets)</summary>

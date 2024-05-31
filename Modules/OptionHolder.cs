@@ -599,7 +599,7 @@ public static class Options
         OptionSaver.Initialize();
 
         // Preset Option
-        _ = PresetOptionItem.Create(0, TabGroup.SystemSettings)
+        _ = PresetOptionItem.Create(TabGroup.SystemSettings)
                 .SetColor(new Color32(255, 235, 4, byte.MaxValue))
                 .SetHeader(true);
 

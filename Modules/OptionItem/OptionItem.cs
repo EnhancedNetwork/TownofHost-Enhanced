@@ -9,9 +9,9 @@ public abstract class OptionItem
     #region static
     public static IReadOnlyList<OptionItem> AllOptions => _allOptions;
     private static readonly List<OptionItem> _allOptions = new(1024);
-    public static IReadOnlyDictionary<int, OptionItem> FastOptions => _fastOptions;
-    private static readonly Dictionary<int, OptionItem> _fastOptions = new(1024);
-    private static readonly Dictionary<int, string> nameSettings = [];
+    public static List<OptionItem> FastOptions => _fastOptions;
+    private static readonly List<OptionItem> _fastOptions = new(1024);
+    private static readonly List<string> nameSettings = new(1024);
 
     public static int CurrentPreset { get; set; }
     #endregion
@@ -102,18 +102,9 @@ public abstract class OptionItem
             }
         }
 
-        if (_fastOptions.TryAdd(id, this))
-        {
-            _allOptions.Add(this);
-            nameSettings.Add(id, name);
-        }
-        else
-        {
-            Logger.Error($"Duplicate ID: {id} Name: {name}", "OptionItem");
-
-            nameSettings.TryGetValue(id, out var setting);
-            Logger.Error($"Duplicate from: {setting}", "OptionItem");
-        }
+        _fastOptions.Add(this);
+        _allOptions.Add(this);
+        nameSettings.Add(name);
     }
 
     // Setter
