@@ -17,9 +17,7 @@ internal class Glitch : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
-    private readonly Dictionary<byte, long> hackedIdList = [];
-
-    public static List<Glitch> Glitchs => Utils.GetPlayerListByRole(CustomRoles.Glitch)?.Select(x => x.GetRoleClass()).OfType<Glitch>().ToList(); 
+    private static readonly Dictionary<byte, long> hackedIdList = [];
 
     public static OptionItem KillCooldown;
     private static OptionItem HackCooldown;
@@ -269,7 +267,7 @@ internal class Glitch : RoleBase
         }
         return false;
     }
-    public bool OnCheckFixedUpdateReport(PlayerControl __instance, byte id) 
+    public static bool OnCheckFixedUpdateReport(PlayerControl __instance, byte id) 
     {
         if (hackedIdList.ContainsKey(id))
         {
@@ -280,7 +278,7 @@ internal class Glitch : RoleBase
         }
         return true;
     }
-    public bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
     {
         if (killer == target || killer == null) return true; 
         if (hackedIdList.ContainsKey(killer.PlayerId))
