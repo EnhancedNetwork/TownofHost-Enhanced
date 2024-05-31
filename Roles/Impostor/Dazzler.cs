@@ -37,9 +37,9 @@ internal class Dazzler : RoleBase
             .SetValueFormat(OptionFormat.Multiplier);
         DazzleLimit = IntegerOptionItem.Create(Id + 14, "DazzlerDazzleLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
             .SetValueFormat(OptionFormat.Times);
-        ResetDazzledVisionOnDeath = BooleanOptionItem.Create(Id + 15, "DazzlerResetDazzledVisionOnDeath", true, TabGroup.ImpostorRoles, false)
+        ResetDazzledVisionOnDeath = BooleanOptionItem.Create("DazzlerResetDazzledVisionOnDeath", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler]);
-        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 16, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false)
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create("ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler]);
     }
 

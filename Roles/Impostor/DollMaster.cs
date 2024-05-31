@@ -41,8 +41,8 @@ internal class DollMaster : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "DollMasterPossessionDuration", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
-        CanKillAsMainBody = BooleanOptionItem.Create(Id + 13, "DollMasterCanKillAsMainBody", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
-        TargetDiesAfterPossession = BooleanOptionItem.Create(Id + 14, "DollMasterTargetDiesAfterPossession", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
+        CanKillAsMainBody = BooleanOptionItem.Create("DollMasterCanKillAsMainBody", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
+        TargetDiesAfterPossession = BooleanOptionItem.Create("DollMasterTargetDiesAfterPossession", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DollMaster]);
     }
 
     public override void Init()

@@ -33,7 +33,7 @@ internal class Lightning : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         ConvertTime = FloatOptionItem.Create(Id + 12, "LightningConvertTime", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lightning])
             .SetValueFormat(OptionFormat.Seconds);
-        KillerConvertGhost = BooleanOptionItem.Create(Id + 14, "LightningKillerConvertGhost", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lightning]);
+        KillerConvertGhost = BooleanOptionItem.Create("LightningKillerConvertGhost", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lightning]);
     }
     public override void Init()
     {

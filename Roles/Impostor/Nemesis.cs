@@ -34,7 +34,7 @@ internal class Nemesis : RoleBase
         NemesisCanKillNum = IntegerOptionItem.Create(Id + 10, "NemesisCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
                 .SetValueFormat(OptionFormat.Players);
-        LegacyNemesis = BooleanOptionItem.Create(Id + 11, "LegacyNemesis", false, TabGroup.ImpostorRoles, false)
+        LegacyNemesis = BooleanOptionItem.Create("LegacyNemesis", false, TabGroup.ImpostorRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis]);
         NemesisShapeshiftCD = FloatOptionItem.Create(Id + 12, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
                 .SetParent(LegacyNemesis)

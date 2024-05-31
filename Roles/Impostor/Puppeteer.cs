@@ -29,7 +29,7 @@ internal class Puppeteer : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Puppeteer);
-        PuppeteerDoubleKills = BooleanOptionItem.Create(Id + 12, "PuppeteerDoubleKills", false, TabGroup.ImpostorRoles, true)
+        PuppeteerDoubleKills = BooleanOptionItem.Create("PuppeteerDoubleKills", false, TabGroup.ImpostorRoles, true)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Puppeteer]);
     }
     public override void Init()
