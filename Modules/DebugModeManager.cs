@@ -24,7 +24,7 @@ false;
     }
     public static void SetupCustomOption()
     {
-        EnableDebugMode = BooleanOptionItem.Create(2, "EnableDebugMode", false, TabGroup.SystemSettings, true)
+        EnableDebugMode = BooleanOptionItem.Create("EnableDebugMode", false, TabGroup.SystemSettings, true)
             .SetHeader(true)
             .SetColor(Color.green)
             .SetHeader(true)

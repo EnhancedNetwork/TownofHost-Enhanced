@@ -7,11 +7,11 @@ public class BooleanOptionItem(int id, string name, bool defaultValue, TabGroup 
     public const string TEXT_true = "ColoredOn";
     public const string TEXT_false = "ColoredOff";
 
-    public static BooleanOptionItem Create(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
+    public static BooleanOptionItem Create(string name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
         return new BooleanOptionItem(1, name, defaultValue, tab, isSingleValue, vanillaText);
     }
-    public static BooleanOptionItem Create(int id, Enum name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
+    public static BooleanOptionItem Create(Enum name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
         return new BooleanOptionItem(1, name.ToString(), defaultValue, tab, isSingleValue, vanillaText);
     }

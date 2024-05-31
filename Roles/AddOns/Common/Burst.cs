@@ -17,9 +17,9 @@ public static class Burst
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Burst, canSetNum: true);
-        ImpCanBeBurst = BooleanOptionItem.Create(Id + 10, "ImpCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
-        CrewCanBeBurst = BooleanOptionItem.Create(Id + 11, "CrewCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
-        NeutralCanBeBurst = BooleanOptionItem.Create(Id + 12, "NeutralCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
+        ImpCanBeBurst = BooleanOptionItem.Create("ImpCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
+        CrewCanBeBurst = BooleanOptionItem.Create("CrewCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
+        NeutralCanBeBurst = BooleanOptionItem.Create("NeutralCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
         BurstKillDelay = FloatOptionItem.Create(Id + 13, "BurstKillDelay", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst])
             .SetValueFormat(OptionFormat.Seconds);
     }
