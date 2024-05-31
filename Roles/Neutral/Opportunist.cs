@@ -19,7 +19,7 @@ internal class Opportunist : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(13300, TabGroup.NeutralRoles, CustomRoles.Opportunist);
-        OppoImmuneToAttacksWhenTasksDone = BooleanOptionItem.Create(13302, "ImmuneToAttacksWhenTasksDone", false, TabGroup.NeutralRoles, false)
+        OppoImmuneToAttacksWhenTasksDone = BooleanOptionItem.Create("ImmuneToAttacksWhenTasksDone", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Opportunist]);
         OverrideTasksData.Create(13303, TabGroup.NeutralRoles, CustomRoles.Opportunist);
     }

@@ -31,7 +31,7 @@ internal class Pixie : RoleBase
             .SetValueFormat(OptionFormat.Players);
         PixieMarkCD = FloatOptionItem.Create(Id + 12, "MarkCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pixie])
             .SetValueFormat(OptionFormat.Seconds);
-        PixieSuicideOpt = BooleanOptionItem.Create(Id + 13, "PixieSuicide", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pixie]);
+        PixieSuicideOpt = BooleanOptionItem.Create("PixieSuicide", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pixie]);
     }
     public override void Init()
     {
