@@ -43,7 +43,7 @@ internal class Knight : RoleBase
     public override string GetProgressText(byte id, bool comms)
         => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     
-    private bool IsKilled(byte playerId) => AbilityLimit > 0;
+    private bool IsKilled(byte playerId) => AbilityLimit <= 0;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl banana)
     {
         AbilityLimit--;
