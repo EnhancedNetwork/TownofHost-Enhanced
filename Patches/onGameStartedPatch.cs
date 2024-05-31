@@ -17,6 +17,8 @@ internal class ChangeRoleSettings
 {
     public static void Postfix(AmongUsClient __instance)
     {
+        SetUpRoleTextPatch.IsInIntro = true;
+
         Main.OverrideWelcomeMsg = "";
 
         Logger.Msg("Is Started", "AssignRoles");
