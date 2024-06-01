@@ -1730,6 +1730,10 @@ public static class Utils
 
                 string SeerRealName = seer.GetRealName(isForMeeting);
 
+                // Set self name to true name if Victim to Doppelganger
+                if (seer.Data.IsDead && Doppelganger.CheckDoppelVictim(seer.PlayerId))
+                    SeerRealName = Doppelganger.TrueNames[seer.PlayerId];
+
                 if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode != CustomGameMode.FFA)
                 {
                     var SeerRoleInfo = seer.GetRoleInfo();
@@ -1859,6 +1863,15 @@ public static class Utils
                         // ====== Target player name ======
 
                         string TargetPlayerName = target.GetRealName(isForMeeting);
+
+                        // if Victim to Doppelganger or is Doppelganger
+                        if (seer.Data.IsDead)
+                        {
+                            if (target.Is(CustomRoles.Doppelganger))
+                                TargetPlayerName = $"{TargetPlayerName}\r\n<size=75%>({ColorString(Color.gray, Doppelganger.TrueNames[target.PlayerId])})</size>";
+                            else if (Doppelganger.CheckDoppelVictim(target.PlayerId))
+                                TargetPlayerName = Doppelganger.TrueNames[target.PlayerId];
+                        }
 
                         var tempNameText = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName, isForMeeting);
                         if (tempNameText != string.Empty)

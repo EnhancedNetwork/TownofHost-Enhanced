@@ -988,7 +988,15 @@ class MeetingHudStartPatch
             var sb = new StringBuilder();
 
             pva.NameText.text = pva.NameText.text.ApplyNameColorData(seer, target, true);
-
+            
+            // if Victim to Doppelganger or is Doppelganger
+            if (seer.Data.IsDead)
+            {
+                if (target.Is(CustomRoles.Doppelganger))
+                    pva.NameText.text += Utils.ColorString(Color.gray, $"\r\n<size=75%>({Doppelganger.TrueNames[target.PlayerId]})</size>\n\n");
+                else if (Doppelganger.CheckDoppelVictim(target.PlayerId))
+                    pva.NameText.text = Doppelganger.TrueNames[target.PlayerId].ApplyNameColorData(seer, target, true);
+            }
 
             // Guesser Mode //
             if (Options.GuesserMode.GetBool())
