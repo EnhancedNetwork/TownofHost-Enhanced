@@ -112,7 +112,6 @@ internal class EAC
                     var bodyid = sr.ReadByte();
                     if (!GameStates.IsInGame)
                     {
-                        var bodyid = sr.ReadByte();
                         if (!LobbyDeadBodies.Contains(bodyid))
                         {
                             WarnHost();
