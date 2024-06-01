@@ -125,7 +125,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
         state.taskState.hasTasks = Utils.HasTasks(player.Data, false);
 
-        if (Main.UnShapeShifter.ContainsKey(player.PlayerId))
+        if (Main.UnShapeShifter.Contains(player.PlayerId))
         {
             AURoleOptions.ShapeshifterDuration = 1f;
         }

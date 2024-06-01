@@ -611,16 +611,10 @@ public static class CheckShapeshiftPatch
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is eaten by Pelican");
             return false;
         }
-        if (instance == target && Main.UnShapeShifter.TryGetValue(instance.PlayerId, out var shaper) && shaper)
-        {
-            Main.UnShapeShifter[instance.PlayerId] = false;
-            logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button (transformed)");
-            return false;
-        }
 
-        if (instance == target && Main.UnShapeShifter.ContainsKey(instance.PlayerId))
+        if (instance == target && Main.UnShapeShifter.Contains(instance.PlayerId))
         {
-            instance.GetRoleClass().UnShapeShiftButton(instance);
+            if(!instance.IsMushroomMixupActive()) instance.GetRoleClass().UnShapeShiftButton(instance);
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
             return false;
         }
@@ -667,15 +661,6 @@ class ShapeshiftPatch
             },
             1.2f, "ShapeShiftNotify");
         }
-    }
-    public static void Postfix(PlayerControl __instance, bool __runOriginal)
-    {
-        if (__runOriginal && Main.UnShapeShifter.ContainsKey(__instance.PlayerId))
-        {
-            Main.UnShapeShifter[__instance.PlayerId] = true;
-            Logger.Info($" Queueing {__instance.GetRealName()} for reset shapeshiufted button state", "UnShapeShifter..ShapeshiftPostfix");
-        }
-
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
@@ -1052,13 +1037,13 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask)
             {
-                if (!lowLoad && Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x.Key) != null && Utils.GetPlayerById(x.Key).CurrentOutfitType != PlayerOutfitType.Shapeshifted) 
+                if (!lowLoad && Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted) 
                     && !player.IsMushroomMixupActive() && Main.GameIsLoaded)
                 { // using lowload because it is a pretty long domino of tasks 💀
-                    Main.UnShapeShifter.Where(x => Utils.GetPlayerById(x.Key) != null && Utils.GetPlayerById(x.Key).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
+                    Main.UnShapeShifter.Where(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
                         .Do(x =>
                         {
-                            var PC = Utils.GetPlayerById(x.Key);
+                            var PC = Utils.GetPlayerById(x);
                             var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
                             PC.RpcShapeshift(randomplayer, false);
                             PC.RpcRejectShapeshift();

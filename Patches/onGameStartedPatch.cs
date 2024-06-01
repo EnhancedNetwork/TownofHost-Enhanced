@@ -428,7 +428,8 @@ internal class SelectRolesPatch
             {
                 if (Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
                 {
-                    Main.UnShapeShifter.Add(pc.PlayerId, false);
+                    Main.UnShapeShifter.Add(pc.PlayerId);
+                    Logger.Info($"Added {pc.GetRealName()} because of {pc.GetCustomRole()}", "UnShapeShift..OnGameStartedPatch");
                 }
 
                 if (pc.GetRoleClass()?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);

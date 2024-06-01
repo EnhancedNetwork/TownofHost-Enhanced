@@ -17,7 +17,6 @@ public class dbConnect
     {
         Logger.Info("Begin dbConnect Login flow", "dbConnect.init");
 
-
         if (!InitOnce)
         {
             yield return GetRoleTable();
