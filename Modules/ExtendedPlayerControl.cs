@@ -254,6 +254,17 @@ static class ExtendedPlayerControl
         }
         player.ResetKillCooldown();
     }
+    public static void ResetPlayerOutfit(this PlayerControl player, GameData.PlayerOutfit Outfit = null)
+    {
+        Outfit ??= Main.PlayerStates[player.PlayerId].NormalOutfit;
+
+        player.RpcSetName(Outfit.PlayerName);
+        player.RpcSetColor((byte)Outfit.ColorId);
+        player.RpcSetHat(Outfit.HatId);
+        player.RpcSetSkin(Outfit.SkinId);
+        player.RpcSetVisor(Outfit.VisorId);
+        player.RpcSetPet(Outfit.PetId);
+    }
     public static void SetKillCooldownV3(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
     {
         if (player == null) return;

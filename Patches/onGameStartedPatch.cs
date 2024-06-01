@@ -124,7 +124,10 @@ internal class ChangeRoleSettings
             {
                 var colorId = pc.Data.DefaultOutfit.ColorId;
                 if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
-                Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId);
+                Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
+                {
+                    NormalOutfit = pc.CurrentOutfit,
+                };
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
