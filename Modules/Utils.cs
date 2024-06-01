@@ -1662,7 +1662,7 @@ public static class Utils
                 static int GetInfoSize(string RoleInfo)
                 {
                     RoleInfo = Regex.Replace(RoleInfo, "<[^>]*>", "");
-                    RoleInfo = Regex.Replace(RoleInfo, "{[^>]*}", "");
+                    RoleInfo = Regex.Replace(RoleInfo, "{[^}]*}", "");
 
                     var BaseFontSize = 275;
                     int BaseFontSizeMin = 100;
