@@ -166,7 +166,6 @@ internal class DollMaster : RoleBase
     {
         if (IsControllingPlayer && controllingTarget != null && DollMasterTarget != null)
         {
-            bool shouldAnimate = false;
             DollMasterTarget.ResetPlayerOutfit();
             controllingTarget.ResetPlayerOutfit();
             UnPossess(DollMasterTarget, controllingTarget);
@@ -380,7 +379,7 @@ internal class DollMaster : RoleBase
     private static void Possess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
-        pc?.ResetPlayerOutfit(Main.PlayerStates[target.PlayerId].NormalOutfit);
+        pc?.RpcShapeshift(target, false);
         target?.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit);
         pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
     }
@@ -390,7 +389,7 @@ internal class DollMaster : RoleBase
     {
         WaitToUnPossess = false;
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
-        pc?.ResetPlayerOutfit();
+        pc?.RpcShapeshift(pc, false);
         target?.ResetPlayerOutfit();
         pc.RpcResetAbilityCooldown();
 

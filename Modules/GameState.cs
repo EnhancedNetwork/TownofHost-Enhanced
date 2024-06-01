@@ -28,7 +28,8 @@ public class PlayerState(byte playerId)
     public PlainShipRoom LastRoom = null;
     public bool HasSpawned { get; set; } = false;
     public Dictionary<byte, string> TargetColorData = [];
-    public GameData.PlayerOutfit NormalOutfit;
+    public OutfitSave SetOutfit; // a constant, which is not gonna be able to be manipulated by the game.-.
+    public GameData.PlayerOutfit NormalOutfit => new GameData.PlayerOutfit().Set(SetOutfit.Playername, SetOutfit.ColorId, SetOutfit.HatId, SetOutfit.SkinId, SetOutfit.VisorId, SetOutfit.PetId, SetOutfit.NamePlateId);
 
     public CustomRoles GetCustomRoleFromRoleType()
     {
@@ -316,6 +317,17 @@ public class PlayerState(byte playerId)
                 count++;
         return count;
     }
+}
+
+public class OutfitSave(string playerName, int colorId, string hatId, string petId, string skinId, string visorId, string namePlateId)
+{
+    public string Playername = playerName;
+    public int ColorId = colorId;
+    public string HatId = hatId;
+    public string PetId = petId;
+    public string SkinId = skinId;
+    public string VisorId = visorId;
+    public string NamePlateId = namePlateId;
 }
 public class TaskState
 {

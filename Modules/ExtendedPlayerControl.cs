@@ -12,6 +12,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -254,16 +255,30 @@ static class ExtendedPlayerControl
         }
         player.ResetKillCooldown();
     }
-    public static void ResetPlayerOutfit(this PlayerControl player, GameData.PlayerOutfit Outfit = null)
+    public static void ResetPlayerOutfit(this PlayerControl player, GameData.PlayerOutfit Outfit = null, bool force = false)
     {
         Outfit ??= Main.PlayerStates[player.PlayerId].NormalOutfit;
 
-        player.RpcSetName(Outfit.PlayerName);
-        player.RpcSetColor((byte)Outfit.ColorId);
-        player.RpcSetHat(Outfit.HatId);
-        player.RpcSetSkin(Outfit.SkinId);
-        player.RpcSetVisor(Outfit.VisorId);
-        player.RpcSetPet(Outfit.PetId);
+        void Setoutfit() 
+        {
+            player.RpcSetName(Outfit.PlayerName);
+            player.RpcSetColor((byte)Outfit.ColorId);
+            player.RpcSetHat(Outfit.HatId);
+            player.RpcSetSkin(Outfit.SkinId);
+            player.RpcSetVisor(Outfit.VisorId);
+            player.RpcSetPet(Outfit.PetId);
+            player.Data.SetOutfit(PlayerOutfitType.Default, Outfit);
+            GameData.Instance.SetDirty();
+        }
+        if (player.CheckCamoflague() && !force)
+        {
+            Main.LateOutfits[player.PlayerId] = Setoutfit;
+        }
+        else
+        {
+            Main.LateOutfits.Remove(player.PlayerId);
+            Setoutfit();
+        }
     }
     public static void SetKillCooldownV3(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
     {
