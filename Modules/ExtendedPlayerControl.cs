@@ -266,8 +266,6 @@ static class ExtendedPlayerControl
             player.RpcSetHat(Outfit.HatId);
             player.RpcSetSkin(Outfit.SkinId);
             player.RpcSetVisor(Outfit.VisorId);
-            player.RpcSetPet(Outfit.PetId);
-            player.RpcSetNamePlate(Outfit.NamePlateId);
 
             //cannot use currentoutfit type because of mushroom mixup . .
             var OutfitTypeSet = player.CurrentOutfitType != PlayerOutfitType.Shapeshifted ? PlayerOutfitType.Default : PlayerOutfitType.Shapeshifted;
