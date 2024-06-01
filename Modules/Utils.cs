@@ -1655,19 +1655,56 @@ public static class Utils
             // Only non-modded players
             if (seer.IsModClient()) continue;
 
-            // During intro scene, set team name for non-modded clients and skip the rest.
-            // Only for desync role, because their team is always shown as Impostor even though they may be in a Crewmate or Neutrals team
-            // Note: When Neutral is based on the Crewmate role then it is impossible to display the real team for it
-            if (SetUpRoleTextPatch.IsInIntro && seer.GetCustomRole().IsDesyncRole())
+            // During intro scene to set team name and role info for non-modded clients and skip the rest.
+            if (SetUpRoleTextPatch.IsInIntro)
             {
-                string IconText = "<color=#ffffff>|</color>";
-                string SelfTeamName = $"<size=450%>{IconText} <font=\"VCR SDF\" material=\"VCR Black Outline\">{ColorString(GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>";
-                string SelfRoleName = $"{seer.GetDisplayRoleAndSubName(seer, false)}";
-                string SeerRealName = seer.GetRealName();
-                string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}";
-                string RoleNameUp = "</size><size=1350%>\n \n</size>";
+                //Get role info font size based on the length of the role info
+                static int GetInfoSize(string RoleInfo)
+                {
+                    var BaseFontSize = 200;
+                    if (RoleInfo.Length > 30)
+                        BaseFontSize = 150;
+                    if (RoleInfo.Length > 60)
+                        BaseFontSize = 100;
 
-                SelfName = $"{SelfTeamName}\r\n{SelfRoleName}\r\n{SelfName}{RoleNameUp}";
+                    return BaseFontSize;
+                }
+
+                string IconText = "<color=#ffffff>|</color>";
+                string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
+                string SelfTeamName = $"<size=450%>{IconText} {Font}{Utils.ColorString(Utils.GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
+                string SelfRoleName = $"<size=185%>{Font}{ColorString(seer.GetRoleColor(), GetRoleName(seer.GetCustomRole()))}</font></size>";
+                string SelfSubRolesName = string.Empty;
+                string SeerRealName = seer.GetRealName();
+                string SelfName = ColorString(seer.GetRoleColor(), SeerRealName);
+                string RoleInfo = $"<size=25%>\n</size><size={GetInfoSize(seer.GetRoleInfo())}%>{Font}{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</font></size>";
+                string RoleNameUp = "<size=1350%>\n\n</size>";
+
+                // Only for desync role, because their team is always shown as Impostor even though they may be in a Crewmate or Neutrals team
+                // Note: When Neutral is based on the Crewmate role then it is impossible to display the real team for it
+                // If not a Desync Role remove team display
+                if (!seer.GetCustomRole().IsDesyncRole())
+                {
+                    SelfTeamName = string.Empty;
+                    RoleNameUp = "<size=625%>\n</size>";
+                    RoleInfo = $"<size=50%>\n</size><size={GetInfoSize(seer.GetRoleInfo())}%>{Font}{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</font></size>";
+                }
+
+                // Format addons
+                bool isFirstSub = true;
+                foreach (var subRole in seer.GetCustomSubRoles().ToArray())
+                {
+                    if (isFirstSub)
+                    {
+                        SelfSubRolesName += $"<size=150%>\n</size=><size=125%>{Font}{ColorString(GetRoleColor(subRole), GetString($"{subRole}"))}</font></size>";
+                        RoleNameUp += "\n";
+                    }
+                    else
+                        SelfSubRolesName += $"<size=125%> {Font}{ColorString(Color.white, "+")} {ColorString(GetRoleColor(subRole), GetString($"{subRole}"))}</font></size=>";
+                    isFirstSub = false;
+                }
+
+                SelfName = $"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}";
 
                 // Privately sent name.
                 seer.RpcSetNamePrivate(SelfName, true, seer);
