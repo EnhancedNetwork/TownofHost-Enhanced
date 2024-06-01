@@ -76,17 +76,13 @@ internal class Undertaker : RoleBase
         else
             MarkedLocation.Add(PlayerId, ExtendedPlayerControl.GetBlackRoomPosition());
     }
-
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
-
         var shapeshifterId = shapeshifter.PlayerId;
         MarkedLocation[shapeshifterId] = shapeshifter.GetCustomPosition();
         SendRPC(shapeshifterId);
-        
+
         shapeshifter.Notify(Translator.GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-        return false;
     }
 
     private static void FreezeUndertaker(PlayerControl player)
