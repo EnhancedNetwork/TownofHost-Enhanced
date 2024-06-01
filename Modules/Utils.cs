@@ -1731,7 +1731,7 @@ public static class Utils
                 string SeerRealName = seer.GetRealName(isForMeeting);
 
                 // Set self name to true name if Victim to Doppelganger
-                if (seer.Data.IsDead && Doppelganger.CheckDoppelVictim(seer.PlayerId))
+                if (seer.Data.IsDead && Doppelganger.TrueNames.ContainsKey(seer.PlayerId) && Doppelganger.CheckDoppelVictim(seer.PlayerId))
                     SeerRealName = Doppelganger.TrueNames[seer.PlayerId];
 
                 if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode != CustomGameMode.FFA)
