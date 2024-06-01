@@ -1057,6 +1057,13 @@ class FixedUpdateInNormalGamePatch
 
                 CustomRoleManager.OnFixedUpdate(player);
 
+                if (Main.LateOutfits.ContainsKey(player.PlayerId) && !player.CheckCamoflague())
+                {
+                    Main.LateOutfits[player.PlayerId]();
+                    Main.LateOutfits.Remove(player.PlayerId);
+                    Logger.Info($"Reset {player.GetRealName()}'s outfit", "LateOutfits..OnFixedUpdate");
+                }
+
                 if (player.Is(CustomRoles.Statue) && player.IsAlive())
                     Statue.OnFixedUpdate(player);
 
