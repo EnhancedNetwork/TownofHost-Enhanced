@@ -367,7 +367,7 @@ internal class DollMaster : RoleBase
                 controllingTarget.MarkDirtySettings();
             }
 
-            DollMasterTarget?.ResetPlayerOutfit();
+            DollMasterTarget?.RpcShapeshift(DollMasterTarget, false);
             controllingTarget?.ResetPlayerOutfit();
 
             IsControllingPlayer = false;
