@@ -166,7 +166,7 @@ internal class DollMaster : RoleBase
     {
         if (IsControllingPlayer && controllingTarget != null && DollMasterTarget != null)
         {
-            DollMasterTarget.ResetPlayerOutfit();
+            DollMasterTarget.RpcShapeshift(DollMasterTarget, false);
             controllingTarget.ResetPlayerOutfit();
             UnPossess(DollMasterTarget, controllingTarget);
             Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
