@@ -267,7 +267,11 @@ static class ExtendedPlayerControl
             player.RpcSetSkin(Outfit.SkinId);
             player.RpcSetVisor(Outfit.VisorId);
             player.RpcSetPet(Outfit.PetId);
-            player.Data.SetOutfit(PlayerOutfitType.Default, Outfit);
+
+            //cannot use currentoutfit type because of mushroom mixup . .
+            var OutfitTypeSet = player.CurrentOutfitType != PlayerOutfitType.Shapeshifted ? PlayerOutfitType.Default : PlayerOutfitType.Shapeshifted;
+
+            player.Data.SetOutfit(OutfitTypeSet, Outfit);
             GameData.Instance.SetDirty();
         }
         if (player.CheckCamoflague() && !force)
