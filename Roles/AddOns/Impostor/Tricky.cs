@@ -26,7 +26,7 @@ public static class Tricky
     }
     private static bool IsReasonEnabled( this PlayerState.DeathReason reason)
     {
-        if (reason is PlayerState.DeathReason.Disconnected or PlayerState.DeathReason.etc) return false;
+        if (reason is PlayerState.DeathReason.etc) return false;
         if (!EnabledDeathReasons.GetBool()) return true;
         return reason.DeathReasonIsEnable();
     }

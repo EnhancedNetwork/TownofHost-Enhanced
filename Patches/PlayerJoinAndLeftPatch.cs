@@ -9,6 +9,7 @@ using TOHE.Patches;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
+using static TOHE.SelectRolesPatch;
 
 namespace TOHE;
 
@@ -31,6 +32,7 @@ class OnGameJoinedPatch
         ChatUpdatePatch.DoBlockChat = false;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
+        EAC.Init();
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
@@ -45,6 +47,7 @@ class OnGameJoinedPatch
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
             RoleAssign.SetRoles = [];
+            GhostRoleAssign.forceRole = [];
             EAC.DeNum = new();
             Main.AllPlayerNames.Clear();
             Main.PlayerQuitTimes.Clear();
@@ -286,6 +289,14 @@ class OnPlayerLeftPatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
+        if (Main.AssignRolesIsStarted)
+        {
+            Logger.Warn($"Assign roles not ended, try remove player {data.Character.PlayerId} from role assign", "OnPlayerLeft");
+            RoleAssign.RoleResult?.Remove(data.Character);
+            RpcSetRoleReplacer.senders?.Remove(data.Character.PlayerId);
+            RpcSetRoleReplacer.StoragedData?.Remove(data.Character);
+        }
+
         if (GameStates.IsNormalGame && GameStates.IsInGame)
             MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
     }
@@ -307,11 +318,8 @@ class OnPlayerLeftPatch
 
                 if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
 
-                if (Main.PlayerStates[data.Character.PlayerId].deathReason == PlayerState.DeathReason.etc) // If no cause of death was established
-                {
-                    Main.PlayerStates[data.Character.PlayerId].deathReason = PlayerState.DeathReason.Disconnected;
-                    Main.PlayerStates[data.Character.PlayerId].SetDead();
-                }
+                Main.PlayerStates[data.Character.PlayerId].Disconnected = true;
+                Main.PlayerStates[data.Character.PlayerId].SetDead();
 
                 // if the player left while he had a Notice message, clear it
                 if (NameNotifyManager.Notifying(data.Character))

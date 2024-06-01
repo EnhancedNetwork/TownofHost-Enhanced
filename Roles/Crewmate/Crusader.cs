@@ -55,7 +55,6 @@ internal class Crusader : RoleBase
         AbilityLimit--;
         SendSkillRPC();
 
-        killer.ResetKillCooldown();
         killer.SetKillCooldown();
         
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
@@ -67,27 +66,28 @@ internal class Crusader : RoleBase
     {
         if (!ForCrusade.Contains(target.PlayerId)) return false;
 
-        foreach (var crusader in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Crusader)).ToArray())
+        var crusader = _Player; //this method is added by localplayer's ROLEBASE instance, so the player will always be the current crusader running the code.
+        if (crusader == null) return false;
+
+
+        if (crusader.CheckForInvalidMurdering(killer) && crusader.RpcCheckAndMurder(killer, true))
         {
-            if (!killer.Is(CustomRoles.Pestilence) && !killer.Is(CustomRoles.KillingMachine)
-                && killer.CheckForInvalidMurdering(target) && crusader.RpcCheckAndMurder(killer, true))
-            {
-                crusader.RpcMurderPlayer(killer);
-                ForCrusade.Remove(target.PlayerId);
-                killer.RpcGuardAndKill(target);
-                return true;
-            }
-
-            if (killer.Is(CustomRoles.Pestilence))
-            {
-                Main.PlayerStates[crusader.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
-                killer.RpcMurderPlayer(crusader);
-                ForCrusade.Remove(target.PlayerId);
-                target.RpcGuardAndKill(killer);
-
-                return true;
-            }
+            killer.RpcGuardAndKill(target);
+            crusader.RpcMurderPlayer(killer);
+            ForCrusade.Remove(target.PlayerId);
+            return true;
         }
+
+        if (killer.Is(CustomRoles.Pestilence))
+        {
+            Main.PlayerStates[crusader.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
+            killer.RpcMurderPlayer(crusader);
+            ForCrusade.Remove(target.PlayerId);
+            target.RpcGuardAndKill(killer);
+
+            return true;
+        }
+
 
         return false;
     }

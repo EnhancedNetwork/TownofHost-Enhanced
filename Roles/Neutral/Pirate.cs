@@ -8,6 +8,7 @@ using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
+
 namespace TOHE.Roles.Neutral;
 internal class Pirate : RoleBase
 {
@@ -50,7 +51,6 @@ internal class Pirate : RoleBase
     public override void Add(byte playerId)
     {
         DuelDone.Add(playerId, false);
-        CustomRoleManager.MarkOthers.Add(GetPlunderedMark);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -120,7 +120,8 @@ internal class Pirate : RoleBase
         hud.KillButton.OverrideText(GetString("PirateDuelButtonText"));
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Challenge");
-    private static string GetPlunderedMark(PlayerControl seer, PlayerControl target, bool isMeeting = false)
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isMeeting = false)
     {
         if (target != null && isMeeting && target.PlayerId == PirateTarget)
         {

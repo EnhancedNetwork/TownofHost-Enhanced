@@ -6,7 +6,7 @@ using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
+
 
 namespace TOHE.Roles.Neutral;
 
@@ -40,7 +40,6 @@ internal class Shroud : RoleBase
     public override void Add(byte playerId)
     {
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
-        CustomRoleManager.MarkOthers.Add(GetShroudMark);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -169,11 +168,10 @@ internal class Shroud : RoleBase
         }
     }
 
-    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-        => target != null && (ShroudList.ContainsValue(seer.PlayerId) && ShroudList.ContainsKey(target.PlayerId)) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isMeeting = false)
+            => isMeeting && target != null && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
     
-    private static string GetShroudMark(PlayerControl seer, PlayerControl target, bool isMeeting)
-        => isMeeting && target != null && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
+        
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

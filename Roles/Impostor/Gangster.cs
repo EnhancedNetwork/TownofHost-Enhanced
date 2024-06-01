@@ -1,5 +1,4 @@
-﻿using Hazel;
-using TOHE.Roles.AddOns.Crewmate;
+﻿using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Double;

@@ -1,11 +1,9 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using UnityEngine;
-using MS.Internal.Xml.XPath;
 
 namespace TOHE.Roles._Ghosts_.Crewmate
 {
@@ -43,7 +41,6 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         {
             AbilityLimit = MaxPossesions.GetInt();
 
-            CustomRoleManager.LowerOthers.Add(OthersNameText);
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
 
             // OnCheckProtect(_Player, Utils.GetPlayerById(0));
@@ -147,9 +144,10 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             // Logger.Info($"Returned false", "GHASTLYONMURDEROTHER");
             return false;
         }
-        private string OthersNameText(PlayerControl seer, PlayerControl seen, bool IsForMeeting, bool isforhud = false)
+
+        public override string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
         {
-            var IsMeeting = GameStates.IsMeeting || IsForMeeting;
+            var IsMeeting = GameStates.IsMeeting || isForMeeting;
             if (IsMeeting || (seer != seen && seer.IsAlive())) return "";
 
             var killer = killertarget.Item1;
@@ -161,7 +159,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 var tar = GetPlayerById(target).GetRealName();
                 if (tar == null) return "";
 
-                var colorstring = ColorString(GetRoleColor(CustomRoles.Ghastly), "<alpha=#88>" +  tar + arrows);
+                var colorstring = ColorString(GetRoleColor(CustomRoles.Ghastly), "<alpha=#88>" + tar + arrows);
                 return colorstring;
             }
 

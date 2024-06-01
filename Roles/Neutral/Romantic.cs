@@ -7,6 +7,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
+
 namespace TOHE.Roles.Neutral;
 
 internal class Romantic : RoleBase
@@ -66,7 +67,6 @@ internal class Romantic : RoleBase
     {
         BetTimes.Add(playerId, 1);
         
-        CustomRoleManager.MarkOthers.Add(TargetMark);
         CustomRoleManager.CheckDeadBodyOthers.Add(OthersAfterPlayerDeathTask);
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -189,7 +189,8 @@ internal class Romantic : RoleBase
         return BetPlayer.ContainsValue(seen.PlayerId)
             ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥") : string.Empty;
     }
-    private string TargetMark(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (!seer.Is(CustomRoles.Romantic) && BetTargetKnowRomantic.GetBool())
         {
@@ -357,7 +358,7 @@ internal class RuthlessRomantic : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
-    public override Custom_RoleType ThisRoleType => new Romantic().ThisRoleType;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
     public override void Init()
     {
