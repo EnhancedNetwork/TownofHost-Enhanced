@@ -1152,7 +1152,7 @@ class FixedUpdateInNormalGamePatch
                 if (seer.Data.IsDead)
                 {
                     if (target.Is(CustomRoles.Doppelganger))
-                        RealName = $"\n{RealName}\r\n<size=75%>({Utils.ColorString(Color.gray, Doppelganger.TrueNames[target.PlayerId])})</size>";
+                        RealName = $"\n{RealName}\r\n<size=75%>{Utils.ColorString(Color.gray, $"({Doppelganger.TrueNames[target.PlayerId]})")}</size>";
                     else if (Doppelganger.CheckDoppelVictim(target.PlayerId))
                         RealName = Doppelganger.TrueNames[target.PlayerId];
                 }

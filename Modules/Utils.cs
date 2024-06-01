@@ -1868,7 +1868,7 @@ public static class Utils
                         if (seer.Data.IsDead)
                         {
                             if (target.Is(CustomRoles.Doppelganger))
-                                TargetPlayerName = $"{TargetPlayerName}\r\n<size=75%>({ColorString(Color.gray, Doppelganger.TrueNames[target.PlayerId])})</size>";
+                                TargetPlayerName = $"{TargetPlayerName}\r\n<size=75%>{ColorString(Color.gray, $"({Doppelganger.TrueNames[target.PlayerId]})")}</size>";
                             else if (Doppelganger.CheckDoppelVictim(target.PlayerId))
                                 TargetPlayerName = Doppelganger.TrueNames[target.PlayerId];
                         }
