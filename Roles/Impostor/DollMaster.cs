@@ -381,7 +381,7 @@ internal class DollMaster : RoleBase
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.ResetPlayerOutfit(Main.PlayerStates[target.PlayerId].NormalOutfit);
-        target?.ResetPlayerOutfit(Main.PlayerStates[target.PlayerId].NormalOutfit);
+        target?.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit);
         pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
     }
 
