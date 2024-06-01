@@ -1661,12 +1661,15 @@ public static class Utils
                 //Get role info font size based on the length of the role info
                 static int GetInfoSize(string RoleInfo)
                 {
-                    var BaseFontSize = 200;
-                    if (RoleInfo.Length > 30)
-                        BaseFontSize = 150;
-                    if (RoleInfo.Length > 60)
-                        BaseFontSize = 100;
+                    RoleInfo = Regex.Replace(RoleInfo, "<[^>]*>", "");
+                    RoleInfo = Regex.Replace(RoleInfo, "{[^>]*}", "");
 
+                    var BaseFontSize = 275;
+                    int BaseFontSizeMin = 100;
+
+                    BaseFontSize -= 3 * RoleInfo.Length;
+                    if (BaseFontSize < BaseFontSizeMin)
+                        BaseFontSize = BaseFontSizeMin;
                     return BaseFontSize;
                 }
 
@@ -1686,7 +1689,7 @@ public static class Utils
                 if (!seer.GetCustomRole().IsDesyncRole())
                 {
                     SelfTeamName = string.Empty;
-                    RoleNameUp = "<size=625%>\n</size>";
+                    RoleNameUp = "<size=565%>\n</size>";
                     RoleInfo = $"<size=50%>\n</size><size={GetInfoSize(seer.GetRoleInfo())}%>{Font}{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</font></size>";
                 }
 
