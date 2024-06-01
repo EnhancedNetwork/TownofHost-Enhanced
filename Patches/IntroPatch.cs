@@ -572,11 +572,12 @@ class IntroCutsceneDestroyPatch
                 {
                  Main.UnShapeShifter.Do(x =>
                     {
-                     var PC = Utils.GetPlayerById(x);
+                     var PC = Utils.GetPlayerById(x.Key);
                      var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
                      PC.RpcShapeshift(randomplayer, false);
                      PC.RpcRejectShapeshift(); 
                      PC.ResetPlayerOutfit();
+                     Main.GameIsLoaded = true;
 
                     });
                 }, 3f, "Set UnShapeShift Button");

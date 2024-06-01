@@ -62,6 +62,7 @@ internal class ChangeRoleSettings
             Main.AllKillers.Clear();
             Main.OverDeadPlayerList.Clear();
             Main.UnShapeShifter.Clear();
+            Main.GameIsLoaded = false;
 
             Main.LastNotifyNames.Clear();
             Main.PlayerColors.Clear();
@@ -427,7 +428,7 @@ internal class SelectRolesPatch
             {
                 if (Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
                 {
-                    Main.UnShapeShifter.Add(pc.PlayerId);
+                    Main.UnShapeShifter.Add(pc.PlayerId, false);
                 }
 
                 if (pc.GetRoleClass()?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
