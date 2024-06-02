@@ -1656,6 +1656,8 @@ public static class Utils
             if (seer.IsModClient()) continue;
 
             // During intro scene to set team name and role info for non-modded clients and skip the rest.
+            // Note: When Neutral is based on the Crewmate role then it is impossible to display the info for it
+            // If not a Desync Role remove team display
             if (SetUpRoleTextPatch.IsInIntro)
             {
                 //Get role info font size based on the length of the role info
@@ -1683,9 +1685,6 @@ public static class Utils
                 string RoleInfo = $"<size=25%>\n</size><size={GetInfoSize(seer.GetRoleInfo())}%>{Font}{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</font></size>";
                 string RoleNameUp = "<size=1350%>\n\n</size>";
 
-                // Only for desync role, because their team is always shown as Impostor even though they may be in a Crewmate or Neutrals team
-                // Note: When Neutral is based on the Crewmate role then it is impossible to display the real team for it
-                // If not a Desync Role remove team display
                 if (!seer.GetCustomRole().IsDesyncRole())
                 {
                     SelfTeamName = string.Empty;
@@ -1770,6 +1769,13 @@ public static class Utils
 
                 string SeerRealName = seer.GetRealName(isForMeeting);
 
+                // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for seer ======
+
+                string SelfTaskText = GetProgressText(seer);
+                string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, false)}{SelfTaskText}</size>";
+                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : string.Empty;
+                string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
+
                 bool IsDisplayInfo = false;
                 if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode != CustomGameMode.FFA)
                 {
@@ -1784,18 +1790,14 @@ public static class Utils
                     else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
                     else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
 
-                    SeerRealName = $"{SeerRealName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>";
+                    SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n";
                 }
 
-                // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for seer ======
-
-                string SelfTaskText = GetProgressText(seer);
-                string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, false)}{SelfTaskText}</size>";
-                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : string.Empty;
-                string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
-
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
+                {
                     SelfName = name;
+                    IsDisplayInfo = false;
+                }
 
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
@@ -1826,7 +1828,7 @@ public static class Utils
                         if (!IsDisplayInfo)
                             SelfName = SelfRoleName + "\r\n" + SelfName;
                         else
-                            SelfName = "<size=350%>\n \n</size>" + SelfRoleName + "\r\n" + SelfName;
+                            SelfName = "<size=425%>\n \n</size>" + SelfRoleName + "\r\n" + SelfName;
                         break;
                 }
                 SelfName += SelfSuffix.Length == 0 ? string.Empty : "\r\n " + SelfSuffix.ToString();
