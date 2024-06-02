@@ -998,6 +998,11 @@ static class ExtendedPlayerControl
         {
             return false;
         }
+        
+        // If doppelganger appears as player return true
+        // Note: Needs to be tested for any buggy outcomes.
+        if (Doppelganger.CheckDoppelVictim(target.PlayerId) && target.PlayerId == Doppelganger.CurrentIdToSwap)
+            return true;
 
         //if the target status is alive
         return !Main.PlayerStates.TryGetValue(target.PlayerId, out var playerState) || !playerState.IsDead;

@@ -23,6 +23,7 @@ internal class Doppelganger : RoleBase
     public static readonly Dictionary<PlayerControl, byte> PlayerControllerToIDRam = []; // Edit ids!
     public static readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = []; // Don't edit ids!
     public static readonly Dictionary<byte, string> TrueNames = []; // Don't edit ids!
+    public static PlayerControl DoppelgangerTarget = null;
     public static byte CurrentIdToSwap = byte.MaxValue;
 
     public override void SetupCustomOption()
@@ -41,6 +42,7 @@ internal class Doppelganger : RoleBase
         PlayerControllerToIDRam.Clear();
         DoppelPresentSkin.Clear();
         TrueNames.Clear();
+        DoppelgangerTarget = null;
         CurrentIdToSwap = byte.MaxValue;
     }
 
@@ -57,6 +59,8 @@ internal class Doppelganger : RoleBase
             DoppelPresentSkin[allPlayers.PlayerId] = allPlayers.CurrentOutfit;
         }
 
+        DoppelgangerTarget = Utils.GetPlayerById(playerId);
+
         CurrentIdToSwap = playerId;
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -72,6 +76,8 @@ internal class Doppelganger : RoleBase
 
     // A quick check if a player has been killed by the doppelganger.
     public static bool CheckDoppelVictim(byte playerId) => DoppelVictim.ContainsKey(playerId);
+
+    public static PlayerControl GetDoppelControl(PlayerControl player) => DoppelgangerTarget != null ? DoppelgangerTarget : player;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -130,7 +136,7 @@ internal class Doppelganger : RoleBase
     }
 
     // Function to swap players controllers for other functions
-    public static PlayerControl SwapPlayerInfoFromRom(PlayerControl player)
+    public static PlayerControl SwapPlayerInfoFromRom(PlayerControl player) // Ram
     {
         if (!HasEnabled || player == null)
             return player; // No need for further processing if disabled or player is null
@@ -144,7 +150,7 @@ internal class Doppelganger : RoleBase
                 var newPlayer = Utils.GetPlayerById(RamId);
                 if (newPlayer != null)
                 {
-                    player = newPlayer; // Swap player only if a valid player is found by ID
+                    return newPlayer; // Swap player only if a valid player is found by ID
                 }
             }
         }
