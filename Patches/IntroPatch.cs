@@ -558,12 +558,17 @@ class IntroCutsceneDestroyPatch
             }
             else if (GhostRoleAssign.forceRole.Any())
             {
-                GhostRoleAssign.forceRole.Do(x => {
-                    var plr = Utils.GetPlayerById(x.Key);
-                    plr.RpcExile();
-                    Main.PlayerStates[x.Key].SetDead();
+                // Needs to be delayed for the game to load it properly
+                _ = new LateTask(() =>
+                {
+                    GhostRoleAssign.forceRole.Do(x =>
+                    {
+                        var plr = Utils.GetPlayerById(x.Key);
+                        plr.RpcExile();
+                        Main.PlayerStates[x.Key].SetDead();
 
-                });
+                    });
+                }, 5f, "Set Dev Ghost-Roles");
             }
 
             if (Main.UnShapeShifter.Any())
