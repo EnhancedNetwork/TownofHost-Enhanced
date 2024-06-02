@@ -2,7 +2,6 @@
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 
 namespace TOHE;
@@ -33,6 +32,10 @@ public abstract class RoleBase
 
 
         Add(playerid);
+        if (CustomRoleManager.OtherCollectionsSet) // If a role is applied mid-game, filter them again jsut in-case
+        {
+            CustomRoleManager.Add();
+        }
     }
 
 
@@ -203,9 +206,14 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When the target role died and need run kill flash
+    /// When someone was died and need to run kill flash for specific role
     /// </summary>
     public virtual bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
+
+    /// <summary>
+    /// When the target role has died and kill flash needs to run globally
+    /// </summary>
+    public virtual bool GlobalKillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
 
     /// <summary>
     /// Shapeshift animation only from itself
@@ -258,8 +266,15 @@ public abstract class RoleBase
     /// <summary>
     /// Check exile role
     /// </summary>
+    public virtual void CheckExile(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    { }
+
+    /// <summary>
+    /// Check exile target
+    /// </summary>
     public virtual void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     { }
+
     /// <summary>
     /// When player was exiled
     /// </summary>
@@ -300,8 +315,8 @@ public abstract class RoleBase
     /// <summary>
     /// When player left the game
     /// </summary>
-    public virtual void OnPlayerLeft(ClientData clientData)
-    { }
+    //public virtual void OnPlayerLeft(ClientData clientData) Note: instead "OnPlayerLeft" use "OnMurderPlayer" and "isSuicide"
+    //{ }
 
     /// <summary>
     /// When the game starts to ending
@@ -358,16 +373,27 @@ public abstract class RoleBase
     // otherwise make some list or byte or smt of sorts to only get the target.
     // not needed if both should have it.
     public virtual string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
+    public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
+    public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
+    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
 
     public virtual float SetModdedLowerText(out Color32? FaceColor)
     {
         FaceColor = null;
         return 2.8f;
     }
+
+
+    // 
+    // IMPORTANT note about otherIcons: 
+    // These are only called once in the method, so object attributes are banned (as 99.99% of roles only want the method to run once).
+    // You may use static attributes, tho you can simply just use utils.GetRoleBasesByType<> if need be.
+    //
+    public virtual string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
+    public virtual string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
+    public virtual string GetSuffixOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     
-    public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
-    public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
-    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
+
 
     // Player know role target, color role target
     public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;

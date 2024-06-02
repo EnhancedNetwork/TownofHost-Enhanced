@@ -76,7 +76,7 @@ internal class Vulture : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte id)
     {
         opt.SetVision(HasImpVision.GetBool());
-        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
 

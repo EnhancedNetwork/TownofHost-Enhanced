@@ -18,6 +18,7 @@ public class PlayerState(byte playerId)
     public List<CustomRoles> SubRoles = [];
     public CountTypes countTypes = CountTypes.OutOfGame;
     public bool IsDead { get; set; } = false;
+    public bool Disconnected { get; set; } = false;
 #pragma warning disable IDE1006 // Naming Styles
     public DeathReason deathReason { get; set; } = DeathReason.etc;
 #pragma warning restore IDE1006
@@ -271,7 +272,6 @@ public class PlayerState(byte playerId)
         Sniped,
         Revenge,
         Execution,
-        Disconnected,
         Fall,
 
         // TOHE

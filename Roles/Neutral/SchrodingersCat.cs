@@ -2,6 +2,7 @@
 using InnerNet;
 using TOHE.Roles.Core;
 
+
 namespace TOHE.Roles.Neutral;
 
 internal class SchrodingersCat : RoleBase
@@ -28,6 +29,7 @@ internal class SchrodingersCat : RoleBase
     public override void Add(byte playerId)
     {
         teammate[playerId] = byte.MaxValue;
+
     }
 
     private void SendRPC(byte catID)
@@ -62,6 +64,38 @@ internal class SchrodingersCat : RoleBase
 
         killer.SetKillCooldown();
 
+        return false;
+    }
+
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
+    {
+        if (seer != target && seer.IsAlive() && teammate.ContainsKey(seer.PlayerId) && teammate.ContainsValue(target.PlayerId))
+        {
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SchrodingersCat), " ☜");
+        }
+        else if (seer != target && !seer.IsAlive() && teammate.ContainsValue(target.PlayerId))
+        {
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SchrodingersCat), " ☜");
+        }
+        return string.Empty;
+    }
+
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+    {
+        if (teammate.TryGetValue(seer.PlayerId, out var temmate) && target.PlayerId == temmate)
+        {
+            if (target.GetCustomRole().IsCrewmate()) return Main.roleColors[CustomRoles.CrewmateTOHE];
+            else return Main.roleColors[target.GetCustomRole()];
+        }
+        return string.Empty;
+    }
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
+    {
+        if (teammate.TryGetValue(target.PlayerId, out var killer) && killer == seer.PlayerId)
+        {
+            return true;
+        }
         return false;
     }
 

@@ -11,7 +11,7 @@ internal class Celebrity : RoleBase
     private const int Id = 6500;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -39,8 +39,12 @@ internal class Celebrity : RoleBase
     {
         playerIdList.Add(playerId);
     }
-    public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
+    public override bool GlobalKillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
     {
+        // if Celebrity killed and seer is Celebrity, return true for show kill flash
+        if (target.PlayerId == _Player.PlayerId && seer.PlayerId == _Player.PlayerId) return true;
+
+        // Hide kill flash for some team
         if (!ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostor()) return false;
         if (!NeutralKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsNeutral()) return false;
 

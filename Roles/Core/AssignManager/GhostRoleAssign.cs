@@ -10,11 +10,25 @@ public static class GhostRoleAssign
     private static int ImpCount = 0;
     private static int CrewCount = 0;
 
+    public static Dictionary<byte, CustomRoles> forceRole = [];
+
     private static readonly List<CustomRoles> HauntedList = [];
     private static readonly List<CustomRoles> ImpHauntedList = [];
     public static void GhostAssignPatch(PlayerControl player)
     {
-        if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
+        if (GameStates.IsHideNSeek  || Options.CurrentGameMode == CustomGameMode.FFA || player == null || player.Data.Disconnected || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
+        if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) {
+            Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");
+            var clas = player.GetRoleClass();
+            clas?.Remove(player.PlayerId);
+            player.RpcSetCustomRole(forcerole);
+            clas.Add(player.PlayerId);
+            forceRole.Remove(player.PlayerId);
+            getCount[forcerole]--;
+            return;
+        }
+
+
 
         var getplrRole = player.GetCustomRole();
         if (getplrRole is CustomRoles.GM or CustomRoles.Nemesis or CustomRoles.Retributionist) return;
@@ -29,13 +43,14 @@ public static class GhostRoleAssign
 
             GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
 
+
         HauntedList.Clear();
         ImpHauntedList.Clear();
 
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
 
 
-        foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys.Where(x => x.GetMode() > 0))
+        foreach (var ghostRole in getCount.Keys.Where(x => x.GetMode() > 0))
         { 
             if (ghostRole.IsCrewmate())
             {

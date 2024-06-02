@@ -109,7 +109,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         /*
          * Builds Modified GameOptions
          */
-        player.BuildCustomGameOptions(ref opt, role);
+        player.BuildCustomGameOptions(ref opt);
 
         AURoleOptions.EngineerCooldown = Mathf.Max(0.01f, AURoleOptions.EngineerCooldown);
 

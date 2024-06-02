@@ -16,9 +16,9 @@ internal class Collector : RoleBase
 
     private static OptionItem CollectorCollectAmount;
 
-    private static Dictionary<byte, byte> CollectorVoteFor = [];
+    private static readonly Dictionary<byte, byte> CollectorVoteFor = [];
     private int CollectVote;
-    private int NewVote;
+    //private int NewVote;
 
     private bool calculated = false;
 
@@ -32,17 +32,17 @@ internal class Collector : RoleBase
     {
         calculated = false;
     }
-    private void SendRPC(byte playerId)
+    private void SendRPC(/*byte playerId*/)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
-        writer.Write(playerId);
+        //writer.Write(playerId);
         writer.Write(CollectVote);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        byte PlayerId = reader.ReadByte();
+        //byte PlayerId = reader.ReadByte();
         int Num = reader.ReadInt32();
         CollectVote = Num;
     }
@@ -58,25 +58,21 @@ internal class Collector : RoleBase
     }
     public bool CollectorWin(bool check = true)
     {
-        var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Collector) && x.IsAlive() && CollectDone(x)).ToArray();
-        if (pcArray.Any())
+        if (_Player != null && _Player.IsAlive() && CollectDone(_Player))
         {
             bool isWinConverted = false;
-            foreach (var x in pcArray)
+
+            if (CustomWinnerHolder.CheckForConvertedWinner(_Player.PlayerId))
             {
-                if (CustomWinnerHolder.CheckForConvertedWinner(x.PlayerId))
-                {
-                    isWinConverted = true;
-                    break;
-                }
+                isWinConverted = true;
             }
+
             if (check) return true;
 
             if (!isWinConverted)
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Collector);
-                foreach (var winner in pcArray)
-                    CustomWinnerHolder.WinnerIds.Add(winner.PlayerId);
+                CustomWinnerHolder.WinnerIds.Add(_Player.PlayerId);
             }
             return true;
         }
@@ -86,7 +82,7 @@ internal class Collector : RoleBase
     {
         if (player.Is(CustomRoles.Collector))
         {
-            var pcid = player.PlayerId;
+            //var pcid = player.PlayerId;
             int VoteAmount = CollectVote;
             int CollectNum = CollectorCollectAmount.GetInt();
             if (VoteAmount >= CollectNum) return true;
@@ -113,8 +109,8 @@ internal class Collector : RoleBase
                 if (CollectorVoteFor.ContainsKey(data.Key) && pc.PlayerId == CollectorVoteFor[data.Key] && pc.Is(CustomRoles.Collector))
                 {
                     VoteAmount = data.Value;
-                    CollectVote = CollectVote + VoteAmount;
-                    SendRPC(pc.PlayerId);
+                    CollectVote += VoteAmount;
+                    SendRPC(/*pc.PlayerId*/);
                     Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()}, collected {VoteAmount} votes from {Utils.GetPlayerById(data.Key).GetNameWithRole().RemoveHtmlTags()}", "Collected votes");
                 }
             }

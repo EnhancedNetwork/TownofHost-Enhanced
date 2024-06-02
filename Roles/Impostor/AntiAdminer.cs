@@ -145,7 +145,7 @@ internal class AntiAdminer : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (isForMeeting) return "";
+        if (seer.PlayerId != seen.PlayerId || isForMeeting) return string.Empty;
 
         StringBuilder sb = new();
         if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("AdminWarning")));

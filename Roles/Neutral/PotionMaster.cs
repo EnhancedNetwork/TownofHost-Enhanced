@@ -63,7 +63,7 @@ internal class PotionMaster : RoleBase
     {
         byte playerId = reader.ReadByte();
 
-          AbilityLimit = reader.ReadInt32();
+        AbilityLimit = reader.ReadSingle();
           RitualTarget[playerId].Add(reader.ReadByte());
         
     }

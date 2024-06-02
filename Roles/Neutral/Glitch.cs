@@ -17,9 +17,7 @@ internal class Glitch : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
-    private Dictionary<byte, long> hackedIdList = [];
-
-    public static List<Glitch> Glitchs => Utils.GetPlayerListByRole(CustomRoles.Glitch)?.Select(x => x.GetRoleClass()).Cast<Glitch>().ToList(); 
+    private static readonly Dictionary<byte, long> hackedIdList = [];
 
     public static OptionItem KillCooldown;
     private static OptionItem HackCooldown;
@@ -161,7 +159,7 @@ internal class Glitch : RoleBase
         if (player == null) return;
         if (!player.Is(CustomRoles.Glitch)) return;
 
-        if (change) { Utils.NotifyRoles(SpecifySeer: player); }
+        if (change) { Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false); }
 
         if (!player.IsAlive())
         {
@@ -211,14 +209,14 @@ internal class Glitch : RoleBase
         catch { KCDTimer = 0; }
         if (KCDTimer > 180 || KCDTimer < 0) KCDTimer = 0;
 
-        try { MimicCDTimer = (int)(MimicCooldown.GetInt() + MimicDuration.GetInt() - (Utils.GetTimeStamp() - LastMimic)); }
+        try { MimicCDTimer = (int)(MimicCooldown.GetInt() - (Utils.GetTimeStamp() - LastMimic)); }
         catch { MimicCDTimer = 0; }
         if (MimicCDTimer > 180 || MimicCDTimer < 0) MimicCDTimer = 0;
 
         if (!player.IsModClient())
         {
             var Pname = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Glitch), player.GetRealName(isMeeting: true));
-            if ((!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != Pname)) player.Notify(Pname, 1.1f);
+            if (!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != Pname) player.Notify(Pname, 1.1f);
         }
         if (!player.AmOwner) // For mooded non host players, sync kcd per second
         {
@@ -269,7 +267,7 @@ internal class Glitch : RoleBase
         }
         return false;
     }
-    public bool OnCheckFixedUpdateReport(PlayerControl __instance, byte id) 
+    public static bool OnCheckFixedUpdateReport(PlayerControl __instance, byte id) 
     {
         if (hackedIdList.ContainsKey(id))
         {
@@ -280,16 +278,14 @@ internal class Glitch : RoleBase
         }
         return true;
     }
-    public bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
     {
-        if (killer == target || killer == null) { Logger.Info("returning true", "glitchcheck"); return true; }
+        if (killer == target || killer == null) return true; 
         if (hackedIdList.ContainsKey(killer.PlayerId))
         {
             killer.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchKill")));
-            Logger.Info("returning false", "glitchcheck"); 
             return false;
         }
-        Logger.Info("returning true", "glitchcheck");
         return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
@@ -300,7 +296,7 @@ internal class Glitch : RoleBase
 
     private void SendRPC()
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, Hazel.SendOption.None, -1);
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.None, -1);
         writer.WriteNetObject(_Player);
         writer.Write(HackCDTimer);
         writer.Write(KCDTimer);

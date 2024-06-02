@@ -104,8 +104,8 @@ enum CustomRPC : byte // 194/255 USED
     SetCursedSoulCurseLimit,
     SetInvestgatorLimit,
     SyncInvestigator, // Unused
-    SetRevealedPlayer,
-    //SetCurrentRevealTarget, // Overseer
+    SetOverseerRevealedPlayer,
+    SetOverseerTimer,
     SetCoronerArrow,
     SetCoronerkKillerArrow,
     SetVultureArrow,
@@ -384,8 +384,11 @@ internal class RPCHandlerPatch
             case CustomRPC.SetDrawPlayer:
                 Revolutionist.ReceiveDrawPlayerRPC(reader);
                 break;
-            case CustomRPC.SetRevealedPlayer:
+            case CustomRPC.SetOverseerRevealedPlayer:
                 Overseer.ReceiveSetRevealedPlayerRPC(reader);
+                break;
+            case CustomRPC.SetOverseerTimer:
+                Overseer.ReceiveTimerRPC(reader);
                 break;
             case CustomRPC.SetNameColorData:
                 NameColorManager.ReceiveRPC(reader);
@@ -884,10 +887,10 @@ internal static class RPC
     }
     public static void SyncRoleSkillReader(MessageReader reader)
     {
-        var pc = reader.ReadNetObject<PlayerControl>();
-
         try
         {
+            var pc = reader.ReadNetObject<PlayerControl>();
+
             switch (pc.GetRoleClass())
             {
                 default:
@@ -897,7 +900,7 @@ internal static class RPC
         }
         catch (Exception error)
         {
-            Logger.Error($"Role {pc.GetRoleClass().GetType().Name} - error RPC:{error}", "SyncRoleSkillReader");
+            Logger.Error($" Error RPC:{error}", "SyncRoleSkillReader");
         }
     }
     public static void SyncLoversPlayers()
@@ -946,7 +949,7 @@ internal static class RPC
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 }
-[HarmonyPatch(typeof(InnerNet.InnerNetClient), nameof(InnerNet.InnerNetClient.StartRpc))]
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpc))]
 internal class StartRpcPatch
 {
     public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId)
@@ -954,7 +957,7 @@ internal class StartRpcPatch
         RPC.SendRpcLogger(targetNetId, callId);
     }
 }
-[HarmonyPatch(typeof(InnerNet.InnerNetClient), nameof(InnerNet.InnerNetClient.StartRpcImmediately))]
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpcImmediately))]
 internal class StartRpcImmediatelyPatch
 {
     public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(3)] int targetClientId = -1)

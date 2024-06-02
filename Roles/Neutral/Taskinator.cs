@@ -43,7 +43,6 @@ internal class Taskinator : RoleBase
         TaskMarkPerRound[playerId] = 0;
     }
 
-
     private void SendRPC(byte taskinatorID, int taskIndex = -1, bool isKill = false, bool clearAll = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
@@ -100,16 +99,15 @@ internal class Taskinator : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
     public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if(!HasEnabled) return;
         if (player == null || _Player == null) return;
         if (!player.IsAlive()) return;
         byte playerId = player.PlayerId;
+
         if (player.Is(CustomRoles.Taskinator))
         {
             if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;

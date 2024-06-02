@@ -118,12 +118,6 @@ class GameEndCheckerForNormal
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         }
                         break;
-                    case CustomWinner.Quizmaster:
-                        if (pc.Is(CustomRoles.Quizmaster) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        {
-                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                        }
-                        break;
                     case CustomWinner.Spiritcaller:
                         if (pc.Is(CustomRoles.EvilSpirit) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         {
@@ -303,7 +297,7 @@ class GameEndCheckerForNormal
                     //自爆卡车来咯
                     if (pc.Is(CustomRoles.Provocateur) && Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tar))
                     {
-                        if (!CustomWinnerHolder.WinnerIds.Contains(tar))
+                        if (CustomWinnerHolder.WinnerIds.Contains(tar))
                         {
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                             CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Provocateur);
@@ -443,7 +437,7 @@ class GameEndCheckerForNormal
             }
 
             /*Keep Schrodinger cat win condition at last*/
-            Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(pc => SchrodingersCat.SchrodingerWinCondition(pc));
+            Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
 
             ShipStatus.Instance.enabled = false;
             StartEndGame(reason);
@@ -460,8 +454,6 @@ class GameEndCheckerForNormal
     }
     private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
     {
-        if (Quizmaster.HasEnabled) Quizmaster.ResetMarkedPlayer();
-
         CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.OnCoEndGame());
 
         // Set ghost role

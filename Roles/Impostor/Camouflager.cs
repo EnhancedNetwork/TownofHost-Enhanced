@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Translator;
@@ -60,6 +62,19 @@ internal class Camouflager : RoleBase
 
         Playerids.Add(playerId);
     }
+
+    private void SendRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(AbilityActivated);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        AbilityActivated = reader.ReadBoolean();
+    }
+
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = ShowShapeshiftAnimationsOpt.GetBool() && AbilityActivated ? CamouflageDuration : CamouflageCooldown;
@@ -86,6 +101,7 @@ internal class Camouflager : RoleBase
         if (!Main.MeetingIsStarted && GameStates.IsInTask)
         {
             AbilityActivated = true;
+            SendRPC();
             camouflager.SyncSettings();
 
             Camouflage.CheckCamouflage();
@@ -106,6 +122,7 @@ internal class Camouflager : RoleBase
         }
 
         AbilityActivated = true;
+        SendRPC();
 
         var timer = 1.2f;
 
@@ -139,9 +156,10 @@ internal class Camouflager : RoleBase
         return DisableReportWhenCamouflageIsActive && AbilityActivated && !(Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool());
     }
 
-    private static void ClearCamouflage()
+    private void ClearCamouflage()
     {
         AbilityActivated = false;
+        SendRPC();
         Camouflage.CheckCamouflage();
     }
     public override void OnFixedUpdate(PlayerControl camouflager)

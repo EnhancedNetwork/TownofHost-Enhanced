@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using MS.Internal.Xml.XPath;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
@@ -108,11 +107,10 @@ internal class Pelican : RoleBase
 
         var target = Utils.GetPlayerById(id);
 
-        var penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
-        if (penguins != null && penguins.Any())
+        var penguins = Utils.GetRoleBasesByType<Penguin>()?.ToList();
+        if (penguins != null)
         {
-            if (penguins.Select(x => x.GetRoleClass()).Any(x => x is Penguin pg && pg.AbductVictim != null && (target.PlayerId == pg.AbductVictim.PlayerId 
-            || id == pg.AbductVictim.PlayerId)))
+            if (penguins.Any(pg => target.PlayerId == pg.AbductVictim?.PlayerId))
             {
                 return false;
             }
@@ -213,7 +211,6 @@ internal class Pelican : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-
         if (killer.Is(CustomRoles.Scavenger) || killer.Is(CustomRoles.Pelican))
         {
             PelicanLastPosition[target.PlayerId] = target.GetCustomPosition();
@@ -243,7 +240,7 @@ internal class Pelican : RoleBase
             Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
             ReportDeadBodyPatch.CanReport[tar] = true;
             
-            target.MarkDirtySettings();
+            target.SyncSettings();
             
             RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
             

@@ -288,8 +288,8 @@ class CheckForEndVotingPatch
                     braked = true;
                 }
             }
-            List<Collector> CollectorCL = Utils.GetPlayerListByRole(CustomRoles.Collector)?.Select(x => x.GetRoleClass()).Cast<Collector>().ToList();
-            if (Collector.HasEnabled && CollectorCL != null) CollectorCL?.Do(x => { x.CollectAmount(VotingData, __instance); });
+            List<Collector> CollectorCL = Utils.GetRoleBasesByType<Collector>()?.ToList();
+            if (Collector.HasEnabled) CollectorCL?.Do(x => { x.CollectAmount(VotingData, __instance); });
 
             if (Options.VoteMode.GetBool() && Options.WhenTie.GetBool() && tie)
             {
@@ -437,7 +437,9 @@ class CheckForEndVotingPatch
         }
         var DecidedWinner = false;
 
-        player.GetRoleClass()?.CheckExileTarget(exiledPlayer, ref DecidedWinner, isMeetingHud: true, name: ref name);
+        player.GetRoleClass()?.CheckExile(exiledPlayer, ref DecidedWinner, isMeetingHud: true, name: ref name);
+
+        CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.CheckExileTarget(exiledPlayer, ref DecidedWinner, isMeetingHud: true, name: ref name));
 
         if (DecidedWinner) name += "<size=0>";
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)

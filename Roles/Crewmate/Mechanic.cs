@@ -1,4 +1,3 @@
-using Hazel;
 using System;
 using System.Text;
 using UnityEngine;
@@ -55,8 +54,6 @@ internal class Mechanic : RoleBase
     }
     public override void UpdateSystem(ShipStatus __instance, SystemTypes systemType, byte amount, PlayerControl player)
     {
-        var playerId = player.PlayerId;
-
         switch (systemType)
         {
             case SystemTypes.Reactor:
@@ -138,7 +135,7 @@ internal class Mechanic : RoleBase
     {
         if (!FixesElectrical.GetBool()) return;
 
-        var playerId = player.PlayerId;
+        //var playerId = player.PlayerId;
         
         if (SkillLimit.GetFloat() > 0 &&
             AbilityLimit + UsesUsedWhenFixingLightsOrComms.GetFloat() - 1 <= 0)
@@ -163,7 +160,7 @@ internal class Mechanic : RoleBase
         TextColor10 = comms ? Color.gray : NormalColor10;
         string Completed10 = comms ? "?" : $"{taskState10.CompletedTasksCount}";
         Color TextColor101;
-        if (AbilityLimit <= 0) TextColor101 = Color.red;
+        if (AbilityLimit <= 1) TextColor101 = Color.red;
         else TextColor101 = Color.white;
         ProgressText.Append(ColorString(TextColor10, $"({Completed10}/{taskState10.AllTasksCount})"));
         ProgressText.Append(ColorString(TextColor101, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
@@ -173,14 +170,14 @@ internal class Mechanic : RoleBase
     {
         if (player.IsAlive())
         {
-            AbilityLimit -= SMAbilityUseGainWithEachTaskCompleted.GetFloat();
+            AbilityLimit += SMAbilityUseGainWithEachTaskCompleted.GetFloat();
             SendSkillRPC();
         }
         return true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
 }

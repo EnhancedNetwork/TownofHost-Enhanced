@@ -27,7 +27,7 @@ internal class Swapper : RoleBase
     private static readonly Dictionary<byte, byte> Vote = [];
     private static readonly Dictionary<byte, byte> VoteTwo = [];
 
-    private static List<byte> playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Swapper).Select(p => p.PlayerId).ToList();
+    private static List<byte> PlayerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Swapper).Select(p => p.PlayerId).ToList();
 
     public override void SetupCustomOption()
     {
@@ -57,13 +57,12 @@ internal class Swapper : RoleBase
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
-    public bool SwapMsg(string msg, bool isUI = false)
+    public bool SwapMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
         if (!GameStates.IsMeeting || _Player == null || GameStates.IsExilling) return false;
-        var pc = _Player;
 
         int operate;
         msg = msg.ToLower().TrimStart().TrimEnd();
@@ -227,7 +226,7 @@ internal class Swapper : RoleBase
         if (deadid == 253) return;
 
 
-        foreach (var pid in playerIdList)
+        foreach (var pid in PlayerIdList)
         {
             if (!Vote.TryGetValue(pid, out var tid1) || !VoteTwo.TryGetValue(pid, out var tid2)) continue;
             if (tid1 == deadid || tid2 == deadid)
@@ -353,7 +352,7 @@ internal class Swapper : RoleBase
     public static void ReceiveSwapRPC(MessageReader reader, PlayerControl pc)
     {
         byte PlayerId = reader.ReadByte();
-        if (Main.PlayerStates[PlayerId].RoleClass is Swapper sw) sw.SwapMsg($"/sw {PlayerId}");
+        if (Main.PlayerStates[pc.PlayerId].RoleClass is Swapper sw) sw.SwapMsg(pc, $"/sw {PlayerId}");
     }
     private void SwapperOnClick(byte playerId, MeetingHud __instance)
     {
@@ -361,7 +360,7 @@ internal class Swapper : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
         
-        if (AmongUsClient.Instance.AmHost) SwapMsg($"/sw {playerId}", true);
+        if (AmongUsClient.Instance.AmHost) SwapMsg(PlayerControl.LocalPlayer, $"/sw {playerId}", true);
         else SendSwapRPC(playerId);
 
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Swapper) && PlayerControl.LocalPlayer.IsAlive())

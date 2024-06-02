@@ -62,7 +62,7 @@ internal class ChatCommands
         if (Nemesis.NemesisMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Retributionist.RetributionistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Medium.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sw && sw.SwapMsg(text)) goto Canceled; 
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sw && sw.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled; 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
@@ -844,8 +844,10 @@ internal class ChatCommands
                         //Logger.Info(roleName, "2");
                         if (setRole == roleName)
                         {
+                            PlayerControl.LocalPlayer.GetRoleClass()?.Remove(PlayerControl.LocalPlayer.PlayerId);
                             PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes());
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
+                            PlayerControl.LocalPlayer.GetRoleClass().OnAdd(PlayerControl.LocalPlayer.PlayerId);
                             Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
                             Utils.NotifyRoles(NoCache: true);
                             Utils.MarkEveryoneDirtySettings();
@@ -1024,33 +1026,97 @@ internal class ChatCommands
                         }
 
                     }
-                    case "/rand":
+                case "/rand":
                     if (!Options.CanPlayMiniGames.GetBool())
                     {
                         Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
                     canceled = true;
-                        subArgs = args.Length != 3 ? "" : args[1];
-                        subArgs2 = args.Length != 3 ? "" : args[2];
+                    subArgs = args.Length != 3 ? "" : args[1];
+                    subArgs2 = args.Length != 3 ? "" : args[2];
 
-                        if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
-                        {
+                    if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("RandCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    if (subArgs == "" || !int.TryParse(subArgs, out int playerChoice1) || subArgs2 == "" || !int.TryParse(subArgs2, out int playerChoice2))
+                    {
                             Utils.SendMessage(GetString("RandCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
                             break;
-                        }
-                        if (subArgs == "" || !int.TryParse(subArgs, out int playerChoice1) || subArgs2 == "" || !int.TryParse(subArgs2, out int playerChoice2))
-                        {
-                            Utils.SendMessage(GetString("RandCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                    }
+                    else
+                    {
+                        var rand = IRandom.Instance;
+                        int botResult = rand.Next(playerChoice1, playerChoice2 + 1);
+                        Utils.SendMessage(string.Format(GetString("RandResult"), botResult), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+
+                case "/8ball":
+                    if (!Options.CanPlayMiniGames.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    canceled = true;
+                    var rando = IRandom.Instance;
+                    int result = rando.Next(0, 16);
+                    string str = "";
+                    switch (result)
+                    {
+                        case 0:
+                            str = GetString("8BallYes");
                             break;
-                        }
-                        else
-                        {
-                            var rand = IRandom.Instance;
-                            int botResult = rand.Next(playerChoice1, playerChoice2 + 1);
-                            Utils.SendMessage(string.Format(GetString("RandResult"), botResult), PlayerControl.LocalPlayer.PlayerId);
+                        case 1:
+                            str = GetString("8BallNo");
                             break;
-                        }
+                        case 2:
+                            str = GetString("8BallMaybe");
+                            break;
+                        case 3:
+                            str = GetString("8BallTryAgainLater");
+                            break;
+                        case 4:
+                            str = GetString("8BallCertain");
+                            break;
+                        case 5:
+                            str = GetString("8BallNotLikely");
+                            break;
+                        case 6:
+                            str = GetString("8BallLikely");
+                            break;
+                        case 7:
+                            str = GetString("8BallDontCount");
+                            break;
+                        case 8:
+                            str = GetString("8BallStop");
+                            break;
+                        case 9:
+                            str = GetString("8BallPossibly");
+                            break;
+                        case 10:
+                            str = GetString("8BallProbably");
+                            break;
+                        case 11:
+                            str = GetString("8BallProbablyNot");
+                            break;
+                        case 12:
+                            str = GetString("8BallBetterNotTell");
+                            break;
+                        case 13:
+                            str = GetString("8BallCantPredict");
+                            break;
+                        case 14:
+                            str = GetString("8BallWithoutDoubt");
+                            break;
+                        case 15:
+                            str = GetString("8BallWithDoubt");
+                            break;
+                    }
+                    Utils.SendMessage("<align=\"center\"><size=150%>" + str + "</align></size>", PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medium), GetString("8BallTitle")));
+                    break;
 
                 default:
                     Main.isChatCommand = false;
@@ -1493,9 +1559,26 @@ internal class ChatCommands
                     if (devMark == "▲")
                     {
                         byte pid = playerId == 255 ? (byte)0 : playerId;
+                        GhostRoleAssign.forceRole.Remove(pid);
                         RoleAssign.SetRoles.Remove(pid);
                         RoleAssign.SetRoles.Add(pid, rl);
                     }
+                    if (rl.IsGhostRole() && !rl.IsAdditionRole() && isDev && (rl.GetCount() >= 1 && rl.GetMode() > 0))
+                    {
+                        byte pid = playerId == 255 ? (byte)0 : playerId;
+                        CustomRoles setrole = rl.GetCustomRoleTeam() switch
+                        {
+                            Custom_Team.Impostor => CustomRoles.ImpostorTOHE,
+                            _ => CustomRoles.CrewmateTOHE
+
+                        };
+                        RoleAssign.SetRoles.Remove(pid);
+                        RoleAssign.SetRoles.Add(pid, setrole);
+                        GhostRoleAssign.forceRole[pid] = rl;
+
+                        devMark = "▲";
+                    }
+
                     if (isUp) return;
                 }
                 var Des = rl.GetInfoLong();
@@ -1542,7 +1625,7 @@ internal class ChatCommands
         if (Inspector.InspectCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Inspector command", "OnReceiveChat"); return; }
         if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
         if (player.GetRoleClass() is Councillor cl && cl.MurderMsg(text)) { canceled = true; Logger.Info($"Is Councillor command", "OnReceiveChat"); return; }
-        if (player.GetRoleClass() is Swapper sw && sw.SwapMsg(text)) { canceled = true; Logger.Info($"Is Swapper command", "OnReceiveChat"); return; }
+        if (player.GetRoleClass() is Swapper sw && sw.SwapMsg(player, text)) { canceled = true; Logger.Info($"Is Swapper command", "OnReceiveChat"); return; }
         if (Medium.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
         if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info($"Is Nemesis Revenge command", "OnReceiveChat"); return; }
         if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
@@ -2465,6 +2548,69 @@ internal class ChatCommands
                     Utils.SendMessage(string.Format(GetString("RandResult"), botResult), player.PlayerId);
                     break;
                 }
+            case "/8ball":
+                if (!Options.CanPlayMiniGames.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
+                canceled = true;
+                var rando = IRandom.Instance;
+                int result = rando.Next(0, 16);
+                string str = "";
+                switch (result)
+                {
+                    case 0:
+                        str = GetString("8BallYes");
+                        break;
+                    case 1:
+                        str = GetString("8BallNo");
+                        break;
+                    case 2:
+                        str = GetString("8BallMaybe");
+                        break;
+                    case 3:
+                        str = GetString("8BallTryAgainLater");
+                        break;
+                    case 4:
+                        str = GetString("8BallCertain");
+                        break;
+                    case 5:
+                        str = GetString("8BallNotLikely");
+                        break;
+                    case 6:
+                        str = GetString("8BallLikely");
+                        break;
+                    case 7:
+                        str = GetString("8BallDontCount");
+                        break;
+                    case 8:
+                        str = GetString("8BallStop");
+                        break;
+                    case 9:
+                        str = GetString("8BallPossibly");
+                        break;
+                    case 10:
+                        str = GetString("8BallProbably");
+                        break;
+                    case 11:
+                        str = GetString("8BallProbablyNot");
+                        break;
+                    case 12:
+                        str = GetString("8BallBetterNotTell");
+                        break;
+                    case 13:
+                        str = GetString("8BallCantPredict");
+                        break;
+                    case 14:
+                        str = GetString("8BallWithoutDoubt");
+                        break;
+                    case 15:
+                        str = GetString("8BallWithDoubt");
+                        break;
+                }
+                Utils.SendMessage("<align=\"center\"><size=150%>" + str + "</align></size>", player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medium), GetString("8BallTitle")));
+                break;
             case "/me":
                 subArgs = text.Length == 3 ? string.Empty : text.Remove(0, 3);
                 if (string.IsNullOrEmpty(subArgs))
