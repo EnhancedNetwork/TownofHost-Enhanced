@@ -55,6 +55,11 @@ class ExileControllerWrapUpPatch
         if (!AmongUsClient.Instance.AmHost) return;
         AntiBlackout.RestoreIsDead(doSend: false);
 
+        if (Main.UnShapeShifter.Any())
+        {
+            Main.UnShapeShifter.Do(x => Utils.GetPlayerById(x)?.RpcRejectShapeshift());
+        }
+
         List<Collector> collectorCL = Utils.GetRoleBasesByType<Collector>()?.ToList();
 
         if (collectorCL != null) Logger.Info($"{!collectorCL.Any(x => x.CollectorWin(false))}", "!Collector.CollectorWin(false)");
