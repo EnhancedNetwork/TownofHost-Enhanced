@@ -581,7 +581,7 @@ class IntroCutsceneDestroyPatch
                      var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
                      PC.RpcShapeshift(randomplayer, false);
                      PC.RpcRejectShapeshift(); 
-                     PC.ResetPlayerOutfit();
+                     PC.ResetPlayerOutfit(force: true);
                      Main.GameIsLoaded = true;
 
                     });
