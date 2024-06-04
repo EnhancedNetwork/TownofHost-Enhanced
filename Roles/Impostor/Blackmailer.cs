@@ -32,11 +32,6 @@ internal class Blackmailer : RoleBase
     {
         ForBlackmailer.Clear();
     }
-    public override void Add(byte playerId)
-    {
-
-        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = SkillCooldown.GetFloat();
@@ -79,7 +74,7 @@ internal class Blackmailer : RoleBase
     private static void ClearBlackmaile() => ForBlackmailer.Clear();
     
     public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && GameStates.IsInGame && ForBlackmailer.Contains(player.PlayerId);
-    private string GetMarkOthers(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (!isForMeeting) return string.Empty;
         

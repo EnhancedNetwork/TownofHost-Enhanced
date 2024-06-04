@@ -53,7 +53,6 @@ internal class Witch : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-        CustomRoleManager.MarkOthers.Add(GetSpelledMark);
     }
 
     private static void SendRPC(bool doSpell, byte witchId, byte target = 255)
@@ -201,7 +200,8 @@ internal class Witch : RoleBase
             SwitchSpellMode(pc.PlayerId, false);
         }
     }
-    private string GetSpelledMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         seen ??= seer;
 

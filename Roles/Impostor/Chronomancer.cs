@@ -1,9 +1,7 @@
-﻿using Hazel;
-using System;
+﻿using System;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
 using AmongUs.GameOptions;
 
@@ -122,7 +120,7 @@ internal class Chronomancer : RoleBase
     {
         ChargedTime = 0;
         IsInMassacre = false;
-        _Player.MarkDirtySettings();
+        _Player?.MarkDirtySettings();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {

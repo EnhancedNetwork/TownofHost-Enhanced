@@ -4,6 +4,8 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using TOHE.Modules;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -13,9 +15,18 @@ namespace TOHE;
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
 class SetUpRoleTextPatch
 {
+    public static bool IsInIntro = false;
+
     public static void Postfix(IntroCutscene __instance)
     {
         if (!GameStates.IsModHost) return;
+
+        // After showing team for non-modded clients update player names.
+        _ = new LateTask(() =>
+        {
+            IsInIntro = false;
+            Utils.NotifyRoles(NoCache: true);
+        }, 1f);
 
         _ = new LateTask(() =>
         {
@@ -54,11 +65,11 @@ class CoBeginPatch
 {
     public static void Prefix()
     {
+        if (RoleBasisChanger.IsChangeInProgress) return;
+
         var logger = Logger.Handler("Info");
 
         var allPlayerControlsArray = Main.AllPlayerControls;
-
-        Main.AssignRolesIsStarted = false;
 
         logger.Info("------------Player Names------------");
         foreach ( var pc in allPlayerControlsArray)
@@ -552,7 +563,7 @@ class IntroCutsceneDestroyPatch
 {
     public static void Postfix()
     {
-        if (!GameStates.IsInGame) return;
+        if (!GameStates.IsInGame || RoleBasisChanger.SkipTasksAfterAssignRole) return;
 
         Main.introDestroyed = true;
 
@@ -583,13 +594,20 @@ class IntroCutsceneDestroyPatch
 
                 _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "Set Impostor For Server");
             }
-            var ghostUP = PlayerControl.LocalPlayer.GetCustomRole();
-            var checkGhostRole = CustomRolesHelper.IsGhostRole(ghostUP);
 
-            if (PlayerControl.LocalPlayer.Is(CustomRoles.GM) || checkGhostRole) // Incase user has /up access
+            if (PlayerControl.LocalPlayer.Is(CustomRoles.GM)) // Incase user has /up access
             {
                 PlayerControl.LocalPlayer.RpcExile();
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+            }
+            else if (GhostRoleAssign.forceRole.Any())
+            {
+                GhostRoleAssign.forceRole.Do(x => {
+                    var plr = Utils.GetPlayerById(x.Key);
+                    plr.RpcExile();
+                    Main.PlayerStates[x.Key].SetDead();
+
+                });
             }
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))

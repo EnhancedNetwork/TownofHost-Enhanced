@@ -213,7 +213,7 @@ class CheckMurderPatch
         }
 
         // if player hacked by Glitch
-        if (Glitch.HasEnabled && Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckMurderOthers(killer, target)))
+        if (Glitch.HasEnabled && !Glitch.OnCheckMurderOthers(killer, target))
         {
             Logger.Info($"Is hacked by Glitch, it cannot kill ", "Glitch.CheckMurder");
             return false;
@@ -227,10 +227,10 @@ class CheckMurderPatch
         }
 
         // Penguin's victim unable to kill
-        List<PlayerControl> penguins = Utils.GetPlayerListByRole(CustomRoles.Penguin);
-        if (Penguin.HasEnabled && penguins != null && penguins.Any())
+        List<Penguin> penguins = Utils.GetRoleBasesByType<Penguin>()?.ToList();
+        if (Penguin.HasEnabled && penguins != null)
         {
-            if (penguins.Select(x => x.GetRoleClass()).OfType<Penguin>().Any(x => killer.PlayerId == x?.AbductVictim?.PlayerId))
+            if (penguins.Any(x => killer.PlayerId == x?.AbductVictim?.PlayerId))
             {
                 killer.Notify(GetString("PenguinTargetOnCheckMurder"));
                 killer.SetKillCooldown(5);
@@ -885,7 +885,7 @@ class FixedUpdateInNormalGamePatch
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
         {
-            if(Glitch.Glitchs != null && Glitch.Glitchs.Any() && !Glitch.Glitchs.Any(x => x.OnCheckFixedUpdateReport(__instance, id)))
+            if(Glitch.HasEnabled && !Glitch.OnCheckFixedUpdateReport(__instance, id))
             { }
             else
             {
@@ -1170,13 +1170,13 @@ class FixedUpdateInNormalGamePatch
                 Mark.Append(seerRoleClass?.GetMark(seer, target, false));
                 Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
 
-                Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target));
+                Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, false, false));
 
 
                 if (Radar.IsEnable) Suffix.Append(Radar.GetPlayerArrow(seer, target, isForMeeting: false));
 
-                Suffix.Append(seerRoleClass?.GetSuffix(seer, target));
-                Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
+                Suffix.Append(seerRoleClass?.GetSuffix(seer, target, false));
+                Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, false));
 
 
                 if (seerRole.IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
@@ -1539,7 +1539,7 @@ public static class PlayerControlDiePatch
 class PlayerControlSetRolePatch
 {
     public static readonly Dictionary<byte, bool> DidSetGhost = [];
-    public static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
+    private static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType)
     {
         if (GameStates.IsHideNSeek || __instance == null) return true;
@@ -1556,7 +1556,7 @@ class PlayerControlSetRolePatch
 
             try
             {
-                GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
+               GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
             }
             catch (Exception error)
             {
@@ -1564,15 +1564,14 @@ class PlayerControlSetRolePatch
             }
 
             var targetIsKiller = target.Is(Custom_Team.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
+            ghostRoles.Clear();
 
             foreach (var seer in Main.AllPlayerControls)
             {
                 var self = seer.PlayerId == target.PlayerId;
                 var seerIsKiller = seer.Is(Custom_Team.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
-                if (!ghostRoles.ContainsKey(seer))
-                    ghostRoles.Add(seer, roleType);
 
-                if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
+                if (target.GetCustomRole().IsGhostRole() || target.IsAnySubRole(x => x.IsGhostRole()))
                 {
                     ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
@@ -1585,16 +1584,19 @@ class PlayerControlSetRolePatch
                     ghostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
-            if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
+            // If all players see player as Guardian Angel
+            if (ghostRoles.All(kvp => kvp.Value == RoleTypes.GuardianAngel))
             {
                 roleType = RoleTypes.GuardianAngel;
                 return true;
             }
+            // If all players see player as Crewmate Ghost
             else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
             {
                 roleType = RoleTypes.CrewmateGhost;
                 return true;
             }
+            // If all players see player as Impostor Ghost
             else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
             {
                 roleType = RoleTypes.ImpostorGhost;

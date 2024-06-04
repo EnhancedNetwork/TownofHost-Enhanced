@@ -1,5 +1,4 @@
-﻿using Hazel;
-using TOHE.Roles.Core;
+﻿using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.Options;

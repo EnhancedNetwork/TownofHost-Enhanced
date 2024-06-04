@@ -6,6 +6,7 @@ using TOHE.Roles.Core;
 using static TOHE.Utils;
 using static TOHE.Translator;
 
+
 namespace TOHE.Roles.Crewmate;
 
 internal class Medic : RoleBase
@@ -38,9 +39,9 @@ internal class Medic : RoleBase
 
     private enum ShieldDeactivationIsVisible
     {
-        MedicShieldDeactivationIsVisible_DeactivationImmediately,
-        MedicShieldDeactivationIsVisible_DeactivationAfterMeeting,
-        MedicShieldDeactivationIsVisible_DeactivationIsVisibleOFF
+        MedicShieldDeactivationIsVisible_Immediately,
+        MedicShieldDeactivationIsVisible_AfterMeeting,
+        MedicShieldDeactivationIsVisible_OFF
     }
 
     public override void SetupCustomOption()
@@ -68,8 +69,6 @@ internal class Medic : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = 1;
-
-        CustomRoleManager.MarkOthers.Add(GetMarkForOthers);
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -230,7 +229,8 @@ internal class Medic : RoleBase
         }
         return string.Empty;
     }
-    private string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool isformeeting)
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (!seer.Is(CustomRoles.Medic))
         {

@@ -319,7 +319,7 @@ internal class DollMaster : RoleBase
         if (!target.CanBeTeleported() || Pelican.IsEaten(pc.PlayerId) || Pelican.IsEaten(target.PlayerId))
         {
             AURoleOptions.ShapeshifterCooldown = 0;
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), target.IsAlive() ? GetString("CouldNotSwapWithTarget") : GetString("CanNotSwapWithDeadTarget")));
+            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), target.IsAlive() ? GetString("DollMaster_CouldNotSwapWithTarget") : GetString("DollMaster_CanNotSwapWithDeadTarget")));
             return false;
         }
 

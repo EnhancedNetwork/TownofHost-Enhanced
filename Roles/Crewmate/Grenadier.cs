@@ -6,7 +6,6 @@ using TOHE.Modules;
 using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
-using Hazel;
 using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;

@@ -54,16 +54,15 @@ internal class Trapster : RoleBase
 
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
-        var target  = deadBody?.Object;
 
         // if trapster dead
-        if (target.Is(CustomRoles.Trapster) && TrapTrapsterBody.GetBool() && !reporter.IsTransformedNeutralApocalypse())
+        if (deadBody.Object.Is(CustomRoles.Trapster) && TrapTrapsterBody.GetBool() && !reporter.IsTransformedNeutralApocalypse())
         {
-            var killerId = target.PlayerId;
+            var killerId = deadBody.PlayerId;
 
             Main.PlayerStates[reporter.PlayerId].deathReason = PlayerState.DeathReason.Trap;
             reporter.RpcMurderPlayer(reporter);
-            reporter.SetRealKiller(target);
+            reporter.SetRealKiller(deadBody.Object);
 
             RPC.PlaySoundRPC(killerId, Sounds.KillSound);
             
@@ -76,10 +75,10 @@ internal class Trapster : RoleBase
         }
 
         // if reporter try reported trap body
-        if (BoobyTrapBody.Contains(target.PlayerId) && reporter.IsAlive()
-            && !reporter.IsTransformedNeutralApocalypse() && _Player.RpcCheckAndMurder(target, true))
+        if (BoobyTrapBody.Contains(deadBody.PlayerId) && reporter.IsAlive()
+            && !reporter.IsTransformedNeutralApocalypse() && _Player.RpcCheckAndMurder(deadBody.Object, true))
         {
-            var killerId = target.PlayerId;
+            var killerId = deadBody.PlayerId;
             
             Main.PlayerStates[reporter.PlayerId].deathReason = PlayerState.DeathReason.Trap;
             reporter.RpcMurderPlayer(reporter);

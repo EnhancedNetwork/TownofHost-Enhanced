@@ -68,11 +68,10 @@ internal class Solsticer : RoleBase
     {
         playerid = playerId;
 
-        CustomRoleManager.SuffixOthers.Add(GetSuffixOthers);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id)
     {
-        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
         AURoleOptions.PlayerSpeedMod = !patched ? SolsticerSpeed.GetFloat() : 0.5f;
     } //Enabled Solsticer can vent
@@ -99,7 +98,8 @@ internal class Solsticer : RoleBase
 
         return true;
     }
-    private string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
+
+    public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {
         if (GameStates.IsMeeting || !warningActived) return "";
         if (seer.Is(CustomRoles.Solsticer)) return "";
@@ -250,7 +250,7 @@ internal class Solsticer : RoleBase
     }
     public static void SetShortTasksToAdd()
     {
-        var TotalPlayer = Main.PlayerStates.Count(x => x.Value.deathReason != PlayerState.DeathReason.Disconnected);
+        var TotalPlayer = Main.PlayerStates.Count(x => x.Value.Disconnected == false);
         var AlivePlayer = Main.AllAlivePlayerControls.Length;
 
         AddShortTasks = (int)((TotalPlayer - AlivePlayer) * AddTasksPreDeadPlayer.GetFloat());

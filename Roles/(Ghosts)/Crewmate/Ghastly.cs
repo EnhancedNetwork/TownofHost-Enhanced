@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -42,7 +41,6 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         {
             AbilityLimit = MaxPossesions.GetInt();
 
-            CustomRoleManager.LowerOthers.Add(OthersNameText);
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
 
             // OnCheckProtect(_Player, Utils.GetPlayerById(0));
@@ -146,9 +144,10 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             // Logger.Info($"Returned false", "GHASTLYONMURDEROTHER");
             return false;
         }
-        private string OthersNameText(PlayerControl seer, PlayerControl seen, bool IsForMeeting, bool isforhud = false)
+
+        public override string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
         {
-            var IsMeeting = GameStates.IsMeeting || IsForMeeting;
+            var IsMeeting = GameStates.IsMeeting || isForMeeting;
             if (IsMeeting || (seer != seen && seer.IsAlive())) return "";
 
             var killer = killertarget.Item1;
@@ -160,13 +159,25 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 var tar = GetPlayerById(target).GetRealName();
                 if (tar == null) return "";
 
-                var colorstring = ColorString(GetRoleColor(CustomRoles.Ghastly), "<alpha=#88>" +  tar + arrows);
+                var colorstring = ColorString(GetRoleColor(CustomRoles.Ghastly), "<alpha=#88>" + tar + arrows);
                 return colorstring;
             }
 
 
             return "";
         }
+        public override void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+        {
+            var tuple = killertarget;
+            if (DeadPlayer.PlayerId == tuple.Item1)
+            {
+                TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
+                LastTime.Remove(DeadPlayer.PlayerId);
+                KillerIsChosen = false;
+                killertarget = (byte.MaxValue, byte.MaxValue);
+            }
+        }
+
         public override string GetProgressText(byte playerId, bool cooms) => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
         
     }

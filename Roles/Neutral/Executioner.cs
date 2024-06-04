@@ -1,5 +1,4 @@
 using Hazel;
-using InnerNet;
 using System;
 using TOHE.Roles.Core;
 using static TOHE.Options;
@@ -12,7 +11,7 @@ internal class Executioner : RoleBase
     private const int Id = 14200;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
@@ -126,7 +125,7 @@ internal class Executioner : RoleBase
             case "WinCheck":
                 if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) break;
                 if (!CustomWinnerHolder.CheckForConvertedWinner(executionerId))
-                {           //まだ勝者が設定されていない場合
+                {
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Executioner);
                     CustomWinnerHolder.WinnerIds.Add(executionerId);
                 }
@@ -144,27 +143,40 @@ internal class Executioner : RoleBase
         else
             Target.Remove(reader.ReadByte());
     }
-    public void ChangeRoleByTarget(PlayerControl target)
+    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute)
+        => !(ChangeRolesAfterTargetKilled.GetValue() is 6 or 7) && !ForRecompute;
+
+    public static void ChangeRoleByTarget(PlayerControl target)
     {
-        byte Executioner = 0x73;
+        byte ExecutionerId = 0x73;
         Target.Do(x =>
         {
             if (x.Value == target.PlayerId)
-                Executioner = x.Key;
+                ExecutionerId = x.Key;
         });
-        Utils.GetPlayerById(Executioner).RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
-        Target.Remove(Executioner);
-        SendRPC(Executioner);
-        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(Executioner));
+        
+        var Executioner = Utils.GetPlayerById(ExecutionerId);
+        Executioner.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
+
+        playerIdList.Remove(ExecutionerId);
+        Target.Remove(ExecutionerId);
+        SendRPC(ExecutionerId);
+
+        Executioner.GetRoleClass().OnAdd(ExecutionerId);
+        Utils.NotifyRoles(SpecifySeer: Executioner);
     }
     public static void ChangeRole(PlayerControl executioner)
     {
         executioner.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
+
+        playerIdList.Remove(executioner.PlayerId);
         Target.Remove(executioner.PlayerId);
         SendRPC(executioner.PlayerId);
+        
         var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), Translator.GetString(""));
         text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), Translator.GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
         executioner.Notify(text);
+        
         try { executioner.GetRoleClass().OnAdd(executioner.PlayerId); } 
         catch (Exception err) 
         { Logger.Warn($"Error after attempting to RoleCLass.Add({executioner.GetCustomRole().ToString().RemoveHtmlTags() + ", " + executioner.GetRealName()}.PlayerId): {err}", "Executioner.ChangeRole.Add"); }
@@ -175,27 +187,16 @@ internal class Executioner : RoleBase
 
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        ExecutionerWasDead(target.PlayerId);
-    }
-    private void OnOthersDead(PlayerControl killer, PlayerControl target, bool inMeeting)
-    {
         if (Target.ContainsKey(target.PlayerId))
         {
             Target.Remove(target.PlayerId);
             SendRPC(target.PlayerId);
         }
-
-        else if (CheckTarget(target.PlayerId))
-            ChangeRoleByTarget(target);
     }
-
-    private static void ExecutionerWasDead(byte targetId)
+    private void OnOthersDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (Target.ContainsKey(targetId))
-        {
-            Target.Remove(targetId);
-            SendRPC(targetId);
-        }
+        if (CheckTarget(target.PlayerId))
+            ChangeRoleByTarget(target);
     }
 
     public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
@@ -214,17 +215,20 @@ internal class Executioner : RoleBase
 
     public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
-        foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId).ToArray())
+        foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId))
         {
             var executioner = Utils.GetPlayerById(kvp.Key);
             if (executioner == null || !executioner.IsAlive() || executioner.Data.Disconnected) continue;
-            if (!isMeetingHud) ExeWin(kvp.Key, DecidedWinner);
 
             if (isMeetingHud)
             {
                 name = string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
-                DecidedWinner = true;
             }
+            else
+            {
+                ExeWin(kvp.Key, DecidedWinner);
+            }
+            DecidedWinner = true;
         }
     }
     private static void ExeWin(byte playerId, bool DecidedWinner)
