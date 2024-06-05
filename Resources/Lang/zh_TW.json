@@ -2399,7 +2399,7 @@
   "RpcAntiBlackOutIgnored": "【<b>{0}</b>】發生未知錯誤，根據房主設定將忽略該玩家",
   "RpcAntiBlackOutEndGame": "【<b>{0}</b>】發生未知錯誤，將結束遊戲以防止黑屏",
   "RpcAntiBlackOutNotifyInLobby": "由於玩家【<b>{0}</b> 】發生未知錯誤，已結束遊戲以防止卡房，若您不希望在其他玩家發生錯誤時結束遊戲，請在設定中關閉【{1}】",
-  "AntiBlackOutNotifyInLobby": "An error occurred, to prevent black screen. Do a «/dump» and send the logs to the discord server TOHE in «bug-reports» and we will try to fix it.",
+  "AntiBlackOutNotifyInLobby": "發生了錯誤，為了防止黑屏。你可以使用「/dump」並將錯誤報告發送至TOHE Discord裡的「bug-reports」頻道來試圖修復。",
   "AntiBlackOutLoggerSendInGame": "由於未知錯誤發生，將結束遊戲以防止黑屏",
   "AntiBlackOutRequestHostToForceEnd": "您觸發了黑屏Bug，正在請求房主結束遊戲...",
   "AntiBlackOutHostRejectForceEnd": "您觸發了黑屏Bug，房主拒絕結束遊戲，稍後將為您斷開連接",
