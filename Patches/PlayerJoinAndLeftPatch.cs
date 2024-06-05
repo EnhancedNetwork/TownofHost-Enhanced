@@ -110,7 +110,7 @@ class OnGameJoinedPatch
                     return;
                 }
 
-                if (GameStates.IsVanillaServer)
+                if (!GameStates.IsVanillaServer)
                 {
                     RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
                 }
