@@ -595,23 +595,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveSwapRPC(reader, __instance);
                 break;
-            case CustomRPC.RequestMarks:
-                if (PlayerControl.LocalPlayer.OwnedByHost())
-                {
-                    var Seer = Utils.GetPlayerById(reader.ReadByte());
-                    var Seen = Utils.GetPlayerById(reader.ReadByte());
-                    var OldMarks = reader.ReadString();
-                    var isForMeeting = reader.ReadBoolean();
-                    var Marks = Seer.GetRoleClass().GetMark(Seer, Seen, isForMeeting) + CustomRoleManager.GetMarkOthers(Seer, Seen, isForMeeting);
-                    if (OldMarks != Marks)
-                    {
-                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ReceiveMarks, SendOption.Reliable, -1);
-                        writer.Write(Seen.PlayerId);
-                        writer.Write(Marks);
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
-                    }
-                }
-                break;
             case CustomRPC.ReceiveMarks:
                 if (!PlayerControl.LocalPlayer.OwnedByHost())
                 {
