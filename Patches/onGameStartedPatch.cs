@@ -126,7 +126,7 @@ internal class ChangeRoleSettings
                 if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
                 Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
                 {
-                    SetOutfit = new OutfitSave(Main.AllPlayerNames[pc.PlayerId], pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.NamePlateId),
+                    NormalOutfit = new GameData.PlayerOutfit().Set(Main.AllPlayerNames[pc.PlayerId], pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
                 };
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
