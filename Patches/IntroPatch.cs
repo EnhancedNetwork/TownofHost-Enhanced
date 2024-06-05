@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -539,6 +540,8 @@ class IntroCutsceneDestroyPatch
                 state.HasSpawned = true;
             }
         }
+
+        CustomRoleManager.Add();
 
         if (AmongUsClient.Instance.AmHost)
         {
