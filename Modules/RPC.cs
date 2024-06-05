@@ -149,7 +149,8 @@ internal class RPCHandlerPatch
         or CustomRPC.PresidentEnd
         or CustomRPC.SetSwapperVotes
         or CustomRPC.DumpLog
-        or CustomRPC.SetFriendCode;
+        or CustomRPC.SetFriendCode
+        or CustomRPC.RequestMarks;
     public static bool DoNotLogRpc(byte id)
     => (CustomRPC)id is CustomRPC.RequestMarks
         or CustomRPC.ReceiveMarks;
