@@ -731,7 +731,7 @@ internal static class RPC
     }
     public static void SetFriendCode(PlayerControl target, string fc)
     {
-        if (GameStates.IsVanillaServer) return; //Anticheat
+        if (GameStates.IsVanillaServer) return;
         target.FriendCode = fc;
         target.Data.FriendCode = fc;
         target.GetClient().FriendCode = fc;

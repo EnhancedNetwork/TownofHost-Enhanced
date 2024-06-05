@@ -109,7 +109,11 @@ class OnGameJoinedPatch
                     SceneChanger.ChangeScene("MainMenu");
                     return;
                 }
-                RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
+
+                if (GameStates.IsVanillaServer)
+                {
+                    RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
+                }
                 var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
                 var host = AmongUsClient.Instance.GetHost();
                 Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined");
@@ -517,7 +521,7 @@ class CreatePlayerPatch
             {
                 _ = new LateTask(() =>
                 {
-                    if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null)
+                    if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null && GameStates.IsVanillaServer)
                     {
                         // Only for vanilla
                         if (!client.Character.OwnedByHost() && !client.Character.IsModClient())
