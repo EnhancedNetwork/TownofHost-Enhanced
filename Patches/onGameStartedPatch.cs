@@ -277,7 +277,19 @@ internal class SelectRolesPatch
     public static void Postfix()
     {
         //There is a delay of 0.8 seconds because after the player exits during the assign of desync roles, either a black screen will occur or the Scientist role will be set
-        _ = new LateTask(SetRolesAfterSelect, 0.8f, "Set Role Types After Select");
+        _ = new LateTask(() => {
+            // Set roles
+            SetRolesAfterSelect();
+
+            // Assign tasks again
+            ShipStatus.Instance.Begin();
+        }, 0.5f, "Set Role Types After Select");
+        
+        _ = new LateTask(() => {
+
+            // Update name players
+            Utils.NotifyRoles(NoCache: true);
+        }, 0.8f, "Do Notify Roles After Assign", shoudLog: false);
     }
     public static void SetRolesAfterSelect()
     {
@@ -540,8 +552,6 @@ internal class SelectRolesPatch
             Utils.SyncAllSettings();
 
             Logger.Msg("Ended", "AssignRoles");
-
-            Utils.NotifyRoles(NoCache: true);
         }
         catch (Exception ex)
         {
