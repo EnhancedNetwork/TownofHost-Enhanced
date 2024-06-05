@@ -732,6 +732,8 @@ internal static class RPC
     public static void SetFriendCode(PlayerControl target, string fc)
     {
         if (GameStates.IsVanillaServer) return;
+        if (target.GetClient() != null && target.GetClient().ProductUserId != string.Empty) return;
+        // On Niko233's region this is not needed lol
         target.FriendCode = fc;
         target.Data.FriendCode = fc;
         target.GetClient().FriendCode = fc;
