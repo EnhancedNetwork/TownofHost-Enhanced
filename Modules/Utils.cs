@@ -1666,7 +1666,7 @@ public static class Utils
                     RoleInfo = Regex.Replace(RoleInfo, "<[^>]*>", "");
                     RoleInfo = Regex.Replace(RoleInfo, "{[^}]*}", "");
 
-                    var BaseFontSize = 275;
+                    var BaseFontSize = 200;
                     int BaseFontSizeMin = 100;
 
                     BaseFontSize -= 3 * RoleInfo.Length;
@@ -1677,7 +1677,7 @@ public static class Utils
 
                 string IconText = "<color=#ffffff>|</color>";
                 string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
-                string SelfTeamName = $"<size=450%>{IconText} {Font}{Utils.ColorString(Utils.GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
+                string SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
                 string SelfRoleName = $"<size=185%>{Font}{ColorString(seer.GetRoleColor(), GetRoleName(seer.GetCustomRole()))}</font></size>";
                 string SelfSubRolesName = string.Empty;
                 string SeerRealName = seer.GetRealName();
