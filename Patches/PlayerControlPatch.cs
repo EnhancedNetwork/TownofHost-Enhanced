@@ -1328,7 +1328,7 @@ class CoEnterVentPatch
         {
             _ = new LateTask(() =>
             {
-                __instance.RpcBootFromVent(id);
+                __instance?.RpcBootFromVent(id);
             }, 0.5f, "Fix Vent Stuck");
             return false;
         }
