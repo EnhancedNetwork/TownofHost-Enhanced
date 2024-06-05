@@ -74,15 +74,6 @@ internal class Virus : RoleBase
             AddMsg(VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
     }
     public override void MeetingHudClear() => VirusNotify.Clear();
-    
-
-    private static void SendRPCInfectKill(byte virusId, byte target = 255)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.Write(virusId);
-        writer.Write(target);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(ImpostorVision.GetBool());
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -157,7 +148,6 @@ internal class Virus : RoleBase
     private static void RemoveInfectedPlayer(PlayerControl virus)
     {
         InfectedPlayer.Clear();
-        SendRPCInfectKill(virus.PlayerId);
     }
 
     public static bool KnowRole(PlayerControl player, PlayerControl target)
