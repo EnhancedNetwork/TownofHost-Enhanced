@@ -16,6 +16,11 @@ public static class Bloodlust
         SetupAdtRoleOptions(Id, CustomRoles.Bloodlust, canSetNum: true);
     }
 
+    public static void Add()
+    {
+        Alchemist.AddBloodlus();
+    }
+
     public static void OnTaskComplete(PlayerControl player)
     {
         if (Alchemist.BloodlustList.ContainsKey(player.PlayerId)) return;

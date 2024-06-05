@@ -488,6 +488,9 @@ internal class SelectRolesPatch
                         case CustomRoles.Fool:
                             Fool.Add();
                             break;
+                        case CustomRoles.Bloodlust:
+                            Bloodlust.Add();
+                            break;
 
                         default:
                             break;
