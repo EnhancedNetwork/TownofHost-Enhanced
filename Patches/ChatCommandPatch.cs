@@ -2685,8 +2685,26 @@ class ChatUpdatePatch
         if (player == null) return;
 
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
+
+        if (sendTo != byte.MaxValue)
+        {
+            if (Utils.GetPlayerInfoById(sendTo) != null)
+            {
+                var targetinfo = Utils.GetPlayerInfoById(sendTo);
+
+                if (targetinfo.DefaultOutfit.ColorId == -1)
+                {
+                    var delaymessage = Main.MessagesToSend[0];
+                    Main.MessagesToSend.RemoveAt(0);
+                    Main.MessagesToSend.Add(delaymessage);
+                    return;
+                }
+                // green beans color id is -1
+            }
+            // It is impossible to get null player here unless it quits
+        }
         Main.MessagesToSend.RemoveAt(0);
-        
+
         int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
         var name = player.Data.PlayerName;
 

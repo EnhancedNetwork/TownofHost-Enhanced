@@ -165,18 +165,18 @@ public static class AddonAssign
             allPlayers.Add(pc);
         }
         var role = CustomRoles.Lovers;
-        var rd = IRandom.Instance;
         var count = Math.Clamp(RawCount, 0, allPlayers.Count);
         if (RawCount == -1) count = Math.Clamp(role.GetCount(), 0, allPlayers.Count);
-        if (count <= 0) return;
+        if (count <= 0 || allPlayers.Count <= 1) return;
         for (var i = 0; i < count; i++)
         {
-            var player = allPlayers[rd.Next(0, allPlayers.Count)];
+            var player = allPlayers.RandomElement();
             Main.LoversPlayers.Add(player);
             allPlayers.Remove(player);
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
             Logger.Info($"Registered Lovers: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", "Assign Lovers");
         }
-        RPC.SyncLoversPlayers();
+        if (Main.LoversPlayers.Any())
+            RPC.SyncLoversPlayers();
     }
 }

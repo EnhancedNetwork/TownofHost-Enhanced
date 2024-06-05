@@ -138,7 +138,7 @@ class CheckMurderPatch
 
         Logger.Info($"Start: CustomRoleManager.OnCheckMurder", "CheckMurder");
 
-        if (CustomRoleManager.OnCheckMurder(killer, target) == false)
+        if (CustomRoleManager.OnCheckMurder(ref killer, ref target) == false)
         {
             Logger.Info($"Canceled from CustomRoleManager.OnCheckMurder", "CheckMurder");
             return false;
@@ -248,20 +248,6 @@ class CheckMurderPatch
         Logger.Info($"check: {check}", "RpcCheckAndMurder");
 
         if (target == null) target = killer;
-
-        Logger.Info($"Start", "Shaman.CheckMurder");
-
-        // Shaman replace target
-        if (Shaman.HasEnabled && Shaman.ShamanTarget != byte.MaxValue)
-        {
-            Logger.Info($"Real target before = {target.GetNameWithRole().RemoveHtmlTags()}", "Shaman.CheckMurder");
-
-            target = Shaman.ChangeTarget(target);
-
-            Logger.Info($"Real target after = {target.GetNameWithRole().RemoveHtmlTags()}", "Shaman.CheckMurder");
-        }
-
-        Logger.Info($"End", "Shaman.CheckMurder");
 
         var killerRole = killer.GetCustomRole();
 
@@ -1355,7 +1341,7 @@ class CoEnterVentPatch
         {
             _ = new LateTask(() =>
             {
-                __instance.RpcBootFromVent(id);
+                __instance?.RpcBootFromVent(id);
             }, 0.5f, "Fix Vent Stuck");
             return false;
         }

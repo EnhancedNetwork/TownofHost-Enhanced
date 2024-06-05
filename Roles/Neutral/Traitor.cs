@@ -21,7 +21,6 @@ internal class Traitor : RoleBase
 
     public override void SetupCustomOption()
     {
-        //Traitorは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Traitor, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor])
             .SetValueFormat(OptionFormat.Seconds);
@@ -53,7 +52,7 @@ internal class Traitor : RoleBase
     {
         return !(target == killer || target.Is(Custom_Team.Impostor));
     }
-    
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
-        => seer.Is(CustomRoles.Traitor) && target.Is(Custom_Team.Impostor);
+
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+        => seer.Is(CustomRoles.Traitor) && target.Is(Custom_Team.Impostor) ? Main.roleColors[CustomRoles.Impostor] : string.Empty;
 }

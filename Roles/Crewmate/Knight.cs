@@ -50,6 +50,7 @@ internal class Knight : RoleBase
         SendSkillRPC(); 
         Logger.Info($"{killer.GetNameWithRole()} : " + "Kill chance used", "Knight");
         killer.ResetKillCooldown();
+        killer.SetKillCooldown();
         return true;
     }
 }

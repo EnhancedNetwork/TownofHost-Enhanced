@@ -109,9 +109,15 @@ class OnGameJoinedPatch
                     SceneChanger.ChangeScene("MainMenu");
                     return;
                 }
-                RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
+
                 var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
                 var host = AmongUsClient.Instance.GetHost();
+
+                if (!GameStates.IsVanillaServer)
+                {
+                    RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
+                }
+
                 Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined");
                 Logger.Info($"{host.PlayerName.RemoveHtmlTags()}(ClientID:{host.Id}/FriendCode:{host.FriendCode}/HashPuid:{host.GetHashedPuid()}/Platform:{host.PlatformData.Platform}) is the host", "Session: OnGameJoined");
             }
@@ -304,6 +310,20 @@ class OnPlayerLeftPatch
     {
         try
         {
+            if (AmongUsClient.Instance.AmHost && data.Character != null)
+            {
+                for (int i = 0; i < Main.MessagesToSend.Count; i++)
+                {
+                    var (msg, sendTo, title) = Main.MessagesToSend[i];
+                    if (sendTo == data.Character.PlayerId)
+                    {
+                        Main.MessagesToSend.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            // Remove messages sending to left player
+
             if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
@@ -517,7 +537,7 @@ class CreatePlayerPatch
             {
                 _ = new LateTask(() =>
                 {
-                    if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null)
+                    if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null && GameStates.IsVanillaServer)
                     {
                         // Only for vanilla
                         if (!client.Character.OwnedByHost() && !client.Character.IsModClient())

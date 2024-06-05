@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -22,11 +23,8 @@ class SetUpRoleTextPatch
         if (!GameStates.IsModHost) return;
 
         // After showing team for non-modded clients update player names.
-        _ = new LateTask(() =>
-        {
-            IsInIntro = false;
-            Utils.NotifyRoles(NoCache: true);
-        }, 1f);
+        IsInIntro = false;
+        Utils.NotifyRoles(NoCache: true);
 
         _ = new LateTask(() =>
         {
@@ -542,6 +540,8 @@ class IntroCutsceneDestroyPatch
                 state.HasSpawned = true;
             }
         }
+
+        CustomRoleManager.Add();
 
         if (AmongUsClient.Instance.AmHost)
         {
