@@ -310,6 +310,20 @@ class OnPlayerLeftPatch
     {
         try
         {
+            if (AmongUsClient.Instance.AmHost && data.Character != null)
+            {
+                for (int i = 0; i < Main.MessagesToSend.Count; i++)
+                {
+                    var (msg, sendTo, title) = Main.MessagesToSend[i];
+                    if (sendTo == data.Character.PlayerId)
+                    {
+                        Main.MessagesToSend.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            // Remove messages sending to left player
+
             if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
