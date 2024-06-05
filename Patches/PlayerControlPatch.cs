@@ -1167,25 +1167,37 @@ class FixedUpdateInNormalGamePatch
                 var seerRole = seer.GetCustomRole();
 
 
-                // If seer is host then set mark, if seer is Modded and not Host send a Request to the Host for marks info.
+                // If seer is Host then set mark, and check for any Mark updates to send to other modded clients.
+                if (!CustomRoleManager.SaveMarkFromRPC.ContainsKey(target.PlayerId))
+                    CustomRoleManager.SaveMarkFromRPC[target.PlayerId] = "";
                 if (PlayerControl.LocalPlayer.OwnedByHost())
                 {
                     Mark.Append(seerRoleClass?.GetMark(seer, target, false));
                     Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
+
+                    // Simulate mark check for every other modded player and other player.
+                    foreach (var moddedPlayers in Main.AllPlayerControls.Where(moddedPlayers => !moddedPlayers.OwnedByHost() && moddedPlayers.IsModClient()))
+                    {
+                        string NewMark = string.Empty;
+                        foreach (var nmPlayers in Main.AllPlayerControls.Where(nmPlayers => nmPlayers != moddedPlayers))
+                        {
+                            NewMark = moddedPlayers.GetRoleClass().GetMark(moddedPlayers, nmPlayers, false) + CustomRoleManager.GetMarkOthers(moddedPlayers, nmPlayers, false);
+
+                            if (NewMark != CustomRoleManager.SaveMarkFromRPC[nmPlayers.PlayerId]) // If new mark on a player send info to other modded clients
+                            {
+                                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ReceiveMarks, SendOption.Reliable, -1);
+                                writer.Write(nmPlayers.PlayerId);
+                                writer.Write(NewMark);
+                                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                            }
+
+                            CustomRoleManager.SaveMarkFromRPC[nmPlayers.PlayerId] = NewMark;
+                        }
+                    }
                 }
                 else
                 {
-                    if (!CustomRoleManager.SaveMarkFromRPC.ContainsKey(target.PlayerId))
-                        CustomRoleManager.SaveMarkFromRPC[target.PlayerId] = "";
-
-                    // Request marks from host.
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestMarks, SendOption.Reliable, -1);
-                    writer.Write(seer.PlayerId); 
-                    writer.Write(target.PlayerId);
-                    writer.Write(CustomRoleManager.SaveMarkFromRPC[target.PlayerId]);
-                    writer.Write(false);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
-
+                    // if seer is Modded and not Host set marks received from Host.
                     Mark.Append(CustomRoleManager.SaveMarkFromRPC[target.PlayerId]);
                 }
 
