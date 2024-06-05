@@ -126,6 +126,8 @@ internal class ChangeRoleSettings
             {
                 var colorId = pc.Data.DefaultOutfit.ColorId;
                 if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
+                TOHE.Logger.Info($"the currect color for {pc.GetRealName()} : {pc.PlayerId} is : {pc.CurrentOutfit.ColorId}", "PlayerOutfitTest");
+
                 Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
                 {
                     SetOutfit = new OutfitSave(Main.AllPlayerNames[pc.PlayerId], pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.NamePlateId),
