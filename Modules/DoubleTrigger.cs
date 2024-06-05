@@ -67,6 +67,7 @@ static class DoubleTrigger
         if (!FirstTriggerTimer.ContainsKey(playerId)) return;
 
         FirstTriggerTimer[playerId] -= Time.fixedDeltaTime;
+        Logger.Info($"{player.name} FirstTriggerTimer: {FirstTriggerTimer[playerId]}", "DoubleTrigger");
         if (FirstTriggerTimer[playerId] <= 0)
         {
             Logger.Info($"{player.name} Do single action", "DoubleTrigger");
