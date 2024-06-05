@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
@@ -161,7 +162,7 @@ internal class EvilTracker : RoleBase
     }
     private static void SendRPC(byte trackerId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetEvilTrackerTarget, SendOption.Reliable, -1);
         writer.Write(trackerId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
