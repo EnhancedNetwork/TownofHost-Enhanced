@@ -198,7 +198,7 @@ public class GameStartManagerPatch
             }
 
             // Lobby timer
-            if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return;
+            if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer) return;
 
             if (update) currentText = __instance.PlayerCounter.text;
 
