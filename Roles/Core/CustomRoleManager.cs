@@ -141,7 +141,7 @@ public static class CustomRoleManager
     /// <summary>
     /// Check Murder as Killer in target
     /// </summary>
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurder(ref PlayerControl killer, ref PlayerControl target)
     {
         if (killer == target) return true;
 
