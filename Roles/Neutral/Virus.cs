@@ -93,26 +93,26 @@ internal class Virus : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        if (target == null || !target.CanBeInfected()) return;
-        if (!InfectedBodies.Contains(target.PlayerId)) return;
+        if (!InfectedBodies.Contains(target.Data.PlayerId)) return;
+        if (reporter == null || !reporter.CanBeInfected()) return;
 
         AbilityLimit--;
         SendSkillRPC();
 
         if (KillInfectedPlayerAfterMeeting.GetBool())
         {
-            InfectedPlayer.Add(target.PlayerId);
+            InfectedPlayer.Add(reporter.PlayerId);
 
-            VirusNotify.Add(target.PlayerId, GetString("VirusNoticeMessage2"));
+            VirusNotify.Add(reporter.PlayerId, GetString("VirusNoticeMessage2"));
         }
         else
         {
-            target.RpcSetCustomRole(CustomRoles.Contagious);
+            reporter.RpcSetCustomRole(CustomRoles.Contagious);
 
-            VirusNotify.Add(target.PlayerId, GetString("VirusNoticeMessage"));
+            VirusNotify.Add(reporter.PlayerId, GetString("VirusNoticeMessage"));
         }
 
-        Logger.Info("Setting up a career:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());
+        Logger.Info("Setting up a career:" + reporter?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
