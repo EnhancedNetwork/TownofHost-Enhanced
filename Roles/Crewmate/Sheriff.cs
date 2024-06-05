@@ -118,6 +118,10 @@ internal class Sheriff : RoleBase
             )
         {
             killer.ResetKillCooldown();
+            if (AbilityLimit < 1)
+            {
+                killer.SetKillCooldown();
+            }
             return true;
         }
         Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
