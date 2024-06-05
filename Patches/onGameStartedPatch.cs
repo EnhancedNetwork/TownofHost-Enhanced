@@ -130,7 +130,7 @@ internal class ChangeRoleSettings
 
                 Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
                 {
-                    SetOutfit = new OutfitSave(Main.AllPlayerNames[pc.PlayerId], pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.NamePlateId),
+                    NormalOutfit = new GameData.PlayerOutfit().Set(Main.AllPlayerNames[pc.PlayerId], pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
                 };
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
