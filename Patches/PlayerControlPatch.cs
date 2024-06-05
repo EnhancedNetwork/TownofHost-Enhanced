@@ -1167,8 +1167,27 @@ class FixedUpdateInNormalGamePatch
                 var seerRole = seer.GetCustomRole();
 
 
-                Mark.Append(seerRoleClass?.GetMark(seer, target, false));
-                Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
+                // If seer is host then set mark, if seer is Modded and not Host send a Request to the Host for marks info.
+                if (PlayerControl.LocalPlayer.OwnedByHost())
+                {
+                    Mark.Append(seerRoleClass?.GetMark(seer, target, false));
+                    Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
+                }
+                else
+                {
+                    if (!CustomRoleManager.SaveMarkFromRPC.ContainsKey(target.PlayerId))
+                        CustomRoleManager.SaveMarkFromRPC[target.PlayerId] = "";
+
+                    // Request marks from host.
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestMarks, SendOption.Reliable, -1);
+                    writer.Write(seer.PlayerId); 
+                    writer.Write(target.PlayerId);
+                    writer.Write(CustomRoleManager.SaveMarkFromRPC[target.PlayerId]);
+                    writer.Write(false);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                    Mark.Append(CustomRoleManager.SaveMarkFromRPC[target.PlayerId]);
+                }
 
                 Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, false, false));
 

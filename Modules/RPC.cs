@@ -48,6 +48,8 @@ enum CustomRPC : byte // 194/255 USED
     RetributionistRevenge,
     SetFriendCode,
     SyncLobbyTimer,
+    RequestMarks,
+    ReceiveMarks,
 
     //Roles 
     SetBountyTarget,
@@ -148,12 +150,16 @@ internal class RPCHandlerPatch
         or CustomRPC.SetSwapperVotes
         or CustomRPC.DumpLog
         or CustomRPC.SetFriendCode;
+    public static bool DoNotLogRpc(byte id)
+    => (CustomRPC)id is CustomRPC.RequestMarks
+        or CustomRPC.ReceiveMarks;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
         if (EAC.ReceiveRpc(__instance, callId, reader)) return false;
-        Logger.Info($"{__instance?.Data?.PlayerId}({(__instance.OwnedByHost() ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
+        if (!DoNotLogRpc(callId))
+            Logger.Info($"{__instance?.Data?.PlayerId}({(__instance.OwnedByHost() ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
         switch (rpcType)
         {
             case RpcCalls.SetName: //SetNameRPC
@@ -594,6 +600,32 @@ internal class RPCHandlerPatch
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveSwapRPC(reader, __instance);
                 break;
+            case CustomRPC.RequestMarks:
+                if (PlayerControl.LocalPlayer.OwnedByHost())
+                {
+                    var Seer = Utils.GetPlayerById(reader.ReadByte());
+                    var Seen = Utils.GetPlayerById(reader.ReadByte());
+                    var OldMarks = reader.ReadString();
+                    var isForMeeting = reader.ReadBoolean();
+                    var Marks = Seer.GetRoleClass().GetMark(Seer, Seen, isForMeeting) + CustomRoleManager.GetMarkOthers(Seer, Seen, isForMeeting);
+                    if (OldMarks != Marks)
+                    {
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ReceiveMarks, SendOption.Reliable, -1);
+                        writer.Write(Seen.PlayerId);
+                        writer.Write(Marks);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    }
+                }
+                break;
+            case CustomRPC.ReceiveMarks:
+                if (!PlayerControl.LocalPlayer.OwnedByHost())
+                {
+                    var SeenId = reader.ReadByte();
+                    var Marks = reader.ReadString();
+                    if (Marks != CustomRoleManager.SaveMarkFromRPC[SeenId])
+                        CustomRoleManager.SaveMarkFromRPC[SeenId] = Marks;
+                }
+                break;
         }
     }
 
@@ -916,7 +948,7 @@ internal static class RPC
     }
     public static void SendRpcLogger(uint targetNetId, byte callId, int targetClientId = -1)
     {
-        if (!DebugModeManager.AmDebugger) return;
+        if (!DebugModeManager.AmDebugger || RPCHandlerPatch.DoNotLogRpc(callId)) return;
         string rpcName = GetRpcName(callId);
         string from = targetNetId.ToString();
         string target = targetClientId.ToString();
@@ -954,6 +986,7 @@ internal class StartRpcPatch
 {
     public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId)
     {
+        if (RPCHandlerPatch.DoNotLogRpc(callId)) return;
         RPC.SendRpcLogger(targetNetId, callId);
     }
 }
@@ -962,6 +995,7 @@ internal class StartRpcImmediatelyPatch
 {
     public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(3)] int targetClientId = -1)
     {
+        if (RPCHandlerPatch.DoNotLogRpc(callId)) return;
         RPC.SendRpcLogger(targetNetId, callId, targetClientId);
     }
 }

@@ -18,6 +18,8 @@ public static class CustomRoleManager
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
 
     public static bool OtherCollectionsSet = false;
+    public static Dictionary<byte, string> SaveMarkFromRPC = [];
+    
     public static List<RoleBase> GetNormalOptions(Custom_RoleType type)
     {
         List<RoleBase> roles = [];

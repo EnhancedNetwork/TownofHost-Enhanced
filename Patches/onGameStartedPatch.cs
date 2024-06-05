@@ -17,6 +17,8 @@ internal class ChangeRoleSettings
 {
     public static void Postfix(AmongUsClient __instance)
     {
+        CustomRoleManager.SaveMarkFromRPC.Clear();
+        
         SetUpRoleTextPatch.IsInIntro = true;
 
         Main.OverrideWelcomeMsg = "";

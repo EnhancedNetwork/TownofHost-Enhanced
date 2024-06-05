@@ -1011,8 +1011,27 @@ class MeetingHudStartPatch
             if (seer.KnowDeathReason(target))
                 sb.Append($" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})");
 
-            sb.Append(seerRoleClass?.GetMark(seer, target, true));
-            sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));
+            // If seer is host then set mark, if seer is Modded and not Host send a Request to the Host for marks info.
+            if (PlayerControl.LocalPlayer.OwnedByHost())
+            {
+                sb.Append(seerRoleClass?.GetMark(seer, target, true));
+                sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));
+            }
+            else
+            {
+                if (!CustomRoleManager.SaveMarkFromRPC.ContainsKey(target.PlayerId))
+                    CustomRoleManager.SaveMarkFromRPC[target.PlayerId] = "";
+
+                // Request marks from host
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestMarks, SendOption.Reliable, -1);
+                writer.Write(seer.PlayerId);
+                writer.Write(target.PlayerId);
+                writer.Write(CustomRoleManager.SaveMarkFromRPC[target.PlayerId]);
+                writer.Write(true);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                sb.Append(CustomRoleManager.SaveMarkFromRPC[target.PlayerId]);
+            }
 
             if (seer.GetCustomRole().IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
             {
