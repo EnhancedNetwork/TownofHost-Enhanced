@@ -15,6 +15,8 @@ namespace TOHE;
 class GameEndCheckerForNormal
 {
     private static GameEndPredicate predicate;
+    public static bool ShowAllRolesWhenGameEnd = false;
+
     public static bool Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -47,13 +49,16 @@ class GameEndCheckerForNormal
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
         {
             // Clear all Notice players 
-            NameNotifyManager.Notice.Clear();
+            NameNotifyManager.Reset();
 
             // Reset Camouflage
             Main.AllPlayerControls.Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true, GameEnd: true));
 
+            // Show all roles
+            ShowAllRolesWhenGameEnd = true;
+
             // Update all Notify Roles
-            Utils.DoNotifyRoles(ForceLoop: true);
+            Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
 
             if (reason == GameOverReason.ImpostorBySabotage && (CustomRoles.Jackal.RoleExist() || CustomRoles.Sidekick.RoleExist()) && Jackal.CanWinBySabotageWhenNoImpAlive.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeam()))
             {
@@ -440,6 +445,8 @@ class GameEndCheckerForNormal
             Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
 
             ShipStatus.Instance.enabled = false;
+            // When crewmates win, show as impostor win, for displaying all names players
+            reason = reason is GameOverReason.HumansByVote or GameOverReason.HumansByTask ? GameOverReason.ImpostorByVote : reason;
             StartEndGame(reason);
             predicate = null;
         }
@@ -511,6 +518,9 @@ class GameEndCheckerForNormal
             // Delay to ensure that the end of the game is delivered at the end of the game
             yield return new WaitForSeconds(EndGameDelay);
         }
+
+        // Update all Notify Roles
+        Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
 
         // Start End Game
         GameManager.Instance.RpcEndGame(reason, false);
