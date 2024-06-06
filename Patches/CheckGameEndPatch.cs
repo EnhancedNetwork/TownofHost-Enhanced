@@ -49,7 +49,7 @@ class GameEndCheckerForNormal
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
         {
             // Clear all Notice players 
-            NameNotifyManager.Notice.Clear();
+            NameNotifyManager.Reset();
 
             // Reset Camouflage
             Main.AllPlayerControls.Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true, GameEnd: true));
@@ -445,7 +445,7 @@ class GameEndCheckerForNormal
             Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
 
             ShipStatus.Instance.enabled = false;
-            // When crewmates win, show as impostor win. for displaying all names players
+            // When crewmates win, show as impostor win, for displaying all names players
             reason = reason is GameOverReason.HumansByVote or GameOverReason.HumansByTask ? GameOverReason.ImpostorByVote : reason;
             StartEndGame(reason);
             predicate = null;
