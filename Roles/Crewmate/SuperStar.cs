@@ -33,7 +33,7 @@ internal class SuperStar : RoleBase
         playerIdList.Add(playerId);
     }
 
-    public override string GetSuffixOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetSuffixOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
             => seen.Is(CustomRoles.SuperStar) && EveryOneKnowSuperStar.GetBool() ? ColorString(GetRoleColor(CustomRoles.SuperStar), "★") : string.Empty;
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
