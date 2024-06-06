@@ -38,30 +38,30 @@ internal class GameDataHandlerPatch
                             EAC.WarnHost();
                             return false;
                         }
-                    }
-                    else
-                    {
-                        if (AmongUsClient.Instance.AmHost)
+                        else
                         {
-                            if (obj == GameData.Instance)
+                            if (AmongUsClient.Instance.AmHost)
                             {
-                                Logger.Warn(string.Format("Received DataFlag for GameData {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
-                                EAC.WarnHost();
-                                return false;
-                            }
+                                if (obj == GameData.Instance)
+                                {
+                                    Logger.Warn(string.Format("Received DataFlag for GameData {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                    EAC.WarnHost();
+                                    return false;
+                                }
 
-                            if (obj == MeetingHud.Instance)
-                            {
-                                Logger.Warn(string.Format("Received DataFlag for MeetingHud {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
-                                EAC.WarnHost();
-                                return false;
-                            }
+                                if (obj == MeetingHud.Instance)
+                                {
+                                    Logger.Warn(string.Format("Received DataFlag for MeetingHud {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                    EAC.WarnHost();
+                                    return false;
+                                }
 
-                            if (obj == VoteBanSystem.Instance)
-                            {
-                                Logger.Warn(string.Format("Received DataFlag for VoteBanSystem {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
-                                EAC.WarnHost();
-                                return false;
+                                if (obj == VoteBanSystem.Instance)
+                                {
+                                    Logger.Warn(string.Format("Received DataFlag for VoteBanSystem {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                    EAC.WarnHost();
+                                    return false;
+                                }
                             }
                         }
                     }
@@ -108,6 +108,12 @@ internal class GameDataHandlerPatch
                         {
                             Utils.ErrorEnd("SceneChange Tutorial Hack");
                         }
+                        return false;
+                    }
+
+                    if (GameStates.IsInGame)
+                    {
+                        Logger.Warn(string.Format("Client {0} ({1}) tried to send SceneChangeFlag during mid of game.", client.PlayerName, client.Id), "GameDataHandlerPatch");
                         return false;
                     }
 
