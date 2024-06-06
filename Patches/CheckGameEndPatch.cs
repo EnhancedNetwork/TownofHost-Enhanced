@@ -15,6 +15,8 @@ namespace TOHE;
 class GameEndCheckerForNormal
 {
     private static GameEndPredicate predicate;
+    public static bool ShowAllRolesWhenGameEnd = false;
+
     public static bool Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -52,8 +54,11 @@ class GameEndCheckerForNormal
             // Reset Camouflage
             Main.AllPlayerControls.Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true, GameEnd: true));
 
+            // Show all roles
+            ShowAllRolesWhenGameEnd = true;
+
             // Update all Notify Roles
-            Utils.DoNotifyRoles(ForceLoop: true);
+            Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
 
             if (reason == GameOverReason.ImpostorBySabotage && (CustomRoles.Jackal.RoleExist() || CustomRoles.Sidekick.RoleExist()) && Jackal.CanWinBySabotageWhenNoImpAlive.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeam()))
             {
@@ -511,6 +516,9 @@ class GameEndCheckerForNormal
             // Delay to ensure that the end of the game is delivered at the end of the game
             yield return new WaitForSeconds(EndGameDelay);
         }
+
+        // Update all Notify Roles
+        Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
 
         // Start End Game
         GameManager.Instance.RpcEndGame(reason, false);
