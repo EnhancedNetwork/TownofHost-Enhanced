@@ -594,7 +594,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Masochist)
                     || pc.Is(CustomRoles.SchrodingersCat)
                     || pc.Is(CustomRoles.PlagueBearer)
-                    || pc.Is(CustomRoles.Pestilence))
+                    || pc.Is(CustomRoles.Pestilence)
+                    || pc.Is(CustomRoles.Spy))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Fragile.CrewCanBeFragile.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Fragile.NeutralCanBeFragile.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Fragile.ImpCanBeFragile.GetBool()))
                     return false;
