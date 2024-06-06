@@ -62,7 +62,7 @@ internal class ChatCommands
         if (President.EndMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Inspector.InspectCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Pirate.DuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (PlayerControl.LocalPlayer.GetRoleClass() is Councillor cl && cl.MurderMsg(text)) goto Canceled;
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Councillor cl && cl.MurderMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Nemesis.NemesisMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Retributionist.RetributionistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Medium.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -1631,7 +1631,7 @@ internal class ChatCommands
         if (President.EndMsg(player, text)) { canceled = true; Logger.Info($"Is President command", "OnReceiveChat"); return; }
         if (Inspector.InspectCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Inspector command", "OnReceiveChat"); return; }
         if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
-        if (player.GetRoleClass() is Councillor cl && cl.MurderMsg(text)) { canceled = true; Logger.Info($"Is Councillor command", "OnReceiveChat"); return; }
+        if (player.GetRoleClass() is Councillor cl && cl.MurderMsg(player, text)) { canceled = true; Logger.Info($"Is Councillor command", "OnReceiveChat"); return; }
         if (player.GetRoleClass() is Swapper sw && sw.SwapMsg(player, text)) { canceled = true; Logger.Info($"Is Swapper command", "OnReceiveChat"); return; }
         if (Medium.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
         if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info($"Is Nemesis Revenge command", "OnReceiveChat"); return; }
@@ -2712,8 +2712,26 @@ class ChatUpdatePatch
         if (player == null) return;
 
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
+
+        if (sendTo != byte.MaxValue)
+        {
+            if (Utils.GetPlayerInfoById(sendTo) != null)
+            {
+                var targetinfo = Utils.GetPlayerInfoById(sendTo);
+
+                if (targetinfo.DefaultOutfit.ColorId == -1)
+                {
+                    var delaymessage = Main.MessagesToSend[0];
+                    Main.MessagesToSend.RemoveAt(0);
+                    Main.MessagesToSend.Add(delaymessage);
+                    return;
+                }
+                // green beans color id is -1
+            }
+            // It is impossible to get null player here unless it quits
+        }
         Main.MessagesToSend.RemoveAt(0);
-        
+
         int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
         var name = player.Data.PlayerName;
 

@@ -1655,19 +1655,58 @@ public static class Utils
             // Only non-modded players
             if (seer.IsModClient()) continue;
 
-            // During intro scene, set team name for non-modded clients and skip the rest.
-            // Only for desync role, because their team is always shown as Impostor even though they may be in a Crewmate or Neutrals team
-            // Note: When Neutral is based on the Crewmate role then it is impossible to display the real team for it
-            if (SetUpRoleTextPatch.IsInIntro && seer.GetCustomRole().IsDesyncRole())
+            // During intro scene to set team name and role info for non-modded clients and skip the rest.
+            // Note: When Neutral is based on the Crewmate role then it is impossible to display the info for it
+            // If not a Desync Role remove team display
+            if (SetUpRoleTextPatch.IsInIntro)
             {
-                string IconText = "<color=#ffffff>|</color>";
-                string SelfTeamName = $"<size=450%>{IconText} <font=\"VCR SDF\" material=\"VCR Black Outline\">{ColorString(GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>";
-                string SelfRoleName = $"{seer.GetDisplayRoleAndSubName(seer, false)}";
-                string SeerRealName = seer.GetRealName();
-                string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}";
-                string RoleNameUp = "</size><size=1350%>\n \n</size>";
+                //Get role info font size based on the length of the role info
+                static int GetInfoSize(string RoleInfo)
+                {
+                    RoleInfo = Regex.Replace(RoleInfo, "<[^>]*>", "");
+                    RoleInfo = Regex.Replace(RoleInfo, "{[^}]*}", "");
 
-                SelfName = $"{SelfTeamName}\r\n{SelfRoleName}\r\n{SelfName}{RoleNameUp}";
+                    var BaseFontSize = 200;
+                    int BaseFontSizeMin = 100;
+
+                    BaseFontSize -= 3 * RoleInfo.Length;
+                    if (BaseFontSize < BaseFontSizeMin)
+                        BaseFontSize = BaseFontSizeMin;
+                    return BaseFontSize;
+                }
+
+                string IconText = "<color=#ffffff>|</color>";
+                string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
+                string SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
+                string SelfRoleName = $"<size=185%>{Font}{ColorString(seer.GetRoleColor(), GetRoleName(seer.GetCustomRole()))}</font></size>";
+                string SelfSubRolesName = string.Empty;
+                string SeerRealName = seer.GetRealName();
+                string SelfName = ColorString(seer.GetRoleColor(), SeerRealName);
+                string RoleInfo = $"<size=25%>\n</size><size={GetInfoSize(seer.GetRoleInfo())}%>{Font}{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</font></size>";
+                string RoleNameUp = "<size=1350%>\n\n</size>";
+
+                if (!seer.GetCustomRole().IsDesyncRole())
+                {
+                    SelfTeamName = string.Empty;
+                    RoleNameUp = "<size=565%>\n</size>";
+                    RoleInfo = $"<size=50%>\n</size><size={GetInfoSize(seer.GetRoleInfo())}%>{Font}{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</font></size>";
+                }
+
+                // Format addons
+                bool isFirstSub = true;
+                foreach (var subRole in seer.GetCustomSubRoles().ToArray())
+                {
+                    if (isFirstSub)
+                    {
+                        SelfSubRolesName += $"<size=150%>\n</size=><size=125%>{Font}{ColorString(GetRoleColor(subRole), GetString($"{subRole}"))}</font></size>";
+                        RoleNameUp += "\n";
+                    }
+                    else
+                        SelfSubRolesName += $"<size=125%> {Font}{ColorString(Color.white, "+")} {ColorString(GetRoleColor(subRole), GetString($"{subRole}"))}</font></size=>";
+                    isFirstSub = false;
+                }
+
+                SelfName = $"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}";
 
                 // Privately sent name.
                 seer.RpcSetNamePrivate(SelfName, true, seer);
@@ -1730,23 +1769,6 @@ public static class Utils
 
                 string SeerRealName = seer.GetRealName(isForMeeting);
 
-                if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode != CustomGameMode.FFA)
-                {
-                    var SeerRoleInfo = seer.GetRoleInfo();
-
-                    if (seerRole.IsImpostor())
-                        SeerRealName = $"<size=110%><color=#ff1919>" + GetString("YouAreImpostor") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
-
-                    else if (seerRole.IsCrewmate() && !seer.Is(CustomRoles.Madmate))
-                        SeerRealName = $"<size=110%><color=#8cffff>" + GetString("YouAreCrewmate") + $"</color></size>\n" + SeerRoleInfo;
-
-                    else if (seerRole.IsNeutral() && !seerRole.IsMadmate())
-                        SeerRealName = $"<size=110%><color=#7f8c8d>" + GetString("YouAreNeutral") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
-
-                    else if (seerRole.IsMadmate() || seerRole == CustomRoles.Madmate)
-                        SeerRealName = $"<size=110%><color=#ff1919>" + GetString("YouAreMadmate") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
-                }
-
                 // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for seer ======
 
                 string SelfTaskText = GetProgressText(seer);
@@ -1754,8 +1776,28 @@ public static class Utils
                 string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : string.Empty;
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
+                bool IsDisplayInfo = false;
+                if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode != CustomGameMode.FFA)
+                {
+                    IsDisplayInfo = true;
+                    var SeerRoleInfo = seer.GetRoleInfo();
+
+                    string RoleText = string.Empty;
+                    string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
+
+                    if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
+                    else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
+                    else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
+                    else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
+
+                    SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n";
+                }
+
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
+                {
                     SelfName = name;
+                    IsDisplayInfo = false;
+                }
 
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
@@ -1783,7 +1825,10 @@ public static class Utils
                         SelfName = $"<size={fontSize}>{SelfTaskText}</size>\r\n{SelfName}";
                         break;
                     default:
-                        SelfName = SelfRoleName + "\r\n" + SelfName;
+                        if (!IsDisplayInfo)
+                            SelfName = SelfRoleName + "\r\n" + SelfName;
+                        else
+                            SelfName = "<size=425%>\n \n</size>" + SelfRoleName + "\r\n" + SelfName;
                         break;
                 }
                 SelfName += SelfSuffix.Length == 0 ? string.Empty : "\r\n " + SelfSuffix.ToString();

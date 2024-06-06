@@ -276,6 +276,8 @@ internal class SelectRolesPatch
     }
     public static void Postfix()
     {
+        if (!AmongUsClient.Instance.AmHost) return;
+
         //There is a delay of 0.8 seconds because after the player exits during the assign of desync roles, either a black screen will occur or the Scientist role will be set
         _ = new LateTask(() => {
             // Set roles
@@ -291,12 +293,10 @@ internal class SelectRolesPatch
             Utils.NotifyRoles(NoCache: true);
         }, 0.8f, "Do Notify Roles After Assign", shoudLog: false);
     }
-    public static void SetRolesAfterSelect()
+    private static void SetRolesAfterSelect()
     {
         try
         {
-            if (!AmongUsClient.Instance.AmHost) return;
-
             if (GameStates.IsHideNSeek)
             {
                 GameOptionsSender.AllSenders.Clear();
@@ -488,14 +488,15 @@ internal class SelectRolesPatch
                         case CustomRoles.Fool:
                             Fool.Add();
                             break;
+                        case CustomRoles.Bloodlust:
+                            Bloodlust.Add();
+                            break;
 
                         default:
                             break;
                     }
                 }
             }
-
-            CustomRoleManager.Add();
 
             EndOfSelectRolePatch:
 

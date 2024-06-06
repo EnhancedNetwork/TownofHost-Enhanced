@@ -497,7 +497,7 @@ static class ExtendedPlayerControl
     public static string GetRealName(this PlayerControl player, bool isMeeting = false, bool clientData = false)
     {
         if (clientData) return player.GetClient().PlayerName;
-        return isMeeting ? player?.Data?.PlayerName : player?.name;
+        return isMeeting || player == null ? player?.Data?.PlayerName : player?.name;
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
