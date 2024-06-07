@@ -928,7 +928,7 @@
   "DiseasedInfoLong": "(Modificatori):\nQuando qualcuno tenta di utilizzare il pulsante uccidi su di te, la sua ricarica verrà aumentata di un periodo di tempo configurabile",
   "AntidoteInfoLong": "(Modificatori):\nQuando qualcuno tenta di utilizzare il pulsante uccidi su di te, il suo tempo di recupero verrà ridotto di un periodo di tempo configurabile",
   "StubbornInfoLong": "(Modificatori):\nCon il modificatore del Testardo, il Cancellatore non può cancellarti il ruolo, il Purificatore non può purificarti, il Bandito non può derubarti e il Monarca non ti può cavallerizzare.\nIn più, non riceverai nuovi modificatori dal mercante",
-  "SwiftInfoLong": "(Modificatori):\nCome Rapido, non farai alcun movimento quando uccidi.",
+  "SwiftInfoLong": "(Add-ons):\nAs the Swift, you will not make any movement when you kill.\nNote: Swift also ignores bait",
   "UnluckyInfoLong": "(Modificatori):\nCome Sfortunato, quando completi incarichi, uccidi, usi i condotti o apri una porta, hai la possibilità di morire.",
   "VoidBallotInfoLong": "(Modificatori):\nIl possessore di questo modificatore avrà il valore del suo voto a zero",
   "AwareInfoLong": "(Modificatori):\nCome Attento, verrai avvisato nel prossimo incontro se un ruolo rivelatore ha interagito con te",
