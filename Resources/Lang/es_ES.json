@@ -928,7 +928,7 @@
   "DiseasedInfoLong": "(Complementos): \nCuando alguien intenta usar el botón de asesinato en tí, cogerán un catarro y su tiempo de espera aumentará por una cantidad configurable de tiempo",
   "AntidoteInfoLong": "(Complementos): \nCuando alguien intenta usar su botón de matar en tí, su tiempo de espera se reducirá por una cantidad configurable de tiempo",
   "StubbornInfoLong": "(Complementos):\nEl Cabezón no puede tener su rol borrado por el Borrador, ser purificado por el Purificador, ser robado por el Bandido, nombrado caballero por el Monarca ni vendido los complementos por el Mercader.",
-  "SwiftInfoLong": "(Complementos): \nEl Raudo no se abalanzará sobre sus víctimas al asesinar.",
+  "SwiftInfoLong": "(Add-ons):\nAs the Swift, you will not make any movement when you kill.\nNote: Swift also ignores bait",
   "UnluckyInfoLong": "(Add-ons):\nAs Unlucky, when you complete tasks, kill, venting, or open door, you have a chance to die.",
   "VoidBallotInfoLong": "(Complementos): \nEl poseedor de este complemento tendrá un recuento de votos de 0",
   "AwareInfoLong": "(Complementos): \nEl Precavido será notificado durante la próxima reunión si un rol que revela haya interactuado contigo",
