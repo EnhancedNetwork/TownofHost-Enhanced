@@ -216,7 +216,7 @@ public class PlayerState(byte playerId)
 
             case CustomRoles.Admired:
                 countTypes = CountTypes.Crew;
-                SubRoles.Where(AddON => AddON != role && AddON.IsConverted()).Do(x => SubRoles.Remove(x));
+                SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
                 SubRoles.Remove(CustomRoles.Rascal);
                 SubRoles.Remove(CustomRoles.Loyal);
                 break;

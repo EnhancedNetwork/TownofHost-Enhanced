@@ -1326,11 +1326,8 @@ class CoEnterVentPatch
             || (playerRoleClass != null && playerRoleClass.CheckBootFromVent(__instance, id))
         )
         {
-            _ = new LateTask(() =>
-            {
-                __instance?.RpcBootFromVent(id);
-            }, 0.5f, "Fix Vent Stuck");
-            return false;
+            __instance?.RpcBootFromVent(id);
+            return true;
         }
 
         playerRoleClass?.OnCoEnterVent(__instance, id);
