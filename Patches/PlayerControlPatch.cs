@@ -1327,7 +1327,7 @@ class CoEnterVentPatch
         )
         {
             __instance?.RpcBootFromVent(id);
-            return true;
+            return false;
         }
 
         playerRoleClass?.OnCoEnterVent(__instance, id);
