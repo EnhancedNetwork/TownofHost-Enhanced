@@ -617,12 +617,15 @@ internal class SelectRolesPatch
 
                 foreach (var (seer, roleType) in StoragedData)
                 {
-                    var target = Utils.GetPlayerById(sender.Key);
-
-                    seer.SetRole(roleType);
-                    sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, target.GetClientId())
-                        .Write((ushort)roleType)
-                        .EndRpc();
+                    try
+                    {
+                        seer.SetRole(roleType);
+                        sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
+                            .Write((ushort)roleType)
+                            .EndRpc();
+                    }
+                    catch
+                    { }
                 }
                 sender.Value.EndMessage();
             }
