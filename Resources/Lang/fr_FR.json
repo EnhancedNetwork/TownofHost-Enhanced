@@ -928,7 +928,7 @@
   "DiseasedInfoLong": "(Modifieurs):\nLe Malade Augmente le Rechargement, d'une Durée configurable, de celui qui utilise son Bouton d'Exécution sur lui.",
   "AntidoteInfoLong": "(Modifieurs):\nL'Antidote Diminue le Rechargement, d'une Durée configurable, de celui qui utilise son Bouton d'Exécution sur lui.",
   "StubbornInfoLong": "(Modifieurs):\nL'Obstiné empêche le Purificateur de Purifier son Rôle, le Nettoyeur de Nettoyer son Cadavre, le Bandit de le Voler et le Monarque de l'Adouber.\nDe plus, il ne peut pas obtenir de nouveaux Modifieurs du Marchand.",
-  "SwiftInfoLong": "(Modifieurs):\nLe Vif ne fait pas de Mouvements quand il Exécute.",
+  "SwiftInfoLong": "(Add-ons):\nAs the Swift, you will not make any movement when you kill.\nNote: Swift also ignores bait",
   "UnluckyInfoLong": "(Modifieurs):\nLe Malchanceux Risque d'être Exécuté en Accomplissant ses Tâches, en Exécutant, en Évacuant ou en Ouvrant une Porte.",
   "VoidBallotInfoLong": "(Modifieurs):\nLe Vote Nul aura un compte de 0 vote.",
   "AwareInfoLong": "(Modifieurs):\nLe Conscient est notifié lors de la prochaine Réunion si un Rôle Révélateur a interagi avec lui.",
