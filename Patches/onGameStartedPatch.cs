@@ -509,6 +509,24 @@ internal class SelectRolesPatch
             foreach (var pc in Main.AllPlayerControls)
                 pc.ResetKillCooldown();
 
+            //Return the number of role type
+            var roleOpt = Main.NormalOptions.roleOptions;
+
+            // Role type: Scientist
+            int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
+            ScientistNum -= RoleAssign.addScientistNum;
+            roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum, roleOpt.GetChancePerGame(RoleTypes.Scientist));
+
+            // Role type: Engineer
+            int EngineerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Engineer);
+            EngineerNum -= RoleAssign.addEngineerNum;
+            roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum, roleOpt.GetChancePerGame(RoleTypes.Engineer));
+
+            // Role type: Shapeshifter
+            int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
+            ShapeshifterNum -= RoleAssign.addShapeshifterNum;
+            roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum, roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
+
             switch (Options.CurrentGameMode)
             {
                 case CustomGameMode.Standard:
