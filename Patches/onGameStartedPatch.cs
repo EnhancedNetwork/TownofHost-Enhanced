@@ -599,7 +599,12 @@ internal class SelectRolesPatch
             {
                 if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var roleType))
                 {
-                    sender.RpcSetRole(seer, roleType, target.GetClientId());
+                    try
+                    {
+                        sender.RpcSetRole(seer, roleType, target.GetClientId());
+                    }
+                    catch
+                    { }
                 }
             }
         }
