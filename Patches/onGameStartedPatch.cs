@@ -411,8 +411,8 @@ internal class SelectRolesPatch
 
             try
             {
-                AddonAssign.StartSortAndAssign();
                 AddonAssign.InitAndStartAssignLovers();
+                AddonAssign.StartSortAndAssign();
             }
             catch (Exception error)
             {

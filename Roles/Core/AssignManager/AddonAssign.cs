@@ -119,7 +119,7 @@ public static class AddonAssign
             if (!allPlayers.Any()) return;
 
             // Select player
-            var player = allPlayers[IRandom.Instance.Next(allPlayers.Count)];
+            var player = allPlayers.RandomElement();
             allPlayers.Remove(player);
 
             // Set Add-on
