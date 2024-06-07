@@ -928,7 +928,7 @@
   "DiseasedInfoLong": "(Agregados):\nCuando alguien intenta usar el boton de asesinar en ti, su tiempo de espera será incrementado por una cantidad de tiempo configurable.",
   "AntidoteInfoLong": "(Agregados):\nCuando alguien intenta usar el boton de matar en ti, su tiempo de espera será reducido por una cantidad de tiempo configurable.",
   "StubbornInfoLong": "(Agregados):\nCon el agregado de Terco, el Erradicador no puede borrar tu rol, el Conserje no te puede purificar, el Bandido no te puede robar y el Monarca no te puede condecorar (nombrar caballero).\nAdicionalmente, El Comerciante no te puede vender ningún agregado.",
-  "SwiftInfoLong": "(Agregados): \nComo Swift, no harás ningún movimiento cuando mates.",
+  "SwiftInfoLong": "(Add-ons):\nAs the Swift, you will not make any movement when you kill.\nNote: Swift also ignores bait",
   "UnluckyInfoLong": "(Add-ons):\nAs Unlucky, when you complete tasks, kill, venting, or open door, you have a chance to die.",
   "VoidBallotInfoLong": "(Agregados):\nTener este agregado hará que tus votos cuenten como 0.",
   "AwareInfoLong": "(Agregados):\nCon el agregado de Precavido, se te notificará en la siguiente reunión si un jugador que revela roles ha interactuado contigo en algún momento.",
