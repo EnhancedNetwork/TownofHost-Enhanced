@@ -928,7 +928,7 @@
   "DiseasedInfoLong": "(Atributos):\n★Quando alguém tenta usar o botão de abate em você, o tempo de recarga da pessoa vai ser aumentado.",
   "AntidoteInfoLong": "(Atributos):\n★Quando alguém tenta usar o botão em você, o tempo de recarga da pessoa vai ser diminuido.",
   "StubbornInfoLong": "(Atributos):\nComo Protegido, o Apagador não pode apagar sua função, o Limpador não pode limpar você, o Bandido não pode roubar de você e o Monarca não pode te nomear.\nAlém disso, você não pode obter novos atributos do Atribuidor",
-  "SwiftInfoLong": "(Atributos):\n★O Veloz faz com que seus abates não o façam dar uma investida.",
+  "SwiftInfoLong": "(Add-ons):\nAs the Swift, you will not make any movement when you kill.\nNote: Swift also ignores bait",
   "UnluckyInfoLong": "(Atributos):\nComo o Azarado, ao completar tarefas, matar, usar os dutos ou abrir uma porta, você tem a chance de morrer.",
   "VoidBallotInfoLong": "(Atributos):\n★Esse atributo faz seu voto não ter nenhum valor.",
   "AwareInfoLong": "(Atributos):\n★O Consciente tem a habilidade de ser notificado na próxima reunião causa alguma função reveladora interaja com ele.",
