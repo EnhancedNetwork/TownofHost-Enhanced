@@ -265,7 +265,7 @@ internal class DollMaster : RoleBase
         // If Target as DollMaster Main Body gets killed, kill DollMaster instead.
         if (target == controllingTarget)
         {
-            target.RpcRemovePet();
+            target.RpcSetPet("");
             UnPossess(DollMasterTarget, controllingTarget);
             GetPlayersPositions(DollMasterTarget);
             SwapPlayersPositions(DollMasterTarget);
@@ -275,7 +275,7 @@ internal class DollMaster : RoleBase
         // If DollMaster gets killed as possessed Target, kill possessed Target instead.
         else if (target == DollMasterTarget)
         {
-            DollMasterTarget.RpcRemovePet();
+            DollMasterTarget.RpcSetPet("");
             UnPossess(DollMasterTarget, controllingTarget);
             GetPlayersPositions(DollMasterTarget);
             SwapPlayersPositions(DollMasterTarget);

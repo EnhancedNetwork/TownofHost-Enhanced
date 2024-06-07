@@ -8,6 +8,7 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
+using static TOHE.SelectRolesPatch;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -21,7 +22,7 @@ internal class ChangeRoleSettings
 
         Main.OverrideWelcomeMsg = "";
 
-        Logger.Msg("Is Started", "AssignRoles");
+        Logger.Msg("Is Started", "Initialization");
 
         try
         {
@@ -196,6 +197,9 @@ internal class ChangeRoleSettings
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
 
+            // Block "RpcSetRole" for set desync roles for some players
+            RpcSetRoleReplacer.Initialize();
+
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
@@ -208,6 +212,8 @@ internal class ChangeRoleSettings
 
             SetEverythingUpPatch.LastWinsText = "";
             SetEverythingUpPatch.LastWinsReason = "";
+
+            Logger.Msg("End", "Initialization");
         }
         catch (Exception ex)
         {
@@ -239,9 +245,6 @@ internal class SelectRolesPatch
 
         try
         {
-            // Block "RpcSetRole" for set desync roles for some players
-            RpcSetRoleReplacer.Initialize();
-
             // Set GM for Host
             if (Main.EnableGM.Value && Options.CurrentGameMode == CustomGameMode.Standard)
             {
@@ -250,24 +253,6 @@ internal class SelectRolesPatch
                 PlayerControl.LocalPlayer.Data.IsDead = true;
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
-
-            // Select custom roles / add-ons
-            EAC.OriginalRoles = [];
-            RoleAssign.StartSelect();
-            AddonAssign.StartSelect();
-
-            // Set count vanilla roles
-            RoleAssign.CalculateVanillaRoleCount();
-
-            // Set Rate For Vanilla Roles
-            var roleOpt = Main.NormalOptions.roleOptions;
-            int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
-            roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum + RoleAssign.addScientistNum, RoleAssign.addScientistNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Scientist));
-            int EngineerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Engineer);
-            roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + RoleAssign.addEngineerNum, RoleAssign.addEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
-            int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
-            roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum + RoleAssign.addShapeshifterNum, RoleAssign.addShapeshifterNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
-
         }
         catch (Exception e)
         {
@@ -286,13 +271,13 @@ internal class SelectRolesPatch
 
             // Assign tasks again
             ShipStatus.Instance.Begin();
-        }, 0.5f, "Set Role Types After Select");
-        
+        }, 2f, "Set Role Types After Select");
+
         _ = new LateTask(() => {
 
             // Update name players
             Utils.NotifyRoles(NoCache: true);
-        }, 0.8f, "Do Notify Roles After Assign", shoudLog: false);
+        }, 2.3f, "Do Notify Roles After Assign", shoudLog: false);
     }
     private static void SetRolesAfterSelect()
     {
@@ -316,7 +301,25 @@ internal class SelectRolesPatch
                 return;
             }
 
+            Logger.Msg("Is Started", "AssignRoles");
             Main.AssignRolesIsStarted = true;
+
+            // Select custom roles / add-ons
+            EAC.OriginalRoles = [];
+            RoleAssign.StartSelect();
+            AddonAssign.StartSelect();
+
+            // Set count vanilla roles
+            RoleAssign.CalculateVanillaRoleCount();
+
+            // Set Rate For Vanilla Roles
+            var roleOpt = Main.NormalOptions.roleOptions;
+            int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
+            roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum + RoleAssign.addScientistNum, RoleAssign.addScientistNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Scientist));
+            int EngineerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Engineer);
+            roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + RoleAssign.addEngineerNum, RoleAssign.addEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
+            int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
+            roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum + RoleAssign.addShapeshifterNum, RoleAssign.addShapeshifterNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
 
             //Initialization of CustomRpcSender and RpcSetRoleReplacer
             Dictionary<byte, CustomRpcSender> senders = [];
@@ -353,8 +356,6 @@ internal class SelectRolesPatch
             RpcSetRoleReplacer.senders = null;
             RpcSetRoleReplacer.OverriddenSenderList = null;
             RpcSetRoleReplacer.StoragedData = null;
-
-            Main.AssignRolesIsStarted = false;
 
             //Utils.ApplySuffix();
 
@@ -410,8 +411,8 @@ internal class SelectRolesPatch
 
             try
             {
-                AddonAssign.StartSortAndAssign();
                 AddonAssign.InitAndStartAssignLovers();
+                AddonAssign.StartSortAndAssign();
             }
             catch (Exception error)
             {
@@ -507,24 +508,6 @@ internal class SelectRolesPatch
             foreach (var pc in Main.AllPlayerControls)
                 pc.ResetKillCooldown();
 
-            //Return the number of role type
-            var roleOpt = Main.NormalOptions.roleOptions;
-
-            // Role type: Scientist
-            int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
-            ScientistNum -= RoleAssign.addScientistNum;
-            roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum, roleOpt.GetChancePerGame(RoleTypes.Scientist));
-
-            // Role type: Engineer
-            int EngineerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Engineer);
-            EngineerNum -= RoleAssign.addEngineerNum;
-            roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum, roleOpt.GetChancePerGame(RoleTypes.Engineer));
-
-            // Role type: Shapeshifter
-            int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
-            ShapeshifterNum -= RoleAssign.addShapeshifterNum;
-            roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum, roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
-
             switch (Options.CurrentGameMode)
             {
                 case CustomGameMode.Standard:
@@ -553,6 +536,7 @@ internal class SelectRolesPatch
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
 
+            Main.AssignRolesIsStarted = false;
             Logger.Msg("Ended", "AssignRoles");
         }
         catch (Exception ex)

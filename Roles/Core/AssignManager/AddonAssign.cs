@@ -119,7 +119,7 @@ public static class AddonAssign
             if (!allPlayers.Any()) return;
 
             // Select player
-            var player = allPlayers[IRandom.Instance.Next(allPlayers.Count)];
+            var player = allPlayers.RandomElement();
             allPlayers.Remove(player);
 
             // Set Add-on
@@ -157,6 +157,7 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.RuthlessRomantic)
                 || pc.Is(CustomRoles.Romantic)
                 || pc.Is(CustomRoles.VengefulRomantic)
+                || pc.Is(CustomRoles.Workaholic)
                 || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool()))
