@@ -928,7 +928,7 @@
   "DiseasedInfoLong": "(アドオン):\n他のプレイヤーがあなたにキルボタンを使用しようとすると、そのクールダウン時間が設定可能な時間だけ増加します。",
   "AntidoteInfoLong": "(アドオン): \n 他のプレイヤーがあなたにキルボタンを使用しようとすると、そのクールダウン時間が設定可能な時間だけ減少します。",
   "StubbornInfoLong": "(アドオン):\n頑固なアドオンを持っている場合、消しゴムはロールを消去できません。 浄化者はあなたを浄化することはできませんし、バンディットはあなたから盗むことはできません。 また、君主はあなたをナイトにすることはできません。 さらに、販売者から新しいアドオンを入手することはできません。",
-  "SwiftInfoLong": "(アドオン):\n速い者として、あなたは殺害時に動きを見せません。",
+  "SwiftInfoLong": "(Add-ons):\nAs the Swift, you will not make any movement when you kill.\nNote: Swift also ignores bait",
   "UnluckyInfoLong": "(Add-ons):\nAs Unlucky, when you complete tasks, kill, venting, or open door, you have a chance to die.",
   "VoidBallotInfoLong": "(アドオン):\nこのアドオンを持つ者は投票数が0になります。",
   "AwareInfoLong": "(アドオン): \n気づきとして、あなたは明かす役割が自分と交流したかどうかを次の会議で通知されます。",
