@@ -34,6 +34,7 @@ class OnGameJoinedPatch
         ErrorText.Instance.Clear();
         Main.MessagesToSend.Clear();
         EAC.Init();
+        OnPlayerJoinedPatch.realClientName = [];
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
@@ -44,6 +45,10 @@ class OnGameJoinedPatch
                 RehostManager.IsAutoRehostDone = true;
             }
 
+            if (!OnPlayerJoinedPatch.realClientName.ContainsKey(__instance.ClientId))
+            {
+                OnPlayerJoinedPatch.realClientName.Add(__instance.ClientId, DataManager.Player.Customization.Name);
+            }
 
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
@@ -153,6 +158,7 @@ class DisconnectInternalPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
 public static class OnPlayerJoinedPatch
 {
+    public static Dictionary<int, string> realClientName = [];
     public static bool IsDisconnected(this ClientData client)
     {
         var __instance = AmongUsClient.Instance;
@@ -264,6 +270,10 @@ public static class OnPlayerJoinedPatch
         }
         BanManager.CheckBanPlayer(client);
         BanManager.CheckDenyNamePlayer(client);
+        if (!realClientName.ContainsKey(client.Id))
+        {
+            realClientName.Add(client.Id, client.PlayerName);
+        }
 
         if (AmongUsClient.Instance.AmHost)
         {
