@@ -1135,7 +1135,7 @@ class FixedUpdateInNormalGamePatch
                     target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
 
                 // if Victim to Doppelganger or is Doppelganger
-                if (seer.Data.IsDead)
+                if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
                 {
                     if (target.Is(CustomRoles.Doppelganger))
                         RealName = $"\n{RealName}\r\n<size=75%>{Utils.ColorString(Color.gray, $"({Doppelganger.TrueNames[target.PlayerId]})")}</size>";

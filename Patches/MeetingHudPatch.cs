@@ -990,7 +990,7 @@ class MeetingHudStartPatch
             pva.NameText.text = pva.NameText.text.ApplyNameColorData(seer, target, true);
             
             // if Victim to Doppelganger or is Doppelganger
-            if (seer.Data.IsDead)
+            if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
             {
                 if (target.Is(CustomRoles.Doppelganger))
                     pva.NameText.text = $"{Utils.ColorString(Color.gray, $"<size=75%>({Doppelganger.TrueNames[target.PlayerId]})</size>")}\r\n{pva.NameText.text.ApplyNameColorData(seer, target, true)}\n\n";
