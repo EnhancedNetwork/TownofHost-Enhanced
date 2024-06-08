@@ -1,6 +1,8 @@
 ﻿using AmongUs.Data;
+using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
+using UnityEngine;
 
 namespace TOHE;
 
@@ -15,6 +17,10 @@ class ExileControllerWrapUpPatch
             try
             {
                 WrapUpPostfix(__instance.exiled);
+            }
+            catch (Exception error)
+            {
+                Logger.Error($"Error after exiled: {error}", "WrapUpPostfix");
             }
             finally
             {
@@ -31,6 +37,10 @@ class ExileControllerWrapUpPatch
             try
             {
                 WrapUpPostfix(__instance.exiled);
+            }
+            catch (Exception error)
+            {
+                Logger.Error($"Error after exiled: {error}", "WrapUpAndSpawn");
             }
             finally
             {
