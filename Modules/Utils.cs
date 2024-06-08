@@ -1914,9 +1914,9 @@ public static class Utils
                         // if Victim to Doppelganger or is Doppelganger
                         if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
                         {
-                            if (target.Is(CustomRoles.Doppelganger))
+                            if (target.Is(CustomRoles.Doppelganger) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
                                 TargetPlayerName = $"{TargetPlayerName}\r\n<size=75%>{ColorString(Color.gray, $"({Doppelganger.TrueNames[target.PlayerId]})")}</size>";
-                            else if (Doppelganger.CheckDoppelVictim(target.PlayerId))
+                            else if (Doppelganger.CheckDoppelVictim(target.PlayerId) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
                                 TargetPlayerName = Doppelganger.TrueNames[target.PlayerId];
                         }
 

@@ -992,9 +992,9 @@ class MeetingHudStartPatch
             // if Victim to Doppelganger or is Doppelganger
             if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
             {
-                if (target.Is(CustomRoles.Doppelganger))
+                if (target.Is(CustomRoles.Doppelganger) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
                     pva.NameText.text = $"{Utils.ColorString(Color.gray, $"<size=75%>({Doppelganger.TrueNames[target.PlayerId]})</size>")}\r\n{pva.NameText.text.ApplyNameColorData(seer, target, true)}\n\n";
-                else if (Doppelganger.CheckDoppelVictim(target.PlayerId))
+                else if (Doppelganger.CheckDoppelVictim(target.PlayerId) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
                     pva.NameText.text = Doppelganger.TrueNames[target.PlayerId].ApplyNameColorData(seer, target, true);
             }
 
