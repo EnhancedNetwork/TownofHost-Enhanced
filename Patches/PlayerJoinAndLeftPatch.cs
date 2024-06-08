@@ -349,7 +349,12 @@ class OnPlayerLeftPatch
                     Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
                 }
 
-                data.Character.RpcSetName(data.Character.GetRealName(isMeeting: true));
+                try
+                {
+                    data.Character.RpcSetName(data.Character.GetRealName(isMeeting: true));
+                }
+                catch
+                { }
 
                 AntiBlackout.OnDisconnect(data.Character.Data);
                 PlayerGameOptionsSender.RemoveSender(data.Character);
