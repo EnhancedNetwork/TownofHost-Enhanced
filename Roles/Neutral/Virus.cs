@@ -83,7 +83,7 @@ internal class Virus : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        if (target != null && !InfectedBodies.Contains(target.Data.PlayerId)) return;
+        if (target?.Data != null && !InfectedBodies.Contains(target.Data.PlayerId)) return;
         if (reporter == null || !reporter.CanBeInfected()) return;
 
         AbilityLimit--;
