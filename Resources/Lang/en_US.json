@@ -939,7 +939,7 @@
   "DiseasedInfoLong": "(Add-ons):\nWhen someone tries to use the kill button on you, their cooldown will be increased by a configurable amount of time.",
   "AntidoteInfoLong": "(Add-ons):\nWhen someone tries to use the kill button on you, their cooldown will be decreased by a configurable amount of time.",
   "StubbornInfoLong": "(Add-ons):\nWith the Stubborn add-on, Eraser can't erase your role, Cleanser can't cleanse you, Bandit can't steal from you, and Monarch can't knight you.\nAdditionally, you can't gain any new add-ons from the Merchant.",
-  "SwiftInfoLong": "(Add-ons):\nAs the Swift, you will not make any movement when you kill.",
+  "SwiftInfoLong": "(Add-ons):\nAs the Swift, you will not make any movement when you kill.\nNote: Swift also ignores Bait",
   "UnluckyInfoLong": "(Add-ons):\nAs Unlucky, when you complete tasks, kill, venting, or open door, you have a chance to die.",
   "VoidBallotInfoLong": "(Add-ons):\nHolder of this add-on will have 0 vote count.",
   "AwareInfoLong": "(Add-ons):\nAs the Aware, you get a notification in the next meeting if a revealing role had interacted with you.",
