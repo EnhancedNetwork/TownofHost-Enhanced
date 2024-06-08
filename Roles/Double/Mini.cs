@@ -206,9 +206,9 @@ internal class Mini : RoleBase
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
         => (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && EveryoneCanKnowMini.GetBool();
 
-    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-            => !seer.GetCustomRole().IsImpostorTeam() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? Main.roleColors[CustomRoles.Mini] : string.Empty;
-    
-    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-            => HasEnabled && EveryoneCanKnowMini.GetBool() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? ColorString(GetRoleColor(CustomRoles.Mini), Age != 18 && UpDateAge.GetBool() ? $"({Age})" : string.Empty) : string.Empty;
+    //public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+    //    => (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && EveryoneCanKnowMini.GetBool() ? Main.roleColors[CustomRoles.Mini] : string.Empty;
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+            => EveryoneCanKnowMini.GetBool() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? ColorString(GetRoleColor(CustomRoles.Mini), Age != 18 && UpDateAge.GetBool() ? $"({Age})" : string.Empty) : string.Empty;
 }

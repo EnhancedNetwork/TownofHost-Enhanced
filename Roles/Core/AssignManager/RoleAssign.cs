@@ -613,8 +613,8 @@ public class RoleAssign
 
             if (Mini.CheckSpawnEvilMini())
             {
-                var tempImpRole = FinalRolesList.FirstOrDefault(role => role.IsImpostor());
-                FinalRolesList.Remove(tempImpRole);
+                //var tempImpRole = FinalRolesList.FirstOrDefault(role => role.IsImpostor());
+                //FinalRolesList.Remove(tempImpRole);
                 FinalRolesList.Add(CustomRoles.EvilMini);
             }
             else

@@ -51,6 +51,8 @@ public static class NameColorManager
         // Bounties
         if (seer.Is(CustomRoles.BountyHunter) && BountyHunter.GetTarget(seer) == target.PlayerId) color = "bf1313";
 
+        // Mini
+        if (!seer.GetCustomRole().IsImpostorTeam() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini))) color = Main.roleColors[CustomRoles.Mini];
 
         // Amnesiac
         if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) color = Main.roleColors[seer.GetCustomRole()];
