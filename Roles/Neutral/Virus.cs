@@ -1,5 +1,4 @@
-﻿using Hazel;
-using System;
+﻿using System;
 using UnityEngine;
 using AmongUs.GameOptions;
 using TOHE.Roles.AddOns.Crewmate;

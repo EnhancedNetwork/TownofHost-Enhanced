@@ -18,6 +18,7 @@ internal class Traitor : RoleBase
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
     private static OptionItem CanUsesSabotage;
+    private static OptionItem KnowMadmate;
 
     public override void SetupCustomOption()
     {
@@ -27,6 +28,7 @@ internal class Traitor : RoleBase
         CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
         CanUsesSabotage = BooleanOptionItem.Create(Id + 15, "CanUseSabotage", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
+        KnowMadmate = BooleanOptionItem.Create(Id + 16, "TraitorKnowMadmate", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
     }
     public override void Init()
     {
@@ -54,5 +56,17 @@ internal class Traitor : RoleBase
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-        => seer.Is(CustomRoles.Traitor) && target.Is(Custom_Team.Impostor) ? Main.roleColors[CustomRoles.Impostor] : string.Empty;
+    {
+        if (target.Is(Custom_Team.Impostor))
+        {
+            return Main.roleColors[CustomRoles.Impostor];
+        }
+        else if (target.Is(CustomRoles.Madmate) && KnowMadmate.GetBool())
+        {
+            return "BB0F0F";
+        }
+
+        else return string.Empty;
+
+    }
 }

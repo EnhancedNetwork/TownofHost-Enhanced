@@ -361,7 +361,8 @@ class OnPlayerLeftPatch
 
                 try
                 {
-                    data.Character.RpcSetName(data.Character.GetRealName(isMeeting: true));
+                    if (AmongUsClient.Instance.AmHost)
+                        data.Character.RpcSetName(data.Character.GetRealName(isMeeting: true));
                 }
                 catch
                 { }

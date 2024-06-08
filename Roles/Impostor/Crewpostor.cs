@@ -102,6 +102,8 @@ internal class Crewpostor : RoleBase
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
+        if (!player.IsAlive()) return true;
+
         if (TasksDone.ContainsKey(player.PlayerId))
             TasksDone[player.PlayerId]++;
         else
