@@ -200,9 +200,6 @@ internal class ChangeRoleSettings
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
 
-            // Block "RpcSetRole" for set desync roles for some players
-            RpcSetRoleReplacer.Initialize();
-
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
@@ -248,6 +245,9 @@ internal class SelectRolesPatch
 
         try
         {
+            // Block "RpcSetRole" for set desync roles for some players
+            RpcSetRoleReplacer.Initialize();
+
             // Set GM for Host
             if (Main.EnableGM.Value && Options.CurrentGameMode == CustomGameMode.Standard)
             {
