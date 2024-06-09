@@ -9,10 +9,11 @@ namespace TOHE;
 // Enhanced File Checker.
 internal class EFC
 {
-    private static readonly ReadOnlyCollection<string> BannedBepInExMods = new(new List<string> { "MalumMenu", "AUnlocker" }); // Put BepInEx BepInPlugin name, not dll name lol.
+    private static readonly ReadOnlyCollection<string> BannedBepInExMods = new(new List<string> { "MalumMenu", "AUnlocker" }); // Put BepInEx BepInPlugin name, not dll name here lol.
     private static readonly ReadOnlyCollection<string> KeyWordsInVersionInfo = new(new List<string> { "Malum", "Sicko" }); // Banned words for version text
     public static string UnauthorizedReason = string.Empty;
     public static List<string> CheatTags = []; // For API report
+    public static bool HasTrySpoofFriendCode = false;
     public static bool HasUnauthorizedFile = false;
     public static bool HasShownPopUp = false;
     public static string ClientPUIDHash = string.Empty;
@@ -22,17 +23,24 @@ internal class EFC
     {
         GameObject PlayButton = GameObject.Find("Main Buttons/PlayButton");
 
-        // Disable play button until all API information is gathered
+        // Disable play button until EAC information is gathered from API
         if (PlayButton != null)
         {
-            bool APIInfoCollected = BanManager.EACDict.Count > 0;
-
-            PlayButton.GetComponent<UnityEngine.BoxCollider2D>().enabled = APIInfoCollected;
-            if (!APIInfoCollected)
+            if (BanManager.EACDict.Count < 1 || HasTrySpoofFriendCode)
+            {
+                PlayButton.GetComponent<UnityEngine.BoxCollider2D>().enabled = false;
                 GameObject.Find("Main Buttons/PlayButton/Inactive").GetComponent<SpriteRenderer>().color = Color.gray;
+            }
             else
+            {
+                PlayButton.GetComponent<UnityEngine.BoxCollider2D>().enabled = true;
                 GameObject.Find("Main Buttons/PlayButton/Inactive").GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f);
+            }
         }
+
+        // Skip check if player is a dev for testing... I promise (- ‿◦ )
+        if (DevManager.GetDevUser(EOSManager.Instance?.friendCode).IsDev 
+            || DevManager.GetDevUser(PlayerControl.LocalPlayer?.FriendCode).IsDev) return;
 
         // Unauthorized file or ban detected.
         if (HasUnauthorizedFile)
@@ -75,6 +83,12 @@ internal class EFC
             return;
         }
 
+        if (EOSManager.Instance.editAccountUsername.gameObject.active || EOSManager.Instance.askToMergeAccount.gameObject.active)
+        {
+            HasTrySpoofFriendCode = true;
+            HasUnauthorizedFile = true;
+        }
+
         if (GameStates.IsOnlineGame && AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
         {
             if (BanManager.CheckEACList(PlayerControl.LocalPlayer?.FriendCode, PlayerControl.LocalPlayer?.GetClient().GetHashedPuid()))
@@ -88,7 +102,8 @@ internal class EFC
     public static bool CheckIfUnauthorizedFiles()
     {
         // Skip check if player is a dev for testing... I promise (- ‿◦ )
-        if (DevManager.GetDevUser(EOSManager.Instance?.friendCode).IsDev) return false;
+        if (DevManager.GetDevUser(EOSManager.Instance?.friendCode).IsDev
+            || DevManager.GetDevUser(PlayerControl.LocalPlayer?.FriendCode).IsDev) return false;
 
         // Get user info for later use with API.
         string ClientUserName = GameObject.Find("AccountTab")?.GetComponent<AccountTab>()?.userName.text;
