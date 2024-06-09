@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine;
 
 namespace TOHE.Patches;
@@ -8,6 +8,17 @@ namespace TOHE.Patches;
 [HarmonyPatch]
 public class ShowHostMeetingPatch
 {
+    private static string hostName = string.Empty;
+    private static int hostColor = int.MaxValue;
+
+    [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
+    [HarmonyPostfix]
+    public static void ShowRolePostfix()
+    {
+        hostName = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.PlayerName;
+        hostColor = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.ColorId;
+    }
+
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
     [HarmonyPostfix]
     public static void UpdatePostfix(MeetingHud __instance)
@@ -15,13 +26,8 @@ public class ShowHostMeetingPatch
         // Not display in local game, because it will be impossible to complete the meeting
         if (!GameStates.IsOnlineGame) return;
 
-        var host = GameData.Instance.GetHost();
-
-        if (host != null)
-        {
-            PlayerMaterial.SetColors(host.DefaultOutfit.ColorId, __instance.HostIcon);
-            __instance.ProceedButton.gameObject.GetComponentInChildren<TextMeshPro>().text = string.Format(Translator.GetString("HostIconInMeeting"), host.PlayerName);
-        }
+        PlayerMaterial.SetColors(hostColor, __instance.HostIcon);
+        __instance.ProceedButton.gameObject.GetComponentInChildren<TextMeshPro>().text = string.Format(Translator.GetString("HostIconInMeeting"), hostName);
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
