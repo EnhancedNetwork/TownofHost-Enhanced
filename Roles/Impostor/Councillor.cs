@@ -59,13 +59,12 @@ internal class Councillor : RoleBase
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
-    public bool MurderMsg(string msg, bool isUI = false)
+    public bool MurderMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
         if (!GameStates.IsMeeting || _Player == null || GameStates.IsExilling) return false;
-        var pc = _Player;
 
         int operate = 0; // 1:ID 2:猜测
         msg = msg.ToLower().TrimStart().TrimEnd();
@@ -259,7 +258,7 @@ internal class Councillor : RoleBase
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
         int PlayerId = reader.ReadByte();
-        if (pc.GetRoleClass() is Councillor cl) cl.MurderMsg($"/tl {PlayerId}", true);
+        if (pc.GetRoleClass() is Councillor cl) cl.MurderMsg(pc, $"/tl {PlayerId}", true);
     }
 
     private static void CouncillorOnClick(byte playerId/*, MeetingHud __instance*/)
@@ -267,7 +266,7 @@ internal class Councillor : RoleBase
         Logger.Msg($"Click: ID {playerId}", "Councillor UI");
         var pc = Utils.GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
-        if (AmongUsClient.Instance.AmHost && pc.GetRoleClass() is Councillor cl) cl.MurderMsg($"/tl {playerId}", true);
+        if (AmongUsClient.Instance.AmHost && pc.GetRoleClass() is Councillor cl) cl.MurderMsg(PlayerControl.LocalPlayer, $"/tl {playerId}", true);
         else SendRPC(playerId);
     }
 

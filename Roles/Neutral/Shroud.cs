@@ -138,7 +138,7 @@ internal class Shroud : RoleBase
                         ShroudList.Remove(shroud.PlayerId);
                         SendRPC(byte.MaxValue, shroud.PlayerId, 2);
                         //Utils.NotifyRoles(SpecifySeer: shroud);
-                        Utils.NotifyRoles(Utils.GetPlayerById(shroudId), SpecifyTarget: shroud, ForceLoop: true);
+                        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(shroudId), SpecifyTarget: shroud, ForceLoop: true);
                     }
                 }
             }

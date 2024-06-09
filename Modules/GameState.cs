@@ -28,6 +28,7 @@ public class PlayerState(byte playerId)
     public PlainShipRoom LastRoom = null;
     public bool HasSpawned { get; set; } = false;
     public Dictionary<byte, string> TargetColorData = [];
+    public GameData.PlayerOutfit NormalOutfit;
 
     public CustomRoles GetCustomRoleFromRoleType()
     {
@@ -216,7 +217,7 @@ public class PlayerState(byte playerId)
 
             case CustomRoles.Admired:
                 countTypes = CountTypes.Crew;
-                SubRoles.Where(AddON => AddON != role && AddON.IsConverted()).Do(x => SubRoles.Remove(x));
+                SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
                 SubRoles.Remove(CustomRoles.Rascal);
                 SubRoles.Remove(CustomRoles.Loyal);
                 break;
@@ -316,6 +317,7 @@ public class PlayerState(byte playerId)
         return count;
     }
 }
+
 public class TaskState
 {
     public static int InitialTotalTasks;
@@ -436,8 +438,12 @@ public static class GameStates
         {
             if (!IsOnlineGame) return false;
 
-            string region = ServerManager.Instance.CurrentRegion.Name;
-            return (region == "North America" || region == "Europe" || region == "Asia");
+            const string Domain = "among.us";
+
+            // From Reactor.gg
+            return ServerManager.Instance.CurrentRegion?.TryCast<StaticHttpRegionInfo>() is { } regionInfo &&
+                   regionInfo.PingServer.EndsWith(Domain, StringComparison.Ordinal) &&
+                   regionInfo.Servers.All(serverInfo => serverInfo.Ip.EndsWith(Domain, StringComparison.Ordinal));
         }
     }
     public static bool IsLocalGame => AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;

@@ -31,7 +31,7 @@ internal class Hangman : RoleBase
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = ShapeshiftDuration.GetFloat();
     }
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.Pestilence))
             return true;
@@ -48,7 +48,7 @@ internal class Hangman : RoleBase
             target.SetRealKiller(killer);
 
             killer.SetKillCooldown();
-            MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, false);
+            //MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, false);
             return false;
         }
         return true;

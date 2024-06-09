@@ -166,9 +166,8 @@ internal class DollMaster : RoleBase
     {
         if (IsControllingPlayer && controllingTarget != null && DollMasterTarget != null)
         {
-            bool shouldAnimate = false;
-            DollMasterTarget.RpcShapeshift(DollMasterTarget, shouldAnimate);
-            controllingTarget.RpcShapeshift(controllingTarget, shouldAnimate);
+            DollMasterTarget.RpcShapeshift(DollMasterTarget, false);
+            controllingTarget.ResetPlayerOutfit();
             UnPossess(DollMasterTarget, controllingTarget);
             Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
             ReducedVisionPlayers.Clear();
@@ -265,7 +264,7 @@ internal class DollMaster : RoleBase
         // If Target as DollMaster Main Body gets killed, kill DollMaster instead.
         if (target == controllingTarget)
         {
-            target.RpcRemovePet();
+            target.RpcSetPet("");
             UnPossess(DollMasterTarget, controllingTarget);
             GetPlayersPositions(DollMasterTarget);
             SwapPlayersPositions(DollMasterTarget);
@@ -275,7 +274,7 @@ internal class DollMaster : RoleBase
         // If DollMaster gets killed as possessed Target, kill possessed Target instead.
         else if (target == DollMasterTarget)
         {
-            DollMasterTarget.RpcRemovePet();
+            DollMasterTarget.RpcSetPet("");
             UnPossess(DollMasterTarget, controllingTarget);
             GetPlayersPositions(DollMasterTarget);
             SwapPlayersPositions(DollMasterTarget);
@@ -369,7 +368,7 @@ internal class DollMaster : RoleBase
             }
 
             DollMasterTarget?.RpcShapeshift(DollMasterTarget, false);
-            controllingTarget?.RpcShapeshift(controllingTarget, false);
+            controllingTarget?.ResetPlayerOutfit();
 
             IsControllingPlayer = false;
             ResetPlayerSpeed = true;
@@ -380,8 +379,8 @@ internal class DollMaster : RoleBase
     private static void Possess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
-        pc.RpcShapeshift(target, shouldAnimate);
-        target?.RpcShapeshift(pc, shouldAnimate);
+        pc?.RpcShapeshift(target, false);
+        target?.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit);
         pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
     }
 
@@ -390,8 +389,8 @@ internal class DollMaster : RoleBase
     {
         WaitToUnPossess = false;
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
-        pc.RpcShapeshift(pc, shouldAnimate);
-        target?.RpcShapeshift(target, shouldAnimate);
+        pc?.RpcShapeshift(pc, false);
+        target?.ResetPlayerOutfit();
         pc.RpcResetAbilityCooldown();
 
         IsControllingPlayer = false;
@@ -406,7 +405,7 @@ internal class DollMaster : RoleBase
     // Swap Dollmaster and possessed player info for functions.
     public static PlayerControl SwapPlayerInfo(PlayerControl player)
     {
-        if (IsControllingPlayer)
+        if (IsControllingPlayer && HasEnabled)
         {
             if (!(DollMasterTarget == null || controllingTarget == null))
             {

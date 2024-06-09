@@ -149,7 +149,7 @@ internal class PlagueBearer : RoleBase
 
                 // Set Pestilence
                 plagueBearer.RpcSetCustomRole(CustomRoles.Pestilence);
-                plagueBearer.GetRoleClass()?.Add(PlagueId);
+                plagueBearer.GetRoleClass()?.OnAdd(PlagueId);
 
                 plagueBearer.Notify(GetString("PlagueBearerToPestilence"), time: 2f);
                 plagueBearer.RpcGuardAndKill(plagueBearer);

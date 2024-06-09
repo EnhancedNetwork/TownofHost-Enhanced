@@ -50,7 +50,7 @@ internal class Kamikaze : RoleBase
 
     private void SendRPC(byte KamiId, byte targetId = byte.MaxValue, bool checkMurder = false)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncKami, SendOption.Reliable, -1);
         writer.Write(checkMurder);
         writer.Write(KamiId);
 

@@ -51,6 +51,17 @@ internal class Shaman : RoleBase
     {
         hud.KillButton.OverrideText(GetString("ShamanButtonText"));
     }
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (ShamanTarget == byte.MaxValue) return true;
+
+        PlayerControl shaman = target;
+        target = ChangeTarget(target);
+
+        killer.RpcCheckAndMurder(target);
+        target.SetRealKiller(shaman);
+        return false;
+    }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (ShamanTargetChoosen == false)

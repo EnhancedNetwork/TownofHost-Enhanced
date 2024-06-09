@@ -146,7 +146,7 @@ internal class Gangster : RoleBase
     }
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanRecruit(playerId)? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
-    private bool CanRecruit(byte id) => AbilityLimit <= 0;
+    private bool CanRecruit(byte id) => AbilityLimit >= 1;
     private static bool CanBeGansterRecruit(PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral())

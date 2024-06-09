@@ -164,7 +164,7 @@ internal class Camouflager : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl camouflager)
     {
-        if (!ShowShapeshiftAnimationsOpt.GetBool() && !AbilityActivated) return;
+        if (ShowShapeshiftAnimationsOpt.GetBool() || !AbilityActivated) return;
 
         if (camouflager == null || !camouflager.IsAlive())
         {

@@ -8,6 +8,7 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
+using static TOHE.SelectRolesPatch;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -17,9 +18,11 @@ internal class ChangeRoleSettings
 {
     public static void Postfix(AmongUsClient __instance)
     {
+        SetUpRoleTextPatch.IsInIntro = true;
+
         Main.OverrideWelcomeMsg = "";
 
-        Logger.Msg("Is Started", "AssignRoles");
+        Logger.Msg("Is Started", "Initialization");
 
         try
         {
@@ -72,6 +75,7 @@ internal class ChangeRoleSettings
             Main.MeetingsPassed = 0;
             Main.MeetingIsStarted = false;
             Main.introDestroyed = false;
+            GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
 
             ChatManager.ResetHistory();
             ReportDeadBodyPatch.CanReport = [];
@@ -124,7 +128,10 @@ internal class ChangeRoleSettings
             {
                 var colorId = pc.Data.DefaultOutfit.ColorId;
                 if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
-                Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId);
+                Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
+                {
+                    NormalOutfit = new GameData.PlayerOutfit().Set(pc.GetRealName(clientData: true), pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
+                };
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
@@ -205,6 +212,8 @@ internal class ChangeRoleSettings
 
             SetEverythingUpPatch.LastWinsText = "";
             SetEverythingUpPatch.LastWinsReason = "";
+
+            Logger.Msg("End", "Initialization");
         }
         catch (Exception ex)
         {
@@ -264,7 +273,6 @@ internal class SelectRolesPatch
             roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + RoleAssign.addEngineerNum, RoleAssign.addEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
             int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
             roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum + RoleAssign.addShapeshifterNum, RoleAssign.addShapeshifterNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
-
         }
         catch (Exception e)
         {
@@ -274,15 +282,27 @@ internal class SelectRolesPatch
     }
     public static void Postfix()
     {
+        if (!AmongUsClient.Instance.AmHost) return;
+
         //There is a delay of 0.8 seconds because after the player exits during the assign of desync roles, either a black screen will occur or the Scientist role will be set
-        _ = new LateTask(SetRolesAfterSelect, 0.8f, "Set Role Types After Select");
+        _ = new LateTask(() => {
+            // Set roles
+            SetRolesAfterSelect();
+
+            // Assign tasks again
+            ShipStatus.Instance.Begin();
+        }, 1f, "Set Role Types After Select");
+
+        _ = new LateTask(() => {
+
+            // Update name players
+            Utils.NotifyRoles(NoCache: true);
+        }, 1.3f, "Do Notify Roles After Assign", shoudLog: false);
     }
-    public static void SetRolesAfterSelect()
+    private static void SetRolesAfterSelect()
     {
         try
         {
-            if (!AmongUsClient.Instance.AmHost) return;
-
             if (GameStates.IsHideNSeek)
             {
                 GameOptionsSender.AllSenders.Clear();
@@ -301,7 +321,8 @@ internal class SelectRolesPatch
                 return;
             }
 
-            Main.AssignRolesIsStarted = true;
+            Logger.Msg("Is Started", "AssignRoles");
+            //Main.AssignRolesIsStarted = true;
 
             //Initialization of CustomRpcSender and RpcSetRoleReplacer
             Dictionary<byte, CustomRpcSender> senders = [];
@@ -339,8 +360,7 @@ internal class SelectRolesPatch
             RpcSetRoleReplacer.OverriddenSenderList = null;
             RpcSetRoleReplacer.StoragedData = null;
 
-            Main.AssignRolesIsStarted = false;
-
+            //Main.AssignRolesIsStarted = false;
             //Utils.ApplySuffix();
 
             foreach (var pc in Main.AllPlayerControls)
@@ -395,8 +415,8 @@ internal class SelectRolesPatch
 
             try
             {
-                AddonAssign.StartSortAndAssign();
                 AddonAssign.InitAndStartAssignLovers();
+                AddonAssign.StartSortAndAssign();
             }
             catch (Exception error)
             {
@@ -474,14 +494,15 @@ internal class SelectRolesPatch
                         case CustomRoles.Fool:
                             Fool.Add();
                             break;
+                        case CustomRoles.Bloodlust:
+                            Bloodlust.Add();
+                            break;
 
                         default:
                             break;
                     }
                 }
             }
-
-            CustomRoleManager.Add();
 
             EndOfSelectRolePatch:
 
@@ -581,7 +602,12 @@ internal class SelectRolesPatch
             {
                 if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var roleType))
                 {
-                    sender.RpcSetRole(seer, roleType, target.GetClientId());
+                    try
+                    {
+                        sender.RpcSetRole(seer, roleType, target.GetClientId());
+                    }
+                    catch
+                    { }
                 }
             }
         }
@@ -617,12 +643,15 @@ internal class SelectRolesPatch
 
                 foreach (var (seer, roleType) in StoragedData)
                 {
-                    var target = Utils.GetPlayerById(sender.Key);
-
-                    seer.SetRole(roleType);
-                    sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, target.GetClientId())
-                        .Write((ushort)roleType)
-                        .EndRpc();
+                    try
+                    {
+                        seer.SetRole(roleType);
+                        sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
+                            .Write((ushort)roleType)
+                            .EndRpc();
+                    }
+                    catch
+                    { }
                 }
                 sender.Value.EndMessage();
             }

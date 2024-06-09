@@ -35,7 +35,7 @@ internal class Transporter : RoleBase
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if ((completedTaskCount + 1) <= TransporterTeleportMax.GetInt())
+        if (player.IsAlive() && (completedTaskCount + 1) <= TransporterTeleportMax.GetInt())
         {
             Logger.Info($"Transporter: {player.GetNameWithRole().RemoveHtmlTags()} completed the task", "Transporter");
 

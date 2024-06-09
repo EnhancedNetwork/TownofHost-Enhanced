@@ -34,7 +34,7 @@ public static class MessageReaderUpdateSystemPatch
 {
     public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        if (systemType is SystemTypes.Ventilation) return true;
+        if (systemType is SystemTypes.Ventilation or SystemTypes.Security) return true;
         if (GameStates.IsHideNSeek) return true;
 
         var amount = MessageReader.Get(reader).ReadByte();
@@ -48,7 +48,7 @@ public static class MessageReaderUpdateSystemPatch
     }
     public static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        if (systemType is SystemTypes.Ventilation) return;
+        if (systemType is SystemTypes.Ventilation or SystemTypes.Security) return;
         if (GameStates.IsHideNSeek) return;
 
         UpdateSystemPatch.Postfix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());

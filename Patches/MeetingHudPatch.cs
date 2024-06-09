@@ -464,27 +464,41 @@ class CheckForEndVotingPatch
 
         _ = new LateTask(() =>
         {
-            Main.DoBlockNameChange = true;
-            if (GameStates.IsInGame)
+            try
             {
-                GameData.Instance.UpdateName(exiledPlayer.PlayerId, name, false);
-                player.RpcSetName(name);
+                Main.DoBlockNameChange = true;
+                if (GameStates.IsInGame)
+                {
+                    GameData.Instance.UpdateName(exiledPlayer.PlayerId, name, false);
+                    player?.RpcSetName(name);
+                }
+            }
+            catch (Exception error)
+            {
+                Logger.Error($"Error after change exiled player name: {error}", "ConfirmEjections");
             }
         }, 3.0f, "Change Exiled Player Name");
 
         _ = new LateTask(() =>
         {
-            if (GameStates.IsInGame && !player.Data.Disconnected)
+            try
             {
-                player.RpcSetName(realName);
-                Main.DoBlockNameChange = false;
-            }
+                if (GameStates.IsInGame && !player.Data.Disconnected)
+                {
+                    player?.RpcSetName(realName);
+                    Main.DoBlockNameChange = false;
+                }
 
-            if (GameStates.IsInGame && player.Data.Disconnected)
+                if (GameStates.IsInGame && player.Data.Disconnected)
+                {
+                    player.Data.PlayerName = realName;
+                    GameData.Instance.UpdateName(exiledPlayer.PlayerId, realName, false);
+                    //Await Next Send Data or Next Meeting
+                }
+            }
+            catch (Exception error)
             {
-                player.Data.PlayerName = realName;
-                GameData.Instance.UpdateName(exiledPlayer.PlayerId, realName, false);
-                //Await Next Send Data or Next Meeting
+                Logger.Error($"Error after change exiled player name back: {error}", "ConfirmEjections");
             }
         }, 11.5f, "Change Exiled Player Name Back");
 
@@ -988,7 +1002,15 @@ class MeetingHudStartPatch
             var sb = new StringBuilder();
 
             pva.NameText.text = pva.NameText.text.ApplyNameColorData(seer, target, true);
-
+            
+            // if Victim to Doppelganger or is Doppelganger
+            if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
+            {
+                if (target.Is(CustomRoles.Doppelganger) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
+                    pva.NameText.text = $"{Utils.ColorString(Color.gray, $"<size=75%>({Doppelganger.TrueNames[target.PlayerId]})</size>")}\r\n{pva.NameText.text.ApplyNameColorData(seer, target, true)}\n\n";
+                else if (Doppelganger.CheckDoppelVictim(target.PlayerId) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
+                    pva.NameText.text = Doppelganger.TrueNames[target.PlayerId].ApplyNameColorData(seer, target, true);
+            }
 
             // Guesser Mode //
             if (Options.GuesserMode.GetBool())

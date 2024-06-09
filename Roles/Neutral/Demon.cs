@@ -51,10 +51,10 @@ internal class Demon : RoleBase
     }
     public override void Add(byte playerId)
     {
-        DemonHealth.TryAdd(playerId, SelfHealthMax.GetInt());
+        DemonHealth[playerId] = SelfHealthMax.GetInt();
 
         foreach (var pc in Main.AllAlivePlayerControls)
-            PlayerHealth.TryAdd(pc.PlayerId, HealthMax.GetInt());
+            PlayerHealth[pc.PlayerId] = HealthMax.GetInt();
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -112,7 +112,7 @@ internal class Demon : RoleBase
         if (target.Is(CustomRoles.Pestilence)) return true;
         if (killer == null || target == null || !target.Is(CustomRoles.Demon) || killer.Is(CustomRoles.Demon)) return true;
 
-        if (DemonHealth[target.PlayerId] - SelfDamage.GetInt() < 1)
+        if (DemonHealth.TryGetValue(target.PlayerId, out var Health) && Health - SelfDamage.GetInt() < 1)
         {
             DemonHealth.Remove(target.PlayerId);
             Utils.NotifyRoles(SpecifySeer: target);

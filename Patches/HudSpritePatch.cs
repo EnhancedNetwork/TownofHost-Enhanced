@@ -1,6 +1,7 @@
 ﻿using TOHE.Roles.Core;
 using UnityEngine;
 using System;
+using TOHE.Modules;
 
 namespace TOHE;
 
@@ -35,7 +36,7 @@ public static class HudSpritePatch
         bool shapeshifting = Main.CheckShapeshift.TryGetValue(player.PlayerId, out bool ss) && ss;
 
         if (!Kill) Kill = __instance.KillButton.graphic.sprite;
-        if (!Ability) Ability = __instance.AbilityButton.graphic.sprite;
+        if (!Ability) Ability = AbilityButtonSetFromSettingsPatch.abilityButton;
         if (!Vent) Vent = __instance.ImpostorVentButton.graphic.sprite;
         if (!Report) Report = __instance.ReportButton.graphic.sprite;
 
@@ -89,6 +90,7 @@ public static class HudSpritePatch
 [HarmonyPatch(typeof(AbilityButton), nameof(AbilityButton.SetFromSettings))]
 public static class AbilityButtonSetFromSettingsPatch
 {
+    public static Sprite abilityButton;
     public static bool Prefix(AbilityButton __instance, AbilityButtonSettings settings)
     {
         // When Custom Buttons is disabled run vanilla code
@@ -96,9 +98,12 @@ public static class AbilityButtonSetFromSettingsPatch
 
         __instance.SetInfiniteUses();
 
+        abilityButton = settings.Image;
         // When ability button is initialize or player is dead, set default image
-        if (!Main.introDestroyed || PlayerControl.LocalPlayer.Data.IsDead || AmongUsClient.Instance.IsGameOver)
+        if (!Main.introDestroyed || PlayerControl.LocalPlayer.Data.IsDead || AmongUsClient.Instance.IsGameOver || RoleBasisChanger.SkipTasksAfterAssignRole)
+        {
             __instance.graphic.sprite = settings.Image;
+        }
 
         __instance.graphic.SetCooldownNormalizedUvs();
         __instance.buttonLabelText.fontSharedMaterial = settings.FontMaterial;

@@ -100,7 +100,7 @@ internal class Lawyer : RoleBase
             }
             // Unable to find a target? Try to turn to changerole or opportunist
 
-            var SelectedTarget = targetList[rand.Next(targetList.Count)];
+            var SelectedTarget = targetList.RandomElement();
             Target.Add(playerId, SelectedTarget.PlayerId);
             SendRPC(playerId, SelectedTarget.PlayerId, true);
             Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()}:{SelectedTarget.GetNameWithRole()}", "Lawyer");
@@ -177,16 +177,16 @@ internal class Lawyer : RoleBase
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (seer == null || target == null) return "";
+        if (seer == null || target == null) return string.Empty;
 
         if (!seer.Is(CustomRoles.Lawyer))
         {
-            if (!TargetKnowsLawyer.GetBool()) return "";
+            if (!TargetKnowsLawyer.GetBool()) return string.Empty;
             return (Target.TryGetValue(target.PlayerId, out var x) && seer.PlayerId == x) ?
-                Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : "";
+                Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : string.Empty;
         }
         var GetValue = Target.TryGetValue(seer.PlayerId, out var targetId);
-        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : "";
+        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : string.Empty;
     }
     public override void AfterMeetingTasks()
     {

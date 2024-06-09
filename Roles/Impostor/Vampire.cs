@@ -56,6 +56,11 @@ internal class Vampire : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+
+        if (NowActionMode == ActionMode.TriggerDouble)
+        {
+            Utils.GetPlayerById(playerId)?.AddDoubleTrigger();
+        }
     }
 
     public static bool CheckCanUseVent() => CanVent.GetBool();
