@@ -44,10 +44,10 @@ internal class Eraser : RoleBase
 
     public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
-        if (!HasEnabled) return;
-        if (player == null || target == null) return;
-        if (target.Is(CustomRoles.Eraser)) return;
-        if (AbilityLimit < 1) return;
+        if (!HasEnabled) return true;
+        if (player == null || target == null) return true;
+        if (target.Is(CustomRoles.Eraser)) return true;
+        if (AbilityLimit < 1) return true;
 
         if (didVote.Contains(player.PlayerId)) return true;
         didVote.Add(player.PlayerId);
