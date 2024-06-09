@@ -1340,7 +1340,7 @@
   "BombCooldown": "Bomb Cooldown",
   "ImpostorVision": "Has <color=#ff1919>Impostor</color> Vision",
   "CanUseSabotage": "Can Sabotage",
-  "Warlock_CanKillImpostors": "Can Kill <color=#ff1919>Impostors</color>",
+  "CanKillImpostors": "Can Kill <color=#ff1919>Impostors</color>",
   "Warlock_CanKillSelf": "Can Kill Themselves",
   "CrewpostorKnowsAllies": "Knows <color=#ff1919>Impostors</color>",
   "AlliesKnowCrewpostor": "Known to <color=#ff1919>Impostors</color>",
