@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using TOHE.Modules;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -613,8 +612,8 @@ public class RoleAssign
 
             if (Mini.CheckSpawnEvilMini())
             {
-                var tempImpRole = FinalRolesList.FirstOrDefault(role => role.IsImpostor());
-                FinalRolesList.Remove(tempImpRole);
+                //var tempImpRole = FinalRolesList.FirstOrDefault(role => role.IsImpostor());
+                //FinalRolesList.Remove(tempImpRole);
                 FinalRolesList.Add(CustomRoles.EvilMini);
             }
             else

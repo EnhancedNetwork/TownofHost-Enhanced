@@ -4,6 +4,7 @@ using System;
 using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -104,6 +105,8 @@ internal class FortuneTeller : RoleBase
         if (player == null || target == null) return true;
         if (didVote.Contains(player.PlayerId)) return true;
         didVote.Add(player.PlayerId);
+
+        target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
 
         if (AbilityLimit < 1)
         {

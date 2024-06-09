@@ -40,15 +40,14 @@ internal class Eraser : RoleBase
         AbilityLimit = EraseLimitOpt.GetInt();
     }
     public override string GetProgressText(byte playerId, bool comms)
-        => Utils.ColorString(AbilityLimit <= 0 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, $"({AbilityLimit})");
+        => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, $"({AbilityLimit})");
 
     public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
-
-        if (!HasEnabled) return true;
-        if (player == null || target == null) return true;
-        if (target.Is(CustomRoles.Eraser)) return true;
-        if (AbilityLimit <= 0) return true;
+        if (!HasEnabled) return;
+        if (player == null || target == null) return;
+        if (target.Is(CustomRoles.Eraser)) return;
+        if (AbilityLimit < 1) return;
 
         if (didVote.Contains(player.PlayerId)) return true;
         didVote.Add(player.PlayerId);

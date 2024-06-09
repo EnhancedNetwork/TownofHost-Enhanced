@@ -277,6 +277,69 @@ static class ExtendedPlayerControl
         }
         player.ResetKillCooldown();
     }
+    public static void ResetPlayerOutfit(this PlayerControl player, GameData.PlayerOutfit Outfit = null, bool force = false)
+    {
+        Outfit ??= Main.PlayerStates[player.PlayerId].NormalOutfit;
+
+        void Setoutfit() 
+        {
+            var sender = CustomRpcSender.Create(name: $"Reset PlayerOufit for 『{player.Data.PlayerName}』");
+
+            player.SetName(Outfit.PlayerName);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName)
+                .Write(Outfit.PlayerName)
+            .EndRpc();
+
+            Main.AllPlayerNames[player.PlayerId] = Outfit.PlayerName;
+
+            player.SetColor(Outfit.ColorId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
+                .Write(Outfit.ColorId)
+            .EndRpc();
+
+            player.SetHat(Outfit.HatId, Outfit.ColorId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
+                .Write(Outfit.HatId)
+            .EndRpc();
+
+            player.SetSkin(Outfit.SkinId, Outfit.ColorId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetSkinStr)
+                .Write(Outfit.SkinId)
+            .EndRpc();
+
+            player.SetVisor(Outfit.VisorId, Outfit.ColorId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetVisorStr)
+                .Write(Outfit.VisorId)
+            .EndRpc();
+
+            player.SetPet(Outfit.PetId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetPetStr)
+                .Write(Outfit.PetId)
+                .EndRpc();
+
+            player.SetNamePlate(Outfit.NamePlateId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetNamePlateStr)
+                .Write(Outfit.NamePlateId)
+                .EndRpc();
+
+            sender.SendMessage();
+
+            //cannot use currentoutfit type because of mushroom mixup . .
+            var OutfitTypeSet = player.CurrentOutfitType != PlayerOutfitType.Shapeshifted ? PlayerOutfitType.Default : PlayerOutfitType.Shapeshifted;
+
+            player.Data.SetOutfit(OutfitTypeSet, Outfit);
+            GameData.Instance.SetDirty();
+        }
+        if (player.CheckCamoflague() && !force)
+        {
+            Main.LateOutfits[player.PlayerId] = Setoutfit;
+        }
+        else
+        {
+            Main.LateOutfits.Remove(player.PlayerId);
+            Setoutfit();
+        }
+    }
     public static void SetKillCooldownV3(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
     {
         if (player == null) return;
@@ -508,8 +571,20 @@ static class ExtendedPlayerControl
 
     public static string GetRealName(this PlayerControl player, bool isMeeting = false, bool clientData = false)
     {
-        if (clientData) return player.GetClient().PlayerName;
-        return isMeeting ? player?.Data?.PlayerName : player?.name;
+        if (clientData)
+        {
+            var client = player.GetClient();
+
+            if (client != null)
+            {
+                if (OnPlayerJoinedPatch.realClientName.TryGetValue(client.Id, out var realname))
+                {
+                    return realname;
+                }
+                return player.GetClient().PlayerName;
+            }
+        }
+        return isMeeting || player == null ? player?.Data?.PlayerName : player?.name;
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
@@ -775,7 +850,7 @@ static class ExtendedPlayerControl
 
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        if (Options.CurrentGameMode == CustomGameMode.FFA) return true;
+        if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd) return true;
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (PlayerControl.LocalPlayer.PlayerId == seer.PlayerId && Main.GodMode.Value)) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
@@ -1021,6 +1096,11 @@ static class ExtendedPlayerControl
         {
             return false;
         }
+        
+        // If doppelganger appears as player return true
+        // Note: Needs to be tested for any buggy outcomes.
+        if (Doppelganger.CheckDoppelVictim(target.PlayerId) && target.PlayerId == Doppelganger.CurrentIdToSwap)
+            return true;
 
         //if the target status is alive
         return !Main.PlayerStates.TryGetValue(target.PlayerId, out var playerState) || !playerState.IsDead;

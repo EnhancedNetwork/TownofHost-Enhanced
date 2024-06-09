@@ -39,7 +39,7 @@ internal class CursedSoul : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        CurseLimit = new();
+        CurseLimit = CurseMax.GetInt();
     }
     public override void Add(byte playerId)
     {
@@ -70,11 +70,11 @@ internal class CursedSoul : RoleBase
     
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (CurseLimit < 1) return true;
+        if (CurseLimit < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
-            return true;
+            return false;
         }
         if (CanBeSoulless(target))
         {
@@ -96,11 +96,11 @@ internal class CursedSoul : RoleBase
 
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{CurseLimit}次魅惑机会", "CursedSoul");
-            return true;
+            return false;
         }
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulInvalidTarget")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{CurseLimit}次魅惑机会", "CursedSoul");
-        return true;
+        return false;
     }
     public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
         => player.Is(CustomRoles.CursedSoul) && target.Is(CustomRoles.Soulless);

@@ -1,5 +1,4 @@
-﻿using Hazel;
-using System;
+﻿using System;
 using UnityEngine;
 using AmongUs.GameOptions;
 using TOHE.Roles.AddOns.Crewmate;
@@ -74,15 +73,6 @@ internal class Virus : RoleBase
             AddMsg(VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
     }
     public override void MeetingHudClear() => VirusNotify.Clear();
-    
-
-    private static void SendRPCInfectKill(byte virusId, byte target = 255)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.Write(virusId);
-        writer.Write(target);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(ImpostorVision.GetBool());
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -93,26 +83,26 @@ internal class Virus : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        if (target == null || !target.CanBeInfected()) return;
-        if (!InfectedBodies.Contains(target.PlayerId)) return;
+        if (target?.Data != null && !InfectedBodies.Contains(target.Data.PlayerId)) return;
+        if (reporter == null || !reporter.CanBeInfected()) return;
 
         AbilityLimit--;
         SendSkillRPC();
 
         if (KillInfectedPlayerAfterMeeting.GetBool())
         {
-            InfectedPlayer.Add(target.PlayerId);
+            InfectedPlayer.Add(reporter.PlayerId);
 
-            VirusNotify.Add(target.PlayerId, GetString("VirusNoticeMessage2"));
+            VirusNotify.Add(reporter.PlayerId, GetString("VirusNoticeMessage2"));
         }
         else
         {
-            target.RpcSetCustomRole(CustomRoles.Contagious);
+            reporter.RpcSetCustomRole(CustomRoles.Contagious);
 
-            VirusNotify.Add(target.PlayerId, GetString("VirusNoticeMessage"));
+            VirusNotify.Add(reporter.PlayerId, GetString("VirusNoticeMessage"));
         }
 
-        Logger.Info("Setting up a career:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());
+        Logger.Info("Setting up a career:" + reporter?.Data?.PlayerName + " = " + reporter.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
@@ -157,7 +147,6 @@ internal class Virus : RoleBase
     private static void RemoveInfectedPlayer(PlayerControl virus)
     {
         InfectedPlayer.Clear();
-        SendRPCInfectKill(virus.PlayerId);
     }
 
     public static bool KnowRole(PlayerControl player, PlayerControl target)

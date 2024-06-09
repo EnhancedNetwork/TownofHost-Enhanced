@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -22,11 +23,8 @@ class SetUpRoleTextPatch
         if (!GameStates.IsModHost) return;
 
         // After showing team for non-modded clients update player names.
-        _ = new LateTask(() =>
-        {
-            IsInIntro = false;
-            Utils.NotifyRoles(NoCache: true);
-        }, 1f);
+        IsInIntro = false;
+        Utils.NotifyRoles(NoCache: true);
 
         _ = new LateTask(() =>
         {
@@ -543,6 +541,8 @@ class IntroCutsceneDestroyPatch
             }
         }
 
+        CustomRoleManager.Add();
+
         if (AmongUsClient.Instance.AmHost)
         {
             if (GameStates.IsNormalGame)
@@ -570,12 +570,17 @@ class IntroCutsceneDestroyPatch
             }
             else if (GhostRoleAssign.forceRole.Any())
             {
-                GhostRoleAssign.forceRole.Do(x => {
-                    var plr = Utils.GetPlayerById(x.Key);
-                    plr.RpcExile();
-                    Main.PlayerStates[x.Key].SetDead();
+                // Needs to be delayed for the game to load it properly
+                _ = new LateTask(() =>
+                {
+                    GhostRoleAssign.forceRole.Do(x =>
+                    {
+                        var plr = Utils.GetPlayerById(x.Key);
+                        plr.RpcExile();
+                        Main.PlayerStates[x.Key].SetDead();
 
-                });
+                    });
+                }, 5f, "Set Dev Ghost-Roles");
             }
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
