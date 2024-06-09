@@ -438,7 +438,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Mundane:
-                if (pc.CanUseKillButton() || pc.GetCustomRole().IsTasklessCrewmate() || pc.Is(Custom_Team.Impostor))
+                if (pc.HasImpKillButton() || pc.GetCustomRole().IsTasklessCrewmate() || pc.Is(Custom_Team.Impostor))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Mundane.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Mundane.CanBeOnNeutral.GetBool()))
                     return false;
@@ -558,9 +558,10 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Lazy)
                     || pc.Is(CustomRoles.Merchant)
                     || pc.Is(CustomRoles.Alchemist)
-                    || pc.Is(CustomRoles.LazyGuy))
+                    || pc.Is(CustomRoles.LazyGuy)
+                    || pc.Is(CustomRoles.Crewpostor))
                     return false;
-                if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsTasklessCrewmate())
+                if (!pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsTasklessCrewmate())
                     return false;
                 break;
 

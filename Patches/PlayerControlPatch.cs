@@ -472,6 +472,8 @@ class MurderPlayerPatch
         AfterPlayerDeathTasks(killer, target, false);
         Utils.TargetDies(__instance, target);
 
+        DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+
         if (Options.LowLoadMode.GetBool())
         {
             __instance.MarkDirtySettings();
@@ -1136,11 +1138,24 @@ class FixedUpdateInNormalGamePatch
                 var seer = PlayerControl.LocalPlayer;
                 var seerRoleClass = seer.GetRoleClass();
                 var target = __instance;
+                var realTarget = target;
 
                 if (seer != target && seer != DollMaster.DollMasterTarget)
                     target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
 
                 string RealName = target.GetRealName();
+
+                if (seer != target && seer.IsAlive())
+                    target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
+
+                // if Victim to Doppelganger or is Doppelganger
+                if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
+                {
+                    if (target.Is(CustomRoles.Doppelganger) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
+                        RealName = $"\n{RealName}\r\n<size=75%>{Utils.ColorString(Color.gray, $"({Doppelganger.TrueNames[target.PlayerId]})")}</size>";
+                    else if (Doppelganger.CheckDoppelVictim(target.PlayerId) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
+                        RealName = Doppelganger.TrueNames[target.PlayerId];
+                }
 
                 Mark.Clear();
                 Suffix.Clear();
@@ -1217,18 +1232,18 @@ class FixedUpdateInNormalGamePatch
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
                     ? $" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : string.Empty;
 
-                target.cosmetics.nameText.text = $"{RealName}{DeathReason}{Mark}";
+                realTarget.cosmetics.nameText.text = $"{RealName}{DeathReason}{Mark}";
 
                 if (Suffix.ToString() != "")
                 {
                     RoleText.transform.SetLocalY(0.35f);
-                    target.cosmetics.colorBlindText.transform.SetLocalY(-0.4f);
-                    target.cosmetics.nameText.text += "\r\n" + Suffix.ToString();
+                    realTarget.cosmetics.colorBlindText.transform.SetLocalY(-0.4f);
+                    realTarget.cosmetics.nameText.text += "\r\n" + Suffix.ToString();
                 }
                 else
                 {
                     RoleText.transform.SetLocalY(0.2f);
-                    target.cosmetics.colorBlindText.transform.SetLocalY(-0.2f);
+                    realTarget.cosmetics.colorBlindText.transform.SetLocalY(-0.2f);
                 }
             }
             else

@@ -39,7 +39,7 @@ internal class CursedSoul : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        CurseLimit = new();
+        CurseLimit = CurseMax.GetInt();
     }
     public override void Add(byte playerId)
     {

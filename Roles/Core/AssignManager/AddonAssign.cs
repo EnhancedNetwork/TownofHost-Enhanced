@@ -158,6 +158,7 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.Romantic)
                 || pc.Is(CustomRoles.VengefulRomantic)
                 || pc.Is(CustomRoles.Workaholic)
+                || pc.Is(CustomRoles.Solsticer)
                 || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool()))
