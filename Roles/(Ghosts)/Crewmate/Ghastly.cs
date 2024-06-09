@@ -79,7 +79,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
                 KillerIsChosen = false;
                 GetPlayerById(killer).Notify(GetString("GhastlyYouvePosses"));
-                angel.Notify($"<size=65%>〘{string.Format(GetString("GhastlyPossessedUser"), "</size>" + _Player.GetRealName())}<size=65%> 〙</size>");
+                angel.Notify($"<size=65%>〘{string.Format(GetString("GhastlyPossessedUser"), "</size>" + GetPlayerById(killer).GetRealName())}<size=65%> 〙</size>\n");
 
                 TargetArrow.Add(killer, Target);
                 angel.RpcGuardAndKill(target);
