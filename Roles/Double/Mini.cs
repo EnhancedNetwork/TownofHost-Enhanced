@@ -28,7 +28,7 @@ internal class Mini : RoleBase
     public static int Age = new();
     private static bool IsEvilMini = false;
     private static int GrowUpTime = new();
-    private static int GrowUp = new();
+    //private static int GrowUp = new();
     private static long LastFixedUpdate = new();
     private static bool misguessed = false;
 
@@ -51,19 +51,12 @@ internal class Mini : RoleBase
     public override void Init()
     {
         GrowUpTime = 0;
-        GrowUp = GrowUpDuration.GetInt() / 18;
+        //GrowUp = GrowUpDuration.GetInt() / 18;
         Age = 0;
         misguessed = false;
 
         var rand = new Random();
         IsEvilMini = CanBeEvil.GetBool() && (rand.Next(0, 100) < EvilMiniSpawnChances.GetInt());
-    }
-    public override void Add(byte playerId)
-    {
-
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public void SendRPC()
     {

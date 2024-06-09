@@ -4,6 +4,7 @@ using System;
 using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
