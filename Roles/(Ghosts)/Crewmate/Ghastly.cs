@@ -4,6 +4,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using UnityEngine;
+using MS.Internal.Xml.XPath;
 
 namespace TOHE.Roles._Ghosts_.Crewmate
 {
@@ -68,7 +69,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 Target = byte.MaxValue;
                 KillerIsChosen = true;
 
-                angel.Notify(GetString("GhastlyChooseTarget"));
+                angel.Notify($"\n{GetString("GhastlyChooseTarget")}\n");
             }
             else if (KillerIsChosen && Target == byte.MaxValue && target.PlayerId != killer)
             {
@@ -79,13 +80,13 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
                 KillerIsChosen = false;
                 GetPlayerById(killer).Notify(GetString("GhastlyYouvePosses"));
-                angel.Notify($"<size=65%>〘{string.Format(GetString("GhastlyPossessedUser"), "</size>" + GetPlayerById(killer).GetRealName())}<size=65%> 〙</size>\n");
+                angel.Notify($"\n<size=65%>〘{string.Format(GetString("GhastlyPossessedUser"), "</size>" + GetPlayerById(killer).GetRealName())}<size=65%> 〙</size>\n");
 
                 TargetArrow.Add(killer, Target);
                 angel.RpcGuardAndKill(target);
                 angel.RpcResetAbilityCooldown();
 
-                Logger.Info($" chosen {target.GetRealName()} for : {GetPlayerById(killer).GetRealName()}", "GhastlyTarget");
+                Logger.Info($" chosen {target?.GetRealName()} for : {GetPlayerById(killer)?.GetRealName()}", "GhastlyTarget");
             }
             else if (target.PlayerId == killer)
             {
@@ -111,7 +112,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             if (killertarget.Item1 == player.PlayerId 
                 && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= GetTimeStamp())
             {
-                _Player.Notify(string.Format(GetString("GhastlyExpired"), player.GetRealName()));
+                _Player.Notify(string.Format($"\n{ GetString("GhastlyExpired")}\n", player.GetRealName()));
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(player.PlayerId);
                 KillerIsChosen = false;
@@ -131,7 +132,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 }
                 else 
                 {
-                    _Player.Notify(string.Format(GetString("GhastlyExpired"), killer.GetRealName()));
+                    _Player.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", killer.GetRealName()));
                     TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                     LastTime.Remove(killer.PlayerId);
                     KillerIsChosen = false;
