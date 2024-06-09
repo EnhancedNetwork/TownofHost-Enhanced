@@ -112,7 +112,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             if (killertarget.Item1 == player.PlayerId 
                 && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= GetTimeStamp())
             {
-                _Player.Notify(string.Format($"\n{ GetString("GhastlyExpired")}\n", player.GetRealName()));
+                _Player?.Notify(string.Format($"\n{ GetString("GhastlyExpired")}\n", player.GetRealName()));
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(player.PlayerId);
                 KillerIsChosen = false;
@@ -132,7 +132,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 }
                 else 
                 {
-                    _Player.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", killer.GetRealName()));
+                    _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", killer.GetRealName()));
                     TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                     LastTime.Remove(killer.PlayerId);
                     KillerIsChosen = false;
@@ -168,7 +168,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             var tuple = killertarget;
             if (DeadPlayer.PlayerId == tuple.Item1 || DeadPlayer.PlayerId == tuple.Item2)
             {
-                _Player.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", DeadPlayer.GetRealName()));
+                _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", DeadPlayer.GetRealName()));
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(DeadPlayer.PlayerId);
                 KillerIsChosen = false;
