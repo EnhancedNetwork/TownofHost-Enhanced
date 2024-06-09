@@ -128,7 +128,10 @@ internal class ChangeRoleSettings
             {
                 var colorId = pc.Data.DefaultOutfit.ColorId;
                 if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
-                Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId);
+                Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
+                {
+                    NormalOutfit = new GameData.PlayerOutfit().Set(Main.AllPlayerNames[pc.PlayerId], pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
+                };
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
@@ -197,9 +200,6 @@ internal class ChangeRoleSettings
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
 
-            // Block "RpcSetRole" for set desync roles for some players
-            RpcSetRoleReplacer.Initialize();
-
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
@@ -245,6 +245,9 @@ internal class SelectRolesPatch
 
         try
         {
+            // Block "RpcSetRole" for set desync roles for some players
+            RpcSetRoleReplacer.Initialize();
+
             // Set GM for Host
             if (Main.EnableGM.Value && Options.CurrentGameMode == CustomGameMode.Standard)
             {

@@ -254,6 +254,69 @@ static class ExtendedPlayerControl
         }
         player.ResetKillCooldown();
     }
+    public static void ResetPlayerOutfit(this PlayerControl player, GameData.PlayerOutfit Outfit = null, bool force = false)
+    {
+        Outfit ??= Main.PlayerStates[player.PlayerId].NormalOutfit;
+
+        void Setoutfit() 
+        {
+            var sender = CustomRpcSender.Create(name: $"Reset PlayerOufit for 『{player.Data.PlayerName}』");
+
+            player.SetName(Outfit.PlayerName);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName)
+                .Write(Outfit.PlayerName)
+            .EndRpc();
+
+            Main.AllPlayerNames[player.PlayerId] = Outfit.PlayerName;
+
+            player.SetColor(Outfit.ColorId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
+                .Write(Outfit.ColorId)
+            .EndRpc();
+
+            player.SetHat(Outfit.HatId, Outfit.ColorId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
+                .Write(Outfit.HatId)
+            .EndRpc();
+
+            player.SetSkin(Outfit.SkinId, Outfit.ColorId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetSkinStr)
+                .Write(Outfit.SkinId)
+            .EndRpc();
+
+            player.SetVisor(Outfit.VisorId, Outfit.ColorId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetVisorStr)
+                .Write(Outfit.VisorId)
+            .EndRpc();
+
+            player.SetPet(Outfit.PetId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetPetStr)
+                .Write(Outfit.PetId)
+                .EndRpc();
+
+            player.SetNamePlate(Outfit.NamePlateId);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetNamePlateStr)
+                .Write(Outfit.NamePlateId)
+                .EndRpc();
+
+            sender.SendMessage();
+
+            //cannot use currentoutfit type because of mushroom mixup . .
+            var OutfitTypeSet = player.CurrentOutfitType != PlayerOutfitType.Shapeshifted ? PlayerOutfitType.Default : PlayerOutfitType.Shapeshifted;
+
+            player.Data.SetOutfit(OutfitTypeSet, Outfit);
+            GameData.Instance.SetDirty();
+        }
+        if (player.CheckCamoflague() && !force)
+        {
+            Main.LateOutfits[player.PlayerId] = Setoutfit;
+        }
+        else
+        {
+            Main.LateOutfits.Remove(player.PlayerId);
+            Setoutfit();
+        }
+    }
     public static void SetKillCooldownV3(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
     {
         if (player == null) return;
