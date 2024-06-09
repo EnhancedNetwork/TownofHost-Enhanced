@@ -71,7 +71,7 @@ internal class Mortician : RoleBase
     }
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting) return;
+        if (inMeeting || Main.PlayerStates[target.Data.PlayerId].deathReason == PlayerState.DeathReason.etc) return;
 
         Vector2 pos = target.transform.position;
         float minDis = float.MaxValue;
