@@ -77,8 +77,15 @@ internal class Alchemist : RoleBase
 
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdatesBloodlus);
             CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateInvis);
+            AddBloodlus();
+        }
+    }
+    public static void AddBloodlus()
+    {
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdatesBloodlus);
         }
     }
 
@@ -161,7 +168,7 @@ internal class Alchemist : RoleBase
         return false;
     }
 
-    private void OnFixedUpdatesBloodlus(PlayerControl player)
+    private static void OnFixedUpdatesBloodlus(PlayerControl player)
     {
         if (!IsBloodlust(player.PlayerId)) return;
 

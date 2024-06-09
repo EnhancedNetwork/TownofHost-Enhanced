@@ -231,7 +231,7 @@ internal class Vulture : RoleBase
     }
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting) return;
+        if (inMeeting || target.IsDisconnected()) return;
         if (!ArrowsPointingToDeadBody.GetBool()) return;
 
         Vector2 pos = target.transform.position;

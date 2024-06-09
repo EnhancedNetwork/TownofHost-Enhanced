@@ -29,7 +29,6 @@ internal class SchrodingersCat : RoleBase
     public override void Add(byte playerId)
     {
         teammate[playerId] = byte.MaxValue;
-
     }
 
     private void SendRPC(byte catID)

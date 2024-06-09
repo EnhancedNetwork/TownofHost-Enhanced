@@ -101,8 +101,8 @@ internal class Solsticer : RoleBase
 
     public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
     {
-        if (GameStates.IsMeeting || !warningActived) return "";
-        if (seer.Is(CustomRoles.Solsticer)) return "";
+        if (IsForMeeting || !warningActived || seer.Is(CustomRoles.Solsticer)) return string.Empty;
+        if (seer.PlayerId != target.PlayerId && !target.Is(CustomRoles.Solsticer)) return string.Empty;
 
         var warning = "⚠";
         if (IsSolsticerTarget(seer, onlyKiller: true) && !target.Is(CustomRoles.Solsticer))

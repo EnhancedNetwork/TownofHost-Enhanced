@@ -95,7 +95,7 @@ internal class Tracefinder : RoleBase
 
     public static void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting) return;
+        if (inMeeting || target.IsDisconnected()) return;
 
         var pos = target.GetCustomPosition();
 

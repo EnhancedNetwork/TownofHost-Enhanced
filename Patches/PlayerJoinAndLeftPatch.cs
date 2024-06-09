@@ -33,6 +33,7 @@ class OnGameJoinedPatch
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
         EAC.Init();
+        OnPlayerJoinedPatch.realClientName = [];
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
@@ -43,6 +44,10 @@ class OnGameJoinedPatch
                 RehostManager.IsAutoRehostDone = true;
             }
 
+            if (!OnPlayerJoinedPatch.realClientName.ContainsKey(__instance.ClientId))
+            {
+                OnPlayerJoinedPatch.realClientName.Add(__instance.ClientId, DataManager.Player.Customization.Name);
+            }
 
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
@@ -109,9 +114,15 @@ class OnGameJoinedPatch
                     SceneChanger.ChangeScene("MainMenu");
                     return;
                 }
-                RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
+
                 var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
                 var host = AmongUsClient.Instance.GetHost();
+
+                if (!GameStates.IsVanillaServer)
+                {
+                    RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
+                }
+
                 Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined");
                 Logger.Info($"{host.PlayerName.RemoveHtmlTags()}(ClientID:{host.Id}/FriendCode:{host.FriendCode}/HashPuid:{host.GetHashedPuid()}/Platform:{host.PlatformData.Platform}) is the host", "Session: OnGameJoined");
             }
@@ -146,6 +157,7 @@ class DisconnectInternalPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
 public static class OnPlayerJoinedPatch
 {
+    public static Dictionary<int, string> realClientName = [];
     public static bool IsDisconnected(this ClientData client)
     {
         var __instance = AmongUsClient.Instance;
@@ -257,6 +269,10 @@ public static class OnPlayerJoinedPatch
         }
         BanManager.CheckBanPlayer(client);
         BanManager.CheckDenyNamePlayer(client);
+        if (!realClientName.ContainsKey(client.Id))
+        {
+            realClientName.Add(client.Id, client.PlayerName);
+        }
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -287,6 +303,8 @@ class OnPlayerLeftPatch
 {
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
+        Main.PlayerStates[data.Character.PlayerId].Disconnected = true;
+
         if (!AmongUsClient.Instance.AmHost) return;
 
         if (Main.AssignRolesIsStarted)
@@ -304,6 +322,20 @@ class OnPlayerLeftPatch
     {
         try
         {
+            if (AmongUsClient.Instance.AmHost && data.Character != null)
+            {
+                for (int i = 0; i < Main.MessagesToSend.Count; i++)
+                {
+                    var (msg, sendTo, title) = Main.MessagesToSend[i];
+                    if (sendTo == data.Character.PlayerId)
+                    {
+                        Main.MessagesToSend.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            // Remove messages sending to left player
+
             if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
@@ -328,7 +360,13 @@ class OnPlayerLeftPatch
                     Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
                 }
 
-                data.Character.RpcSetName(data.Character.GetRealName(isMeeting: true));
+                try
+                {
+                    if (AmongUsClient.Instance.AmHost)
+                        data.Character.RpcSetName(data.Character.GetRealName(isMeeting: true));
+                }
+                catch
+                { }
 
                 AntiBlackout.OnDisconnect(data.Character.Data);
                 PlayerGameOptionsSender.RemoveSender(data.Character);
@@ -517,7 +555,7 @@ class CreatePlayerPatch
             {
                 _ = new LateTask(() =>
                 {
-                    if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null)
+                    if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null && GameStates.IsVanillaServer)
                     {
                         // Only for vanilla
                         if (!client.Character.OwnedByHost() && !client.Character.IsModClient())
