@@ -79,14 +79,14 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 LastTime.Add(killer, GetTimeStamp());
 
                 KillerIsChosen = false;
-                GetPlayerById(killer).Notify(GetString("GhastlyYouvePosses"));
+                GetPlayerById(killer)?.Notify(GetString("GhastlyYouvePosses"));
                 angel.Notify($"\n<size=65%>〘{string.Format(GetString("GhastlyPossessedUser"), "</size>" + GetPlayerById(killer).GetRealName())}<size=65%> 〙</size>\n");
 
                 TargetArrow.Add(killer, Target);
                 angel.RpcGuardAndKill(target);
                 angel.RpcResetAbilityCooldown();
 
-                Logger.Info($" chosen {target?.GetRealName()} for : {GetPlayerById(killer)?.GetRealName()}", "GhastlyTarget");
+                Logger.Info($" chosen {target.GetRealName()} for : {GetPlayerById(killer).GetRealName()}", "GhastlyTarget");
             }
             else if (target.PlayerId == killer)
             {
