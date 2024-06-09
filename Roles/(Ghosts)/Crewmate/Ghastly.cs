@@ -168,7 +168,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             var tuple = killertarget;
             if (DeadPlayer.PlayerId == tuple.Item1 || DeadPlayer.PlayerId == tuple.Item2)
             {
-                _Player.Notify(string.Format(GetString("GhastlyExpired"), DeadPlayer.GetRealName()));
+                _Player.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", DeadPlayer.GetRealName()));
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(DeadPlayer.PlayerId);
                 KillerIsChosen = false;
