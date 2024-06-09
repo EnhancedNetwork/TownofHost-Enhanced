@@ -31,7 +31,7 @@ internal class Warlock : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Warlock);
-        WarlockCanKillAllies = BooleanOptionItem.Create(Id + 2, "CanKillImpostors", true, TabGroup.ImpostorRoles, false)
+        WarlockCanKillAllies = BooleanOptionItem.Create("CanKillImpostors", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Warlock]);
         WarlockCanKillSelf = BooleanOptionItem.Create("Warlock_CanKillSelf", false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Warlock]);
