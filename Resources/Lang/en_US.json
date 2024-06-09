@@ -3188,6 +3188,7 @@
   "GhastlyNotUrTarget": "That is not your target",
   "GhastlyYouvePosses": "You've Been Possessed!",
   "GhastlyPossessedUser": "You have possessed: {0}",
+  "GhastlyExpired":  "{0} is no longer possesed",
 
   "TasksMarkPerRound": "Number of tasks that can be marked in one round",
   "TaskinatorBombPlanted": "Bomb has been planted",

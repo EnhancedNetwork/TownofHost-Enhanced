@@ -111,7 +111,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             if (killertarget.Item1 == player.PlayerId 
                 && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= GetTimeStamp())
             {
-                Logger.Info("removing the possesed!!", "ghastlyremovable");
+                _Player.Notify(string.Format(GetString("GhastlyExpired"), player.GetRealName()));
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(player.PlayerId);
                 KillerIsChosen = false;
@@ -122,24 +122,22 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
         {
             var tuple = killertarget;
-            // Logger.Info($" check KILLER {(killer.GetRealName())} : {Utils.GetPlayerById(killertarget.Item1).GetRealName()}" +  $" ++  check TARGET {(target.GetRealName())} : {Utils.GetPlayerById(killertarget.Item2).GetRealName()}", "GHASTLYONMURDEROTHER");
             if (tuple.Item1 == killer.PlayerId && tuple.Item2 != byte.MaxValue)
             {
                 if (tuple.Item2 != target.PlayerId)
                 {
-                    //Logger.Info($"Returned true", "GHASTLYONMURDEROTHER");
                     killer.Notify(GetString("GhastlyNotUrTarget"));
                     return true;
                 }
                 else 
                 {
+                    _Player.Notify(string.Format(GetString("GhastlyExpired"), killer.GetRealName()));
                     TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                     LastTime.Remove(killer.PlayerId);
                     KillerIsChosen = false;
                     killertarget = (byte.MaxValue, byte.MaxValue);
                 }
             }
-            // Logger.Info($"Returned false", "GHASTLYONMURDEROTHER");
             return false;
         }
 
@@ -169,6 +167,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             var tuple = killertarget;
             if (DeadPlayer.PlayerId == tuple.Item1 || DeadPlayer.PlayerId == tuple.Item2)
             {
+                _Player.Notify(string.Format(GetString("GhastlyExpired"), DeadPlayer.GetRealName()));
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(DeadPlayer.PlayerId);
                 KillerIsChosen = false;
