@@ -148,11 +148,11 @@ public static class CustomRoleManager
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
 
-        if (DollMaster.HasEnabled)
-        {
-            // If Target is possessed by Dollmaster swap controllers.
-            target = DollMaster.SwapPlayerInfo(target);   
-        }
+        // If Target is possessed by Dollmaster swap controllers.
+        target = DollMaster.SwapPlayerInfo(target);   
+
+        if (killer.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.Doppelganger))
+            target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
@@ -231,6 +231,9 @@ public static class CustomRoleManager
         {
             target = DollMaster.SwapPlayerInfo(target);
         }
+
+        if (killer.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.Doppelganger))
+            target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers back
 
         // Check if killer is a true killing role and Target is possessed by Dollmaster
         if (DollMaster.HasEnabled && DollMaster.IsControllingPlayer)
