@@ -32,7 +32,6 @@ class OnGameJoinedPatch
         ChatUpdatePatch.DoBlockChat = false;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
-        Main.MessagesToSend.Clear();
         EAC.Init();
         OnPlayerJoinedPatch.realClientName = [];
 
@@ -559,13 +558,10 @@ class CreatePlayerPatch
                         // Only for vanilla
                         if (!client.Character.OwnedByHost() && !client.Character.IsModClient())
                         {
-                            if (Main.UseVersionProtocol.Value)
-                            {
-                                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(LobbyBehaviour.Instance.NetId, (byte)RpcCalls.LobbyTimeExpiring, SendOption.None, client.Id);
-                                writer.WritePacked((int)GameStartManagerPatch.timer);
-                                writer.Write(false);
-                                AmongUsClient.Instance.FinishRpcImmediately(writer);
-                            }
+                            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(LobbyBehaviour.Instance.NetId, (byte)RpcCalls.LobbyTimeExpiring, SendOption.None, client.Id);
+                            writer.WritePacked((int)GameStartManagerPatch.timer);
+                            writer.Write(false);
+                            AmongUsClient.Instance.FinishRpcImmediately(writer);
                         }
                         // Non-host modded client
                         else if (!client.Character.OwnedByHost() && client.Character.IsModClient())

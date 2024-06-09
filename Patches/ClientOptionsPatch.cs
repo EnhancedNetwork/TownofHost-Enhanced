@@ -25,8 +25,6 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem VersionCheat;
     private static ClientOptionItem GodMode;
     private static ClientOptionItem AutoRehost;
-    private static ClientOptionItem UseVersionProtocol;
-    private static ClientOptionItem FreezeMessageToSend;
 #endif
 
     public static void Postfix(OptionsMenuBehaviour __instance)
@@ -40,7 +38,6 @@ public static class OptionsMenuBehaviourStartPatch
             Main.VersionCheat.Value = false;
             Main.GodMode.Value = false;
             Main.AutoRehost.Value = false;
-            Main.UseVersionProtocol.Value = true;
         }
 
         if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
@@ -144,19 +141,6 @@ public static class OptionsMenuBehaviourStartPatch
             if ((AutoRehost == null || AutoRehost.ToggleButton == null) && DebugModeManager.AmDebugger)
             {
                 AutoRehost = ClientOptionItem.Create("AutoRehost", Main.AutoRehost, __instance);
-            }
-            if ((UseVersionProtocol == null || UseVersionProtocol.ToggleButton == null) && DebugModeManager.AmDebugger)
-            {
-                UseVersionProtocol = ClientOptionItem.Create("UseVersionProtocol", Main.UseVersionProtocol, __instance);
-            }
-            if ((FreezeMessageToSend == null || FreezeMessageToSend.ToggleButton == null) && DebugModeManager.AmDebugger)
-            {
-                FreezeMessageToSend = ClientOptionItem.Create("FreezeMessageToSend", Main.FreezeMessageToSend, __instance, ClearMessageToSend);
-                static void ClearMessageToSend()
-                {
-                    Main.MessagesToSend.Clear();
-                    Logger.Info("Clear MessagesToSend", "ClientOptionsPatch");
-                }
             }
         }
 #endif
