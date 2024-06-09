@@ -1,5 +1,6 @@
 ﻿using static TOHE.Options;
 using static TOHE.Utils;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Crewmate;
 
