@@ -544,7 +544,10 @@ public static class Utils
         if (playerData.Role == null) return false;
 
         var hasTasks = true;
-        var States = Main.PlayerStates[playerData.PlayerId];
+        if (!Main.PlayerStates.TryGetValue(playerData.PlayerId, out var States))
+        {
+            return false;
+        }
 
         if (playerData.Disconnected) return false;
         if (playerData.Role.IsImpostor)
