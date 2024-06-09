@@ -158,6 +158,7 @@ namespace TOHE.Modules.ChatManager
         public static void SendPreviousMessagesToAll()
         {
             if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return;
+            if (Main.UseVersionProtocol.Value == false) return;
             //This should never function for non host
             if (GameStates.IsExilling && chatHistory.Count < 20)
             {

@@ -50,7 +50,7 @@ class ChatControllerUpdatePatch
         if (!__instance.freeChatField.textArea.hasFocus) return;
         if (!GameStates.IsModHost) return;
 
-        __instance.freeChatField.textArea.characterLimit = AmongUsClient.Instance.AmHost ? 999 : 300;
+        __instance.freeChatField.textArea.characterLimit = Main.UseVersionProtocol.Value ? (AmongUsClient.Instance.AmHost ? 999 : 300) : 100;
 
         if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.C))
             ClipboardHelper.PutClipboardString(__instance.freeChatField.textArea.text);

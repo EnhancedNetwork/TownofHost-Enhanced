@@ -13,7 +13,7 @@ internal class EAC
     private static List<byte> LobbyDeadBodies = [];
     public static void Init()
     {
-        DeNum = new();
+        DeNum = 0;
         OriginalRoles = [];
         ReportTimes = [];
         LobbyDeadBodies = [];
@@ -191,10 +191,33 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】大厅直接击杀，已驳回", "EAC");
                         return true;
                     }
-                    Report(pc, "Directly Murder Player");
-                    HandleCheat(pc, "Directly Murder Player");
-                    Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接击杀，已驳回", "EAC");
-                    return true;
+
+                    if (Main.UseVersionProtocol.Value)
+                    {
+                        Report(pc, "Directly Murder Player");
+                        HandleCheat(pc, "Directly Murder Player");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接击杀，已驳回", "EAC");
+                        return true;
+                    }
+                    else
+                    {
+                        if (murdered == null)
+                        {
+                            WarnHost();
+                            Report(pc, "Trying to kill a non-existing player?");
+                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】尝试击杀不存在的玩家，已驳回", "EAC");
+                            return true;
+                        }
+
+                        if (!pc.HasImpKillButton(true))
+                        {
+                            Report(pc, "Murder as non imp");
+                            HandleCheat(pc, "Murder as non imp");
+                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非内鬼击杀，已驳回", "EAC");
+                            return true;
+                        }
+                    }
+                    break;
                 case RpcCalls.CheckShapeshift:
                     if (GameStates.IsLobby)
                     {
@@ -458,6 +481,12 @@ internal class EAC
     public static Dictionary<byte, int> ReportTimes = [];
     public static bool RpcReportDeadBodyCheck(PlayerControl player, GameData.PlayerInfo target)
     {
+        if (GameStates.IsLobby && LobbyDeadBodies.Contains(target.PlayerId))
+        {
+            Logger.Info($"玩家【{player.GetClientId()}:{player.GetRealName()}】尝试举报可能被非法击杀的尸体，已驳回", "EAC");
+            Report(player, "Reporting invaild body || out of game, maybe false");
+            return true;
+        }
         if (!ReportTimes.ContainsKey(player.PlayerId))
         {
             ReportTimes.Add(player.PlayerId, 0);

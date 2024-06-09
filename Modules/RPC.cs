@@ -603,9 +603,9 @@ internal class RPCHandlerPatch
         Version version = Main.playerVersion[ClientId].version;
         string tag = Main.playerVersion[ClientId].tag;
         string forkId = Main.playerVersion[ClientId].forkId;
-
-        if (version != Main.version
-            || tag != $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})"
+        
+        if (version != Main.FakeVersion
+            || tag != Main.FakeGitInfo
             || forkId != Main.ForkId)
             return false;
 
@@ -718,9 +718,17 @@ internal static class RPC
     }
     public static void ExileAsync(PlayerControl player)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
         player.Exiled();
+
+        if (Main.UseVersionProtocol.Value)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        else
+        {
+            AntiBlackout.SendGameData("ExileAsync");
+        }
     }
     public static void RpcSetFriendCode(string fc)
     {
@@ -748,13 +756,13 @@ internal static class RPC
             {
                 bool cheating = Main.VersionCheat.Value;
                 MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
-                writer.Write(cheating ? Main.playerVersion[hostId].version.ToString() : Main.PluginVersion);
-                writer.Write(cheating ? Main.playerVersion[hostId].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
+                writer.Write(cheating ? Main.playerVersion[hostId].version.ToString() : Main.FakePluginVersion);
+                writer.Write(cheating ? Main.playerVersion[hostId].tag : Main.FakeGitInfo);
                 writer.Write(cheating ? Main.playerVersion[hostId].forkId : Main.ForkId);
                 writer.Write(cheating);
                 writer.EndMessage();
             }
-            Main.playerVersion[PlayerControl.LocalPlayer.GetClientId()] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);
+            Main.playerVersion[PlayerControl.LocalPlayer.GetClientId()] = new PlayerVersion(Main.FakePluginVersion, Main.FakeGitInfo, Main.ForkId);
         }
         catch
         {

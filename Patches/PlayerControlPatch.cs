@@ -505,10 +505,22 @@ class RpcMurderPlayerPatch
         {
             __instance.MurderPlayer(target, murderResultFlags);
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, -1);
-        messageWriter.WriteNetObject(target);
-        messageWriter.Write((int)murderResultFlags);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        if (Main.UseVersionProtocol.Value)
+        {
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, -1);
+            messageWriter.WriteNetObject(target);
+            messageWriter.Write((int)murderResultFlags);
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        }
+        else
+        {
+            var senderpc = PlayerControl.LocalPlayer;
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(senderpc.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, -1);
+            messageWriter.WriteNetObject(target);
+            messageWriter.Write((int)murderResultFlags);
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        }
 
         return false;
         // There is no need to include DecisionByHost. DecisionByHost will make client check protection locally and cause confusion.
@@ -1097,8 +1109,8 @@ class FixedUpdateInNormalGamePatch
                 {
                     if (Main.ForkId != ver.forkId) // フォークIDが違う場合
                         __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.2>{ver.forkId}</size>\n{__instance?.name}</color>";
-                    else if (Main.version.CompareTo(ver.version) == 0)
-                        __instance.cosmetics.nameText.text = ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})" ? $"<color=#87cefa>{__instance.name}</color>" : $"<color=#ffff00><size=1.2>{ver.tag}</size>\n{__instance?.name}</color>";
+                    else if (Main.FakeVersion.CompareTo(ver.version) == 0)
+                        __instance.cosmetics.nameText.text = ver.tag == Main.FakeGitInfo ? $"<color=#87cefa>{__instance.name}</color>" : $"<color=#ffff00><size=1.2>{ver.tag}</size>\n{__instance?.name}</color>";
                     else __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.2>v{ver.version}</size>\n{__instance?.name}</color>";
                 }
                 else __instance.cosmetics.nameText.text = __instance?.Data?.PlayerName;

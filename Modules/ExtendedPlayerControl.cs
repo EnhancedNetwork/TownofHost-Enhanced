@@ -200,7 +200,13 @@ static class ExtendedPlayerControl
         // Other Clients
         if (!killer.OwnedByHost())
         {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable);
+            var sender = killer;
+            if (!Main.UseVersionProtocol.Value)
+            {
+                sender = PlayerControl.LocalPlayer;
+            }
+
+            var writer = AmongUsClient.Instance.StartRpcImmediately(sender.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable);
             writer.WriteNetObject(target);
             writer.Write((int)MurderResultFlags.FailedProtected);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -384,6 +390,11 @@ static class ExtendedPlayerControl
         }
         else
         {
+            if (!Main.UseVersionProtocol.Value)
+            {
+                killer = PlayerControl.LocalPlayer;
+            }
+
             MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, seer.GetClientId());
             messageWriter.WriteNetObject(target);
             messageWriter.Write((int)MurderResultFlags.Succeeded);
@@ -701,8 +712,15 @@ static class ExtendedPlayerControl
         }
         player.Exiled();
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        if (Main.UseVersionProtocol.Value)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        else
+        {
+            AntiBlackout.SendGameData("RpcExileV2");
+        }
     }
     /// <summary>
     /// ONLY to be used when killer surely may kill the target, please check with killer.RpcCheckAndMurder(target, check: true) for indirect kill.
