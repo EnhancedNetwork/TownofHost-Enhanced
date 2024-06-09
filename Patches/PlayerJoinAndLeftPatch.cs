@@ -340,10 +340,7 @@ class OnPlayerLeftPatch
             if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
 
-                if (!data.Character.Data.IsDead && !PlayerControlSetRolePatch.DidSetGhost.TryGetValue(data.Character.PlayerId, out _))
-                {
-                    CustomRoleManager.AllEnabledRoles.ForEach(r => r.OnOtherTargetsReducedToAtoms(data.Character));
-                }
+                CustomRoleManager.AllEnabledRoles.ForEach(r => r.OnOtherTargetsReducedToAtoms(data.Character));
 
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
                 {
