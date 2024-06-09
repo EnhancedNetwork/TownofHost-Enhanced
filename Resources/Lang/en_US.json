@@ -3044,6 +3044,7 @@
   "DollMaster_MainBody": "Main Body",
   "DollMaster_Doll": "Doll",
   "DollMaster_UnableToUseAbility": "Unable to use ability on player",
+  "Doppelganger_RoleInfo": "Spoofed Role: {0}",
   "EatenByDevourer": "Your skin was eaten by the Devourer",
   "DevourerEatenSkin": "Target skin eaten",
   "DevouredName": "Devoured",

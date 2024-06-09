@@ -406,7 +406,7 @@ internal class DollMaster : RoleBase
     // Swap Dollmaster and possessed player info for functions.
     public static PlayerControl SwapPlayerInfo(PlayerControl player)
     {
-        if (IsControllingPlayer)
+        if (IsControllingPlayer && HasEnabled)
         {
             if (!(DollMasterTarget == null || controllingTarget == null))
             {

@@ -34,6 +34,9 @@ internal class Lookout : RoleBase
 
         if (!seer.IsAlive() || !seen.IsAlive()) return string.Empty;
 
+        if (Doppelganger.CheckDoppelVictim(seen.PlayerId))
+            seen = Doppelganger.GetDoppelControl(seen);
+
         return ColorString(GetRoleColor(CustomRoles.Lookout), " " + seen.PlayerId.ToString()) + " ";
     }
 }
