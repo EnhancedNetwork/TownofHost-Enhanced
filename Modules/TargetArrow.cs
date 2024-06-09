@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace TOHE;
@@ -91,6 +89,7 @@ static class TargetArrow
         }
         return arrows;
     }
+    public static bool HasTargetArrows(PlayerControl seer) => TargetArrows.Keys.Any(a => a.From == seer.PlayerId);
     /// <summary>
     /// Check target arrow every FixedUpdate
     /// Issue NotifyRoles when there are updates
@@ -141,7 +140,7 @@ static class TargetArrow
                 update = true;
             }
         }
-        if (update)
+        if (update && !seer.AmOwner)
         {
             Utils.NotifyRoles(SpecifySeer: seer, ForceLoop: false);
         }

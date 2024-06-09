@@ -1,21 +1,27 @@
-﻿using Hazel;
-using System.Collections.Generic;
-using TOHE.Modules;
+﻿using AmongUs.GameOptions;
 using UnityEngine;
+using TOHE.Modules;
+using static TOHE.Translator;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Pursuer
+internal class Pursuer : RoleBase
 {
-    private static readonly int Id = 13400;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
-    private static Dictionary<byte, List<byte>> clientList = [];
-    private static List<byte> notActiveList = [];
-    public static Dictionary<byte, int> SeelLimit = [];
-    public static OptionItem PursuerSkillCooldown;
-    public static OptionItem PursuerSkillLimitTimes;
-    public static void SetupCustomOption()
+    //===========================SETUP================================\\
+    private const int Id = 13400;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pursuer);
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
+    //==================================================================\\
+
+    private static OptionItem PursuerSkillCooldown;
+    private static OptionItem PursuerSkillLimitTimes;
+
+    private static readonly HashSet<byte> notActiveList = [];
+    private List<byte> clientList = [];
+
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pursuer);
         PursuerSkillCooldown = FloatOptionItem.Create(Id + 10, "PursuerSkillCooldown", new(2.5f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pursuer])
@@ -23,69 +29,47 @@ public static class Pursuer
         PursuerSkillLimitTimes = IntegerOptionItem.Create(Id + 11, "PursuerSkillLimitTimes", new(1, 20, 1), 2, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pursuer])
             .SetValueFormat(OptionFormat.Times);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        clientList = [];
-        notActiveList = [];
-        SeelLimit = [];
-        IsEnable = false;
+        notActiveList.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        SeelLimit.Add(playerId, PursuerSkillLimitTimes.GetInt());
-        IsEnable = true;
+        AbilityLimit = PursuerSkillLimitTimes.GetInt();
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    private static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPursuerSellLimit, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(SeelLimit[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte PlayerId = reader.ReadByte();
-        int Limit = reader.ReadInt32();
-        if (SeelLimit.ContainsKey(PlayerId))
-            SeelLimit[PlayerId] = Limit;
-        else
-            SeelLimit.Add(PlayerId, PursuerSkillLimitTimes.GetInt());
-    }
-    public static bool CanUseKillButton(byte playerId)
+    public override bool CanUseKillButton(PlayerControl pc) => CanUseKillButton(pc.PlayerId);
+    
+    public bool CanUseKillButton(byte playerId)
         => !Main.PlayerStates[playerId].IsDead
-        && SeelLimit.TryGetValue(playerId, out var x) && x >= 1;
-    public static string GetSeelLimit(byte playerId) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Pursuer) : Color.gray, SeelLimit.TryGetValue(playerId, out var x) ? $"({x})" : "Invalid");
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? PursuerSkillCooldown.GetFloat() : 300f;
-    public static bool IsClient(byte playerId)
+        && AbilityLimit >= 1;
+    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Pursuer) : Color.gray, $"({AbilityLimit})");
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? PursuerSkillCooldown.GetFloat() : 300f;
+    public bool IsClient(byte playerId)
     {
-        foreach (var pc in clientList)
-            if (pc.Value.Contains(playerId)) return true;
-        return false;
+        return clientList.Contains(playerId);
     }
-    public static bool IsClient(byte pc, byte tar) => clientList.TryGetValue(pc, out var x) && x.Contains(tar);
-    public static bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
-    public static bool CanSeel(byte playerId) => playerIdList.Contains(playerId) && SeelLimit.TryGetValue(playerId, out int x) && x > 0;
-    public static void SeelToClient(PlayerControl pc, PlayerControl target)
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
+    public bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
+    public bool CanSeel(byte playerId) => AbilityLimit > 0;
+    public override bool OnCheckMurderAsKiller(PlayerControl pc, PlayerControl target)
     {
-        if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return;
-        
-        SeelLimit[pc.PlayerId]--;
-        SendRPC(pc.PlayerId);
+        if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return true;
+        if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.SerialKiller)) return false;
+        if (!(CanBeClient(target) && CanSeel(pc.PlayerId))) return false;
+
+        AbilityLimit--;
+        SendSkillRPC();
         if (target.Is(CustomRoles.KillingMachine)) 
         {
             Logger.Info("target is Killing Machine, ability used count reduced, but target will not die", "Purser");
-            return; 
+            return false; 
         }
-        if (!clientList.ContainsKey(pc.PlayerId))
-            clientList.Add(pc.PlayerId, []);
 
-        clientList[pc.PlayerId].Add(target.PlayerId);
+        clientList.Add(target.PlayerId);
 
         if (!Options.DisableShieldAnimations.GetBool())
             pc.RpcGuardAndKill(pc);
@@ -97,46 +81,32 @@ public static class Pursuer
 
         Utils.NotifyRoles(SpecifySeer: pc);
         Logger.Info($"Counterfeiters {pc.GetRealName()} sell counterfeits to {target.GetRealName()}", "Pursuer");
+        return false;
     }
-    public static bool OnClientMurder(PlayerControl pc)
+    public override bool CheckMurderOnOthersTarget(PlayerControl pc, PlayerControl _)  // Target of Pursuer attempt to murder someone
     {
         if (!IsClient(pc.PlayerId) || notActiveList.Contains(pc.PlayerId)) return false;
+        
         byte cfId = byte.MaxValue;
         foreach (var cf in clientList)
-            if (cf.Value.Contains(pc.PlayerId)) cfId = cf.Key;
+            if (cf == pc.PlayerId) cfId = cf;
+        
         if (cfId == byte.MaxValue) return false;
+        
         var killer = Utils.GetPlayerById(cfId);
         var target = pc;
         if (killer == null) return false;
-        target.SetRealKiller(killer);
-        target.Data.IsDead = true;
+        
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-        target.RpcMurderPlayerV3(target);
-        Main.PlayerStates[target.PlayerId].SetDead();
+        target.RpcMurderPlayer(target);
+        target.SetRealKiller(killer);
+
         Logger.Info($"赝品商 {pc.GetRealName()} 的客户 {target.GetRealName()} 因使用赝品走火自杀", "Pursuer");
         return true;
     }
-    public static void OnReportDeadBody()
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        notActiveList.Clear();
-        foreach (var cl in clientList)
-            foreach (var pc in cl.Value)
-            {
-                var target = Utils.GetPlayerById(pc);
-                if (target == null || !target.IsAlive()) continue;
-                var role = target.GetCustomRole();
-                if (
-                    (role.IsCrewmate() && !role.IsCK()) ||
-                    (role.IsNeutral() && !role.IsNK())
-                    )
-                {
-                    var killer = Utils.GetPlayerById(cl.Key);
-                    if (killer == null) continue;
-                    CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Misfire, target.PlayerId);
-                    target.SetRealKiller(Utils.GetPlayerById(pc));
-                    target.SetRealKiller(killer);
-                    Logger.Info($"赝品商 {killer.GetRealName()} 的客户 {target.GetRealName()} 因不带刀自杀", "Pursuer");
-                }
-            }
+        hud.KillButton.OverrideText(GetString("PursuerButtonText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Pursuer");
 }

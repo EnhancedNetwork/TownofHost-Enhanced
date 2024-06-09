@@ -1,27 +1,31 @@
 ﻿using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Benefactor
+internal class Benefactor : RoleBase
 {
-    private static readonly int Id = 26400;
-    //private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 26400;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    //==================================================================\\
 
-    public static Dictionary<byte, List<int>> taskIndex = [];
-    public static Dictionary<byte, int> TaskMarkPerRound = [];
+    private static OptionItem TaskMarkPerRoundOpt;
+    private static OptionItem ShieldDuration;
+    private static OptionItem ShieldIsOneTimeUse;
+
     private static int maxTasksMarkedPerRound = new();
-    public static Dictionary<byte, long> shieldedPlayers = [];
 
-    public static OptionItem TaskMarkPerRoundOpt;
-    public static OptionItem ShieldDuration;
-    public static OptionItem ShieldIsOneTimeUse;
+    private static readonly Dictionary<byte, HashSet<int>> taskIndex = [];
+    private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
+    private static readonly Dictionary<byte, long> shieldedPlayers = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Benefactor);
         TaskMarkPerRoundOpt = IntegerOptionItem.Create(Id + 10, "TasksMarkPerRound", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Benefactor])
@@ -32,22 +36,22 @@ public static class Benefactor
         Options.OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Benefactor);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        //playerIdList = [];
-        taskIndex = [];
-        shieldedPlayers = [];
-        TaskMarkPerRound = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        taskIndex.Clear();
+        shieldedPlayers.Clear();
+        TaskMarkPerRound.Clear();
         maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         TaskMarkPerRound[playerId] = 0;
-        IsEnable = true;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
         TaskMarkPerRound.Remove(playerId);
     }
 
@@ -116,15 +120,15 @@ public static class Benefactor
         }
     }
 
-    public static string GetProgressText(byte playerId)
+    public override string GetProgressText(byte PlayerId, bool comms)
     {
-        if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
-        int markedTasks = TaskMarkPerRound[playerId];
+        if (!TaskMarkPerRound.ContainsKey(PlayerId)) TaskMarkPerRound[PlayerId] = 0;
+        int markedTasks = TaskMarkPerRound[PlayerId];
         int x = Math.Max(maxTasksMarkedPerRound - markedTasks, 0);
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $"({x})");
     }
 
-    public static void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
         foreach (var playerId in TaskMarkPerRound.Keys.ToArray())
         {
@@ -132,20 +136,23 @@ public static class Benefactor
             if (taskIndex.ContainsKey(playerId)) taskIndex[playerId].Clear();
             SendRPC(type: 0, benefactorId: playerId); //clear taskindex
         }
-        if (shieldedPlayers.Count > 0)
+        if (shieldedPlayers.Any())
         {
             shieldedPlayers.Clear();
             SendRPC(type: 1); //clear all shielded players
         }
     }
 
-    public static void OnTasKComplete(PlayerControl player, PlayerTask task)
+    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (!IsEnable) return;
-        if (player == null) return;
+        
+        if (!HasEnabled) return;
+        if (player == null || _Player == null) return;
         if (!player.IsAlive()) return;
+        
         byte playerId = player.PlayerId;
+        
         if (player.Is(CustomRoles.Benefactor))
         {
             if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
@@ -183,9 +190,24 @@ public static class Benefactor
         }
     }
 
-    public static void OnFixedUpdate()
+    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (!IsEnable) return;
+        if (target == null || killer == null) return true;
+        if (!shieldedPlayers.ContainsKey(target.PlayerId)) return false;
+
+        if (ShieldIsOneTimeUse.GetBool())
+        {
+            shieldedPlayers.Remove(target.PlayerId);
+            SendRPC(type: 4, targetId: target.PlayerId);
+            Logger.Info($"{target.GetNameWithRole()} shield broken", "BenefactorShieldBroken");
+        }
+        killer.RpcGuardAndKill();
+        killer.SetKillCooldown();
+        return true;
+    }
+
+    public override void OnFixedUpdateLowLoad(PlayerControl pc)
+    {
         var now = Utils.GetTimeStamp();
         foreach (var x in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < now).ToArray())
         {
@@ -196,21 +218,5 @@ public static class Benefactor
             SendRPC(type: 4, targetId: target); //remove shieldedPlayer
         }
     }
-
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
-    {
-        if (target == null || killer == null) return true;
-        if (!shieldedPlayers.ContainsKey(target.PlayerId)) return true;
-        if (ShieldIsOneTimeUse.GetBool())
-        {
-            shieldedPlayers.Remove(target.PlayerId);
-            SendRPC(type:4 , targetId: target.PlayerId);
-            Logger.Info($"{target.GetNameWithRole()} shield broken", "BenefactorShieldBroken");
-        }
-        killer.RpcGuardAndKill();
-        killer.SetKillCooldown();
-        return false;
-    }
-
 }
 

@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Youtuber
 {
-    private static readonly int Id = 25500;
+    private const int Id = 25500;
 
     public static OptionItem ImpCanBeAutopsy;
     public static OptionItem CrewCanBeAutopsy;
@@ -12,6 +12,6 @@ public static class Youtuber
 
     public static void SetupCustomOptions()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Youtuber, canSetNum: true, tab: TabGroup.OtherRoles);
+        SetupAdtRoleOptions(Id, CustomRoles.Youtuber, canSetNum: true, tab: TabGroup.Addons);
     }
 }

@@ -1,88 +1,181 @@
-using System.Collections.Generic;
+﻿using System;
+using System.Text;
+using UnityEngine;
 using static TOHE.Options;
+using static TOHE.Translator;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Impostor;
-public static class Chronomancer
-{
-    private static readonly int Id = 900;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
 
-    public static Dictionary<byte, long> firstKill = [];
-    public static Dictionary<byte, long> lastCooldownStart = [];
-    public static Dictionary<byte, float> ChargedTime = [];
+internal class Chronomancer : RoleBase
+{
+    //===========================SETUP================================\\
+    private const int Id = 900;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
+    //==================================================================\\
+
+    private int ChargedTime = 0;
+    long now = Utils.GetTimeStamp();
+    private int FullCharge = 0;
+    private bool IsInMassacre;
+
+    public float realcooldown;
+
+    private float LastNowF = 0;
+    private float countnowF = 0;
+
+    private string LastCD;
+
+    private static Color32 OrangeColor = new(255, 190, 92, 255); // The lest color
+    private static Color32 GreenColor = new(0, 128, 0, 255); // The final color
+
+    private static int Charges;
 
     private static OptionItem KillCooldown;
+    private static OptionItem Dtime;
+    private static OptionItem ReduceVision;
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Chronomancer);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "ChronomancerKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
+        KillCooldown = IntegerOptionItem.Create(Id + 10, "ChronomancerKillCooldown", new(1, 180, 1), 60, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
+            .SetValueFormat(OptionFormat.Seconds);
+        Dtime = FloatOptionItem.Create(Id + 11, "ChronomancerDecreaseTime", new(0.05f, 1f, 0.05f), 0.15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
+            .SetValueFormat(OptionFormat.Seconds);
+        ReduceVision = FloatOptionItem.Create(Id + 12, "ChronomancerVisionMassacre", new(0.25f, 1f, 0.25f), 0.5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Seconds);
     }
-
-    public static void Init()
+    public override void Add(byte playerId)
     {
-        playerIdList = [];
-        firstKill = [];
-        lastCooldownStart = [];
-        ChargedTime = [];
-        IsEnable = false;
+        FullCharge = KillCooldown.GetInt();
+        Charges = (int)Math.Round(KillCooldown.GetInt() / 10.0);
+        realcooldown = DefaultKillCooldown;
+
+        LastCD = GetCharge();
     }
-    public static void Add(byte playerId)
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        long now = Utils.GetTimeStamp();
-        playerIdList.Add(playerId);
-        firstKill.Add(playerId, -1);
-        ChargedTime.Add(playerId, 0);
-        lastCooldownStart.Add(playerId, now);
-        IsEnable = true;
-    }
-
-    public static void SetKillCooldown(byte id)
-    {
-        long now = Utils.GetTimeStamp();
-
-        if (firstKill[id] == -1)
+        if (IsInMassacre)
         {
-            Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-            lastCooldownStart[id] = now;
-            return;
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, ReduceVision.GetFloat());
         }
-        if (now - firstKill[id] >= ChargedTime[id])
+        else
         {
-            firstKill[id] = -1;
-            Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-            lastCooldownStart[id] = now;
-        }
-        else Main.AllPlayerKillCooldown[id] = 0f;
-        Logger.Info($"{Utils.GetPlayerById(id).GetNameWithRole()} kill cd set to {Main.AllPlayerKillCooldown[id]}", "Chronomancer");
-    }
-
-    public static void AfterMeetingTask()
-    {
-        long now = Utils.GetTimeStamp();
-        foreach (var playerId in playerIdList.ToArray())
-        {
-            if (Utils.GetPlayerById(playerId).IsAlive())
-            { 
-                firstKill[playerId] =  -1;
-                lastCooldownStart[playerId] = now;
-                ChargedTime[playerId] = 0;
-                SetKillCooldown(playerId);
-            }
-           
+            opt.SetVision(true);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
         }
     }
-
-    public static void OnCheckMurder(PlayerControl killer)
+    private Color32 GetPercentColor(int val)
     {
-        long now = Utils.GetTimeStamp();
-        if (firstKill[killer.PlayerId] == -1)
+        float chargeRatio = Mathf.Clamp01((float)val / FullCharge);
+        return Color32.Lerp(OrangeColor, GreenColor, chargeRatio);
+
+    }
+    private int GetChargeToColor()
+    {
+        int percent = (int)Math.Round(((double)ChargedTime / FullCharge) * 100);
+        int ToColor = (Charges * percent) / 100;
+
+        return ToColor;
+    }
+    private string GetCharge()
+    {
+        Color32 percentcolor = GetPercentColor(ChargedTime);
+        var sb = new StringBuilder(Utils.ColorString(percentcolor, $"{(int)Math.Round(((double)ChargedTime / FullCharge) * 100)}% "));
+        var ChargeToColor = GetChargeToColor();
+        var CHcol = IsInMassacre ? "#630303" : "#0cb339";
+
+        sb.Append($"<size=75%>");
+        for (int i = 0; i < Charges; i++)
         {
-            firstKill[killer.PlayerId] = now;
-            ChargedTime[killer.PlayerId] = (firstKill[killer.PlayerId] - lastCooldownStart[killer.PlayerId]) - KillCooldown.GetFloat();
+            string box = ChargeToColor > 0 ? $"<{CHcol}>█ </color>" : "<#666666>█ </color>";
+            ChargeToColor--;
+            sb.Append(box);
         }
-        SetKillCooldown(killer.PlayerId);
+        sb.Append($"</size>");
+
+        return sb.ToString();
+    }
+    private string GetModdedCharge()
+    {
+        var sb = new StringBuilder($"{(int)Math.Round(((double)ChargedTime / FullCharge) * 100)}% ");
+
+        return sb.ToString();
+    }
+    public void SetCooldown()
+    {
+        if (IsInMassacre)
+        {
+            Main.AllPlayerKillCooldown[_state.PlayerId] = 0.1f;
+        }
+        else
+        {
+            Main.AllPlayerKillCooldown[_state.PlayerId] = realcooldown;
+        }
+        _Player.SyncSettings();
+    }
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    {
+        ChargedTime = 0;
+        IsInMassacre = false;
+        _Player?.MarkDirtySettings();
+    }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        if (ChargedTime >= FullCharge)
+        {
+            LastNowF = countnowF + Dtime.GetFloat();
+            killer.Notify(GetString("ChronomancerStartMassacre"));
+            IsInMassacre = true;
+        }
+        killer.SetKillCooldown();
+        return true;
+    }
+    public override void OnFixedUpdate(PlayerControl pc)
+    {
+        if (GameStates.IsMeeting) return;
+
+        if (LastCD != GetCharge())
+        {
+            LastCD = GetCharge();
+            Utils.NotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
+        }
+
+        if (ChargedTime != FullCharge
+            && now + 1 <= Utils.GetTimeStamp() && !IsInMassacre)
+        {
+            now = Utils.GetTimeStamp();
+            ChargedTime++;
+        }
+        else if (IsInMassacre && ChargedTime > 0 && countnowF >= LastNowF)
+        {
+            LastNowF = countnowF + Dtime.GetFloat();
+            ChargedTime--;
+        }
+
+        if (IsInMassacre && ChargedTime < 1)
+        {
+            IsInMassacre = false;
+            pc.MarkDirtySettings();
+        }
+
+        countnowF += Time.deltaTime;
+    }
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        bool ismeeting = GameStates.IsMeeting || isForMeeting;
+        if (seer == seen && !ismeeting)
+        {
+            if (!seer.IsModClient()) return GetCharge();
+            else if (isForHud) return GetModdedCharge();
+        }
+        return "";
+    }
+    public override float SetModdedLowerText(out Color32? FaceColor)
+    {
+        FaceColor = GetPercentColor(ChargedTime);
+        return 3.8f;
     }
 }

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Modules;
 using UnityEngine;
 
@@ -13,6 +11,8 @@ public abstract class OptionItem
     private static readonly List<OptionItem> _allOptions = new(1024);
     public static IReadOnlyDictionary<int, OptionItem> FastOptions => _fastOptions;
     private static readonly Dictionary<int, OptionItem> _fastOptions = new(1024);
+    private static readonly Dictionary<int, string> nameSettings = [];
+
     public static int CurrentPreset { get; set; }
     #endregion
 
@@ -105,10 +105,14 @@ public abstract class OptionItem
         if (_fastOptions.TryAdd(id, this))
         {
             _allOptions.Add(this);
+            nameSettings.Add(id, name);
         }
         else
         {
             Logger.Error($"Duplicate ID: {id} Name: {name}", "OptionItem");
+
+            nameSettings.TryGetValue(id, out var setting);
+            Logger.Error($"Duplicate from: {setting}", "OptionItem");
         }
     }
 
@@ -303,8 +307,7 @@ public enum TabGroup
     ImpostorRoles,
     CrewmateRoles,
     NeutralRoles,
-    Addons,
-    OtherRoles
+    Addons
 }
 public enum OptionFormat
 {

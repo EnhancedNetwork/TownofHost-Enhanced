@@ -1,21 +1,28 @@
-using System.Collections.Generic;
-using System.Linq;
+using AmongUs.GameOptions;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Twister
+internal class Twister : RoleBase
 {
-    private static readonly int Id = 5700;
+    //===========================SETUP================================\\
+    private const int Id = 5700;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Twister);
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
+    //==================================================================\\
 
     private static OptionItem ShapeshiftCooldown;
     private static OptionItem ShapeshiftDuration;
     private static OptionItem HideTwistedPlayerNames;
 
-    public static void SetupCustomOption()
+    private static HashSet<byte> changePositionPlayers = [];
+
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Twister);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 10, "TwisterCooldown", new(1f, 180f, 1f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Twister])
@@ -24,27 +31,35 @@ public static class Twister
                 .SetValueFormat(OptionFormat.Seconds);
         HideTwistedPlayerNames = BooleanOptionItem.Create(Id + 12, "TwisterHideTwistedPlayerNames", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Twister]);
     }
-    public static void ApplyGameOptions()
+    public override void Init()
+    {
+        changePositionPlayers.Clear();
+    }
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = ShapeshiftDuration.GetFloat();
     }
-    public static void TwistPlayers(PlayerControl shapeshifter, bool shapeshiftIsHidden = false)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl targetSS, bool IsAnimate, bool shapeshifting)
     {
-        List<byte> changePositionPlayers = [shapeshifter.PlayerId];
+        // When is force revert shapeshift
+        if (shapeshifter.PlayerId == targetSS.PlayerId && !IsAnimate) return;
+
+        changePositionPlayers = [shapeshifter.PlayerId];
 
         var rd = IRandom.Instance;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if ((changePositionPlayers.Contains(pc.PlayerId) && !shapeshiftIsHidden) || !pc.CanBeTeleported())
+            if (changePositionPlayers.Contains(pc.PlayerId) || !pc.CanBeTeleported())
             {
                 continue;
             }
 
             var filtered = Main.AllAlivePlayerControls.Where(a =>
                 pc.CanBeTeleported() && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToList();
-            
-            if (filtered.Count == 0) break;
+
+            if (filtered.Count == 0) return;
 
             var target = filtered[rd.Next(0, filtered.Count)];
             changePositionPlayers.Add(target.PlayerId);
@@ -62,5 +77,10 @@ public static class Twister
                 pc.Notify(ColorString(GetRoleColor(CustomRoles.Twister), string.Format(GetString("TeleportedByTransporter"), target.GetRealName())));
             }
         }
+    }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton?.OverrideText(GetString("TwisterButtonText"));
     }
 }

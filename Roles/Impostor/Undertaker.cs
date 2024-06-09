@@ -1,24 +1,29 @@
-﻿using Hazel;
-using System.Collections.Generic;
-using TOHE.Roles.Crewmate;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Undertaker
+internal class Undertaker : RoleBase
 {
-    private static readonly int Id = 4900;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 4900;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
+    //==================================================================\\
 
-    public static OptionItem SSCooldown;
-    public static OptionItem KillCooldown;
-    public static OptionItem FreezeTime;
+    private static OptionItem SSCooldown;
+    private static OptionItem KillCooldown;
+    private static OptionItem FreezeTime;
 
-    public static Dictionary<byte, Vector2> MarkedLocation = [];
+    private static readonly Dictionary<byte, Vector2> MarkedLocation = [];
+    
     private static float DefaultSpeed = new();
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Undertaker);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Undertaker])
@@ -29,31 +34,28 @@ public static class Undertaker
             .SetValueFormat(OptionFormat.Seconds);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        MarkedLocation.Clear();
         DefaultSpeed = new();
-        MarkedLocation = [];
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
-        MarkedLocation[playerId] = ExtendedPlayerControl.GetBlackRoomPosition();
+        MarkedLocation.TryAdd(playerId, ExtendedPlayerControl.GetBlackRoomPosition());
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
     }
 
-    public static void ApplyGameOptions()
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = SSCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-
-    public static void SendRPC(byte playerId)
+    private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UndertakerLocationSync, SendOption.Reliable, -1);
         writer.Write(playerId);
@@ -75,18 +77,24 @@ public static class Undertaker
             MarkedLocation.Add(PlayerId, ExtendedPlayerControl.GetBlackRoomPosition());
     }
 
-    public static void OnShapeshift(PlayerControl pc, bool IsShapeshifting)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (!IsEnable || !pc.IsAlive() || !IsShapeshifting) return;
-        MarkedLocation[pc.PlayerId] = pc.GetCustomPosition();
-        SendRPC(pc.PlayerId);
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
+
+        var shapeshifterId = shapeshifter.PlayerId;
+        MarkedLocation[shapeshifterId] = shapeshifter.GetCustomPosition();
+        SendRPC(shapeshifterId);
+        
+        shapeshifter.Notify(Translator.GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+        return false;
     }
 
-    public static void FreezeUndertaker(PlayerControl player)
+    private static void FreezeUndertaker(PlayerControl player)
     {
         Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
         ReportDeadBodyPatch.CanReport[player.PlayerId] = false;
         player.MarkDirtySettings();
+
         _ = new LateTask(() =>
         {
             Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed;
@@ -95,39 +103,33 @@ public static class Undertaker
         }, FreezeTime.GetFloat(), "Freeze Undertaker");
     }
 
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
+    private static bool HasMarkedLoc(byte playerId) => MarkedLocation.TryGetValue(playerId, out var pos) && pos != ExtendedPlayerControl.GetBlackRoomPosition();
 
-    public static bool HasMarkedLoc(byte playerId) => MarkedLocation[playerId] != ExtendedPlayerControl.GetBlackRoomPosition();
-
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-
-        if (!IsThisRole(killer.PlayerId)) return true;
-        if (target.Is(CustomRoles.Bait)) return true;
-        if (target.Is(CustomRoles.Pestilence)) return true;
-        if (target.Is(CustomRoles.Guardian) && target.AllTasksCompleted()) return true;
-        if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted() && Options.OppoImmuneToAttacksWhenTasksDone.GetBool()) return false;
-        if (target.Is(CustomRoles.Veteran) && Main.VeteranInProtect.ContainsKey(target.PlayerId)) return true;
-        if (Medic.ProtectList.Contains(target.PlayerId)) return false;
-
         if (!HasMarkedLoc(killer.PlayerId)) return true;
+        if (target.Is(CustomRoles.Bait)) return true;
 
         if (target.CanBeTeleported())
         {
-            target.RpcTeleport(MarkedLocation[killer.PlayerId]);
-            target.SetRealKiller(killer);
-            Main.PlayerStates[target.PlayerId].SetDead();
-            target.RpcMurderPlayerV3(target);
+            var tempPos = MarkedLocation[killer.PlayerId];
+            target.RpcTeleport(tempPos);
             killer.SetKillCooldown();
+
+            target.RpcMurderPlayer(target);
+            target.SetRealKiller(killer);
+
             MarkedLocation[killer.PlayerId] = ExtendedPlayerControl.GetBlackRoomPosition();
+            
             SendRPC(killer.PlayerId);
             FreezeUndertaker(killer);
+            
             killer.SyncSettings();
         }
         return false;
     }
-    
-    public static void OnReportDeadBody()
+
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         foreach(var playerId in MarkedLocation.Keys)
         {
@@ -135,6 +137,12 @@ public static class Undertaker
             Main.AllPlayerSpeed[playerId] = DefaultSpeed;
             SendRPC(playerId);
         }
+    }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
+        hud.AbilityButton?.OverrideText(Translator.GetString("UndertakerButtonText"));
     }
 }
 

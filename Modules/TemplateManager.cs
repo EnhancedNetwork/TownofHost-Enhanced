@@ -1,10 +1,7 @@
 using AmongUs.Data;
-using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -36,8 +33,21 @@ public static class TemplateManager
         ["NumShortTasks"] = () => Main.NormalOptions.NumShortTasks.ToString(),
         ["Date"] = () => DateTime.Now.ToShortDateString(),
         ["Time"] = () => DateTime.Now.ToShortTimeString(),
-        ["PlayerName"] = () => ""
-        
+        ["PlayerName"] = () => "",
+        ["LobbyTimer"] = () =>
+        {
+            if (GameStates.IsLobby)
+            {
+                int timer = (int)GameStartManagerPatch.timer;
+                int minutes = timer / 60;
+                int seconds = timer % 60;
+                return $"{minutes:D2}:{seconds:D2}";
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
     };
 
     private static readonly Dictionary<string, Func<string>> _replaceDictionaryHideNSeekOptions = new()
@@ -51,9 +61,22 @@ public static class TemplateManager
         ["PlayerSpeedMod"] = () => Main.HideNSeekOptions.PlayerSpeedMod.ToString(),
         ["Date"] = () => DateTime.Now.ToShortDateString(),
         ["Time"] = () => DateTime.Now.ToShortTimeString(),
-        ["PlayerName"] = () => ""
-
-    };
+        ["PlayerName"] = () => "",
+        ["LobbyTimer"] = () =>
+        {
+            if (GameStates.IsLobby)
+            {
+                int timer = (int)GameStartManagerPatch.timer;
+                int minutes = timer / 60;
+                int seconds = timer % 60;
+                return $"{minutes:D2}:{seconds:D2}";
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+};
 
     public static void Init()
     {
@@ -152,7 +175,19 @@ public static class TemplateManager
                 HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
             else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, replay: true);
         }
-        else foreach (string x in sendList.ToArray()) Utils.SendMessage(ApplyReplaceDictionary(x), playerId, replay:true);
+        else foreach (string x in sendList.ToArray())
+            {
+                var title = TryGetTitle(x, out var HasTitle);
+                var rmv = x;
+                if (HasTitle)
+                {
+                    rmv = title != "" ? x.Remove(x.IndexOf("<title>"), x.IndexOf("</title>")) : "";
+                    rmv = rmv.Replace("<title>", "");
+                    rmv = rmv.Replace("</title>", "");
+                }
+
+                Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, replay: true);
+            }
     }
 
     private static string ApplyReplaceDictionary(string text)
@@ -180,5 +215,24 @@ public static class TemplateManager
             //Logger.Exception(ex, "TemplateManager.ApplyReplaceDictionary");
             return text;
         }
+    }
+    private static string TryGetTitle(string Text, out bool Contains)
+    {
+        int start = Text.IndexOf("<title>");
+        int end = Text.IndexOf("</title>");
+        var contains = start != -1 && end != -1 && start < end;
+        Contains = contains;
+        string title = "";
+
+        if (contains)
+        {
+            title = Text.Substring(start, end);
+            title = title.Replace("<title>", "");
+            title = title.Replace("</title>", "");
+            
+        }
+
+
+        return title;
     }
 }

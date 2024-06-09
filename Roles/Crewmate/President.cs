@@ -1,31 +1,33 @@
 ﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class President
+internal class President : RoleBase
 {
-    private static readonly int Id = 12300;
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 12300;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
+    //==================================================================\\
 
-    public static Dictionary<byte, int> EndLimit = [];
-    public static Dictionary<byte, int> RevealLimit = [];
-    public static Dictionary<byte, bool> CheckPresidentReveal = [];
+    private static OptionItem PresidentAbilityUses;
+    private static OptionItem PresidentCanBeGuessedAfterRevealing;
+    private static OptionItem HidePresidentEndCommand;
+    private static OptionItem NeutralsSeePresident;
+    private static OptionItem MadmatesSeePresident;
+    private static OptionItem ImpsSeePresident;
 
+    private static readonly Dictionary<byte, int> EndLimit = [];
+    private static readonly Dictionary<byte, int> RevealLimit = [];
+    private static readonly Dictionary<byte, bool> CheckPresidentReveal = [];
 
-    public static OptionItem PresidentAbilityUses;
-    public static OptionItem PresidentCanBeGuessedAfterRevealing;
-    public static OptionItem HidePresidentEndCommand;
-    public static OptionItem NeutralsSeePresident;
-    public static OptionItem MadmatesSeePresident;
-    public static OptionItem ImpsSeePresident;
-
-
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.President);
         PresidentAbilityUses = IntegerOptionItem.Create(Id + 10, "PresidentAbilityUses", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President])
@@ -36,32 +38,34 @@ public static class President
         ImpsSeePresident = BooleanOptionItem.Create(Id + 14, "ImpsSeePresident", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President]);
         HidePresidentEndCommand = BooleanOptionItem.Create(Id + 15, "HidePresidentEndCommand", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President]);
     }
-    public static void Init()
+    public override void Init()
     {
-        CheckPresidentReveal = [];
-        EndLimit = [];
-        RevealLimit = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        CheckPresidentReveal.Clear();
+        EndLimit.Clear();
+        RevealLimit.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         CheckPresidentReveal.Add(playerId, false);
         EndLimit.Add(playerId, PresidentAbilityUses.GetInt());
         RevealLimit.Add(playerId, 1);
-        IsEnable = true;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         CheckPresidentReveal.Remove(playerId);
         EndLimit.Remove(playerId);
         RevealLimit.Remove(playerId);
     }
-    public static string GetEndLimit(byte playerId) => Utils.ColorString(EndLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.President) : Color.gray, EndLimit.TryGetValue(playerId, out var endLimit) ? $"({endLimit})" : "Invalid");
+
+    public static bool CheckReveal(byte targetId) => CheckPresidentReveal.TryGetValue(targetId, out var canBeReveal) && canBeReveal;
+    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(EndLimit[PlayerId] > 0 ? Utils.GetRoleColor(CustomRoles.President) : Color.gray, EndLimit.TryGetValue(PlayerId, out var endLimit) ? $"({endLimit})" : "Invalid");
 
     public static void TryHideMsgForPresident()
     {
         ChatUpdatePatch.DoBlockChat = true;
-        //List<CustomRoles> roles = Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>().Where(x => x is not CustomRoles.NotAssigned and not CustomRoles.KB_Normal).ToList();
+
         var rd = IRandom.Instance;
         string msg;
         for (int i = 0; i < 20; i++)
@@ -186,6 +190,12 @@ public static class President
         }
         return false;
     }
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (CheckPresidentReveal[target.PlayerId])
+            killer.SetKillCooldown(0.9f);
+        return true;
+    }
 
     private static void SendRPC(byte playerId, bool isEnd = true)
     {
@@ -214,4 +224,20 @@ public static class President
         }
         EndMsg(pc, $"/finish");
     }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
+    {
+        if ((target.Is(CustomRoles.President)) && CheckPresidentReveal[target.PlayerId] && !PresidentCanBeGuessedAfterRevealing.GetBool())
+        {
+            Utils.SendMessage(GetString("GuessPresident"), guesser.PlayerId);
+            return true;
+        }
+        return false;
+    }
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
+        => (target.Is(CustomRoles.President) && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) && CheckPresidentReveal[target.PlayerId] == true) ||
+            (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && MadmatesSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
+            (target.Is(CustomRoles.President) && seer.GetCustomRole().IsNeutral() && NeutralsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
+            (target.Is(CustomRoles.President) && seer.GetCustomRole().IsImpostor() && ImpsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true);
+    
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
 }

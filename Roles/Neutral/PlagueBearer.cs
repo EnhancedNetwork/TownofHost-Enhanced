@@ -1,33 +1,39 @@
-﻿using Hazel;
-using System.Collections.Generic;
-using TOHE.Roles.Impostor;
+﻿using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.ParticleSystem.PlaybackState;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
-public static class PlagueBearer
-{
-    private static readonly int Id = 17600;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
-    public static Dictionary<byte, List<byte>> PlaguedList = [];
-    public static Dictionary<byte, float> PlagueBearerCD = [];
-    public static Dictionary<byte, int> PestilenceCD = [];
-    public static List<byte> PestilenceList = [];
 
-    public static OptionItem PlagueBearerCDOpt;
-    public static OptionItem PestilenceCDOpt;
+internal class PlagueBearer : RoleBase
+{
+    //===========================SETUP================================\\
+    private const int Id = 17600;
+    public static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    //==================================================================\\
+
+    private static OptionItem PlagueBearerCooldownOpt;
+    public static OptionItem PestilenceCooldownOpt;
     public static OptionItem PestilenceCanVent;
     public static OptionItem PestilenceHasImpostorVision;
 
+    private static readonly Dictionary<byte, HashSet<byte>> PlaguedList = [];
 
-    public static void SetupCustomOption()
+    public override void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.PlagueBearer , 1, zeroOne: false);
-        PlagueBearerCDOpt = FloatOptionItem.Create(Id + 10, "PlagueBearerCD", new(0f, 180f, 2.5f), 22.5f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.PlagueBearer])
+        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.PlagueBearer, 1, zeroOne: false);
+        PlagueBearerCooldownOpt = FloatOptionItem.Create(Id + 10, "PlagueBearerCooldown", new(0f, 180f, 2.5f), 22.5f, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer])
                 .SetValueFormat(OptionFormat.Seconds);
-        PestilenceCDOpt = FloatOptionItem.Create(Id + 11, "PestilenceCD", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.PlagueBearer])
+        PestilenceCooldownOpt = FloatOptionItem.Create(Id + 11, "PestilenceCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer])
                 .SetValueFormat(OptionFormat.Seconds);
         PestilenceCanVent = BooleanOptionItem.Create(Id + 12, "PestilenceCanVent", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
@@ -35,72 +41,126 @@ public static class PlagueBearer
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
-        PlaguedList = [];
-        PlagueBearerCD = [];
-        PestilenceList = [];
-        IsEnable = false;
+        playerIdList.Clear();
+        PlaguedList.Clear();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        PlagueBearerCD.Add(playerId, PlagueBearerCDOpt.GetFloat());
         PlaguedList[playerId] = [];
-        IsEnable = true;
+
+        CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PlagueBearerCD[id];
-    public static void SetKillCooldownPestilence(byte id) => Main.AllPlayerKillCooldown[id] = PestilenceCDOpt.GetFloat();
-
-    public static bool IsPlagued(byte pc, byte target)
+    public override void Remove(byte playerId)
     {
-        return PlaguedList[pc].Contains(target);
+        playerIdList.Remove(playerId);
+        PlaguedList.Remove(playerId);
+        CustomRoleManager.CheckDeadBodyOthers.Remove(OnPlayerDead);
     }
+
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PlagueBearerCooldownOpt.GetFloat();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    private static bool IsPlagued(byte pc, byte target) => PlaguedList.TryGetValue(pc, out var Targets) && Targets.Contains(target);
+    
     public static void SendRPC(PlayerControl player, PlayerControl target)
     {
         MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.setPlaguedPlayer, SendOption.Reliable, -1);//RPCによる同期
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(Utils.GetPlayerById(playerIdList.First())); // setPlaguedPlayer
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte PlagueBearerId = reader.ReadByte();
         byte PlaguedId = reader.ReadByte();
         PlaguedList[PlagueBearerId].Add(PlaguedId);
     }
-    public static (int, int) PlaguedPlayerCount(byte playerId)
+    public static void CheckAndInfect(PlayerControl seer, PlayerControl target)
     {
-        int plagued = 0, all = 0; //学校で習った書き方
-                                  //多分この方がMain.isDousedでforeachするより他のアーソニストの分ループ数少なくて済む
-        foreach (var pc in Main.AllAlivePlayerControls)
+        var isDisconnectOrSelfKill = seer.PlayerId == target.PlayerId;
+        foreach (var (PlagueId, Targets) in PlaguedList)
         {
-            if (pc.PlayerId == playerId) continue; //塗れない人は除外 (死んでたり切断済みだったり あとアーソニスト自身も)
+            var plagueBearer = GetPlayerById(PlagueId);
+            if (plagueBearer == null || !plagueBearer.IsAlive()) continue;
 
-            all++;
-            if (IsPlagued(playerId, pc.PlayerId))
-                //塗れている場合
-                plagued++;
+            bool needCheck = false;
+            if (target.Is(CustomRoles.PlagueBearer) && !isDisconnectOrSelfKill)
+            {
+                PlaguedList[PlagueId].Add(seer.PlayerId);
+                SendRPC(plagueBearer, seer);
+                needCheck = true;
+            }
+            else if (isDisconnectOrSelfKill)
+            {
+                needCheck = true;
+            }
+            else if (Targets.Contains(seer.PlayerId) && !Targets.Contains(target.PlayerId))
+            {
+                PlaguedList[PlagueId].Add(target.PlayerId);
+                SendRPC(plagueBearer, target);
+                needCheck = true;
+            }
+            else if (!Targets.Contains(seer.PlayerId) && Targets.Contains(target.PlayerId))
+            {
+                PlaguedList[PlagueId].Add(seer.PlayerId);
+                SendRPC(plagueBearer, seer);
+                needCheck = true;
+            }
+
+            if (needCheck)
+            {
+                NotifyRoles(SpecifySeer: plagueBearer);
+                CheckPlagueAllPlayers();
+            }
         }
+    }
+    private static (int, int) PlaguedPlayerCount(byte playerId)
+    {
+        int all = Main.AllAlivePlayerControls.Count(pc => pc.PlayerId != playerId);
+        int plagued = Main.AllAlivePlayerControls.Count(pc => pc.PlayerId != playerId && IsPlagued(playerId, pc.PlayerId));
+
         return (plagued, all);
     }
-
-    public static bool IsPlaguedAll(PlayerControl player)
+    private static bool IsPlaguedAll(PlayerControl player)
     {
         if (!player.Is(CustomRoles.PlagueBearer)) return false;
-        
-        var (countItem1, countItem2) = PlaguedPlayerCount(player.PlayerId);
-        return countItem1 >= countItem2;
-    }
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+        var (plagued, all) = PlaguedPlayerCount(player.PlayerId);
+        return plagued >= all;
+    }
+    public static void CheckPlagueAllPlayers()
+    {
+        foreach (var PlagueId in PlaguedList.Keys)
+        {
+            var plagueBearer = GetPlayerById(PlagueId);
+            if (plagueBearer == null) continue;
+
+            if (IsPlaguedAll(plagueBearer))
+            {
+                playerIdList.Remove(PlagueId);
+
+                // Set Pestilence
+                plagueBearer.RpcSetCustomRole(CustomRoles.Pestilence);
+                plagueBearer.GetRoleClass()?.Add(PlagueId);
+
+                plagueBearer.Notify(GetString("PlagueBearerToPestilence"), time: 2f);
+                plagueBearer.RpcGuardAndKill(plagueBearer);
+                plagueBearer.ResetKillCooldown();
+
+                NotifyRoles(SpecifySeer: plagueBearer);
+                plagueBearer.MarkDirtySettings();
+            }
+        }
+    }
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (IsPlagued(killer.PlayerId, target.PlayerId))
         {
@@ -109,51 +169,79 @@ public static class PlagueBearer
         }
         PlaguedList[killer.PlayerId].Add(target.PlayerId);
         SendRPC(killer, target);
-        Utils.NotifyRoles(SpecifySeer: killer);
+        NotifyRoles(SpecifySeer: killer);
+
+        CheckPlagueAllPlayers();
 
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
 
-        Logger.Info($"kill cooldown {PlagueBearerCD[killer.PlayerId]}", "PlagueBearer");
+        return false;
+    }
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    {
+        if (HasEnabled && deadBody.Object != null)
+        {
+            CheckAndInfect(reporter, deadBody.Object);
+        }
+        return true;
+    }
+    private void OnPlayerDead(PlayerControl killer, PlayerControl deadBody, bool inMeeting)
+    {
+        if (HasEnabled)
+        {
+            CheckAndInfect(killer, deadBody);
+        }
+    }
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
+        => IsPlagued(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Pestilence), "⦿") : string.Empty;
+
+    public override string GetProgressText(byte playerId, bool comms)
+    {
+        var (plagued, all) = PlaguedPlayerCount(playerId);
+        return ColorString(GetRoleColor(CustomRoles.PlagueBearer).ShadeColor(0.25f), $"({plagued}/{all})");
+    }
+    
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(GetString("InfectiousKillButtonText"));
+    }
+}
+
+internal class Pestilence : RoleBase
+{
+    //===========================SETUP================================\\
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.PlagueBearer);
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    //==================================================================\\
+
+    public override void Add(byte playerId)
+    {
+
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
+    }
+
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PlagueBearer.PestilenceCooldownOpt.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(PlagueBearer.PestilenceHasImpostorVision.GetBool());
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => PlagueBearer.PestilenceCanVent.GetBool();
+
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        killer.SetRealKiller(target);
+        target.RpcMurderPlayer(killer);
         return false;
     }
 
-    public static bool IsIndirectKill(PlayerControl killer)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        return Puppeteer.PuppeteerList.ContainsKey(killer.PlayerId) ||
-            Shroud.ShroudList.ContainsKey(killer.PlayerId) ||
-            Main.CursedPlayers.ContainsValue(killer) ||
-            Sniper.snipeTarget.ContainsValue(killer.PlayerId);
-    }
-
-    public static bool OnCheckMurderPestilence(PlayerControl killer, PlayerControl target)
-    {
-        if (killer == null || target == null) return false;
-        if (!PestilenceList.Contains(target.PlayerId)) return false;
-        if (target.Is(CustomRoles.Guardian) && target.AllTasksCompleted()) return true;
-        if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted()) return true;
-        if (target.Is(CustomRoles.Veteran) && Main.VeteranInProtect.ContainsKey(target.PlayerId)) return true;
-        if (target.Is(CustomRoles.TimeMaster) && Main.TimeMasterInProtect.ContainsKey(target.PlayerId)) return true;
-        if (IsIndirectKill(killer)) return false;
-        killer.SetRealKiller(target);
-        target.RpcMurderPlayerV3(killer);
-        return true;
-    }
-    public static void OnFixedUpdate(PlayerControl player)
-    {
-        if (!IsPlaguedAll(player)) return;
-
-        player.RpcSetCustomRole(CustomRoles.Pestilence);
-        player.Notify(GetString("PlagueBearerToPestilence"));
-        player.RpcGuardAndKill(player);
-
-        var playerId = player.PlayerId;
-
-        if (!PestilenceList.Contains(playerId))
-            PestilenceList.Add(playerId);
-
-        SetKillCooldownPestilence(playerId);
-        playerIdList.Remove(playerId);
-
+        if (!isUI) SendMessage(GetString("GuessPestilence"), pc.PlayerId);
+        else pc.ShowPopUp(GetString("GuessPestilence"));
+        guesserSuicide = true;
+        Logger.Msg($"Is Active: {guesserSuicide}", "guesserSuicide - Pestilence");
+        return false;
     }
 }

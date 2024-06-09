@@ -1,6 +1,4 @@
-using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace TOHE;
@@ -9,7 +7,7 @@ namespace TOHE;
 class DisableDevice
 {
     public static bool DoDisable => Options.DisableDevices.GetBool();
-    private static readonly List<byte> DesyncComms = [];
+    private static readonly HashSet<byte> DesyncComms = [];
     private static int frame = 0;
     public static readonly Dictionary<string, Vector2> DevicePos = new()
     {
@@ -58,9 +56,9 @@ class DisableDevice
 
                 bool doComms = false;
                 Vector2 PlayerPos = pc.transform.position;
-                bool ignore = (Options.DisableDevicesIgnoreImpostors.GetBool() && pc.Is(CustomRoleTypes.Impostor)) ||
-                        (Options.DisableDevicesIgnoreNeutrals.GetBool() && pc.Is(CustomRoleTypes.Neutral)) ||
-                        (Options.DisableDevicesIgnoreCrewmates.GetBool() && pc.Is(CustomRoleTypes.Crewmate)) ||
+                bool ignore = (Options.DisableDevicesIgnoreImpostors.GetBool() && pc.Is(Custom_Team.Impostor)) ||
+                        (Options.DisableDevicesIgnoreNeutrals.GetBool() && pc.Is(Custom_Team.Neutral)) ||
+                        (Options.DisableDevicesIgnoreCrewmates.GetBool() && pc.Is(Custom_Team.Crewmate)) ||
                         (Options.DisableDevicesIgnoreAfterAnyoneDied.GetBool() && GameStates.AlreadyDied);
 
                 var mapId = Utils.GetActiveMapId();
@@ -155,9 +153,9 @@ public class RemoveDisableDevicesPatch
         var player = PlayerControl.LocalPlayer;
         bool ignore = player.Is(CustomRoles.GM) ||
             !player.IsAlive() ||
-            (Options.DisableDevicesIgnoreImpostors.GetBool() && player.Is(CustomRoleTypes.Impostor)) ||
-            (Options.DisableDevicesIgnoreNeutrals.GetBool() && player.Is(CustomRoleTypes.Neutral)) ||
-            (Options.DisableDevicesIgnoreCrewmates.GetBool() && player.Is(CustomRoleTypes.Crewmate)) ||
+            (Options.DisableDevicesIgnoreImpostors.GetBool() && player.Is(Custom_Team.Impostor)) ||
+            (Options.DisableDevicesIgnoreNeutrals.GetBool() && player.Is(Custom_Team.Neutral)) ||
+            (Options.DisableDevicesIgnoreCrewmates.GetBool() && player.Is(Custom_Team.Crewmate)) ||
             (Options.DisableDevicesIgnoreAfterAnyoneDied.GetBool() && GameStates.AlreadyDied);
 
         var admins = UnityEngine.Object.FindObjectsOfType<MapConsole>(true);

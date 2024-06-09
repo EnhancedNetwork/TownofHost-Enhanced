@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public static class Bloodlust
 {
-    private static readonly int Id = 21700;
+    private const int Id = 21700;
 
     public static OptionItem ImpCanBeAutopsy;
     public static OptionItem CrewCanBeAutopsy;
@@ -14,6 +14,11 @@ public static class Bloodlust
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Bloodlust, canSetNum: true);
+    }
+
+    public static void Add()
+    {
+        Alchemist.AddBloodlus();
     }
 
     public static void OnTaskComplete(PlayerControl player)

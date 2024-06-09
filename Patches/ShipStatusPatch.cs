@@ -1,12 +1,9 @@
-using HarmonyLib;
 using Hazel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Crewmate;
+using UnityEngine;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
-using UnityEngine;
+using TOHE.Roles.Core;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -37,7 +34,7 @@ public static class MessageReaderUpdateSystemPatch
 {
     public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        if (systemType is SystemTypes.Ventilation) return true;
+        if (systemType is SystemTypes.Ventilation or SystemTypes.Security) return true;
         if (GameStates.IsHideNSeek) return true;
 
         var amount = MessageReader.Get(reader).ReadByte();
@@ -47,18 +44,18 @@ public static class MessageReaderUpdateSystemPatch
             return false;
         }
 
-        return RepairSystemPatch.Prefix(__instance, systemType, player, amount);
+        return UpdateSystemPatch.Prefix(__instance, systemType, player, amount);
     }
     public static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        if (systemType is SystemTypes.Ventilation) return;
+        if (systemType is SystemTypes.Ventilation or SystemTypes.Security) return;
         if (GameStates.IsHideNSeek) return;
 
-        RepairSystemPatch.Postfix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
+        UpdateSystemPatch.Postfix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
     }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(byte))]
-class RepairSystemPatch
+class UpdateSystemPatch
 {
     public static bool Prefix(ShipStatus __instance,
         [HarmonyArgument(0)] SystemTypes systemType,
@@ -82,34 +79,23 @@ class RepairSystemPatch
 
         // ###### Roles/Add-ons During Sabotages ######
 
-        if (Quizmaster.IsEnable)
-            Quizmaster.OnSabotageCall(systemType);
-
-
         if (Fool.IsEnable && Fool.BlockFixSabotage(player, systemType))
         {
             return false;
         }
 
 
-        // Fast fix critical saboatge
-        switch (player.GetCustomRole())
-        {
-            case CustomRoles.SabotageMaster:
-                SabotageMaster.UpdateSystem(__instance, systemType, amount, player.PlayerId);
-                break;
-            case CustomRoles.Alchemist when Alchemist.FixNextSabo:
-                Alchemist.UpdateSystem(systemType, amount);
-                break;
-        }
-
-
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
             && (systemType is SystemTypes.Doors))
         {
-            Unlucky.SuicideRand(player);
+            Unlucky.SuicideRand(player, Unlucky.StateSuicide.OpenDoor);
             if (Unlucky.UnluckCheck[player.PlayerId]) return false;
         }
+
+        player.GetRoleClass()?.UpdateSystem(__instance, systemType, amount, player);
+
+        if (Quizmaster.HasEnabled)
+            Quizmaster.OnSabotageCall(systemType);
 
         return true;
     }
@@ -127,19 +113,7 @@ class RepairSystemPatch
             var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
             if (SwitchSystem != null && SwitchSystem.IsActive)
             {
-                switch (player.GetCustomRole())
-                {
-                    case CustomRoles.SabotageMaster:
-                        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
-                        SabotageMaster.SwitchSystemRepair(SwitchSystem, amount, player.PlayerId);
-                        break;
-                    case CustomRoles.Alchemist when Alchemist.FixNextSabo:
-                        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
-                        SwitchSystem.ActualSwitches = 0;
-                        SwitchSystem.ExpectedSwitches = 0;
-                        Alchemist.FixNextSabo = false;
-                        break;
-                }
+                player.GetRoleClass()?.SwitchSystemUpdate(SwitchSystem, amount, player);
             }
         }
     }
