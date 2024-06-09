@@ -4,6 +4,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using UnityEngine;
+using MS.Internal.Xml.XPath;
 
 namespace TOHE.Roles._Ghosts_.Crewmate
 {
@@ -42,9 +43,6 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             AbilityLimit = MaxPossesions.GetInt();
 
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
-
-            // OnCheckProtect(_Player, Utils.GetPlayerById(0));
-           // OnCheckProtect(_Player, Utils.GetPlayerById(2));
         }
 
         public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -82,6 +80,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
                 KillerIsChosen = false;
                 GetPlayerById(killer).Notify(GetString("GhastlyYouvePosses"));
+                angel.Notify($"<size=65%>〘{string.Format(GetString("GhastlyPossessedUser"), "</size>" + _Player.GetRealName())}<size=65%> 〙</size>");
 
                 TargetArrow.Add(killer, Target);
                 angel.RpcGuardAndKill(target);
@@ -169,7 +168,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         public override void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
         {
             var tuple = killertarget;
-            if (DeadPlayer.PlayerId == tuple.Item1)
+            if (DeadPlayer.PlayerId == tuple.Item1 || DeadPlayer.PlayerId == tuple.Item2)
             {
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(DeadPlayer.PlayerId);
