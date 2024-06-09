@@ -28,6 +28,7 @@ public class PlayerState(byte playerId)
     public PlainShipRoom LastRoom = null;
     public bool HasSpawned { get; set; } = false;
     public Dictionary<byte, string> TargetColorData = [];
+    public GameData.PlayerOutfit NormalOutfit;
 
     public CustomRoles GetCustomRoleFromRoleType()
     {
@@ -316,6 +317,7 @@ public class PlayerState(byte playerId)
         return count;
     }
 }
+
 public class TaskState
 {
     public static int InitialTotalTasks;
