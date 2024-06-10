@@ -438,13 +438,14 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Mundane:
-                if (pc.HasImpKillButton() || pc.GetCustomRole().IsTasklessCrewmate() || pc.Is(Custom_Team.Impostor))
+                if (pc.HasImpKillButton() || !Utils.HasTasks(pc.Data, false) || pc.GetCustomRole().IsTasklessCrewmate() || pc.Is(Custom_Team.Impostor))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Mundane.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Mundane.CanBeOnNeutral.GetBool()))
                     return false;
                 if (pc.Is(CustomRoles.CopyCat)
                     || pc.Is(CustomRoles.Doomsayer)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Collector))
                     return false;
                 if ((pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool())
                     || (pc.Is(CustomRoles.Terrorist) && (!Terrorist.TerroristCanGuess.GetBool() || Terrorist.CanTerroristSuicideWin.GetBool()))
