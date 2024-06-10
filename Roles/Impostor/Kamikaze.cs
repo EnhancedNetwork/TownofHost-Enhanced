@@ -51,7 +51,7 @@ internal class Kamikaze : RoleBase
         return killer.CheckDoubleTrigger(target, () =>
         {
 
-            if (AbilityLimit > 0) 
+            if (AbilityLimit >= 1) 
             {
                 KamikazedList.Add(target.PlayerId);
                 killer.SetKillCooldown(KillCooldown.GetFloat());
