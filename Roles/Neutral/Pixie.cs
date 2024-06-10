@@ -108,7 +108,7 @@ internal class Pixie : RoleBase
         }
     }
 
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
         byte targetId = target.PlayerId;
