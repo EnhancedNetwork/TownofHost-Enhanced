@@ -120,10 +120,9 @@ internal class Tracefinder : RoleBase
             }
         }, delay, "Get Arrow Tracefinder");
     }
-    public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetSuffix(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Tracefinder)) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
+        if (isForMeeting || seer.PlayerId != target.PlayerId) return string.Empty;
         return Utils.ColorString(Color.white, LocateArrow.GetArrows(seer));
     }
 }
