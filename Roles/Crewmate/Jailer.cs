@@ -139,7 +139,7 @@ internal class Jailer : RoleBase
         return false;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
-    public override void OnReportDeadBody(PlayerControl sob, PlayerControl bakugan)
+    public override void OnReportDeadBody(PlayerControl sob, GameData.PlayerInfo bakugan)
     {
         foreach (var targetId in JailerTarget.Values)
         {
