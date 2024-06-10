@@ -55,7 +55,7 @@ internal class Anonymous : RoleBase
             hud.AbilityButton.SetUsesRemaining((int)AbilityLimit);
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => DeadBodyList.Clear();
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target) => DeadBodyList.Clear();
     public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         if (inMeeting || isSuicide) return;

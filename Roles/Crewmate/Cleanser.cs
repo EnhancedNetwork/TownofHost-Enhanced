@@ -77,7 +77,7 @@ internal class Cleanser : RoleBase
         Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser),GetString("CleanserTitle")));
         SendSkillRPC();
     }
-    public override void OnReportDeadBody(PlayerControl baba, PlayerControl lilelam)
+    public override void OnReportDeadBody(PlayerControl baba, GameData.PlayerInfo lilelam)
     {
         DidVote = false;
         foreach (var pid in CleanserTarget.Keys)

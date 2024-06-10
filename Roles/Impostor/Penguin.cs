@@ -134,7 +134,7 @@ internal class Penguin : RoleBase
         hud.AbilityButton?.OverrideText(GetString("PenguinTimerText"));
         hud.AbilityButton?.ToggleVisible(AbductVictim != null);
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         stopCount = true;
         // If you meet a meeting with time running out, kill it even if you're on a ladder.
