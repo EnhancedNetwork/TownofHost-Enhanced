@@ -1324,7 +1324,7 @@
   "BombCooldown": "Bomb Cooldown",
   "ImpostorVision": "Hat <color=#ff1919>Verräter</color> -Sicht",
   "CanUseSabotage": "Kann Sabotieren",
-  "Warlock_CanKillImpostors": "Can Kill <color=#ff1919>Impostors</color>",
+  "CanKillImpostors": "Can Kill <color=#ff1919>Impostors</color>",
   "Warlock_CanKillSelf": "Can Kill Themselves",
   "CrewpostorKnowsAllies": "Kennt die <color=#ff1919>Verräter</color>",
   "AlliesKnowCrewpostor": "Ist den <color=#ff1919>Verrätern</color> bekannt",
