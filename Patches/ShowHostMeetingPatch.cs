@@ -1,4 +1,5 @@
 using TMPro;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 
 namespace TOHE.Patches;
@@ -8,13 +9,33 @@ namespace TOHE.Patches;
 [HarmonyPatch]
 public class ShowHostMeetingPatch
 {
+    private static PlayerControl HostControl = null;
     private static string hostName = string.Empty;
     private static int hostColor = int.MaxValue;
+
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.OnDestroy))]
+    [HarmonyPostfix]
+    public static void OnDestroyPostfix()
+    {
+        if (GameStates.IsInGame && HostControl == null)
+        {
+            HostControl = AmongUsClient.Instance.GetHost().Character;
+            hostName = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.PlayerName;
+            hostColor = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.ColorId;
+
+            if (Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1 && Doppelganger.CheckDoppelVictim(AmongUsClient.Instance.GetHost().Character.PlayerId))
+            {
+                hostName = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.PlayerId].PlayerName;
+                hostColor = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.PlayerId].ColorId;
+            }
+        }
+    }
 
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
     [HarmonyPostfix]
     public static void ShowRolePostfix()
     {
+        HostControl = AmongUsClient.Instance.GetHost().Character;
         hostName = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.PlayerName;
         hostColor = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.ColorId;
     }
