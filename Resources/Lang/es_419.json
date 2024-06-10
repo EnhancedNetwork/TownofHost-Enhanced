@@ -1324,7 +1324,7 @@
   "BombCooldown": "Tiempo de espera para explotar",
   "ImpostorVision": "Visión de <color=#ff1919>Impostor</color>",
   "CanUseSabotage": "Puede sabotear",
-  "Warlock_CanKillImpostors": "Can Kill <color=#ff1919>Impostors</color>",
+  "CanKillImpostors": "Can Kill <color=#ff1919>Impostors</color>",
   "Warlock_CanKillSelf": "Can Kill Themselves",
   "CrewpostorKnowsAllies": "Conoce a los <color=#ff1919>Impostores</color>",
   "AlliesKnowCrewpostor": "Los <color=#ff1919>Impostores</color> conocen al <color=#ff1919>Tripulostor</color>",
