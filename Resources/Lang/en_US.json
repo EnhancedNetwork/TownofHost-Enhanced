@@ -2590,7 +2590,7 @@
   "ChronomancerKillCooldown": "Ability Charge Time",
   "ChronomancerDecreaseTime": "Slaughter Decrease Time (lower is faster)",
   "ChronomancerStartMassacre": "SALUGHTER: ACTIVATED",
-  "ChronomancerVisionMassacre": "Vision When In Salughter",
+  "ChronomancerVisionMassacre": "Vision When In Slaughter",
 
   "ShamanButtonText": "Voodoo",
   "ShamanTargetAlreadySelected": "You have already selected a voodoo doll in this round",
