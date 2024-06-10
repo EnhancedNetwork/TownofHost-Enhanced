@@ -21,6 +21,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         private static OptionItem MaxPossesions;
         private static OptionItem PossessDur;
         private static OptionItem GhastlySpeed;
+        private static OptionItem GhastlyKillAllies;
 
         private (byte, byte) killertarget = (byte.MaxValue, byte.MaxValue);
         private readonly Dictionary<byte, long> LastTime = [];
@@ -37,6 +38,8 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 .SetValueFormat(OptionFormat.Seconds);
             GhastlySpeed = FloatOptionItem.Create(Id + 13, "GhastlySpeed", new(1.5f, 5f, 0.5f), 2f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
                 .SetValueFormat(OptionFormat.Multiplier);
+            GhastlyKillAllies = BooleanOptionItem.Create(Id + 14, "GhastlyKillAllies", false, TabGroup.CrewmateRoles, false)
+                .SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly]);
         }
         public override void Add(byte playerId)
         {
@@ -60,6 +63,12 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
             var killer = killertarget.Item1;
             var Target = killertarget.Item2;
+
+            if (!KillerIsChosen && !CheckConflicts(target))
+            {
+                angel.Notify(GetString("GhastlyCannotPossessTarget"));
+                return false;
+            }
 
             if (!KillerIsChosen && target.PlayerId != killer)
             {
@@ -94,9 +103,12 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             }
 
             killertarget = (killer, Target);
-            // Logger.Info($"{killertarget.Item1} ++ {killertarget.Item2}", "ghasltytargets");
 
             return false;
+        }
+        private bool CheckConflicts(PlayerControl target)
+        {
+            return target != null && (!GhastlyKillAllies.GetBool() || target.GetCountTypes() != _Player.GetCountTypes());
         }
         public override void OnFixedUpdate(PlayerControl pc)
         {
