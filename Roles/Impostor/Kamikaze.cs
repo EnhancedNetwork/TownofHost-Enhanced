@@ -90,6 +90,7 @@ internal class Kamikaze : RoleBase
             }
             pc.SetRealKiller(_Player);
         }
+        KamikazedList.Clear();
     }
 
     public override string GetProgressText(byte playerId, bool comms)
