@@ -286,7 +286,7 @@ internal class Solsticer : RoleBase
         }
         return false;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         patched = false;
     }

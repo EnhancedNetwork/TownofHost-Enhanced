@@ -159,7 +159,7 @@ internal class Oracle : RoleBase
         }
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl tagret)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo tagret)
     {
         DidVote.Clear();
             

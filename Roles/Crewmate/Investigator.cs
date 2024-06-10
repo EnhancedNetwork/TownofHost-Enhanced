@@ -150,7 +150,7 @@ internal class Investigator : RoleBase
         if (ExtendedPlayerControl.HasKillButton(target) || CopyCat.playerIdList.Contains(target.PlayerId)) return "#FF1919";
         else return "#8CFFFF";
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         foreach (var playerid in RoundInvestigateLimit.Keys)
         {

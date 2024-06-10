@@ -81,7 +81,7 @@ internal class Eraser : RoleBase
 
         Utils.NotifyRoles(SpecifySeer: player);
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         TempEraseLimit = (int)AbilityLimit;
 

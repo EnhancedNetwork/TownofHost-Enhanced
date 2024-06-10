@@ -75,7 +75,7 @@ internal class Wraith : RoleBase
         => GameStates.IsInTask && !InvisTime.ContainsKey(id) && !lastTime.ContainsKey(id);
     private static bool IsInvis(byte id) => InvisTime.ContainsKey(id);
 
-    public override void OnReportDeadBody(PlayerControl pa, PlayerControl dum)
+    public override void OnReportDeadBody(PlayerControl pa, GameData.PlayerInfo dum)
     {
         lastTime.Clear();
         InvisTime.Clear();

@@ -134,7 +134,7 @@ internal class Camouflager : RoleBase
             }
         }, timer, "Camouflager Use Shapeshift");
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         ClearCamouflage();
         Timer = [];
