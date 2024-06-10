@@ -280,10 +280,7 @@ public static class CustomRolesHelper
 
     public static bool IsMadmate(this CustomRoles role)
     {
-        if (role.GetStaticRoleClass().ThisRoleType is Custom_RoleType.Madmate) return true;
-
-        return role is
-            CustomRoles.Refugee;
+        return role.GetStaticRoleClass().ThisRoleType is Custom_RoleType.Madmate;
     }
     /// <summary>
     /// Role Changes the Crewmates Team, Including changing to Impostor.
@@ -763,7 +760,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Hurried)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
-                if (pc.GetCustomRole().IsNeutral() || pc.IsAnySubRole(sub => sub.IsConverted()))
+                if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()))
                     return false;
                 if ((pc.GetCustomRole().IsImpostor() && !Egoist.ImpCanBeEgoist.GetBool()) || (pc.GetCustomRole().IsCrewmate() && !Egoist.CrewCanBeEgoist.GetBool()))
                     return false;
