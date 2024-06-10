@@ -227,7 +227,7 @@ public static class CustomRolesHelper
             //FFA
             CustomRoles.Killer) return true;
 
-        return role.IsNK() || role.IsNonNK();
+        return role.IsNK() || role.IsNonNK() || role.IsMadmate();
     }
     public static bool IsNK(this CustomRoles role)
     {
