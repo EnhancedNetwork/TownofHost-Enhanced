@@ -2713,7 +2713,7 @@ class ChatUpdatePatch
         if (clientId == -1)
         {
             player.SetName(title);
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg, false);
             player.SetName(name);
         }
 
