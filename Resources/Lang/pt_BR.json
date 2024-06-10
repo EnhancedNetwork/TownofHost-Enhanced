@@ -1324,7 +1324,7 @@
   "BombCooldown": "Recarga de Bomba",
   "ImpostorVision": "Tem Visão de <color=#ff1919>Impostor</color>",
   "CanUseSabotage": "Pode Sabotar",
-  "Warlock_CanKillImpostors": "Pode Matar <color=#ff1919>Impostores</color>",
+  "CanKillImpostors": "Can Kill <color=#ff1919>Impostors</color>",
   "Warlock_CanKillSelf": "Podem se Matar",
   "CrewpostorKnowsAllies": "Conhece <color=#ff1919>Impostores</color>",
   "AlliesKnowCrewpostor": "Conhecido pelos <color=#ff1919>Impostores</color>",
