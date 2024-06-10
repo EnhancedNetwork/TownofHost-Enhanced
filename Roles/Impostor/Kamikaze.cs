@@ -77,6 +77,8 @@ internal class Kamikaze : RoleBase
         foreach (var BABUSHKA in KamikazedList)
         {
             var pc = Utils.GetPlayerById(BABUSHKA);
+            if (!pc.IsAlive()) continue;
+
             pc.SetDeathReason(PlayerState.DeathReason.Targeted);
             if (!IsAfterMeeting)
             {
