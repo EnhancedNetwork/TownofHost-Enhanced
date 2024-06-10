@@ -13,7 +13,7 @@ internal class Wildling : RoleBase
     //===========================SETUP================================\\
     private const int Id = 5200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Wildling);
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
 
@@ -55,6 +55,7 @@ internal class Wildling : RoleBase
         AURoleOptions.ShapeshifterDuration = ShapeshiftDur.GetFloat();
     }
 
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
     private bool InProtect(byte playerId) => TimeStamp > Utils.GetTimeStamp(DateTime.Now);
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
