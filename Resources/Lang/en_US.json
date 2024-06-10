@@ -2588,9 +2588,9 @@
   "SoulCollectorSelfVote": "Host settings do not allow you to collect your own soul",
 
   "ChronomancerKillCooldown": "Ability Charge Time",
-  "ChronomancerDecreaseTime": "Massacre Decrease Time (lower is faster)",
-  "ChronomancerStartMassacre": "MASSACRE: ACTIVATED",
-  "ChronomancerVisionMassacre": "Vision When In Massacre",
+  "ChronomancerDecreaseTime": "Slaughter Decrease Time (lower is faster)",
+  "ChronomancerStartMassacre": "SALUGHTER: ACTIVATED",
+  "ChronomancerVisionMassacre": "Vision When In Salughter",
 
   "ShamanButtonText": "Voodoo",
   "ShamanTargetAlreadySelected": "You have already selected a voodoo doll in this round",
