@@ -1535,6 +1535,16 @@ public static class PlayerControlDiePatch
         if (GameStates.IsNormalGame)
         {
             CustomRoleManager.AllEnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
+
+            var playerclass = __instance.GetRoleClass();
+            if (GameStates.IsInTask)
+            {
+                playerclass.OnSelfReducedToAtoms(false);
+            }
+            else
+            {
+                Utils.LateExileTask.Add(playerclass.OnSelfReducedToAtoms);
+            }
         }
 
         __instance.RpcRemovePet();

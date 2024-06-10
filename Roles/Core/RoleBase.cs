@@ -200,9 +200,16 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// A method to always check the state when target has died (murder, exiled, execute etc..)
+    /// A method to always check the state when targets have died (murder, exiled, execute etc..)
     /// </summary>
     public virtual void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+    { }
+
+
+    /// <summary>
+    /// A method to always check the state player has died (murder, exiled, execute etc..). If there is a meeting it will only happen after it.
+    /// </summary>
+    public virtual void OnSelfReducedToAtoms(bool IsAfterMeeting)
     { }
 
     /// <summary>
