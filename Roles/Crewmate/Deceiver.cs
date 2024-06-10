@@ -95,7 +95,7 @@ internal class Deceiver : RoleBase
         Logger.Info($"The customer {target.GetRealName()} of {pc.GetRealName()}, a counterfeiter, commits suicide by using counterfeits", "Deceiver");
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl rafaeu, PlayerControl dinosaurs)
+    public override void OnReportDeadBody(PlayerControl rafaeu, GameData.PlayerInfo dinosaurs)
     {
         notActiveList.Clear();
         foreach (var pc in clientList)

@@ -62,7 +62,7 @@ internal class Reverie : RoleBase
         playerIdList.Remove(playerId);
         NowCooldown.Remove(playerId);
     }
-    public override void OnReportDeadBody(PlayerControl HES, PlayerControl HIM)
+    public override void OnReportDeadBody(PlayerControl HES, GameData.PlayerInfo HIM)
     {
         foreach (var playerId in NowCooldown.Keys)
         {

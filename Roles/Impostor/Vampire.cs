@@ -146,7 +146,7 @@ internal class Vampire : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl deadBody)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody)
     {
         foreach (var targetId in BittenPlayers.Keys)
         {

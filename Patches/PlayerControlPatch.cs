@@ -802,7 +802,7 @@ class ReportDeadBodyPatch
 
         foreach (var playerStates in Main.PlayerStates.Values.ToArray())
         {
-            playerStates.RoleClass?.OnReportDeadBody(player, target?.Object);
+            playerStates.RoleClass?.OnReportDeadBody(player, target);
         }
 
         // Alchemist & Bloodlust
@@ -810,7 +810,7 @@ class ReportDeadBodyPatch
 
         if (Aware.IsEnable) Aware.OnReportDeadBody();
         
-        Sleuth.OnReportDeadBody(player, target?.Object);
+        Sleuth.OnReportDeadBody(player, target);
 
 
 
