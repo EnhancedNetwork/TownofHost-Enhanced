@@ -1259,7 +1259,6 @@
   "KickPlayerFriendCodeInvalid": "Kick players with a invalid friend code",
   "TempBanPlayerFriendCodeInvalid": "Temp Ban players with a invalid friend code",
   "ApplyBanList": "Apply BanList",
-  "EndWhenPlayerBug": "End the game when a player has a critical error",
   "RemovePetsAtDeadPlayers": "Remove pets at dead players",
   "KillFlashDuration": "Kill-Flash Duration",
   "ConfirmEjectionsMode": "Confirm Ejections Mode",
@@ -2453,13 +2452,18 @@
   "Back": "Back",
   "Yes": "Yes",
   "No": "No",
-  "RpcAntiBlackOutIgnored": "Because of <b>{0}</b>, an unknown error occurred, RPC will be ignored.",
-  "RpcAntiBlackOutEndGame": "Because of <b>{0}</b>, an unknown error occurred, game will end to prevent black screen.",
-  "RpcAntiBlackOutNotifyInLobby": "Because of <b>{0}</b>, an unknown error occurred, to prevent black screen, turn off [{1}] in settings.",
-  "AntiBlackOutNotifyInLobby": "An error occurred, to prevent black screen. Do a «/dump» and send the logs to the discord server TOHE in «bug-reports» and we will try to fix it.",
+
   "AntiBlackOutLoggerSendInGame": "Because of an unknown error, the game will end to prevent black screen.",
-  "AntiBlackOutRequestHostToForceEnd": "You were the reason of the black screen, you are asking the host to stop the game...",
-  "AntiBlackOutHostRejectForceEnd": "You were the reason of the black screen, and the host is not going to end the game, we will disconnect you soon.",
+  "AntiBlackOutNotifyInLobby": "An error occurred, to prevent black screen. Do a «/dump» and send the logs to the discord server TOHE in «bug-reports» and we will try to fix it.",
+
+  "EndWhenPlayerBug": "End the game when modded player get critical error (While loading)",
+  "AntiBlackOutRequestHostToForceEnd": "You were the reason of the black screen, game will end",
+  "AntiBlackOutHostRejectForceEnd": "You were the reason of the black screen, and the host is not going to end the game\nYou will be disconnected soon",
+
+  "RpcAntiBlackOutNotifyInLobby": "Because of <b>{0}</b>, an unknown error occurred, to prevent black screen, turn off [{1}] in settings.",
+  "RpcAntiBlackOutEndGame": "Because of <b>{0}</b>, an unknown error occurred, game will end to prevent black screen.",
+  "RpcAntiBlackOutIgnored": "Because of <b>{0}</b>, an unknown error occurred, RPC will be ignored.",
+
   "NextPage": "Next Page",
   "PreviousPage": "Previous Page",
   "EAC.CheatDetected.EAC": "Cheating usage detected (Using AUM)",
