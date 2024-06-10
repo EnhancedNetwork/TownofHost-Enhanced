@@ -1,4 +1,4 @@
-using Hazel;
+﻿using Hazel;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -39,7 +39,11 @@ internal class Kamikaze : RoleBase
         pc.AddDoubleTrigger();
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
+    {
+        return KamikazedList.Contains(seen.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), "⊗") : string.Empty;
+    }
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
@@ -51,7 +55,7 @@ internal class Kamikaze : RoleBase
         return killer.CheckDoubleTrigger(target, () =>
         {
 
-            if (AbilityLimit >= 1) 
+            if (AbilityLimit >= 1 && !KamikazedList.Contains(target.PlayerId)) 
             {
                 KamikazedList.Add(target.PlayerId);
                 killer.SetKillCooldown(KillCooldown.GetFloat());
