@@ -58,6 +58,7 @@ internal class Kamikaze : RoleBase
             if (AbilityLimit >= 1 && !KamikazedList.Contains(target.PlayerId)) 
             {
                 KamikazedList.Add(target.PlayerId);
+                killer.RpcGuardAndKill(killer);
                 killer.SetKillCooldown(KillCooldown.GetFloat());
                 Utils.NotifyRoles(SpecifySeer: killer);
                 AbilityLimit--;
