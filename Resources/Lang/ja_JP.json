@@ -1324,7 +1324,7 @@
   "BombCooldown": "爆弾のクールダウン",
   "ImpostorVision": "<color=#ff1919>インポスター</color> ビジョンを持っています",
   "CanUseSabotage": "妨害行為ができる",
-  "Warlock_CanKillImpostors": "Can Kill <color=#ff1919>Impostors</color>",
+  "CanKillImpostors": "Can Kill <color=#ff1919>Impostors</color>",
   "Warlock_CanKillSelf": "Can Kill Themselves",
   "CrewpostorKnowsAllies": "<color=#ff1919>インポスター</color> を知っています",
   "AlliesKnowCrewpostor": "<color=#ff1919>インポスター</color> に知られています",
