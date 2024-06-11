@@ -76,6 +76,7 @@ internal class ChangeRoleSettings
             Main.MeetingsPassed = 0;
             Main.MeetingIsStarted = false;
             Main.introDestroyed = false;
+            GameEndCheckerForNormal.ForEndGame = false;
             GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
 
             ChatManager.ResetHistory();

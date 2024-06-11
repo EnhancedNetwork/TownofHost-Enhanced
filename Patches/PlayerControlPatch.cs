@@ -1532,7 +1532,7 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (GameStates.IsNormalGame && GameStates.IsInGame)
+        if (GameStates.IsNormalGame && GameStates.IsInGame && !GameEndCheckerForNormal.ForEndGame)
         {
             CustomRoleManager.AllEnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
 
