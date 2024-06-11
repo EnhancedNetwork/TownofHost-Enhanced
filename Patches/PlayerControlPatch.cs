@@ -1301,28 +1301,7 @@ class PlayerStartPatch
         roleText.enabled = false;
     }
 }
-[HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
-class EnterVentPatch
-{
-    public static void Postfix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
-    {
-        if (GameStates.IsHideNSeek) return;
-
-        Main.LastEnteredVent.Remove(pc.PlayerId);
-        Main.LastEnteredVent.Add(pc.PlayerId, __instance);
-        Main.LastEnteredVentLocation.Remove(pc.PlayerId);
-        Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetCustomPosition());
-
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        pc.GetRoleClass()?.OnEnterVent(pc, __instance);
-
-        if (pc.Is(CustomRoles.Unlucky))
-        {
-            Unlucky.SuicideRand(pc, Unlucky.StateSuicide.EnterVent);
-        }
-    }
-}
+// Player press vent button
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
 class CoEnterVentPatch
 {
@@ -1365,6 +1344,29 @@ class CoEnterVentPatch
         playerRoleClass?.OnCoEnterVent(__instance, id);
 
         return true;
+    }
+}
+// Player entered in vent
+[HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
+class EnterVentPatch
+{
+    public static void Postfix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
+    {
+        if (GameStates.IsHideNSeek) return;
+
+        Main.LastEnteredVent.Remove(pc.PlayerId);
+        Main.LastEnteredVent.Add(pc.PlayerId, __instance);
+        Main.LastEnteredVentLocation.Remove(pc.PlayerId);
+        Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetCustomPosition());
+
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        pc.GetRoleClass()?.OnEnterVent(pc, __instance);
+
+        if (pc.Is(CustomRoles.Unlucky))
+        {
+            Unlucky.SuicideRand(pc, Unlucky.StateSuicide.EnterVent);
+        }
     }
 }
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoExitVent))]
