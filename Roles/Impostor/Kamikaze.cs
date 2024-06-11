@@ -46,7 +46,7 @@ internal class Kamikaze : RoleBase
     {
         if (KamikazedList.Contains(seen.PlayerId) && BuddhaSymbol.GetBool())
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), "<rotate=-25>卐</rotate>");
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), "<rotate=-45> 卐</rotate>");
         }
 
 
