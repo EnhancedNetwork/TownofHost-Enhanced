@@ -119,7 +119,7 @@ internal class Bandit : RoleBase
             Targets[target.PlayerId] = (CustomRoles)SelectedAddOn;
             Logger.Info($"{killer.GetNameWithRole()} will steal {SelectedAddOn} addon from {target.GetNameWithRole()} after meeting starts", "Bandit");
         }
-        AbilityLimit++;
+        AbilityLimit--;
         SendSkillRPC();
 
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
