@@ -2681,11 +2681,13 @@ class ChatUpdatePatch
                      ?? Main.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
                      ?? player;
         }
+        Logger.Info($"player is null? {player == null}", "ChatUpdatePatch");
         if (player == null) return;
 
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
+        Logger.Info($"MessagesToSend - sendTo: {sendTo} - title: {title}", "ChatUpdatePatch");
 
-        if (sendTo != byte.MaxValue)
+        if (sendTo != byte.MaxValue && GameStates.IsLobby)
         {
             if (Utils.GetPlayerInfoById(sendTo) != null)
             {

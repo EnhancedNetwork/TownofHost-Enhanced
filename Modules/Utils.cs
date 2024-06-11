@@ -1323,7 +1323,7 @@ public static class Utils
         }
         catch (Exception exx)
         {
-            Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage..SplitMessage");
+            Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage.SplitMessage");
         }
 
         // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
