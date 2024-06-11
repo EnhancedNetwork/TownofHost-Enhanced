@@ -796,6 +796,7 @@ class ReportDeadBodyPatch
         // Hereinafter, it is assumed that the button is confirmed to be pressed
         //=============================================
 
+        Main.MeetingIsStarted = true;
         Main.LastVotedPlayerInfo = null;
         Main.GuesserGuessed.Clear();
         Main.AllKillers.Clear();
