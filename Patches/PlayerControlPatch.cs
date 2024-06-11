@@ -1299,6 +1299,7 @@ class PlayerStartPatch
         roleText.enabled = false;
     }
 }
+
 [HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
 class EnterVentPatch
 {
@@ -1321,6 +1322,7 @@ class EnterVentPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
 class CoEnterVentPatch
 {

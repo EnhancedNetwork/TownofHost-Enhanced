@@ -12,6 +12,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
+using static TOHE.EAC;
 
 namespace TOHE;
 
@@ -608,6 +609,125 @@ internal class RPCHandlerPatch
             || tag != $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})"
             || forkId != Main.ForkId)
             return false;
+
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
+internal class PlayerPhysicsRPCHandlerPatch
+{
+    private static bool hasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId);
+    private static bool hasLadder(int ladderId) => ShipStatus.Instance.Ladders.Any(l => l.Id == ladderId);
+
+    public static bool Prefix(PlayerPhysics __instance, byte callId, MessageReader reader)
+    {
+        var rpcType = (RpcCalls)callId;
+        MessageReader subReader = MessageReader.Get(reader);
+
+        var player = __instance.myPlayer;
+
+        if (!player)
+        {
+            Logger.Warn("Received Physics RPC without a player", "RPC_PlayerPhysics");
+            return false;
+        }
+
+        if (GameStates.IsLobby && rpcType is not RpcCalls.Pet and not RpcCalls.CancelPet)
+        {
+            WarnHost();
+            Report(player, $"Physics {rpcType} in lobby (can be spoofed by others)");
+            HandleCheat(player, $"Physics {rpcType} in lobby (can be spoofed by others)");
+            Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to {rpcType} in lobby.", "EAC_physics");
+            return false;
+        }
+
+        switch (rpcType)
+        {
+            case RpcCalls.EnterVent:
+            case RpcCalls.ExitVent:
+                // Hey tommy, just come across that how is random spawn on vent achieved? Hope you are using rpc snap to =(
+                int ventid = subReader.ReadPackedInt32();
+                if (!hasVent(ventid))
+                {
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        WarnHost();
+                        Report(player, "Vent null vent (can be spoofed by others)");
+                        HandleCheat(player, "Vent null vent (can be spoofed by others)");
+                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to enter a unexisting vent.", "EAC_physics");
+                    }
+                    else
+                    {
+                        // Not sure whether host will send null vent to a player huh
+                        Logger.Warn($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to enter a unexisting vent.", "EAC_physics");
+                        if (rpcType is RpcCalls.ExitVent)
+                        {
+                            player.Visible = true;
+                            player.inVent = false;
+                            player.moveable = true;
+                            player.NetTransform.SetPaused(false);
+                        }
+                    }
+                    return false;
+                }
+                break;
+
+            case RpcCalls.BootFromVent:
+                int ventid2 = subReader.ReadPackedInt32();
+                if (!hasVent(ventid2))
+                {
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        WarnHost();
+                        Report(player, "Got booted from a null vent (can be spoofed by others)");
+                        AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
+                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to boot from a unexisting vent.", "EAC_physics");
+                    }
+                    else
+                    {
+                        // Not sure whether host will send null vent to a player huh
+                        Logger.Warn($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to boot from a unexisting vent.", "EAC_physics");
+                        player.Visible = true;
+                        player.inVent = false;
+                        player.moveable = true;
+                        player.NetTransform.SetPaused(false);
+                    }
+                    return false;
+                }
+                break;
+
+            case RpcCalls.ClimbLadder:
+                int ladderId = subReader.ReadPackedInt32();
+                if (!hasLadder(ladderId))
+                {
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        WarnHost();
+                        Report(player, "climb null ladder (can be spoofed by others)");
+                        HandleCheat(player, "climb null ladder (can be spoofed by others)");
+                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to climb a unexisting ladder.", "EAC_physics");
+                    }
+                    return false;
+                }
+                if (player.AmOwner)
+                {
+                    Logger.Fatal($"Got climb ladder for my self, this is impossible", "EAC_physics");
+                    return false;
+                }
+                break;
+
+            case RpcCalls.Pet:
+                if (player.AmOwner)
+                {
+                    Logger.Fatal($"Got pet pet for my self, this is impossible", "EAC_physics");
+                    return false;
+                }
+
+                // if (player.CurrentOutfit.PetId == "")
+                // Petting air is fine i guess lol
+                break;
+        }
 
         return true;
     }
