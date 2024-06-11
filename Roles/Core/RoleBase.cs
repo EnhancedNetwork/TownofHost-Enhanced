@@ -262,6 +262,11 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// When a guesser or a target successfully guess or gets guessed out
+    /// </summary>
+    public virtual void OnGuessed(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
+    { }
+    /// <summary>
     /// When guesser need check guess (Check limit or Cannot guess а role/add-on)
     /// </summary>
     public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;

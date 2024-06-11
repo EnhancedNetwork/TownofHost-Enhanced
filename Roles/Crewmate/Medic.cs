@@ -212,6 +212,11 @@ internal class Medic : RoleBase
         IsDead(target);
     }
 
+    public override void OnGuessed(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
+    {
+        IsDead(target);
+    }
+
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
