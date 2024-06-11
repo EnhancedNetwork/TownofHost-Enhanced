@@ -192,6 +192,7 @@ internal class Medic : RoleBase
         if (ShieldDeactivationIsVisibleOpt.GetInt() == 1)
         {
             TempMarkProtected = byte.MaxValue;
+            SendRPCForProtectList();
             NotifyRoles();
         }
     }
