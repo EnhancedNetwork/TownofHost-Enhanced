@@ -87,6 +87,9 @@ internal class CopyCat : RoleBase
             CustomRoles.Addict or
             CustomRoles.Chameleon or
             CustomRoles.Alchemist or
+            CustomRoles.Doomsayer or // CopyCat cannot guessed roles because he can be know others roles players
+            CustomRoles.EvilGuesser or
+            CustomRoles.NiceGuesser or
             CustomRoles.Captain or
             CustomRoles.Medic or // Bcz the medic is limited to only one player
             CustomRoles.TimeMaster or
@@ -134,10 +137,10 @@ internal class CopyCat : RoleBase
                 case CustomRoles.Juggernaut:
                     role = CustomRoles.Reverie;
                     break;
-                case CustomRoles.EvilGuesser:
-                case CustomRoles.Doomsayer:
-                    role = CustomRoles.NiceGuesser;
-                    break;
+                //case CustomRoles.EvilGuesser:
+                //case CustomRoles.Doomsayer:
+                //    role = CustomRoles.NiceGuesser;
+                //    break;
                 case CustomRoles.Taskinator:
                     role = CustomRoles.Benefactor;
                     break;

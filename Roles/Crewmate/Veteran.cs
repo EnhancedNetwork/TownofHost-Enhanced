@@ -123,7 +123,7 @@ internal class Veteran : RoleBase
     public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
         => AbilityLimit < 1;
 
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => VeteranInProtect.Clear();
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target) => VeteranInProtect.Clear();
     
     public override string GetProgressText(byte playerId, bool comms)
     {

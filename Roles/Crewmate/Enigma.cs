@@ -89,11 +89,11 @@ internal class Enigma : RoleBase
         ShownClues.Remove(playerId);
     }
 
-    public override void OnReportDeadBody(PlayerControl player, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo target)
     {
-        if (target == null) return;
+        if (target == null || target.Object == null) return;
 
-        PlayerControl killer = target.GetRealKiller();
+        PlayerControl killer = target.Object.GetRealKiller();
         if (killer == null) return;
 
         string title;

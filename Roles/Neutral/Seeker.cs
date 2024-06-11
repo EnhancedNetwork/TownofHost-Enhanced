@@ -111,7 +111,7 @@ internal class Seeker : RoleBase
         SendRPC(killer.PlayerId, setTarget: false);
         return false;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
        Main.AllPlayerSpeed[_state.PlayerId] = DefaultSpeed[_state.PlayerId];
     }

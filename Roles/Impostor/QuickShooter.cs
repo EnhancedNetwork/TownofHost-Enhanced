@@ -81,7 +81,7 @@ internal class QuickShooter : RoleBase
     }
 
     private static Dictionary<byte, int> NewSL = [];
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         NewSL[_state.PlayerId] = Math.Clamp(ShotLimit, 0, MeetingReserved.GetInt());
 

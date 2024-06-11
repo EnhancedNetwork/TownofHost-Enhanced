@@ -219,7 +219,7 @@ internal class Captain : RoleBase
         CaptainVoteTargets.Clear();
         SendRPCVoteRemove();
     }
-    public override void OnReportDeadBody(PlayerControl y, PlayerControl x)
+    public override void OnReportDeadBody(PlayerControl y, GameData.PlayerInfo x)
     {
         foreach (byte target in OriginalSpeed.Keys.ToArray())
         {

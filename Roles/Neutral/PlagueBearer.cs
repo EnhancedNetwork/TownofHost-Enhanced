@@ -183,7 +183,7 @@ internal class PlagueBearer : RoleBase
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
-        if (HasEnabled && deadBody.Object != null)
+        if (HasEnabled && deadBody != null && deadBody.Object != null)
         {
             CheckAndInfect(reporter, deadBody.Object);
         }

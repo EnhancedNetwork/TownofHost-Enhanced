@@ -1478,7 +1478,7 @@ internal class ChatCommands
             "報應者" or "惩罚者" or "惩罚" or "报仇者" => GetString("Retributionist"),
 
             // 随机阵营职业
-            "迷你船員" or "迷你船员" or "迷你" or "小孩" => GetString("Mini"),
+            "迷你船員" or "迷你船员" or "迷你" or "小孩" or "Mini" => GetString("Mini"),
             _ => text,
         };
     }
@@ -1541,7 +1541,6 @@ internal class ChatCommands
         foreach (var rl in CustomRolesHelper.AllRoles)
         {
             if (rl.IsVanilla()) continue;
-            if (rl == CustomRoles.Mini) continue;
             var roleName = GetString(rl.ToString());
             if (role == roleName.ToLower().Trim().TrimStart('*').Replace(" ", string.Empty))
             {
@@ -1549,7 +1548,7 @@ internal class ChatCommands
                 if ((isDev || isUp) && GameStates.IsLobby)
                 {
                     devMark = "▲";
-                    if (CustomRolesHelper.IsAdditionRole(rl) || rl is CustomRoles.GM || rl.IsGhostRole()) devMark = "";
+                    if (CustomRolesHelper.IsAdditionRole(rl) || rl is CustomRoles.GM or CustomRoles.Mini || rl.IsGhostRole()) devMark = "";
                     if (rl.GetCount() < 1 || rl.GetMode() == 0) devMark = "";
                     if (isUp)
                     {
@@ -2682,11 +2681,13 @@ class ChatUpdatePatch
                      ?? Main.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
                      ?? player;
         }
+        Logger.Info($"player is null? {player == null}", "ChatUpdatePatch");
         if (player == null) return;
 
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
+        Logger.Info($"MessagesToSend - sendTo: {sendTo} - title: {title}", "ChatUpdatePatch");
 
-        if (sendTo != byte.MaxValue)
+        if (sendTo != byte.MaxValue && GameStates.IsLobby)
         {
             if (Utils.GetPlayerInfoById(sendTo) != null)
             {
@@ -2713,7 +2714,7 @@ class ChatUpdatePatch
         if (clientId == -1)
         {
             player.SetName(title);
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg, false);
             player.SetName(name);
         }
 

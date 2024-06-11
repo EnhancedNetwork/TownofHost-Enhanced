@@ -612,7 +612,7 @@ class IntroCutsceneDestroyPatch
                         Main.PlayerStates[x.Key].SetDead();
 
                     });
-                }, 5f, "Set Dev Ghost-Roles");
+                }, 3f, "Set Dev Ghost-Roles");
             }
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
@@ -638,7 +638,8 @@ class IntroCutsceneDestroyPatch
         Logger.Info("OnDestroy", "IntroCutscene");
 
         // Update hud buttons
-        HudManager.Instance.SetHudActive(true);
+        if (!AmongUsClient.Instance.IsGameOver)
+            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
     }
 }
  

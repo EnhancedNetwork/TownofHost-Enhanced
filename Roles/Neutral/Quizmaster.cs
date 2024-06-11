@@ -93,11 +93,12 @@ internal class Quizmaster : RoleBase
     }
     public override void Add(byte playerId)
     {
+        Player = _Player;
         MarkedPlayer = byte.MaxValue;
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
-    private void SendRPC(byte targetId)
+    public void SendRPC(byte targetId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -115,6 +116,10 @@ internal class Quizmaster : RoleBase
             MarkedPlayer = targetId;
 
             allowedKilling = CanKillAfterMark;
+        }
+        else
+        {
+            MarkedPlayer = targetId;
         }
     }
 
@@ -196,7 +201,7 @@ internal class Quizmaster : RoleBase
         return chosenRole;
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         if (reporter == null) return;
 
@@ -208,7 +213,7 @@ internal class Quizmaster : RoleBase
         }
         else
         {
-            var targetInfo = target.Data;
+            var targetInfo = target;
             lastReportedColor = thisReportedColor;
             thisReportedColor = targetInfo.GetPlayerColorString();
         }
@@ -300,12 +305,12 @@ internal class Quizmaster : RoleBase
             AlreadyMarked = false;
 
         MarkedPlayer = byte.MaxValue;
+        if (Player?.GetRoleClass() is Quizmaster Quiz)
+            Quiz.SendRPC(byte.MaxValue);
     }
 
     private void OnPlayerDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting) return;
-
         diedThisRound++;
         if (target.PlayerId == MarkedPlayer) ResetMarkedPlayer(false);
     }

@@ -29,15 +29,15 @@ public static class Sleuth
         SleuthNotify.Clear();
     }
 
-    public static void OnReportDeadBody(PlayerControl reporter, PlayerControl deadBody)
+    public static void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody)
     {
-        if (reporter.Is(CustomRoles.Sleuth) && deadBody != null && !deadBody.IsAlive() && reporter.PlayerId != deadBody.PlayerId)
+        if (reporter.Is(CustomRoles.Sleuth) && deadBody != null && deadBody.Object != null && !deadBody.Object.IsAlive() && reporter.PlayerId != deadBody.PlayerId)
         {
             string msg;
-            msg = string.Format(Translator.GetString("SleuthNoticeVictim"), deadBody.GetRealName(), deadBody.GetDisplayRoleAndSubName(deadBody, false));
+            msg = string.Format(Translator.GetString("SleuthNoticeVictim"), deadBody.Object.GetRealName(), deadBody.Object.GetDisplayRoleAndSubName(deadBody.Object, false));
             if (SleuthCanKnowKillerRole.GetBool())
             {
-                var realKiller = deadBody.GetRealKiller();
+                var realKiller = deadBody.Object.GetRealKiller();
                 if (realKiller == null) msg += "；" + Translator.GetString("SleuthNoticeKillerNotFound");
                 else msg += "；" + string.Format(Translator.GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false));
             }

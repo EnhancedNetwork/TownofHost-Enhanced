@@ -79,7 +79,7 @@ internal class Medium : RoleBase
         }
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl reported, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reported, GameData.PlayerInfo target)
     {
         ContactPlayer.Clear();
         if (target == null) return;
@@ -89,7 +89,7 @@ internal class Medium : RoleBase
             AbilityLimit--;
             ContactPlayer[target.PlayerId] = _Player.PlayerId;
             SendRPC(_Player.PlayerId, target.PlayerId, true);
-            Logger.Info($"Psychics Make Connections： {_Player.GetNameWithRole()} => {target.GetRealName}", "Medium");
+            Logger.Info($"Psychics Make Connections： {_Player.GetNameWithRole()} => {target.PlayerName}", "Medium");
         }
         
 

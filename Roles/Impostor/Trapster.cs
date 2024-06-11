@@ -76,7 +76,7 @@ internal class Trapster : RoleBase
 
         // if reporter try reported trap body
         if (BoobyTrapBody.Contains(deadBody.PlayerId) && reporter.IsAlive()
-            && !reporter.IsTransformedNeutralApocalypse() && _Player.RpcCheckAndMurder(deadBody.Object, true))
+            && !reporter.IsTransformedNeutralApocalypse() && _Player.RpcCheckAndMurder(reporter, true))
         {
             var killerId = deadBody.PlayerId;
             

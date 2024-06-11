@@ -4,6 +4,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using UnityEngine;
+using MS.Internal.Xml.XPath;
 
 namespace TOHE.Roles._Ghosts_.Crewmate
 {
@@ -20,6 +21,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         private static OptionItem MaxPossesions;
         private static OptionItem PossessDur;
         private static OptionItem GhastlySpeed;
+        private static OptionItem GhastlyKillAllies;
 
         private (byte, byte) killertarget = (byte.MaxValue, byte.MaxValue);
         private readonly Dictionary<byte, long> LastTime = [];
@@ -36,15 +38,14 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 .SetValueFormat(OptionFormat.Seconds);
             GhastlySpeed = FloatOptionItem.Create(Id + 13, "GhastlySpeed", new(1.5f, 5f, 0.5f), 2f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly])
                 .SetValueFormat(OptionFormat.Multiplier);
+            GhastlyKillAllies = BooleanOptionItem.Create(Id + 14, "GhastlyKillAllies", false, TabGroup.CrewmateRoles, false)
+                .SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly]);
         }
         public override void Add(byte playerId)
         {
             AbilityLimit = MaxPossesions.GetInt();
 
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
-
-            // OnCheckProtect(_Player, Utils.GetPlayerById(0));
-           // OnCheckProtect(_Player, Utils.GetPlayerById(2));
         }
 
         public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -63,6 +64,12 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             var killer = killertarget.Item1;
             var Target = killertarget.Item2;
 
+            if (!KillerIsChosen && !CheckConflicts(target))
+            {
+                angel.Notify(GetString("GhastlyCannotPossessTarget"));
+                return false;
+            }
+
             if (!KillerIsChosen && target.PlayerId != killer)
             {
                 TargetArrow.Remove(killer, Target);
@@ -71,7 +78,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 Target = byte.MaxValue;
                 KillerIsChosen = true;
 
-                angel.Notify(GetString("GhastlyChooseTarget"));
+                angel.Notify($"\n{GetString("GhastlyChooseTarget")}\n");
             }
             else if (KillerIsChosen && Target == byte.MaxValue && target.PlayerId != killer)
             {
@@ -81,7 +88,8 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 LastTime.Add(killer, GetTimeStamp());
 
                 KillerIsChosen = false;
-                GetPlayerById(killer).Notify(GetString("GhastlyYouvePosses"));
+                GetPlayerById(killer)?.Notify(GetString("GhastlyYouvePosses"));
+                angel.Notify($"\n<size=65%>〘{string.Format(GetString("GhastlyPossessedUser"), "</size>" + GetPlayerById(killer).GetRealName())}<size=65%> 〙</size>\n");
 
                 TargetArrow.Add(killer, Target);
                 angel.RpcGuardAndKill(target);
@@ -95,9 +103,12 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             }
 
             killertarget = (killer, Target);
-            // Logger.Info($"{killertarget.Item1} ++ {killertarget.Item2}", "ghasltytargets");
 
             return false;
+        }
+        private bool CheckConflicts(PlayerControl target)
+        {
+            return target != null && (!GhastlyKillAllies.GetBool() || target.GetCountTypes() != _Player.GetCountTypes());
         }
         public override void OnFixedUpdate(PlayerControl pc)
         {
@@ -113,7 +124,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate
             if (killertarget.Item1 == player.PlayerId 
                 && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= GetTimeStamp())
             {
-                Logger.Info("removing the possesed!!", "ghastlyremovable");
+                _Player?.Notify(string.Format($"\n{ GetString("GhastlyExpired")}\n", player.GetRealName()));
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(player.PlayerId);
                 KillerIsChosen = false;
@@ -124,24 +135,22 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
         {
             var tuple = killertarget;
-            // Logger.Info($" check KILLER {(killer.GetRealName())} : {Utils.GetPlayerById(killertarget.Item1).GetRealName()}" +  $" ++  check TARGET {(target.GetRealName())} : {Utils.GetPlayerById(killertarget.Item2).GetRealName()}", "GHASTLYONMURDEROTHER");
             if (tuple.Item1 == killer.PlayerId && tuple.Item2 != byte.MaxValue)
             {
                 if (tuple.Item2 != target.PlayerId)
                 {
-                    //Logger.Info($"Returned true", "GHASTLYONMURDEROTHER");
                     killer.Notify(GetString("GhastlyNotUrTarget"));
                     return true;
                 }
                 else 
                 {
+                    _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", killer.GetRealName()));
                     TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                     LastTime.Remove(killer.PlayerId);
                     KillerIsChosen = false;
                     killertarget = (byte.MaxValue, byte.MaxValue);
                 }
             }
-            // Logger.Info($"Returned false", "GHASTLYONMURDEROTHER");
             return false;
         }
 
@@ -169,8 +178,9 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         public override void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
         {
             var tuple = killertarget;
-            if (DeadPlayer.PlayerId == tuple.Item1)
+            if (DeadPlayer.PlayerId == tuple.Item1 || DeadPlayer.PlayerId == tuple.Item2)
             {
+                _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", Utils.GetPlayerById(killertarget.Item1)));
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(DeadPlayer.PlayerId);
                 KillerIsChosen = false;
