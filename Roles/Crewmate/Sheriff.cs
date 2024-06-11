@@ -99,6 +99,7 @@ internal class Sheriff : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown : 300f;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
 
     public override bool CanUseKillButton(PlayerControl pc) => IsUseKillButton(pc);
     public bool IsUseKillButton(PlayerControl pc)
