@@ -668,7 +668,7 @@ class ReportDeadBodyPatch
             return false;
         }
 
-        Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target?.Object?.GetNameWithRole().RemoveHtmlTags() ?? "null"}", "ReportDeadBody");
+        Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target?.PlayerName ?? "null (Button Pressed)"}", "ReportDeadBody");
 
         foreach (var kvp in Main.PlayerStates)
         {
@@ -798,7 +798,9 @@ class ReportDeadBodyPatch
         Main.GuesserGuessed.Clear();
         Main.AllKillers.Clear();
 
-
+        Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
+        Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
+        Logger.Info($"target.PlayerId is - {target?.PlayerId}", "AfterReportTasks");
 
         foreach (var playerStates in Main.PlayerStates.Values.ToArray())
         {
