@@ -10,6 +10,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
 using static TOHE.SelectRolesPatch;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -341,6 +342,9 @@ class OnPlayerLeftPatch
 
             if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
+
+                CustomRoleManager.AllEnabledRoles.ForEach(r => r.OnOtherTargetsReducedToAtoms(data.Character));
+
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
                 {
                     foreach (var lovers in Main.LoversPlayers.ToArray())

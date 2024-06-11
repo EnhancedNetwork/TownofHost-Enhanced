@@ -16,6 +16,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -514,6 +515,7 @@ class RpcMurderPlayerPatch
         // There is no need to include DecisionByHost. DecisionByHost will make client check protection locally and cause confusion.
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckShapeshift))]
 public static class CheckShapeshiftPatch
 {
@@ -1544,9 +1546,30 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (GameStates.IsNormalGame)
+        try
         {
-            CustomRoleManager.AllEnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
+            if (GameStates.IsNormalGame && GameStates.IsInGame && !GameEndCheckerForNormal.ForEndGame)
+            {
+                CustomRoleManager.AllEnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
+
+                var playerclass = __instance.GetRoleClass();
+
+                Action<bool> SelfExile = Utils.LateExileTask.FirstOrDefault(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId) ?? playerclass.OnSelfReducedToAtoms;
+                if (GameStates.IsInTask)
+                {
+                    SelfExile(false);
+                    Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
+                }
+                else
+                {
+                    Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
+                    Utils.LateExileTask.Add(SelfExile);
+                }
+            }
+        }
+        catch (Exception exx)
+        {
+            Logger.Error($"Error after Targetreducedtoatoms: {exx}", "PlayerControl.Die");
         }
 
         __instance.RpcRemovePet();
@@ -1573,7 +1596,10 @@ class PlayerControlSetRolePatch
 
             try
             {
+               Action<bool> SelfExile = __instance.GetRoleClass().OnSelfReducedToAtoms;
                GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
+
+               if (target.GetCustomRole().IsGhostRole()) Utils.LateExileTask.Add(SelfExile);
             }
             catch (Exception error)
             {
