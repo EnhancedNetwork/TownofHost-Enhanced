@@ -44,7 +44,7 @@ internal class Imitator : RoleBase
     public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (AbilityLimit > 0);
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit < 1) return true;
+        if (AbilityLimit < 1) return false;
 
         var role = target.GetCustomRole();
 
@@ -136,7 +136,7 @@ internal class Imitator : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
         }
 
-        return true;
+        return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

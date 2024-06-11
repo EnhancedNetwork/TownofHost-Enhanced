@@ -134,7 +134,7 @@ internal class Devourer : RoleBase
 
     private static void SetSkin(PlayerControl target, GameData.PlayerOutfit outfit)
     {
-        var sender = CustomRpcSender.Create(name: $"Camouflage.RpcSetSkin({target.Data.PlayerName})");
+        var sender = CustomRpcSender.Create(name: $"Devourer.RpcSetSkin({target.Data.PlayerName})");
 
         target.SetColor(outfit.ColorId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetColor)

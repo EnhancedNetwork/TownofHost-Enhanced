@@ -25,8 +25,8 @@ public class ShowHostMeetingPatch
 
             if (Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1 && Doppelganger.CheckDoppelVictim(AmongUsClient.Instance.GetHost().Character.PlayerId))
             {
-                hostName = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.PlayerId].PlayerName;
-                hostColor = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.PlayerId].ColorId;
+                hostName = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].PlayerName;
+                hostColor = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].ColorId;
             }
         }
     }
