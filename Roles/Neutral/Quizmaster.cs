@@ -196,7 +196,7 @@ internal class Quizmaster : RoleBase
         return chosenRole;
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         if (reporter == null) return;
 
@@ -208,7 +208,7 @@ internal class Quizmaster : RoleBase
         }
         else
         {
-            var targetInfo = target.Data;
+            var targetInfo = target;
             lastReportedColor = thisReportedColor;
             thisReportedColor = targetInfo.GetPlayerColorString();
         }
@@ -304,8 +304,6 @@ internal class Quizmaster : RoleBase
 
     private void OnPlayerDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting) return;
-
         diedThisRound++;
         if (target.PlayerId == MarkedPlayer) ResetMarkedPlayer(false);
     }

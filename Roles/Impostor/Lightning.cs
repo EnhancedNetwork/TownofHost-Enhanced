@@ -155,7 +155,7 @@ internal class Lightning : RoleBase
             Utils.NotifyRoles();
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         foreach (var ghost in GhostPlayer.ToArray())
         {

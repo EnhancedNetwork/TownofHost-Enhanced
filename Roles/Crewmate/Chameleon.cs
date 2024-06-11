@@ -100,7 +100,7 @@ internal class Chameleon : RoleBase
     private static bool IsInvis(byte id) => InvisTime.ContainsKey(id);
 
     private static long lastFixedTime = 0;
-    public override void OnReportDeadBody(PlayerControl y, PlayerControl x)
+    public override void OnReportDeadBody(PlayerControl y, GameData.PlayerInfo x)
     {
         lastTime.Clear();
         InvisTime.Clear();

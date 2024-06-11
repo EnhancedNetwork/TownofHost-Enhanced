@@ -119,7 +119,7 @@ internal class Bandit : RoleBase
             Targets[target.PlayerId] = (CustomRoles)SelectedAddOn;
             Logger.Info($"{killer.GetNameWithRole()} will steal {SelectedAddOn} addon from {target.GetNameWithRole()} after meeting starts", "Bandit");
         }
-        AbilityLimit++;
+        AbilityLimit--;
         SendSkillRPC();
 
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
@@ -173,7 +173,7 @@ internal class Bandit : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reportash, PlayerControl panagustava)
+    public override void OnReportDeadBody(PlayerControl reportash, GameData.PlayerInfo panagustava)
     {
         if (StealMode.GetValue() == 1) return;
         foreach (var kvp2 in Targets)

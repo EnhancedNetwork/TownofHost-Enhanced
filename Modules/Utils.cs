@@ -34,21 +34,21 @@ public static class Utils
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            Logger.Fatal($"{text} error, triggering anti-blackout measures", "Anti-black");
+            Logger.Fatal($"Error: {text} - triggering critical error", "Anti-black");
             ChatUpdatePatch.DoBlockChat = true;
             Main.OverrideWelcomeMsg = GetString("AntiBlackOutNotifyInLobby");
             
             _ = new LateTask(() =>
             {
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
-            }, 3f, "Anti-Black Msg SendInGame 3");
+            }, 3f, "Anti-Black Msg SendInGame Error During Loading");
             
             _ = new LateTask(() =>
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 RPC.ForceEndGame(CustomWinner.Error);
-            }, 5.5f, "Anti-Black End Game 3");
+            }, 5.5f, "Anti-Black End Game As Critical Error");
         }
         else
         {
@@ -60,20 +60,20 @@ public static class Utils
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"));
-                }, 3f, "Anti-Black Msg SendInGame 4");
+                }, 3f, "Anti-Black Msg SendInGame Non-Host Modded Has Error During Loading");
             }
             else
             {
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"));
-                }, 3f, "Anti-Black Msg SendInGame 5");
+                }, 3f, "Anti-Black Msg SendInGame Host Reject Force End");
                 
                 _ = new LateTask(() =>
                 {
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
-                    Logger.Fatal($"{text} 错误，已断开游戏", "Anti-black");
-                }, 8f, "Anti-Black Exit Game 4");
+                    Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
+                }, 8f, "Anti-Black Exit Game Due Critical Error");
             }
         }
     }
@@ -544,7 +544,10 @@ public static class Utils
         if (playerData.Role == null) return false;
 
         var hasTasks = true;
-        var States = Main.PlayerStates[playerData.PlayerId];
+        if (!Main.PlayerStates.TryGetValue(playerData.PlayerId, out var States))
+        {
+            return false;
+        }
 
         if (playerData.Disconnected) return false;
         if (playerData.Role.IsImpostor)
@@ -1320,7 +1323,7 @@ public static class Utils
         }
         catch (Exception exx)
         {
-            Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage..SplitMessage");
+            Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage.SplitMessage");
         }
 
         // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history

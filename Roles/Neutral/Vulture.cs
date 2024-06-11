@@ -168,7 +168,7 @@ internal class Vulture : RoleBase
         }
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         foreach (var apc in playerIdList)
         {
@@ -231,7 +231,7 @@ internal class Vulture : RoleBase
     }
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting) return;
+        if (inMeeting || target.IsDisconnected()) return;
         if (!ArrowsPointingToDeadBody.GetBool()) return;
 
         Vector2 pos = target.transform.position;

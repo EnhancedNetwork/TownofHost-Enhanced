@@ -506,9 +506,10 @@ internal class SelectRolesPatch
 
             EndOfSelectRolePatch:
 
-            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            if (!AmongUsClient.Instance.IsGameOver)
+                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
             //HudManager.Instance.Chat.SetVisible(true);
-            
+
             foreach (var pc in Main.AllPlayerControls)
                 pc.ResetKillCooldown();
 

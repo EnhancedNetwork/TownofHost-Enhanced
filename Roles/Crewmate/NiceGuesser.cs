@@ -37,6 +37,10 @@ internal class NiceGuesser : RoleBase
     {
         playerIdList.Add(playerId);
     }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+    }
 
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
             => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceGuesser), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;

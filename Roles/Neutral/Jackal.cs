@@ -118,7 +118,7 @@ internal class Jackal : RoleBase
 
     private void OthersPlayersDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting) return;
+        if (inMeeting || target.IsDisconnected()) return;
 
         if (ResetKillCooldownWhenSbGetKilled.GetBool() && !killer.Is(CustomRoles.Sidekick) && !killer.Is(CustomRoles.Jackal) && !target.Is(CustomRoles.Sidekick) && !target.Is(CustomRoles.Jackal) && !GameStates.IsMeeting)
         {

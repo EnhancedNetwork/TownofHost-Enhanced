@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using System;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -101,7 +102,14 @@ internal static class FFAManager
 
         _ = new LateTask( ()=>
         {
-            Utils.SetChatVisible();
+            try
+            {
+                Utils.SetChatVisible();
+            }
+            catch (Exception error)
+            {
+                Logger.Error($"Error: {error}", "FFA Init");
+            }
             RoundTime = FFA_GameTime.GetInt() + 8;
             var now = Utils.GetTimeStamp() + 8;
             foreach (PlayerControl pc in Main.AllAlivePlayerControls)

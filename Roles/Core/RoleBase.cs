@@ -243,10 +243,15 @@ public abstract class RoleBase
     /// Check start meeting by dead body
     /// </summary>
     public virtual bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
+
     /// <summary>
     /// When the meeting was start by report dead body or press meeting button
+    /// target is null when meeting was start by pressing meeting button
+    /// target is not null when meeting was start by report dead body
+    /// When target left the game, it's data in GameData.PlayerInfo is not null, it still has data that can be used
+    /// But if you use target.Object, then it can be null
     /// </summary>
-    public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public virtual void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     { }
 
     /// <summary>

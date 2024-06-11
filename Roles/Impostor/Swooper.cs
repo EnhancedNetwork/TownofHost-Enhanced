@@ -169,7 +169,7 @@ internal class Swooper : RoleBase
         return false;
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         InvisCooldown.Clear();
         InvisDuration.Clear();

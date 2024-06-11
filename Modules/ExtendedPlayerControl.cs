@@ -1036,7 +1036,7 @@ static class ExtendedPlayerControl
     }
     public static PlayerControl GetRealKiller(this PlayerControl target)
     {
-        var killerId = Main.PlayerStates[target.PlayerId].GetRealKiller();
+        var killerId = Main.PlayerStates[target.Data.PlayerId].GetRealKiller();
         return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
     }
     public static PlainShipRoom GetPlainShipRoom(this PlayerControl pc)
@@ -1073,14 +1073,25 @@ static class ExtendedPlayerControl
         {
             return false;
         }
-        
-        // If doppelganger appears as player return true
-        // Note: Needs to be tested for any buggy outcomes.
-        if (Doppelganger.CheckDoppelVictim(target.PlayerId) && target.PlayerId == Doppelganger.CurrentIdToSwap)
-            return true;
 
         //if the target status is alive
         return !Main.PlayerStates.TryGetValue(target.PlayerId, out var playerState) || !playerState.IsDead;
+    }
+    public static bool IsDisconnected(this PlayerControl target)
+    {
+        //In lobby all not disconnected
+        if (GameStates.IsLobby && !GameStates.IsInGame)
+        {
+            return false;
+        }
+        //if target is null, is disconnected
+        if (target == null)
+        {
+            return true;
+        }
+
+        //if the target status is disconnected
+        return !Main.PlayerStates.TryGetValue(target.PlayerId, out var playerState) || playerState.Disconnected;
     }
     public static bool IsExiled(this PlayerControl target)
     {

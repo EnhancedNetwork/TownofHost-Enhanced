@@ -162,7 +162,7 @@ internal class DollMaster : RoleBase
     }
 
     // Prepare for a meeting if possessing.
-    public override void OnReportDeadBody(PlayerControl pc, PlayerControl target) // Fix crap when meeting gets called.
+    public override void OnReportDeadBody(PlayerControl pc, GameData.PlayerInfo target) // Fix crap when meeting gets called.
     {
         if (IsControllingPlayer && controllingTarget != null && DollMasterTarget != null)
         {

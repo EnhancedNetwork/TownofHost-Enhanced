@@ -303,6 +303,11 @@ class OnPlayerLeftPatch
 {
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
+        if (GameStates.IsInGame)
+        {
+            Main.PlayerStates[data.Character.PlayerId].Disconnected = true;
+        }
+
         if (!AmongUsClient.Instance.AmHost) return;
 
         if (Main.AssignRolesIsStarted)

@@ -99,7 +99,7 @@ internal class SoulCollector : RoleBase
         SendRPC(voter.PlayerId);
     }
 
-    public override void OnReportDeadBody(PlayerControl ryuak, PlayerControl iscute)
+    public override void OnReportDeadBody(PlayerControl ryuak, GameData.PlayerInfo iscute)
     {
         foreach (var playerId in SoulCollectorTarget.Keys) 
         { 
@@ -114,7 +114,7 @@ internal class SoulCollector : RoleBase
             if (targetId == byte.MaxValue) continue;
 
             Main.PlayerStates.TryGetValue(targetId, out var playerState);
-            if (targetId == deadPlayer.PlayerId && playerState.IsDead && playerState.deathReason != PlayerState.DeathReason.etc) // if player death reason is "ect", then player was left the game
+            if (targetId == deadPlayer.PlayerId && playerState.IsDead && !playerState.Disconnected)
             {
                 SoulCollectorTarget[playerId] = byte.MaxValue;
                 SoulCollectorPoints[playerId]++;
