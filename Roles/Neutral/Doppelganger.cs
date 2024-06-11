@@ -21,7 +21,7 @@ internal class Doppelganger : RoleBase
 
     public static readonly Dictionary<byte, string> DoppelVictim = [];
     public static readonly Dictionary<PlayerControl, byte> PlayerControllerToIDRam = []; // Edit ids!
-    public static readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = []; // Don't edit ids!
+    public static readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
     public static readonly Dictionary<byte, string> TrueNames = []; // Don't edit ids!
     public static PlayerControl DoppelgangerTarget = null;
     public static byte CurrentIdToSwap = byte.MaxValue;
@@ -56,7 +56,6 @@ internal class Doppelganger : RoleBase
         foreach (PlayerControl allPlayers in Main.AllPlayerControls)
         {
             PlayerControllerToIDRam[allPlayers] = allPlayers.PlayerId;
-            DoppelPresentSkin[allPlayers.PlayerId] = allPlayers.CurrentOutfit;
         }
 
         DoppelgangerTarget = Utils.GetPlayerById(playerId);
@@ -204,6 +203,8 @@ internal class Doppelganger : RoleBase
             .EndRpc();
 
         sender.SendMessage();
+
+        DoppelPresentSkin[pc.PlayerId] = new GameData.PlayerOutfit().Set(newOutfit.PlayerName, newOutfit.ColorId, newOutfit.HatId, newOutfit.SkinId, newOutfit.VisorId, newOutfit.PetId, newOutfit.NamePlateId);
     }
 
     public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Doppelganger).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
