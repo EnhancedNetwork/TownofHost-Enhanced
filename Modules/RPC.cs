@@ -357,9 +357,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncPuppet:
                 Puppeteer.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SyncKami:
-                Kamikaze.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetKillOrSpell:
                 Witch.ReceiveRPC(reader, false);
                 break;

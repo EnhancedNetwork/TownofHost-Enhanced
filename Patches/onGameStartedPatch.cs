@@ -64,6 +64,7 @@ internal class ChangeRoleSettings
             Main.ShapeshiftTarget.Clear();
             Main.AllKillers.Clear();
             Main.OverDeadPlayerList.Clear();
+            Utils.LateExileTask.Clear();
 
             Main.LastNotifyNames.Clear();
             Main.PlayerColors.Clear();
@@ -75,6 +76,7 @@ internal class ChangeRoleSettings
             Main.MeetingsPassed = 0;
             Main.MeetingIsStarted = false;
             Main.introDestroyed = false;
+            GameEndCheckerForNormal.ForEndGame = false;
             GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
 
             ChatManager.ResetHistory();

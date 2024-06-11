@@ -38,7 +38,7 @@ internal class Detective : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo deadBody)
     {
-        if (deadBody == null || deadBody.Object.IsAlive()) return;
+        if (deadBody == null || deadBody.Object != null || deadBody.Object.IsAlive()) return;
 
         if (player != null && player.Is(CustomRoles.Detective) && player != deadBody.Object)
         {

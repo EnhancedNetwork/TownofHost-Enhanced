@@ -460,9 +460,11 @@ class GameEndCheckerForNormal
     {
         AmongUsClient.Instance.StartCoroutine(CoEndGame(AmongUsClient.Instance, reason).WrapToIl2Cpp());
     }
+    public static bool ForEndGame = false;
     private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
     {
         CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.OnCoEndGame());
+        ForEndGame = true;
 
         // Set ghost role
         List<byte> ReviveRequiredPlayerIds = [];

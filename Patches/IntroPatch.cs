@@ -580,7 +580,7 @@ class IntroCutsceneDestroyPatch
                         Main.PlayerStates[x.Key].SetDead();
 
                     });
-                }, 5f, "Set Dev Ghost-Roles");
+                }, 3f, "Set Dev Ghost-Roles");
             }
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))

@@ -2092,6 +2092,7 @@ public static class Utils
             _ => true,
         };
     }
+    public static HashSet<Action<bool>> LateExileTask = [];
     public static void AfterMeetingTasks()
     {
         ChatManager.ClearLastSysMsg();
@@ -2104,6 +2105,12 @@ public static class Utils
         foreach (var playerState in Main.PlayerStates.Values.ToArray())
         {
             playerState.RoleClass?.AfterMeetingTasks();
+        }
+
+        if (LateExileTask.Any())
+        {
+            LateExileTask.Do(t => t.Invoke(true));
+            LateExileTask.Clear();
         }
 
 
