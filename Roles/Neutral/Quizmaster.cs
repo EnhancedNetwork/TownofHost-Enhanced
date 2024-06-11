@@ -304,8 +304,6 @@ internal class Quizmaster : RoleBase
 
     private void OnPlayerDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting) return;
-
         diedThisRound++;
         if (target.PlayerId == MarkedPlayer) ResetMarkedPlayer(false);
     }
