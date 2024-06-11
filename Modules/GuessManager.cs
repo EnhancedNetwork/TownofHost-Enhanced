@@ -379,9 +379,6 @@ public static class GuessManager
                 {
                     _ = new LateTask(() =>
                     {
-                        pc.GetRoleClass().OnGuessed(isUI, pc, target, role, ref guesserSuicide);
-                        target.GetRoleClass().OnGuessed(isUI, pc, target, role, ref guesserSuicide);
-                        
                         Main.PlayerStates[dp.PlayerId].deathReason = PlayerState.DeathReason.Gambled;
                         dp.SetRealKiller(pc);
                         RpcGuesserMurderPlayer(dp);
