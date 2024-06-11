@@ -79,6 +79,7 @@ internal class Medic : RoleBase
     private static void SendRPCForProtectList()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMedicalerProtectList, SendOption.Reliable, -1);
+        writer.Write(TempMarkProtected);
         writer.Write(ProtectList.Count);
         for (int i = 0; i < ProtectList.Count; i++)
             writer.Write(ProtectList[i]);
@@ -86,6 +87,7 @@ internal class Medic : RoleBase
     }
     public static void ReceiveRPCForProtectList(MessageReader reader)
     {
+        TempMarkProtected = reader.ReadByte();
         int count = reader.ReadInt32();
         ProtectList.Clear();
         for (int i = 0; i < count; i++)
@@ -205,6 +207,7 @@ internal class Medic : RoleBase
         {
             TempMarkProtected = byte.MaxValue;
         }
+        SendRPCForProtectList();
         NotifyRoles(ForceLoop: true);
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
