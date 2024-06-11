@@ -11,9 +11,9 @@ public static class Loyal
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Loyal, canSetNum: true);
-        ImpCanBeLoyal = BooleanOptionItem.Create(Id + 10, "ImpCanBeLoyal", true, TabGroup.Addons, false)
+        ImpCanBeLoyal = BooleanOptionItem.Create("ImpCanBeLoyal", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Loyal]);
-        CrewCanBeLoyal = BooleanOptionItem.Create(Id + 11, "CrewCanBeLoyal", true, TabGroup.Addons, false)
+        CrewCanBeLoyal = BooleanOptionItem.Create("CrewCanBeLoyal", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Loyal]);
     }
 }

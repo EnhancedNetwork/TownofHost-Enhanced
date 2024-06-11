@@ -14,9 +14,9 @@ public static class Fool
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Fool, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeFool = BooleanOptionItem.Create(Id + 10, "ImpCanBeFool", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
-        CrewCanBeFool = BooleanOptionItem.Create(Id + 11, "CrewCanBeFool", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
-        NeutralCanBeFool = BooleanOptionItem.Create(Id + 12, "NeutralCanBeFool", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
+        ImpCanBeFool = BooleanOptionItem.Create("ImpCanBeFool", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
+        CrewCanBeFool = BooleanOptionItem.Create("CrewCanBeFool", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
+        NeutralCanBeFool = BooleanOptionItem.Create("NeutralCanBeFool", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
     }
 
     public static void Init()

@@ -9,15 +9,16 @@ public abstract class OptionItem
     #region static
     public static IReadOnlyList<OptionItem> AllOptions => _allOptions;
     private static readonly List<OptionItem> _allOptions = new(1024);
-    public static IReadOnlyDictionary<int, OptionItem> FastOptions => _fastOptions;
-    private static readonly Dictionary<int, OptionItem> _fastOptions = new(1024);
-    private static readonly Dictionary<int, string> nameSettings = [];
+    public static List<OptionItem> FastOptions => _fastOptions;
+    private static readonly List<OptionItem> _fastOptions = new(1024);
+    private static readonly List<string> nameSettings = new(1024);
 
     public static int CurrentPreset { get; set; }
     #endregion
 
     // Constructor variables
     public int Id { get; }
+    public static int LastId { get; set; }
     public string Name { get; }
     public int DefaultValue { get; }
     public TabGroup Tab { get; }
@@ -33,6 +34,7 @@ public abstract class OptionItem
     public bool IsHidden { get; protected set; }
     public bool IsText { get; protected set; }
     public bool IsVanillaText { get; protected set; }
+    public string FullName => Name + Id;
     public Dictionary<string, string> ReplacementDictionary
     {
         get => _replacementDictionary;
@@ -64,7 +66,11 @@ public abstract class OptionItem
     public OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaStr)
     {
         // Info Setting
-        Id = id;
+        if (FastOptions.Exists(x => x.Id == Id))
+        {
+            LastId++;
+            Id = LastId;
+        }
         Name = name;
         DefaultValue = defaultValue;
         Tab = tab;
@@ -102,18 +108,9 @@ public abstract class OptionItem
             }
         }
 
-        if (_fastOptions.TryAdd(id, this))
-        {
-            _allOptions.Add(this);
-            nameSettings.Add(id, name);
-        }
-        else
-        {
-            Logger.Error($"Duplicate ID: {id} Name: {name}", "OptionItem");
-
-            nameSettings.TryGetValue(id, out var setting);
-            Logger.Error($"Duplicate from: {setting}", "OptionItem");
-        }
+        _fastOptions.Add(this);
+        _allOptions.Add(this);
+        nameSettings.Add(name);
     }
 
     // Setter

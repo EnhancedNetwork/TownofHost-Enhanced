@@ -14,9 +14,9 @@ public static class Egoist
     public static void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Egoist, canSetNum: true, tab: TabGroup.Addons);
-        CrewCanBeEgoist = BooleanOptionItem.Create(Id + 10, "CrewCanBeEgoist", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
-        ImpCanBeEgoist = BooleanOptionItem.Create(Id + 11, "ImpCanBeEgoist", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
-        ImpEgoistVisibalToAllies = BooleanOptionItem.Create(Id + 12, "ImpEgoistVisibalToAllies", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
-        EgoistCountAsConverted = BooleanOptionItem.Create(Id + 13, "EgoistCountAsConverted", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
+        CrewCanBeEgoist = BooleanOptionItem.Create("CrewCanBeEgoist", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
+        ImpCanBeEgoist = BooleanOptionItem.Create("ImpCanBeEgoist", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
+        ImpEgoistVisibalToAllies = BooleanOptionItem.Create("ImpEgoistVisibalToAllies", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
+        EgoistCountAsConverted = BooleanOptionItem.Create("EgoistCountAsConverted", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
     }
 }

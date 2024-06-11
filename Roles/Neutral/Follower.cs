@@ -35,14 +35,14 @@ internal class Follower : RoleBase
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Follower, 1, zeroOne: false);
         MaxBetTimes = IntegerOptionItem.Create(Id + 10, "FollowerMaxBetTimes", new(1, 20, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
             .SetValueFormat(OptionFormat.Times);
-        BetCooldown = FloatOptionItem.Create(Id + 12, "FollowerBetCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
+        BetCooldown = FloatOptionItem.Create("FollowerBetCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
             .SetValueFormat(OptionFormat.Seconds);
-        BetCooldownIncrese = FloatOptionItem.Create(Id + 14, "FollowerBetCooldownIncrese", new(0f, 60f, 1f), 4f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
+        BetCooldownIncrese = FloatOptionItem.Create("FollowerBetCooldownIncrese", new(0f, 60f, 1f), 4f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
             .SetValueFormat(OptionFormat.Seconds);
-        MaxBetCooldown = FloatOptionItem.Create(Id + 16, "FollowerMaxBetCooldown", new(0f, 180f, 2.5f), 50f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
+        MaxBetCooldown = FloatOptionItem.Create("FollowerMaxBetCooldown", new(0f, 180f, 2.5f), 50f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower])
             .SetValueFormat(OptionFormat.Seconds);
-        KnowTargetRole = BooleanOptionItem.Create(Id + 18, "FollowerKnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower]);
-        BetTargetKnowFollower = BooleanOptionItem.Create(Id + 20, "FollowerBetTargetKnowFollower", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower]);
+        KnowTargetRole = BooleanOptionItem.Create("FollowerKnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower]);
+        BetTargetKnowFollower = BooleanOptionItem.Create("FollowerBetTargetKnowFollower", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Follower]);
     }
     public override void Init()
     {

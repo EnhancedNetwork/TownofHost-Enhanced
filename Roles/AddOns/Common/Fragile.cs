@@ -17,13 +17,13 @@ public static class Fragile
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Fragile, canSetNum: true);
-        ImpCanBeFragile = BooleanOptionItem.Create(Id + 10, "ImpCanBeFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        CrewCanBeFragile = BooleanOptionItem.Create(Id + 11, "CrewCanBeFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        NeutralCanBeFragile = BooleanOptionItem.Create(Id + 12, "NeutralCanBeFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        ImpCanKillFragile = BooleanOptionItem.Create(Id + 13, "ImpCanKillFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        CrewCanKillFragile = BooleanOptionItem.Create(Id + 14, "CrewCanKillFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        NeutralCanKillFragile = BooleanOptionItem.Create(Id + 15, "NeutralCanKillFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        FragileKillerLunge = BooleanOptionItem.Create(Id + 16, "FragileKillerLunge", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
+        ImpCanBeFragile = BooleanOptionItem.Create("ImpCanBeFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
+        CrewCanBeFragile = BooleanOptionItem.Create("CrewCanBeFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
+        NeutralCanBeFragile = BooleanOptionItem.Create("NeutralCanBeFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
+        ImpCanKillFragile = BooleanOptionItem.Create("ImpCanKillFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
+        CrewCanKillFragile = BooleanOptionItem.Create("CrewCanKillFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
+        NeutralCanKillFragile = BooleanOptionItem.Create("NeutralCanKillFragile", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
+        FragileKillerLunge = BooleanOptionItem.Create("FragileKillerLunge", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
     }
 
     public static bool KillFragile(PlayerControl killer, PlayerControl target)

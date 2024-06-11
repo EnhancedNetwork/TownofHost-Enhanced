@@ -22,11 +22,11 @@ internal class Phantom : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(14900, TabGroup.NeutralRoles, CustomRoles.Phantom);
-        PhantomCanVent = BooleanOptionItem.Create(14902, "CanVent", false, TabGroup.NeutralRoles, false)
+        PhantomCanVent = BooleanOptionItem.Create("CanVent", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Phantom]);
-        PhantomSnatchesWin = BooleanOptionItem.Create(14903, "SnatchesWin", false, TabGroup.NeutralRoles, false)
+        PhantomSnatchesWin = BooleanOptionItem.Create("SnatchesWin", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Phantom]);
-        PhantomCanGuess = BooleanOptionItem.Create(14904, "CanGuess", false, TabGroup.NeutralRoles, false)
+        PhantomCanGuess = BooleanOptionItem.Create("CanGuess", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Phantom]);
         OverrideTasksData.Create(14905, TabGroup.NeutralRoles, CustomRoles.Phantom);
     }

@@ -18,9 +18,9 @@ public static class Lucky
         SetupAdtRoleOptions(Id, CustomRoles.Lucky, canSetNum: true);
         LuckyProbability = IntegerOptionItem.Create(Id + 10, "LuckyProbability", new(0, 100, 5), 50, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lucky])
             .SetValueFormat(OptionFormat.Percent);
-        ImpCanBeLucky = BooleanOptionItem.Create(Id + 11, "ImpCanBeLucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
-        CrewCanBeLucky = BooleanOptionItem.Create(Id + 12, "CrewCanBeLucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
-        NeutralCanBeLucky = BooleanOptionItem.Create(Id + 13, "NeutralCanBeLucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
+        ImpCanBeLucky = BooleanOptionItem.Create("ImpCanBeLucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
+        CrewCanBeLucky = BooleanOptionItem.Create("CrewCanBeLucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
+        NeutralCanBeLucky = BooleanOptionItem.Create("NeutralCanBeLucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
     }
 
     public static void Init()

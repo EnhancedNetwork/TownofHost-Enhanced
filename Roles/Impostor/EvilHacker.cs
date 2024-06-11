@@ -44,13 +44,13 @@ internal class EvilHacker : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.EvilHacker);
-        OptionCanSeeDeadMark = BooleanOptionItem.Create(Id + 10, OptionName.EvilHackerCanSeeDeadMark, true, TabGroup.ImpostorRoles, false)
+        OptionCanSeeDeadMark = BooleanOptionItem.Create(OptionName.EvilHackerCanSeeDeadMark, true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.EvilHacker]);
-        OptionCanSeeImpostorMark = BooleanOptionItem.Create(Id + 11, OptionName.EvilHackerCanSeeImpostorMark, true, TabGroup.ImpostorRoles, false)
+        OptionCanSeeImpostorMark = BooleanOptionItem.Create(OptionName.EvilHackerCanSeeImpostorMark, true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.EvilHacker]);
-        OptionCanSeeKillFlash = BooleanOptionItem.Create(Id + 12, OptionName.EvilHackerCanSeeKillFlash, true, TabGroup.ImpostorRoles, false)
+        OptionCanSeeKillFlash = BooleanOptionItem.Create(OptionName.EvilHackerCanSeeKillFlash, true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.EvilHacker]);
-        OptionCanSeeMurderRoom = BooleanOptionItem.Create(Id + 13, OptionName.EvilHackerCanSeeMurderRoom, true, TabGroup.ImpostorRoles, false)
+        OptionCanSeeMurderRoom = BooleanOptionItem.Create(OptionName.EvilHackerCanSeeMurderRoom, true, TabGroup.ImpostorRoles, false)
             .SetParent(OptionCanSeeKillFlash);
     }
     public override void Init()

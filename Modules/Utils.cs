@@ -22,6 +22,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using System.Security.Cryptography;
 
 
 namespace TOHE;
@@ -738,7 +739,7 @@ public static class Utils
             var text = sb.ToString();
             sb.Clear().Append(text.RemoveHtmlTags());
         }
-        foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Id > 59999 && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
+        foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Id != 0 && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
         {
             if (opt.Name is "KillFlashDuration" or "RoleAssigningAlgorithm")
                 sb.Append($"\n【{opt.GetName(true)}: {opt.GetString()}】\n");
@@ -770,7 +771,7 @@ public static class Utils
             sb.Clear().Append(text.RemoveHtmlTags());
         }
         sb.Append($"━━━━━━━━━━━━【{GetString("Settings")}】━━━━━━━━━━━━");
-        foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Id > 59999 && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
+        foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Id != 0 && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
         {
             if (opt.Name == "KillFlashDuration")
                 sb.Append($"\n【{opt.GetName(true)}: {opt.GetString()}】\n");
@@ -1252,6 +1253,25 @@ public static class Utils
             + $"\n  ○ /dump {GetString("Command.dump")}"
         //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
             , ID);
+    }
+    public static int ToInt(this string input)
+    {
+        using (MD5 md5 = MD5.Create())
+        {
+            byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+            int hashInt = BitConverter.ToInt32(hashBytes, 0);
+
+            hashInt = Math.Abs(hashInt);
+
+            string hashStr = hashInt.ToString().PadLeft(8, '0');
+            if (hashStr.Length > 8)
+            {
+                hashStr = hashStr.Substring(0, 8);
+            }
+
+            return int.Parse(hashStr);
+        }
     }
     public static string[] SplitMessage(this string LongMsg)
     {

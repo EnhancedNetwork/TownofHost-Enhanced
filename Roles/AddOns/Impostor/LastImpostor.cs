@@ -11,7 +11,7 @@ public static class LastImpostor
     public static void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.Addons, CustomRoles.LastImpostor, 1);
-        CooldownReduction = FloatOptionItem.Create(Id + 15, "OverclockedReduction", new(5f, 95f, 5f), 50f, TabGroup.Addons, false)
+        CooldownReduction = FloatOptionItem.Create("OverclockedReduction", new(5f, 95f, 5f), 50f, TabGroup.Addons, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.LastImpostor])
             .SetValueFormat(OptionFormat.Percent);
     }

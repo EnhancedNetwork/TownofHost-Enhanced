@@ -13,8 +13,8 @@ public static class Autopsy
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Autopsy, canSetNum: true);
-        ImpCanBeAutopsy = BooleanOptionItem.Create(Id + 10, "ImpCanBeAutopsy", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
-        CrewCanBeAutopsy = BooleanOptionItem.Create(Id + 11, "CrewCanBeAutopsy", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
-        NeutralCanBeAutopsy = BooleanOptionItem.Create(Id + 12, "NeutralCanBeAutopsy", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
+        ImpCanBeAutopsy = BooleanOptionItem.Create("ImpCanBeAutopsy", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
+        CrewCanBeAutopsy = BooleanOptionItem.Create("CrewCanBeAutopsy", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
+        NeutralCanBeAutopsy = BooleanOptionItem.Create("NeutralCanBeAutopsy", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
     }
 }

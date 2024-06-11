@@ -13,8 +13,8 @@ public static class VoidBallot
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.VoidBallot, canSetNum: true);
-        ImpCanBeVoidBallot = BooleanOptionItem.Create(Id + 10, "ImpCanBeVoidBallot", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
-        CrewCanBeVoidBallot = BooleanOptionItem.Create(Id + 11, "CrewCanBeVoidBallot", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
-        NeutralCanBeVoidBallot = BooleanOptionItem.Create(Id + 12, "NeutralCanBeVoidBallot", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
+        ImpCanBeVoidBallot = BooleanOptionItem.Create("ImpCanBeVoidBallot", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
+        CrewCanBeVoidBallot = BooleanOptionItem.Create("CrewCanBeVoidBallot", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
+        NeutralCanBeVoidBallot = BooleanOptionItem.Create("NeutralCanBeVoidBallot", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
     }
 }

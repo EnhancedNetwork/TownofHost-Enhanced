@@ -12,8 +12,8 @@ public static class Silent
     public static void SetupCustomOptions()
     {
         Options.SetupAdtRoleOptions(Id, CustomRoles.Silent, canSetNum: true, tab: TabGroup.Addons);
-        CanBeOnImp = BooleanOptionItem.Create(Id + 11, "ImpCanBeSilent", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Silent]);
-        CanBeOnCrew = BooleanOptionItem.Create(Id + 12, "CrewCanBeSilent", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Silent]);
-        CanBeOnNeutral = BooleanOptionItem.Create(Id + 13, "NeutralCanBeSilent", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Silent]);
+        CanBeOnImp = BooleanOptionItem.Create("ImpCanBeSilent", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Silent]);
+        CanBeOnCrew = BooleanOptionItem.Create("CrewCanBeSilent", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Silent]);
+        CanBeOnNeutral = BooleanOptionItem.Create("NeutralCanBeSilent", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Silent]);
     }
 }

@@ -18,10 +18,10 @@ public static class Aware
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(21600, CustomRoles.Aware, canSetNum: true);
-        ImpCanBeAware = BooleanOptionItem.Create(Id + 10, "ImpCanBeAware", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
-        CrewCanBeAware = BooleanOptionItem.Create(Id + 11, "CrewCanBeAware", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
-        NeutralCanBeAware = BooleanOptionItem.Create(Id + 12, "NeutralCanBeAware", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
-        AwareknowRole = BooleanOptionItem.Create(Id + 13, "AwareKnowRole", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
+        ImpCanBeAware = BooleanOptionItem.Create("ImpCanBeAware", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
+        CrewCanBeAware = BooleanOptionItem.Create("CrewCanBeAware", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
+        NeutralCanBeAware = BooleanOptionItem.Create("NeutralCanBeAware", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
+        AwareknowRole = BooleanOptionItem.Create("AwareKnowRole", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
     }
 
     public static void Init()

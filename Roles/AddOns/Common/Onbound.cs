@@ -13,9 +13,9 @@ public static class Onbound
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Onbound, canSetNum: true, tab: TabGroup.TaskSettings);
-        ImpCanBeOnbound = BooleanOptionItem.Create(Id + 10, "ImpCanBeOnbound", true, TabGroup.TaskSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
-        CrewCanBeOnbound = BooleanOptionItem.Create(Id + 11, "CrewCanBeOnbound", true, TabGroup.TaskSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
-        NeutralCanBeOnbound = BooleanOptionItem.Create(Id + 12, "NeutralCanBeOnbound", true, TabGroup.TaskSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
+        ImpCanBeOnbound = BooleanOptionItem.Create("ImpCanBeOnbound", true, TabGroup.TaskSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
+        CrewCanBeOnbound = BooleanOptionItem.Create("CrewCanBeOnbound", true, TabGroup.TaskSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
+        NeutralCanBeOnbound = BooleanOptionItem.Create("NeutralCanBeOnbound", true, TabGroup.TaskSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
     }
 }
 

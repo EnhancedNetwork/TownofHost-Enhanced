@@ -19,11 +19,11 @@ public static class Radar
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Radar, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeRadar = BooleanOptionItem.Create(Id + 10, "ImpCanBeRadar", true, TabGroup.Addons, false)
+        ImpCanBeRadar = BooleanOptionItem.Create("ImpCanBeRadar", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Radar]);
-        CrewCanBeRadar = BooleanOptionItem.Create(Id + 11, "CrewCanBeRadar", true, TabGroup.Addons, false)
+        CrewCanBeRadar = BooleanOptionItem.Create("CrewCanBeRadar", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Radar]);
-        NeutralCanBeRadar = BooleanOptionItem.Create(Id + 12, "NeutralCanBeRadar", true, TabGroup.Addons, false)
+        NeutralCanBeRadar = BooleanOptionItem.Create("NeutralCanBeRadar", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Radar]);
     }
 

@@ -10,9 +10,9 @@ public static class Influenced
     public static void SetupCustomOption()
     {
         Options.SetupAdtRoleOptions(Id, CustomRoles.Influenced, canSetNum: true);
-        CanBeOnImp = BooleanOptionItem.Create(Id + 10, "ImpCanBeInfluenced", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Influenced]);
-        CanBeOnCrew = BooleanOptionItem.Create(Id + 11, "CrewCanBeInfluenced", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Influenced]);
-        CanBeOnNeutral = BooleanOptionItem.Create(Id + 12, "NeutralCanBeInfluenced", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Influenced]);
+        CanBeOnImp = BooleanOptionItem.Create("ImpCanBeInfluenced", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Influenced]);
+        CanBeOnCrew = BooleanOptionItem.Create("CrewCanBeInfluenced", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Influenced]);
+        CanBeOnNeutral = BooleanOptionItem.Create("NeutralCanBeInfluenced", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Influenced]);
     }
     public static void ChangeVotingData(Dictionary<byte, int> VotingData)
     { 

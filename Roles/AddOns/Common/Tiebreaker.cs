@@ -13,9 +13,9 @@ public static class Tiebreaker
     public static void SetupCustomOptions()
     {
         Options.SetupAdtRoleOptions(Id, CustomRoles.Tiebreaker, canSetNum: true);
-        ImpCanBeTiebreaker = BooleanOptionItem.Create(Id + 10, "ImpCanBeTiebreaker", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Tiebreaker]);
-        CrewCanBeTiebreaker = BooleanOptionItem.Create(Id + 11, "CrewCanBeTiebreaker", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Tiebreaker]);
-        NeutralCanBeTiebreaker = BooleanOptionItem.Create(Id + 12, "NeutralCanBeTiebreaker", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Tiebreaker]);
+        ImpCanBeTiebreaker = BooleanOptionItem.Create("ImpCanBeTiebreaker", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Tiebreaker]);
+        CrewCanBeTiebreaker = BooleanOptionItem.Create("CrewCanBeTiebreaker", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Tiebreaker]);
+        NeutralCanBeTiebreaker = BooleanOptionItem.Create("NeutralCanBeTiebreaker", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Tiebreaker]);
     }
 
     public static void Clear()

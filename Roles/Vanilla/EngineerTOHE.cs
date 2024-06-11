@@ -20,10 +20,10 @@ internal class EngineerTOHE : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.EngineerTOHE);
-        EngineerCD = FloatOptionItem.Create(Id + 2, "VentCooldown", new(0f, 250f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
+        EngineerCD = FloatOptionItem.Create("VentCooldown", new(0f, 250f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EngineerTOHE])
             .SetValueFormat(OptionFormat.Seconds);
-        EngineerInVentTime = FloatOptionItem.Create(Id + 3, "InVentMaxTime", new(0f, 250f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
+        EngineerInVentTime = FloatOptionItem.Create("InVentMaxTime", new(0f, 250f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EngineerTOHE])
             .SetValueFormat(OptionFormat.Seconds);
     }

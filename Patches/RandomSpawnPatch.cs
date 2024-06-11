@@ -162,14 +162,14 @@ class RandomSpawn
 
     public static void SetupCustomOption()
     {
-        RandomSpawnMode = BooleanOptionItem.Create(60470, RandomSpawnOpt.RandomSpawnMode, false, TabGroup.GameSettings, false)
+        RandomSpawnMode = BooleanOptionItem.Create(RandomSpawnOpt.RandomSpawnMode, false, TabGroup.GameSettings, false)
             .HideInFFA()
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
-        SpawnRandomLocation = BooleanOptionItem.Create(60471, RandomSpawnOpt.RandomSpawn_SpawnRandomLocation, true, TabGroup.GameSettings, false)
+        SpawnRandomLocation = BooleanOptionItem.Create(RandomSpawnOpt.RandomSpawn_SpawnRandomLocation, true, TabGroup.GameSettings, false)
             .SetParent(RandomSpawnMode);
-        AirshipAdditionalSpawn = BooleanOptionItem.Create(60472, RandomSpawnOpt.RandomSpawn_AirshipAdditionalSpawn, true, TabGroup.GameSettings, false)
+        AirshipAdditionalSpawn = BooleanOptionItem.Create(RandomSpawnOpt.RandomSpawn_AirshipAdditionalSpawn, true, TabGroup.GameSettings, false)
             .SetParent(SpawnRandomLocation);
-        SpawnRandomVents = BooleanOptionItem.Create(60475, RandomSpawnOpt.RandomSpawn_SpawnRandomVents, false, TabGroup.GameSettings, false)
+        SpawnRandomVents = BooleanOptionItem.Create(RandomSpawnOpt.RandomSpawn_SpawnRandomVents, false, TabGroup.GameSettings, false)
             .SetParent(RandomSpawnMode);
     }
 
