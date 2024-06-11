@@ -107,7 +107,7 @@ internal class Baker : RoleBase
         return countItem1 >= countItem2;
     }
 
-    public override void OnReportDeadBody(PlayerControl marg, PlayerControl iscute)
+    public override void OnReportDeadBody(PlayerControl marg, GameData.PlayerInfo iscute)
     {
         CanUseAbility = true;
     }
@@ -231,7 +231,7 @@ internal class Famine : RoleBase
             }
         }
     }
-    public override void OnReportDeadBody(PlayerControl marg, PlayerControl iscute)
+    public override void OnReportDeadBody(PlayerControl sylveon, GameData.PlayerInfo iscute)
     {
         foreach (var pc in Baker.FamineList)
         {

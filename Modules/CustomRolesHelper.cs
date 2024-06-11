@@ -611,7 +611,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.CursedWolf)
                     || pc.Is(CustomRoles.Masochist)
                     || pc.Is(CustomRoles.SchrodingersCat)
-                    || pc.IsNeutralApocalypse())
+                    || pc.IsNeutralApocalypse()
                     || pc.Is(CustomRoles.Spy)
                     || pc.Is(CustomRoles.Necromancer))
                     return false;
