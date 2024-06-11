@@ -63,11 +63,13 @@ internal class Mini : RoleBase
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
         writer.Write(Age);
+        writer.Write(IsEvilMini);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         Age = reader.ReadInt32();
+        IsEvilMini = reader.ReadBoolean();
     }
 
     public static bool CheckSpawnEvilMini() => IsEvilMini;
