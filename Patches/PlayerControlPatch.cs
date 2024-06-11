@@ -524,18 +524,21 @@ class ExiledPatch
     {
         try
         {
-            var playerclass = __instance.GetRoleClass();
+            if (GameStates.IsNormalGame && GameStates.IsInGame && !GameEndCheckerForNormal.ForEndGame)
+            {
+                var playerclass = __instance.GetRoleClass();
 
-            Action<bool> SelfExile = Utils.LateExileTask.FirstOrDefault(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId) ?? playerclass.OnSelfReducedToAtoms;
-            if (GameStates.IsInTask)
-            {
-                SelfExile(false);
-                Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
-            }
-            else
-            {
-                Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
-                Utils.LateExileTask.Add(SelfExile);
+                Action<bool> SelfExile = Utils.LateExileTask.FirstOrDefault(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId) ?? playerclass.OnSelfReducedToAtoms;
+                if (GameStates.IsInTask)
+                {
+                    SelfExile(false);
+                    Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
+                }
+                else
+                {
+                    Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
+                    Utils.LateExileTask.Add(SelfExile);
+                }
             }
         }
         catch (Exception err)
