@@ -31,7 +31,7 @@ public static class Sleuth
 
     public static void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody)
     {
-        if (reporter.Is(CustomRoles.Sleuth) && deadBody != null && !deadBody.Object.IsAlive() && reporter.PlayerId != deadBody.PlayerId)
+        if (reporter.Is(CustomRoles.Sleuth) && deadBody != null && deadBody.Object != null && !deadBody.Object.IsAlive() && reporter.PlayerId != deadBody.PlayerId)
         {
             string msg;
             msg = string.Format(Translator.GetString("SleuthNoticeVictim"), deadBody.Object.GetRealName(), deadBody.Object.GetDisplayRoleAndSubName(deadBody.Object, false));

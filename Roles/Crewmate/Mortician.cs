@@ -104,7 +104,7 @@ internal class Mortician : RoleBase
             SendRPC(apc, false);
         }
 
-        if (!pc.Is(CustomRoles.Mortician) || target == null || pc.PlayerId == target.PlayerId) return;
+        if (!pc.Is(CustomRoles.Mortician) || target == null || target.Object == null || pc.PlayerId == target.PlayerId) return;
         lastPlayerName.TryGetValue(target.PlayerId, out var name);
         if (name == "") msgToSend.Add(pc.PlayerId, string.Format(GetString("MorticianGetNoInfo"), target.Object.GetRealName()));
         else msgToSend.Add(pc.PlayerId, string.Format(GetString("MorticianGetInfo"), target.Object.GetRealName(), name));

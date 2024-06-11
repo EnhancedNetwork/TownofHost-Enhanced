@@ -89,7 +89,7 @@ internal class Medium : RoleBase
             AbilityLimit--;
             ContactPlayer[target.PlayerId] = _Player.PlayerId;
             SendRPC(_Player.PlayerId, target.PlayerId, true);
-            Logger.Info($"Psychics Make Connections： {_Player.GetNameWithRole()} => {target.Object.GetRealName}", "Medium");
+            Logger.Info($"Psychics Make Connections： {_Player.GetNameWithRole()} => {target.PlayerName}", "Medium");
         }
         
 
