@@ -243,6 +243,15 @@ public static class CustomRoleManager
                     DollMaster.CheckMurderAsPossessed(killer, target);
                     return false;
                 }
+
+        Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
+
+        // Check murder on others targets
+        if (OnCheckMurderAsTargetOnOthers(killer, target) == false)
+        {
+            Logger.Info("Cancels because for others target need cancel kill", "OnCheckMurderAsTargetOnOthers");
+            return false;
+        }
                 
         return true;
     }
