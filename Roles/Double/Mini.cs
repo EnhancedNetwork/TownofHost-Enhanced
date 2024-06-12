@@ -55,8 +55,12 @@ internal class Mini : RoleBase
         Age = 0;
         misguessed = false;
 
-        var rand = IRandom.Instance;
-        IsEvilMini = CanBeEvil.GetBool() && (rand.Next(0, 100) < EvilMiniSpawnChances.GetInt());
+        if (AmongUsClient.Instance.AmHost)
+        {
+            var rand = IRandom.Instance;
+            IsEvilMini = CanBeEvil.GetBool() && (rand.Next(0, 100) < EvilMiniSpawnChances.GetInt());
+            SendRPC();
+        }
     }
     public void SendRPC()
     {
