@@ -531,14 +531,31 @@ public enum CustomRoles
      * Please add all the new roles in alphabetical order *
      ******************************************************/
 
-    //Default
+    // Crewmate(Vanilla)
     Crewmate = 0,
-    //Impostor(Vanilla)
+    Scientist,
+    Engineer,
+    GuardianAngel,
+    //Tracker,
+    //Noisemaker,
+
+    // Impostor(Vanilla)
     Impostor,
     Shapeshifter,
-    // Vanilla Remakes
+    //Phantom,
+
+    // Crewmate Vanilla Remakes
+    CrewmateTOHE,
+    ScientistTOHE,
+    EngineerTOHE,
+    GuardianAngelTOHE,
+    //TrackerTOHE,
+    //NoisemakerTOHE,
+
+    // Impostor Vanilla Remakes
     ImpostorTOHE,
     ShapeshifterTOHE,
+    //PhantomTOHE,
 
     // Impostor Ghost
     Bloodmoon,
@@ -617,16 +634,6 @@ public enum CustomRoles
     Warlock,
     Wildling,
     Zombie,
-
-    //Crewmate(Vanilla)
-    Engineer,
-    GuardianAngel,
-    Scientist,
-    // Vanilla Remakes
-    CrewmateTOHE,
-    EngineerTOHE,
-    ScientistTOHE,
-    GuardianAngelTOHE,
 
     //Crewmate Ghost
     Ghastly,
