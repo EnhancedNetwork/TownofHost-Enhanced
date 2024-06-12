@@ -140,10 +140,9 @@ internal class Jackal : RoleBase
                 AbilityLimit--;
                 SendSkillRPC();
                 
-                if (CopyCat.playerIdList.Contains(target.PlayerId))
-                    target.GetRoleClass()?.Remove(target.PlayerId);
-
+                target.GetRoleClass()?.Remove(target.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Sidekick);
+                target.GetRoleClass()?.OnAdd(target.PlayerId);
 
                 if (!Main.ResetCamPlayerList.Contains(target.PlayerId))
                     Main.ResetCamPlayerList.Add(target.PlayerId);
