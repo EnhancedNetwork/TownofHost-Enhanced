@@ -59,7 +59,14 @@ internal class Mini : RoleBase
         {
             var rand = IRandom.Instance;
             IsEvilMini = CanBeEvil.GetBool() && (rand.Next(0, 100) < EvilMiniSpawnChances.GetInt());
-            SendRPC();
+
+            _ = new LateTask(() =>
+            {
+                if (GameStates.IsInTask)
+                {
+                    SendRPC();
+                }
+            }, 8f, "Sync Mini");
         }
     }
     public void SendRPC()
