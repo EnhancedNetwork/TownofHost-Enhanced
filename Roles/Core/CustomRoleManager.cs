@@ -75,7 +75,7 @@ public static class CustomRoleManager
     }
 
     /// <summary>
-    /// If the role protect others players from direct to kill
+    /// If the role protect others players from direct kill
     /// </summary>
     public static bool OnCheckProtectedTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
@@ -256,7 +256,8 @@ public static class CustomRoleManager
                 
         Logger.Info($"Start", "OnCheckProtectedTargetOnOthers");
 
-        // When direct kill check if player is protected, always keep at bottom.
+        // Check if player is protected
+        // always keep at bottom
         if (OnCheckProtectedTargetOnOthers(killer, target) == false)
         {
             Logger.Info("Cancels because for others target need cancel kill", "OnCheckProtectedTargetOnOthers");
