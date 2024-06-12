@@ -48,7 +48,7 @@ internal class Pelican : RoleBase
     }
     public override void Add(byte playerId)
     {
-
+        CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
@@ -220,35 +220,44 @@ internal class Pelican : RoleBase
     public override void OnMurderPlayerAsTarget(PlayerControl SLAT, PlayerControl victim, bool inMeeting, bool isSuicide)
     {
         if (inMeeting) return;
-
-        var pc = victim.PlayerId;
+        ReleaseEatenPlayers(victim);
+    }
+    private void ReleaseEatenPlayers(PlayerControl pelican)
+    {
+        var pc = pelican.PlayerId;
         if (!eatenList.ContainsKey(pc)) return;
         Vector2 teleportPosition;
-        if ((victim.GetCustomPosition() == GetBlackRoomPSForPelican() || victim.GetCustomPosition() == ExtendedPlayerControl.GetBlackRoomPosition())
+        if ((pelican.GetCustomPosition() == GetBlackRoomPSForPelican() || pelican.GetCustomPosition() == ExtendedPlayerControl.GetBlackRoomPosition())
             && PelicanLastPosition.ContainsKey(pc))
             teleportPosition = PelicanLastPosition[pc];
-        else teleportPosition = victim.GetCustomPosition();
+        else teleportPosition = pelican.GetCustomPosition();
 
         foreach (var tar in eatenList[pc])
         {
             var target = Utils.GetPlayerById(tar);
             var player = Utils.GetPlayerById(pc);
             if (player == null || target == null) continue;
-            
+
             target.RpcTeleport(teleportPosition);
 
             Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
             ReportDeadBodyPatch.CanReport[tar] = true;
-            
+
             target.SyncSettings();
-            
+
             RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
-            
+
             Logger.Info($"{Utils.GetPlayerById(pc).GetRealName()} dead, player return back: {target.GetRealName()}", "Pelican");
         }
         eatenList.Remove(pc);
         SyncEatenList();
         Utils.NotifyRoles();
+    }
+    private void OnFixedUpdateOthers(PlayerControl pc)
+    {
+        if (!Main.AllPlayerControls.Any(player => player.Is(CustomRoles.Pelican)) && eatenList.Any())
+            ReleaseEatenPlayers(pc);
+
     }
 
     public override void OnFixedUpdateLowLoad(PlayerControl pelican)
