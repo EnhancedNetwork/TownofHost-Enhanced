@@ -1804,7 +1804,6 @@ public static class Utils
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                 {
                     SelfName = name;
-                    IsDisplayInfo = false;
                 }
 
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
@@ -1824,7 +1823,9 @@ public static class Utils
                 // Camouflage
                 if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                     SelfName = $"<size=0%>{SelfName}</size>";
-
+                
+                if (!SelfName.Contains(seer.GetRealName()))
+                    IsDisplayInfo = false;
 
                 switch (Options.CurrentGameMode)
                 {
