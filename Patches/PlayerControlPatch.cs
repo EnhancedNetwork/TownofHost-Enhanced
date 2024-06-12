@@ -283,6 +283,15 @@ class CheckMurderPatch
         if (killer.Is(Custom_Team.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
 
+        Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
+
+        // Check murder on others targets
+        if (CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target) == false)
+        {
+            Logger.Info("Cancels because for others target need cancel kill", "OnCheckMurderAsTargetOnOthers");
+            return false;
+        }
+
         Logger.Info($"Start", "TargetSubRoles");
 
         if (targetSubRoles.Any())

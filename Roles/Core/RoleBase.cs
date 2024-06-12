@@ -198,6 +198,12 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     { }
+    /// <summary>
+    /// When the Target is protected by a ability cancel direct kill.
+    /// only use to cancel direct kills!
+    /// </summary>
+    /// <returns>If the target needs to cancel kill, always use "return true"</returns>
+    public virtual bool CheckProtectedOnOthersTarget(PlayerControl killer, PlayerControl target) => target == null || killer == null;
 
     /// <summary>
     /// A method to always check the state when targets have died (murder, exiled, execute etc..)

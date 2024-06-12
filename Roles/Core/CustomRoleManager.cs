@@ -75,6 +75,16 @@ public static class CustomRoleManager
     }
 
     /// <summary>
+    /// If the role protect others players from direct to kill
+    /// </summary>
+    public static bool OnCheckProtectedTargetOnOthers(PlayerControl killer, PlayerControl target)
+    {
+        // return true when need to cancel the kill target
+        // "Any()" defines a function that returns true, and converts to false to cancel the kill
+        return AllEnabledRoles.Any(RoleClass => RoleClass.CheckProtectedOnOthersTarget(killer, target) == true);
+    }
+
+    /// <summary>
     /// Builds Modified GameOptions
     /// </summary>
     public static void BuildCustomGameOptions(this PlayerControl player, ref IGameOptions opt)
@@ -243,16 +253,16 @@ public static class CustomRoleManager
                     DollMaster.CheckMurderAsPossessed(killer, target);
                     return false;
                 }
+                
+        Logger.Info($"Start", "OnCheckProtectedTargetOnOthers");
 
-        Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
-
-        // Check murder on others targets
-        if (OnCheckMurderAsTargetOnOthers(killer, target) == false)
+        // When direct kill check if player is protected, always keep at bottom.
+        if (OnCheckProtectedTargetOnOthers(killer, target) == false)
         {
-            Logger.Info("Cancels because for others target need cancel kill", "OnCheckMurderAsTargetOnOthers");
+            Logger.Info("Cancels because for others target need cancel kill", "OnCheckProtectedTargetOnOthers");
             return false;
         }
-                
+
         return true;
     }
     /// <summary>

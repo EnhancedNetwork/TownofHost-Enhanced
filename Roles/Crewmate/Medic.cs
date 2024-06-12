@@ -141,7 +141,7 @@ internal class Medic : RoleBase
         Logger.Info($"{killer.GetNameWithRole()} : {AbilityLimit} shields left", "Medic");
         return false;
     }
-    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
+    public override bool CheckProtectedOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
 
         var Medics = Utils.GetPlayerListByRole(CustomRoles.Medic);

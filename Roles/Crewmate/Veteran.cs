@@ -59,7 +59,7 @@ internal class Veteran : RoleBase
         
         return true;
     }
-    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    public override bool CheckProtectedOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         if (VeteranInProtect.ContainsKey(target.PlayerId) && killer.PlayerId != target.PlayerId)
             if (VeteranInProtect[target.PlayerId] + VeteranSkillDuration.GetInt() >= GetTimeStamp())
