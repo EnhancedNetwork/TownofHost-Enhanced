@@ -99,9 +99,11 @@ internal class ChangeRoleSettings
             // Clear last exiled
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = null;
 
-            //名前の記録
-            //Main.AllPlayerNames = [];
+            IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
+
+            // Sync Player Names
             RPC.SyncAllPlayerNames();
+            //Main.AllPlayerNames = [];
 
             GhostRoleAssign.Init();
 
@@ -204,8 +206,6 @@ internal class ChangeRoleSettings
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
-
-            IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
 
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;

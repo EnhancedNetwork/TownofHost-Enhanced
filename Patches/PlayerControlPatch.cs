@@ -826,6 +826,7 @@ class ReportDeadBodyPatch
         // Hereinafter, it is assumed that the button is confirmed to be pressed
         //=============================================
 
+        Main.MeetingIsStarted = true;
         Main.LastVotedPlayerInfo = null;
         Main.GuesserGuessed.Clear();
         Main.AllKillers.Clear();
@@ -1407,6 +1408,7 @@ class CoExitVentPatch
     public static void Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
     {
         if (GameStates.IsHideNSeek) return;
+        Logger.Info($" {__instance.myPlayer.GetNameWithRole().RemoveHtmlTags()}, Vent ID: {id}", "CoExitVent");
 
         var player = __instance.myPlayer;
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
