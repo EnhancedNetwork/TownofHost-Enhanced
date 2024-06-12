@@ -61,6 +61,13 @@ internal class Mini : RoleBase
             IsEvilMini = CanBeEvil.GetBool() && (rand.Next(0, 100) < EvilMiniSpawnChances.GetInt());
         }
     }
+    public override void Add(byte playerId)
+    {
+        if (AmongUsClient.Instance.AmHost)
+        {
+            SendRPC();
+        }
+    }
     public void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
