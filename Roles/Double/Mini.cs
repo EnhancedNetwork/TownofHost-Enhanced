@@ -55,7 +55,7 @@ internal class Mini : RoleBase
         Age = 0;
         misguessed = false;
 
-        var rand = new Random();
+        var rand = IRandom.Instance;
         IsEvilMini = CanBeEvil.GetBool() && (rand.Next(0, 100) < EvilMiniSpawnChances.GetInt());
     }
     public void SendRPC()
@@ -198,8 +198,8 @@ internal class Mini : RoleBase
         }
     }
 
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
-        => (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && EveryoneCanKnowMini.GetBool();
+    //public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
+    //    => (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && EveryoneCanKnowMini.GetBool();
 
     //public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     //    => (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && EveryoneCanKnowMini.GetBool() ? Main.roleColors[CustomRoles.Mini] : string.Empty;
