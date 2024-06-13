@@ -73,6 +73,13 @@ internal class Romantic : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public override void Remove(byte playerId)
+    {
+        BetTimes.Remove(playerId);
+
+        CustomRoleManager.CheckDeadBodyOthers.Remove(OthersAfterPlayerDeathTask);
+    }
+
     private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);

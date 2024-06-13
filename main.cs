@@ -39,12 +39,12 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0610.200.021000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 Canary 2.1";
+    public const string PluginVersion = "2024.0612.200.030000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 Canary 3";
     public static readonly string SupportedVersionAU = "2024.3.5"; // Also 2024.6.4
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 2.1
+    public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 3
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
     public static readonly bool devRelease = false; // INACTIVE - Latest: V2.0.0 Dev 25
 
@@ -531,14 +531,31 @@ public enum CustomRoles
      * Please add all the new roles in alphabetical order *
      ******************************************************/
 
-    //Default
+    // Crewmate(Vanilla)
     Crewmate = 0,
-    //Impostor(Vanilla)
+    Scientist,
+    Engineer,
+    GuardianAngel,
+    //Tracker,
+    //Noisemaker,
+
+    // Impostor(Vanilla)
     Impostor,
     Shapeshifter,
-    // Vanilla Remakes
+    //Phantom,
+
+    // Crewmate Vanilla Remakes
+    CrewmateTOHE,
+    ScientistTOHE,
+    EngineerTOHE,
+    GuardianAngelTOHE,
+    //TrackerTOHE,
+    //NoisemakerTOHE,
+
+    // Impostor Vanilla Remakes
     ImpostorTOHE,
     ShapeshifterTOHE,
+    //PhantomTOHE,
 
     // Impostor Ghost
     Bloodmoon,
@@ -617,16 +634,6 @@ public enum CustomRoles
     Warlock,
     Wildling,
     Zombie,
-
-    //Crewmate(Vanilla)
-    Engineer,
-    GuardianAngel,
-    Scientist,
-    // Vanilla Remakes
-    CrewmateTOHE,
-    EngineerTOHE,
-    ScientistTOHE,
-    GuardianAngelTOHE,
 
     //Crewmate Ghost
     Ghastly,
