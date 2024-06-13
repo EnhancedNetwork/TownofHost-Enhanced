@@ -57,7 +57,7 @@ public static class Unlucky
 
         if (shouldBeSuicide)
         {
-            Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+            victim.SetDeathReason(PlayerState.DeathReason.Suicide);
             victim.RpcMurderPlayer(victim);
             return true;
         }
