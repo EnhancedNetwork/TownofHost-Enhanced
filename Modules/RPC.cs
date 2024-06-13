@@ -614,7 +614,7 @@ internal class RPCHandlerPatch
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
 internal class PlayerPhysicsRPCHandlerPatch
 {
-    private static bool hasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId) || ventId is 99;
+    private static bool hasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId);
     private static bool hasLadder(int ladderId) => ShipStatus.Instance.Ladders.Any(l => l.Id == ladderId);
 
     public static bool Prefix(PlayerPhysics __instance, byte callId, MessageReader reader)
@@ -652,12 +652,12 @@ internal class PlayerPhysicsRPCHandlerPatch
                         WarnHost();
                         Report(player, "Vent null vent (can be spoofed by others)");
                         HandleCheat(player, "Vent null vent (can be spoofed by others)");
-                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to enter a unexisting vent.", "EAC_physics");
+                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to enter a unexisting vent. {ventid}", "EAC_physics");
                     }
                     else
                     {
                         // Not sure whether host will send null vent to a player huh
-                        Logger.Warn($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to enter a unexisting vent.", "EAC_physics");
+                        Logger.Warn($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to enter a unexisting vent. {ventid}", "EAC_physics");
                         if (rpcType is RpcCalls.ExitVent)
                         {
                             player.Visible = true;
@@ -679,12 +679,18 @@ internal class PlayerPhysicsRPCHandlerPatch
                         WarnHost();
                         Report(player, "Got booted from a null vent (can be spoofed by others)");
                         AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
-                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to boot from a unexisting vent.", "EAC_physics");
+                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to boot from a unexisting vent. {ventid2}", "EAC_physics");
                     }
                     else
                     {
                         // Not sure whether host will send null vent to a player huh
-                        Logger.Warn($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to boot from a unexisting vent.", "EAC_physics");
+                        // Nah, host may send 99 boot from vent, which is stupid
+                        Logger.Warn($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to boot from a unexisting vent. {ventid2}", "EAC_physics");
+                        if (ventid2 == 99 && player.inVent)
+                        {
+                            __instance.BootFromVent(ventid2);
+                            return false;
+                        }
                         player.Visible = true;
                         player.inVent = false;
                         player.moveable = true;
