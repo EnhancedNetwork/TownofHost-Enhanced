@@ -1,4 +1,5 @@
-﻿using static TOHE.Options;
+﻿using System.Reflection.Metadata.Ecma335;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -14,8 +15,6 @@ public static class Unlucky
     public static OptionItem ImpCanBeUnlucky;
     public static OptionItem CrewCanBeUnlucky;
     public static OptionItem NeutralCanBeUnlucky;
-
-    public static readonly Dictionary<byte, bool> UnluckCheck = [];
 
     public enum StateSuicide
     {
@@ -43,21 +42,7 @@ public static class Unlucky
         CrewCanBeUnlucky = BooleanOptionItem.Create(Id + 16, "CrewCanBeUnlucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
         NeutralCanBeUnlucky = BooleanOptionItem.Create(Id + 17, "NeutralCanBeUnlucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
     }
-    
-    public static void Init()
-    {
-        UnluckCheck.Clear();
-    }
-    public static void Add(byte PlayerId)
-    {
-        UnluckCheck.Add(PlayerId, false);
-    }
-    public static void Remove(byte player)
-    {
-        UnluckCheck.Remove(player);
-    }
-
-    public static void SuicideRand(PlayerControl victim, StateSuicide state)
+    public static bool SuicideRand(PlayerControl victim, StateSuicide state)
     {
         var shouldBeSuicide = IRandom.Instance.Next(1, 100) <= state switch
         {
@@ -75,7 +60,8 @@ public static class Unlucky
         {
             Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
             victim.RpcMurderPlayer(victim);
-            UnluckCheck[victim.PlayerId] = true;
+            return true;
         }
+        return false;
     }
 }

@@ -751,8 +751,8 @@ class ReportDeadBodyPatch
 
                 if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
                 {
-                    Unlucky.SuicideRand(__instance, Unlucky.StateSuicide.ReportDeadBody);
-                    if (Unlucky.UnluckCheck[__instance.PlayerId]) return false;
+                    if (Unlucky.SuicideRand(__instance, Unlucky.StateSuicide.ReportDeadBody)) 
+                        return false;
                    
                 }
             }

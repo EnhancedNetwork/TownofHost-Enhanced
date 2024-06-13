@@ -191,7 +191,6 @@ internal class ChangeRoleSettings
             Statue.Init();
             Ghoul.Init();
             Rainbow.Init();
-            Unlucky.Init();
 
             //FFA
             FFAManager.Init();
@@ -477,9 +476,6 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Antidote:
                             Antidote.Add();
-                            break;
-                        case CustomRoles.Unlucky:
-                            Unlucky.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Burst:
                             Burst.Add();
