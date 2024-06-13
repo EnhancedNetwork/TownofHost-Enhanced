@@ -57,7 +57,7 @@ public class MeetingTimeManager
             MeetingTimeMax = TimeManager.MeetingTimeLimit.GetInt();
             BonusMeetingTime += TimeManager.TotalIncreasedMeetingTime();
         }
-        if (SoulCollector.HasEnabled)
+        if (CustomRoles.Death.RoleExist())
         {
             BonusMeetingTime += SoulCollector.DeathMeetingTimeIncrease.GetInt();
         }

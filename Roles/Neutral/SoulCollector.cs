@@ -83,7 +83,15 @@ internal class SoulCollector : RoleBase
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
         => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-    => SoulCollectorTarget[seer.PlayerId] == seen.PlayerId ? $"<color={Utils.GetRoleColorCode(seer.GetCustomRole())}>♠</color>" : "";
+    => SoulCollectorTarget[seer.PlayerId] == seen.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠") : string.Empty;
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
+    {
+        if (SoulCollectorTarget[playerIdList.First()] == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First())
+        {
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠");
+        }
+        return string.Empty;
+    }
     public override bool CanUseKillButton(PlayerControl pc) => pc.Is(CustomRoles.SoulCollector);
     public override bool CanUseImpostorVentButton(PlayerControl pc) => SoulCollectorCanVent.GetBool();
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -102,9 +110,10 @@ internal class SoulCollector : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl ryuak, GameData.PlayerInfo iscute)
     {
+        PlayerControl sc = Utils.GetPlayerById(playerIdList.First());
         foreach (var playerId in SoulCollectorTarget.Keys)
         {
-            if (GetPassiveSouls.GetBool())
+            if (GetPassiveSouls.GetBool() && sc.IsAlive())
             {
                 SoulCollectorPoints[playerId]++;                
                 _ = new LateTask(() =>

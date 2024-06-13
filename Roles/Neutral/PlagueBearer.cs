@@ -197,8 +197,15 @@ internal class PlagueBearer : RoleBase
         }
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
-        => IsPlagued(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Pestilence), "⦿") : string.Empty;
-
+        => IsPlagued(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.PlagueBearer), "⦿") : string.Empty;
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
+    {
+        if (IsPlagued(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First())
+        {
+            return ColorString(GetRoleColor(CustomRoles.PlagueBearer), "⦿");
+        }
+        return string.Empty;
+    }
     public override string GetProgressText(byte playerId, bool comms)
     {
         var (plagued, all) = PlaguedPlayerCount(playerId);

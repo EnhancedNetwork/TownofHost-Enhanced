@@ -90,7 +90,15 @@ internal class Baker : RoleBase
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
         => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-        => BreadList[seer.PlayerId].Contains(seen.PlayerId) ? $"<color={GetRoleColorCode(seer.GetCustomRole())}>●</color>" : "";
+        => HasBread(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Baker), "●") : "";
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
+    {
+        if (HasBread(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First())
+        {
+            return ColorString(GetRoleColor(CustomRoles.Baker), "●");
+        }
+        return string.Empty;
+    }
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
     public override bool CanUseImpostorVentButton(PlayerControl pc) => BakerCanVent.GetBool();
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Main.AllPlayerKillCooldown[id];
@@ -205,7 +213,7 @@ internal class Famine : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => false;
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(GetString("FamineKillButtonText"));
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-        => Baker.FamineList[seer.PlayerId].Contains(seen.PlayerId) ? $"<color={GetRoleColorCode(seer.GetCustomRole())}>⁂</color>" : "";
+        => Baker.FamineList[seer.PlayerId].Contains(seen.PlayerId) ? $"<color={GetRoleColorCode(seer.GetCustomRole())}>⁂</color>" : string.Empty;
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.IsNeutralApocalypse()) killer.Notify(GetString("FamineCantStarveApoc"));
