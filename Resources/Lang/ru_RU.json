@@ -3069,7 +3069,7 @@
   "PirateTryHideMsg": "Скрыть команды <color=#EDC240>Пирата</color>",
   "SuccessfulDuelsToWin": "Количество успешных дуэлей, необходимое для победы",
   "PirateMeetingMsg": "Duel with your target.\n\nDuel command:\n⦿ /duel 0\n⦿ /duel 1\n⦿ /duel 2\n\nYou win the Duel if you choose the same option as the target",
-  "PirateTargetMeetingMsg": "<color=#EDC240>Пират</color> выбрал тебя своей целью! Сразитесь с ним, чтобы спасти свою жизнь.\n\n Команда дуэли: -\n⦿ /duel 0 (чтобы выбрать камень)\n⦿ /duel 1 (чтобы выбрать бумагу)\n⦿ /duel 2 (чтобы выбрать ножницы)\\ n\nЕсли <color=#EDC240>Пират</color> выберет тот же вариант, что и вы, или вы не будете участвовать в дуэли, то вы <b>умрёте</b>.",
+  "PirateTargetMeetingMsg": "<color=#EDC240>Пират</color> выбрал тебя своей целью! Сразитесь с ним, чтобы спасти свою жизнь.\n\n Команда дуэли: -\n⦿ /duel 0 (чтобы выбрать камень)\n⦿ /duel 1 (чтобы выбрать бумагу)\n⦿ /duel 2 (чтобы выбрать ножницы)\nЕсли <color=#EDC240>Пират</color> выберет тот же вариант, что и вы, или вы не будете участвовать в дуэли, то вы <b>умрёте</b>",
   "PirateTitle": "ПИРАТ ",
   "PirateTargetAlreadyChosen": "Вы уже выбрали цель в этом раунде.",
   "PirateDead": "Вы мертвы. Вы больше не можете проводить дуэли.",
