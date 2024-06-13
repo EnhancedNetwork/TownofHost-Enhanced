@@ -2793,6 +2793,7 @@
   "BanditStealCooldown": "Steal cooldown",
 
   "DoppelMaxSteals": "Maximum Steals",
+  "DoppelCurrentVictimCanSeeRolesAsDead": "Last victim can see role and add-on info of alive players as ghost",
 
   "NecromancerRevengeTime": "Necromancy time",
   "NecromancerRevenge": "You have {0}s to kill <color=#ff1919>{1}</color>",
