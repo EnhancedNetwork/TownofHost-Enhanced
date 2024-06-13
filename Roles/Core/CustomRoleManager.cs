@@ -197,8 +197,8 @@ public static class CustomRoleManager
                         break;
 
                     case CustomRoles.Unlucky:
-                        Unlucky.SuicideRand(killer, Unlucky.StateSuicide.TryKill);
-                        if (Unlucky.UnluckCheck[killer.PlayerId]) return false;
+                        if (Unlucky.SuicideRand(killer, Unlucky.StateSuicide.TryKill)) 
+                            return false;
                         break;
 
                     case CustomRoles.Tired:

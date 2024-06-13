@@ -99,9 +99,11 @@ internal class ChangeRoleSettings
             // Clear last exiled
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = null;
 
-            //名前の記録
-            //Main.AllPlayerNames = [];
+            IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
+
+            // Sync Player Names
             RPC.SyncAllPlayerNames();
+            //Main.AllPlayerNames = [];
 
             GhostRoleAssign.Init();
 
@@ -191,7 +193,6 @@ internal class ChangeRoleSettings
             Statue.Init();
             Ghoul.Init();
             Rainbow.Init();
-            Unlucky.Init();
 
             //FFA
             FFAManager.Init();
@@ -204,8 +205,6 @@ internal class ChangeRoleSettings
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
-
-            IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
 
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
@@ -477,9 +476,6 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Antidote:
                             Antidote.Add();
-                            break;
-                        case CustomRoles.Unlucky:
-                            Unlucky.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Burst:
                             Burst.Add();

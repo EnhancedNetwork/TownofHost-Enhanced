@@ -52,7 +52,7 @@ internal class AntiAdminer : RoleBase
     private static int Count = 0;
     public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        Count--; if (Count > 0) return; Count = 5;
+        Count--; if (Count > 0) return; Count = 3;
 
         bool Admin = false, Camera = false, DoorLog = false, Vital = false;
         foreach (PlayerControl pc in Main.AllAlivePlayerControls)

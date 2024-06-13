@@ -32,8 +32,7 @@ internal class ChatCommands
 
     public static bool Prefix(ChatController __instance)
     {
-        if (__instance.quickChatField.visible) return true;
-        if (__instance.freeChatField.textArea.text == "") return false;
+        if (__instance.quickChatField.visible == false && __instance.freeChatField.textArea.text == "") return false;
         if (!GameStates.IsModHost && !AmongUsClient.Instance.AmHost) return true;
         __instance.timeSinceLastMessage = 3f;
         var text = __instance.freeChatField.textArea.text;
@@ -325,28 +324,24 @@ internal class ChatCommands
                                 break;
                             }*/
 
+                case "/kc":
                 case "/kcount":
-                    //canceled = true;
-                    int impnum = 0;
-                    int neutralnum = 0;
+                    if (GameStates.IsLobby || !Options.EnableKillerLeftCommand.GetBool()) break;
 
-                    foreach (var players in Main.AllAlivePlayerControls)
-                    {
-                        if (Options.ShowImpRemainOnEject.GetBool())
-                        {
-                            if (players.GetCustomRole().IsImpostor())
-                                impnum++;
-                        }
-                        if (Options.ShowNKRemainOnEject.GetBool())
-                        {
-                            if (players.GetCustomRole().IsNK())
-                                neutralnum++;
-                        }
-                    }
-                    if (!GameStates.IsLobby && Options.EnableKillerLeftCommand.GetBool())
-                    {
-                        Utils.SendMessage(GetString("Remaining.ImpostorCount") + impnum + "\n\r" + GetString("Remaining.NeutralCount") + neutralnum, PlayerControl.LocalPlayer.PlayerId);
-                    }
+                    var allAlivePlayers = Main.AllAlivePlayerControls;
+                    int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
+                    int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                    int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
+
+                    var sub = new StringBuilder();
+                    sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
+
+                    if (Options.ShowMadmatesInLeftCommand.GetBool())
+                        sub.Append(string.Format("\n\r" + GetString("Remaining.MadmateCount"), madnum));
+
+                    sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
+
+                    Utils.SendMessage(sub.ToString(), PlayerControl.LocalPlayer.PlayerId);
                     break;
 
 
@@ -1133,6 +1128,9 @@ internal class ChatCommands
             Logger.Info("Command Canceled", "ChatCommand");
             __instance.freeChatField.textArea.Clear();
             __instance.freeChatField.textArea.SetText(cancelVal);
+
+            __instance.quickChatMenu.Clear();
+            __instance.quickChatField.Clear();
         }
         return !canceled;
     }
@@ -1820,27 +1818,24 @@ internal class ChatCommands
                             break;
                         } */
 
+            case "/kc":
             case "/kcount":
-                int impnum = 0;
-                int neutralnum = 0;
+                if (GameStates.IsLobby || !Options.EnableKillerLeftCommand.GetBool()) break;
 
-                foreach (var players in Main.AllAlivePlayerControls)
-                {
-                    if (Options.ShowImpRemainOnEject.GetBool())
-                    {
-                        if (players.GetCustomRole().IsImpostor())
-                            impnum++;
-                    }
-                    if (Options.ShowNKRemainOnEject.GetBool())
-                    {
-                        if (players.GetCustomRole().IsNK())
-                            neutralnum++;
-                    }
-                }
-                if (!GameStates.IsLobby && Options.EnableKillerLeftCommand.GetBool())
-                {
-                    Utils.SendMessage(GetString("Remaining.ImpostorCount") + impnum + "\n\r" + GetString("Remaining.NeutralCount") + neutralnum, player.PlayerId);
-                }
+                var allAlivePlayers = Main.AllAlivePlayerControls;
+                int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
+                int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
+
+                var sub = new StringBuilder();
+                sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
+
+                if (Options.ShowMadmatesInLeftCommand.GetBool())
+                    sub.Append(string.Format("\n\r" + GetString("Remaining.MadmateCount"), madnum));
+
+                sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
+
+                Utils.SendMessage(sub.ToString(), player.PlayerId);
                 break;
 
             case "/d":

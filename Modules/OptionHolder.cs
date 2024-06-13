@@ -133,6 +133,7 @@ public static class Options
     // ------------ System Settings Tab ------------
     public static OptionItem GradientTagsOpt;
     public static OptionItem EnableKillerLeftCommand;
+    public static OptionItem ShowMadmatesInLeftCommand;
     public static OptionItem SeeEjectedRolesInMeeting;
 
     public static OptionItem KickLowLevelPlayer;
@@ -1080,6 +1081,8 @@ public static class Options
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
             .SetColor(Color.green)
             .HideInHnS();
+        ShowMadmatesInLeftCommand = BooleanOptionItem.Create(60042, "ShowMadmatesInLeftCommand", true, TabGroup.SystemSettings, false)
+            .SetParent(EnableKillerLeftCommand);
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
             .SetColor(Color.green)
             .HideInHnS();

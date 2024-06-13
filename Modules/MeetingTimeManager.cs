@@ -32,8 +32,6 @@ public class MeetingTimeManager
     }
     public static void OnReportDeadBody()
     {
-        Main.MeetingIsStarted = true;
-
         if (Options.AllAliveMeeting.GetBool() && Utils.IsAllAlive)
         {
             DiscussionTime = 0;

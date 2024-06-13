@@ -88,8 +88,8 @@ class UpdateSystemPatch
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
             && (systemType is SystemTypes.Doors))
         {
-            Unlucky.SuicideRand(player, Unlucky.StateSuicide.OpenDoor);
-            if (Unlucky.UnluckCheck[player.PlayerId]) return false;
+            if (Unlucky.SuicideRand(player, Unlucky.StateSuicide.OpenDoor)) 
+                return false;
         }
 
         player.GetRoleClass()?.UpdateSystem(__instance, systemType, amount, player);

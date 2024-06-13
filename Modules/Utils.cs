@@ -1804,7 +1804,6 @@ public static class Utils
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                 {
                     SelfName = name;
-                    IsDisplayInfo = false;
                 }
 
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
@@ -1825,6 +1824,8 @@ public static class Utils
                 if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                     SelfName = $"<size=0%>{SelfName}</size>";
 
+                if (!SelfName.Contains(seer.GetRealName()))
+                    IsDisplayInfo = false;
 
                 switch (Options.CurrentGameMode)
                 {
@@ -2011,6 +2012,10 @@ public static class Utils
                         // Target Name
                         string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}{TargetSuffix}";
                         //TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
+
+                        // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
+                        if (seer.Data.IsDead && seer != target && !target.Data.IsDead && !target.Is(CustomRoles.Doppelganger) && !Doppelganger.CurrentVictimCanSeeRolesAsDead.GetBool() && Doppelganger.CurrentIdToSwap == seer.PlayerId)
+                            TargetName = target.GetRealName();
 
                         realTarget.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
                     }

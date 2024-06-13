@@ -108,6 +108,21 @@ public class RoleAssign
             int count = role.GetCount();
             RoleAssignInfo info = new(role, chance, count);
 
+            if (role is CustomRoles.Mini)
+            {
+                if (Mini.CheckSpawnEvilMini())
+                {
+                    info = new(CustomRoles.EvilMini, chance, count);
+                    Roles[RoleAssignType.Impostor].Add(info);
+                }
+                else
+                {
+                    info = new(CustomRoles.NiceMini, chance, count);
+                    Roles[RoleAssignType.Crewmate].Add(info);
+                }
+                continue;
+            }
+
             if (role.IsImpostor()) Roles[RoleAssignType.Impostor].Add(info);
             else if (role.IsNK()) Roles[RoleAssignType.NeutralKilling].Add(info);
             else if (role.IsNA()) Roles[RoleAssignType.NeutralApocalypse].Add(info);
@@ -725,22 +740,6 @@ public class RoleAssign
         if (NNKs.Any()) Logger.Info(string.Join(", ", NNKs.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "NNKRoleResult");
         if (NKs.Any()) Logger.Info(string.Join(", ", NKs.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "NKRoleResult");
         if (Crews.Any()) Logger.Info(string.Join(", ", Crews.Select(x => $"{x.Role} - {x.AssignedCount}/{x.MaxCount} ({x.SpawnChance}%)")), "CrewRoleResult");
-
-        if (FinalRolesList.Contains(CustomRoles.Mini))
-        {
-            FinalRolesList.Remove(CustomRoles.Mini);
-
-            if (Mini.CheckSpawnEvilMini())
-            {
-                //var tempImpRole = FinalRolesList.FirstOrDefault(role => role.IsImpostor());
-                //FinalRolesList.Remove(tempImpRole);
-                FinalRolesList.Add(CustomRoles.EvilMini);
-            }
-            else
-            {
-                FinalRolesList.Add(CustomRoles.NiceMini);
-            }
-        }
 
         if (Sunnyboy.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Jester)) FinalRolesList.Add(CustomRoles.Sunnyboy);
         if (Bard.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Arrogance)) FinalRolesList.Add(CustomRoles.Bard);

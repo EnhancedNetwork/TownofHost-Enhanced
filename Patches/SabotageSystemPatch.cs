@@ -305,8 +305,6 @@ public class SabotageSystemPatch
         }
         private static bool CanSabotage(PlayerControl player, SystemTypes systemType)
         {
-            var playerRole = player.GetCustomRole();
-
             if (systemType is SystemTypes.Comms)
             {
                 if (Camouflager.CantPressCommsSabotageButton(player))
