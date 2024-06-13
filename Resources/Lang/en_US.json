@@ -1371,7 +1371,7 @@
   "VampireActionMode": "Action Mode",
   "Vampire_OnlyBites": "Only Bites",
 
-  "KamikazeControversialSymbol":  "Use controversial symbol",
+  "KamikazeControversialSymbol": "Use controversial symbol",
 
   "MareAddSpeedInLightsOut": "Additional Speed During Lights Out",
   "MareKillCooldownInLightsOut": "Kill Cooldown During Lights Out",
@@ -1958,9 +1958,11 @@
   "Command.icons": "<size=85%><u>Icon Meanings</u></size>\n<size=60%>† - This player was spelled by a <color=#ff1919>Witch</color> and will die if the <color=#ff1919>Witch</color> is not killed by the end of the meeting\n<color=#663399>乂</color> - This player was hexed by a <color=#663399>Hex Master</color> and will die if the <color=#663399>Hex Master</color> is not killed by the end of the meeting\n<color=#375d91>❖</color> - This player was hexed by an <color=#375d91>Occultist</color> and will die if the <color=#375d91>Occultist</color> is not killed by the end of the meeting\n<color=#6697FF>◈</color> - This player was shrouded by a <color=#6697FF>Shroud</color> and will die if the <color=#6697FF>Shroud</color> is not killed by the end of the meeting\n<color=#EDC240>⦿</color> - This player is being dueled by a <color=#EDC240>Pirate</color>\n<color=#ff9ace>♥</color> - This player is a <color=#ff9ace>Lover</color>\n<color=#b8fb4f>⚠</color> - This player is a <color=#b8fb4f>Snitch</color> who has finished their tasks</size>",
   "Command.iconinfo": "→ Display info on in-meeting icons",
   "Command.iconhelp": "→ Display info on in-meeting icons to everyone",
-  "Remaining.ImpostorCount": "<color=#ff1919>Impostors</color> left: ",
-  "Remaining.NeutralCount": "<color=#7f8c8d>Neutral Killers</color> left: ",
+  "Remaining.ImpostorCount": "<color=#ff1919>Impostors</color> left: {0}",
+  "Remaining.MadmateCount": "<color=#ff1919>Madmates</color> left: {0}",
+  "Remaining.NeutralCount": "<color=#7f8c8d>Neutral Killers</color> left: {0}",
   "EnableKillerLeftCommand": "Enable use of /kcount command",
+  "ShowMadmatesInLeftCommand": "Show <color=#ff1919>Madmates</color> (including add-ons)",
   "SeeEjectedRolesInMeeting": "See ejected roles in meetings",
 
   "SkillUsedLeft": "You have activated your skill to call a meeting. \nRemaining amount of uses left:",
@@ -3162,7 +3164,7 @@
   "GhastlyNotUrTarget": "That is not your target",
   "GhastlyYouvePosses": "You've Been Possessed!",
   "GhastlyPossessedUser": "You have possessed: {0}",
-  "GhastlyExpired":  "{0} is no longer possessed",
+  "GhastlyExpired": "{0} is no longer possessed",
 
   "TasksMarkPerRound": "Number of tasks that can be marked in one round",
   "TaskinatorBombPlanted": "Bomb has been planted",
