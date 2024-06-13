@@ -18,6 +18,7 @@ internal class Doppelganger : RoleBase
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
     private static OptionItem MaxSteals;
+    public static OptionItem CurrentVictimCanSeeRolesAsDead;
 
     public static readonly Dictionary<byte, string> DoppelVictim = [];
     public static readonly Dictionary<PlayerControl, byte> PlayerControllerToIDRam = []; // Edit ids!
