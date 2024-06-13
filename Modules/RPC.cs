@@ -614,7 +614,7 @@ internal class RPCHandlerPatch
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
 internal class PlayerPhysicsRPCHandlerPatch
 {
-    private static bool hasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId);
+    private static bool hasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId) || ventId is 99;
     private static bool hasLadder(int ladderId) => ShipStatus.Instance.Ladders.Any(l => l.Id == ladderId);
 
     public static bool Prefix(PlayerPhysics __instance, byte callId, MessageReader reader)
