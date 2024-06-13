@@ -46,7 +46,6 @@ public static class Unlucky
     {
         var shouldBeSuicide = IRandom.Instance.Next(1, 100) <= state switch
         {
-
             StateSuicide.TryKill => UnluckyKillSuicideChance.GetInt(),
             StateSuicide.CompleteTask => UnluckyTaskSuicideChance.GetInt(),
             StateSuicide.EnterVent => UnluckyVentSuicideChance.GetInt(),
