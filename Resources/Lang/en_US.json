@@ -1371,7 +1371,7 @@
   "VampireActionMode": "Action Mode",
   "Vampire_OnlyBites": "Only Bites",
 
-  "KamikazeControversialSymbol":  "Use controversial symbol",
+  "KamikazeControversialSymbol": "Use controversial symbol",
 
   "MareAddSpeedInLightsOut": "Additional Speed During Lights Out",
   "MareKillCooldownInLightsOut": "Kill Cooldown During Lights Out",
@@ -1468,6 +1468,8 @@
   "LawyerVision": "<color=#008080>Lawyer</color> Vision",
   "FlashSpeed": "<color=#ff8400>Flash</color> Speed",
   "LoverSuicide": "<color=#ff9ace>Lovers</color> die together",
+  "LoversStealWinWhenAlive": "<color=#ff9ace>Lovers</color> steal the win when alive",
+  "LoversFollowWin": "<color=#ff9ace>Lovers</color> follow the winner team when died",
   "NumberOfLovers": "Number of <color=#ff9ace>Lover Pairs</color> (x2 members)",
   "LoverKnowRoles": "<color=#ff9ace>Lovers</color> know the roles of each other",
   "TrapperBlockMoveTime": "Freeze time",
@@ -3162,7 +3164,7 @@
   "GhastlyNotUrTarget": "That is not your target",
   "GhastlyYouvePosses": "You've Been Possessed!",
   "GhastlyPossessedUser": "You have possessed: {0}",
-  "GhastlyExpired":  "{0} is no longer possessed",
+  "GhastlyExpired": "{0} is no longer possessed",
 
   "TasksMarkPerRound": "Number of tasks that can be marked in one round",
   "TaskinatorBombPlanted": "Bomb has been planted",

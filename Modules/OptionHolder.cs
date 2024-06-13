@@ -489,6 +489,8 @@ public static class Options
     public static OptionItem LoverSpawnChances;
     public static OptionItem LoverKnowRoles;
     public static OptionItem LoverSuicide;
+    public static OptionItem LoversStealWinWhenAlive;
+    public static OptionItem LoversFollowWin;
     public static OptionItem ImpCanBeInLove;
     public static OptionItem CrewCanBeInLove;
     public static OptionItem NeutralCanBeInLove;
@@ -1912,6 +1914,14 @@ public static class Options
             .SetGameMode(customGameMode);
 
         LoverSuicide = BooleanOptionItem.Create(id + 3, "LoverSuicide", true, TabGroup.Addons, false)
+        .SetParent(spawnOption)
+            .SetGameMode(customGameMode);
+
+        LoversStealWinWhenAlive = BooleanOptionItem.Create(id + 8, "LoversStealWinWhenAlive", true, TabGroup.Addons, false)
+        .SetParent(spawnOption)
+            .SetGameMode(customGameMode);
+
+        LoversFollowWin = BooleanOptionItem.Create(id + 9, "LoversFollowWin", false, TabGroup.Addons, false)
         .SetParent(spawnOption)
             .SetGameMode(customGameMode);
 
