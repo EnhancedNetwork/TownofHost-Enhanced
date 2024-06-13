@@ -270,7 +270,6 @@ public static class CustomRoleManager
 
         // target was murder by killer
         targetRoleClass.OnMurderPlayerAsTarget(killer, target, inMeeting, isSuicide);
-        targetRoleClass.OnSelfReducedToAtoms(false);
 
         // Check target add-ons
         if (targetSubRoles.Any())
