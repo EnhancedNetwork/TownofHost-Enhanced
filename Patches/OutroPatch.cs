@@ -32,8 +32,7 @@ class EndGamePatch
         {
             foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
             {
-                var plr = Utils.GetPlayerById(pvc);
-                if (!plr.GetCustomRole().IsGhostRole()) continue;
+                if (!Main.PlayerStates.TryGetValue(pvc, out var state) || !state.MainRole.IsGhostRole()) continue;
                 if (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole)) continue;
                     
                 Main.PlayerStates[pvc].MainRole = prevrole;
