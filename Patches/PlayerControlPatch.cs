@@ -516,36 +516,6 @@ class RpcMurderPlayerPatch
     }
 }
 
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
-
-class ExiledPatch
-{
-    public static void Postfix(PlayerControl __instance)
-    {
-        try
-        {
-            var playerclass = __instance.GetRoleClass();
-
-            Action<bool> SelfExile = Utils.LateExileTask.FirstOrDefault(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId) ?? playerclass.OnSelfReducedToAtoms;
-            if (GameStates.IsInTask)
-            {
-                SelfExile(false);
-                Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
-            }
-            else
-            {
-                Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
-                Utils.LateExileTask.Add(SelfExile);
-            }
-        }
-        catch (Exception err)
-        {
-            Logger.Exception(err, "Playercontrol.Exiled");
-        }
-    }
-
-}
-
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckShapeshift))]
 public static class CheckShapeshiftPatch
 {
@@ -1578,11 +1548,31 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        
+        try
+        {
             if (GameStates.IsNormalGame && GameStates.IsInGame && !GameEndCheckerForNormal.ForEndGame)
             {
                 CustomRoleManager.AllEnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
+
+                var playerclass = __instance.GetRoleClass();
+
+                Action<bool> SelfExile = Utils.LateExileTask.FirstOrDefault(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId) ?? playerclass.OnSelfReducedToAtoms;
+                if (GameStates.IsInTask)
+                {
+                    SelfExile(false);
+                    Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
+                }
+                else
+                {
+                    Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
+                    Utils.LateExileTask.Add(SelfExile);
+                }
             }
+        }
+        catch (Exception exx)
+        {
+            Logger.Error($"Error after Targetreducedtoatoms: {exx}", "PlayerControl.Die");
+        }
 
         __instance.RpcRemovePet();
     }
