@@ -114,7 +114,7 @@ internal class Swooper : RoleBase
                     swooper.Notify(GetString("SwooperInvisInCooldown"));
                 }
             }
-        }, 0.5f, "Swooper Vent");
+        }, 0.8f, "Swooper Vent");
     }
 
     public override void OnFixedUpdateLowLoad(PlayerControl player)

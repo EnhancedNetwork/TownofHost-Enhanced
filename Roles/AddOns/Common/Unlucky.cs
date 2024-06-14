@@ -1,4 +1,5 @@
-﻿using static TOHE.Options;
+﻿using System.Reflection.Metadata.Ecma335;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -14,8 +15,6 @@ public static class Unlucky
     public static OptionItem ImpCanBeUnlucky;
     public static OptionItem CrewCanBeUnlucky;
     public static OptionItem NeutralCanBeUnlucky;
-
-    public static readonly Dictionary<byte, bool> UnluckCheck = [];
 
     public enum StateSuicide
     {
@@ -43,49 +42,25 @@ public static class Unlucky
         CrewCanBeUnlucky = BooleanOptionItem.Create(Id + 16, "CrewCanBeUnlucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
         NeutralCanBeUnlucky = BooleanOptionItem.Create(Id + 17, "NeutralCanBeUnlucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
     }
-    
-    public static void Init()
+    public static bool SuicideRand(PlayerControl victim, StateSuicide state)
     {
-        UnluckCheck.Clear();
-    }
-    public static void Add(byte PlayerId)
-    {
-        UnluckCheck.Add(PlayerId, false);
-    }
-    public static void Remove(byte player)
-    {
-        UnluckCheck.Remove(player);
-    }
-
-    public static void SuicideRand(PlayerControl victim, StateSuicide state)
-    {
-        var random = IRandom.Instance;
-        var shouldBeSuicide = false;
-
-        switch (state)
+        var shouldBeSuicide = IRandom.Instance.Next(1, 100) <= state switch
         {
-            case StateSuicide.TryKill:
-                shouldBeSuicide = random.Next(1, 101) <= UnluckyKillSuicideChance.GetInt();
-                break;
-            case StateSuicide.CompleteTask:
-                shouldBeSuicide = random.Next(1, 101) <= UnluckyTaskSuicideChance.GetInt();
-                break;
-            case StateSuicide.EnterVent:
-                shouldBeSuicide = random.Next(1, 101) <= UnluckyVentSuicideChance.GetInt();
-                break;
-            case StateSuicide.ReportDeadBody:
-                shouldBeSuicide = random.Next(1, 101) <= UnluckyReportSuicideChance.GetInt();
-                break;
-            case StateSuicide.OpenDoor:
-                shouldBeSuicide = random.Next(1, 101) <= UnluckyOpenDoorSuicideChance.GetInt();
-                break;
-        }
+            StateSuicide.TryKill => UnluckyKillSuicideChance.GetInt(),
+            StateSuicide.CompleteTask => UnluckyTaskSuicideChance.GetInt(),
+            StateSuicide.EnterVent => UnluckyVentSuicideChance.GetInt(),
+            StateSuicide.ReportDeadBody => UnluckyReportSuicideChance.GetInt(),
+            StateSuicide.OpenDoor => UnluckyOpenDoorSuicideChance.GetInt(),
+
+            _ => -1
+        };
 
         if (shouldBeSuicide)
         {
-            Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+            victim.SetDeathReason(PlayerState.DeathReason.Suicide);
             victim.RpcMurderPlayer(victim);
-            UnluckCheck[victim.PlayerId] = true;
+            return true;
         }
+        return false;
     }
 }

@@ -751,8 +751,8 @@ class ReportDeadBodyPatch
 
                 if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
                 {
-                    Unlucky.SuicideRand(__instance, Unlucky.StateSuicide.ReportDeadBody);
-                    if (Unlucky.UnluckCheck[__instance.PlayerId]) return false;
+                    if (Unlucky.SuicideRand(__instance, Unlucky.StateSuicide.ReportDeadBody)) 
+                        return false;
                    
                 }
             }
@@ -1231,6 +1231,16 @@ class FixedUpdateInNormalGamePatch
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
                     ? $" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : string.Empty;
+
+                // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
+                if (seer.Data.IsDead && seer != target && !target.Data.IsDead && !target.Is(CustomRoles.Doppelganger) && !Doppelganger.CurrentVictimCanSeeRolesAsDead.GetBool() && Doppelganger.CurrentIdToSwap == seer.PlayerId)
+                {
+                    RealName = target.GetRealName();
+                    DeathReason = string.Empty;
+                    RoleText.text = string.Empty;
+                    Suffix.Clear();
+                    Mark.Clear();
+                }
 
                 realTarget.cosmetics.nameText.text = $"{RealName}{DeathReason}{Mark}";
 

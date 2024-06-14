@@ -208,9 +208,11 @@ internal class DollMaster : RoleBase
     // Handle specific killing roles when interacting with a Dollmaster or Player while possessing.
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (IsControllingPlayer)
+        if (IsControllingPlayer && DollMasterTarget != null && controllingTarget != null)
         {
             if (!CanKillerUseAbility(killer)) return true;
+
+            if (killer.GetCustomRole().IsImpostorTeam() && target == controllingTarget) return true;
 
             if (killer.Is(CustomRoles.Sheriff) && killer != DollMasterTarget && target == DollMasterTarget)
             {

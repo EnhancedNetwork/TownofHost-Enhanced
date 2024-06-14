@@ -17,18 +17,22 @@ public class ShowHostMeetingPatch
     [HarmonyPostfix]
     public static void OnDestroyPostfix()
     {
-        if (GameStates.IsInGame && HostControl == null)
+        try
         {
-            HostControl = AmongUsClient.Instance.GetHost().Character;
-            hostName = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.PlayerName;
-            hostColor = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.ColorId;
-
-            if (Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1 && Doppelganger.CheckDoppelVictim(AmongUsClient.Instance.GetHost().Character.PlayerId))
+            if (GameStates.IsInGame && HostControl == null)
             {
-                hostName = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].PlayerName;
-                hostColor = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].ColorId;
+                HostControl = AmongUsClient.Instance.GetHost().Character;
+                hostName = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.PlayerName;
+                hostColor = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.ColorId;
+
+                if (Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1 && Doppelganger.CheckDoppelVictim(AmongUsClient.Instance.GetHost().Character.PlayerId))
+                {
+                    hostName = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].PlayerName;
+                    hostColor = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].ColorId;
+                }
             }
         }
+        catch { }
     }
 
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]

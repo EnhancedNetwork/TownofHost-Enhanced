@@ -86,7 +86,7 @@ internal class Admirer : RoleBase
     }
     
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? AdmireCooldown.GetFloat() : 300f;
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && AbilityLimit >= 1;
+    public override bool CanUseKillButton(PlayerControl player) => AbilityLimit >= 1;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
