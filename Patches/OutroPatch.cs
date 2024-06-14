@@ -25,7 +25,9 @@ class EndGamePatch
 
         // if game is H&S or Host no have mod
         if (!GameStates.IsModHost || GameStates.IsHideNSeek) return;
-        
+
+        Logger.Info("-----------Game over-----------", "Phase");
+
         try
         {
             foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
@@ -33,26 +35,16 @@ class EndGamePatch
                 var plr = Utils.GetPlayerById(pvc);
                 if (plr == null || !plr.GetCustomRole().IsGhostRole()) continue;
 
-                CustomRoles prevrole = GhostRoleAssign.GhostGetPreviousRole[pvc];
-                Main.PlayerStates[pvc].SetMainRole(prevrole);
-
-                if (AmongUsClient.Instance.AmHost)
-                {
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
-                    writer.Write(pvc);
-                    writer.WritePacked((int)prevrole);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
-                }
+                if (GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole))
+                    Main.PlayerStates[pvc].MainRole = prevrole;
             }
+
             if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
-            // Seems to be a problem with Exiled() Patch. I plan to diligently attempt fixes in RoleBase PR.
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Logger.Warn($"{e} at EndGamePatch", "GhostGetPreviousRole");
         }
-
-        Logger.Info("-----------Game over-----------", "Phase");
 
         SummaryText = [];
 
