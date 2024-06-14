@@ -727,10 +727,6 @@ static class ExtendedPlayerControl
         }
         switch (Addon)
         {
-            case CustomRoles.Unlucky:
-                Unlucky.Remove(Killed.PlayerId);
-                Unlucky.Add(target.PlayerId);
-                break;
             case CustomRoles.Tired:
                 Tired.Remove(Killed.PlayerId);
                 Tired.Add(target.PlayerId);
