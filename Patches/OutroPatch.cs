@@ -43,7 +43,7 @@ class EndGamePatch
         }
         catch (Exception e)
         {
-            Logger.Warn($"{e} at EndGamePatch", "GhostGetPreviousRole");
+            Logger.Error($"{e} at EndGamePatch", "GhostGetPreviousRole");
         }
 
         SummaryText = [];
