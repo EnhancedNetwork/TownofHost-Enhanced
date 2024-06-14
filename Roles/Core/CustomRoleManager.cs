@@ -166,6 +166,7 @@ public static class CustomRoleManager
         // Forced check
         if (killerRoleClass.ForcedCheckMurderAsKiller(killer, target) == false)
         {
+            __state = true;
             Logger.Info("Cancels because for killer no need kill target", "ForcedCheckMurderAsKiller");
             return false;
         }
@@ -175,6 +176,7 @@ public static class CustomRoleManager
         // Check in target
         if (killer.RpcCheckAndMurder(target, true) == false)
         {
+            __state = true;
             Logger.Info("Cancels because target cancel kill", "OnCheckMurder.RpcCheckAndMurder");
             return false;
         }
