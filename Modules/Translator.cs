@@ -214,6 +214,25 @@ public static class Translator
             }
         return str;
     }
+    public static bool TryGetString(string strItem, out string s)
+    {
+        static bool Checkif(string str)
+        {
+            string[] strings = [$"*{str}", "INVALID"];
+            return strings.Any(str.Contains);
+        }
+
+        var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
+        if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
+        string str = GetString(strItem, langId, true);
+        s = str;
+
+        if (!Checkif(str))
+        {
+            return true;
+        }
+        return false;
+    }
 
     public static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
     {
