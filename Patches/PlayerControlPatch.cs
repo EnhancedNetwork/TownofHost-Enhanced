@@ -104,7 +104,7 @@ class CheckMurderPatch
             }
         }
     }
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state = false)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
         if (GameStates.IsHideNSeek) return true;
@@ -152,9 +152,9 @@ class CheckMurderPatch
 
         return false;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __runOriginal)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state)
     {
-        if (!__runOriginal) // Notify roles after ability usage 
+        if (__state)
         {
             Utils.NotifyRoles(SpecifySeer: __instance);
             Utils.NotifyRoles(SpecifySeer: target);
