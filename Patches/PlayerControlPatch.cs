@@ -138,7 +138,7 @@ class CheckMurderPatch
 
         Logger.Info($"Start: CustomRoleManager.OnCheckMurder", "CheckMurder");
 
-        if (CustomRoleManager.OnCheckMurder(ref killer, ref target) == false)
+        if (CustomRoleManager.OnCheckMurder(ref killer, ref target, ref __state) == false)
         {
             Logger.Info($"Canceled from CustomRoleManager.OnCheckMurder", "CheckMurder");
             return false;
