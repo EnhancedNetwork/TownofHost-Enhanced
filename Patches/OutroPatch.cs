@@ -34,9 +34,9 @@ class EndGamePatch
             {
                 var plr = Utils.GetPlayerById(pvc);
                 if (plr == null || !plr.GetCustomRole().IsGhostRole()) continue;
-
-                if (GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole))
-                    Main.PlayerStates[pvc].MainRole = prevrole;
+                if (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole)) continue;
+                    
+                Main.PlayerStates[pvc].MainRole = prevrole;
             }
 
             if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
