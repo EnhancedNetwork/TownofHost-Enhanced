@@ -16,8 +16,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
-using MS.Internal.Xml.XPath;
 
 namespace TOHE;
 
@@ -156,13 +154,11 @@ class CheckMurderPatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __runOriginal)
     {
-
         if (!__runOriginal) // Notify roles after ability usage 
         {
             Utils.NotifyRoles(SpecifySeer: __instance);
             Utils.NotifyRoles(SpecifySeer: target);
         }
-
     }
     public static bool CheckForInvalidMurdering(PlayerControl killer, PlayerControl target)
     {
