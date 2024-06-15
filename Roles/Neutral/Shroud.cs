@@ -106,6 +106,7 @@ internal class Shroud : RoleBase
         if (!shroud.IsAlive() || Pelican.IsEaten(shroud.PlayerId))
         {
             ShroudList.Remove(shroud.PlayerId);
+            SendRPC(byte.MaxValue, shroud.PlayerId, 2);
         }
         else
         {
@@ -147,21 +148,14 @@ internal class Shroud : RoleBase
 
     public override void OnPlayerExiled(PlayerControl shroud, GameData.PlayerInfo exiled)
     {
-        if (!shroud.IsAlive())
-        {
-            ShroudList.Remove(shroud.PlayerId);
-            SendRPC(byte.MaxValue, shroud.PlayerId, 2);
-            return;
-        }
-
         foreach (var shroudedId in ShroudList.Keys)
         {
             PlayerControl shrouded = Utils.GetPlayerById(shroudedId);
-            if (shrouded == null) continue;
+            if (!shrouded.IsAlive()) continue;
 
             Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
             shrouded.RpcMurderPlayer(shrouded);
-            shrouded.SetRealKiller(_Player);
+            shrouded.SetRealKiller(shroud);
 
             ShroudList.Remove(shrouded.PlayerId);
             SendRPC(byte.MaxValue, shrouded.PlayerId, 2);
