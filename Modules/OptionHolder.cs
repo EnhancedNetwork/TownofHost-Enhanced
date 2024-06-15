@@ -352,6 +352,7 @@ public static class Options
     public static OptionItem FixFirstKillCooldown;
     public static OptionItem FixKillCooldownValue;
     public static OptionItem ShieldPersonDiedFirst;
+    public static OptionItem EveryoneCanSeeDeathReason;
 
     public static OptionItem KillFlashDuration;
 
@@ -1320,7 +1321,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Reset Doors Mode
-        DoorsResetMode = StringOptionItem.Create(60501, "DoorsResetMode", EnumHelper.GetAllNames<DoorsReset.ResetMode>(), 2, TabGroup.GameSettings, false)
+        DoorsResetMode = StringOptionItem.Create(60501, "DoorsResetMode", EnumHelper.GetAllNames<DoorsReset.ResetModeList>(), 2, TabGroup.GameSettings, false)
             .SetParent(ResetDoorsEveryTurns)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Change decontamination time on MiraHQ/Polus
@@ -1830,6 +1831,9 @@ public static class Options
             .SetParent(FixFirstKillCooldown);
         // 首刀保护
         ShieldPersonDiedFirst = BooleanOptionItem.Create(60780, "ShieldPersonDiedFirst", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+        EveryoneCanSeeDeathReason = BooleanOptionItem.Create(60781, "EveryoneCanSeeDeathReason", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 

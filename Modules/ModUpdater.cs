@@ -31,7 +31,7 @@ public class ModUpdater
     public static PassiveButton updateButton;
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.VeryLow)]
-    public static void Start_Prefix(/*MainMenuManager __instance*/)
+    public static void Start_Postfix(/*MainMenuManager __instance*/)
     {
         ResetUpdateButton();
         if (isChecked) return;

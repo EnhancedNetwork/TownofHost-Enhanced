@@ -827,6 +827,8 @@ public static class Utils
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
+        if (Options.HideGameSettings.GetBool()) return;
+
         foreach (var opt in option.Children.Select((v, i) => new { Value = v, Index = i + 1 }).ToArray())
         {
             if (command)
@@ -1951,7 +1953,7 @@ public static class Utils
 
 
                                     //Impostors
-                                    if (Options.ImpostorsCanGuess.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Councillor) && !seer.Is(CustomRoles.Nemesis))
+                                    if (Options.ImpostorsCanGuess.GetBool() && (seer.GetCustomRole().IsImpostor() || seer.GetCustomRole().IsMadmate()) && !seer.Is(CustomRoles.Councillor) && !seer.Is(CustomRoles.Nemesis))
                                         TargetPlayerName = GetTragetId;
 
                                     else if (seer.Is(CustomRoles.EvilGuesser) && !Options.ImpostorsCanGuess.GetBool())
