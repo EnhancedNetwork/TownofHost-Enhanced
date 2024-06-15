@@ -230,6 +230,7 @@ public static class CustomRoleManager
             {
                 target.RpcMurderPlayer(target);
                 target.SetRealKiller(killer);
+                Oiiai.OnMurderPlayer(killer, target);
             }
 
             Logger.Info("Cancels because for killer no need kill target", "OnCheckMurderAsKiller");
@@ -261,6 +262,7 @@ public static class CustomRoleManager
         {
             target.RpcMurderPlayer(target);
             target.SetRealKiller(killer);
+            Oiiai.OnMurderPlayer(killer, target);
             return false;
         }
                 
