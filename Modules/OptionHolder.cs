@@ -1320,7 +1320,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Reset Doors Mode
-        DoorsResetMode = StringOptionItem.Create(60501, "DoorsResetMode", EnumHelper.GetAllNames<DoorsReset.ResetMode>(), 2, TabGroup.GameSettings, false)
+        DoorsResetMode = StringOptionItem.Create(60501, "DoorsResetMode", EnumHelper.GetAllNames<DoorsReset.ResetModeList>(), 2, TabGroup.GameSettings, false)
             .SetParent(ResetDoorsEveryTurns)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Change decontamination time on MiraHQ/Polus
