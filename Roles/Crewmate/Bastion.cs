@@ -108,7 +108,7 @@ internal class Bastion : RoleBase
     {
         if (BastionNumberOfAbilityUses >= 1)
         {
-            BastionNumberOfAbilityUses -= 1;
+            BastionNumberOfAbilityUses--;
             if (!BombedVents.Contains(vent.Id)) BombedVents.Add(vent.Id);
             pc.Notify(GetString("VentBombSuccess"));
         }

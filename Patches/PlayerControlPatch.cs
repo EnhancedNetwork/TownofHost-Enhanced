@@ -635,14 +635,26 @@ class ShapeshiftPatch
 
         shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, animate, shapeshifting);
 
-        //Forced update and rewrite players name
-        if (!shapeshifting && !shapeshifter.Is(CustomRoles.Glitch))
+        if (!shapeshifter.Is(CustomRoles.Glitch))
         {
-            _ = new LateTask(() =>
+            var time = animate ? 1.2f : 0.5f;
+            //Forced update players name
+            if (shapeshifting)
             {
-                Utils.NotifyRoles(NoCache: true);
-            },
-            1.2f, "ShapeShiftNotify");
+                _ = new LateTask(() =>
+                {
+                    Utils.NotifyRoles(SpecifyTarget: shapeshifter, NoCache: true);
+                },
+                time, "ShapeShiftNotify");
+            }
+            else if (!shapeshifting)
+            {
+                _ = new LateTask(() =>
+                {
+                    Utils.NotifyRoles(NoCache: true);
+                },
+                time, "UnShiftNotify");
+            }
         }
     }
 }
