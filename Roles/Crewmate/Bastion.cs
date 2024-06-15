@@ -25,7 +25,6 @@ internal class Bastion : RoleBase
     private static OptionItem BastionMaxBombs;
 
     private static readonly HashSet<int> BombedVents = [];
-    private static float BastionNumberOfAbilityUses = 0;
 
     public override void SetupCustomOption()
     {
@@ -45,7 +44,7 @@ internal class Bastion : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        BastionNumberOfAbilityUses = BastionMaxBombs.GetInt();
+        AbilityLimit = BastionMaxBombs.GetInt();
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -55,7 +54,7 @@ internal class Bastion : RoleBase
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player.IsAlive())
-            BastionNumberOfAbilityUses += BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
+            AbilityLimit += BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
         
         return true;
     }
@@ -70,10 +69,10 @@ internal class Bastion : RoleBase
         TextColor15 = comms ? Color.gray : NormalColor15;
         string Completed15 = comms ? "?" : $"{taskState15.CompletedTasksCount}";
         Color TextColor151;
-        if (BastionNumberOfAbilityUses < 1) TextColor151 = Color.red;
+        if (AbilityLimit < 1) TextColor151 = Color.red;
         else TextColor151 = Color.white;
         ProgressText.Append(ColorString(TextColor15, $"({Completed15}/{taskState15.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor151, $" <color=#777777>-</color> {Math.Round(BastionNumberOfAbilityUses, 1)}"));
+        ProgressText.Append(ColorString(TextColor151, $" <color=#777777>-</color> {Math.Round(AbilityLimit, 1)}"));
         return ProgressText.ToString();
     }
     public override bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId)
@@ -90,25 +89,24 @@ internal class Bastion : RoleBase
         {
             _ = new LateTask(() =>
             {
-                foreach (var bastion in Main.AllAlivePlayerControls.Where(bastion => bastion.Is(CustomRoles.Bastion)).ToArray())
-                {
-                    bastion.Notify(GetString("BastionNotify"));
-                    pc.Notify(GetString("EnteredBombedVent"));
+                var bastion = _Player;
+                bastion.Notify(GetString("BastionNotify"));
+                pc.Notify(GetString("EnteredBombedVent"));
 
-                    Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                    pc.RpcMurderPlayer(pc);
-                    pc.SetRealKiller(bastion);
-                    BombedVents.Remove(ventId);
-                }
+                Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                pc.RpcMurderPlayer(pc);
+                pc.SetRealKiller(bastion);
+                BombedVents.Remove(ventId);
             }, 0.5f, "Player bombed by Bastion");
             return true;
         }
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (BastionNumberOfAbilityUses >= 1)
+        if (AbilityLimit >= 1)
         {
-            BastionNumberOfAbilityUses -= 1;
+            AbilityLimit--;
+            SendSkillRPC();
             if (!BombedVents.Contains(vent.Id)) BombedVents.Add(vent.Id);
             pc.Notify(GetString("VentBombSuccess"));
         }

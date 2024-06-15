@@ -13,9 +13,6 @@ public static class Swift
     }
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        target.RpcMurderPlayer(target);
-        target.SetRealKiller(killer);
-        Oiiai.OnMurderPlayer(killer, target);
 
         if (!DisableShieldAnimations.GetBool())
             killer.RpcGuardAndKill(killer);

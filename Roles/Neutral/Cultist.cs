@@ -24,7 +24,7 @@ internal class Cultist : RoleBase
     private static OptionItem CanCharmNeutral;
     public static OptionItem CharmedCountMode;
 
-    private enum CharmedCountModeSelect
+    private enum CharmedCountModeSelectList
     {
         Cultist_CharmedCountMode_None,
         Cultist_CharmedCountMode_Cultist,
@@ -42,7 +42,7 @@ internal class Cultist : RoleBase
             .SetValueFormat(OptionFormat.Times);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "CultistKnowTargetRole", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
         TargetKnowOtherTarget = BooleanOptionItem.Create(Id + 14, "CultistTargetKnowOtherTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
-        CharmedCountMode = StringOptionItem.Create(Id + 17, "Cultist_CharmedCountMode", EnumHelper.GetAllNames<CharmedCountModeSelect>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
+        CharmedCountMode = StringOptionItem.Create(Id + 17, "Cultist_CharmedCountMode", EnumHelper.GetAllNames<CharmedCountModeSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
         CanCharmNeutral = BooleanOptionItem.Create(Id + 18, "CultistCanCharmNeutral", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
     }
     public override void Add(byte playerId)

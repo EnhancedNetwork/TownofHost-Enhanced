@@ -10,7 +10,6 @@ internal class CopyCat : RoleBase
     private const int Id = 11500;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -59,7 +58,7 @@ internal class CopyCat : RoleBase
         foreach (var player in playerIdList.ToArray())
         {
             var pc = Utils.GetPlayerById(player);
-            if (pc == null) continue;
+            if (!pc.IsAlive()) continue;
             ////////////           /*remove the settings for current role*/             /////////////////////
             
             var pcRole = pc.GetCustomRole();

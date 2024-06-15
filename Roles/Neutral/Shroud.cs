@@ -84,6 +84,7 @@ internal class Shroud : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (ShroudList.ContainsKey(target.PlayerId)) return false;
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantShroud")));
@@ -106,6 +107,7 @@ internal class Shroud : RoleBase
         if (!shroud.IsAlive() || Pelican.IsEaten(shroud.PlayerId))
         {
             ShroudList.Remove(shroud.PlayerId);
+            SendRPC(byte.MaxValue, shroud.PlayerId, 2);
         }
         else
         {
@@ -149,19 +151,19 @@ internal class Shroud : RoleBase
     {
         if (!shroud.IsAlive())
         {
-            ShroudList.Remove(shroud.PlayerId);
-            SendRPC(byte.MaxValue, shroud.PlayerId, 2);
+            ShroudList.Clear();
+            SendRPC(byte.MaxValue, byte.MaxValue, 1);
             return;
         }
 
         foreach (var shroudedId in ShroudList.Keys)
         {
             PlayerControl shrouded = Utils.GetPlayerById(shroudedId);
-            if (shrouded == null) continue;
+            if (!shrouded.IsAlive()) continue;
 
             Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
             shrouded.RpcMurderPlayer(shrouded);
-            shrouded.SetRealKiller(_Player);
+            shrouded.SetRealKiller(shroud);
 
             ShroudList.Remove(shrouded.PlayerId);
             SendRPC(byte.MaxValue, shrouded.PlayerId, 2);
@@ -169,7 +171,7 @@ internal class Shroud : RoleBase
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isMeeting = false)
-            => isMeeting && target != null && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
+        => isMeeting && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
     
         
 

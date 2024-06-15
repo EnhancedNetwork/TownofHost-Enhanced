@@ -55,7 +55,7 @@ public class ModNews
     }
 
     [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.Init)), HarmonyPostfix]
-    public static void Initialize(ref Il2CppSystem.Collections.IEnumerator __result)
+    public static void Initialize_Postfix(ref Il2CppSystem.Collections.IEnumerator __result)
     {
         static IEnumerator FetchBlacklist()
         {
@@ -110,7 +110,7 @@ public class ModNews
 
 
     [HarmonyPatch(typeof(PlayerAnnouncementData), nameof(PlayerAnnouncementData.SetAnnouncements)), HarmonyPrefix]
-    public static bool SetModAnnouncements(PlayerAnnouncementData __instance, [HarmonyArgument(0)] ref Il2CppReferenceArray<Announcement> aRange)
+    public static bool SetModAnnouncements_Prefix(PlayerAnnouncementData __instance, [HarmonyArgument(0)] ref Il2CppReferenceArray<Announcement> aRange)
     {
         Logger.Info("AllModNews:" + AllModNews.Count, "ModNews");
         AllModNews.Sort((a1, a2) => { return DateTime.Compare(DateTime.Parse(a2.Date), DateTime.Parse(a1.Date)); });
@@ -133,7 +133,7 @@ public class ModNews
 
 
     [HarmonyPatch(typeof(AnnouncementPanel), nameof(AnnouncementPanel.SetUp)), HarmonyPostfix]
-    public static void SetUpPanel(AnnouncementPanel __instance, [HarmonyArgument(0)] Announcement announcement)
+    public static void SetUpPanel_Postfix(AnnouncementPanel __instance, [HarmonyArgument(0)] Announcement announcement)
     {
         if (announcement.Number < 100000) return;
         var obj = new GameObject("ModLabel");

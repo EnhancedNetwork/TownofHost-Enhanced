@@ -4,6 +4,7 @@ using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -96,6 +97,8 @@ internal class Kamikaze : RoleBase
             else
             {
                 pc.RpcExileV2();
+                Main.PlayerStates[pc.PlayerId].SetDead();
+                pc.Data.IsDead = true;
             }
             pc.SetRealKiller(_Player);
         }

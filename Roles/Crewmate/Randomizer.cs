@@ -43,7 +43,7 @@ internal class Randomizer : RoleBase
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (inMeeting) return;
+        if (inMeeting || isSuicide) return;
 
         var Fg = IRandom.Instance;
         int Randomizer = Fg.Next(1, 5);

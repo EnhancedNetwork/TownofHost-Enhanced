@@ -186,7 +186,7 @@ internal class DollMaster : RoleBase
     // If Dollmaster starts a meeting while possessing redirect it to possessed player
     public override bool OnCheckStartMeeting(PlayerControl reporter)
     {
-        if (controllingTarget == null || DollMasterTarget == null) return false;
+        if (controllingTarget == null || DollMasterTarget == null) return true;
 
         if (IsControllingPlayer && IsDoll(reporter.PlayerId)) return false; // Prevent possessed player from starting meeting.
 
