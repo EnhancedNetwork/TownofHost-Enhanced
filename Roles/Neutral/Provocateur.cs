@@ -4,6 +4,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Provocateur : RoleBase
 {
     //===========================SETUP================================\\
@@ -56,3 +57,4 @@ internal class Provocateur : RoleBase
         hud.KillButton.OverrideText(GetString("ProvocateurButtonText"));
     }
 }
+

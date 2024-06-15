@@ -1,6 +1,7 @@
 ﻿
 namespace TOHE.Roles.Vanilla;
 
+[Obfuscation(Exclude = true)]
 internal class CrewmateTOHE : RoleBase
 {
     //===========================SETUP================================\\
@@ -28,3 +29,4 @@ internal class CrewmateTOHE : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 300f;
 }
+

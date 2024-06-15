@@ -2,6 +2,7 @@
 
 namespace TOHE.Roles.Vanilla;
 
+[Obfuscation(Exclude = true)]
 internal class ShapeshifterTOHE : RoleBase
 {
     //===========================SETUP================================\\
@@ -42,3 +43,4 @@ internal class ShapeshifterTOHE : RoleBase
         AURoleOptions.ShapeshifterDuration = ShapeshiftDur.GetFloat();
     }
 }
+

@@ -7,6 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Taskinator : RoleBase
 {
     //===========================SETUP================================\\
@@ -144,4 +145,5 @@ internal class Taskinator : RoleBase
         }
     }
 }
+
 

@@ -5,6 +5,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Seeker : RoleBase
 {
     //===========================SETUP================================\\
@@ -215,3 +216,4 @@ internal class Seeker : RoleBase
 
     }
 }
+

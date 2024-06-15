@@ -1,10 +1,11 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Crusader : RoleBase
 {
     //===========================SETUP================================\\

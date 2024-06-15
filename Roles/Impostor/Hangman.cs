@@ -5,6 +5,7 @@ using UnityEngine;
 using static TOHE.Options;
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Hangman : RoleBase
 {
     //===========================SETUP================================\\

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Undertaker : RoleBase
 {
     //===========================SETUP================================\\
@@ -145,4 +146,5 @@ internal class Undertaker : RoleBase
         hud.AbilityButton?.OverrideText(Translator.GetString("UndertakerButtonText"));
     }
 }
+
 

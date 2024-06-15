@@ -1,4 +1,4 @@
-using static TOHE.Options;
+﻿using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -67,3 +67,4 @@ public static class Rainbow
         return IRandom.Instance.Next(0, 18);
     }
 }
+

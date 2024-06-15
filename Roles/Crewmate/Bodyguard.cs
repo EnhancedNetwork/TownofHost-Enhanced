@@ -3,6 +3,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Bodyguard : RoleBase
 {
     //===========================SETUP================================\\
@@ -62,3 +63,4 @@ internal class Bodyguard : RoleBase
         return false;
     }
 }
+

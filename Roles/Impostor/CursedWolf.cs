@@ -3,6 +3,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class CursedWolf : RoleBase
 {
     //===========================SETUP================================\\
@@ -52,3 +53,4 @@ internal class CursedWolf : RoleBase
 
     public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedWolf), $"({AbilityLimit})");
 }
+

@@ -5,6 +5,7 @@ using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Celebrity : RoleBase
 {
     //===========================SETUP================================\\
@@ -84,3 +85,4 @@ internal class Celebrity : RoleBase
         CelebrityDead.Clear();
     }
 }
+

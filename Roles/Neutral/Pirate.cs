@@ -10,6 +10,8 @@ using static TOHE.Utils;
 
 
 namespace TOHE.Roles.Neutral;
+
+[Obfuscation(Exclude = true)]
 internal class Pirate : RoleBase
 {
     //===========================SETUP================================\\
@@ -343,3 +345,4 @@ internal class Pirate : RoleBase
 
 
 }
+

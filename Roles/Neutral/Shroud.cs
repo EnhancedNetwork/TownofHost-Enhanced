@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
@@ -10,6 +10,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Shroud : RoleBase
 {
     //===========================SETUP================================\\
@@ -178,3 +179,4 @@ internal class Shroud : RoleBase
         hud.KillButton?.OverrideText($"{GetString("ShroudButtonText")}");
     }
 }
+

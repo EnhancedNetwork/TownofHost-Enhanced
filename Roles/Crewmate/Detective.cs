@@ -4,6 +4,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Detective : RoleBase
 {
     //===========================SETUP================================\\
@@ -61,3 +62,4 @@ internal class Detective : RoleBase
     }
     public override void MeetingHudClear() => DetectiveNotify.Clear();
 }
+

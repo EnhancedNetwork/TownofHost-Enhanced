@@ -3,6 +3,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Phantom : RoleBase
 {
     //===========================SETUP================================\\
@@ -45,3 +46,4 @@ internal class Phantom : RoleBase
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
 }
+

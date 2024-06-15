@@ -1,4 +1,4 @@
-using Hazel;
+﻿using Hazel;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -6,6 +6,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class CursedSoul : RoleBase
 {
     //===========================SETUP================================\\

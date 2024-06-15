@@ -5,6 +5,8 @@ using InnerNet;
 namespace TOHE.Roles.Neutral;
 
 // 来源：https://github.com/Yumenopai/TownOfHost_Y
+
+[Obfuscation(Exclude = true)]
 internal class Stalker : RoleBase
 {
     //===========================SETUP================================\\
@@ -106,3 +108,4 @@ internal class Stalker : RoleBase
         return true;
     }
 }
+

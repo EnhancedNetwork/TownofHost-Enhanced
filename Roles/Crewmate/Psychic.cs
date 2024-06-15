@@ -1,10 +1,11 @@
-using Hazel;
+﻿using Hazel;
 using System;
 using static TOHE.Options;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Psychic : RoleBase
 {
     //===========================SETUP================================\\

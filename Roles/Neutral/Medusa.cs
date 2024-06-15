@@ -1,9 +1,10 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using static TOHE.Translator;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Medusa : RoleBase
 {
     //===========================SETUP================================\\
@@ -65,3 +66,4 @@ internal class Medusa : RoleBase
         hud.ReportButton.OverrideText(GetString("MedusaReportButtonText"));
     }
 }
+

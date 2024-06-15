@@ -4,6 +4,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Doctor : RoleBase
 {
     //===========================SETUP================================\\
@@ -60,3 +61,4 @@ internal class Doctor : RoleBase
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
 }
+

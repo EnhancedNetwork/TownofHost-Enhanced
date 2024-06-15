@@ -3,6 +3,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Vigilante : RoleBase
 {
     //===========================SETUP================================\\
@@ -50,3 +51,4 @@ internal class Vigilante : RoleBase
         return true;
     }
 }
+

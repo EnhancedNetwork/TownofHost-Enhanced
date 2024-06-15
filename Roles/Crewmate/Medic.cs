@@ -9,6 +9,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Medic : RoleBase
 {
     //===========================SETUP================================\\
@@ -258,3 +259,4 @@ internal class Medic : RoleBase
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Shield");
 }
+

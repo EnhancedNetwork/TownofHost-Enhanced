@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using System;
 using TOHE.Roles.Core;
@@ -7,6 +7,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Tracefinder : RoleBase
 {
     //===========================SETUP================================\\

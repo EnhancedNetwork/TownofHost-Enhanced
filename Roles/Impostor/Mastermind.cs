@@ -1,10 +1,11 @@
-using TOHE.Roles.Crewmate;
+﻿using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Mastermind : RoleBase
 {
     //===========================SETUP================================\\
@@ -186,3 +187,4 @@ internal class Mastermind : RoleBase
         return string.Empty;
     }
 }
+

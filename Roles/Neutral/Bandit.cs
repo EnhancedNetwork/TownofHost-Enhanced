@@ -6,6 +6,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Bandit : RoleBase
 {
     //===========================SETUP================================\\
@@ -192,3 +193,4 @@ internal class Bandit : RoleBase
     }
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Bandit).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }
+

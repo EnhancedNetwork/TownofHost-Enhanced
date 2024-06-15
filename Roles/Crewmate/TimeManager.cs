@@ -1,5 +1,6 @@
-namespace TOHE.Roles.Crewmate;
+﻿namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class TimeManager : RoleBase
 {
     //===========================SETUP================================\\

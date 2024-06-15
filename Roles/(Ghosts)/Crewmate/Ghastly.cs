@@ -8,7 +8,9 @@ using MS.Internal.Xml.XPath;
 
 namespace TOHE.Roles._Ghosts_.Crewmate
 {
-    internal class Ghastly : RoleBase
+
+[Obfuscation(Exclude = true)]
+internal class Ghastly : RoleBase
     {
         //===========================SETUP================================\\
         private const int Id = 22060;
@@ -192,3 +194,4 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         
     }
 }
+

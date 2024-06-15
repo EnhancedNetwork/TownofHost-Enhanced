@@ -39,3 +39,4 @@ public static class Hurried
     }
     //Hard to check specific player, loop check all player
 }
+

@@ -3,6 +3,8 @@
 namespace TOHE.Roles.Impostor;
 
 // Thanks： https://github.com/Yumenopai/TownOfHost_Y
+
+[Obfuscation(Exclude = true)]
 internal class Greedy : RoleBase
 {
     //===========================SETUP================================\\

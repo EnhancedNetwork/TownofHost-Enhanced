@@ -1,5 +1,6 @@
 ﻿namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Trickster : RoleBase
 {
     //===========================SETUP================================\\
@@ -24,3 +25,4 @@ internal class Trickster : RoleBase
         PlayerIds.Add(playerId);
     }
 }
+

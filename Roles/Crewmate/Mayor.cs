@@ -128,3 +128,4 @@ internal partial class Mayor : RoleBase
         hud.AbilityButton.buttonLabelText.text = GetString("MayorVentButtonText");
     }
 }
+

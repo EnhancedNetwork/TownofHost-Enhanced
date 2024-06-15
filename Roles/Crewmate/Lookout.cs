@@ -4,6 +4,7 @@ using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Lookout : RoleBase
 {
     //===========================SETUP================================\\
@@ -39,3 +40,4 @@ internal class Lookout : RoleBase
         return ColorString(GetRoleColor(CustomRoles.Lookout), $" {seen.Data.PlayerId}");
     }
 }
+

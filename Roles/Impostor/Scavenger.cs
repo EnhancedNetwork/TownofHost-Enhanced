@@ -1,5 +1,6 @@
 ﻿namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Scavenger : RoleBase
 {
     //===========================SETUP================================\\
@@ -52,3 +53,4 @@ internal class Scavenger : RoleBase
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
         => !killer.Is(CustomRoles.Scavenger);
 }
+

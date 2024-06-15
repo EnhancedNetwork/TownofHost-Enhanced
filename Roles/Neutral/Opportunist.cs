@@ -2,6 +2,7 @@
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Opportunist : RoleBase
 {
     //===========================SETUP================================\\
@@ -36,3 +37,4 @@ internal class Opportunist : RoleBase
         => !(OppoImmuneToAttacksWhenTasksDone.GetBool() && target.AllTasksCompleted());
     
 }
+

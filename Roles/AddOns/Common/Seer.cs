@@ -17,3 +17,4 @@ public static class Seer
         NeutralCanBeSeer = BooleanOptionItem.Create(Id + 12, "NeutralCanBeSeer", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Seer]);
     }
 }
+

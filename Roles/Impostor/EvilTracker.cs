@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
 using UnityEngine;
@@ -7,6 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class EvilTracker : RoleBase
 {
     //===========================SETUP================================\\

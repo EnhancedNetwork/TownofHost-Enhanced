@@ -1,4 +1,4 @@
-using Hazel;
+﻿using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Options;
@@ -7,6 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Lawyer : RoleBase
 {
     //===========================SETUP================================\\

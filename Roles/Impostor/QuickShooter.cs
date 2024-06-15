@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class QuickShooter : RoleBase
 {
     //===========================SETUP================================\\

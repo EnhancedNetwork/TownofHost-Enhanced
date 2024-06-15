@@ -1,4 +1,4 @@
-using Hazel;
+﻿using Hazel;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
@@ -6,6 +6,7 @@ using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Snitch : RoleBase
 {
     //===========================SETUP================================\\
@@ -247,3 +248,4 @@ internal class Snitch : RoleBase
         return false;
     }
 }
+

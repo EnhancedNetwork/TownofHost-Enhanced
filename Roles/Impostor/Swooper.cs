@@ -8,6 +8,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Swooper : RoleBase
 {
     //===========================SETUP================================\\

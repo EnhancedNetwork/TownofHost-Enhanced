@@ -9,6 +9,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Hawk : RoleBase
 {
     //===========================SETUP================================\\
@@ -116,5 +117,6 @@ internal class Hawk : RoleBase
         => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Hawk).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
 }
+
 
 

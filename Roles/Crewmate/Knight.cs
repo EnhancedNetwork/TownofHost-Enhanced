@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Knight : RoleBase
 {
     //===========================SETUP================================\\
@@ -54,3 +55,4 @@ internal class Knight : RoleBase
         return true;
     }
 }
+

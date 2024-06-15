@@ -38,3 +38,4 @@ internal class ShapeMaster : RoleBase // Should be deleted tbh, because it's lit
         AURoleOptions.ShapeshifterDuration = ShapeMasterShapeshiftDuration.GetFloat();
     }
 }
+

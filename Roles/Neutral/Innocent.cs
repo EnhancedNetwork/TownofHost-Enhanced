@@ -4,6 +4,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Innocent : RoleBase
 {
     //===========================SETUP================================\\
@@ -96,3 +97,4 @@ internal class Innocent : RoleBase
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Suidce");
 }
+

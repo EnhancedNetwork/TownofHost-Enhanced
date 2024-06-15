@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
@@ -8,6 +8,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Jackal : RoleBase
 {
     //===========================SETUP================================\\
@@ -262,3 +263,4 @@ internal class Jackal : RoleBase
         return false;
     }
 }
+

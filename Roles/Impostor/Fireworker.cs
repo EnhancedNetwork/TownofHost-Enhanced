@@ -1,10 +1,11 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Fireworker : RoleBase
 {
     private enum FireworkerState
@@ -210,3 +211,4 @@ internal class Fireworker : RoleBase
             hud.AbilityButton.OverrideText(GetString("FireworkerInstallAtionButtonText"));
     }
 }
+

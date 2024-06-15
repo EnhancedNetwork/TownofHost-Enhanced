@@ -7,6 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Kamikaze : RoleBase
 {
     //===========================SETUP================================\\
@@ -105,4 +106,5 @@ internal class Kamikaze : RoleBase
     public override string GetProgressText(byte playerId, bool comms)
         => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Kamikaze).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }
+
 

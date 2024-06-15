@@ -21,3 +21,4 @@ public static class Schizophrenic
     public static bool IsExistInGame(PlayerControl player) => player.Is(CustomRoles.Schizophrenic);
 }
 
+

@@ -5,6 +5,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class SchrodingersCat : RoleBase
 {
     //===========================SETUP================================\\
@@ -111,3 +112,4 @@ internal class SchrodingersCat : RoleBase
         }
     }
 }
+

@@ -1,4 +1,4 @@
-using TOHE.Roles.Core;
+﻿using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.Options;
@@ -6,6 +6,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Doppelganger : RoleBase
 {
     //===========================SETUP================================\\
@@ -211,3 +212,4 @@ internal class Doppelganger : RoleBase
 
     public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Doppelganger).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }
+

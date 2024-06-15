@@ -8,6 +8,7 @@ using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Vector : RoleBase
 {
     //===========================SETUP================================\\
@@ -99,3 +100,4 @@ internal class Vector : RoleBase
         hud.AbilityButton.SetUsesRemaining(VectorVentNumWin.GetInt() - (VectorVentCount.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var mx) ? mx : 0));
     }
 }
+

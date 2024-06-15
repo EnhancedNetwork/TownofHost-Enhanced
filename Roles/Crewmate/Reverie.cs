@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using AmongUs.GameOptions;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Reverie : RoleBase
 {
     //===========================SETUP================================\\

@@ -6,6 +6,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Randomizer : RoleBase
 {
     //===========================SETUP================================\\
@@ -119,3 +120,4 @@ internal class Randomizer : RoleBase
         }
     }
 }
+

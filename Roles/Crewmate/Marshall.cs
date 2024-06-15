@@ -1,10 +1,11 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Marshall : RoleBase
 {
     //===========================SETUP================================\\
@@ -56,3 +57,4 @@ internal class Marshall : RoleBase
         return true;
     }
 }
+

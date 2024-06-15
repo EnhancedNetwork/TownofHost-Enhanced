@@ -1,4 +1,4 @@
-using Hazel;
+﻿using Hazel;
 using InnerNet;
 using System;
 using System.Text;
@@ -11,6 +11,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class FortuneTeller : RoleBase
 {
     //===========================SETUP================================\\
@@ -209,3 +210,4 @@ internal class FortuneTeller : RoleBase
 
     }
 }
+

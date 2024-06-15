@@ -10,6 +10,7 @@ using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Quizmaster : RoleBase
 {
     //===========================SETUP================================\\

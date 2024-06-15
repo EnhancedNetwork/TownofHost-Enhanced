@@ -1,9 +1,10 @@
-using Hazel;
+﻿using Hazel;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Spiritualist : RoleBase
 {
     //===========================SETUP================================\\

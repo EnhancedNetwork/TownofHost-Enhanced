@@ -5,6 +5,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Deputy : RoleBase
 {
     //===========================SETUP================================\\
@@ -70,3 +71,4 @@ internal class Deputy : RoleBase
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Deputy");
 }
+

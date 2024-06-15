@@ -20,3 +20,4 @@ public static class Gravestone
     public static bool EveryoneKnowRole(PlayerControl player) => player.Is(CustomRoles.Gravestone) && !player.IsAlive();
 }
 
+

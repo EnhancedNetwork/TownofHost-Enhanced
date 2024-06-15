@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using System;
@@ -8,6 +8,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Huntsman : RoleBase
 {
     //===========================SETUP================================\\
@@ -158,3 +159,4 @@ internal class Huntsman : RoleBase
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
         => Targets.Contains(target.PlayerId) ? "6e5524" : string.Empty;
 }
+

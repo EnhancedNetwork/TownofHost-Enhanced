@@ -4,6 +4,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Hater : RoleBase
 {
     //===========================SETUP================================\\
@@ -130,3 +131,4 @@ internal class Hater : RoleBase
         };
     }
 }
+

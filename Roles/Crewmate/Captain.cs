@@ -6,6 +6,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Captain : RoleBase
 {
     //===========================SETUP================================\\
@@ -254,4 +255,5 @@ internal class Captain : RoleBase
         }
     }
 }
+
 

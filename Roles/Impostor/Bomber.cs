@@ -5,6 +5,7 @@ using TOHE.Roles.Crewmate;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Bomber : RoleBase
 {
     //===========================SETUP================================\\
@@ -112,3 +113,4 @@ internal class Bomber : RoleBase
         hud.AbilityButton.OverrideText(Translator.GetString("BomberShapeshiftText"));
     }
 }
+

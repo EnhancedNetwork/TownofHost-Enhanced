@@ -3,6 +3,7 @@ using System;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Zombie : RoleBase
 {
     //===========================SETUP================================\\
@@ -54,3 +55,4 @@ internal class Zombie : RoleBase
         }
     }
 }
+

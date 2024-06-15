@@ -17,3 +17,4 @@ public class Rascal
 
     public static bool AppearAsMadmate(PlayerControl player) => RascalAppearAsMadmate.GetBool() && player.Is(CustomRoles.Rascal);
 }
+

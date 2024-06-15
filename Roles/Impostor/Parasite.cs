@@ -3,6 +3,7 @@ using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Parasite : RoleBase
 {
     //===========================SETUP================================\\
@@ -39,3 +40,4 @@ internal class Parasite : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
     public override bool CanUseSabotage(PlayerControl pc) => true;
 }
+

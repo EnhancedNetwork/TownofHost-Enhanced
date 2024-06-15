@@ -3,6 +3,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class KillingMachine : RoleBase
 {
     //===========================SETUP================================\\
@@ -52,3 +53,4 @@ internal class KillingMachine : RoleBase
         return false;
     }
 }
+

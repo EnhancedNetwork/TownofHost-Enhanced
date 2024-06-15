@@ -1,9 +1,10 @@
-using TOHE.Roles.Core;
+﻿using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Imitator : RoleBase
 {
     //===========================SETUP================================\\
@@ -144,3 +145,4 @@ internal class Imitator : RoleBase
     }
 
 }
+

@@ -1,10 +1,11 @@
-using Hazel;
+﻿using Hazel;
 using System;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Executioner : RoleBase
 {
     //===========================SETUP================================\\

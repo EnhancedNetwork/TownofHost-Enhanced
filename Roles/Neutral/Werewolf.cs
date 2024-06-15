@@ -1,10 +1,11 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using TOHE.Roles.Double;
 using static TOHE.Options;
 using UnityEngine;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Werewolf : RoleBase
 {
     //===========================SETUP================================\\
@@ -73,3 +74,4 @@ internal class Werewolf : RoleBase
         return true;
     }
 }
+

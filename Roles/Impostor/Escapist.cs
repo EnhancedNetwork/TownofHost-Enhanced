@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Escapist : RoleBase
 {
     //===========================SETUP================================\\
@@ -69,3 +70,4 @@ internal class Escapist : RoleBase
         return false;
     }
 }
+

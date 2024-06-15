@@ -9,6 +9,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class TimeMaster : RoleBase
 {
     //===========================SETUP================================\\
@@ -152,3 +153,4 @@ internal class TimeMaster : RoleBase
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Time Master");
 }
+

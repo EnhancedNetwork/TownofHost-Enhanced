@@ -4,6 +4,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Collector : RoleBase
 {
 
@@ -119,3 +120,4 @@ internal class Collector : RoleBase
         calculated = true;
     }
 }
+

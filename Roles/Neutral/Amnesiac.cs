@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
 using static TOHE.Roles.Core.CustomRoleManager;
@@ -6,6 +6,7 @@ using Hazel;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Amnesiac : RoleBase
 {
     //===========================SETUP================================\\
@@ -188,3 +189,4 @@ internal class Amnesiac : RoleBase
         return true;
     }
 }
+

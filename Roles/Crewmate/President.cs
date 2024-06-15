@@ -5,6 +5,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class President : RoleBase
 {
     //===========================SETUP================================\\

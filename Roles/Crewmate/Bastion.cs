@@ -8,6 +8,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Bastion : RoleBase
 {
     //===========================SETUP================================\\
@@ -128,3 +129,4 @@ internal class Bastion : RoleBase
         hud.AbilityButton.buttonLabelText.text = GetString("BastionVentButtonText");
     }
 }
+

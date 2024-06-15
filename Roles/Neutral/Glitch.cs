@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using System.Text;
 using static TOHE.Translator;
 using static TOHE.Options;
@@ -8,6 +8,7 @@ using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Glitch : RoleBase
 {
     //===========================SETUP================================\\
@@ -313,3 +314,4 @@ internal class Glitch : RoleBase
         MimicDurTimer = reader.ReadInt32();
     }
 }
+

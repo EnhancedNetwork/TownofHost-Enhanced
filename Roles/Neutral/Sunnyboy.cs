@@ -2,6 +2,7 @@
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Sunnyboy : RoleBase
 {
     //===========================SETUP================================\\
@@ -37,3 +38,4 @@ internal class Sunnyboy : RoleBase
     public static bool CheckGameEnd()
         => CustomRoles.Sunnyboy.RoleExist() && Main.AllAlivePlayerControls.Length > 1;
 }
+

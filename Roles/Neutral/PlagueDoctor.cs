@@ -10,6 +10,8 @@ using static TOHE.Translator;
 namespace TOHE.Roles.Neutral;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Neutral/PlagueDoctor.cs
+
+[Obfuscation(Exclude = true)]
 internal class PlagueDoctor : RoleBase
 {
     //===========================SETUP================================\\
@@ -297,3 +299,4 @@ internal class PlagueDoctor : RoleBase
         }
     }
 }
+

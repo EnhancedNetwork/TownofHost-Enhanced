@@ -5,6 +5,8 @@ using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
+
+[Obfuscation(Exclude = true)]
 internal class Pixie : RoleBase
 {
     //===========================SETUP================================\\
@@ -174,4 +176,5 @@ internal class Pixie : RoleBase
         }
     }
 }
+
 

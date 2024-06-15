@@ -1,4 +1,4 @@
-//using System.Linq;
+﻿//using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;

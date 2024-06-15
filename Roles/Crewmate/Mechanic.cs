@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using UnityEngine;
 using AmongUs.GameOptions;
@@ -7,6 +7,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Mechanic : RoleBase
 {
     //===========================SETUP================================\\

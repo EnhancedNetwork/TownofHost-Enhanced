@@ -6,6 +6,8 @@ using UnityEngine;
 namespace TOHE.Roles.Impostor;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Impostor/Stealth.cs
+
+[Obfuscation(Exclude = true)]
 internal class Stealth : RoleBase
 {
     //===========================SETUP================================\\
@@ -145,3 +147,4 @@ internal class Stealth : RoleBase
         return string.Format(Translator.GetString("StealthDarkened"), DestroyableSingleton<TranslationController>.Instance.GetString(darkenedRoom.Value));
     }
 }
+

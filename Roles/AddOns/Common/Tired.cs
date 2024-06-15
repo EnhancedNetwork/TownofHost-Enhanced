@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -81,3 +81,4 @@ public class Tired
         }, TiredDuration.GetFloat());
     }
 }
+

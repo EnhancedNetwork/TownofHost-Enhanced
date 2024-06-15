@@ -7,6 +7,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles._Ghosts_.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Bloodmoon : RoleBase
 {
     //===========================SETUP================================\\
@@ -99,3 +100,4 @@ internal class Bloodmoon : RoleBase
 
     }
 }
+

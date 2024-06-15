@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class SoulCatcher : RoleBase
 {
     //===========================SETUP================================\\
@@ -67,3 +68,4 @@ internal class SoulCatcher : RoleBase
         return false;
     }
 }
+

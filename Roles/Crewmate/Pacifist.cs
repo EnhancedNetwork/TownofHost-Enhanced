@@ -11,6 +11,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Pacifist : RoleBase
 {
     //===========================SETUP================================\\
@@ -107,3 +108,4 @@ internal class Pacifist : RoleBase
         hud.AbilityButton.buttonLabelText.text = GetString("PacifistVentButtonText");
     }
 }
+

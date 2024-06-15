@@ -3,6 +3,7 @@ using TOHE.Modules;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Berserker : RoleBase
 {
     //===========================SETUP================================\\
@@ -143,3 +144,4 @@ internal class Berserker : RoleBase
         return true;
     }
 }
+

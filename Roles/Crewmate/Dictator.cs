@@ -2,6 +2,7 @@
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Dictator : RoleBase
 {
     //===========================SETUP================================\\
@@ -30,3 +31,4 @@ internal class Dictator : RoleBase
     public static bool CheckVotingForTarget(PlayerControl pc, PlayerVoteArea pva)
         => pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead;
 }
+

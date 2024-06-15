@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using static TOHE.Options;
@@ -6,6 +6,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Jailer : RoleBase
 {
     //===========================SETUP================================\\

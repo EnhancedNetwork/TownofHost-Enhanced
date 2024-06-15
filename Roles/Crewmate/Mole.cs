@@ -5,6 +5,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Mole : RoleBase
 {
     //===========================SETUP================================\\
@@ -56,3 +57,4 @@ internal class Mole : RoleBase
         hud.AbilityButton.OverrideText(GetString("MoleVentButtonText"));
     }
 }
+

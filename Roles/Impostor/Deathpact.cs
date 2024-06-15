@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using System.Data;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -10,6 +10,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Deathpact : RoleBase
 {
     //===========================SETUP================================\\

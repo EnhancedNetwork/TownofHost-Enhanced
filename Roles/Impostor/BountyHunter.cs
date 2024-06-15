@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Neutral;
@@ -7,6 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class BountyHunter : RoleBase
 {
     //===========================SETUP================================\\
@@ -259,3 +260,4 @@ internal class BountyHunter : RoleBase
         return TargetArrow.GetArrows(seer, targetId);
     }
 }
+

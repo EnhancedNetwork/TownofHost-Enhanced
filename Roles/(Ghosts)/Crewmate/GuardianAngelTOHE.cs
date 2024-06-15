@@ -4,6 +4,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class GuardianAngelTOHE : RoleBase
 {
     //===========================SETUP================================\\
@@ -84,3 +85,4 @@ internal class GuardianAngelTOHE : RoleBase
         }
     }
 }
+

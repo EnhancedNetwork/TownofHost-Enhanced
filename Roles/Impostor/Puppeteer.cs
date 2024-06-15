@@ -11,6 +11,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Puppeteer : RoleBase
 {
     //===========================SETUP================================\\
@@ -174,3 +175,4 @@ internal class Puppeteer : RoleBase
 
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Puttpuer");
 }
+

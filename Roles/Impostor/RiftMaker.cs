@@ -6,6 +6,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class RiftMaker : RoleBase
 {
     //===========================SETUP================================\\
@@ -241,3 +242,4 @@ internal class RiftMaker : RoleBase
         SendRPC(byte.MaxValue, 3);
     }
 }
+

@@ -1,8 +1,9 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class SerialKiller : RoleBase
 {
     //===========================SETUP================================\\
@@ -49,3 +50,4 @@ internal class SerialKiller : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 }
+

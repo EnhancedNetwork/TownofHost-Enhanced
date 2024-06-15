@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
 using TOHE.Roles.Crewmate;
@@ -9,6 +9,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class HexMaster : RoleBase
 {
     //===========================SETUP================================\\

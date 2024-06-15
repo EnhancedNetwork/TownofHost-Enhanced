@@ -1,4 +1,4 @@
-using Hazel;
+﻿using Hazel;
 using System;
 using UnityEngine;
 using static TOHE.Options;
@@ -6,6 +6,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Spy : RoleBase
 {
     //===========================SETUP================================\\

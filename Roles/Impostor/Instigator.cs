@@ -2,6 +2,7 @@
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Instigator : RoleBase
 {
     //===========================SETUP================================\\
@@ -82,3 +83,4 @@ internal class Instigator : RoleBase
 
     }
 }
+

@@ -1,4 +1,4 @@
-//namespace TOHE.Roles.Crewmate;
+﻿//namespace TOHE.Roles.Crewmate;
 
 
 // Unused role

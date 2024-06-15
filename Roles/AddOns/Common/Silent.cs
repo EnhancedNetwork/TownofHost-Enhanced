@@ -17,3 +17,4 @@ public static class Silent
         CanBeOnNeutral = BooleanOptionItem.Create(Id + 13, "NeutralCanBeSilent", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Silent]);
     }
 }
+

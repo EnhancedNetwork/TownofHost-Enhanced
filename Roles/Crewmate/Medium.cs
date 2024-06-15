@@ -10,6 +10,7 @@ using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Medium : RoleBase
 {
     //===========================SETUP================================\\

@@ -4,6 +4,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Terrorist : RoleBase
 {
     //===========================SETUP================================\\
@@ -96,3 +97,4 @@ internal class Terrorist : RoleBase
         }
     }
 }
+

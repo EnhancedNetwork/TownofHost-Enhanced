@@ -4,6 +4,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Transporter : RoleBase
 {
     //===========================SETUP================================\\
@@ -72,3 +73,4 @@ internal class Transporter : RoleBase
         return true;
     }
 }
+

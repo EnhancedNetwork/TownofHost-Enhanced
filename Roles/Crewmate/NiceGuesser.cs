@@ -3,6 +3,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class NiceGuesser : RoleBase
 {
     //===========================SETUP================================\\
@@ -84,3 +85,4 @@ internal class NiceGuesser : RoleBase
         return false;
     }
 }
+

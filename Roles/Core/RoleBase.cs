@@ -430,3 +430,4 @@ public abstract class RoleBase
         OnReceiveRPC(reader); // Default implementation
     }
 }
+

@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
 using TOHE.Roles.AddOns.Common;
@@ -6,6 +6,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Poisoner : RoleBase
 {
     private class PoisonedInfo(byte poisonerId, float killTimer) 
@@ -141,3 +142,4 @@ internal class Poisoner : RoleBase
         hud.KillButton.OverrideText(GetString("PoisonerPoisonButtonText"));
     }
 }
+

@@ -2,6 +2,7 @@
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class LazyGuy : RoleBase
 {
     //===========================SETUP================================\\
@@ -26,3 +27,4 @@ internal class LazyGuy : RoleBase
         playerIdList.Add(playerId);
     }
 }
+

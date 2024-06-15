@@ -4,6 +4,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Necromancer : RoleBase
 {
     //===========================SETUP================================\\
@@ -121,3 +122,4 @@ internal class Necromancer : RoleBase
         }
     }
 }
+

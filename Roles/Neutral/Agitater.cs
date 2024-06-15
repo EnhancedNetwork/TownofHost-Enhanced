@@ -6,6 +6,8 @@ using TOHE.Roles.Core;
 using InnerNet;
 
 namespace TOHE.Roles.Neutral;
+
+[Obfuscation(Exclude = true)]
 internal class Agitater : RoleBase
 {
     //===========================SETUP================================\\
@@ -213,3 +215,4 @@ internal class Agitater : RoleBase
         => hud.KillButton.OverrideText(GetString("AgitaterKillButtonText"));
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("bombshell");
 }
+

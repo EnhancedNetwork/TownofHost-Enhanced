@@ -10,6 +10,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Grenadier : RoleBase
 {
     //===========================SETUP================================\\
@@ -177,3 +178,4 @@ internal class Grenadier : RoleBase
         hud.AbilityButton.buttonLabelText.text = GetString("GrenadierVentButtonText");
     }
 }
+

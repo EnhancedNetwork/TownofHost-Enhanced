@@ -117,3 +117,4 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
         return false;
     }
 }
+

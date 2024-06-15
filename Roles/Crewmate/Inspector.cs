@@ -1,4 +1,4 @@
-using Hazel;
+﻿using Hazel;
 using System;
 using System.Text;
 using TOHE.Modules.ChatManager;
@@ -10,6 +10,8 @@ using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
+
+[Obfuscation(Exclude = true)]
 internal class Inspector : RoleBase
 {
     //===========================SETUP================================\\

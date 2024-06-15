@@ -9,6 +9,7 @@ using InnerNet;
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Impostor/Penguin.cs
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Penguin : RoleBase
 {
     //===========================SETUP================================\\
@@ -267,3 +268,4 @@ internal class Penguin : RoleBase
         }
     }
 }
+

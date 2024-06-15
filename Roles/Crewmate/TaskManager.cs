@@ -5,6 +5,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class TaskManager : RoleBase
 {
     //===========================SETUP================================\\
@@ -44,3 +45,4 @@ internal class TaskManager : RoleBase
         return ProgressText.ToString();
     }
 }
+

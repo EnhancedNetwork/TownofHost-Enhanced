@@ -3,6 +3,7 @@ using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Vanilla;
 
+[Obfuscation(Exclude = true)]
 internal class EngineerTOHE : RoleBase
 {
     //===========================SETUP================================\\
@@ -45,3 +46,4 @@ internal class EngineerTOHE : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 300f;
 }
+

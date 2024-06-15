@@ -10,6 +10,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Romantic : RoleBase
 {
     //===========================SETUP================================\\
@@ -286,6 +287,7 @@ internal class Romantic : RoleBase
     }
 }
 
+[Obfuscation(Exclude = true)]
 internal class VengefulRomantic : RoleBase
 {
 
@@ -357,6 +359,7 @@ internal class VengefulRomantic : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc) => Romantic.VengefulCanVent.GetBool();
 }
 
+[Obfuscation(Exclude = true)]
 internal class RuthlessRomantic : RoleBase
 {
 
@@ -383,3 +386,4 @@ internal class RuthlessRomantic : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => Romantic.RuthlessCanVent.GetBool();
 }
+

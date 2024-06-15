@@ -1,4 +1,4 @@
-using Hazel;
+﻿using Hazel;
 using System.Text;
 using TOHE.Modules;
 using static TOHE.Options;
@@ -6,6 +6,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Witch : RoleBase
 {
     //===========================SETUP================================\\

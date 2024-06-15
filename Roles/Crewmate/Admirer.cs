@@ -1,4 +1,4 @@
-using Hazel;
+﻿using Hazel;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
@@ -10,6 +10,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Admirer : RoleBase
 {
     //===========================SETUP================================\\
@@ -222,3 +223,4 @@ internal class Admirer : RoleBase
         hud.KillButton?.OverrideText(GetString("AdmireButtonText"));
     }
 }
+

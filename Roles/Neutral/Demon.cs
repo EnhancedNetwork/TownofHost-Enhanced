@@ -8,6 +8,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Demon : RoleBase
 {
     //===========================SETUP================================\\

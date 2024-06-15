@@ -1,5 +1,6 @@
 ﻿namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Bard: RoleBase
 {
     //===========================SETUP================================\\
@@ -29,3 +30,4 @@ internal class Bard: RoleBase
         if (exiled != null) Main.AllPlayerKillCooldown[bard.PlayerId] /= 2;
     }
 }
+

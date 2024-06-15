@@ -6,6 +6,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Warden : RoleBase
 {
     //===========================SETUP================================\\

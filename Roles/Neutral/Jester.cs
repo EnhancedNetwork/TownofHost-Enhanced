@@ -3,6 +3,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Jester : RoleBase
 {
     //===========================SETUP================================\\
@@ -90,3 +91,4 @@ internal class Jester : RoleBase
             name += string.Format(Translator.GetString("JesterMeetingLoose"), MeetingsNeededForJesterWin.GetInt() + 1);
     }
 }
+

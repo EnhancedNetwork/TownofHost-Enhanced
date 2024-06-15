@@ -1,7 +1,8 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Sidekick : RoleBase
 {
     private static readonly HashSet<byte> playerIdList = [];
@@ -43,3 +44,4 @@ internal class Sidekick : RoleBase
         hud.SabotageButton.OverrideText(Translator.GetString("SabotageButtonText"));
     }
 }
+

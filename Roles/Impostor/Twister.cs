@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Options;
@@ -7,6 +7,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Twister : RoleBase
 {
     //===========================SETUP================================\\

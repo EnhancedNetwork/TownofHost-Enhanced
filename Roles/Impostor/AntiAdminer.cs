@@ -9,6 +9,8 @@ namespace TOHE.Roles.Impostor;
 
 // 参考 : https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Mode/SuperHostRoles/BlockTool.cs
 // 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/AntiAdminer
+
+[Obfuscation(Exclude = true)]
 internal class AntiAdminer : RoleBase
 {
     //===========================SETUP================================\\

@@ -3,6 +3,7 @@ using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Refugee : RoleBase
 {
     //===========================SETUP================================\\
@@ -38,3 +39,4 @@ internal class Refugee : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
     public override bool CanUseSabotage(PlayerControl pc) => true;
 }
+

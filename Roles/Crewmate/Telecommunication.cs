@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -8,6 +8,7 @@ using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Telecommunication : RoleBase
 {
     //===========================SETUP================================\\

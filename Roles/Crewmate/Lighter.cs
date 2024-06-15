@@ -7,6 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Lighter : RoleBase
 {
     //===========================SETUP================================\\
@@ -137,3 +138,4 @@ internal class Lighter : RoleBase
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Lighter");
 }
+

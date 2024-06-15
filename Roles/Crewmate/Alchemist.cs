@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
 using TOHE.Modules;
@@ -10,6 +10,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Alchemist : RoleBase
 {
     //===========================SETUP================================\\
@@ -516,3 +517,4 @@ internal class Alchemist : RoleBase
         hud.AbilityButton.OverrideText(GetString("AlchemistVentButtonText"));
     }
 }
+

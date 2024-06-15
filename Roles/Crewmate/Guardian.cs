@@ -3,6 +3,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Guardian : RoleBase
 {
     //===========================SETUP================================\\
@@ -49,3 +50,4 @@ internal class Guardian : RoleBase
         return false;
     }
 }
+

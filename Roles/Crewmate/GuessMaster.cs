@@ -2,6 +2,7 @@
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class GuessMaster : RoleBase
 {
     //===========================SETUP================================\\

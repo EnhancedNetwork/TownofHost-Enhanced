@@ -10,6 +10,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Veteran : RoleBase
 {
     //===========================SETUP================================\\
@@ -148,3 +149,4 @@ internal class Veteran : RoleBase
     }
     public override Sprite ImpostorVentButtonSprite(PlayerControl player) => CustomButton.Get("Veteran");
 }
+

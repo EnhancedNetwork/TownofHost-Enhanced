@@ -1,8 +1,9 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Traitor : RoleBase
 {
     //===========================SETUP================================\\
@@ -70,3 +71,4 @@ internal class Traitor : RoleBase
 
     }
 }
+

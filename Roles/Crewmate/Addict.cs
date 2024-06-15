@@ -1,9 +1,10 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Addict : RoleBase
 {
     //===========================SETUP================================\\
@@ -137,3 +138,4 @@ internal class Addict : RoleBase
         hud.AbilityButton.OverrideText(Translator.GetString("AddictVentButtonText"));
     }
 }
+

@@ -7,6 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Infectious : RoleBase
 {
     //===========================SETUP================================\\
@@ -185,3 +186,4 @@ internal class Infectious : RoleBase
         hud.KillButton.OverrideText(GetString("InfectiousKillButtonText"));
     }
 }
+

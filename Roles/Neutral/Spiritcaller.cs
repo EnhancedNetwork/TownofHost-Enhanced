@@ -7,6 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Spiritcaller : RoleBase
 {
     //===========================SETUP================================\\

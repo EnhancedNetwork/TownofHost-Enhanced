@@ -2,6 +2,7 @@
 
 namespace TOHE.Roles.Impostor;
 
+[Obfuscation(Exclude = true)]
 internal class Godfather : RoleBase
 {
     //===========================SETUP================================\\
@@ -62,3 +63,4 @@ internal class Godfather : RoleBase
         GodfatherTarget.Add(voteTarget.PlayerId);
     }
 }
+

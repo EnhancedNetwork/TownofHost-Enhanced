@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -8,6 +8,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Vulture : RoleBase
 {
     //===========================SETUP================================\\

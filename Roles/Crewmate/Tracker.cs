@@ -9,6 +9,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Tracker : RoleBase
 {
     //===========================SETUP================================\\

@@ -11,6 +11,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class Pelican : RoleBase
 {
     //===========================SETUP================================\\
@@ -289,3 +290,4 @@ internal class Pelican : RoleBase
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Vulture");
 }
+

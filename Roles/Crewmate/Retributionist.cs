@@ -10,6 +10,7 @@ using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Crewmate;
 
+[Obfuscation(Exclude = true)]
 internal class Retributionist : RoleBase
 {
     //===========================SETUP================================\\

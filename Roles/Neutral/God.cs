@@ -2,6 +2,7 @@
 
 namespace TOHE.Roles.Neutral;
 
+[Obfuscation(Exclude = true)]
 internal class God : RoleBase
 {
     //===========================SETUP================================\\
@@ -54,3 +55,4 @@ internal class God : RoleBase
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.God);
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => Main.roleColors[target.GetCustomRole()];
 }
+
