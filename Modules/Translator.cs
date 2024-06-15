@@ -214,23 +214,46 @@ public static class Translator
             }
         return str;
     }
-    public static bool TryGetString(string strItem, out string s)
+    public static bool TryGetStrings(string strItem, out string[] s) 
     {
-        static bool Checkif(string str)
-        {
-            string[] strings = [$"*{str}", "INVALID"];
-            return strings.Any(str.Contains);
-        }
+        // Basically if you wanna let the user infinitely expand a function to their liking
+        // I need to test if this shit works lol, I plan a usecase for it in 2.1.0 (see: https://discord.com/channels/1094344790910455908/1251264307052675134)
 
         var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
-        string str = GetString(strItem, langId, true);
-        s = str;
+        s = [""];
 
-        if (!Checkif(str))
+        try
         {
-            return true;
+
+            var CaptureStr = translateMaps
+                 .Where(x => x.Key.ToLower().Contains(strItem.ToLower()))
+                 .ToDictionary(
+                          x => x.Key,
+                          x => x.Value
+                          .Where(inner => inner.Key - 1 != -1)
+                          .ToDictionary(inner => inner.Key, inner => inner.Value)
+                 );
+
+            if (CaptureStr.Keys.Any())
+            {
+                List<string> strings = [];
+
+                foreach (var melon in CaptureStr)
+                {
+                    var cache = GetString(melon.Key, langId);
+                    Logger.Info($" Adding < {cache} > to the list of strings", "Translator.TryGetStrings");
+                    strings.Add(cache);
+                }
+                s = [.. strings];
+                return true;
+            }
         }
+        catch (Exception err)
+        {
+            Logger.Exception(err, "Translator.TryGetStrings");
+        }
+
         return false;
     }
 
