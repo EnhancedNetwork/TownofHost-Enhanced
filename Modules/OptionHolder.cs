@@ -352,6 +352,7 @@ public static class Options
     public static OptionItem FixFirstKillCooldown;
     public static OptionItem FixKillCooldownValue;
     public static OptionItem ShieldPersonDiedFirst;
+    public static OptionItem EveryoneCanSeeDeathReason;
 
     public static OptionItem KillFlashDuration;
 
@@ -1830,6 +1831,9 @@ public static class Options
             .SetParent(FixFirstKillCooldown);
         // 首刀保护
         ShieldPersonDiedFirst = BooleanOptionItem.Create(60780, "ShieldPersonDiedFirst", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+        EveryoneCanSeeDeathReason = BooleanOptionItem.Create(60781, "EveryoneCanSeeDeathReason", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 

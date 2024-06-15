@@ -376,6 +376,8 @@ public static class CustomRolesHelper
                     return false;
                 break;
             case CustomRoles.Autopsy:
+                if (Options.EveryoneCanSeeDeathReason.GetBool())
+                    return false;
                 if (pc.Is(CustomRoles.Doctor)
                     || pc.Is(CustomRoles.Tracefinder)
                     || pc.Is(CustomRoles.ScientistTOHE)
