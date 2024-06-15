@@ -252,6 +252,13 @@ internal class Jackal : RoleBase
             if (killer.Is(CustomRoles.Recruit) && (target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick)))
                 return true;
         }
+
+        if (!SidekickCanKillJackal.GetBool())
+        {
+            // Recruit/Sidekick can kill Jackal
+            if (target.Is(CustomRoles.Jackal) && (killer.Is(CustomRoles.Sidekick) || killer.Is(CustomRoles.Recruit)))
+                return true;
+        }
         return false;
     }
 }
