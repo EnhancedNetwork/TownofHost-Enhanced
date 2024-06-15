@@ -67,7 +67,6 @@ internal class Shaman : RoleBase
             target.Notify(GetString("Shaman_KillerCannotMurderChosenTarget"), time: 10f);
         }
         ShamanTarget = byte.MaxValue;
-        ShamanTargetChoosen = false;
         return false;
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
