@@ -231,7 +231,7 @@ public static class Translator
                  .ToDictionary(
                           x => x.Key,
                           x => x.Value
-                          .Where(inner => inner.Key - 1 != -1)
+                          .Where(inner => inner.Key == (int)langId && inner.Key - 1 != -1)
                           .ToDictionary(inner => inner.Key, inner => inner.Value)
                  );
 
