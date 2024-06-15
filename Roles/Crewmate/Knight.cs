@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TOHE.Roles.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Knight : RoleBase
 {
     //===========================SETUP================================\\

@@ -4,7 +4,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Benefactor : RoleBase
 {
     //===========================SETUP================================\\

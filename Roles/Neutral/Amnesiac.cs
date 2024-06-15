@@ -6,7 +6,7 @@ using Hazel;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Amnesiac : RoleBase
 {
     //===========================SETUP================================\\
@@ -21,6 +21,7 @@ internal class Amnesiac : RoleBase
     private static OptionItem IncompatibleNeutralMode;
     private static OptionItem ShowArrows;
 
+    [Obfuscation(Exclude = true)]
     private enum AmnesiacIncompatibleNeutralModeSelectList
     {
         Role_Amnesiac,

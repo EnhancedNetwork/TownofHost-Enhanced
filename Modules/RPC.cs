@@ -15,6 +15,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+[Obfuscation(Exclude = true)]
 enum CustomRPC : byte // 194/255 USED
 {
     // RpcCalls can increase with each AU version
@@ -123,6 +124,7 @@ enum CustomRPC : byte // 194/255 USED
     SyncFFAPlayer,
     SyncFFANameNotify,
 }
+[Obfuscation(Exclude = true)]
 public enum Sounds
 {
     KillSound,

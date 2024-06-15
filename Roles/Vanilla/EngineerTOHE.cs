@@ -3,7 +3,7 @@ using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Vanilla;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class EngineerTOHE : RoleBase
 {
     //===========================SETUP================================\\

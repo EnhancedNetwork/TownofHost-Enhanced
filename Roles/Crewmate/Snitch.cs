@@ -6,7 +6,7 @@ using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Snitch : RoleBase
 {
     //===========================SETUP================================\\

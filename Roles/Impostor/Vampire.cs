@@ -5,7 +5,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Vampire : RoleBase
 {
     private class BittenInfo(byte vampierId, float killTimer)
@@ -27,6 +27,7 @@ internal class Vampire : RoleBase
     private static OptionItem CanVent;
     private static OptionItem ActionModeOpt;
 
+    [Obfuscation(Exclude = true)]
     private enum ActionModeList
     {
         Vampire_OnlyBites,

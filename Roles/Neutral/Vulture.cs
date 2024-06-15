@@ -8,7 +8,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Vulture : RoleBase
 {
     //===========================SETUP================================\\

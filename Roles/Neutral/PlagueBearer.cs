@@ -8,7 +8,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class PlagueBearer : RoleBase
 {
     //===========================SETUP================================\\
@@ -209,7 +209,7 @@ internal class PlagueBearer : RoleBase
     }
 }
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Pestilence : RoleBase
 {
     //===========================SETUP================================\\

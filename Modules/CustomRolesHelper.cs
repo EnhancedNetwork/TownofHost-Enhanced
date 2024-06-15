@@ -1288,6 +1288,7 @@ public static class CustomRolesHelper
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
 }
+[Obfuscation(Exclude = true)]
 public enum Custom_Team
 {
     Crewmate,
@@ -1295,6 +1296,7 @@ public enum Custom_Team
     Neutral,
     Addon,
 }
+[Obfuscation(Exclude = true)]
 public enum Custom_RoleType
 {
     // Impostors
@@ -1324,6 +1326,7 @@ public enum Custom_RoleType
 
     None
 }
+[Obfuscation(Exclude = true)]
 public enum CountTypes
 {
     OutOfGame,

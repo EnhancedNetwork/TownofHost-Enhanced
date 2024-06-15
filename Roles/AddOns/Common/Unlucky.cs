@@ -16,6 +16,7 @@ public static class Unlucky
     public static OptionItem CrewCanBeUnlucky;
     public static OptionItem NeutralCanBeUnlucky;
 
+    [Obfuscation(Exclude = true)]
     public enum StateSuicide
     {
         TryKill,

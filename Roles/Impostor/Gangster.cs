@@ -9,7 +9,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Impostor;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Gangster : RoleBase
 {
     //===========================SETUP================================\\

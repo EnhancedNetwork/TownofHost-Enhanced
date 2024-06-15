@@ -7,7 +7,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Double;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Mini : RoleBase
 {
     //===========================SETUP================================\\

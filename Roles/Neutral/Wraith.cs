@@ -9,7 +9,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Wraith : RoleBase
 {
     //===========================SETUP================================\\

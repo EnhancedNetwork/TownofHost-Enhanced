@@ -9,7 +9,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class HexMaster : RoleBase
 {
     //===========================SETUP================================\\
@@ -31,6 +31,7 @@ internal class HexMaster : RoleBase
     private static readonly Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
     private static readonly Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
 
+    [Obfuscation(Exclude = true)]
     private enum SwitchTriggerList
     {
         TriggerKill,

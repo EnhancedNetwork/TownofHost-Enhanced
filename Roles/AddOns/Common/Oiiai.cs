@@ -17,6 +17,7 @@ public static class Oiiai
     private static OptionItem CanPassOn;
     private static OptionItem ChangeNeutralRole;
 
+    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectList
     {
         Role_NoChange,

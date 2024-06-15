@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral;
 
 // 来源：https://github.com/Yumenopai/TownOfHost_Y
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Stalker : RoleBase
 {
     //===========================SETUP================================\\

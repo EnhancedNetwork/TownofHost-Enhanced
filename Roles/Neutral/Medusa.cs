@@ -4,7 +4,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Medusa : RoleBase
 {
     //===========================SETUP================================\\

@@ -7,7 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Cultist : RoleBase
 {
     //===========================SETUP================================\\
@@ -25,6 +25,7 @@ internal class Cultist : RoleBase
     private static OptionItem CanCharmNeutral;
     public static OptionItem CharmedCountMode;
 
+    [Obfuscation(Exclude = true)]
     private enum CharmedCountModeSelectList
     {
         Cultist_CharmedCountMode_None,

@@ -2,7 +2,7 @@ using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
-
+[Obfuscation(Exclude = true)]
 public class ErrorText : MonoBehaviour
 {
     #region Singleton
@@ -145,6 +145,7 @@ public class ErrorText : MonoBehaviour
     public bool CheatDetected;
     public bool SBDetected;
 }
+[Obfuscation(Exclude = true)]
 public enum ErrorCode
 {
     //xxxyyyz: ERR-xxx-yyy-z

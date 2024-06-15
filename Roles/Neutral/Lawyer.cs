@@ -7,7 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Lawyer : RoleBase
 {
     //===========================SETUP================================\\
@@ -27,6 +27,7 @@ internal class Lawyer : RoleBase
     private static OptionItem TargetKnowsLawyer;
 
     public static readonly Dictionary<byte, byte> Target = [];
+    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectList
     {
         Role_Crewmate,

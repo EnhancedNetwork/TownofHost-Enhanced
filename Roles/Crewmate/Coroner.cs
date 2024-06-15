@@ -10,7 +10,7 @@ using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Coroner : RoleBase
 {
     //===========================SETUP================================\\

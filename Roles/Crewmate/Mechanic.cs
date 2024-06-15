@@ -7,7 +7,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Mechanic : RoleBase
 {
     //===========================SETUP================================\\

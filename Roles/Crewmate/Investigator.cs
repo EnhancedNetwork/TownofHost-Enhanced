@@ -5,7 +5,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Investigator : RoleBase
 {
     //===========================SETUP================================\\

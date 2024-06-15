@@ -147,6 +147,7 @@ class RandomSpawn
     }
     public static bool IsRandomSpawn() => RandomSpawnMode.GetBool();
 
+    [Obfuscation(Exclude = true)]
     private enum RandomSpawnOpt
     {
         RandomSpawnMode,

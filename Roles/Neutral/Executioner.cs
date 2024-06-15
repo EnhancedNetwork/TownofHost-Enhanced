@@ -5,7 +5,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Executioner : RoleBase
 {
     //===========================SETUP================================\\
@@ -26,7 +26,8 @@ internal class Executioner : RoleBase
     private static OptionItem ChangeRolesAfterTargetKilled;
 
     public static readonly Dictionary<byte, byte> Target = [];
-    
+
+    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectList
     {
         Role_Crewmate,

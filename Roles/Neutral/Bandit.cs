@@ -6,7 +6,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Bandit : RoleBase
 {
     //===========================SETUP================================\\
@@ -28,6 +28,7 @@ internal class Bandit : RoleBase
     private float killCooldown;
     private Dictionary<byte, CustomRoles> Targets = [];
 
+    [Obfuscation(Exclude = true)]
     private enum BanditStealModeOptList
     {
         BanditStealMode_OnMeeting,

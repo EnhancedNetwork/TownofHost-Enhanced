@@ -3,6 +3,7 @@ using InnerNet;
 
 namespace TOHE.Patches;
 
+[Obfuscation(Exclude = true)]
 enum GameDataTag : byte
 {
     DataFlag = 1,

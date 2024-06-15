@@ -5,7 +5,7 @@ using TOHE.Roles.Crewmate;
 
 namespace TOHE.Roles.Impostor;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Bomber : RoleBase
 {
     //===========================SETUP================================\\

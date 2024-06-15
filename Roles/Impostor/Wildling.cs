@@ -8,7 +8,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Wildling : RoleBase
 {
     //===========================SETUP================================\\

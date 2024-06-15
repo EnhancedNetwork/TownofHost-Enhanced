@@ -4,6 +4,7 @@ using System.Text.Json;
 namespace TOHE.Modules;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Modules/OptionSaver.cs
+
 public static class OptionSaver
 {
     private static readonly DirectoryInfo SaveDataDirectoryInfo = new("./TOHE-DATA/SaveData/");
@@ -100,6 +101,7 @@ public static class OptionSaver
         LoadOptionsData(JsonSerializer.Deserialize<SerializableOptionsData>(jsonString));
     }
 
+    [Obfuscation(Exclude = true)]
     /// <summary>Optional data suitable for json storage</summary>
     public class SerializableOptionsData
     {

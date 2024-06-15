@@ -7,7 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class EvilTracker : RoleBase
 {
     //===========================SETUP================================\\
@@ -32,6 +32,7 @@ internal class EvilTracker : RoleBase
     private static readonly Dictionary<byte, bool> CanSetTarget = [];
     private static readonly Dictionary<byte, HashSet<byte>> ImpostorsId = [];
 
+    [Obfuscation(Exclude = true)]
     private enum TargetMode
     {
         Never,

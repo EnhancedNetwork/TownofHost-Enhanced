@@ -8,7 +8,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Ninja : RoleBase
 {
     //===========================SETUP================================\\

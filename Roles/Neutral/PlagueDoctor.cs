@@ -11,7 +11,7 @@ namespace TOHE.Roles.Neutral;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Neutral/PlagueDoctor.cs
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class PlagueDoctor : RoleBase
 {
     //===========================SETUP================================\\

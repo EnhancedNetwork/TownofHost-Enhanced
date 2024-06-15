@@ -3,7 +3,7 @@ using TOHE.Modules;
 
 namespace TOHE.Roles.Impostor;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Miner : RoleBase
 {
     //===========================SETUP================================\\

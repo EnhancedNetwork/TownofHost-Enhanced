@@ -11,7 +11,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class FortuneTeller : RoleBase
 {
     //===========================SETUP================================\\

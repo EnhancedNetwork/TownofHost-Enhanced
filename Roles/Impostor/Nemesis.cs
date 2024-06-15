@@ -10,7 +10,7 @@ using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Impostor;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Nemesis : RoleBase
 {
     //===========================SETUP================================\\

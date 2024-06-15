@@ -6,7 +6,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Dazzler : RoleBase
 {
     //===========================SETUP================================\\

@@ -2,7 +2,7 @@
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Sunnyboy : RoleBase
 {
     //===========================SETUP================================\\

@@ -9,7 +9,7 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Hawk : RoleBase
 {
     //===========================SETUP================================\\

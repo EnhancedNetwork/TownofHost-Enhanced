@@ -256,6 +256,7 @@ public class PlayerState(byte playerId)
     public void InitTask(PlayerControl player) => taskState.Init(player);
     public void UpdateTask(PlayerControl player) => taskState.Update(player);
 
+    [Obfuscation(Exclude = true)]
     public enum DeathReason
     {
         Kill,

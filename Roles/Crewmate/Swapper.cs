@@ -9,7 +9,7 @@ using static TOHE.CheckForEndVotingPatch;
 
 namespace TOHE.Roles.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Swapper : RoleBase
 {
     //===========================SETUP================================\\

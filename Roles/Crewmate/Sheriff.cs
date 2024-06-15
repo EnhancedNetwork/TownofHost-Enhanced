@@ -5,7 +5,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Sheriff : RoleBase
 {
     //===========================SETUP================================\\
@@ -39,6 +39,7 @@ internal class Sheriff : RoleBase
 
     private static readonly Dictionary<CustomRoles, OptionItem> KillTargetOptions = [];
 
+    [Obfuscation(Exclude = true)]
     private enum KillOptionList
     {
         SheriffCanKillAll,

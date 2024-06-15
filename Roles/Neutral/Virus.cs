@@ -9,7 +9,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Virus : RoleBase
 {
     //===========================SETUP================================\\
@@ -32,6 +32,7 @@ internal class Virus : RoleBase
     private static readonly HashSet<byte> InfectedPlayer = [];
     private static readonly Dictionary<byte, string> VirusNotify = [];
 
+    [Obfuscation(Exclude = true)]
     private enum ContagiousCountModeSelectList
     {
         Virus_ContagiousCountMode_None,

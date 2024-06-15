@@ -4,7 +4,7 @@ using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Lookout : RoleBase
 {
     //===========================SETUP================================\\

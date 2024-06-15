@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Werewolf : RoleBase
 {
     //===========================SETUP================================\\

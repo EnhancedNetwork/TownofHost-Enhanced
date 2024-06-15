@@ -5,7 +5,7 @@ using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Jinx : RoleBase
 {
     //===========================SETUP================================\\

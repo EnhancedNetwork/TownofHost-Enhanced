@@ -1,7 +1,7 @@
 ﻿
 namespace TOHE;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class DefaultSetup : RoleBase
 {
     //===========================SETUP================================\\

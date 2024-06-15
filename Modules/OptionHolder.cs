@@ -10,6 +10,7 @@ using TOHE.Roles.Core;
 namespace TOHE;
 
 [Flags]
+[Obfuscation(Exclude = true)]
 public enum CustomGameMode
 {
     Standard = 0x01,
@@ -70,6 +71,7 @@ public static class Options
     public static Dictionary<CustomRoles, OptionItem> CustomGhostRoleCounts;
     public static Dictionary<CustomRoles, StringOptionItem> CustomRoleSpawnChances;
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
+    [Obfuscation(Exclude = true)]
     public enum SpawnChance
     {
         Chance0,
@@ -94,6 +96,7 @@ public static class Options
         Chance95,
         Chance100,
     }
+    [Obfuscation(Exclude = true)]
     private enum RatesZeroOne
     {
         RoleOff,

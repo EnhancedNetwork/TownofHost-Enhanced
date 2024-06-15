@@ -9,7 +9,7 @@ using MS.Internal.Xml.XPath;
 namespace TOHE.Roles._Ghosts_.Crewmate
 {
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Ghastly : RoleBase
     {
         //===========================SETUP================================\\

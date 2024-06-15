@@ -218,7 +218,7 @@ public class CustomRpcSender
 
         return this;
     }
-
+    [Obfuscation(Exclude = true)]
     public enum State
     {
         BeforeInit = 0, //初期化前 何もできない

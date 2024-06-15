@@ -5,7 +5,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-[Obfuscation(Exclude = true)]
+[Obfuscation(Exclude = true, ApplyToMembers = false)]
 internal class Marshall : RoleBase
 {
     //===========================SETUP================================\\
