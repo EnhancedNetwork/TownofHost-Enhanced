@@ -988,6 +988,7 @@
   "AdditionalEmergencyCooldownTime": "Tiempo de espera adicional",
   "LadderDeath": "Caídas de escalera de mano",
   "LadderDeathChance": "Probabilidad de caerse",
+  "EveryoneCanSeeDeathReason": "Everyone Can See Death Reason",
   "DisableSwipeCardTask": "Desactivar tarea de pasar tarjeta",
   "DisableSubmitScanTask": "Desactivar tarea de enviar escaneo",
   "DisableUnlockSafeTask": "Desactivar tarea de abrir caja fuerte",
