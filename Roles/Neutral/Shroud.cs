@@ -84,6 +84,7 @@ internal class Shroud : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (ShroudList.ContainsKey(target.PlayerId)) return false;
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantShroud")));
@@ -148,6 +149,13 @@ internal class Shroud : RoleBase
 
     public override void OnPlayerExiled(PlayerControl shroud, GameData.PlayerInfo exiled)
     {
+        if (!shroud.IsAlive())
+        {
+            ShroudList.Clear();
+            SendRPC(byte.MaxValue, byte.MaxValue, 1);
+            return;
+        }
+
         foreach (var shroudedId in ShroudList.Keys)
         {
             PlayerControl shrouded = Utils.GetPlayerById(shroudedId);
@@ -163,7 +171,7 @@ internal class Shroud : RoleBase
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isMeeting = false)
-            => isMeeting && target != null && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
+        => isMeeting && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
     
         
 

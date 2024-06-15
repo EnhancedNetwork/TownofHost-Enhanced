@@ -16,7 +16,7 @@ internal class Shaman : RoleBase
 
     private static OptionItem VoodooCooldown;
 
-    public static byte ShamanTarget = byte.MaxValue;
+    private static byte ShamanTarget = byte.MaxValue;
     private static bool ShamanTargetChoosen = false;
 
     public override void SetupCustomOption()
@@ -55,11 +55,18 @@ internal class Shaman : RoleBase
     {
         if (ShamanTarget == byte.MaxValue) return true;
 
-        PlayerControl shaman = target;
-        target = ChangeTarget(target);
+        PlayerControl ChoosenTarget = ChangeTarget(target);
 
-        killer.RpcCheckAndMurder(target);
-        target.SetRealKiller(shaman);
+        if (killer.CheckForInvalidMurdering(ChoosenTarget) && killer.RpcCheckAndMurder(ChoosenTarget, check: true))
+        {
+            killer.RpcMurderPlayer(ChoosenTarget);
+            ChoosenTarget.SetRealKiller(target);
+        }
+        else
+        {
+            target.Notify(GetString("Shaman_KillerCannotMurderChosenTarget"), time: 10f);
+        }
+        ShamanTarget = byte.MaxValue;
         return false;
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
