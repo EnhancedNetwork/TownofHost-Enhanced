@@ -35,13 +35,13 @@ internal class Jackal : RoleBase
     public static OptionItem CanUseSabotageSK;
     private static OptionItem SidekickCanKillJackal;
     private static OptionItem SidekickCanKillSidekick;
-    private enum SidekickAssignModeSelect
+    private enum SidekickAssignModeSelectList
     {
         Jackal_SidekickAssignMode_SidekickAndRecruit,
         Jackal_SidekickAssignMode_Sidekick,
         Jackal_SidekickAssignMode_Recruit,
     }
-    private enum SidekickCountModeSelect
+    private enum SidekickCountModeSelectList
     {
         Jackal_SidekickCountMode_Jackal,
         Jackal_SidekickCountMode_None,
@@ -63,7 +63,7 @@ internal class Jackal : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         JackalCanKillSidekick = BooleanOptionItem.Create(Id + 15, "JackalCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         CanRecruitSidekick = BooleanOptionItem.Create(Id + 30, "JackalCanRecruitSidekick", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
-        SidekickAssignMode = StringOptionItem.Create(Id + 34, "Jackal_SidekickAssignMode", EnumHelper.GetAllNames<SidekickAssignModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
+        SidekickAssignMode = StringOptionItem.Create(Id + 34, "Jackal_SidekickAssignMode", EnumHelper.GetAllNames<SidekickAssignModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
                 .SetHidden(false);
         SidekickRecruitLimitOpt = IntegerOptionItem.Create(Id + 33, "JackalSidekickRecruitLimit", new(0, 15, 1), 2, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
                 .SetValueFormat(OptionFormat.Times);
@@ -73,7 +73,7 @@ internal class Jackal : RoleBase
         CanUseSabotageSK = BooleanOptionItem.Create(Id + 22, "CanUseSabotage", true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         SidekickCanKillJackal = BooleanOptionItem.Create(Id + 23, "Jackal_SidekickCanKillJackal", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         SidekickCanKillSidekick = BooleanOptionItem.Create(Id + 24, "Jackal_SidekickCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
-        SidekickCountMode = StringOptionItem.Create(Id + 25, "Jackal_SidekickCountMode", EnumHelper.GetAllNames<SidekickCountModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
+        SidekickCountMode = StringOptionItem.Create(Id + 25, "Jackal_SidekickCountMode", EnumHelper.GetAllNames<SidekickCountModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
             .SetHidden(false);
     }
     public override void Init()
@@ -250,6 +250,13 @@ internal class Jackal : RoleBase
 
             // Recruit can kill Recruit/Sidekick
             if (killer.Is(CustomRoles.Recruit) && (target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick)))
+                return true;
+        }
+
+        if (!SidekickCanKillJackal.GetBool())
+        {
+            // Recruit/Sidekick can kill Jackal
+            if (target.Is(CustomRoles.Jackal) && (killer.Is(CustomRoles.Sidekick) || killer.Is(CustomRoles.Recruit)))
                 return true;
         }
         return false;

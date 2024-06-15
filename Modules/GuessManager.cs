@@ -122,7 +122,7 @@ public static class GuessManager
         }
         if (!pc.Is(CustomRoles.EvilGuesser))
         {
-            if (pc.GetCustomRole().IsImpostor() && !Options.ImpostorsCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Councillor))
+            if ((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !Options.ImpostorsCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Councillor))
             {
                 if (!isUI) Utils.SendMessage(GetString("GuessNotAllowed"), pc.PlayerId);
                 else pc.ShowPopUp(GetString("GuessNotAllowed"));
@@ -285,7 +285,7 @@ public static class GuessManager
                     if (role.IsAdditionRole() && !Options.CanGuessAddons.GetBool())
                     {
                         // Impostors Cant Guess Addons
-                        if (Options.ImpostorsCanGuess.GetBool() && pc.Is(Custom_Team.Impostor) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
+                        if (Options.ImpostorsCanGuess.GetBool() && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
                         {
                             if (!isUI) Utils.SendMessage(GetString("GuessAdtRole"), pc.PlayerId);
                             else pc.ShowPopUp(GetString("GuessAdtRole"));
@@ -575,7 +575,7 @@ public static class GuessManager
 
             if (Options.GuesserMode.GetBool())
             {
-                if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsImpostor() && Options.ImpostorsCanGuess.GetBool())
+                if (PlayerControl.LocalPlayer.IsAlive() && (PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) || PlayerControl.LocalPlayer.GetCustomRole().IsMadmate()) && Options.ImpostorsCanGuess.GetBool())
                     CreateGuesserButton(__instance);
                 else if (PlayerControl.LocalPlayer.GetCustomRole() is CustomRoles.EvilGuesser && !Options.ImpostorsCanGuess.GetBool())
                     CreateGuesserButton(__instance);

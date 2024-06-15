@@ -101,7 +101,7 @@ public static class MainMenuManagerPatch
     //private static PassiveButton patreonButton;
 
     [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
-    public static void StartPostfix(MainMenuManager __instance)
+    public static void Start_Postfix(MainMenuManager __instance)
     {
         if (template == null) template = __instance.quitButton;
 
@@ -355,12 +355,12 @@ public static class MainMenuManagerPatch
     [HarmonyPatch(nameof(MainMenuManager.OpenAccountMenu))]
     [HarmonyPatch(nameof(MainMenuManager.OpenCredits))]
     [HarmonyPostfix]
-    public static void OpenMenuPostfix()
+    public static void OpenMenu_Postfix()
     {
         if (MainMenuManagerStartPatch.ToheLogo != null) MainMenuManagerStartPatch.ToheLogo.gameObject.SetActive(false);
     }
     [HarmonyPatch(nameof(MainMenuManager.ResetScreen)), HarmonyPostfix]
-    public static void ResetScreenPostfix()
+    public static void ResetScreen_Postfix()
     {
         if (MainMenuManagerStartPatch.ToheLogo != null) MainMenuManagerStartPatch.ToheLogo.gameObject.SetActive(true);
     }

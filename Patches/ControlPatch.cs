@@ -32,8 +32,8 @@ internal class ControllerManagerUpdatePatch
                 Logger.Info("User canceled Auto Play Again!", "ControllerManager");
                 EndGameManagerPatch.IsRestarting = false;
             }
-            //切换自定义设置的页面
-            if (GameStates.IsLobby)
+            // Do next page
+            if (GameStates.IsLobby && DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
             {
                 if (Input.GetKeyDown(KeyCode.Tab))
                 {
