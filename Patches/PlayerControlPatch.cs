@@ -16,7 +16,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -105,7 +104,7 @@ class CheckMurderPatch
             }
         }
     }
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state = false)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
         if (GameStates.IsHideNSeek) return true;
@@ -139,7 +138,7 @@ class CheckMurderPatch
 
         Logger.Info($"Start: CustomRoleManager.OnCheckMurder", "CheckMurder");
 
-        if (CustomRoleManager.OnCheckMurder(ref killer, ref target) == false)
+        if (CustomRoleManager.OnCheckMurder(ref killer, ref target, ref __state) == false)
         {
             Logger.Info($"Canceled from CustomRoleManager.OnCheckMurder", "CheckMurder");
             return false;
@@ -152,6 +151,14 @@ class CheckMurderPatch
         //============
 
         return false;
+    }
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state)
+    {
+        if (__state)
+        {
+            Utils.NotifyRoles(SpecifySeer: __instance);
+            Utils.NotifyRoles(SpecifySeer: target);
+        }
     }
     public static bool CheckForInvalidMurdering(PlayerControl killer, PlayerControl target)
     {

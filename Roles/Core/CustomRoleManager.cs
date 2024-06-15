@@ -141,7 +141,7 @@ public static class CustomRoleManager
     /// <summary>
     /// Check Murder as Killer in target
     /// </summary>
-    public static bool OnCheckMurder(ref PlayerControl killer, ref PlayerControl target)
+    public static bool OnCheckMurder(ref PlayerControl killer, ref PlayerControl target, ref bool __state)
     {
         if (killer == target) return true;
         var canceled = false;
@@ -168,6 +168,7 @@ public static class CustomRoleManager
         // Forced check
         if (killerRoleClass.ForcedCheckMurderAsKiller(killer, target) == false)
         {
+            __state = true;
             Logger.Info("Cancels because for killer no need kill target", "ForcedCheckMurderAsKiller");
             return false;
         }
@@ -177,6 +178,7 @@ public static class CustomRoleManager
         // Check in target
         if (killer.RpcCheckAndMurder(target, true) == false)
         {
+            __state = true;
             Logger.Info("Cancels because target cancel kill", "OnCheckMurder.RpcCheckAndMurder");
             return false;
         }
@@ -225,6 +227,7 @@ public static class CustomRoleManager
         // Check murder as killer
         if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
         {
+            __state = true;
             if (cancelbutkill && target.IsAlive() 
                 && !DoubleTrigger.FirstTriggerTimer.TryGetValue(killer.PlayerId, out _)) // some roles have an internal rpcmurderplayer, but still had to cancel
             {
