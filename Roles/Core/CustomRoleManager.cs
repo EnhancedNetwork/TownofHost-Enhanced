@@ -228,7 +228,8 @@ public static class CustomRoleManager
             if (cancelbutkill && target.IsAlive() 
                 && !DoubleTrigger.FirstTriggerTimer.TryGetValue(killer.PlayerId, out _)) // some roles have an internal rpcmurderplayer, but still had to cancel
             {
-                killer.RpcMurderPlayer(target);
+                target.RpcMurderPlayer(target);
+                target.SetRealKiller(killer);
             }
 
             Logger.Info("Cancels because for killer no need kill target", "OnCheckMurderAsKiller");
@@ -258,7 +259,8 @@ public static class CustomRoleManager
 
         if (cancelbutkill)
         {
-            killer.RpcMurderPlayer(target);
+            target.RpcMurderPlayer(target);
+            target.SetRealKiller(killer);
             return false;
         }
                 
