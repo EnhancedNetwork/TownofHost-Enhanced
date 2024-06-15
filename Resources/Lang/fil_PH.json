@@ -988,6 +988,7 @@
   "AdditionalEmergencyCooldownTime": "Additional Cooldown",
   "LadderDeath": "Fall From Ladders",
   "LadderDeathChance": "Fall To Death Chance",
+  "EveryoneCanSeeDeathReason": "Everyone Can See Death Reason",
   "DisableSwipeCardTask": "Disable Swipe Card Task",
   "DisableSubmitScanTask": "Disable Submit Scan Task",
   "DisableUnlockSafeTask": "Disable Unlock Safe Task",
