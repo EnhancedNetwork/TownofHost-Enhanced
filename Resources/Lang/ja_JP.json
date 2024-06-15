@@ -988,6 +988,7 @@
   "AdditionalEmergencyCooldownTime": "追加のクールダウン",
   "LadderDeath": "梯子からの転落",
   "LadderDeathChance": "死亡の可能性のある落下",
+  "EveryoneCanSeeDeathReason": "Everyone Can See Death Reason",
   "DisableSwipeCardTask": "カードをスワイプするタスクの無効化",
   "DisableSubmitScanTask": "スキャンの提出タスクの無効化",
   "DisableUnlockSafeTask": "金庫の解錠タスクの無効化",
