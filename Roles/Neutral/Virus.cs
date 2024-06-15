@@ -31,7 +31,7 @@ internal class Virus : RoleBase
     private static readonly HashSet<byte> InfectedPlayer = [];
     private static readonly Dictionary<byte, string> VirusNotify = [];
 
-    private enum ContagiousCountModeSelect
+    private enum ContagiousCountModeSelectList
     {
         Virus_ContagiousCountMode_None,
         Virus_ContagiousCountMode_Virus,
@@ -50,7 +50,7 @@ internal class Virus : RoleBase
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "VirusKnowTargetRole", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Virus]);
         TargetKnowOtherTarget = BooleanOptionItem.Create(Id + 14, "VirusTargetKnowOtherTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Virus]);
         KillInfectedPlayerAfterMeeting = BooleanOptionItem.Create(Id + 15, "VirusKillInfectedPlayerAfterMeeting", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Virus]);
-        ContagiousCountMode = StringOptionItem.Create(Id + 18, "Virus_ContagiousCountMode", EnumHelper.GetAllNames<ContagiousCountModeSelect>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Virus]);
+        ContagiousCountMode = StringOptionItem.Create(Id + 18, "Virus_ContagiousCountMode", EnumHelper.GetAllNames<ContagiousCountModeSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Virus]);
     }
 
     public override void Init()
