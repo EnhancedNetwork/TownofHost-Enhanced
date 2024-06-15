@@ -346,12 +346,16 @@ internal class ChatCommands
                     int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
                     int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
                     int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
+                    int apocnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNA());
 
                     var sub = new StringBuilder();
                     sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
 
                     if (Options.ShowMadmatesInLeftCommand.GetBool())
                         sub.Append(string.Format("\n\r" + GetString("Remaining.MadmateCount"), madnum));
+
+                    if (Options.ShowApocalypseInLeftCommand.GetBool())
+                        sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
 
                     sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
 

@@ -1986,8 +1986,10 @@
   "Remaining.ImpostorCount": "<color=#ff1919>Impostors</color> left: {0}",
   "Remaining.MadmateCount": "<color=#ff1919>Madmates</color> left: {0}",
   "Remaining.NeutralCount": "<color=#7f8c8d>Neutral Killers</color> left: {0}",
+  "Remaining.ApocalypseCount": "<color=#ff174f>Neutral Apocalypse</color> left: {0}",
   "EnableKillerLeftCommand": "Enable use of /kcount command",
   "ShowMadmatesInLeftCommand": "Show <color=#ff1919>Madmates</color> (including add-ons)",
+  "ShowApocalypseInLeftCommand": "Show <color=#ff174f>Neutral Apocalypse</color>",
   "SeeEjectedRolesInMeeting": "See ejected roles in meetings",
 
   "SkillUsedLeft": "You have activated your skill to call a meeting. \nRemaining amount of uses left:",
