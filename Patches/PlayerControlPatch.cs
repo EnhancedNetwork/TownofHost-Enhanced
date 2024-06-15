@@ -635,7 +635,7 @@ class ShapeshiftPatch
 
         shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, animate, shapeshifting);
 
-        if (!shapeshifter.Is(CustomRoles.Glitch))
+        if (!shapeshifter.Is(CustomRoles.Glitch) && !Main.MeetingIsStarted)
         {
             var time = animate ? 1.2f : 0.5f;
             //Forced update players name
