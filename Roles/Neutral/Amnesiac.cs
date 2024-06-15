@@ -20,7 +20,7 @@ internal class Amnesiac : RoleBase
     private static OptionItem IncompatibleNeutralMode;
     private static OptionItem ShowArrows;
 
-    private enum AmnesiacIncompatibleNeutralModeSelect
+    private enum AmnesiacIncompatibleNeutralModeSelectList
     {
         Role_Amnesiac,
         Role_Pursuer,
@@ -32,7 +32,7 @@ internal class Amnesiac : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Amnesiac);
-        IncompatibleNeutralMode = StringOptionItem.Create(Id + 10, "IncompatibleNeutralMode", EnumHelper.GetAllNames<AmnesiacIncompatibleNeutralModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
+        IncompatibleNeutralMode = StringOptionItem.Create(Id + 10, "IncompatibleNeutralMode", EnumHelper.GetAllNames<AmnesiacIncompatibleNeutralModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         ShowArrows = BooleanOptionItem.Create(Id + 11, "ShowArrows", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Amnesiac]);
     }
     public override void Init()

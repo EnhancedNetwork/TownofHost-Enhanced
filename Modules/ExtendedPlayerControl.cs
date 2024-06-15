@@ -809,7 +809,8 @@ static class ExtendedPlayerControl
     public static bool IsNonNeutralKiller(this PlayerControl player) => player.GetCustomRole().IsNonNK();
     
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl target)
-        => (seer.Is(CustomRoles.Doctor) || seer.Is(CustomRoles.Autopsy)
+        => (Options.EveryoneCanSeeDeathReason.GetBool()
+        || seer.Is(CustomRoles.Doctor) || seer.Is(CustomRoles.Autopsy)
         || (seer.Data.IsDead && Options.GhostCanSeeDeathReason.GetBool()))
         && target.Data.IsDead || target.Is(CustomRoles.Gravestone) && target.Data.IsDead;
 

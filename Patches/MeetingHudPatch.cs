@@ -67,9 +67,10 @@ class CheckForEndVotingPatch
                     });
                     states = [.. statesList];
 
+                    ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
+
                     if (AntiBlackout.BlackOutIsActive)
                     {
-                        ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
                         //__instance.RpcVotingComplete(states, null, true);
 
                         // Need check BlackOutIsActive again
@@ -322,10 +323,11 @@ class CheckForEndVotingPatch
 
             exiledPlayer?.Object.SetRealKiller(null);
 
+            ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
+
             //RPC
             if (AntiBlackout.BlackOutIsActive)
             {
-                ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
                 //__instance.RpcVotingComplete(states, null, true);
 
                 // Need check BlackOutIsActive again
@@ -901,7 +903,7 @@ class MeetingHudStartPatch
             var roleTextMeeting = UnityEngine.Object.Instantiate(pva.NameText);
             roleTextMeeting.transform.SetParent(pva.NameText.transform);
             roleTextMeeting.transform.localPosition = new Vector3(0f, -0.18f, 0f);
-            roleTextMeeting.fontSize = 1.5f;
+            roleTextMeeting.fontSize = 1.6f;
             roleTextMeeting.text = RoleTextData.Item1;
             if (Main.VisibleTasksCount) roleTextMeeting.text += Utils.GetProgressText(pc);
             roleTextMeeting.color = RoleTextData.Item2;
@@ -1029,7 +1031,7 @@ class MeetingHudStartPatch
                 if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Inspector))
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                if (Options.ImpostorsCanGuess.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Councillor))
+                if (Options.ImpostorsCanGuess.GetBool() && (seer.GetCustomRole().IsImpostor() || seer.GetCustomRole().IsMadmate()) && !seer.Is(CustomRoles.Councillor))
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
                 if (Options.NeutralKillersCanGuess.GetBool() && seer.GetCustomRole().IsNK())

@@ -179,6 +179,14 @@ public static class BanManager
         bool OnlyCheckPuid = false;
         if (code == "" && hashedpuid != "") OnlyCheckPuid = true;
         else if (code == "") return false;
+
+        string noDiscrim = "";
+        if (code.Contains('#'))
+        {
+            int index = code.IndexOf('#');
+            noDiscrim = code[..index];
+        }
+
         try
         {
             Directory.CreateDirectory("TOHE-DATA");
@@ -189,7 +197,10 @@ public static class BanManager
             {
                 if (line == "") continue;
                 if (!OnlyCheckPuid)
+                {
                     if (line.Contains(code)) return true;
+                    if (!string.IsNullOrEmpty(noDiscrim) && !line.Contains('#') && line.Contains(noDiscrim)) return true;
+                }
                 if (line.Contains(hashedpuid)) return true;
             }
         }

@@ -144,6 +144,8 @@ public static class CustomRoleManager
     public static bool OnCheckMurder(ref PlayerControl killer, ref PlayerControl target, ref bool __state)
     {
         if (killer == target) return true;
+        var canceled = false;
+        var cancelbutkill = false;
 
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
@@ -191,30 +193,31 @@ public static class CustomRoleManager
                     case CustomRoles.Madmate when target.Is(Custom_Team.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
                     case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTargets:
                     case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
-                        return false;
-
-                    case CustomRoles.Mare:
-                        if (Mare.IsLightsOut)
-                            return false;
+                        canceled = true;
                         break;
 
                     case CustomRoles.Unlucky:
-                        if (Unlucky.SuicideRand(killer, Unlucky.StateSuicide.TryKill)) 
-                            return false;
+                        if (Unlucky.SuicideRand(killer, Unlucky.StateSuicide.TryKill))
+                            canceled = true;
                         break;
 
                     case CustomRoles.Tired:
                         Tired.AfterActionTasks(killer);
                         break;
 
+                    case CustomRoles.Mare:
+                        if (Mare.IsLightsOut)
+                            canceled = true;
+                        break;
+
                     case CustomRoles.Clumsy:
                         if (!Clumsy.OnCheckMurder(killer))
-                            return false;
+                            canceled = true;
                         break;
 
                     case CustomRoles.Swift:
                         if (!Swift.OnCheckMurder(killer, target))
-                            return false;
+                            cancelbutkill = true;
                         break;
                 }
             }
@@ -225,6 +228,14 @@ public static class CustomRoleManager
         if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
         {
             __state = true;
+            if (cancelbutkill && target.IsAlive() 
+                && !DoubleTrigger.FirstTriggerTimer.TryGetValue(killer.PlayerId, out _)) // some roles have an internal rpcmurderplayer, but still had to cancel
+            {
+                target.RpcMurderPlayer(target);
+                target.SetRealKiller(killer);
+                Oiiai.OnMurderPlayer(killer, target);
+            }
+
             Logger.Info("Cancels because for killer no need kill target", "OnCheckMurderAsKiller");
             return false;
         }
@@ -246,6 +257,17 @@ public static class CustomRoleManager
                     DollMaster.CheckMurderAsPossessed(killer, target);
                     return false;
                 }
+
+        if (canceled)
+            return false;
+
+        if (cancelbutkill)
+        {
+            target.RpcMurderPlayer(target);
+            target.SetRealKiller(killer);
+            Oiiai.OnMurderPlayer(killer, target);
+            return false;
+        }
                 
         return true;
     }

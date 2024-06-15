@@ -34,7 +34,7 @@ internal class SuperStar : RoleBase
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
-            => seen.Is(CustomRoles.SuperStar) && EveryOneKnowSuperStar.GetBool() ? ColorString(GetRoleColor(CustomRoles.SuperStar), "★") : string.Empty;
+            => seen.Is(CustomRoles.SuperStar) && (seer.PlayerId == seen.PlayerId || EveryOneKnowSuperStar.GetBool()) ? ColorString(GetRoleColor(CustomRoles.SuperStar), "★") : string.Empty;
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {

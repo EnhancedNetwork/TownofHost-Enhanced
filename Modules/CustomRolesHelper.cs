@@ -376,6 +376,8 @@ public static class CustomRolesHelper
                     return false;
                 break;
             case CustomRoles.Autopsy:
+                if (Options.EveryoneCanSeeDeathReason.GetBool())
+                    return false;
                 if (pc.Is(CustomRoles.Doctor)
                     || pc.Is(CustomRoles.Tracefinder)
                     || pc.Is(CustomRoles.ScientistTOHE)
@@ -509,7 +511,7 @@ public static class CustomRolesHelper
                     return false;
                 if (Options.GuesserMode.GetBool())
                 {
-                    if (DoubleShot.ImpCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.EvilGuesser) && (pc.Is(Custom_Team.Impostor) && !Options.ImpostorsCanGuess.GetBool()))
+                    if (DoubleShot.ImpCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.EvilGuesser) && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !Options.ImpostorsCanGuess.GetBool())
                         return false;
                     if (DoubleShot.CrewCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.NiceGuesser) && (pc.Is(Custom_Team.Crewmate) && !Options.CrewmatesCanGuess.GetBool()))
                         return false;
@@ -837,7 +839,9 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Consigliere)
                     || pc.Is(CustomRoles.Butcher)
                     || pc.Is(CustomRoles.KillingMachine)
-                    || pc.Is(CustomRoles.Gangster))
+                    || pc.Is(CustomRoles.Gangster)
+                    || pc.Is(CustomRoles.Berserker))
+                    || pc.Is(CustomRoles.BountyHunter))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
