@@ -988,6 +988,7 @@
   "AdditionalEmergencyCooldownTime": "Дополнительный откат",
   "LadderDeath": "Падение с Лестницы",
   "LadderDeathChance": "Шанс разбиться насмерть",
+  "EveryoneCanSeeDeathReason": "Everyone Can See Death Reason",
   "DisableSwipeCardTask": "Отключить Задание «Провести Карту»",
   "DisableSubmitScanTask": "Отключить Задание «Сканирование»",
   "DisableUnlockSafeTask": "Отключить Задание «Открытие Сейфа»",
