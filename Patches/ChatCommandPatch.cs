@@ -489,7 +489,7 @@ internal class ChatCommands
                 case "/шаблон":
                 case "/пример":
                     canceled = true;
-                    if (args.Length > 1) TemplateManager.SendTemplate(args[1], PlayerControl.LocalPlayer.PlayerId);
+                    if (args.Length > 1) TemplateManager.SendTemplate(args[1]);
                     else Utils.SendMessage($"{GetString("ForExample")}:\n{args[0]} test", PlayerControl.LocalPlayer.PlayerId);
                     break;
 
