@@ -988,6 +988,7 @@
   "AdditionalEmergencyCooldownTime": "Rechargement supplémentaire",
   "LadderDeath": "Chute d'une Échelle",
   "LadderDeathChance": "Risque de chute mortelle",
+  "EveryoneCanSeeDeathReason": "Everyone Can See Death Reason",
   "DisableSwipeCardTask": "Désactiver la Tâche de Lecture de Carte",
   "DisableSubmitScanTask": "Désactiver la Tâche du Scanner",
   "DisableUnlockSafeTask": "Désactiver la Tâche Déverrouiller le Coffre-Fort",
