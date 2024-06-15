@@ -323,17 +323,18 @@ internal class ChatCommands
                     Utils.ShowHelp(PlayerControl.LocalPlayer.PlayerId);
                     break;
 
-                /*        case "/icons":
-                            { 
-                                Utils.SendMessage(GetString("Command.icons"), PlayerControl.LocalPlayer.PlayerId);
-                                break;
-                            }
+                case "/icon":
+                case "/icons":
+                    {
+                        Utils.SendMessage(GetString("Command.icons"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
 
-                        case "/iconhelp":
-                            { 
-                                Utils.SendMessage(GetString("Command.icons"));
-                                break;
-                            }*/
+                case "/iconhelp":
+                    {
+                        Utils.SendMessage(GetString("Command.icons"));
+                        break;
+                    }
 
                 case "/kc":
                 case "/kcount":
@@ -1871,11 +1872,12 @@ internal class ChatCommands
                 else Utils.SendMessage("Winner: " + string.Join(", ", Main.winnerNameList), player.PlayerId);
                 break;
 
-            /*        case "/icons":
-                        { 
-                            Utils.SendMessage(GetString("Command.icons"), player.PlayerId);
-                            break;
-                        } */
+            case "/icon":
+            case "/icons":
+                {
+                    Utils.SendMessage(GetString("Command.icons"), player.PlayerId);
+                    break;
+                }
 
             case "/kc":
             case "/kcount":
