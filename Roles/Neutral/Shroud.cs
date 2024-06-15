@@ -148,6 +148,13 @@ internal class Shroud : RoleBase
 
     public override void OnPlayerExiled(PlayerControl shroud, GameData.PlayerInfo exiled)
     {
+        if (!shroud.IsAlive())
+        {
+            ShroudList.Clear();
+            SendRPC(byte.MaxValue, byte.MaxValue, 1);
+            return;
+        }
+
         foreach (var shroudedId in ShroudList.Keys)
         {
             PlayerControl shrouded = Utils.GetPlayerById(shroudedId);
