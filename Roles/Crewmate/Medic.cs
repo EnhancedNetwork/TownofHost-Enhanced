@@ -29,7 +29,7 @@ internal class Medic : RoleBase
 
     private static byte TempMarkProtected;
 
-    private enum SelectOptions
+    private enum SelectOptionsList
     {
         Medic_SeeMedicAndTarget,
         Medic_SeeMedic,
@@ -37,7 +37,7 @@ internal class Medic : RoleBase
         Medic_SeeNoOne
     }
 
-    private enum ShieldDeactivationIsVisible
+    private enum ShieldDeactivationIsVisibleList
     {
         MedicShieldDeactivationIsVisible_Immediately,
         MedicShieldDeactivationIsVisible_AfterMeeting,
@@ -47,13 +47,13 @@ internal class Medic : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Medic);
-        WhoCanSeeProtectOpt = StringOptionItem.Create(Id + 10, "MedicWhoCanSeeProtect", EnumHelper.GetAllNames<SelectOptions>(), 0, TabGroup.CrewmateRoles, false)
+        WhoCanSeeProtectOpt = StringOptionItem.Create(Id + 10, "MedicWhoCanSeeProtect", EnumHelper.GetAllNames<SelectOptionsList>(), 0, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medic]);
-        KnowShieldBrokenOpt = StringOptionItem.Create(Id + 16, "MedicKnowShieldBroken", EnumHelper.GetAllNames<SelectOptions>(), 1, TabGroup.CrewmateRoles, false)
+        KnowShieldBrokenOpt = StringOptionItem.Create(Id + 16, "MedicKnowShieldBroken", EnumHelper.GetAllNames<SelectOptionsList>(), 1, TabGroup.CrewmateRoles, false)
            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medic]);
         ShieldDeactivatesWhenMedicDies = BooleanOptionItem.Create(Id + 24, "MedicShieldDeactivatesWhenMedicDies", true, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medic]);
-        ShieldDeactivationIsVisibleOpt = StringOptionItem.Create(Id + 25, "MedicShielDeactivationIsVisible", EnumHelper.GetAllNames<ShieldDeactivationIsVisible>(), 0, TabGroup.CrewmateRoles, false)
+        ShieldDeactivationIsVisibleOpt = StringOptionItem.Create(Id + 25, "MedicShielDeactivationIsVisible", EnumHelper.GetAllNames<ShieldDeactivationIsVisibleList>(), 0, TabGroup.CrewmateRoles, false)
             .SetParent(ShieldDeactivatesWhenMedicDies);
         ResetCooldown = FloatOptionItem.Create(Id + 30, "MedicResetCooldown", new(0f, 120f, 1f), 10f, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medic])

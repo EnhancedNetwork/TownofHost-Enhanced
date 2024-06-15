@@ -16,7 +16,7 @@ internal class Imitator : RoleBase
     private static OptionItem RememberCooldown;
     private static OptionItem IncompatibleNeutralMode;
 
-    private enum ImitatorIncompatibleNeutralModeSelect
+    private enum ImitatorIncompatibleNeutralModeSelectList
     {
         Role_Imitator,
         Role_Pursuer,
@@ -30,7 +30,7 @@ internal class Imitator : RoleBase
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Imitator);
         RememberCooldown = FloatOptionItem.Create(Id + 10, "RememberCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator])
                 .SetValueFormat(OptionFormat.Seconds);
-        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", EnumHelper.GetAllNames<ImitatorIncompatibleNeutralModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
+        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", EnumHelper.GetAllNames<ImitatorIncompatibleNeutralModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
     }
     public override void Add(byte playerId)
     {
