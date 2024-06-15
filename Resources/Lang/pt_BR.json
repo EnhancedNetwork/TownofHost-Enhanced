@@ -988,6 +988,7 @@
   "AdditionalEmergencyCooldownTime": "Recarga Adicional",
   "LadderDeath": "Cair de Escadas",
   "LadderDeathChance": "Chance de Cair Para a Morte",
+  "EveryoneCanSeeDeathReason": "Everyone Can See Death Reason",
   "DisableSwipeCardTask": "Desabilitar Passar cartão",
   "DisableSubmitScanTask": "Desabilitar Fazer raio-x (scan)",
   "DisableUnlockSafeTask": "Desabilitar Abrir cofre",
