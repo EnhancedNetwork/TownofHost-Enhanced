@@ -225,7 +225,8 @@ public static class CustomRoleManager
         // Check murder as killer
         if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
         {
-            if (cancelbutkill && target.IsAlive()) // some roles have an internal rpcmurderplayer, but still had to cancel
+            if (cancelbutkill && target.IsAlive() 
+                && !DoubleTrigger.FirstTriggerTimer.TryGetValue(killer.PlayerId, out var time) && time <= 0) // some roles have an internal rpcmurderplayer, but still had to cancel
             {
                 killer.RpcMurderPlayer(target);
             }
