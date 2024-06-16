@@ -102,8 +102,7 @@ internal class Necromancer : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null) return false;
-        if (target == null) return false;
+        if (killer == null || target == null || !killer.IsAlive()) return false;
 
         if (!IsRevenge) return true;
         else if (target == Killer)
