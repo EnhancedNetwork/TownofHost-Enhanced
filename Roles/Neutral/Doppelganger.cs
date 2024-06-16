@@ -11,6 +11,7 @@ internal class Doppelganger : RoleBase
     //===========================SETUP================================\\
     private const int Id = 25000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doppelganger);
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -51,8 +52,7 @@ internal class Doppelganger : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = MaxSteals.GetInt();
-        if (playerId == PlayerControl.LocalPlayer.PlayerId && Main.nickName.Length != 0) DoppelVictim[playerId] = Main.nickName;
-        else DoppelVictim[playerId] = Utils.GetPlayerById(playerId).Data.PlayerName;
+        DoppelVictim[playerId] = Utils.GetPlayerById(playerId)?.GetRealName();
 
         // Read and write info for the rest of the game!
         foreach (PlayerControl allPlayers in Main.AllPlayerControls)
@@ -78,7 +78,7 @@ internal class Doppelganger : RoleBase
     // A quick check if a player has been killed by the doppelganger.
     public static bool CheckDoppelVictim(byte playerId) => DoppelVictim.ContainsKey(playerId);
 
-    public static PlayerControl GetDoppelControl(PlayerControl player) => DoppelgangerTarget != null ? DoppelgangerTarget : player;
+    public static PlayerControl GetDoppelControl(PlayerControl player) => DoppelgangerTarget ?? player;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {

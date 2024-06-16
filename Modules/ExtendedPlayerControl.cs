@@ -1046,6 +1046,11 @@ static class ExtendedPlayerControl
         var killerId = Main.PlayerStates[target.Data.PlayerId].GetRealKiller();
         return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
     }
+    public static PlayerControl GetRealKillerById(this byte targetId)
+    {
+        var killerId = Main.PlayerStates[targetId].GetRealKiller();
+        return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
+    }
     public static PlainShipRoom GetPlainShipRoom(this PlayerControl pc)
     {
         if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return null;

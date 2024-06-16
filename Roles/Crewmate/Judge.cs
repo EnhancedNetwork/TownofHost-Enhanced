@@ -122,7 +122,7 @@ internal class Judge : RoleBase
             var target = GetPlayerById(targetId);
             if (target != null)
             {
-                Logger.Info($"{pc.GetNameWithRole()} 审判了 {target.GetNameWithRole()}", "Judge");
+                Logger.Info($"{pc.GetNameWithRole()} try trial {target.GetNameWithRole()}", "Judge");
                 bool judgeSuicide = true;
                 if (TrialLimit[pc.PlayerId] < 1)
                 {
@@ -167,7 +167,10 @@ internal class Judge : RoleBase
                 else if (target.Is(CustomRoles.Rascal)) judgeSuicide = false;
                 else if (target.IsTransformedNeutralApocalypse()) judgeSuicide = true;
                 else if (target.Is(CustomRoles.Trickster)) judgeSuicide = true;
-                else if (target.Is(CustomRoles.Madmate) && CanTrialMadmate.GetBool()) judgeSuicide = false;
+                else if ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)) && CanTrialSidekick.GetBool()) judgeSuicide = false;
+                else if ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && CanTrialMadmate.GetBool()) judgeSuicide = false;
+                else if (target.Is(CustomRoles.Infected) && CanTrialInfected.GetBool()) judgeSuicide = false;
+                else if (target.Is(CustomRoles.Contagious) && CanTrialContagious.GetBool()) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Charmed) && CanTrialCharmed.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsCrewKiller() && CanTrialCrewKilling.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNK() && CanTrialNeutralK.GetBool()) judgeSuicide = false;
@@ -176,7 +179,6 @@ internal class Judge : RoleBase
                 else if (target.GetCustomRole().IsNC() && CanTrialNeutralC.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNA() && CanTrialNeutralA.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsImpostor() && !target.Is(CustomRoles.Trickster)) judgeSuicide = false;
-                else if (target.GetCustomRole().IsMadmate() && CanTrialMadmate.GetBool()) judgeSuicide = false;
                 else judgeSuicide = true;
 
                 var dp = judgeSuicide ? pc : target;
@@ -194,7 +196,6 @@ internal class Judge : RoleBase
                     dp.SetRealKiller(pc);
                     GuessManager.RpcGuesserMurderPlayer(dp);
 
-                    //死者检查
                     MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
                     NotifyRoles(isForMeeting: false, NoCache: true);

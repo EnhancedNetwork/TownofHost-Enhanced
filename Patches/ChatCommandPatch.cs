@@ -326,13 +326,13 @@ internal class ChatCommands
                 case "/icon":
                 case "/icons":
                     {
-                        Utils.SendMessage(GetString("Command.icons"), PlayerControl.LocalPlayer.PlayerId);
+                        Utils.SendMessage(GetString("Command.icons"), PlayerControl.LocalPlayer.PlayerId, GetString("IconsTitle"));
                         break;
                     }
 
                 case "/iconhelp":
                     {
-                        Utils.SendMessage(GetString("Command.icons"));
+                        Utils.SendMessage(GetString("Command.icons"), title: GetString("IconsTitle"));
                         break;
                     }
 
@@ -1879,7 +1879,7 @@ internal class ChatCommands
             case "/icon":
             case "/icons":
                 {
-                    Utils.SendMessage(GetString("Command.icons"), player.PlayerId);
+                    Utils.SendMessage(GetString("Command.icons"), player.PlayerId, GetString("IconsTitle"));
                     break;
                 }
 

@@ -450,6 +450,7 @@ public static class GuessManager
         }
         Swapper.CheckSwapperTarget(pc.PlayerId);
         meetingHud.CheckForEndVoting();
+        _ = new LateTask(() => hudManager.SetHudActive(false), 0.3f, "SetHudActive in GuesserMurderPlayer", shoudLog: false);
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
         writer.Write(pc.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -489,6 +490,8 @@ public static class GuessManager
             if (!voteAreaPlayer.AmOwner) continue;
             meetingHud.ClearVote();
         }
+        hudManager.SetHudActive(false);
+        _ = new LateTask(() => hudManager.SetHudActive(false), 0.3f, "SetHudActive in ClientGuess", shoudLog: false);
     }
     private static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)
     {
