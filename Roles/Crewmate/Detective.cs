@@ -80,9 +80,12 @@ internal class Detective : RoleBase
 
     public override void OnMeetingHudStart(PlayerControl pc)
     {
-        InfoAboutDeadPlayerAndKiller.Clear();
         if (DetectiveNotify.ContainsKey(pc.PlayerId))
             AddMsg(DetectiveNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Detective), GetString("DetectiveNoticeTitle")));
     }
-    public override void MeetingHudClear() => DetectiveNotify.Clear();
+    public override void MeetingHudClear()
+    {
+        DetectiveNotify.Clear();
+        InfoAboutDeadPlayerAndKiller.Clear();
+    }
 }
