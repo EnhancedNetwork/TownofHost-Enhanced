@@ -477,7 +477,7 @@ class MurderPlayerPatch
         target.SetRealKiller(killer, true);
         Utils.CountAlivePlayers(true);
 
-        // When target death, activate
+        // When target death, activate ability for others roles
         AfterPlayerDeathTasks(killer, target, false);
         
         // Check Kill Flash
