@@ -52,7 +52,7 @@ internal class Demon : RoleBase
     }
     public override void Add(byte playerId)
     {
-        DemonHealth[playerId] = SelfHealthMax.GetInt();
+        DemonHealth.Add(playerId, SelfHealthMax.GetInt());
 
         foreach (var pc in Main.AllAlivePlayerControls)
             PlayerHealth[pc.PlayerId] = HealthMax.GetInt();
@@ -105,13 +105,13 @@ internal class Demon : RoleBase
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         Utils.NotifyRoles(SpecifySeer: killer);
 
-        Logger.Info($"{killer.GetNameWithRole()} 对玩家 {target.GetNameWithRole()} 造成了 {Damage.GetInt()} 点伤害", "Demon");
+        Logger.Info($"Demon {killer.GetRealName()} dealt {target.GetRealName()} damage equal to {Damage.GetInt()}", "Demon");
         return false;
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Pestilence)) return true;
-        if (killer == null || target == null || !target.Is(CustomRoles.Demon) || killer.Is(CustomRoles.Demon)) return true;
+        if (killer.Is(CustomRoles.Pestilence)) return true;
+        if (killer == null || target == null) return true;
 
         if (DemonHealth.TryGetValue(target.PlayerId, out var Health) && Health - SelfDamage.GetInt() < 1)
         {
@@ -122,13 +122,19 @@ internal class Demon : RoleBase
 
         killer.SetKillCooldown();
 
-        DemonHealth[target.PlayerId] -= SelfDamage.GetInt();
+        if (!DemonHealth.ContainsKey(target.PlayerId))
+        {
+            DemonHealth.Add(target.PlayerId, SelfHealthMax.GetInt());
+            Health = SelfHealthMax.GetInt();
+        }
+
+        DemonHealth[target.PlayerId] = Health - SelfDamage.GetInt();
         SendRPC(target.PlayerId);
         RPC.PlaySoundRPC(target.PlayerId, Sounds.KillSound);
         killer.RpcGuardAndKill(target);
         Utils.NotifyRoles(SpecifySeer: target);
 
-        Logger.Info($"{killer.GetNameWithRole()} 对玩家 {target.GetNameWithRole()} 造成了 {SelfDamage.GetInt()} 点伤害", "Demon");
+        Logger.Info($"{killer.GetRealName()} try kill {target.GetRealName()} but get damage {SelfDamage.GetInt()}", "Demon");
         return false;
     }
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)

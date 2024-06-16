@@ -49,6 +49,7 @@ enum CustomRPC : byte // 194/255 USED
     RetributionistRevenge,
     SetFriendCode,
     SyncLobbyTimer,
+    SyncPlayerSetting,
 
     //Roles 
     SetBountyTarget,
@@ -493,6 +494,15 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncPsychicRedList:
                 Psychic.ReceiveRPC(reader);
                 break;
+            case CustomRPC.SyncPlayerSetting:
+                byte playerid = reader.ReadByte();
+                CustomRoles rl = (CustomRoles)reader.ReadPackedInt32();
+                if (Main.PlayerStates.ContainsKey(playerid))
+                {
+                    Main.PlayerStates[playerid].MainRole = rl;
+                }
+                break;
+
             case CustomRPC.SetKillTimer:
                 float time = reader.ReadSingle();
                 PlayerControl.LocalPlayer.SetKillTimer(time);

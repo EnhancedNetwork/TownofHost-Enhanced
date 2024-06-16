@@ -16,7 +16,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -105,7 +104,7 @@ class CheckMurderPatch
             }
         }
     }
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state = false)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
         if (GameStates.IsHideNSeek) return true;
@@ -139,7 +138,7 @@ class CheckMurderPatch
 
         Logger.Info($"Start: CustomRoleManager.OnCheckMurder", "CheckMurder");
 
-        if (CustomRoleManager.OnCheckMurder(ref killer, ref target) == false)
+        if (CustomRoleManager.OnCheckMurder(ref killer, ref target, ref __state) == false)
         {
             Logger.Info($"Canceled from CustomRoleManager.OnCheckMurder", "CheckMurder");
             return false;
@@ -152,6 +151,14 @@ class CheckMurderPatch
         //============
 
         return false;
+    }
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state)
+    {
+        if (__state)
+        {
+            Utils.NotifyRoles(SpecifySeer: __instance);
+            Utils.NotifyRoles(SpecifySeer: target);
+        }
     }
     public static bool CheckForInvalidMurdering(PlayerControl killer, PlayerControl target)
     {
@@ -1254,18 +1261,27 @@ class FixedUpdateInNormalGamePatch
                     Mark.Clear();
                 }
 
-                realTarget.cosmetics.nameText.text = $"{RealName}{DeathReason}{Mark}";
+                // code from EHR (Endless Host Roles by: Gurge44)
+                var currentText = target.cosmetics.nameText.text;
+                var changeTo = $"{RealName}{DeathReason}{Mark}\r\n{Suffix}";
+                bool needUpdate = currentText != changeTo;
 
-                if (Suffix.ToString() != "")
+                if (needUpdate)
                 {
-                    RoleText.transform.SetLocalY(0.35f);
-                    realTarget.cosmetics.colorBlindText.transform.SetLocalY(-0.4f);
-                    realTarget.cosmetics.nameText.text += "\r\n" + Suffix.ToString();
-                }
-                else
-                {
-                    RoleText.transform.SetLocalY(0.2f);
-                    realTarget.cosmetics.colorBlindText.transform.SetLocalY(-0.2f);
+                    target.cosmetics.nameText.text = changeTo;
+
+                    float offset = 0.2f;
+                    float colorBlind = -0.2f;
+
+                    if (Suffix.ToString() != string.Empty)
+                    {
+                        // If the name is on two lines, the job title text needs to be moved up.
+                        offset += 0.15f;
+                        colorBlind -= 0.2f;
+                    }
+
+                    RoleText.transform.SetLocalY(offset);
+                    realTarget.cosmetics.colorBlindText.transform.SetLocalY(colorBlind);
                 }
             }
             else
@@ -1320,7 +1336,7 @@ class PlayerStartPatch
         var roleText = UnityEngine.Object.Instantiate(__instance.cosmetics.nameText);
         roleText.transform.SetParent(__instance.cosmetics.nameText.transform);
         roleText.transform.localPosition = new Vector3(0f, 0.2f, 0f);
-        roleText.fontSize -= 1.2f;
+        roleText.fontSize = 1.3f;
         roleText.text = "RoleText";
         roleText.gameObject.name = "RoleText";
         roleText.enabled = false;

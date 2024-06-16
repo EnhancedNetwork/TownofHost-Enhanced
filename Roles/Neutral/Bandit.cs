@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -26,7 +28,7 @@ internal class Bandit : RoleBase
     private static OptionItem CanVent;
 
     private float killCooldown;
-    private Dictionary<byte, CustomRoles> Targets = [];
+    private readonly Dictionary<byte, CustomRoles> Targets = [];
 
     [Obfuscation(Exclude = true)]
     private enum BanditStealModeOptList
@@ -98,13 +100,39 @@ internal class Bandit : RoleBase
         var addon = AllSubRoles[rand.Next(0, AllSubRoles.Count)];
         return addon;
     }
-
-    public void StealAddon(PlayerControl killer, PlayerControl target, CustomRoles? SelectedAddOn)
+    public void SendRPC(byte targetId, CustomRoles SelectedAddOn, bool removeNow)
     {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(AbilityLimit);
+        writer.Write(removeNow);
+        if (removeNow)
+        {
+            writer.Write(targetId);
+            writer.WritePacked((int)SelectedAddOn);
+        }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        float Limit = reader.ReadSingle();
+        AbilityLimit = Limit;
+
+        bool removeNow = reader.ReadBoolean();
+        if (removeNow)
+        {
+            byte targetId = reader.ReadByte();
+            var SelectedAddOn = (CustomRoles)reader.ReadPackedInt32();
+
+            Main.PlayerStates[targetId].RemoveSubRole(SelectedAddOn);
+        }
+    }
+    private void StealAddon(PlayerControl killer, PlayerControl target, CustomRoles? SelectedAddOn)
+    {
+        ExtendedPlayerControl.AddInSwitchAddons(target, killer, IsAddon: SelectedAddOn);
+        
         if (StealMode.GetValue() == 1)
         {
-            ExtendedPlayerControl.AddInSwitchAddons(target, killer, IsAddon: SelectedAddOn);
-          
             Main.PlayerStates[target.PlayerId].RemoveSubRole((CustomRoles)SelectedAddOn);
             if (SelectedAddOn == CustomRoles.Aware) Aware.AwareInteracted.Remove(target.PlayerId);
             Logger.Info($"Successfully removed {SelectedAddOn} addon from {target.GetNameWithRole()}", "Bandit");
@@ -115,13 +143,11 @@ internal class Bandit : RoleBase
         }
         else
         {
-            ExtendedPlayerControl.AddInSwitchAddons(target, killer, IsAddon: SelectedAddOn);
-          
             Targets[target.PlayerId] = (CustomRoles)SelectedAddOn;
             Logger.Info($"{killer.GetNameWithRole()} will steal {SelectedAddOn} addon from {target.GetNameWithRole()} after meeting starts", "Bandit");
         }
         AbilityLimit--;
-        SendSkillRPC();
+        SendRPC(target.PlayerId, (CustomRoles)SelectedAddOn, StealMode.GetValue() == 1);
 
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
         Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
@@ -180,14 +206,15 @@ internal class Bandit : RoleBase
         foreach (var kvp2 in Targets)
         {
             byte targetId = kvp2.Key;
-            var target = _Player;
+            var target = Utils.GetPlayerById(targetId);
             if (target == null) continue;
             CustomRoles role = kvp2.Value;
             Main.PlayerStates[targetId].RemoveSubRole(role);
-            if (role == CustomRoles.Aware) Aware.AwareInteracted.Remove(target.PlayerId);
+            if (role == CustomRoles.Aware) Aware.AwareInteracted.Remove(targetId);
             Logger.Info($"Successfully removed {role} addon from {target.GetNameWithRole()}", "Bandit");
+            SendRPC(targetId, role, true);
 
-            if (role == CustomRoles.Aware && !Aware.AwareInteracted.ContainsKey(target.PlayerId)) Aware.AwareInteracted[target.PlayerId] = [];
+            if (role == CustomRoles.Aware && !Aware.AwareInteracted.ContainsKey(targetId)) Aware.AwareInteracted[targetId] = [];
             _Player.RpcSetCustomRole(role);
             Logger.Info($"Successfully Added {role} addon to {_Player.GetNameWithRole()}", "Bandit");
         }
