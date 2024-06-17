@@ -606,7 +606,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.PlagueBearer)
                     || pc.Is(CustomRoles.Pestilence)
                     || pc.Is(CustomRoles.Spy)
-                    || pc.Is(CustomRoles.Necromancer))
+                    || pc.Is(CustomRoles.Necromancer)
+                    || pc.Is(CustomRoles.Demon))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Fragile.CrewCanBeFragile.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Fragile.NeutralCanBeFragile.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Fragile.ImpCanBeFragile.GetBool()))
                     return false;
