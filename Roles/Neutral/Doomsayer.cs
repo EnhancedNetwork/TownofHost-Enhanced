@@ -31,7 +31,7 @@ internal class Doomsayer : RoleBase
     private static OptionItem AdvancedSettings;
     private static OptionItem MaxNumberOfGuessesPerMeeting;
     private static OptionItem KillCorrectlyGuessedPlayers;
-    private static OptionItem DoesNotSuicideWhenMisguessing;
+    public static OptionItem DoesNotSuicideWhenMisguessing;
     private static OptionItem MisguessRolePrevGuessRoleUntilNextMeeting;
     private static OptionItem DoomsayerTryHideMsg;
     private static OptionItem ImpostorVision;
