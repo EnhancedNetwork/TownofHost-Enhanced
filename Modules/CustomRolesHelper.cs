@@ -793,6 +793,8 @@ public static class CustomRolesHelper
                     return false;
                 break;
             case CustomRoles.Tricky:
+                if (pc.Is(CustomRoles.Mastermind))
+                    return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
                 break;
