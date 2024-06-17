@@ -170,7 +170,7 @@ internal class Wraith : RoleBase
                     pc.Notify(GetString("WraithInvisInCooldown"));
                 }
             }
-        }, 0.5f, "Wraith Vent");
+        }, 0.8f, "Wraith Vent");
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
