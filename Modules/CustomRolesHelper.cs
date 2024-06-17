@@ -500,7 +500,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.DoubleShot:
-                if (!Options.GuesserMode.GetBool() && !pc.Is(CustomRoles.EvilGuesser) && !pc.Is(CustomRoles.NiceGuesser) && !pc.Is(CustomRoles.Doomsayer) && !pc.Is(CustomRoles.Guesser))
+                if (!Options.GuesserMode.GetBool() && !pc.Is(CustomRoles.EvilGuesser) && !pc.Is(CustomRoles.NiceGuesser) && (!pc.Is(CustomRoles.Doomsayer) || Doomsayer.DoesNotSuicideWhenMisguessing.GetBool()) && !pc.Is(CustomRoles.Guesser))
                     return false;
                 if (pc.Is(CustomRoles.CopyCat) 
                     || pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicCanGuess.GetBool()
