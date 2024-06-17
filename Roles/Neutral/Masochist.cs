@@ -78,42 +78,26 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if (target.Is(CustomRoles.Masochist))
+        if (!isUI) SendMessage(GetString("GuessMasochist"), pc.PlayerId);
+        else pc.ShowPopUp(GetString("GuessMasochist"));
+
+        MasochistMax[target.PlayerId]++;
+        SendRPC(target.PlayerId);
+
+        if (MasochistMax[target.PlayerId] >= MasochistKillMax.GetInt())
         {
-            if (!isUI) SendMessage(GetString("GuessMasochist"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessMasochist"));
-
-            MasochistMax[target.PlayerId]++;
-            SendRPC(target.PlayerId);
-
-            if (MasochistMax[target.PlayerId] >= MasochistKillMax.GetInt())
+            if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
             {
-                if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
-                {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Masochist);
-                    CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
-                }
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Masochist);
+                CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
             }
-            return true;
         }
-        if (pc.Is(CustomRoles.Masochist) && target.PlayerId == pc.PlayerId)
-        {
-            if (!isUI) SendMessage(GetString("SelfGuessMasochist"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("SelfGuessMasochist"));
-            guesserSuicide = true;
-            Logger.Msg($"Is Active: {guesserSuicide}", "guesserSuicide - Masochist");
-        }
-
-        return false;
+        return true;
     }
     public override bool GuessCheck(bool isUI, PlayerControl pc, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if (pc.Is(CustomRoles.Masochist))
-        {
-            if (!isUI) SendMessage(GetString("GuessMasochistBlocked"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessMasochistBlocked"));
-            return true;
-        }
-        return false;
+        if (!isUI) SendMessage(GetString("GuessMasochistBlocked"), pc.PlayerId);
+        else pc.ShowPopUp(GetString("GuessMasochistBlocked"));
+        return true;
     }
 }

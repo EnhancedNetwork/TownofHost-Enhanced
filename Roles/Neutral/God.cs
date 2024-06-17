@@ -35,13 +35,12 @@ internal class God : RoleBase
 
     public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if (guesser.Is(CustomRoles.God) && !CanGuess.GetBool())
+        if (!CanGuess.GetBool())
         {
             if (!isUI) Utils.SendMessage(Translator.GetString("GuessDisabled"), guesser.PlayerId);
             else guesser.ShowPopUp(Translator.GetString("GuessDisabled"));
             return true;
         }
-
         return false;
     }
 
