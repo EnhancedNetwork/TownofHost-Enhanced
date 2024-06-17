@@ -483,8 +483,6 @@ class MurderPlayerPatch
         // Check Kill Flash
         Utils.TargetDies(__instance, target);
 
-        DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
-
         if (Options.LowLoadMode.GetBool())
         {
             __instance.MarkDirtySettings();
