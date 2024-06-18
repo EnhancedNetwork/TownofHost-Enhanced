@@ -673,12 +673,18 @@ public class RoleAssign
     public static int addScientistNum;
     public static int addEngineerNum;
     public static int addShapeshifterNum;
+    public static int addNoisemakerNum;
+    public static int addPhantomNum;
+    public static int addTrackerNum;
     public static void CalculateVanillaRoleCount()
     {
         // Calculate the number of base roles
         addEngineerNum = 0;
         addScientistNum = 0;
         addShapeshifterNum = 0;
+        addNoisemakerNum = 0;
+        addPhantomNum = 0;
+        addTrackerNum = 0;
         foreach (var role in AllRoles)
         {
             switch (role.GetVNRole())
@@ -691,6 +697,15 @@ public class RoleAssign
                     break;
                 case CustomRoles.Shapeshifter:
                     addShapeshifterNum++;
+                    break;
+                case CustomRoles.Noisemaker:
+                    addNoisemakerNum++;
+                    break;
+                case CustomRoles.Phantom:
+                    addPhantomNum++;
+                    break;
+                case CustomRoles.Tracker:
+                    addTrackerNum++;
                     break;
             }
         }

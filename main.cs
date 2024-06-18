@@ -536,26 +536,26 @@ public enum CustomRoles
     Scientist,
     Engineer,
     GuardianAngel,
-    //Tracker,
-    //Noisemaker,
+    Tracker,
+    Noisemaker,
 
     // Impostor(Vanilla)
     Impostor,
     Shapeshifter,
-    //Phantom,
+    Phantom,
 
     // Crewmate Vanilla Remakes
     CrewmateTOHE,
     ScientistTOHE,
     EngineerTOHE,
     GuardianAngelTOHE,
-    //TrackerTOHE,
-    //NoisemakerTOHE,
+    TrackerTOHE,
+    NoisemakerTOHE,
 
     // Impostor Vanilla Remakes
     ImpostorTOHE,
     ShapeshifterTOHE,
-    //PhantomTOHE,
+    PhantomTOHE,
 
     // Impostor Ghost
     Bloodmoon,
@@ -704,7 +704,7 @@ public enum CustomRoles
     TaskManager,
     Telecommunication,
     Tracefinder,
-    Tracker,
+    //Tracker,
     Transporter,
     TimeManager,
     TimeMaster,
@@ -746,7 +746,7 @@ public enum CustomRoles
     Opportunist,
     Pelican,
     Pestilence,
-    Phantom,
+    Specter,
     Pickpocket,
     Pirate,
     Pixie,
@@ -914,7 +914,7 @@ public enum CustomWinner
     Juggernaut = CustomRoles.Juggernaut,
     Infectious = CustomRoles.Infectious,
     Virus = CustomRoles.Virus,
-    Phantom = CustomRoles.Phantom,
+    Specter = CustomRoles.Specter,
     Jinx = CustomRoles.Jinx,
     CursedSoul = CustomRoles.CursedSoul,
     PotionMaster = CustomRoles.PotionMaster,
@@ -954,7 +954,7 @@ public enum AdditionalWinners
     Jackal = CustomRoles.Jackal,
     Sidekick = CustomRoles.Sidekick,
     Pursuer = CustomRoles.Pursuer,
-    Phantom = CustomRoles.Phantom,
+    Specter = CustomRoles.Specter,
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
     Taskinator = CustomRoles.Taskinator,

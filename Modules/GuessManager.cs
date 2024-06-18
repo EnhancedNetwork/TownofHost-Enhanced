@@ -222,7 +222,7 @@ public static class GuessManager
                     return true;
                 }
                 
-                if (pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool())
+                if (pc.Is(CustomRoles.Specter) && !Specter.CanGuess.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessDisabled"));
@@ -258,10 +258,10 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessOnbound"));
                     return true;
                 }
-                if (role == CustomRoles.Phantom && target.Is(CustomRoles.Phantom))
+                if (role == CustomRoles.Specter && target.Is(CustomRoles.Specter))
                 {
-                    if (!isUI) Utils.SendMessage(GetString("GuessPhantom"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessPhantom"));
+                    if (!isUI) Utils.SendMessage(GetString("GuessSpecter"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessSpecter"));
                     return true;
                 }
 

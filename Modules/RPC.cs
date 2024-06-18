@@ -112,7 +112,7 @@ enum CustomRPC : byte // 194/255 USED
     SetVultureArrow,
     SetRadarArrow,
     SyncVultureBodyAmount,
-    SetTrackerTarget,
+    //SetTrackerTarget,
     SpyRedNameSync,
     SpyRedNameRemove,
     SetChameleonTimer,
@@ -443,9 +443,9 @@ internal class RPCHandlerPatch
                 byte killerId = reader.ReadByte();
                 RPC.SetRealKiller(targetId, killerId);
                 break;
-            case CustomRPC.SetTrackerTarget:
-                Tracker.ReceiveRPC(reader);
-                break;
+            //case CustomRPC.SetTrackerTarget:
+            //    Tracker.ReceiveRPC(reader);
+            //    break;
             case CustomRPC.SetJailerExeLimit:
                 Jailer.ReceiveRPC(reader, setTarget: false);
                 break;

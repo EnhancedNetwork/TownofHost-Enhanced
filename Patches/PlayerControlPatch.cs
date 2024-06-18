@@ -1782,11 +1782,14 @@ class PlayerControlLocalSetRolePatch
         {
             var modRole = role switch
             {
-                RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
-                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
                 RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
-                RoleTypes.Engineer => CustomRoles.EngineerTOHE,
+                RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
                 RoleTypes.Scientist => CustomRoles.ScientistTOHE,
+                RoleTypes.Engineer => CustomRoles.EngineerTOHE,
+                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
+                RoleTypes.Noisemaker => CustomRoles.NoisemakerTOHE,
+                RoleTypes.Phantom => CustomRoles.PhantomTOHE,
+                RoleTypes.Tracker => CustomRoles.TrackerTOHE,
                 _ => CustomRoles.NotAssigned,
             };
             if (modRole != CustomRoles.NotAssigned)

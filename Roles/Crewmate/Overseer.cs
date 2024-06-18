@@ -72,7 +72,7 @@ internal class Overseer : RoleBase
         CustomRoles.Retributionist,
         CustomRoles.Guardian,
         CustomRoles.Spiritualist,
-        CustomRoles.Tracker,
+        //CustomRoles.Tracker,
     ];
 
     public override void SetupCustomOption()

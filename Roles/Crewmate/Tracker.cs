@@ -1,4 +1,5 @@
-﻿using Hazel;
+﻿/*
+using Hazel;
 using System;
 using UnityEngine;
 using System.Text;
@@ -201,3 +202,4 @@ internal class Tracker : RoleBase
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Track");
 }
+*/

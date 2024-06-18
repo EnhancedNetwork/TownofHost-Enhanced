@@ -143,9 +143,9 @@ internal class CopyCat : RoleBase
                 case CustomRoles.Taskinator:
                     role = CustomRoles.Benefactor;
                     break;
-                case CustomRoles.EvilTracker:
-                    role = CustomRoles.Tracker;
-                    break;
+                //case CustomRoles.EvilTracker:
+                //    role = CustomRoles.Tracker;
+                //    break;
                 case CustomRoles.AntiAdminer:
                     role = CustomRoles.Telecommunication;
                     break;

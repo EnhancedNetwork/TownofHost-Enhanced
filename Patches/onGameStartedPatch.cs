@@ -35,6 +35,9 @@ internal class ChangeRoleSettings
                     Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
                     Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
                     Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Noisemaker, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Phantom, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Tracker, 0, 0);
                 }
             }
             else if (GameStates.IsHideNSeek)
@@ -274,6 +277,12 @@ internal class SelectRolesPatch
             roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + RoleAssign.addEngineerNum, RoleAssign.addEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
             int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
             roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum + RoleAssign.addShapeshifterNum, RoleAssign.addShapeshifterNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
+            int NoisemakerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Noisemaker);
+            roleOpt.SetRoleRate(RoleTypes.Noisemaker, NoisemakerNum + RoleAssign.addNoisemakerNum, RoleAssign.addNoisemakerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Noisemaker));
+            int PhantomNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Phantom);
+            roleOpt.SetRoleRate(RoleTypes.Phantom, PhantomNum + RoleAssign.addPhantomNum, RoleAssign.addPhantomNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Phantom));
+            int TrackerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Tracker);
+            roleOpt.SetRoleRate(RoleTypes.Tracker, TrackerNum + RoleAssign.addTrackerNum, RoleAssign.addTrackerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Tracker));
         }
         catch (Exception e)
         {
@@ -388,6 +397,15 @@ internal class SelectRolesPatch
                         break;
                     case RoleTypes.Shapeshifter:
                         role = CustomRoles.Shapeshifter;
+                        break;
+                    case RoleTypes.Noisemaker:
+                        role = CustomRoles.Noisemaker;
+                        break;
+                    case RoleTypes.Phantom:
+                        role = CustomRoles.Phantom;
+                        break;
+                    case RoleTypes.Tracker:
+                        role = CustomRoles.Tracker;
                         break;
                     default:
                         Logger.SendInGame(string.Format(GetString("Error.InvalidRoleAssignment"), pc?.Data?.PlayerName));
@@ -528,6 +546,21 @@ internal class SelectRolesPatch
             int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
             ShapeshifterNum -= RoleAssign.addShapeshifterNum;
             roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum, roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
+
+            // Role type: Noisemaker
+            int NoisemakerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Noisemaker);
+            NoisemakerNum -= RoleAssign.addNoisemakerNum;
+            roleOpt.SetRoleRate(RoleTypes.Noisemaker, NoisemakerNum, roleOpt.GetChancePerGame(RoleTypes.Noisemaker));
+
+            // Role type: Phantom
+            int PhantomNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Phantom);
+            PhantomNum -= RoleAssign.addPhantomNum;
+            roleOpt.SetRoleRate(RoleTypes.Phantom, PhantomNum, roleOpt.GetChancePerGame(RoleTypes.Phantom));
+
+            // Role type: Tracker
+            int TrackerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Tracker);
+            TrackerNum -= RoleAssign.addTrackerNum;
+            roleOpt.SetRoleRate(RoleTypes.Tracker, TrackerNum, roleOpt.GetChancePerGame(RoleTypes.Tracker));
 
             switch (Options.CurrentGameMode)
             {
