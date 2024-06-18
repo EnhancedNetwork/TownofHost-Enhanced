@@ -38,7 +38,7 @@ public class GameStartManagerPatch
                     ? $"<color={Main.HideColor.Value}>{Main.HideName.Value}</color>"
                     : $"<color={Main.ModColor}>{Main.HideName.Value}</color>";
 
-            cancelButton = Object.Instantiate(__instance.StartButton, __instance.transform);
+            cancelButton = Object.Instantiate(__instance.StartButton.GetComponent<SpriteRenderer>(), __instance.transform);
             cancelButton.name = "CancelButton";
             var cancelLabel = cancelButton.GetComponentInChildren<TextMeshPro>();
             Object.Destroy(cancelLabel.GetComponent<TextTranslatorTMP>());

@@ -41,7 +41,7 @@ public class Main : BasePlugin
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginVersion = "2024.0618.200.060000"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "2.0.0 Canary 6";
-    public static readonly string SupportedVersionAU = "2024.6.18";
+    public const string SupportedVersionAU = "2024.6.18";
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 5
@@ -73,8 +73,8 @@ public class Main : BasePlugin
     public static bool AlreadyShowMsgBox = false;
     public static string credentialsText;
     public Coroutines coroutines;
-    public static NormalGameOptionsV07 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
-    public static HideNSeekGameOptionsV07 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
+    public static NormalGameOptionsV08 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static HideNSeekGameOptionsV08 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
