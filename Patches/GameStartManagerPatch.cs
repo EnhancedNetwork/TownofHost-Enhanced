@@ -211,7 +211,7 @@ public class GameStartManagerPatch
 
             __instance.PlayerCounter.text = currentText + suffix;
             __instance.PlayerCounter.fontSize += 10f;
-            //__instance.PlayerCounter.autoSizeTextContainer = false;
+            __instance.PlayerCounter.autoSizeTextContainer = false;
         }
 
         private static void BeginAutoStart(float countdown)

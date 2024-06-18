@@ -57,11 +57,25 @@ public static class GameSettingMenuInitializeOptionsPatch
         */
     }
 }
-[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Awake))]
+[HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.Awake))]
 [HarmonyPriority(799)]
+public static class RolesSettingsMenuAwakePatch
+{
+    public static void Postfix(RolesSettingsMenu __instance)
+    {
+        RoleOptionSetting roleSettingMenu = Object.FindObjectOfType<RoleOptionSetting>();
+        Logger.Info($"{roleSettingMenu == null}", "Check");
+        if (roleSettingMenu == null) return;
+        var toheRoleSettings = Object.Instantiate(roleSettingMenu, roleSettingMenu.transform.parent);
+
+        toheRoleSettings.transform.SetLocalY(-6);
+    }
+}
+//[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Awake))]
+//[HarmonyPriority(799)]
 public static class GameOptionsMenuStartPatch
 {
-    public static void Postfix(GameOptionsMenu __instance)
+    public static void fPostfix(GameOptionsMenu __instance)
     {
         try
         {
@@ -337,12 +351,12 @@ public static class GameOptionsMenuStartPatch
     }
 }
 
-[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Update))]
+//[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Update))]
 public class GameOptionsMenuUpdatePatch
 {
     private static float _timer = 1f;
 
-    public static void Postfix(GameOptionsMenu __instance)
+    public static void fzdPostfix(GameOptionsMenu __instance)
     {
         if (__instance.transform.parent.parent.name == "Game Settings") return;
 
