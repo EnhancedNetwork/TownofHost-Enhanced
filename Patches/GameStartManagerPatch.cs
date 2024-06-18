@@ -145,6 +145,7 @@ public class GameStartManagerPatch
         public static void Postfix(GameStartManager __instance)
         {
             if (!AmongUsClient.Instance) return;
+            return; // something is null and i cant figure out what
 
             string warningMessage = "";
             if (AmongUsClient.Instance.AmHost)
