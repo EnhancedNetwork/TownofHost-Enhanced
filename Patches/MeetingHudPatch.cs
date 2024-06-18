@@ -593,7 +593,7 @@ class CheckForEndVotingPatch
         }
         if (TargetList == null || TargetList.Count == 0) return null;
         var rand = IRandom.Instance;
-        var target = TargetList[rand.Next(TargetList.Count)];
+        var target = TargetList.RandomElement();
         return target;
     }
 }

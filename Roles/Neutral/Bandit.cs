@@ -94,8 +94,7 @@ internal class Bandit : RoleBase
             Logger.Info("No stealable addons found on the target.", "Bandit");
             return null;
         }
-        var rand = IRandom.Instance;
-        var addon = AllSubRoles[rand.Next(0, AllSubRoles.Count)];
+        var addon = AllSubRoles.RandomElement();
         return addon;
     }
     public void SendRPC(byte targetId, CustomRoles SelectedAddOn, bool removeNow)

@@ -999,8 +999,7 @@ static class ExtendedPlayerControl
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
         var vents = UnityEngine.Object.FindObjectsOfType<Vent>();
-        var rand = IRandom.Instance;
-        var vent = vents[rand.Next(0, vents.Count)];
+        var vent = vents.RandomElement();
 
         Logger.Info($" {vent.transform.position}", "RpcVentTeleportPosition");
         player.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));

@@ -90,7 +90,7 @@ internal class Executioner : RoleBase
             }
             if (targetList.Any())
             {
-                var SelectedTarget = targetList[rand.Next(targetList.Count)];
+                var SelectedTarget = targetList.RandomElement();
                 Target.Add(playerId, SelectedTarget.PlayerId);
                 SendRPC(playerId, SelectedTarget.PlayerId, "SetTarget");
                 Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()}:{SelectedTarget.GetNameWithRole()}", "Executioner");
