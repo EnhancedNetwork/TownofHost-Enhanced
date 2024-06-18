@@ -21,7 +21,6 @@ public static class GameStartManagerUpdatePatch
 //タイマーとコード隠し
 public class GameStartManagerPatch
 {
-    //private static SpriteRenderer cancelButton;
     public static float timer = 600f;
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Start))]
     public class GameStartManagerStartPatch
@@ -29,6 +28,9 @@ public class GameStartManagerPatch
         public static TextMeshPro HideName;
         public static void Postfix(GameStartManager __instance)
         {
+            __instance.GameStartTextParent.GetComponent<SpriteRenderer>().sprite = null;
+            __instance.StartButton.ChangeButtonText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.StartLabel));
+            __instance.GameStartText.transform.localPosition = new Vector3(__instance.GameStartText.transform.localPosition.x, 2f, __instance.GameStartText.transform.localPosition.z);
             __instance.GameRoomNameCode.text = GameCode.IntToGameName(AmongUsClient.Instance.GameId);
             // Reset lobby countdown timer
             timer = 600f;
@@ -38,33 +40,13 @@ public class GameStartManagerPatch
                     ? $"<color={Main.HideColor.Value}>{Main.HideName.Value}</color>"
                     : $"<color={Main.ModColor}>{Main.HideName.Value}</color>";
 
-            //cancelButton = Object.Instantiate(__instance.StartButton.GetComponent<SpriteRenderer>(), __instance.transform);
-            //cancelButton.name = "CancelButton";
-            //var cancelLabel = cancelButton.GetComponentInChildren<TextMeshPro>();
-            //Object.Destroy(cancelLabel.GetComponent<TextTranslatorTMP>());
-            //cancelLabel.text = GetString("Cancel");
-            //cancelButton.transform.localScale = new(0.4f, 0.4f, 1f);
-            //cancelButton.color = Color.red;
-            //if (GameStates.IsLocalGame)
-            //{
-            //    cancelButton.transform.localPosition = new(0f, 0.1f, 0f);
-            //}
-            //else
-            //{
-            //    cancelButton.transform.localPosition = new(0f, -0.36f, 0f);
-            //}
-            //var buttonComponent = cancelButton.GetComponent<PassiveButton>();
-            //buttonComponent.OnClick = new();
-            //buttonComponent.OnClick.AddListener((Action)(() => __instance.ResetStartState()));
-            //cancelButton.gameObject.SetActive(false);
-
             if (!AmongUsClient.Instance.AmHost) return;
 
             // Make Public Button
             if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !Main.AllowPublicRoom || !VersionChecker.IsSupported)
             {
-                __instance.HostPublicButton.activeTextColor = Palette.DisabledClear;
-                //__instance.h.color = Palette.DisabledClear;
+                //__instance.HostPublicButton.activeTextColor = Palette.DisabledClear;
+                //__instance.hj.color = Palette.DisabledClear;
             }
 
             if (GameStates.IsNormalGame)
@@ -93,9 +75,10 @@ public class GameStartManagerPatch
         public static float exitTimer = -1f;
         private static float minWait, maxWait;
         private static int minPlayer;
-        public static void Prefix(GameStartManager __instance)
+        public static bool Prefix(GameStartManager __instance)
         {
-            if (__instance == null) return;
+            VanillaUpdate(__instance);
+
             minWait = Options.MinWaitAutoStart.GetFloat();
             maxWait = Options.MaxWaitAutoStart.GetFloat();
             minPlayer = Options.PlayerAutoStart.GetInt();
@@ -114,7 +97,7 @@ public class GameStartManagerPatch
             }
 
             update = GameData.Instance?.PlayerCount != __instance.LastPlayerCount;
-            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return; // Not host or no instance or LocalGame
+            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return false; // Not host or no instance or LocalGame
 
             if (Main.AutoStart.Value)
             {
@@ -127,7 +110,7 @@ public class GameStartManagerPatch
                         if ((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait)
                         {
                             BeginAutoStart(Options.AutoStartTimer.GetInt());
-                            return;
+                            return false;
                         }
                         else if (Options.ImmediateAutoStart.GetBool())
                         {
@@ -135,17 +118,17 @@ public class GameStartManagerPatch
                                 (timer <= Options.StartWhenTimerLowerThan.GetInt() && Options.StartWhenTimerLowerThan.GetInt() > 0))
                             {
                                 BeginAutoStart(Options.AutoStartTimer.GetInt());
-                                return;
+                                return false;
                             }
                         }
                     }
                 }
             }
+            return false;
         }
         public static void Postfix(GameStartManager __instance)
         {
             if (!AmongUsClient.Instance) return;
-            //return; // something is null and i cant figure out what
 
             string warningMessage = "";
             if (AmongUsClient.Instance.AmHost)
@@ -169,7 +152,6 @@ public class GameStartManagerPatch
                     __instance.StartButton.gameObject.SetActive(false);
                     warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.MismatchedVersion"), string.Join(" ", mismatchedPlayerNameList), $"<color={Main.ModColor}>{Main.ModName}</color>"));
                 }
-                //cancelButton.gameObject.SetActive(__instance.startState == GameStartManager.StartingStates.Countdown);
             }
             else
             {
@@ -188,15 +170,6 @@ public class GameStartManagerPatch
                         warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.AutoExitAtMismatchedVersion"), $"<color={Main.ModColor}>{Main.ModName}</color>", Math.Round(5 - exitTimer).ToString()));
                 }
             }
-            if (warningMessage != "")
-            {
-                __instance.GameStartText.text = warningMessage;
-                __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition + Vector3.up * 2;
-            }
-            else
-            {
-                __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition;
-            }
 
             // Lobby timer
             if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer) return;
@@ -210,8 +183,112 @@ public class GameStartManagerPatch
             if (timer <= 60) suffix = Utils.ColorString(Color.red, suffix);
 
             __instance.PlayerCounter.text = currentText + suffix;
-            __instance.PlayerCounter.fontSize += 10f;
+            __instance.PlayerCounter.fontSize = 3f;
             __instance.PlayerCounter.autoSizeTextContainer = false;
+        }
+
+        private static void VanillaUpdate(GameStartManager thiz)
+        {
+            if (!GameData.Instance)
+            {
+                return;
+            }
+            if (!GameManager.Instance)
+            {
+                return;
+            }
+            thiz.UpdateMapImage((MapNames)GameManager.Instance.LogicOptions.MapId);
+            thiz.CheckSettingsDiffs();
+            thiz.StartButton.gameObject.SetActive(true);
+            thiz.RulesPresetText.text = DestroyableSingleton<TranslationController>.Instance.GetString(GameOptionsManager.Instance.CurrentGameOptions.GetRulesPresetTitle());
+            if (GameCode.IntToGameName(AmongUsClient.Instance.GameId) == null)
+            {
+                thiz.privatePublicPanelText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.LocalButton);
+            }
+            else if (AmongUsClient.Instance.IsGamePublic)
+            {
+                thiz.privatePublicPanelText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.PublicHeader);
+            }
+            else
+            {
+                thiz.privatePublicPanelText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.PrivateHeader);
+            }
+            thiz.HostPrivateButton.gameObject.SetActive(!AmongUsClient.Instance.IsGamePublic);
+            thiz.HostPublicButton.gameObject.SetActive(AmongUsClient.Instance.IsGamePublic);
+            if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.C))
+            {
+                ClipboardHelper.PutClipboardString(GameCode.IntToGameName(AmongUsClient.Instance.GameId));
+            }
+            if (GameData.Instance.PlayerCount != thiz.LastPlayerCount)
+            {
+                thiz.LastPlayerCount = GameData.Instance.PlayerCount;
+                string text = "<color=#FF0000FF>";
+                if (thiz.LastPlayerCount > thiz.MinPlayers)
+                {
+                    text = "<color=#00FF00FF>";
+                }
+                if (thiz.LastPlayerCount == thiz.MinPlayers)
+                {
+                    text = "<color=#FFFF00FF>";
+                }
+                if (AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame)
+                {
+                    thiz.PlayerCounter.text = string.Format("{0}{1}/{2}", text, thiz.LastPlayerCount, 15);
+                }
+                else
+                {
+                    thiz.PlayerCounter.text = string.Format("{0}{1}/{2}", text, thiz.LastPlayerCount, GameManager.Instance.LogicOptions.MaxPlayers);
+                }
+                thiz.StartButton.SetButtonEnableState(thiz.LastPlayerCount >= thiz.MinPlayers);
+                ActionMapGlyphDisplay startButtonGlyph = thiz.StartButtonGlyph;
+                startButtonGlyph?.SetColor((thiz.LastPlayerCount >= thiz.MinPlayers) ? Palette.EnabledColor : Palette.DisabledClear);
+                if (DestroyableSingleton<DiscordManager>.InstanceExists)
+                {
+                    if (AmongUsClient.Instance.AmHost && AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame)
+                    {
+                        DestroyableSingleton<DiscordManager>.Instance.SetInLobbyHost(thiz.LastPlayerCount, GameManager.Instance.LogicOptions.MaxPlayers, AmongUsClient.Instance.GameId);
+                    }
+                    else
+                    {
+                        DestroyableSingleton<DiscordManager>.Instance.SetInLobbyClient(thiz.LastPlayerCount, GameManager.Instance.LogicOptions.MaxPlayers, AmongUsClient.Instance.GameId);
+                    }
+                }
+            }
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (thiz.startState == GameStartManager.StartingStates.Countdown)
+                {
+                    thiz.StartButton.ChangeButtonText(GetString("Cancel"));
+                    int num = Mathf.CeilToInt(thiz.countDownTimer);
+                    thiz.countDownTimer -= Time.deltaTime;
+                    int num2 = Mathf.CeilToInt(thiz.countDownTimer);
+                    if (!thiz.GameStartTextParent.activeSelf)
+                    {
+                        SoundManager.Instance.PlaySound(thiz.gameStartSound, false);
+                    }
+                    thiz.GameStartTextParent.SetActive(true);
+                    thiz.GameStartText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameStarting, num2);
+                    if (num != num2)
+                    {
+                        PlayerControl.LocalPlayer.RpcSetStartCounter(num2);
+                    }
+                    if (num2 <= 0)
+                    {
+                        thiz.FinallyBegin();
+                    }
+                }
+                else
+                {
+                    thiz.StartButton.ChangeButtonText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.StartLabel));
+                    thiz.GameStartTextParent.SetActive(false);
+                    thiz.GameStartText.text = string.Empty;
+                }
+            }
+            if (thiz.LobbyInfoPane.gameObject.activeSelf && DestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening)
+            {
+                thiz.LobbyInfoPane.DeactivatePane();
+            }
+            thiz.LobbyInfoPane.gameObject.SetActive(!DestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening);
         }
 
         private static void BeginAutoStart(float countdown)
@@ -299,10 +376,10 @@ public class GameStartRandomMap
         //    Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
         //}
 
-        IGameOptions opt = GameStates.IsNormalGame 
+        IGameOptions opt = GameStates.IsNormalGame
             ? Main.NormalOptions.Cast<IGameOptions>()
             : Main.HideNSeekOptions.Cast<IGameOptions>();
-        
+
         if (GameStates.IsNormalGame)
         {
             Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
@@ -387,7 +464,7 @@ class ResetStartStatePatch
         {
             if (GameStates.IsNormalGame)
                 Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
-            
+
             PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, AprilFoolsMode.IsAprilFoolsModeToggledOn));
         }
     }
@@ -399,5 +476,34 @@ class UnrestrictedNumImpostorsPatch
     {
         __result = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
         return false;
+    }
+}
+
+public class GameStartManagerBeginPatch
+{
+    [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.ReallyBegin))]
+    public class GameStartManagerStartPatch
+    {
+        public static bool Prefix(GameStartManager __instance)
+        {
+            if (__instance.startState == GameStartManager.StartingStates.Countdown)
+            {
+                __instance.ResetStartState();
+                return false;
+            }
+
+            __instance.startState = GameStartManager.StartingStates.Countdown;
+            __instance.GameSizePopup.SetActive(false);
+            DataManager.Player.Onboarding.AlwaysShowMinPlayerWarning = false;
+            DataManager.Player.Onboarding.ViewedMinPlayerWarning = true;
+            DataManager.Player.Save();
+            __instance.StartButton.gameObject.SetActive(false);
+            __instance.StartButtonClient.gameObject.SetActive(false);
+            __instance.GameStartTextParent.SetActive(false);
+            __instance.countDownTimer = 5.0001f;
+            __instance.startState = GameStartManager.StartingStates.Countdown;
+            AmongUsClient.Instance.KickNotJoinedPlayers();
+            return false;
+        }
     }
 }
