@@ -300,9 +300,8 @@ internal class Alchemist : RoleBase
             case 3: // TP to random player
                 _ = new LateTask(() =>
                 {
-                    var rd = IRandom.Instance;
                     List<PlayerControl> AllAlivePlayer = [.. Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported() && x.PlayerId != player.PlayerId).ToArray()];
-                    var target = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
+                    var target = AllAlivePlayer.RandomElement();
                     player.RpcTeleport(target.GetCustomPosition());
                     player.RPCPlayCustomSound("Teleport");
                 }, 2f, "Alchemist teleported to random player");

@@ -67,7 +67,7 @@ internal class Instigator : RoleBase
         {
             if (killPotentials.Count == 0) break;
 
-            PlayerControl target = killPotentials[rd.Next(0, killPotentials.Count)];
+            PlayerControl target = killPotentials.RandomElement();
             target.SetRealKiller(killer);
             killPlayers.Add(target.PlayerId);
             killPotentials.Remove(target);

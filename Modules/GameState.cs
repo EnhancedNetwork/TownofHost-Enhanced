@@ -342,8 +342,7 @@ public class TaskState
             return "\r\n";
         }
 
-        var rd = IRandom.Instance;
-        var randomPlayer = playersWithTasks[rd.Next(0, playersWithTasks.Length)];
+        var randomPlayer = playersWithTasks.RandomElement();
         var taskState = randomPlayer.Value.TaskState;
 
         Color TextColor;

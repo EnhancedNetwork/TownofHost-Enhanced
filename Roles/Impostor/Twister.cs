@@ -61,7 +61,7 @@ internal class Twister : RoleBase
 
             if (filtered.Count == 0) return;
 
-            var target = filtered[rd.Next(0, filtered.Count)];
+            var target = filtered.RandomElement();
             changePositionPlayers.Add(target.PlayerId);
             changePositionPlayers.Add(pc.PlayerId);
 

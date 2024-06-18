@@ -156,8 +156,8 @@ internal class Merchant : RoleBase
         }
 
         var rd = IRandom.Instance;
-        CustomRoles addon = addons[rd.Next(0, addons.Count)];
-        
+        CustomRoles addon = addons.RandomElement();
+
         List<PlayerControl> AllAlivePlayer =
             Main.AllAlivePlayerControls.Where(x =>
                 x.PlayerId != player.PlayerId
@@ -204,7 +204,7 @@ internal class Merchant : RoleBase
                 return true;
             }
 
-            PlayerControl target = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
+            PlayerControl target = AllAlivePlayer.RandomElement();
 
             target.RpcSetCustomRole(addon);
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSell")));

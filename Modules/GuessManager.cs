@@ -553,11 +553,11 @@ public static class GuessManager
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
                 msg += rd.Next(0, 15).ToString();
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                CustomRoles role = roles[rd.Next(0, roles.Length)];
+                CustomRoles role = roles.RandomElement();
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
                 msg += Utils.GetRoleName(role);
             }
-            var player = Main.AllAlivePlayerControls[rd.Next(0, Main.AllAlivePlayerControls.Length)];
+            var player = Main.AllAlivePlayerControls.RandomElement();
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
             var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
             writer.StartMessage(-1);

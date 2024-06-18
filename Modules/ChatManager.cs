@@ -72,7 +72,7 @@ namespace TOHE.Modules.ChatManager
             return false;
         }
 
-        public static string getTextHash(string text)
+        private static string GetTextHash(string text)
         {
             using SHA256 sha256 = SHA256.Create();
 
@@ -88,7 +88,7 @@ namespace TOHE.Modules.ChatManager
         {
             if (text != "")
             {
-                ChatSentBySystem.Add(getTextHash(text));
+                ChatSentBySystem.Add(GetTextHash(text));
             }
         }
         public static void SendMessage(PlayerControl player, string message)
@@ -101,7 +101,7 @@ namespace TOHE.Modules.ChatManager
             if (GameStates.IsInGame) operate = 3;
             if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id|編號|玩家編號")) operate = 1;
             else if (CheckCommond(ref msg, "shoot|guess|bet|st|gs|bt|猜|赌|賭|sp|jj|tl|trial|审判|判|审|審判|審|compare|cmp|比较|比較|duel|sw|swap|st|换票|换|換票|換|finish|结束|结束会议|結束|結束會議|reveal|展示", false)) operate = 2;
-            else if (ChatSentBySystem.Contains(getTextHash(msg))) operate = 5;
+            else if (ChatSentBySystem.Contains(GetTextHash(msg))) operate = 5;
             
             if ((operate == 1 || Blackmailer.CheckBlackmaile(player)) && player.IsAlive())
             {

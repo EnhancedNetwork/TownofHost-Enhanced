@@ -131,7 +131,7 @@ internal class Enigma : RoleBase
             if (showStageClue && clues.Any(a => a.ClueStage == stage))
                 clues = clues.Where(a => a.ClueStage == stage).ToList();
 
-            EnigmaClue clue = clues[rd.Next(0, clues.Count)];
+            EnigmaClue clue = clues.RandomElement();
             title = clue.Title;
             msg = clue.GetMessage(killer, showStageClue);
 
