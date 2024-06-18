@@ -21,7 +21,7 @@ public static class GameStartManagerUpdatePatch
 //タイマーとコード隠し
 public class GameStartManagerPatch
 {
-    private static SpriteRenderer cancelButton;
+    //private static SpriteRenderer cancelButton;
     public static float timer = 600f;
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Start))]
     public class GameStartManagerStartPatch
@@ -63,8 +63,8 @@ public class GameStartManagerPatch
             // Make Public Button
             if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !Main.AllowPublicRoom || !VersionChecker.IsSupported)
             {
-                //__instance.HostPublicButton.activeTextColor = Palette.DisabledClear;
-                //__instance.hj.color = Palette.DisabledClear;
+                __instance.HostPublicButton.activeTextColor = Palette.DisabledClear;
+                //__instance.h.color = Palette.DisabledClear;
             }
 
             if (GameStates.IsNormalGame)
@@ -145,7 +145,7 @@ public class GameStartManagerPatch
         public static void Postfix(GameStartManager __instance)
         {
             if (!AmongUsClient.Instance) return;
-            return; // something is null and i cant figure out what
+            //return; // something is null and i cant figure out what
 
             string warningMessage = "";
             if (AmongUsClient.Instance.AmHost)
@@ -169,7 +169,7 @@ public class GameStartManagerPatch
                     __instance.StartButton.gameObject.SetActive(false);
                     warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.MismatchedVersion"), string.Join(" ", mismatchedPlayerNameList), $"<color={Main.ModColor}>{Main.ModName}</color>"));
                 }
-                cancelButton.gameObject.SetActive(__instance.startState == GameStartManager.StartingStates.Countdown);
+                //cancelButton.gameObject.SetActive(__instance.startState == GameStartManager.StartingStates.Countdown);
             }
             else
             {
@@ -210,8 +210,8 @@ public class GameStartManagerPatch
             if (timer <= 60) suffix = Utils.ColorString(Color.red, suffix);
 
             __instance.PlayerCounter.text = currentText + suffix;
-            __instance.PlayerCounter.fontSize = 3f;
-            __instance.PlayerCounter.autoSizeTextContainer = false;
+            __instance.PlayerCounter.fontSize += 10f;
+            //__instance.PlayerCounter.autoSizeTextContainer = false;
         }
 
         private static void BeginAutoStart(float countdown)
