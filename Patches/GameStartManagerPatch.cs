@@ -262,6 +262,10 @@ public class GameStartManagerPatch
                     int num = Mathf.CeilToInt(thiz.countDownTimer);
                     thiz.countDownTimer -= Time.deltaTime;
                     int num2 = Mathf.CeilToInt(thiz.countDownTimer);
+                    if (!thiz.GameStartTextParent.activeSelf)
+                    {
+                        SoundManager.Instance.PlaySound(thiz.gameStartSound, false);
+                    }
                     thiz.GameStartTextParent.SetActive(true);
                     thiz.GameStartText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameStarting, num2);
                     if (num != num2)
