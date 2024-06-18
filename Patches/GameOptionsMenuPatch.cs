@@ -8,30 +8,30 @@ using Object = UnityEngine.Object;
 
 namespace TOHE;
 
-[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
-[HarmonyPriority(Priority.First)]
-class GameSettingMenuStartPatch
-{
-    public static void Postfix(GameSettingMenu __instance)
-    {
-        // Need for Hide&Seek because tabs are disabled by default
-        // I dont know what this means..
-        __instance.GameSettingsTab.gameObject.SetActive(true);
-    }
-}
-[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Close))]
-class GameSettingMenuClosePatch
-{
-    public static void Postfix()
-    {
-        // if custom game mode is HideNSeekTOHE in normal game, set standart
-        if (GameStates.IsNormalGame && Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
-        {
-            // Select standart custom game mode
-            Options.GameMode.SetValue(0);
-        }
-    }
-}
+//[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
+//[HarmonyPriority(Priority.First)]
+//class GameSettingMenuStartPatch
+//{
+//    public static void Postfix(GameSettingMenu __instance)
+//    {
+//        // Need for Hide&Seek because tabs are disabled by default
+//        // I dont know what this means..
+//        __instance.GameSettingsTab.gameObject.SetActive(true);
+//    }
+////}
+//[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Close))]
+//class GameSettingMenuClosePatch
+//{
+//    public static void Postfix()
+//    {
+//        // if custom game mode is HideNSeekTOHE in normal game, set standart
+//        if (GameStates.IsNormalGame && Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+//        {
+//            // Select standart custom game mode
+//            Options.GameMode.SetValue(0);
+//        }
+//    }
+//}
 
 
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
@@ -57,7 +57,7 @@ public static class GameSettingMenuInitializeOptionsPatch
         */
     }
 }
-[HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.Awake))]
+[HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.OnEnable))]
 [HarmonyPriority(799)]
 public static class RolesSettingsMenuAwakePatch
 {
@@ -68,7 +68,9 @@ public static class RolesSettingsMenuAwakePatch
         if (roleSettingMenu == null) return;
         var toheRoleSettings = Object.Instantiate(roleSettingMenu, roleSettingMenu.transform.parent);
 
-        toheRoleSettings.transform.SetLocalY(-6);
+        toheRoleSettings.name = "TEST ADSDSF";
+        toheRoleSettings.enabled = true;
+        //toheRoleSettings.
     }
 }
 //[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Awake))]
@@ -483,7 +485,7 @@ public class GameOptionsMenuUpdatePatch
     }
 }
 
-[HarmonyPatch(typeof(StringOption), nameof(StringOption.Start))]
+//[HarmonyPatch(typeof(StringOption), nameof(StringOption.Start))]
 public class StringOptionEnablePatch
 {
     public static bool Prefix(StringOption __instance)
@@ -507,7 +509,7 @@ public class StringOptionEnablePatch
     }
 }
 
-[HarmonyPatch(typeof(StringOption), nameof(StringOption.Increase))]
+//[HarmonyPatch(typeof(StringOption), nameof(StringOption.Increase))]
 public class StringOptionIncreasePatch
 {
     public static bool Prefix(StringOption __instance)
@@ -551,7 +553,7 @@ public class StringOptionIncreasePatch
     }
 }
 
-[HarmonyPatch(typeof(StringOption), nameof(StringOption.Decrease))]
+//[HarmonyPatch(typeof(StringOption), nameof(StringOption.Decrease))]
 public class StringOptionDecreasePatch
 {
     public static bool Prefix(StringOption __instance)
