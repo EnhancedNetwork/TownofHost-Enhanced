@@ -50,7 +50,7 @@ internal class Crewpostor : RoleBase
         TasksDone[playerId] = 0;
         PlayerIds.Add(playerId);
     }
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) 
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) 
     { 
         if (ForRecompute & !player.IsDead)
             return false;

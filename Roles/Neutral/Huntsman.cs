@@ -87,7 +87,7 @@ internal class Huntsman : RoleBase
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-    public override void OnReportDeadBody(PlayerControl Ronaldo, GameData.PlayerInfo IsTheGoat)
+    public override void OnReportDeadBody(PlayerControl Ronaldo, NetworkedPlayerInfo IsTheGoat)
     {
         ResetTargets(isStartedGame: false);
     }

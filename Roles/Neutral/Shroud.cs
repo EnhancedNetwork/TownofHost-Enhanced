@@ -147,7 +147,7 @@ internal class Shroud : RoleBase
         }
     }
 
-    public override void OnPlayerExiled(PlayerControl shroud, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl shroud, NetworkedPlayerInfo exiled)
     {
         if (!shroud.IsAlive())
         {

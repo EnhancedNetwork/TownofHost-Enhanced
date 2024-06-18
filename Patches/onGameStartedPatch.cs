@@ -134,7 +134,7 @@ internal class ChangeRoleSettings
                 if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
                 Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
                 {
-                    NormalOutfit = new GameData.PlayerOutfit().Set(pc.GetRealName(clientData: true), pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
+                    NormalOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set(pc.GetRealName(clientData: true), pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
                 };
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
@@ -148,7 +148,7 @@ internal class ChangeRoleSettings
                 pc.cosmetics.nameText.text = pc.name;
 
                 var outfit = pc.Data.DefaultOutfit;
-                Camouflage.PlayerSkins[pc.PlayerId] = new GameData.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
+                Camouflage.PlayerSkins[pc.PlayerId] = new NetworkedPlayerInfo.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
                 Main.clientIdList.Add(pc.GetClientId());
             }
 

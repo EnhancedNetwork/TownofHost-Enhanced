@@ -138,7 +138,7 @@ internal class Infectious : RoleBase
         }
         return false;
     }
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
         if (!player.IsAlive())
         {

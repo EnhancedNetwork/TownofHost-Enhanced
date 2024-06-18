@@ -91,7 +91,7 @@ internal class Stealth : RoleBase
             ResetDarkenState();
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (AmongUsClient.Instance.AmHost)
         {

@@ -200,7 +200,7 @@ internal class FortuneTeller : RoleBase
         ProgressText.Append(ColorString(TextColor41, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit)}"));
         return ProgressText.ToString();
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         didVote.Clear();
 

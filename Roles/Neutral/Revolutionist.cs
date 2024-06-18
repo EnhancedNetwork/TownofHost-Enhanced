@@ -87,7 +87,7 @@ internal class Revolutionist : RoleBase
     }
     public override bool CanUseKillButton(PlayerControl pc) => !IsDrawDone(pc);
     public override bool CanUseImpostorVentButton(PlayerControl pc) => IsDrawDone(pc);
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var x in RevolutionistStart.Keys.ToArray())
         {

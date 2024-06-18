@@ -156,7 +156,7 @@ internal class Puppeteer : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         PuppeteerList.Clear();
         SendRPC(byte.MaxValue, byte.MaxValue, 0);

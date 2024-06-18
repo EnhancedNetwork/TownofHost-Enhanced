@@ -670,8 +670,8 @@ class ShapeshiftPatch
 class ReportDeadBodyPatch
 {
     public static Dictionary<byte, bool> CanReport;
-    public static Dictionary<byte, List<GameData.PlayerInfo>> WaitReport = [];
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
+    public static Dictionary<byte, List<NetworkedPlayerInfo>> WaitReport = [];
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] NetworkedPlayerInfo target)
     {
         if (GameStates.IsMeeting || GameStates.IsHideNSeek) return false;
 
@@ -810,7 +810,7 @@ class ReportDeadBodyPatch
 
         return true;
     }
-    public static void AfterReportTasks(PlayerControl player, GameData.PlayerInfo target)
+    public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target)
     {
         //=============================================
         // Hereinafter, it is assumed that the button is confirmed to be pressed
@@ -1773,7 +1773,7 @@ class PlayerControlSetRolePatch
     }
 }
 
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRole))]
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoSetRole))]
 class PlayerControlLocalSetRolePatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)

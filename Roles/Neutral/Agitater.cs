@@ -115,7 +115,7 @@ internal class Agitater : RoleBase
         return false;
     }
 
-    public override void OnReportDeadBody(PlayerControl reported, GameData.PlayerInfo agitatergoatedrole)
+    public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo agitatergoatedrole)
     {
         if (CurrentBombedPlayer == byte.MaxValue) return;
         var target = Utils.GetPlayerById(CurrentBombedPlayer);

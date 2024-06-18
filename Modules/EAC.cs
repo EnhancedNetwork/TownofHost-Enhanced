@@ -456,7 +456,7 @@ internal class EAC
     }
 
     public static Dictionary<byte, int> ReportTimes = [];
-    public static bool RpcReportDeadBodyCheck(PlayerControl player, GameData.PlayerInfo target)
+    public static bool RpcReportDeadBodyCheck(PlayerControl player, NetworkedPlayerInfo target)
     {
         if (!ReportTimes.ContainsKey(player.PlayerId))
         {

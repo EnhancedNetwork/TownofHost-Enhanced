@@ -135,7 +135,7 @@ class CheckForEndVotingPatch
                 }
             }
 
-            GameData.PlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
+            NetworkedPlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
             bool tie = false;
 
             foreach (var ps in __instance.playerStates)
@@ -360,7 +360,7 @@ class CheckForEndVotingPatch
     }
 
     // 参考：https://github.com/music-discussion/TownOfHost-TheOtherRoles
-    private static void ConfirmEjections(GameData.PlayerInfo exiledPlayer, bool AntiBlackoutStore = false)
+    private static void ConfirmEjections(NetworkedPlayerInfo exiledPlayer, bool AntiBlackoutStore = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (exiledPlayer == null) return;
@@ -471,7 +471,7 @@ class CheckForEndVotingPatch
                 Main.DoBlockNameChange = true;
                 if (GameStates.IsInGame)
                 {
-                    GameData.Instance.UpdateName(exiledPlayer.PlayerId, name, false);
+                    exiledPlayer.UpdateName(name, Utils.GetClientById(exiledPlayer.ClientId));
                     player?.RpcSetName(name);
                 }
             }
@@ -494,7 +494,7 @@ class CheckForEndVotingPatch
                 if (GameStates.IsInGame && player.Data.Disconnected)
                 {
                     player.Data.PlayerName = realName;
-                    GameData.Instance.UpdateName(exiledPlayer.PlayerId, realName, false);
+                    exiledPlayer.UpdateName(realName, Utils.GetClientById(exiledPlayer.ClientId));
                     //Await Next Send Data or Next Meeting
                 }
             }

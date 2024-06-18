@@ -222,7 +222,7 @@ internal class Romantic : RoleBase
         if (player == null) return null;
         return Utils.ColorString(BetTimes.TryGetValue(playerId, out var timesV1) && timesV1 >= 1 ? Color.white : Utils.GetRoleColor(CustomRoles.Romantic), $"<color=#ffffff>-</color> {(BetTimes.TryGetValue(playerId, out var timesV2) && timesV2 >= 1 && timesV2 >= 1 ? "♡" : "♥")}");
     }
-    public override void OnReportDeadBody(PlayerControl ugandan, GameData.PlayerInfo knuckles)
+    public override void OnReportDeadBody(PlayerControl ugandan, NetworkedPlayerInfo knuckles)
     {
         isPartnerProtected = false;
     }

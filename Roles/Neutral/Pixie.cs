@@ -133,7 +133,7 @@ internal class Pixie : RoleBase
         return false;
     }
 
-    public override void OnPlayerExiled(PlayerControl pc, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl pc, NetworkedPlayerInfo exiled)
     {
         byte pixieId = pc.PlayerId;
         if (PixieTargets.ContainsKey(pixieId))

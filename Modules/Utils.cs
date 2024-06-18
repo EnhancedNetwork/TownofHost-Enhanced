@@ -534,7 +534,7 @@ public static class Utils
     }
 
 
-    public static bool HasTasks(GameData.PlayerInfo playerData, bool ForRecompute = true)
+    public static bool HasTasks(NetworkedPlayerInfo playerData, bool ForRecompute = true)
     {
         if (GameStates.IsLobby) return false;
 
@@ -1600,7 +1600,7 @@ public static class Utils
         return null;
     }
 
-    public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
+    public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
     private static readonly StringBuilder SelfMark = new(20);

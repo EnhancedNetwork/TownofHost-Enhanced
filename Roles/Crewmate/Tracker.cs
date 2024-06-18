@@ -108,7 +108,7 @@ internal class Tracker : RoleBase
         SendRPC(0,player.PlayerId, target.PlayerId);
     }
 
-    public override void OnReportDeadBody(PlayerControl reported, GameData.PlayerInfo repoted)
+    public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo repoted)
     {
         foreach (var trackerId in _playerIdList) 
         {

@@ -6,8 +6,8 @@ namespace TOHE.Roles.Impostor;
 
 internal class Devourer : RoleBase
 {
-    private readonly static GameData.PlayerOutfit ConsumedOutfit = new GameData.PlayerOutfit().Set("", 15, "", "", "visor_Crack", "", "");
-    private static readonly Dictionary<byte, GameData.PlayerOutfit> OriginalPlayerSkins = [];
+    private readonly static NetworkedPlayerInfo.PlayerOutfit ConsumedOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set("", 15, "", "", "visor_Crack", "", "");
+    private static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> OriginalPlayerSkins = [];
 
     //===========================SETUP================================\\
     private const int Id = 5500;
@@ -126,13 +126,13 @@ internal class Devourer : RoleBase
         OnDevourerDied(devourer);
     }
 
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
         if (exiled != null && exiled.Object.Is(CustomRoles.Devourer))
             OnDevourerDied(exiled.Object);
     }
 
-    private static void SetSkin(PlayerControl target, GameData.PlayerOutfit outfit)
+    private static void SetSkin(PlayerControl target, NetworkedPlayerInfo.PlayerOutfit outfit)
     {
         var sender = CustomRpcSender.Create(name: $"Devourer.RpcSetSkin({target.Data.PlayerName})");
 

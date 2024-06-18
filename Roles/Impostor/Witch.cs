@@ -188,7 +188,7 @@ internal class Witch : RoleBase
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Spell, [.. spelledIdList]);
         RemoveSpelledPlayer();
     }
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
         RemoveSpelledPlayer();
     }

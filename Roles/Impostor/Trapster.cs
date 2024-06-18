@@ -52,7 +52,7 @@ internal class Trapster : RoleBase
         return true;
     }
 
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
 
         // if trapster dead

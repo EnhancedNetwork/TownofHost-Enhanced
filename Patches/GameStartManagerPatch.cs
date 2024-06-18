@@ -63,8 +63,8 @@ public class GameStartManagerPatch
             // Make Public Button
             if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !Main.AllowPublicRoom || !VersionChecker.IsSupported)
             {
-                __instance.MakePublicButton.color = Palette.DisabledClear;
-                __instance.privatePublicText.color = Palette.DisabledClear;
+                //__instance.HostPublicButton.activeTextColor = Palette.DisabledClear;
+                //__instance.hj.color = Palette.DisabledClear;
             }
 
             if (GameStates.IsNormalGame)

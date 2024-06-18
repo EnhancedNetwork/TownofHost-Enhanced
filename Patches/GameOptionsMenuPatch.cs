@@ -15,7 +15,8 @@ class GameSettingMenuStartPatch
     public static void Postfix(GameSettingMenu __instance)
     {
         // Need for Hide&Seek because tabs are disabled by default
-        __instance.Tabs.SetActive(true);
+        // I dont know what this means..
+        __instance.GameSettingsTab.gameObject.SetActive(true);
     }
 }
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Close))]
@@ -31,19 +32,21 @@ class GameSettingMenuClosePatch
         }
     }
 }
-[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.InitializeOptions))]
+
+
+[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
 public static class GameSettingMenuInitializeOptionsPatch
 {
     public static void Prefix(GameSettingMenu __instance)
     {
         // Unlocks map/impostor amount changing in online (for testing on your custom servers)
         // Changed to be able to change the map in online mode without having to re-establish the room.
-        __instance.HideForOnline = new Il2CppReferenceArray<Transform>(0);
+        __instance.GameSettingsTab.HideForOnline = new Il2CppReferenceArray<Transform>(0);
     }
-
     // Add Dleks to map selection
     public static void Postfix([HarmonyArgument(0)] Il2CppReferenceArray<Transform> items)
     {
+        /*
         items
             .FirstOrDefault(
                 i => i.gameObject.activeSelf && i.name.Equals("MapName", StringComparison.OrdinalIgnoreCase))?
@@ -51,9 +54,10 @@ public static class GameSettingMenuInitializeOptionsPatch
             .Values?
             // using .Insert will convert managed values and break the struct resulting in crashes
             .System_Collections_IList_Insert((int)MapNames.Dleks, new Il2CppSystem.Collections.Generic.KeyValuePair<string, int>(Constants.MapNames[(int)MapNames.Dleks], (int)MapNames.Dleks));
+        */
     }
 }
-[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Start))]
+[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Awake))]
 [HarmonyPriority(799)]
 public static class GameOptionsMenuStartPatch
 {
@@ -118,8 +122,8 @@ public static class GameOptionsMenuStartPatch
                 gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
                 if (gameSettingMenu == null) return;
 
-                gameSettingMenu.RegularGameSettings.gameObject.SetActive(true);
-                gameSettingMenu.RolesSettings.gameObject.SetActive(true);
+                gameSettingMenu.GameSettingsTab.gameObject.SetActive(true);
+                gameSettingMenu.RoleSettingsTab.gameObject.SetActive(true);
 
                 GameObject.Find("Tint")?.SetActive(false);
 
@@ -129,8 +133,8 @@ public static class GameOptionsMenuStartPatch
                 gameSettings = GameObject.Find("Game Settings");
                 if (gameSettings == null) return;
 
-                gameSettingMenu.RegularGameSettings.gameObject.SetActive(false);
-                gameSettingMenu.RolesSettings.gameObject.SetActive(false);
+                gameSettingMenu.GameSettingsTab.gameObject.SetActive(false);
+                gameSettingMenu.RoleSettingsTab.gameObject.SetActive(false);
 
                 var children = __instance.Children.ToArray();
                 foreach (var ob in children)
@@ -162,15 +166,15 @@ public static class GameOptionsMenuStartPatch
             var roleTab = GameObject.Find("RoleTab");
             var gameTab = GameObject.Find("GameTab");
 
-            List<GameObject> menus = [gameSettingMenu.RegularGameSettings, gameSettingMenu.RolesSettings.gameObject];
-            List<SpriteRenderer> highlights = [gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight];
+            List<GameObject> menus = [gameSettingMenu.GameSettingsTab.gameObject, gameSettingMenu.RoleSettingsTab.gameObject];
+            //List<SpriteRenderer> highlights = [gameSettingMenu.GameSettingsHightlight, gameSettingMenu];
             List<GameObject> tabs = [gameTab, roleTab];
 
             // No add roleTab in Hide & Seek
             if (GameStates.IsHideNSeek)
             {
-                menus = [gameSettingMenu.RegularGameSettings];
-                highlights = [gameSettingMenu.GameSettingsHightlight];
+                menus = [gameSettingMenu.GameSettingsTab.gameObject];
+                //highlights = [gameSettingMenu.GameSettingsHightlight];
                 tabs = [gameTab];
             }
 
@@ -263,7 +267,8 @@ public static class GameOptionsMenuStartPatch
 
                 delay += 0.1f;
                 
-                tohMenu.Children = scOptions.ToArray();
+                // FIX THIS SH
+                //tohMenu.Children = scOptions.ToArray();
                 tohSettings.gameObject.SetActive(false);
                 menus.Add(tohSettings.gameObject);
 
@@ -273,7 +278,7 @@ public static class GameOptionsMenuStartPatch
                 hatButton.Find("Icon").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite($"TOHE.Resources.Images.TabIcon_{tab}.png", 100f);
                 tabs.Add(tohTab);
                 var tohTabHighlight = hatButton.Find("Tab Background").GetComponent<SpriteRenderer>();
-                highlights.Add(tohTabHighlight);
+                //highlights.Add(tohTabHighlight);
             }
 
             // hide roleTab in Hide & Seek
@@ -303,23 +308,23 @@ public static class GameOptionsMenuStartPatch
                     {
                         if (GameStates.IsHideNSeek)
                         {
-                            gameSettingMenu.RegularGameSettings.SetActive(false);
-                            gameSettingMenu.RolesSettings.gameObject.SetActive(false);
-                            gameSettingMenu.HideNSeekSettings.gameObject.SetActive(false);
-                            gameSettingMenu.GameSettingsHightlight.enabled = false;
-                            gameSettingMenu.RolesSettingsHightlight.enabled = false;
+                            //gameSettingMenu.GameSettingsTab.SetActive(false);
+                            gameSettingMenu.RoleSettingsTab.gameObject.SetActive(false);
+                            //gameSettingMenu.GameSettingsTab.HideNSeekSettings.gameObject.SetActive(false);
+                            //gameSettingMenu.GameSettingsTab.GameSettingsHightlight.enabled = false;
+                            //gameSettingMenu.RoleSettingsTabHightlight.enabled = false;
 
                             if (copiedIndex == 0)
                             {
-                                gameSettingMenu.HideNSeekSettings.gameObject.SetActive(true);
-                                gameSettingMenu.GameSettingsHightlight.enabled = true;
+                                //gameSettingMenu.HideNSeekSettings.gameObject.SetActive(true);
+                                //gameSettingMenu.GameSettingsHightlight.enabled = true;
                             }
                         }
                         for (var j = 0; j < menusCount; j++)
                         {
                             if (GameStates.IsHideNSeek && j == 0 && copiedIndex == 0) continue;
                             menus[j].SetActive(j == copiedIndex);
-                            highlights[j].enabled = j == copiedIndex;
+                            //highlights[j].enabled = j == copiedIndex;
                         }
                     }
                     button.OnClick.AddListener((Action)value);
@@ -366,7 +371,7 @@ public class GameOptionsMenuUpdatePatch
             if (_timer < 0.1f) return;
             _timer = 0f;
 
-            float numItems = __instance.Children.Length;
+            float numItems = __instance.Children.Count;
             var offset = 2.7f;
 
             foreach (var option in OptionItem.AllOptions.Where(opt => tab == opt.Tab && opt.OptionBehaviour != null && opt.OptionBehaviour.gameObject != null).ToArray())
@@ -464,7 +469,7 @@ public class GameOptionsMenuUpdatePatch
     }
 }
 
-[HarmonyPatch(typeof(StringOption), nameof(StringOption.OnEnable))]
+[HarmonyPatch(typeof(StringOption), nameof(StringOption.Start))]
 public class StringOptionEnablePatch
 {
     public static bool Prefix(StringOption __instance)
@@ -583,14 +588,15 @@ public class RpcSyncSettingsPatch
         OptionItem.SyncAllOptions();
     }
 }
-[HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.Start))]
-public static class RolesSettingsMenuPatch
+//[HarmonyPatch(typeof(RoleSettingsMenu), nameof(RoleSettingsTabMenu.Start))]
+public static class RoleSettingsTabMenuPatch
 {
-    public static void Postfix(RolesSettingsMenu __instance)
+    /*
+    public static void Postfix(RoleSettingsTabMenu __instance)
     {
         if (GameStates.IsHideNSeek) return;
 
-        foreach (var ob in __instance.Children.ToArray())
+        foreach (var ob in __instance.advancedSettingChildren.ToArray())
         {
             switch (ob.Title)
             {
@@ -605,6 +611,7 @@ public static class RolesSettingsMenuPatch
             }
         }
     }
+    */
 }
 [HarmonyPatch(typeof(NormalGameOptionsV07), nameof(NormalGameOptionsV07.SetRecommendations))]
 public static class SetRecommendationsPatch

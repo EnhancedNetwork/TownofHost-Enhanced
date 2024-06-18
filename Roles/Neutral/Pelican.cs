@@ -174,7 +174,7 @@ internal class Pelican : RoleBase
         Logger.Info($"{pc.GetRealName()} eat player => {target.GetRealName()}", "Pelican");
     }
 
-    public override void OnReportDeadBody(PlayerControl Nah_Id, GameData.PlayerInfo win)
+    public override void OnReportDeadBody(PlayerControl Nah_Id, NetworkedPlayerInfo win)
     {
         foreach (var pc in eatenList)
         {

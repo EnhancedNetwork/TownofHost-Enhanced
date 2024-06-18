@@ -175,7 +175,7 @@ internal class Arsonist : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
         => ArsonistTimer.Clear();
     
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)

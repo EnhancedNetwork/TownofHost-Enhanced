@@ -244,7 +244,7 @@ internal class Overseer : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         OverseerTimer.Clear();
         SendTimerRPC(0, byte.MaxValue);

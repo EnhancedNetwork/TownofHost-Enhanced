@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using InnerNet;
 using System;
@@ -17,6 +18,11 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
+    public static void SetRole(this PlayerControl player, RoleTypes role)
+    {
+        Main.Instance.StartCoroutine(player.CoSetRole(role, true).WrapToManaged());
+    }
+
     public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role)
     {
         if (role < CustomRoles.NotAssigned)
@@ -70,7 +76,7 @@ static class ExtendedPlayerControl
         var client = player.GetClient();
         return client == null ? -1 : client.Id;
     }
-    public static CustomRoles GetCustomRole(this GameData.PlayerInfo player)
+    public static CustomRoles GetCustomRole(this NetworkedPlayerInfo player)
     {
         return player == null || player.Object == null ? CustomRoles.Crewmate : player.Object.GetCustomRole();
     }
@@ -254,7 +260,7 @@ static class ExtendedPlayerControl
         }
         player.ResetKillCooldown();
     }
-    public static void ResetPlayerOutfit(this PlayerControl player, GameData.PlayerOutfit Outfit = null, bool force = false)
+    public static void ResetPlayerOutfit(this PlayerControl player, NetworkedPlayerInfo.PlayerOutfit Outfit = null, bool force = false)
     {
         Outfit ??= Main.PlayerStates[player.PlayerId].NormalOutfit;
 
@@ -305,7 +311,7 @@ static class ExtendedPlayerControl
             var OutfitTypeSet = player.CurrentOutfitType != PlayerOutfitType.Shapeshifted ? PlayerOutfitType.Default : PlayerOutfitType.Shapeshifted;
 
             player.Data.SetOutfit(OutfitTypeSet, Outfit);
-            GameData.Instance.SetDirty();
+            GameData.Instance.DirtyAllData();
         }
         if (player.CheckCamoflague() && !force)
         {
@@ -768,7 +774,7 @@ static class ExtendedPlayerControl
         return CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
     }
     public static bool CheckForInvalidMurdering(this PlayerControl killer, PlayerControl target) => CheckMurderPatch.CheckForInvalidMurdering(killer, target);
-    public static void NoCheckStartMeeting(this PlayerControl reporter, GameData.PlayerInfo target, bool force = false)
+    public static void NoCheckStartMeeting(this PlayerControl reporter, NetworkedPlayerInfo target, bool force = false)
     { 
         //Method that can cause a meeting to occur regardless of whether it is in sabotage.
         //If target is null, it becomes a button.

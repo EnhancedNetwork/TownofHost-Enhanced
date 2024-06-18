@@ -118,7 +118,7 @@ internal class Doomsayer : RoleBase
         }
     }
     
-    public override void OnReportDeadBody(PlayerControl goku, GameData.PlayerInfo solos)
+    public override void OnReportDeadBody(PlayerControl goku, NetworkedPlayerInfo solos)
     {
         if (!AdvancedSettings.GetBool()) return;
 

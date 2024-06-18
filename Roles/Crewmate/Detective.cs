@@ -53,7 +53,7 @@ internal class Detective : RoleBase
         InfoAboutDeadPlayerAndKiller[killer.PlayerId] = killer.GetDisplayRoleAndSubName(killer, false);
         InfoAboutDeadPlayerAndKiller[target.PlayerId] = target.GetDisplayRoleAndSubName(target, false);
     }
-    public override void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo deadBody)
+    public override void OnReportDeadBody(PlayerControl player, NetworkedPlayerInfo deadBody)
     {
         if (deadBody == null || deadBody.Object.IsAlive()) return;
 

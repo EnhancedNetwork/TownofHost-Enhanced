@@ -153,7 +153,7 @@ internal class PlagueDoctor : RoleBase
     {
         LateCheckWin = true;
     }
-    public override void OnReportDeadBody(PlayerControl W, GameData.PlayerInfo L)
+    public override void OnReportDeadBody(PlayerControl W, NetworkedPlayerInfo L)
     {
         InfectActive = false;
     }

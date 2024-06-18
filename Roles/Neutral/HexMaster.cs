@@ -213,7 +213,7 @@ internal class HexMaster : RoleBase
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Hex, [.. hexedIdList]);
         RemoveHexedPlayer();
     }
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
         RemoveHexedPlayer();
     }

@@ -174,7 +174,7 @@ class StartPatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartMeeting))]
 class StartMeetingPatch
 {
-    public static void Prefix(ShipStatus __instance, PlayerControl reporter, GameData.PlayerInfo target)
+    public static void Prefix(ShipStatus __instance, PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (GameStates.IsHideNSeek) return;
 

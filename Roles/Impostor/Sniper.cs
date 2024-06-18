@@ -303,7 +303,7 @@ internal class Sniper : RoleBase
             Utils.NotifyRoles(SpecifySeer: sniper);
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         meetingReset = true;
     }

@@ -255,7 +255,7 @@ public abstract class RoleBase
     /// When the meeting was start by report dead body or press meeting button
     /// target is null when meeting was start by pressing meeting button
     /// target is not null when meeting was start by report dead body
-    /// When target left the game, it's data in GameData.PlayerInfo is not null, it still has data that can be used
+    /// When target left the game, it's data in NetworkedPlayerInfo is not null, it still has data that can be used
     /// But if you use target.Object, then it can be null
     /// </summary>
     public virtual void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)

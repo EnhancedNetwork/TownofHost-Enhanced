@@ -129,7 +129,7 @@ internal class Undertaker : RoleBase
         return false;
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach(var playerId in MarkedLocation.Keys)
         {

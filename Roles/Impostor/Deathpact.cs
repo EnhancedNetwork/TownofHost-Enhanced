@@ -171,7 +171,7 @@ internal class Deathpact : RoleBase
         if (PlayersInDeathpactCanCallMeeting.GetBool()) return true;
         return !IsInActiveDeathpact(reporter);
     }
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (PlayersInDeathpactCanCallMeeting.GetBool()) return true;
         return !IsInActiveDeathpact(reporter);
@@ -303,7 +303,7 @@ internal class Deathpact : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var deathpact in ActiveDeathpacts.ToArray())
         {

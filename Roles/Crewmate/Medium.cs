@@ -79,7 +79,7 @@ internal class Medium : RoleBase
         }
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl reported, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo target)
     {
         ContactPlayer.Clear();
         if (target == null) return;

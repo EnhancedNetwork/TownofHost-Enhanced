@@ -47,7 +47,7 @@ internal class Medusa : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target, PlayerControl killer)
     {
         if (reporter.Is(CustomRoles.Medusa))
         {

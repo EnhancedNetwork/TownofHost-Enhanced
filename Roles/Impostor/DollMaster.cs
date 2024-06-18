@@ -152,7 +152,7 @@ internal class DollMaster : RoleBase
     }
 
     // Prepare for a meeting if possessing.
-    public override void OnReportDeadBody(PlayerControl pc, GameData.PlayerInfo target) // Fix crap when meeting gets called.
+    public override void OnReportDeadBody(PlayerControl pc, NetworkedPlayerInfo target) // Fix crap when meeting gets called.
     {
         if (IsControllingPlayer && controllingTarget != null && DollMasterTarget != null)
         {
@@ -165,7 +165,7 @@ internal class DollMaster : RoleBase
     }
 
     // If Dollmaster reports a body or is forced to while possessing redirect it to possessed player
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (controllingTarget == null || DollMasterTarget == null) return true;
 
