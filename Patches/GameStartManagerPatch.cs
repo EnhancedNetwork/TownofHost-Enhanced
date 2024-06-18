@@ -65,25 +65,6 @@ public class GameStartManagerPatch
                     AURoleOptions.GuardianAngelCooldown = Options.DefaultAngelCooldown.GetFloat();
             }
         }
-
-        public static void CopyComponentProperties(Component source, Component destination)
-        {
-            var type = source.GetType();
-            var fields = type.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            foreach (var field in fields)
-            {
-                field.SetValue(destination, field.GetValue(source));
-            }
-
-            var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            foreach (var property in properties)
-            {
-                if (property.CanWrite && property.GetSetMethod(true) != null)
-                {
-                    property.SetValue(destination, property.GetValue(source));
-                }
-            }
-        }
     }
 
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Update))]
