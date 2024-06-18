@@ -127,7 +127,7 @@ public abstract class RoleBase
     /// <summary>
     /// The role's tasks are needed for a task win
     /// </summary>
-    public virtual bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (!ForRecompute || !player.Object.IsAnySubRole(x => x.IsConverted()));
+    public virtual bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (!ForRecompute || !player.Object.IsAnySubRole(x => x.IsConverted()));
 
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
@@ -249,7 +249,7 @@ public abstract class RoleBase
     /// <summary>
     /// Check start meeting by dead body
     /// </summary>
-    public virtual bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
+    public virtual bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
 
     /// <summary>
     /// When the meeting was start by report dead body or press meeting button
@@ -258,7 +258,7 @@ public abstract class RoleBase
     /// When target left the game, it's data in GameData.PlayerInfo is not null, it still has data that can be used
     /// But if you use target.Object, then it can be null
     /// </summary>
-    public virtual void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public virtual void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     { }
 
     /// <summary>
@@ -278,19 +278,19 @@ public abstract class RoleBase
     /// <summary>
     /// Check exile role
     /// </summary>
-    public virtual void CheckExile(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public virtual void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     { }
 
     /// <summary>
     /// Check exile target
     /// </summary>
-    public virtual void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public virtual void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     { }
 
     /// <summary>
     /// When player was exiled
     /// </summary>
-    public virtual void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public virtual void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     { }
 
     /// <summary>
