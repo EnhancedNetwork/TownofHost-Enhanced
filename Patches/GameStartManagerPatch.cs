@@ -38,25 +38,25 @@ public class GameStartManagerPatch
                     ? $"<color={Main.HideColor.Value}>{Main.HideName.Value}</color>"
                     : $"<color={Main.ModColor}>{Main.HideName.Value}</color>";
 
-            cancelButton = Object.Instantiate(__instance.StartButton.GetComponent<SpriteRenderer>(), __instance.transform);
-            cancelButton.name = "CancelButton";
-            var cancelLabel = cancelButton.GetComponentInChildren<TextMeshPro>();
-            Object.Destroy(cancelLabel.GetComponent<TextTranslatorTMP>());
-            cancelLabel.text = GetString("Cancel");
-            cancelButton.transform.localScale = new(0.4f, 0.4f, 1f);
-            cancelButton.color = Color.red;
-            if (GameStates.IsLocalGame)
-            {
-                cancelButton.transform.localPosition = new(0f, 0.1f, 0f);
-            }
-            else
-            {
-                cancelButton.transform.localPosition = new(0f, -0.36f, 0f);
-            }
-            var buttonComponent = cancelButton.GetComponent<PassiveButton>();
-            buttonComponent.OnClick = new();
-            buttonComponent.OnClick.AddListener((Action)(() => __instance.ResetStartState()));
-            cancelButton.gameObject.SetActive(false);
+            //cancelButton = Object.Instantiate(__instance.StartButton.GetComponent<SpriteRenderer>(), __instance.transform);
+            //cancelButton.name = "CancelButton";
+            //var cancelLabel = cancelButton.GetComponentInChildren<TextMeshPro>();
+            //Object.Destroy(cancelLabel.GetComponent<TextTranslatorTMP>());
+            //cancelLabel.text = GetString("Cancel");
+            //cancelButton.transform.localScale = new(0.4f, 0.4f, 1f);
+            //cancelButton.color = Color.red;
+            //if (GameStates.IsLocalGame)
+            //{
+            //    cancelButton.transform.localPosition = new(0f, 0.1f, 0f);
+            //}
+            //else
+            //{
+            //    cancelButton.transform.localPosition = new(0f, -0.36f, 0f);
+            //}
+            //var buttonComponent = cancelButton.GetComponent<PassiveButton>();
+            //buttonComponent.OnClick = new();
+            //buttonComponent.OnClick.AddListener((Action)(() => __instance.ResetStartState()));
+            //cancelButton.gameObject.SetActive(false);
 
             if (!AmongUsClient.Instance.AmHost) return;
 
