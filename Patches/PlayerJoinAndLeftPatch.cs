@@ -506,12 +506,16 @@ class OnPlayerLeftPatch
         }
     }
 }
-[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.CreatePlayer))]
+[HarmonyPatch(typeof(AmongUsClient._CreatePlayer_d__47), nameof(AmongUsClient._CreatePlayer_d__47.MoveNext))]
 class CreatePlayerPatch
 {
-    public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
+    public static void Postfix(AmongUsClient._CreatePlayer_d__47 __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+
+        if (__instance.__1__state != 1) return;
+
+        ClientData client = __instance.clientData;
 
         Logger.Msg($"Create player data: ID {client.Character.PlayerId}: {client.PlayerName}", "CreatePlayer");
 
