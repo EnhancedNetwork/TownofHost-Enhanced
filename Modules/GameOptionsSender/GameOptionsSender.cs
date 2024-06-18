@@ -38,8 +38,8 @@ public abstract class GameOptionsSender
         writer.Write(opt.Version);
         writer.StartMessage(0);
         writer.Write((byte)currentGameMode);
-        if (opt.TryCast<NormalGameOptionsV07>(out var normalOpt))
-            NormalGameOptionsV07.Serialize(writer, normalOpt);
+        if (opt.TryCast<NormalGameOptionsV08>(out var normalOpt))
+            NormalGameOptionsV08.Serialize(writer, normalOpt);
         else if (opt.TryCast<HideNSeekGameOptionsV07>(out var hnsOpt))
             HideNSeekGameOptionsV07.Serialize(writer, hnsOpt);
         else
