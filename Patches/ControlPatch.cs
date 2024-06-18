@@ -314,7 +314,7 @@ internal class ControllerManagerUpdatePatch
             if (Input.GetKeyDown(KeyCode.Equals))
             {
                 Main.VisibleTasksCount = !Main.VisibleTasksCount;
-                DestroyableSingleton<HudManager>.Instance.Notifier.AddItem("VisibleTaskCountが" + Main.VisibleTasksCount.ToString() + "に変更されました。");
+                DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage("VisibleTaskCountが" + Main.VisibleTasksCount.ToString() + "に変更されました。");
             }
 
             //マスゲーム用コード

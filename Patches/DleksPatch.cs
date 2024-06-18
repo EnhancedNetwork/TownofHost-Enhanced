@@ -3,10 +3,10 @@
 namespace TOHE.Patches;
 
 // Thanks Galster (https://github.com/Galster-dev)
-[HarmonyPatch(typeof(AmongUsClient._CoStartGameHost_d__30), nameof(AmongUsClient._CoStartGameHost_d__30.MoveNext))]
+[HarmonyPatch(typeof(AmongUsClient._CoStartGameHost_d__32), nameof(AmongUsClient._CoStartGameHost_d__32.MoveNext))]
 public static class DleksPatch
 {
-    private static bool Prefix(AmongUsClient._CoStartGameHost_d__30 __instance, ref bool __result)
+    private static bool Prefix(AmongUsClient._CoStartGameHost_d__32 __instance, ref bool __result)
     {
         if (__instance.__1__state != 0)
         {
@@ -37,15 +37,15 @@ public static class DleksPatch
     }
 }
 
-[HarmonyPatch(typeof(KeyValueOption), nameof(KeyValueOption.OnEnable))]
+[HarmonyPatch(typeof(StringOption), nameof(StringOption.Start))]
 class AutoSelectDleksPatch
 {
-    private static void Postfix(KeyValueOption __instance)
+    private static void Postfix(StringOption __instance)
     {
         if (__instance.Title == StringNames.GameMapName)
         {
             // vanilla clamps this to not auto select dleks
-            __instance.Selected = GameOptionsManager.Instance.CurrentGameOptions.MapId;
+            //__instance.stringOptionName = AmongUs.GameOptions.Int32OptionNames.;
         }
     }
 }

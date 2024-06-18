@@ -197,7 +197,7 @@ internal class Bandit : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reportash, GameData.PlayerInfo panagustava)
+    public override void OnReportDeadBody(PlayerControl reportash, NetworkedPlayerInfo panagustava)
     {
         if (StealMode.GetValue() == 1) return;
         foreach (var kvp2 in Targets)

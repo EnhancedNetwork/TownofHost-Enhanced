@@ -84,7 +84,7 @@ internal class Tracefinder : RoleBase
             LocateArrow.RemoveAllTarget(playerId);
     }
 
-    public override void OnReportDeadBody(PlayerControl GODZILLA_VS, GameData.PlayerInfo KINGKONG)
+    public override void OnReportDeadBody(PlayerControl GODZILLA_VS, NetworkedPlayerInfo KINGKONG)
     {
         foreach (var apc in playerIdList)
         {

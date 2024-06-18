@@ -148,7 +148,7 @@ internal class Lawyer : RoleBase
             Target.Remove(reader.ReadByte());
     }
 
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute)
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
         => ChangeRolesAfterTargetKilled.GetValue() is not 1 && !ForRecompute;
 
     private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool inMeeting)

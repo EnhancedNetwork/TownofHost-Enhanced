@@ -126,7 +126,7 @@ internal class Poisoner : RoleBase
             Logger.Info($"{target.GetRealName()} was in an unkillable state, poison was canceled", "Poisoner");
         }
     }
-    public override void OnReportDeadBody(PlayerControl sans, GameData.PlayerInfo bateman)
+    public override void OnReportDeadBody(PlayerControl sans, NetworkedPlayerInfo bateman)
     {
         foreach (var targetId in PoisonedPlayers.Keys)
         {

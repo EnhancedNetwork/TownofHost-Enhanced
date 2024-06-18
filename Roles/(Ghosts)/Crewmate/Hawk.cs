@@ -52,7 +52,7 @@ internal class Hawk : RoleBase
             }
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         int ThisCount = 0;
         foreach (var pc in Main.AllPlayerControls)

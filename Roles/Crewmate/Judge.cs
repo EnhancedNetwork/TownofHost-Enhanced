@@ -68,7 +68,7 @@ internal class Judge : RoleBase
         playerIdList.Remove(playerId);
         TrialLimit.Remove(playerId);
     }
-    public override void OnReportDeadBody(PlayerControl party, GameData.PlayerInfo dinosaur)
+    public override void OnReportDeadBody(PlayerControl party, NetworkedPlayerInfo dinosaur)
     {
         foreach (var pid in TrialLimit.Keys)
         {

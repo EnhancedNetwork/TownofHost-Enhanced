@@ -127,7 +127,7 @@ internal class Puppeteer : RoleBase
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);
-                var KillRange = NormalGameOptionsV07.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
+                var KillRange = NormalGameOptionsV08.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
 
                 if (min.Value <= KillRange && puppet.CanMove && target.CanMove)
                 {
@@ -156,7 +156,7 @@ internal class Puppeteer : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         PuppeteerList.Clear();
         SendRPC(byte.MaxValue, byte.MaxValue, 0);

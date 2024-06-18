@@ -108,7 +108,7 @@ internal class Amnesiac : RoleBase
         else return "";
     }
 
-    public override bool OnCheckReportDeadBody(PlayerControl __instance, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl __instance, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         var tar = deadBody.Object;
         foreach (var apc in playerIdList.ToArray())

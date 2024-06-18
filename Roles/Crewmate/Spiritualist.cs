@@ -66,7 +66,7 @@ internal class Spiritualist : RoleBase
         return false;
     }
 
-    public override void OnReportDeadBody(PlayerControl reported, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo target)
     {
         if (target == null) return;
 

@@ -8,6 +8,7 @@ class ChanceChangePatch
 {
     public static void Postfix(RoleOptionSetting __instance)
     {
+        /*
         bool forced = true;
         string DisableText = $" ({GetString("Disabled")})";
         if (__instance.Role.Role == RoleTypes.Scientist)
@@ -43,5 +44,6 @@ class ChanceChangePatch
         {
             __instance.ChanceText.text = DisableText;
         }
+        */
     }
 }

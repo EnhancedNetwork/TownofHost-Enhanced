@@ -55,7 +55,7 @@ internal class Greedy : RoleBase
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = OddKillCooldown.GetFloat();
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var greedyId in playerIdList.ToArray())
         {

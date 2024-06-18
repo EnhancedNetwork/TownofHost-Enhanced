@@ -41,7 +41,7 @@ internal class Instigator : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public override void OnPlayerExiled(PlayerControl instigator, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl instigator, NetworkedPlayerInfo exiled)
     {
         if (exiled == null || !exiled.GetCustomRole().IsCrewmate()) return;
 

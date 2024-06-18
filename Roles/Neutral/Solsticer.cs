@@ -76,7 +76,7 @@ internal class Solsticer : RoleBase
         AURoleOptions.PlayerSpeedMod = !patched ? SolsticerSpeed.GetFloat() : 0.5f;
     } //Enabled Solsticer can vent
 
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => true;
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => true;
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
@@ -240,7 +240,7 @@ internal class Solsticer : RoleBase
     {
         SetShortTasksToAdd();
         var taskState = pc.GetPlayerTaskState();
-        GameData.Instance.RpcSetTasks(pc.PlayerId, System.Array.Empty<byte>()); //Let taskassign patch decide the tasks
+        pc.Data.RpcSetTasks(System.Array.Empty<byte>()); //Let taskassign patch decide the tasks
         taskState.CompletedTasksCount = 0;
         pc.RpcGuardAndKill();
         pc.Notify(GetString("SolsticerTasksReset"));
@@ -286,7 +286,7 @@ internal class Solsticer : RoleBase
         }
         return false;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         patched = false;
     }

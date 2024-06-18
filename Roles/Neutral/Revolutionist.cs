@@ -87,7 +87,7 @@ internal class Revolutionist : RoleBase
     }
     public override bool CanUseKillButton(PlayerControl pc) => !IsDrawDone(pc);
     public override bool CanUseImpostorVentButton(PlayerControl pc) => IsDrawDone(pc);
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var x in RevolutionistStart.Keys.ToArray())
         {
@@ -240,7 +240,7 @@ internal class Revolutionist : RoleBase
                 }
                 else
                 {
-                    float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                    float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
                     float dis = Vector2.Distance(player.GetCustomPosition(), rv_target.GetCustomPosition());
                     if (dis <= range)
                     {

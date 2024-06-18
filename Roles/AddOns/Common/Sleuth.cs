@@ -29,7 +29,7 @@ public static class Sleuth
         SleuthNotify.Clear();
     }
 
-    public static void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody)
+    public static void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody)
     {
         if (reporter.Is(CustomRoles.Sleuth) && deadBody != null && deadBody.Object != null && !deadBody.Object.IsAlive() && reporter.PlayerId != deadBody.PlayerId)
         {

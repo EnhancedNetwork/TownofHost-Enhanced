@@ -155,7 +155,7 @@ internal class Arsonist : RoleBase
                 }
                 else
                 {
-                    float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                    float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
                     float distance = Vector2.Distance(player.GetCustomPosition(), arTarget.GetCustomPosition());
 
                     if (distance <= range)
@@ -175,7 +175,7 @@ internal class Arsonist : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
         => ArsonistTimer.Clear();
     
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)

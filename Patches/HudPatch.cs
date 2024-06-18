@@ -44,10 +44,10 @@ class HudManagerPatch
         }
         if (GameStates.IsLobby)
         {
-            var POM = GameObject.Find("PlayerOptionsMenu(Clone)");
-            __instance.GameSettings.text = POM != null ? "" : OptionShower.GetTextNoFresh(); //OptionShower.GetText();
-            __instance.GameSettings.fontSizeMin =
-            __instance.GameSettings.fontSizeMax = 1.1f;
+            //var POM = GameObject.Find("PlayerOptionsMenu(Clone)");
+            //__instance.G.text = POM != null ? "" : OptionShower.GetTextNoFresh(); //OptionShower.GetText();
+            //__instance.GameSettings.fontSizeMin =
+            //__instance.GameSettings.fontSizeMax = 1.1f;
         }
         //ゲーム中でなければ以下は実行されない
         if (!AmongUsClient.Instance.IsGameStarted || GameStates.IsHideNSeek) return;

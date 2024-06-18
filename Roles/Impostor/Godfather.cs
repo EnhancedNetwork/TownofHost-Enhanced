@@ -45,7 +45,7 @@ internal class Godfather : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target) => GodfatherTarget.Clear();
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => GodfatherTarget.Clear();
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (GodfatherTarget.Contains(target.PlayerId) && !(killer.GetCustomRole().IsImpostor() || killer.GetCustomRole().IsMadmate() || killer.Is(CustomRoles.Madmate)))

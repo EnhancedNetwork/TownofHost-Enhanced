@@ -72,7 +72,7 @@ internal class Addict : RoleBase
     {
         return !IsImmortal(target);
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var player in playerIdList.ToArray())
         {

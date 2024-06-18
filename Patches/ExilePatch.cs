@@ -7,7 +7,7 @@ namespace TOHE;
 
 class ExileControllerWrapUpPatch
 {
-    public static GameData.PlayerInfo AntiBlackout_LastExiled;
+    public static NetworkedPlayerInfo AntiBlackout_LastExiled;
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
@@ -47,7 +47,7 @@ class ExileControllerWrapUpPatch
             }
         }
     }
-    static void WrapUpPostfix(GameData.PlayerInfo exiled)
+    static void WrapUpPostfix(NetworkedPlayerInfo exiled)
     {
         if (AntiBlackout.BlackOutIsActive) exiled = AntiBlackout_LastExiled;
 
@@ -147,7 +147,7 @@ class ExileControllerWrapUpPatch
         }
     }
 
-    static void WrapUpFinalizer(GameData.PlayerInfo exiled)
+    static void WrapUpFinalizer(NetworkedPlayerInfo exiled)
     {
         // Even if an exception occurs in WrapUpPostfix, this is the only part that will be executed reliably.
         if (AmongUsClient.Instance.AmHost)

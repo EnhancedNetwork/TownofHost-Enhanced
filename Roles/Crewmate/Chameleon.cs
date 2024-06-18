@@ -97,7 +97,7 @@ internal class Chameleon : RoleBase
     
     private static bool IsInvis(byte id) => InvisDuration.ContainsKey(id);
    
-    public override void OnReportDeadBody(PlayerControl y, GameData.PlayerInfo x)
+    public override void OnReportDeadBody(PlayerControl y, NetworkedPlayerInfo x)
     {
         InvisCooldown.Clear();
         InvisDuration.Clear();

@@ -126,7 +126,7 @@ internal class Shroud : RoleBase
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);
-                var KillRange = NormalGameOptionsV07.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
+                var KillRange = NormalGameOptionsV08.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
                 if (min.Value <= KillRange && shroud.CanMove && target.CanMove)
                 {
                     if (shroud.RpcCheckAndMurder(target, true))
@@ -147,7 +147,7 @@ internal class Shroud : RoleBase
         }
     }
 
-    public override void OnPlayerExiled(PlayerControl shroud, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl shroud, NetworkedPlayerInfo exiled)
     {
         if (!shroud.IsAlive())
         {

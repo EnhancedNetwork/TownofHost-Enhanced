@@ -116,7 +116,7 @@ internal class Inspector : RoleBase
         }
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl reported, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo target)
     {
         foreach (var pid in RoundCheckLimit.Keys)
         {

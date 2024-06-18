@@ -23,7 +23,7 @@ internal class Doppelganger : RoleBase
 
     public static readonly Dictionary<byte, string> DoppelVictim = [];
     public static readonly Dictionary<PlayerControl, byte> PlayerControllerToIDRam = []; // Edit ids!
-    public static readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
+    public static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> DoppelPresentSkin = [];
     public static readonly Dictionary<byte, string> TrueNames = []; // Don't edit ids!
     public static PlayerControl DoppelgangerTarget = null;
     public static byte CurrentIdToSwap = byte.MaxValue;
@@ -106,12 +106,12 @@ internal class Doppelganger : RoleBase
         DoppelVictim[target.PlayerId] = target.GetRealName();
 
         // Make new outfit for taget
-        var targetOutfit = new GameData.PlayerOutfit()
+        var targetOutfit = new NetworkedPlayerInfo.PlayerOutfit()
             .Set(target.GetRealName(), target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
         var targetLvl = Utils.GetPlayerInfoById(target.PlayerId).PlayerLevel;
 
         // Make new outfit for killer
-        var killerOutfit = new GameData.PlayerOutfit()
+        var killerOutfit = new NetworkedPlayerInfo.PlayerOutfit()
             .Set(killer.GetRealName(), killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
         var killerLvl = Utils.GetPlayerInfoById(killer.PlayerId).PlayerLevel;
 
@@ -159,7 +159,7 @@ internal class Doppelganger : RoleBase
     }
 
     // Change cosmetic.
-    private static void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit, uint level)
+    private static void RpcChangeSkin(PlayerControl pc, NetworkedPlayerInfo.PlayerOutfit newOutfit, uint level)
     {
         var sender = CustomRpcSender.Create(name: $"Doppelganger.RpcChangeSkin({pc.Data.PlayerName})");
         pc.SetName(newOutfit.PlayerName);
@@ -206,7 +206,7 @@ internal class Doppelganger : RoleBase
 
         sender.SendMessage();
 
-        DoppelPresentSkin[pc.PlayerId] = new GameData.PlayerOutfit().Set(newOutfit.PlayerName, newOutfit.ColorId, newOutfit.HatId, newOutfit.SkinId, newOutfit.VisorId, newOutfit.PetId, newOutfit.NamePlateId);
+        DoppelPresentSkin[pc.PlayerId] = new NetworkedPlayerInfo.PlayerOutfit().Set(newOutfit.PlayerName, newOutfit.ColorId, newOutfit.HatId, newOutfit.SkinId, newOutfit.VisorId, newOutfit.PetId, newOutfit.NamePlateId);
     }
 
     public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Doppelganger).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
