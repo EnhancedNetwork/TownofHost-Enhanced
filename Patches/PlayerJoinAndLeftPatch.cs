@@ -6,11 +6,11 @@ using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Patches;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
 using static TOHE.SelectRolesPatch;
-using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -147,6 +147,8 @@ class OnGameJoinedPatch
                 }, 1.5f, "Retry Log Local Client");
             }
         }, 0.6f, "OnGameJoinedPatch");
+
+        _ = new LateTask(() => { CoPlayerJoined.AfterPlayerJoinedTask(Utils.GetClientById(__instance.ClientId)); }, 0.5f, "AfterPlayerJoinedTask.Host");
     }
 }
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.DisconnectInternal))]
@@ -300,6 +302,8 @@ public static class OnPlayerJoinedPatch
                 }
             }
         }
+
+        _ = new LateTask(() => { CoPlayerJoined.AfterPlayerJoinedTask(client); }, 0.5f, "AfterPlayerJoinedTask.Client");
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
@@ -511,18 +515,13 @@ class OnPlayerLeftPatch
         }
     }
 }
-[HarmonyPatch(typeof(AmongUsClient._CreatePlayer_d__47), nameof(AmongUsClient._CreatePlayer_d__47.MoveNext))]
-class CreatePlayerPatch
+class CoPlayerJoined
 {
-    public static void Postfix(AmongUsClient._CreatePlayer_d__47 __instance)
+    public static void AfterPlayerJoinedTask(ClientData client)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (__instance.__1__state != 1) return;
-
-        ClientData client = __instance.clientData;
-
-        Logger.Msg($"Create player data: ID {client.Character.PlayerId}: {client.PlayerName}", "CreatePlayer");
+        Logger.Info($"{client == null} or {client.Character == null}", "AfterPlayerJoinedTask");
 
         // Standard nickname
         var name = client.PlayerName;
