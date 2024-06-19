@@ -683,7 +683,7 @@ class CheckVanishPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckAppear))]
 class CheckAppearPatch
 {
-    public static bool Prefix(PlayerControl __instacne, bool shouldAnimate)
+    public static bool Prefix(PlayerControl __instance, bool shouldAnimate)
     {
         return true;
     }
@@ -1733,7 +1733,7 @@ class PlayerControlSetRolePatch
 
         return true;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, bool __runOriginal)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole, bool __runOriginal)
     {
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
 
@@ -1811,7 +1811,7 @@ class PlayerControlSetRolePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoSetRole))]
 class PlayerControlLocalSetRolePatch
 {
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role, [HarmonyArgument(1)] bool canOverrideRole)
     {
         if (!AmongUsClient.Instance.AmHost && GameStates.IsNormalGame && !GameStates.IsModHost)
         {
