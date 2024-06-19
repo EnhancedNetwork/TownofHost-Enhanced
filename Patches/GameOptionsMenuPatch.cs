@@ -1,8 +1,12 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using Sentry.Internal;
+using Sentry.Internal.Extensions;
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.TextCore;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
@@ -39,13 +43,48 @@ public static class GameSettingMenuInitializeOptionsPatch
 {
     public static void Prefix(GameSettingMenu __instance)
     {
+
         // Unlocks map/impostor amount changing in online (for testing on your custom servers)
         // Changed to be able to change the map in online mode without having to re-establish the room.
         __instance.GameSettingsTab.HideForOnline = new Il2CppReferenceArray<Transform>(0);
     }
     // Add Dleks to map selection
-    public static void Postfix()
+    public static void Postfix(GameSettingMenu __instance)
     {
+        var gamepreset = __instance.GamePresetsButton;
+        __instance.GamePresetsButton.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        __instance.GamePresetsButton.transform.localPosition = new Vector3(gamepreset.transform.localPosition.x, gamepreset.transform.localPosition.y + 0.2f, gamepreset.transform.localPosition.z);
+
+
+        var gamesettings = __instance.GameSettingsButton;
+        __instance.GameSettingsButton.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        __instance.GameSettingsButton.transform.localPosition = new Vector3(gamesettings.transform.localPosition.x, gamepreset.transform.localPosition.y - 0.4f, gamesettings.transform.localPosition.z);
+
+        var rolesettings = __instance.RoleSettingsButton;
+        __instance.RoleSettingsButton.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+        __instance.RoleSettingsButton.transform.localPosition = new Vector3(rolesettings.transform.localPosition.x, gamesettings.transform.localPosition.y - 0.4f, rolesettings.transform.localPosition.z);
+        rolesettings.OnClick.RemoveAllListeners();
+        // button.OnClick.AddListener( () => {}); // figure this shit out later
+
+        /*GameObject template = gamepreset.gameObject;
+        GameObject targetBox = UnityEngine.Object.Instantiate(template, rolesettings.transform);
+        targetBox.name = "Tohe Settings";
+        targetBox.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
+        targetBox.transform.localPosition = new Vector3(rolesettings.transform.localPosition.x + 2.95f, gamesettings.transform.localPosition.y + 1.4f, rolesettings.transform.localPosition.z);
+
+        _ = new LateTask(() =>  { targetBox.transform.parent = null;
+            gamepreset.transform.localScale = new Vector3(0f, 0f, 0f);
+            targetBox.transform.parent = __instance.transform.Find("LeftPanel");
+        }, 0.1f); // Disable rolesettings and make our own
+
+        PassiveButton button = targetBox.GetComponent<PassiveButton>();
+        button.OnClick.RemoveAllListeners();*/ 
+        // Incomplete, it works but have to adjust few things after I figure out how to disable gamepresets, 
+        // I haven't figured out how else to do it other than making game preset simply vanish
+
+
+
+        // button.OnClick.AddListener((Action)(() => JudgeOnClick(pva.TargetPlayerId/*, __instance*/))); figure out wtf listener
         /*
         items
             .FirstOrDefault(
