@@ -52,35 +52,36 @@ public static class GameSettingMenuInitializeOptionsPatch
     public static void Postfix(GameSettingMenu __instance)
     {
         var gamepreset = __instance.GamePresetsButton;
-        __instance.GamePresetsButton.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-        __instance.GamePresetsButton.transform.localPosition = new Vector3(gamepreset.transform.localPosition.x, gamepreset.transform.localPosition.y + 0.2f, gamepreset.transform.localPosition.z);
-
 
         var gamesettings = __instance.GameSettingsButton;
         __instance.GameSettingsButton.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-        __instance.GameSettingsButton.transform.localPosition = new Vector3(gamesettings.transform.localPosition.x, gamepreset.transform.localPosition.y - 0.4f, gamesettings.transform.localPosition.z);
+        __instance.GameSettingsButton.transform.localPosition = new Vector3(gamesettings.transform.localPosition.x, gamepreset.transform.localPosition.y + 0.2f, gamesettings.transform.localPosition.z);
 
         var rolesettings = __instance.RoleSettingsButton;
         __instance.RoleSettingsButton.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
         __instance.RoleSettingsButton.transform.localPosition = new Vector3(rolesettings.transform.localPosition.x, gamesettings.transform.localPosition.y - 0.4f, rolesettings.transform.localPosition.z);
-        rolesettings.OnClick.RemoveAllListeners();
+        //rolesettings.OnClick.RemoveAllListeners();
         // button.OnClick.AddListener( () => {}); // figure this shit out later
 
-        /*GameObject template = gamepreset.gameObject;
-        GameObject targetBox = UnityEngine.Object.Instantiate(template, rolesettings.transform);
+        GameObject template = gamepreset.gameObject;
+        GameObject targetBox = UnityEngine.Object.Instantiate(template, gamepreset.transform);
         targetBox.name = "Tohe Settings";
         targetBox.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
-        targetBox.transform.localPosition = new Vector3(rolesettings.transform.localPosition.x + 2.95f, gamesettings.transform.localPosition.y + 1.4f, rolesettings.transform.localPosition.z);
+        targetBox.transform.localPosition = new Vector3(targetBox.transform.localPosition.x + 2.95f, rolesettings.transform.localPosition.y - 0.1f, targetBox.transform.localPosition.z);
 
-        _ = new LateTask(() =>  { targetBox.transform.parent = null;
-            gamepreset.transform.localScale = new Vector3(0f, 0f, 0f);
+
+        _ = new LateTask(() => {
+            targetBox.transform.parent = null;
+           // gamepreset.transform.localScale = new Vector3(0f, 0f, 0f);
+            gamepreset.gameObject.SetActive(false);
             targetBox.transform.parent = __instance.transform.Find("LeftPanel");
-        }, 0.1f); // Disable gamepreset but keep our own
+        }, 0.05f); // Disable gamepreset but keep our own
 
         PassiveButton button = targetBox.GetComponent<PassiveButton>();
-        button.OnClick.RemoveAllListeners();*/ 
-        // Incomplete, it works but have to adjust few things after I figure out how to disable gamepresets, 
-        // I haven't figured out how else to do it other than making game preset simply vanish
+        button.OnClick.RemoveAllListeners(); 
+        var label = button.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+        _ = new LateTask(() => { label.text = "Tohe Settings"; }, 0.05f);
+
 
 
 
@@ -96,6 +97,23 @@ public static class GameSettingMenuInitializeOptionsPatch
         */
     }
 }
+
+[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.ChangeTab))]
+
+public class TabChange
+{
+
+    public static void Prefix(ref int tabNum)
+    {
+        if (tabNum == 0) // Disables preset menu in any instances
+            tabNum = 1; 
+    }
+
+
+
+}
+
+
 [HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.OnEnable))]
 [HarmonyPriority(799)]
 public static class RolesSettingsMenuAwakePatch
