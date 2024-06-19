@@ -521,7 +521,7 @@ class CoPlayerJoined
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        Logger.Info($"{client == null} or {client.Character == null}", "AfterPlayerJoinedTask");
+        Logger.Info($"client is null? - {client == null} or {client.Character == null}", "AfterPlayerJoinedTask");
 
         // Standard nickname
         var name = client.PlayerName;
