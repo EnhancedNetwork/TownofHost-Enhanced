@@ -1791,7 +1791,7 @@
   "VipColorCommandNoLobby": "你只能在遊戲未開始時於大廳使用該指令",
   "VipColorInvalidHexCode": "無效的hexcode\n請使用 /vipcolor [hexcode] 來更改 VIP★ 標籤的顏色\n範例: /vipcolor 33ccff",
   "VipColorInvalidGradientCode": "無效的hexcode\n請使用 /vipcolor [hexcode][hexcode] 來更改 VIP★ 標籤的顏色\n範例: /vipcolor 33ccff ff99cc",
-  "TagColorInvalidHexCode": "無效的hexcode\n請使用 /modcolor [hexcode] 來更改標籤的顏色\n範例: /tagcolor ff00ff",
+  "TagColorInvalidHexCode": "無效的hexcode\n請使用 /tagcolor [hexcode] 來更改標籤的顏色\n範例: /tagcolor ff00ff",
   "midCommandDisabled": "/mid指令目前已被禁用",
   "midCommandNoAccess": "你沒有權限使用/mid",
   "WarnCommandDisabled": "警告指令目前已被禁用",
