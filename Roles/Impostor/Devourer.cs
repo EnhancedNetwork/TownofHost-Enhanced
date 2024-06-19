@@ -138,27 +138,32 @@ internal class Devourer : RoleBase
 
         target.SetColor(outfit.ColorId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetColor)
+            .Write(target.Data.NetId)
             .Write(outfit.ColorId)
             .EndRpc();
 
         target.SetHat(outfit.HatId, outfit.ColorId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetHatStr)
             .Write(outfit.HatId)
+            .Write(target.GetNextRpcSequenceId(RpcCalls.SetHatStr))
             .EndRpc();
 
         target.SetSkin(outfit.SkinId, outfit.ColorId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetSkinStr)
             .Write(outfit.SkinId)
+            .Write(target.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
             .EndRpc();
 
         target.SetVisor(outfit.VisorId, outfit.ColorId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetVisorStr)
             .Write(outfit.VisorId)
+            .Write(target.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
             .EndRpc();
 
         target.SetPet(outfit.PetId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetPetStr)
             .Write(outfit.PetId)
+            .Write(target.GetNextRpcSequenceId(RpcCalls.SetPetStr))
             .EndRpc();
 
         sender.SendMessage();

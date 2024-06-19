@@ -158,8 +158,8 @@ static class ExtendedPlayerControl
 
         var sender = CustomRpcSender.Create(name: $"SetNamePrivate");
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, clientId)
+            .Write(player.Data.NetId)
             .Write(name)
-            .Write(DontShowOnModdedClient)
         .EndRpc();
         sender.SendMessage();
     }
@@ -175,6 +175,7 @@ static class ExtendedPlayerControl
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
         writer.Write((ushort)role);
+        writer.Write(true);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
@@ -270,6 +271,7 @@ static class ExtendedPlayerControl
 
             player.SetName(Outfit.PlayerName);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName)
+                .Write(player.Data.NetId)
                 .Write(Outfit.PlayerName)
             .EndRpc();
 
@@ -277,32 +279,38 @@ static class ExtendedPlayerControl
 
             player.SetColor(Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
+                .Write(player.Data.NetId)
                 .Write(Outfit.ColorId)
             .EndRpc();
 
             player.SetHat(Outfit.HatId, Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
                 .Write(Outfit.HatId)
+                .Write(player.GetNextRpcSequenceId(RpcCalls.SetHatStr))
             .EndRpc();
 
             player.SetSkin(Outfit.SkinId, Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetSkinStr)
                 .Write(Outfit.SkinId)
+                .Write(player.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
             .EndRpc();
 
             player.SetVisor(Outfit.VisorId, Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetVisorStr)
                 .Write(Outfit.VisorId)
+                .Write(player.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
             .EndRpc();
 
             player.SetPet(Outfit.PetId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetPetStr)
                 .Write(Outfit.PetId)
+                .Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr))
                 .EndRpc();
 
             player.SetNamePlate(Outfit.NamePlateId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetNamePlateStr)
                 .Write(Outfit.NamePlateId)
+                .Write(player.GetNextRpcSequenceId(RpcCalls.SetNamePlateStr))
                 .EndRpc();
 
             sender.SendMessage();

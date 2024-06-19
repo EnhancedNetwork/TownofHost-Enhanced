@@ -680,6 +680,7 @@ internal class SelectRolesPatch
                         seer.SetRole(roleType);
                         sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
                             .Write((ushort)roleType)
+                            .Write(true)
                             .EndRpc();
                     }
                     catch

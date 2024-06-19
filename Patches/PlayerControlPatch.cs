@@ -1621,8 +1621,9 @@ class PlayerControlSetRolePatch
 {
     public static readonly Dictionary<byte, bool> DidSetGhost = [];
     private static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole)
     {
+        canOverrideRole = true; /* set this to true no matter the case */
         if (GameStates.IsHideNSeek || __instance == null) return true;
         if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
 
@@ -1731,6 +1732,7 @@ class PlayerControlSetRolePatch
                         var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
                         writer.StartMessage(__instance.GetClientId());
                         writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                            .Write(host.Data.NetId)
                             .Write(Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")))
                             .EndRpc();
                         writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
@@ -1745,6 +1747,7 @@ class PlayerControlSetRolePatch
                             .Write(conf.ToString())
                             .EndRpc();
                         writer2.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                            .Write(host.Data.NetId)
                             .Write(name)
                             .EndRpc();
                         writer2.EndMessage();

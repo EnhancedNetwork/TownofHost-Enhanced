@@ -180,12 +180,14 @@ namespace TOHE.Modules.ChatManager
                     var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
                     writer.StartMessage(clientId);
                     writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SetName)
+                        .Write(firstAlivePlayer.Data.NetId)
                         .Write(title)
                         .EndRpc();
                     writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SendChat)
                         .Write(spamMsg)
                         .EndRpc();
                     writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SetName)
+                        .Write(firstAlivePlayer.Data.NetId)
                         .Write(name)
                         .EndRpc();
                     writer.EndMessage();

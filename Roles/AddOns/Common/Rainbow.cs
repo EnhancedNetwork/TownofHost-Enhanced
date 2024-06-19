@@ -56,6 +56,7 @@ public static class Rainbow
             int color = PickRandomColor();
             pc.SetColor(color);
             sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetColor)
+                .Write(pc.Data.NetId)
                 .Write(color)
                 .EndRpc();
         }

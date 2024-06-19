@@ -87,12 +87,14 @@ internal class Spiritcaller : RoleBase
             var writer = CustomRpcSender.Create("SpiritCallerSendMessage", SendOption.None);
             writer.StartMessage(target.GetClientId());
             writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
+                .Write(target.Data.NetId)
                 .Write(GetString("SpiritcallerNoticeTitle"))
                 .EndRpc();
             writer.StartRpc(target.NetId, (byte)RpcCalls.SendChat)
                 .Write(GetString("SpiritcallerNoticeMessage"))
                 .EndRpc();
             writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
+                .Write(target.Data.NetId)
                 .Write(target.Data.PlayerName)
                 .EndRpc();
             writer.EndMessage();
