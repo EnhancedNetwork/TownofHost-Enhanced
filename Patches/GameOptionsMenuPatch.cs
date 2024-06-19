@@ -114,7 +114,6 @@ public static class GameSettingMenuInitializeOptionsPatch
 }
 
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.ChangeTab))]
-
 public class TabChange
 {
 
@@ -127,29 +126,31 @@ public class TabChange
 
 
 }
-
-
-[HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.OnEnable))]
-[HarmonyPriority(799)]
+[HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.Start))]
 public static class RolesSettingsMenuAwakePatch
 {
     public static void Postfix(RolesSettingsMenu __instance)
     {
-        RoleOptionSetting roleSettingMenu = Object.FindObjectOfType<RoleOptionSetting>();
-        Logger.Info($"{roleSettingMenu == null}", "Check");
-        if (roleSettingMenu == null) return;
-        var toheRoleSettings = Object.Instantiate(roleSettingMenu, roleSettingMenu.transform.parent);
+        //Transform mainAreaTransform = __instance.transform.Find("MainArea");
+        //RolesSettingsMenu roleTabMenu = mainAreaTransform.Find("ROLES TAB").GetComponent<RolesSettingsMenu>();
+        //Logger.Info($"{roleTabMenu == null}", "Check");
+        //if (roleTabMenu == null) return;
 
-        toheRoleSettings.name = "TEST ADSDSF";
-        toheRoleSettings.enabled = true;
+        //__instance.
+        //roleTabMenu.
+
+        //var toheRoleSettings = Object.Instantiate(roleTabMenu, roleTabMenu.transform.parent);
+
+        //toheRoleSettings.name = "TEST ADSDSF";
+        //toheRoleSettings.enabled = true;
         //toheRoleSettings.
     }
 }
-//[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Awake))]
+[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Awake))]
 //[HarmonyPriority(799)]
 public static class GameOptionsMenuStartPatch
 {
-    public static void fPostfix(GameOptionsMenu __instance)
+    public static void Postfix(GameOptionsMenu __instance)
     {
         try
         {
