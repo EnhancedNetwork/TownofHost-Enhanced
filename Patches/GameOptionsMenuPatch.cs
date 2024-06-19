@@ -61,7 +61,7 @@ public static class GameSettingMenuInitializeOptionsPatch
         __instance.RoleSettingsButton.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
         __instance.RoleSettingsButton.transform.localPosition = new Vector3(rolesettings.transform.localPosition.x, gamesettings.transform.localPosition.y - 0.4f, rolesettings.transform.localPosition.z);
         //rolesettings.OnClick.RemoveAllListeners();
-        // button.OnClick.AddListener( () => {}); // figure this shit out later
+        // button.OnClick.AddListener( () => {}); // add rolemenu method
 
         //button 1
         GameObject template = gamepreset.gameObject;
@@ -76,13 +76,13 @@ public static class GameSettingMenuInitializeOptionsPatch
             // gamepreset.transform.localScale = new Vector3(0f, 0f, 0f);
             gamepreset.gameObject.SetActive(false);
             targetBox.transform.parent = __instance.transform.Find("LeftPanel");
-        }, 0f);
+        }, 0f); // remove GamePresets
 
         PassiveButton button = targetBox.GetComponent<PassiveButton>();
         button.OnClick.RemoveAllListeners();
         button.OnClick.AddListener((Action)(() => Logger.Info("System Settings was called", "System Settings TEST")));
         var label = button.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        _ = new LateTask(() => { label.text = "System Settings"; }, 0.05f);
+        _ = new LateTask(() => { label.text = "System Settings"; }, 0.05f); // add system settigns method
 
 
         //button 2
@@ -96,7 +96,7 @@ public static class GameSettingMenuInitializeOptionsPatch
         button2.OnClick.RemoveAllListeners();
         button2.OnClick.AddListener((Action)(() => Logger.Info("Mod Settings was called", "Mod Settings TEST")));
         var label2 = button2.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        _ = new LateTask(() => { label2.text = "Mod Settings"; }, 0.05f);
+        _ = new LateTask(() => { label2.text = "Mod Settings"; }, 0.05f); // add mod settings method
 
 
         //button 3
@@ -110,12 +110,9 @@ public static class GameSettingMenuInitializeOptionsPatch
         button3.OnClick.RemoveAllListeners();
         button3.OnClick.AddListener((Action)(() => Logger.Info("Game modifier was called", "Game Modifier TEST")));
         var label3 = button3.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        _ = new LateTask(() => { label3.text = "game Modifiers"; }, 0.05f);
+        _ = new LateTask(() => { label3.text = "game Modifiers"; }, 0.05f); // add game modifiers method
 
 
-
-
-        // button.OnClick.AddListener((Action)(() => JudgeOnClick(pva.TargetPlayerId/*, __instance*/))); figure out wtf listener
         /*
         items
             .FirstOrDefault(
