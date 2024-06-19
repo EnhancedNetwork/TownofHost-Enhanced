@@ -75,7 +75,7 @@ public static class GameSettingMenuInitializeOptionsPatch
         _ = new LateTask(() =>  { targetBox.transform.parent = null;
             gamepreset.transform.localScale = new Vector3(0f, 0f, 0f);
             targetBox.transform.parent = __instance.transform.Find("LeftPanel");
-        }, 0.1f); // Disable rolesettings and make our own
+        }, 0.1f); // Disable gamepreset but keep our own
 
         PassiveButton button = targetBox.GetComponent<PassiveButton>();
         button.OnClick.RemoveAllListeners();*/ 
