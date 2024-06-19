@@ -110,7 +110,7 @@ public static class GameSettingMenuInitializeOptionsPatch
         button3.OnClick.RemoveAllListeners();
         button3.OnClick.AddListener((Action)(() => Logger.Info("Game modifier was called", "Game Modifier TEST")));
         var label3 = button3.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        _ = new LateTask(() => { label3.text = "game Settings"; }, 0.05f);
+        _ = new LateTask(() => { label3.text = "game Modifiers"; }, 0.05f);
 
 
 
