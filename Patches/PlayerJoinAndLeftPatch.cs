@@ -147,8 +147,6 @@ class OnGameJoinedPatch
                 }, 1.5f, "Retry Log Local Client");
             }
         }, 0.6f, "OnGameJoinedPatch");
-
-        _ = new LateTask(() => { CoPlayerJoined.AfterPlayerJoinedTask(Utils.GetClientById(__instance.ClientId)); }, 0.5f, "AfterPlayerJoinedTask.Host");
     }
 }
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.DisconnectInternal))]
@@ -302,8 +300,6 @@ public static class OnPlayerJoinedPatch
                 }
             }
         }
-
-        _ = new LateTask(() => { CoPlayerJoined.AfterPlayerJoinedTask(client); }, 0.5f, "AfterPlayerJoinedTask.Client");
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
@@ -515,13 +511,16 @@ class OnPlayerLeftPatch
         }
     }
 }
-class CoPlayerJoined
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Spawn))]
+class InnerNetClientSpawnPatch
 {
-    public static void AfterPlayerJoinedTask(ClientData client)
+    public static void Prefix([HarmonyArgument(1)] int ownerId, [HarmonyArgument(2)] SpawnFlags flags)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || flags != SpawnFlags.IsClientCharacter) return;
 
-        Logger.Info($"client is null? - {client == null} or {client.Character == null}", "AfterPlayerJoinedTask");
+        ClientData client = Utils.GetClientById(ownerId);
+
+        Logger.Msg($"Spawn player data: ID {ownerId}: {client.PlayerName}", "InnerNetClientSpawn");
 
         // Standard nickname
         var name = client.PlayerName;
