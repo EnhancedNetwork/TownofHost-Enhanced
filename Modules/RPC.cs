@@ -158,7 +158,7 @@ internal class RPCHandlerPatch
         switch (rpcType)
         {
             case RpcCalls.SetName: //SetNameRPC
-                reader.ReadUInt32();
+                subReader.ReadUInt32();
                 string name = subReader.ReadString();
                 if (subReader.BytesRemaining > 0 && subReader.ReadBoolean()) return false;
                 Logger.Info("RPC Set Name For Player: " + __instance.GetNameWithRole() + " => " + name, "SetName");

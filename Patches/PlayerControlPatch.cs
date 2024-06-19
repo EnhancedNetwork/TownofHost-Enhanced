@@ -1655,7 +1655,7 @@ class PlayerControlSetRolePatch
     private static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole)
     {
-        canOverrideRole = true; /* set this to true no matter the case */
+        // canOverrideRole = true; /* set this to true no matter the case */
         if (GameStates.IsHideNSeek || __instance == null) return true;
         if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
 

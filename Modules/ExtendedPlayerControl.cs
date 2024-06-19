@@ -175,7 +175,7 @@ static class ExtendedPlayerControl
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
         writer.Write((ushort)role);
-        writer.Write(true);
+        writer.Write(false);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
