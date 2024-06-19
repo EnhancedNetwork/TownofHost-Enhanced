@@ -76,13 +76,13 @@ public static class GameSettingMenuInitializeOptionsPatch
             // gamepreset.transform.localScale = new Vector3(0f, 0f, 0f);
             gamepreset.gameObject.SetActive(false);
             targetBox.transform.parent = __instance.transform.Find("LeftPanel");
-        }, 0f); // remove GamePresets
+        }, 0.05f, "Remove GamePreset // Set Button 1"); // remove GamePresets
 
         PassiveButton button = targetBox.GetComponent<PassiveButton>();
         button.OnClick.RemoveAllListeners();
-        button.OnClick.AddListener((Action)(() => Logger.Info("System Settings was called", "System Settings TEST")));
+        button.OnClick.AddListener((Action)(() => Logger.Info("System Settings was called", "System Settings TEST"))); // add system settigns method
         var label = button.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        _ = new LateTask(() => { label.text = GetString("TabGroup.SystemSettings"); }, 0.05f); // add system settigns method
+        _ = new LateTask(() => { label.text = GetString("TabGroup.SystemSettings"); }, 0.05f, "Set Button1 Text"); 
 
 
         //button 2
@@ -94,9 +94,9 @@ public static class GameSettingMenuInitializeOptionsPatch
 
         PassiveButton button2 = targetBox2.GetComponent<PassiveButton>();
         button2.OnClick.RemoveAllListeners();
-        button2.OnClick.AddListener((Action)(() => Logger.Info("Mod Settings was called", "Mod Settings TEST")));
-        var label2 = button2.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        _ = new LateTask(() => { label2.text = GetString("TabGroup.ModSettings"); }, 0.05f); // add mod settings method
+        button2.OnClick.AddListener((Action)(() => Logger.Info("Mod Settings was called", "Mod Settings TEST"))); // add mod settings method
+        var label2 = button2.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>(); 
+        _ = new LateTask(() => { label2.text = GetString("TabGroup.ModSettings"); }, 0.05f, "Set Button2 Text"); 
 
 
         //button 3
@@ -108,9 +108,9 @@ public static class GameSettingMenuInitializeOptionsPatch
 
         PassiveButton button3 = targetBox3.GetComponent<PassiveButton>();
         button3.OnClick.RemoveAllListeners();
-        button3.OnClick.AddListener((Action)(() => Logger.Info("Game modifier was called", "Game Modifier TEST")));
-        var label3 = button3.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        _ = new LateTask(() => { label3.text = GetString("TabGroup.ModifierSettings"); }, 0.05f); // add game modifiers method
+        button3.OnClick.AddListener((Action)(() => Logger.Info("Game modifier was called", "Game Modifier TEST"))); // add game modifiers method
+        var label3 = button3.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>(); 
+        _ = new LateTask(() => { label3.text = GetString("TabGroup.ModifierSettings"); }, 0.05f, "Set Button3 Text"); 
 
 
         /*
