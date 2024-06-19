@@ -2211,6 +2211,8 @@
   "Warning.AntiBlackoutProtectionMsg": "<size=110%>Warning:</size>\n\r<b>Black screen protection has been activated,</b> due to the low number of alive <color=#ff1919>Impostors</color>, <color=#8cffff>Crewmates</color> and <color=#7f8c8d>Neutral Killers</color>\n<b>The voting screen will show as a tied vote (only affects the visual, not the results voting)</b>\n<size=70%>Modded players will see voting screen normally</size>",
   "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting triggered Black Screen Prevention!\nFollowing is the information of the player exiled in the last meeting.</b>\n",
   "DisableAntiBlackoutProtects": "Disable AntiBlackout Protects (Recommended for testing)",
+  
+
 
   "Warning.InvalidRpc": "Kicked <b>{0}</b> because an invalid RPC was received.\nPlease check that no mods other than TOHE are installed.",
   "Warning.NoModHost": "TOHE is not installed on the host",
@@ -2254,12 +2256,12 @@
   "NemesisRevengeTitle": "NEMESIS",
   "RetributionistRevengeTitle": "RETRIBUTIONIST",
   "TabGroup.SystemSettings": "System Settings",
-  "TabGroup.GameSettings": "Game Settings",
+  "TabGroup.ModSettings": "Mod Settings",
   "TabGroup.CrewmateRoles": "Crewmate Roles",
   "TabGroup.NeutralRoles": "Neutral Roles",
   "TabGroup.ImpostorRoles": "Impostor Roles",
   "TabGroup. Add-ons": "Add-Ons",
-  "TabGroup.TaskSettings": "Game Modifiers",
+  "TabGroup.ModifierSettings": "Game Modifiers",
   "Experimental.Roles": "★ Experimental Roles <size=65%>(NOTICE: Use with caution, as these require testing)</size>",
   "ActiveRolesList": "Active Roles List",
   "ForExample": "Example Use",
