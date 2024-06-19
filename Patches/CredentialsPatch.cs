@@ -74,11 +74,11 @@ public static class Credentials
                 //        sb.Append(sbOverlay);
                 //}
 
-                //var offset_x = -1.8f; //Offset from right edge
+                //var offset_y = 0f;
+                //if (GameStates.InGame) offset_y = 10f;
                 //if (ChatController && HudManager._instance.Chat.chatButton.active) offset_x += 0.9f; // Additional offsets for chat button if present
                 //if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; // Additional offsets if friend list button is present
-                //__instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(-1.8f, 2f, 0f);
-
+                //__instance.transform.position = new Vector3(-1.8f, offset_y, 0f);
                 __instance.text.text = sb.ToString();
 
                 return false;
@@ -98,7 +98,7 @@ public static class Credentials
         static TextMeshPro SpecialEventText;
         private static void Postfix(VersionShower __instance)
         {
-            Main.credentialsText = $"<size=60%><size=80%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}</size>";
+            Main.credentialsText = $"<size=50%><size=85%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}</size>";
             var buildtype = "";
 
 #if RELEASE
@@ -125,7 +125,7 @@ public static class Credentials
             var credentials = Object.Instantiate(__instance.text);
             credentials.text = Main.credentialsText;
             credentials.alignment = TextAlignmentOptions.Right;
-            credentials.transform.position = new Vector3(1f, 2.66f, -2f);
+            credentials.transform.position = new Vector3(1f, 2.67f, -2f);
             credentials.fontSize = credentials.fontSizeMax = credentials.fontSizeMin = 2f;
 
             ErrorText.Create(__instance.text);
