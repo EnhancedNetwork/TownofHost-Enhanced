@@ -69,7 +69,6 @@ public static class GameSettingMenuInitializeOptionsPatch
         targetBox.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
         targetBox.transform.localPosition = new Vector3(targetBox.transform.localPosition.x + 2.95f, rolesettings.transform.localPosition.y - 0.1f, targetBox.transform.localPosition.z);
 
-
         _ = new LateTask(() => {
             targetBox.transform.parent = null;
            // gamepreset.transform.localScale = new Vector3(0f, 0f, 0f);
