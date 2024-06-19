@@ -13,7 +13,6 @@ public static class Credentials
     class PingTrackerUpdatePatch
     {
         private static int DelayUpdate = 0;
-        private static bool CheckIsModHost = true;
         private static readonly StringBuilder sb = new();
 
         private static bool Prefix(PingTracker __instance)
@@ -24,22 +23,14 @@ public static class Credentials
 
                 if (DelayUpdate > 0 && sb.Length > 0)
                 {
-                    __instance.text.alignment = TextAlignmentOptions.TopRight;
-
-                    if (CheckIsModHost && GameStates.IsModHost)
-                    {
-                        var WarningNoModHost = $"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}".Length;
-                        sb.Remove(247, WarningNoModHost);
-                        CheckIsModHost = false;
-                    }
-
+                    __instance.text.alignment = TextAlignmentOptions.Center;
                     __instance.text.text = sb.ToString();
                     return false;
                 }
 
                 DelayUpdate = 500;
 
-                __instance.text.alignment = TextAlignmentOptions.TopRight;
+                __instance.text.alignment = TextAlignmentOptions.Center;
 
                 sb.Clear();
 
@@ -55,7 +46,7 @@ public static class Credentials
 
                 if (!GameStates.IsModHost)
                 {
-                    CheckIsModHost = true;
+                    //CheckIsModHost = true;
                     sb.Append($"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}");
                 }
 
@@ -70,23 +61,23 @@ public static class Credentials
                     sb.Append($"\r\n{Utils.ColorString(fpscolor, Utils.ColorString(Color.cyan, GetString("FPSGame")) + ((int)FPSGame).ToString())}");
                 }
 
-                if (Main.ShowTextOverlay.Value)
-                {
-                    var sbOverlay = new StringBuilder();
-                    if (Options.LowLoadMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode"))}");
-                    if (Options.NoGameEnd.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd"))}");
-                    if (Options.GuesserMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode"))}");
-                    if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.AllowConsole"))}");
-                    if (DebugModeManager.IsDebugMode) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.DebugMode"))}");
+                //if (Main.ShowTextOverlay.Value)
+                //{
+                //    var sbOverlay = new StringBuilder();
+                //    if (Options.LowLoadMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode"))}");
+                //    if (Options.NoGameEnd.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd"))}");
+                //    if (Options.GuesserMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode"))}");
+                //    if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.AllowConsole"))}");
+                //    if (DebugModeManager.IsDebugMode) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.DebugMode"))}");
 
-                    if (sbOverlay.Length > 0)
-                        sb.Append(sbOverlay);
-                }
+                //    if (sbOverlay.Length > 0)
+                //        sb.Append(sbOverlay);
+                //}
 
-                var offset_x = 1.2f; //Offset from right edge
-                //if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.active) offset_x += 0.9f; // Additional offsets for chat button if present
-                if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; // Additional offsets if friend list button is present
-                __instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(offset_x, 0f, 0f);
+                //var offset_x = -1.8f; //Offset from right edge
+                //if (ChatController && HudManager._instance.Chat.chatButton.active) offset_x += 0.9f; // Additional offsets for chat button if present
+                //if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; // Additional offsets if friend list button is present
+                //__instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(-1.8f, 2f, 0f);
 
                 __instance.text.text = sb.ToString();
 
@@ -95,7 +86,6 @@ public static class Credentials
             catch
             {
                 DelayUpdate = 0;
-                CheckIsModHost = false;
                 sb.Clear();
 
                 return false;
@@ -108,7 +98,7 @@ public static class Credentials
         static TextMeshPro SpecialEventText;
         private static void Postfix(VersionShower __instance)
         {
-            Main.credentialsText = $"\r\n<size=70%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}";
+            Main.credentialsText = $"<size=60%><size=80%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}</size>";
             var buildtype = "";
 
 #if RELEASE
@@ -130,12 +120,12 @@ public static class Credentials
             Logger.Info($"v{Main.PluginVersion}, {buildtype}:{ThisAssembly.Git.Branch}:({ThisAssembly.Git.Commit}), link [{ThisAssembly.Git.RepositoryUrl}], dirty: [{ThisAssembly.Git.IsDirty}]", "TOHE version");
 
             if (Main.IsAprilFools)
-                Main.credentialsText = $"\r\n<color=#00bfff>Town Of Host</color> v11.45.14";
+                Main.credentialsText = $"<color=#00bfff>Town Of Host</color> v11.45.14";
 
             var credentials = Object.Instantiate(__instance.text);
             credentials.text = Main.credentialsText;
             credentials.alignment = TextAlignmentOptions.Right;
-            credentials.transform.position = new Vector3(1f, 2.79f, -2f);
+            credentials.transform.position = new Vector3(1f, 2.66f, -2f);
             credentials.fontSize = credentials.fontSizeMax = credentials.fontSizeMin = 2f;
 
             ErrorText.Create(__instance.text);
