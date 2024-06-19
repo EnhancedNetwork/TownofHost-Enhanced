@@ -63,6 +63,7 @@ public static class GameSettingMenuInitializeOptionsPatch
         //rolesettings.OnClick.RemoveAllListeners();
         // button.OnClick.AddListener( () => {}); // figure this shit out later
 
+        //button 1
         GameObject template = gamepreset.gameObject;
         GameObject targetBox = UnityEngine.Object.Instantiate(template, gamepreset.transform);
         targetBox.name = "Tohe Settings";
@@ -77,9 +78,24 @@ public static class GameSettingMenuInitializeOptionsPatch
         }, 0.05f); // Disable gamepreset but keep our own
 
         PassiveButton button = targetBox.GetComponent<PassiveButton>();
-        button.OnClick.RemoveAllListeners(); 
+        button.OnClick.RemoveAllListeners();
+        button.OnClick.AddListener((Action)(() => Logger.Info("Tohe Settings was called", "Tohe Settings TEST")));
         var label = button.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
         _ = new LateTask(() => { label.text = "Tohe Settings"; }, 0.05f);
+
+
+        //button 2
+        GameObject template2 = targetBox.gameObject;
+        GameObject targetBox2 = UnityEngine.Object.Instantiate(template2, targetBox.transform);
+        targetBox2.name = "Game Settings";
+        targetBox2.transform.localScale = new Vector3(1f, 1f, 1f);
+        targetBox2.transform.localPosition = new Vector3(targetBox2.transform.localPosition.x, targetBox.transform.localPosition.y - 0.1f, targetBox2.transform.localPosition.z);
+
+        PassiveButton button2 = targetBox2.GetComponent<PassiveButton>();
+        button2.OnClick.RemoveAllListeners();
+        button2.OnClick.AddListener((Action)(() => Logger.Info("Game modifier was called", "Game Modifier TEST")));
+        var label2 = button2.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+        _ = new LateTask(() => { label2.text = "Game Modifiers"; }, 0.05f);
 
 
 
