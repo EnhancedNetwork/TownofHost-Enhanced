@@ -66,36 +66,51 @@ public static class GameSettingMenuInitializeOptionsPatch
         //button 1
         GameObject template = gamepreset.gameObject;
         GameObject targetBox = UnityEngine.Object.Instantiate(template, gamepreset.transform);
-        targetBox.name = "Tohe Settings";
+        targetBox.name = "System Settings";
         targetBox.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
         targetBox.transform.localPosition = new Vector3(targetBox.transform.localPosition.x + 2.95f, rolesettings.transform.localPosition.y - 0.1f, targetBox.transform.localPosition.z);
 
-        _ = new LateTask(() => {
+        _ = new LateTask(() =>
+        {
             targetBox.transform.parent = null;
-           // gamepreset.transform.localScale = new Vector3(0f, 0f, 0f);
+            // gamepreset.transform.localScale = new Vector3(0f, 0f, 0f);
             gamepreset.gameObject.SetActive(false);
             targetBox.transform.parent = __instance.transform.Find("LeftPanel");
-        }, 0.05f); // Disable gamepreset but keep our own
+        }, 0f);
 
         PassiveButton button = targetBox.GetComponent<PassiveButton>();
         button.OnClick.RemoveAllListeners();
-        button.OnClick.AddListener((Action)(() => Logger.Info("Tohe Settings was called", "Tohe Settings TEST")));
+        button.OnClick.AddListener((Action)(() => Logger.Info("System Settings was called", "System Settings TEST")));
         var label = button.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        _ = new LateTask(() => { label.text = "Tohe Settings"; }, 0.05f);
+        _ = new LateTask(() => { label.text = "System Settings"; }, 0.05f);
 
 
         //button 2
         GameObject template2 = targetBox.gameObject;
         GameObject targetBox2 = UnityEngine.Object.Instantiate(template2, targetBox.transform);
-        targetBox2.name = "Game Settings";
+        targetBox2.name = "Mod Settings";
         targetBox2.transform.localScale = new Vector3(1f, 1f, 1f);
         targetBox2.transform.localPosition = new Vector3(targetBox2.transform.localPosition.x, targetBox.transform.localPosition.y - 0.1f, targetBox2.transform.localPosition.z);
 
         PassiveButton button2 = targetBox2.GetComponent<PassiveButton>();
         button2.OnClick.RemoveAllListeners();
-        button2.OnClick.AddListener((Action)(() => Logger.Info("Game modifier was called", "Game Modifier TEST")));
+        button2.OnClick.AddListener((Action)(() => Logger.Info("Mod Settings was called", "Mod Settings TEST")));
         var label2 = button2.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        _ = new LateTask(() => { label2.text = "Game Modifiers"; }, 0.05f);
+        _ = new LateTask(() => { label2.text = "Mod Settings"; }, 0.05f);
+
+
+        //button 3
+        GameObject template3 = targetBox2.gameObject;
+        GameObject targetBox3 = UnityEngine.Object.Instantiate(template3, targetBox2.transform);
+        targetBox3.name = "Game Modifiers";
+        targetBox3.transform.localScale = new Vector3(1f, 1f, 1f);
+        targetBox3.transform.localPosition = new Vector3(targetBox3.transform.localPosition.x, targetBox2.transform.localPosition.y, targetBox3.transform.localPosition.z);
+
+        PassiveButton button3 = targetBox3.GetComponent<PassiveButton>();
+        button3.OnClick.RemoveAllListeners();
+        button3.OnClick.AddListener((Action)(() => Logger.Info("Game modifier was called", "Game Modifier TEST")));
+        var label3 = button3.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+        _ = new LateTask(() => { label3.text = "game Settings"; }, 0.05f);
 
 
 
