@@ -1716,7 +1716,7 @@ public static class Utils
                 SelfName = $"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}";
 
                 // Privately sent name.
-                seer.RpcSetNamePrivate(SelfName, true, seer);
+                seer.RpcSetNamePrivate(SelfName, seer);
                 continue;
             }
             
@@ -1732,7 +1732,7 @@ public static class Utils
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
             if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
             {
-                seer.RpcSetNamePrivate("<size=0%>", true, force: NoCache);
+                seer.RpcSetNamePrivate("<size=0%>", force: NoCache);
             }
             else
             {
@@ -1846,7 +1846,7 @@ public static class Utils
 
                 if (!isForMeeting) SelfName += "\r\n";
 
-                seer.RpcSetNamePrivate(SelfName, true, force: NoCache);
+                seer.RpcSetNamePrivate(SelfName, force: NoCache);
             }
 
             // Start run loop for target only when condition is "true"
@@ -1875,7 +1875,7 @@ public static class Utils
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
                     if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
                     {
-                        realTarget.RpcSetNamePrivate("<size=0%>", true, force: NoCache);
+                        realTarget.RpcSetNamePrivate("<size=0%>", force: NoCache);
                     }
                     else
                     {
@@ -2019,7 +2019,7 @@ public static class Utils
                         if (seer.Data.IsDead && seer != target && !target.Data.IsDead && !target.Is(CustomRoles.Doppelganger) && !Doppelganger.CurrentVictimCanSeeRolesAsDead.GetBool() && Doppelganger.CurrentIdToSwap == seer.PlayerId)
                             TargetName = target.GetRealName();
 
-                        realTarget.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
+                        realTarget.RpcSetNamePrivate(TargetName, seer, force: NoCache);
                     }
                 }
             }

@@ -138,7 +138,7 @@ static class ExtendedPlayerControl
         player.RpcSetName(name);
     }
 
-    public static void RpcSetNamePrivate(this PlayerControl player, string name, bool DontShowOnModdedClient = false, PlayerControl seer = null, bool force = false)
+    public static void RpcSetNamePrivate(this PlayerControl player, string name, PlayerControl seer = null, bool force = false)
     {
         //player: player whose name needs to be changed
         //seer: player who can see name changes
