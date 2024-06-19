@@ -251,23 +251,14 @@ class RpcSetTasksPatch
 [HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.HandleRpc))]
 class HandleRpcPatch
 {
-    public static bool Prefix([HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+    public static bool Prefix(NetworkedPlayerInfo __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        MessageReader sr = MessageReader.Get(reader);
+        //MessageReader sr = MessageReader.Get(reader);
         // var rpc = (RpcCalls)callId;
 
         if (AmongUsClient.Instance.AmHost)
         {
-            var dataid = sr.ReadByte();
-            var data = Utils.GetPlayerById(dataid);
-            if (data != null)
-            {
-                Logger.Error($"Received RpcSetTask for {data.GetRealName()}({data.PlayerId}), which is impossible.", "TaskAssignPatch");
-            }
-            else
-            {
-                Logger.Error($"Received RpcSetTask for {dataid} with no playerdata, which is impossible.", "TaskAssignPatch");
-            }
+            Logger.Error($"Received Rpc {(RpcCalls)callId} for {__instance.Object.GetRealName()}({__instance.PlayerId}), which is impossible.", "TaskAssignPatch");
 
             EAC.WarnHost();
             return false;

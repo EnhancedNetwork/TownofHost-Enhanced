@@ -158,8 +158,8 @@ static class ExtendedPlayerControl
 
         var sender = CustomRpcSender.Create(name: $"SetNamePrivate");
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, clientId)
+            .Write(player.Data.NetId)
             .Write(name)
-            .Write(DontShowOnModdedClient)
         .EndRpc();
         sender.SendMessage();
     }
@@ -175,6 +175,7 @@ static class ExtendedPlayerControl
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
         writer.Write((ushort)role);
+        writer.Write(false);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
@@ -270,6 +271,7 @@ static class ExtendedPlayerControl
 
             player.SetName(Outfit.PlayerName);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName)
+                .Write(player.Data.NetId)
                 .Write(Outfit.PlayerName)
             .EndRpc();
 
@@ -277,32 +279,38 @@ static class ExtendedPlayerControl
 
             player.SetColor(Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
+                .Write(player.Data.NetId)
                 .Write(Outfit.ColorId)
             .EndRpc();
 
             player.SetHat(Outfit.HatId, Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
                 .Write(Outfit.HatId)
+                .Write(player.GetNextRpcSequenceId(RpcCalls.SetHatStr))
             .EndRpc();
 
             player.SetSkin(Outfit.SkinId, Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetSkinStr)
                 .Write(Outfit.SkinId)
+                .Write(player.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
             .EndRpc();
 
             player.SetVisor(Outfit.VisorId, Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetVisorStr)
                 .Write(Outfit.VisorId)
+                .Write(player.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
             .EndRpc();
 
             player.SetPet(Outfit.PetId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetPetStr)
                 .Write(Outfit.PetId)
+                .Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr))
                 .EndRpc();
 
             player.SetNamePlate(Outfit.NamePlateId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetNamePlateStr)
                 .Write(Outfit.NamePlateId)
+                .Write(player.GetNextRpcSequenceId(RpcCalls.SetNamePlateStr))
                 .EndRpc();
 
             sender.SendMessage();
@@ -382,6 +390,31 @@ static class ExtendedPlayerControl
             }
         }
     }
+
+    public static void RpcSpecificVanish(this PlayerControl player, PlayerControl seer)
+    {
+        /*
+         *  Unluckily the vanish animation cannot be disabled
+         *  For vanila client seer side, the player must be with Phantom Role behavior, or the rpc will do nothing
+         */
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        MessageWriter msg = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartVanish, SendOption.None, seer.GetClientId());
+        AmongUsClient.Instance.FinishRpcImmediately(msg);
+    }
+
+    public static void RpcSpecificAppear(this PlayerControl player, PlayerControl seer, bool shouldAnimate)
+    {
+        /*
+         *  For vanila client seer side, the player must be with Phantom Role behavior, or the rpc will do nothing
+         */
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        MessageWriter msg = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartAppear, SendOption.None, seer.GetClientId());
+        msg.Write(shouldAnimate);
+        AmongUsClient.Instance.FinishRpcImmediately(msg);
+    }
+
     public static void RpcSpecificMurderPlayer(this PlayerControl killer, PlayerControl target, PlayerControl seer)
     {
         if (seer.AmOwner)
@@ -396,6 +429,7 @@ static class ExtendedPlayerControl
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
     } //Must provide seer, target
+
     [Obsolete]
     public static void RpcSpecificProtectPlayer(this PlayerControl killer, PlayerControl target = null, int colorId = 0)
     {

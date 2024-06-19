@@ -410,12 +410,14 @@ class OnPlayerLeftPatch
                     var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
                     writer.StartMessage(clientId);
                     writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+                        .Write(player.Data.NetId)
                         .Write(title)
                         .EndRpc();
                     writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
                         .Write(msg)
                         .EndRpc();
                     writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+                        .Write(player.Data.NetId)
                         .Write(player.Data.PlayerName)
                         .EndRpc();
                     writer.EndMessage();

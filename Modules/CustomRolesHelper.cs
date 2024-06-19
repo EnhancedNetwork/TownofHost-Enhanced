@@ -42,7 +42,7 @@ public static class CustomRolesHelper
             ? RoleTypes.Impostor 
             : RoleTypes.GuardianAngel;
 
-
+    /* Needs recode, awaiting phantom role base*/
     public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
     {
         if (player == null) return false;

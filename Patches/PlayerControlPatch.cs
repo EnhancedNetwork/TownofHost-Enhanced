@@ -666,6 +666,38 @@ class ShapeshiftPatch
         }
     }
 }
+
+/*
+ *  I have no idea how the check vanish is approved by host & server and how to reject it
+ *  Suggest leaving phantom stuffs after 2.1.0
+ */
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckVanish))]
+class CheckVanishPatch
+{
+    public static bool Prefix(PlayerControl __instance)
+    {
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckAppear))]
+class CheckAppearPatch
+{
+    public static bool Prefix(PlayerControl __instance, bool shouldAnimate)
+    {
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRoleInvisibility))]
+class SetRoleInvisibilityPatch
+{
+    public static void Postfix(PlayerControl __instance, bool isActive, bool shouldAnimate, bool playFullAnimation)
+    {
+        return;
+    }
+}
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
 class ReportDeadBodyPatch
 {
@@ -1621,8 +1653,9 @@ class PlayerControlSetRolePatch
 {
     public static readonly Dictionary<byte, bool> DidSetGhost = [];
     private static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole)
     {
+        // canOverrideRole = true; /* set this to true no matter the case */
         if (GameStates.IsHideNSeek || __instance == null) return true;
         if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
 
@@ -1700,7 +1733,7 @@ class PlayerControlSetRolePatch
 
         return true;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, bool __runOriginal)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole, bool __runOriginal)
     {
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
 
@@ -1731,6 +1764,7 @@ class PlayerControlSetRolePatch
                         var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
                         writer.StartMessage(__instance.GetClientId());
                         writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                            .Write(host.Data.NetId)
                             .Write(Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")))
                             .EndRpc();
                         writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
@@ -1745,6 +1779,7 @@ class PlayerControlSetRolePatch
                             .Write(conf.ToString())
                             .EndRpc();
                         writer2.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                            .Write(host.Data.NetId)
                             .Write(name)
                             .EndRpc();
                         writer2.EndMessage();
@@ -1776,7 +1811,7 @@ class PlayerControlSetRolePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoSetRole))]
 class PlayerControlLocalSetRolePatch
 {
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role, [HarmonyArgument(1)] bool canOverrideRole)
     {
         if (!AmongUsClient.Instance.AmHost && GameStates.IsNormalGame && !GameStates.IsModHost)
         {

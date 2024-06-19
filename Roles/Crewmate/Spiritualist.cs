@@ -96,12 +96,14 @@ internal class Spiritualist : RoleBase
             var writer = CustomRpcSender.Create("SpiritualistSendMessage", SendOption.None);
             writer.StartMessage(target.GetClientId());
             writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
+                .Write(target.Data.NetId)
                 .Write(GetString("SpiritualistNoticeTitle"))
                 .EndRpc();
             writer.StartRpc(target.NetId, (byte)RpcCalls.SendChat)
                 .Write(GetString("SpiritualistNoticeMessage"))
                 .EndRpc();
             writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
+                .Write(target.Data.NetId)
                 .Write(target.Data.PlayerName)
                 .EndRpc();
             writer.EndMessage();
