@@ -666,6 +666,38 @@ class ShapeshiftPatch
         }
     }
 }
+
+/*
+ *  I have no idea how the check vanish is approved by host & server and how to reject it
+ *  Suggest leaving phantom stuffs after 2.1.0
+ */
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckVanish))]
+class CheckVanishPatch
+{
+    public static bool Prefix(PlayerControl __instance)
+    {
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckAppear))]
+class CheckAppearPatch
+{
+    public static bool Prefix(PlayerControl __instacne, bool shouldAnimate)
+    {
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRoleInvisibility))]
+class SetRoleInvisibilityPatch
+{
+    public static void Postfix(PlayerControl __instance, bool isActive, bool shouldAnimate, bool playFullAnimation)
+    {
+        return;
+    }
+}
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
 class ReportDeadBodyPatch
 {
