@@ -1417,7 +1417,7 @@ internal class ChatCommands
             "模仿家" or "效仿者" => GetString("Imitator"),
             "強盜" => GetString("Bandit"),
             "分身者" => GetString("Doppelganger"),
-            "受虐狂" => GetString("Masochist"),
+            "受虐狂" => GetString("PunchingBag"),
             "賭神" or "末日赌怪" => GetString("Doomsayer"),
             "裹屍布" or "裹尸布" => GetString("Shroud"),
             "月下狼人" or "狼人" => GetString("Werewolf"),

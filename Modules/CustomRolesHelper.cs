@@ -91,7 +91,7 @@ public static class CustomRolesHelper
             CustomRoles.Jester or
             CustomRoles.Terrorist or
             CustomRoles.Opportunist or
-            CustomRoles.Masochist or
+            CustomRoles.PunchingBag or
             CustomRoles.Huntsman or
             CustomRoles.Executioner or
             CustomRoles.Vector or
@@ -478,7 +478,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Rebound)
                     || pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicVisibleToEveryone.GetBool()
-                    || pc.Is(CustomRoles.Masochist))
+                    || pc.Is(CustomRoles.PunchingBag))
                     return false; //Based on guess manager
                 if ((pc.GetCustomRole().IsCrewmate() && !Onbound.CrewCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Onbound.NeutralCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Onbound.ImpCanBeOnbound.GetBool()))
                     return false;
@@ -494,7 +494,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Onbound)
                     || pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicVisibleToEveryone.GetBool()
-                    || pc.Is(CustomRoles.Masochist))
+                    || pc.Is(CustomRoles.PunchingBag))
                 {
                     return false;
                 } //Based on guess manager
@@ -604,7 +604,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Jinx)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.CursedWolf)
-                    || pc.Is(CustomRoles.Masochist)
+                    || pc.Is(CustomRoles.PunchingBag)
                     || pc.Is(CustomRoles.SchrodingersCat)
                     || pc.Is(CustomRoles.PlagueBearer)
                     || pc.Is(CustomRoles.Pestilence)
@@ -1261,7 +1261,7 @@ public static class CustomRolesHelper
             CustomRoles.Spiritcaller => CustomWinner.Spiritcaller,
             CustomRoles.Glitch => CustomWinner.Glitch,
             CustomRoles.PlagueBearer => CustomWinner.Plaguebearer,
-            CustomRoles.Masochist => CustomWinner.Masochist,
+            CustomRoles.PunchingBag => CustomWinner.PunchingBag,
             CustomRoles.Doomsayer => CustomWinner.Doomsayer,
             CustomRoles.Shroud => CustomWinner.Shroud,
             CustomRoles.Seeker => CustomWinner.Seeker,

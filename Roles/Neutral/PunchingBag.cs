@@ -6,7 +6,7 @@ using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 
-internal class Masochist : RoleBase// bad roll, plz don't use this hosts
+internal class PunchingBag : RoleBase// bad roll, plz don't use this hosts
 {
     //===========================SETUP================================\\
     private const int Id = 14500;
@@ -17,60 +17,60 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
 
-    private static OptionItem MasochistKillMax;
+    private static OptionItem PunchingBagKillMax;
     
-    private static readonly Dictionary<byte, int> MasochistMax = [];
+    private static readonly Dictionary<byte, int> PunchingBagMax = [];
 
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Masochist);
-        MasochistKillMax = IntegerOptionItem.Create(Id + 2, "MasochistKillMax", new(1, 30, 1), 5, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Masochist])
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.PunchingBag);
+        PunchingBagKillMax = IntegerOptionItem.Create(Id + 2, "PunchingBagKillMax", new(1, 30, 1), 5, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.PunchingBag])
             .SetValueFormat(OptionFormat.Times);
     }
     public override void Init()
     {
         PlayerIds.Clear();
-        MasochistMax.Clear();
+        PunchingBagMax.Clear();
     }
     public override void Add(byte playerId)
     {
         PlayerIds.Add(playerId);
-        MasochistMax.Add(playerId, 0);
+        PunchingBagMax.Add(playerId, 0);
     }
 
-    private void SendRPC(byte masochistId)
+    private void SendRPC(byte punchingbagId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
-        writer.Write(masochistId);
-        writer.Write(MasochistMax[masochistId]);
+        writer.Write(punchingbagId);
+        writer.Write(PunchingBagMax[masochistId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        var masochistId = reader.ReadByte();
+        var punchingbagId = reader.ReadByte();
         var count = reader.ReadInt32();
 
-        MasochistMax[masochistId] = count;
+        PunchingBagMax[punchingbagId] = count;
     }
 
     public override string GetProgressText(byte playerId, bool comms)
-        => ColorString(GetRoleColor(CustomRoles.Masochist).ShadeColor(0.25f), $"({(MasochistMax.TryGetValue(playerId, out var count) ? count : 0)}/{MasochistKillMax.GetInt()})");
+        => ColorString(GetRoleColor(CustomRoles.PunchingBag).ShadeColor(0.25f), $"({(MasochistMax.TryGetValue(playerId, out var count) ? count : 0)}/{PunchingBagKillMax.GetInt()})");
     
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown(target: target, forceAnime: true);
 
-        MasochistMax[target.PlayerId]++;
+        PunchingBagMax[target.PlayerId]++;
         SendRPC(target.PlayerId);
 
-        target.Notify(string.Format(GetString("MasochistKill"), MasochistMax[target.PlayerId]));
-        if (MasochistMax[target.PlayerId] >= MasochistKillMax.GetInt())
+        target.Notify(string.Format(GetString("PunchingBagKill"), PunchingBagMax[target.PlayerId]));
+        if (PunchingBagMax[target.PlayerId] >= PunchingBagKillMax.GetInt())
         {
             if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
             {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Masochist);
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PunchingBag);
                 CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
             }
         }
@@ -78,17 +78,17 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if (!isUI) SendMessage(GetString("GuessMasochist"), pc.PlayerId);
-        else pc.ShowPopUp(GetString("GuessMasochist"));
+        if (!isUI) SendMessage(GetString("GuessPunchingBag"), pc.PlayerId);
+        else pc.ShowPopUp(GetString("GuessPunchingBag"));
 
-        MasochistMax[target.PlayerId]++;
+        PunchingBagMax[target.PlayerId]++;
         SendRPC(target.PlayerId);
 
-        if (MasochistMax[target.PlayerId] >= MasochistKillMax.GetInt())
+        if (PunchingBagMax[target.PlayerId] >= PunchingBagKillMax.GetInt())
         {
             if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
             {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Masochist);
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PunchingBag);
                 CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
             }
         }
@@ -96,8 +96,8 @@ internal class Masochist : RoleBase// bad roll, plz don't use this hosts
     }
     public override bool GuessCheck(bool isUI, PlayerControl pc, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if (!isUI) SendMessage(GetString("GuessMasochistBlocked"), pc.PlayerId);
-        else pc.ShowPopUp(GetString("GuessMasochistBlocked"));
+        if (!isUI) SendMessage(GetString("GuessPunchingBagBlocked"), pc.PlayerId);
+        else pc.ShowPopUp(GetString("GuessPunchingBagBlocked"));
         return true;
     }
 }
