@@ -133,7 +133,6 @@ public class GameStartManagerPatch
             string warningMessage = "";
             if (AmongUsClient.Instance.AmHost)
             {
-                __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset}");
                 bool canStartGame = true;
                 List<string> mismatchedPlayerNameList = [];
                 foreach (var client in AmongUsClient.Instance.allClients.ToArray())
@@ -171,6 +170,8 @@ public class GameStartManagerPatch
                         warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.AutoExitAtMismatchedVersion"), $"<color={Main.ModColor}>{Main.ModName}</color>", Math.Round(5 - exitTimer).ToString()));
                 }
             }
+
+            __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset}");
 
             // Lobby timer
             if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer) return;
