@@ -38,6 +38,7 @@ class OnGameJoinedPatch
 
         // No game end always enabled because the settings are not done
         Options.NoGameEnd.SetValue(1);
+        Options.FormatNameMode.SetValue(0);
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
@@ -514,38 +515,13 @@ class OnPlayerLeftPatch
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Spawn))]
 class InnerNetClientSpawnPatch
 {
-    public static void Prefix([HarmonyArgument(1)] int ownerId, [HarmonyArgument(2)] SpawnFlags flags)
+    public static void Postfix([HarmonyArgument(1)] int ownerId, [HarmonyArgument(2)] SpawnFlags flags)
     {
         if (!AmongUsClient.Instance.AmHost || flags != SpawnFlags.IsClientCharacter) return;
 
         ClientData client = Utils.GetClientById(ownerId);
 
         Logger.Msg($"Spawn player data: ID {ownerId}: {client.PlayerName}", "InnerNetClientSpawn");
-
-        // Standard nickname
-        var name = client.PlayerName;
-        if (Options.FormatNameMode.GetInt() == 2 && client.Id != AmongUsClient.Instance.ClientId)
-            name = Main.Get_TName_Snacks;
-        else
-        {
-            name = name.RemoveHtmlTags().Replace(@"\", string.Empty).Replace("/", string.Empty).Replace("\n", string.Empty).Replace("\r", string.Empty).Replace("<", string.Empty).Replace(">", string.Empty);
-            if (name.Length > 10) name = name[..10];
-            if (Options.DisableEmojiName.GetBool()) name = Regex.Replace(name, @"\p{Cs}", string.Empty);
-            if (Regex.Replace(Regex.Replace(name, @"\s", string.Empty), @"[\x01-\x1F,\x7F]", string.Empty).Length < 1) name = Main.Get_TName_Snacks;
-        }
-        Main.AllPlayerNames.Remove(client.Character.PlayerId);
-        Main.AllPlayerNames.TryAdd(client.Character.PlayerId, name);
-        Logger.Info($"client.PlayerName： {client.PlayerName}", "Name player");
-
-        if (client.Character != null && !name.Equals(client.PlayerName))
-        {
-            _ = new LateTask(() =>
-            {
-                if (client.Character == null) return;
-                Logger.Warn($"Standard nickname：{client.PlayerName} => {name}", "Name Format");
-                client.Character.RpcSetName(name);
-            }, 1f, "Name Format");
-        }
 
         if (client == null || client.Character == null // client is null
             || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color
