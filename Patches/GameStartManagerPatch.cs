@@ -133,7 +133,6 @@ public class GameStartManagerPatch
             string warningMessage = "";
             if (AmongUsClient.Instance.AmHost)
             {
-
                 __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset}");
                 bool canStartGame = true;
                 List<string> mismatchedPlayerNameList = [];

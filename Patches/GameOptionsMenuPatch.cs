@@ -41,17 +41,6 @@ namespace TOHE;
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
 public static class GameSettingMenuInitializeOptionsPatch
 {
-
-    public static PassiveButton SystemButton;
-    public static PassiveButton ModConfButton;
-    public static PassiveButton GameModifButton;
-
-    public static void DeselectAll()
-    {
-        SystemButton?.SelectButton(false);
-        ModConfButton?.SelectButton(false);
-        GameModifButton?.SelectButton(false);
-    }
     public static void Prefix(GameSettingMenu __instance)
     {
 
@@ -89,10 +78,10 @@ public static class GameSettingMenuInitializeOptionsPatch
             targetBox.transform.parent = __instance.transform.Find("LeftPanel");
         }, 0.05f, "Remove GamePreset // Set Button 1"); // remove GamePresets
 
-        SystemButton = targetBox.GetComponent<PassiveButton>();
+        var SystemButton = targetBox.GetComponent<PassiveButton>();
         SystemButton.OnClick.RemoveAllListeners();
-        SystemButton.OnClick.AddListener((Action)(() => 
-            __instance.ChangeTab(10, false)
+        SystemButton.OnClick.AddListener((Action)(() =>
+            Logger.Info("Activated System Settings", "System Settings TEST")
         )); 
         var label = SystemButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
         _ = new LateTask(() => { label.text = GetString("TabGroup.SystemSettings"); }, 0.05f, "Set Button1 Text"); 
@@ -105,10 +94,10 @@ public static class GameSettingMenuInitializeOptionsPatch
         targetBox2.transform.localScale = new Vector3(1f, 1f, 1f);
         targetBox2.transform.localPosition = new Vector3(targetBox2.transform.localPosition.x, targetBox.transform.localPosition.y, targetBox2.transform.localPosition.z);
 
-        ModConfButton = targetBox2.GetComponent<PassiveButton>();
+        var ModConfButton = targetBox2.GetComponent<PassiveButton>();
         ModConfButton.OnClick.RemoveAllListeners();
-        ModConfButton.OnClick.AddListener((Action)(() => 
-            __instance.ChangeTab(11, false)
+        ModConfButton.OnClick.AddListener((Action)(() =>
+            Logger.Info("Activated Mod Settings", "Mop Settings TEST")
         )); 
         var label2 = ModConfButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>(); 
         _ = new LateTask(() => { label2.text = GetString("TabGroup.ModSettings"); }, 0.05f, "Set Button2 Text"); 
@@ -121,10 +110,10 @@ public static class GameSettingMenuInitializeOptionsPatch
         targetBox3.transform.localScale = new Vector3(1f, 1f, 1f);
         targetBox3.transform.localPosition = new Vector3(targetBox3.transform.localPosition.x, targetBox2.transform.localPosition.y, targetBox3.transform.localPosition.z);
 
-        GameModifButton = targetBox3.GetComponent<PassiveButton>();
+        var GameModifButton = targetBox3.GetComponent<PassiveButton>();
         GameModifButton.OnClick.RemoveAllListeners();
         GameModifButton.OnClick.AddListener((Action)(() => 
-            __instance.ChangeTab(12, false)
+            Logger.Info("Activated game Modifier", "Game Modifiers TEST")
         )); 
         var label3 = GameModifButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>(); 
         _ = new LateTask(() => { label3.text = GetString("TabGroup.ModifierSettings"); }, 0.05f, "Set Button3 Text"); 
@@ -154,36 +143,11 @@ public class TabChange
     }
     public static void Postfix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum)
     {
-        //
-        // Later add code here to disable the other menus (our own).
-        //
-        GameSettingMenuInitializeOptionsPatch.DeselectAll();
 
         if (tabNum == 1 && __instance.GameSettingsTab.isActiveAndEnabled)
         {
             _ = new LateTask(() => __instance.MenuDescriptionText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameSettingsDescription), 0.05f, "Fix Menu Description Text");
             return;
-        }
-
-        switch (tabNum)
-        {
-            case 10:
-                GameSettingMenuInitializeOptionsPatch.SystemButton?.SelectButton(true);
-                __instance.MenuDescriptionText.text = "PLACEHOLDER MENU TEXT";
-                Logger.Info("Switching to system settings TAB", "System Settings TEST");
-                break;
-            
-            case 11:
-                GameSettingMenuInitializeOptionsPatch.ModConfButton?.SelectButton(true);
-                __instance.MenuDescriptionText.text = "PLACEHOLDER MENU TEXT";
-                Logger.Info("Switching to Mod Settigns TAB", "Mod Settings TEST");
-                break;
-
-            case 12:
-                GameSettingMenuInitializeOptionsPatch.GameModifButton?.SelectButton(true);
-                __instance.MenuDescriptionText.text = "PLACEHOLDER MENU TEXT";
-                Logger.Info("Switching to Game Modifiers TAB", "Game Modifiers TEST");
-                break;
         }
 
     }
