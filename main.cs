@@ -754,7 +754,7 @@ public enum CustomRoles
     PotionMaster,
     Poisoner,
     Provocateur,
-    PunchingBag
+    PunchingBag,
     Pursuer,
     Pyromaniac,
     Quizmaster,
