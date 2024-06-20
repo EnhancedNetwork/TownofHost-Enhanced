@@ -45,7 +45,7 @@ class AutoSelectDleksPatch
         if (__instance.Title == StringNames.GameMapName)
         {
             // vanilla clamps this to not auto select dleks
-            //__instance.stringOptionName = AmongUs.GameOptions.Int32OptionNames.;
+            __instance.Value = GameOptionsManager.Instance.CurrentGameOptions.MapId;
         }
     }
 }

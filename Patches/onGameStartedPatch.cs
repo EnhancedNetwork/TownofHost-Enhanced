@@ -229,6 +229,16 @@ internal class ChangeRoleSettings
 [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
 internal class SelectRolesPatch
 {
+    private static RoleOptionsCollectionV08 RoleOpt => Main.NormalOptions.roleOptions;
+    private static readonly Dictionary<RoleTypes, int> RoleTypeNums = new() // From EHR
+    {
+        { RoleTypes.Scientist, RoleAssign.AddScientistNum },
+        { RoleTypes.Engineer, RoleAssign.AddEngineerNum },
+        { RoleTypes.Shapeshifter, RoleAssign.AddShapeshifterNum },
+        { RoleTypes.Noisemaker, RoleAssign.AddNoisemakerNum },
+        { RoleTypes.Phantom, RoleAssign.AddPhantomNum },
+        { RoleTypes.Tracker, RoleAssign.AddTrackerNum }
+    };
     public static void Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -270,19 +280,12 @@ internal class SelectRolesPatch
             RoleAssign.CalculateVanillaRoleCount();
 
             // Set Rate For Vanilla Roles
-            var roleOpt = Main.NormalOptions.roleOptions;
-            int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
-            roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum + RoleAssign.addScientistNum, RoleAssign.addScientistNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Scientist));
-            int EngineerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Engineer);
-            roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + RoleAssign.addEngineerNum, RoleAssign.addEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
-            int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
-            roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum + RoleAssign.addShapeshifterNum, RoleAssign.addShapeshifterNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
-            int NoisemakerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Noisemaker);
-            roleOpt.SetRoleRate(RoleTypes.Noisemaker, NoisemakerNum + RoleAssign.addNoisemakerNum, RoleAssign.addNoisemakerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Noisemaker));
-            int PhantomNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Phantom);
-            roleOpt.SetRoleRate(RoleTypes.Phantom, PhantomNum + RoleAssign.addPhantomNum, RoleAssign.addPhantomNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Phantom));
-            int TrackerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Tracker);
-            roleOpt.SetRoleRate(RoleTypes.Tracker, TrackerNum + RoleAssign.addTrackerNum, RoleAssign.addTrackerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Tracker));
+            foreach (var roleType in RoleTypeNums)
+            {
+                int roleNum = Options.DisableVanillaRoles.GetBool() ? 0 : RoleOpt.GetNumPerGame(roleType.Key);
+                roleNum += roleType.Value;
+                RoleOpt.SetRoleRate(roleType.Key, roleNum, roleType.Value > 0 ? 100 : RoleOpt.GetChancePerGame(roleType.Key));
+            }
         }
         catch (Exception e)
         {
@@ -529,38 +532,13 @@ internal class SelectRolesPatch
             foreach (var pc in Main.AllPlayerControls)
                 pc.ResetKillCooldown();
 
-            //Return the number of role type
-            var roleOpt = Main.NormalOptions.roleOptions;
-
-            // Role type: Scientist
-            int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
-            ScientistNum -= RoleAssign.addScientistNum;
-            roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum, roleOpt.GetChancePerGame(RoleTypes.Scientist));
-
-            // Role type: Engineer
-            int EngineerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Engineer);
-            EngineerNum -= RoleAssign.addEngineerNum;
-            roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum, roleOpt.GetChancePerGame(RoleTypes.Engineer));
-
-            // Role type: Shapeshifter
-            int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
-            ShapeshifterNum -= RoleAssign.addShapeshifterNum;
-            roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum, roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
-
-            // Role type: Noisemaker
-            int NoisemakerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Noisemaker);
-            NoisemakerNum -= RoleAssign.addNoisemakerNum;
-            roleOpt.SetRoleRate(RoleTypes.Noisemaker, NoisemakerNum, roleOpt.GetChancePerGame(RoleTypes.Noisemaker));
-
-            // Role type: Phantom
-            int PhantomNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Phantom);
-            PhantomNum -= RoleAssign.addPhantomNum;
-            roleOpt.SetRoleRate(RoleTypes.Phantom, PhantomNum, roleOpt.GetChancePerGame(RoleTypes.Phantom));
-
-            // Role type: Tracker
-            int TrackerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Tracker);
-            TrackerNum -= RoleAssign.addTrackerNum;
-            roleOpt.SetRoleRate(RoleTypes.Tracker, TrackerNum, roleOpt.GetChancePerGame(RoleTypes.Tracker));
+            // Role types
+            foreach (var roleType in RoleTypeNums)
+            {
+                int roleNum = Options.DisableVanillaRoles.GetBool() ? 0 : RoleOpt.GetNumPerGame(roleType.Key);
+                roleNum -= roleType.Value;
+                RoleOpt.SetRoleRate(roleType.Key, roleNum, RoleOpt.GetChancePerGame(roleType.Key));
+            }
 
             switch (Options.CurrentGameMode)
             {

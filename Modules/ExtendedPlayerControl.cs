@@ -20,7 +20,7 @@ static class ExtendedPlayerControl
 {
     public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride = false)
     {
-        Main.Instance.StartCoroutine(player.CoSetRole(role, canOverride).WrapToManaged());
+        AmongUsClient.Instance.StartCoroutine(player.CoSetRole(role, canOverride));
     }
 
     public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role)
