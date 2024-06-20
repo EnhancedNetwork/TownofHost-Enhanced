@@ -26,8 +26,14 @@ public class GameStartManagerPatch
     public class GameStartManagerStartPatch
     {
         public static TextMeshPro HideName;
+        public static TextMeshPro GameCountdown;
         public static void Postfix(GameStartManager __instance)
         {
+            var temp = __instance.PlayerCounter;
+            GameCountdown = UnityEngine.Object.Instantiate(temp, __instance.StartButton.transform);
+            GameCountdown.transform.localPosition = new Vector3(GameCountdown.transform.localPosition.x + 1f, GameCountdown.transform.localPosition.y, GameCountdown.transform.localPosition.z);
+            GameCountdown.text = "";
+
             __instance.GameStartTextParent.GetComponent<SpriteRenderer>().sprite = null;
             __instance.StartButton.ChangeButtonText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.StartLabel));
             __instance.GameStartText.transform.localPosition = new Vector3(__instance.GameStartText.transform.localPosition.x, 2f, __instance.GameStartText.transform.localPosition.z);
@@ -70,8 +76,6 @@ public class GameStartManagerPatch
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Update))]
     public class GameStartManagerUpdatePatch
     {
-        private static bool update = false;
-        private static string currentText = "";
         public static float exitTimer = -1f;
         private static float minWait, maxWait;
         private static int minPlayer;
@@ -96,7 +100,6 @@ public class GameStartManagerPatch
                 GameStartManagerStartPatch.HideName.enabled = false;
             }
 
-            update = GameData.Instance?.PlayerCount != __instance.LastPlayerCount;
             if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return false; // Not host or no instance or LocalGame
 
             if (Main.AutoStart.Value)
@@ -171,10 +174,10 @@ public class GameStartManagerPatch
                 }
             }
 
+            __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset}");
+
             // Lobby timer
             if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer) return;
-
-            if (update) currentText = __instance.PlayerCounter.text;
 
             timer = Mathf.Max(0f, timer -= Time.deltaTime);
             int minutes = (int)timer / 60;
@@ -182,9 +185,9 @@ public class GameStartManagerPatch
             string suffix = $" ({minutes:00}:{seconds:00})";
             if (timer <= 60) suffix = Utils.ColorString(Color.red, suffix);
 
-            __instance.PlayerCounter.text = currentText + suffix;
-            __instance.PlayerCounter.fontSize = 3f;
-            __instance.PlayerCounter.autoSizeTextContainer = false;
+            GameStartManagerStartPatch.GameCountdown.text = suffix;
+            GameStartManagerStartPatch.GameCountdown.fontSize = 3f;
+            GameStartManagerStartPatch.GameCountdown.autoSizeTextContainer = false;
         }
 
         private static void VanillaUpdate(GameStartManager thiz)
@@ -346,6 +349,7 @@ public class GameStartManagerPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.BeginGame))]
 public class GameStartRandomMap
 {

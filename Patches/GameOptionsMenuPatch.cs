@@ -55,7 +55,7 @@ public static class GameSettingMenuInitializeOptionsPatch
 
         var gamesettings = __instance.GameSettingsButton;
         __instance.GameSettingsButton.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-        __instance.GameSettingsButton.transform.localPosition = new Vector3(gamesettings.transform.localPosition.x, gamepreset.transform.localPosition.y + 0.2f, gamesettings.transform.localPosition.z);
+        __instance.GameSettingsButton.transform.localPosition = new Vector3(gamesettings.transform.localPosition.x, gamepreset.transform.localPosition.y + 0.1f, gamesettings.transform.localPosition.z);
 
         var rolesettings = __instance.RoleSettingsButton;
         __instance.RoleSettingsButton.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
@@ -67,7 +67,7 @@ public static class GameSettingMenuInitializeOptionsPatch
         GameObject template = gamepreset.gameObject;
         GameObject targetBox = UnityEngine.Object.Instantiate(template, gamepreset.transform);
         targetBox.name = "System Settings";
-        targetBox.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
+        targetBox.transform.localScale = new Vector3(0.59f, 0.59f, 1f);
         targetBox.transform.localPosition = new Vector3(targetBox.transform.localPosition.x + 2.95f, rolesettings.transform.localPosition.y - 0.1f, targetBox.transform.localPosition.z);
 
         _ = new LateTask(() =>
@@ -78,10 +78,12 @@ public static class GameSettingMenuInitializeOptionsPatch
             targetBox.transform.parent = __instance.transform.Find("LeftPanel");
         }, 0.05f, "Remove GamePreset // Set Button 1"); // remove GamePresets
 
-        PassiveButton button = targetBox.GetComponent<PassiveButton>();
-        button.OnClick.RemoveAllListeners();
-        button.OnClick.AddListener((Action)(() => Logger.Info("System Settings was called", "System Settings TEST"))); // add system settigns method
-        var label = button.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+        var SystemButton = targetBox.GetComponent<PassiveButton>();
+        SystemButton.OnClick.RemoveAllListeners();
+        SystemButton.OnClick.AddListener((Action)(() =>
+            Logger.Info("Activated System Settings", "System Settings TEST")
+        )); 
+        var label = SystemButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
         _ = new LateTask(() => { label.text = GetString("TabGroup.SystemSettings"); }, 0.05f, "Set Button1 Text"); 
 
 
@@ -90,12 +92,14 @@ public static class GameSettingMenuInitializeOptionsPatch
         GameObject targetBox2 = UnityEngine.Object.Instantiate(template2, targetBox.transform);
         targetBox2.name = "Mod Settings";
         targetBox2.transform.localScale = new Vector3(1f, 1f, 1f);
-        targetBox2.transform.localPosition = new Vector3(targetBox2.transform.localPosition.x, targetBox.transform.localPosition.y - 0.1f, targetBox2.transform.localPosition.z);
+        targetBox2.transform.localPosition = new Vector3(targetBox2.transform.localPosition.x, targetBox.transform.localPosition.y, targetBox2.transform.localPosition.z);
 
-        PassiveButton button2 = targetBox2.GetComponent<PassiveButton>();
-        button2.OnClick.RemoveAllListeners();
-        button2.OnClick.AddListener((Action)(() => Logger.Info("Mod Settings was called", "Mod Settings TEST"))); // add mod settings method
-        var label2 = button2.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>(); 
+        var ModConfButton = targetBox2.GetComponent<PassiveButton>();
+        ModConfButton.OnClick.RemoveAllListeners();
+        ModConfButton.OnClick.AddListener((Action)(() =>
+            Logger.Info("Activated Mod Settings", "Mop Settings TEST")
+        )); 
+        var label2 = ModConfButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>(); 
         _ = new LateTask(() => { label2.text = GetString("TabGroup.ModSettings"); }, 0.05f, "Set Button2 Text"); 
 
 
@@ -106,10 +110,12 @@ public static class GameSettingMenuInitializeOptionsPatch
         targetBox3.transform.localScale = new Vector3(1f, 1f, 1f);
         targetBox3.transform.localPosition = new Vector3(targetBox3.transform.localPosition.x, targetBox2.transform.localPosition.y, targetBox3.transform.localPosition.z);
 
-        PassiveButton button3 = targetBox3.GetComponent<PassiveButton>();
-        button3.OnClick.RemoveAllListeners();
-        button3.OnClick.AddListener((Action)(() => Logger.Info("Game modifier was called", "Game Modifier TEST"))); // add game modifiers method
-        var label3 = button3.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>(); 
+        var GameModifButton = targetBox3.GetComponent<PassiveButton>();
+        GameModifButton.OnClick.RemoveAllListeners();
+        GameModifButton.OnClick.AddListener((Action)(() => 
+            Logger.Info("Activated game Modifier", "Game Modifiers TEST")
+        )); 
+        var label3 = GameModifButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>(); 
         _ = new LateTask(() => { label3.text = GetString("TabGroup.ModifierSettings"); }, 0.05f, "Set Button3 Text"); 
 
 
@@ -128,11 +134,22 @@ public static class GameSettingMenuInitializeOptionsPatch
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.ChangeTab))]
 public class TabChange
 {
-
-    public static void Prefix(ref int tabNum)
+    public static void Prefix(ref int tabNum, [HarmonyArgument(1)] bool previewOnly)
     {
-        if (tabNum == 0) // Disables preset menu in any instances
-            tabNum = 1; 
+        if (tabNum == 0)
+        { // Disables preset menu in any instances
+            tabNum = 1;
+        }
+    }
+    public static void Postfix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum)
+    {
+
+        if (tabNum == 1 && __instance.GameSettingsTab.isActiveAndEnabled)
+        {
+            _ = new LateTask(() => __instance.MenuDescriptionText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameSettingsDescription), 0.05f, "Fix Menu Description Text");
+            return;
+        }
+
     }
 
 
