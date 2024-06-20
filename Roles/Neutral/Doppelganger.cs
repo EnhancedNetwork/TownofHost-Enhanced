@@ -169,16 +169,16 @@ internal class Doppelganger : RoleBase
         var sender = CustomRpcSender.Create(name: $"Doppelganger.RpcChangeSkin({pc.Data.PlayerName})");
         pc.SetName(newOutfit.PlayerName);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetName)
-        .Write(pc.Data.NetId)
-        .Write(newOutfit.PlayerName)
+            .Write(pc.Data.NetId)
+            .Write(newOutfit.PlayerName)
         .EndRpc();
 
         Main.AllPlayerNames[pc.PlayerId] = newOutfit.PlayerName;
 
         pc.SetColor(newOutfit.ColorId);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetColor)
-        .Write(pc.Data.NetId)
-        .Write(newOutfit.ColorId)
+            .Write(pc.Data.NetId)
+            .Write(newOutfit.ColorId)
         .EndRpc();
 
         pc.SetHat(newOutfit.HatId, newOutfit.ColorId);
@@ -217,7 +217,6 @@ internal class Doppelganger : RoleBase
             .EndRpc();
 
         sender.SendMessage();
-    
     }
 
     public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Doppelganger).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
