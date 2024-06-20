@@ -1560,7 +1560,6 @@ class PlayerControlCheckNamePatch
         if (!Main.AllClientRealNames.ContainsKey(__instance.OwnerId))
         {
             Main.AllClientRealNames.Add(__instance.OwnerId, playerName);
-            RPC.SyncAllClientRealNames();
         }
 
         // Standard nickname
@@ -1578,6 +1577,7 @@ class PlayerControlCheckNamePatch
         Main.AllPlayerNames.TryAdd(__instance.PlayerId, name);
         Logger.Info($"PlayerId: {__instance.PlayerId} - playerName: {playerName} => {name}", "Name player");
 
+        RPC.SyncAllPlayerNames();
         if (__instance != null && !name.Equals(playerName))
         {
             Logger.Warn($"Standard nickname: {playerName} => {name}", "Name Format");

@@ -34,7 +34,6 @@ enum CustomRPC : byte // 194/255 USED
     PlayCustomSound,
     SetKillTimer,
     SyncAllPlayerNames,
-    SyncAllClientRealNames,
     SyncNameNotify,
     ShowPopUp,
     KillFlash,
@@ -513,12 +512,10 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncAllPlayerNames:
                 Main.AllPlayerNames.Clear();
+                Main.AllClientRealNames.Clear();
                 int num = reader.ReadPackedInt32();
                 for (int i = 0; i < num; i++)
                     Main.AllPlayerNames.TryAdd(reader.ReadByte(), reader.ReadString());
-                break;
-            case CustomRPC.SyncAllClientRealNames:
-                Main.AllClientRealNames.Clear();
                 int num2 = reader.ReadPackedInt32();
                 for (int i = 0; i < num2; i++)
                     Main.AllClientRealNames.TryAdd(reader.ReadInt32(), reader.ReadString());
@@ -728,12 +725,6 @@ internal static class RPC
             writer.Write(name.Key);
             writer.Write(name.Value);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void SyncAllClientRealNames()
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAllClientRealNames, SendOption.Reliable, -1);
         writer.WritePacked(Main.AllClientRealNames.Count);
         foreach (var name in Main.AllClientRealNames)
         {
