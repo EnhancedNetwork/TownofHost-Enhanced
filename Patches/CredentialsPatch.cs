@@ -23,14 +23,14 @@ public static class Credentials
 
                 if (DelayUpdate > 0 && sb.Length > 0)
                 {
-                    __instance.text.alignment = TextAlignmentOptions.Center;
+                    __instance.text.alignment = TextAlignmentOptions.Right;
                     __instance.text.text = sb.ToString();
                     return false;
                 }
 
                 DelayUpdate = 500;
 
-                __instance.text.alignment = TextAlignmentOptions.Center;
+                __instance.text.alignment = TextAlignmentOptions.Right;
 
                 sb.Clear();
 
@@ -61,24 +61,45 @@ public static class Credentials
                     sb.Append($"\r\n{Utils.ColorString(fpscolor, Utils.ColorString(Color.cyan, GetString("FPSGame")) + ((int)FPSGame).ToString())}");
                 }
 
-                //if (Main.ShowTextOverlay.Value)
-                //{
-                //    var sbOverlay = new StringBuilder();
-                //    if (Options.LowLoadMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode"))}");
-                //    if (Options.NoGameEnd.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd"))}");
-                //    if (Options.GuesserMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode"))}");
-                //    if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.AllowConsole"))}");
-                //    if (DebugModeManager.IsDebugMode) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.DebugMode"))}");
+                if (Main.ShowTextOverlay.Value)
+                {
+                    var sbOverlay = new StringBuilder();
+                    if (Options.LowLoadMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode"))}");
+                    if (Options.NoGameEnd.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd"))}");
+                    if (Options.GuesserMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode"))}");
+                    if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.AllowConsole"))}");
+                    if (DebugModeManager.IsDebugMode) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.DebugMode"))}");
 
-                //    if (sbOverlay.Length > 0)
-                //        sb.Append(sbOverlay);
-                //}
+                    if (sbOverlay.Length > 0)
+                        sb.Append(sbOverlay);
+                }
 
-                //var offset_y = 0f;
-                //if (GameStates.InGame) offset_y = 10f;
-                //if (ChatController && HudManager._instance.Chat.chatButton.active) offset_x += 0.9f; // Additional offsets for chat button if present
-                //if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; // Additional offsets if friend list button is present
-                //__instance.transform.position = new Vector3(-1.8f, offset_y, 0f);
+                var offset_x = 2.5f;
+                var offset_y = 5.7f;
+                Vector3 position;
+                if (!Main.ShowTextOverlay.Value)
+                {
+                    offset_y += 0.1f;
+                }
+                if (AmongUsClient.Instance.IsGameStarted)
+                {
+                    if (DestroyableSingleton<HudManager>.Instance && !HudManager.Instance.Chat.isActiveAndEnabled)
+                    {
+                        offset_x += 0.7f; // Additional offsets for chat button if present
+                    }
+                    else
+                    {
+                        offset_x += 0.1f;
+                    }
+
+                    position = new Vector3(offset_x, offset_y, 0f);
+                }
+                else
+                {
+                    position = new Vector3(offset_x, offset_y, 0f);
+                }
+
+                __instance.aspectPosition.DistanceFromEdge = position;
                 __instance.text.text = sb.ToString();
 
                 return false;
@@ -98,7 +119,7 @@ public static class Credentials
         static TextMeshPro SpecialEventText;
         private static void Postfix(VersionShower __instance)
         {
-            Main.credentialsText = $"<size=50%><size=85%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}</size>";
+            Main.credentialsText = $"<size=70%><size=85%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}</size>";
             var buildtype = "";
 
 #if RELEASE

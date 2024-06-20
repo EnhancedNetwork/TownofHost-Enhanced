@@ -30,8 +30,9 @@ public class GameStartManagerPatch
         public static void Postfix(GameStartManager __instance)
         {
             var temp = __instance.PlayerCounter;
-            GameCountdown = UnityEngine.Object.Instantiate(temp, __instance.StartButton.transform);
-            GameCountdown.transform.localPosition = new Vector3(GameCountdown.transform.localPosition.x + 1f, GameCountdown.transform.localPosition.y, GameCountdown.transform.localPosition.z);
+            GameCountdown = Object.Instantiate(temp, __instance.StartButton.transform);
+            var gameCountdownTransformPosition = GameCountdown.transform.localPosition;
+            GameCountdown.transform.localPosition = new Vector3(gameCountdownTransformPosition.x - 0.8f, gameCountdownTransformPosition.y - 0.6f, gameCountdownTransformPosition.z);
             GameCountdown.text = "";
 
             __instance.GameStartTextParent.GetComponent<SpriteRenderer>().sprite = null;
