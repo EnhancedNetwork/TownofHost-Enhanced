@@ -22,6 +22,8 @@ internal class DollMaster : RoleBase
     private static bool WaitToUnPossess = false;
     public static PlayerControl controllingTarget = null; // Personal possessed player identifier for reference.
     public static PlayerControl DollMasterTarget = null; // Personal possessed player identifier for reference.
+    public static GameData.PlayerOutfit controllingOutfit = null;
+    public static GameData.PlayerOutfit DollMasterOutfit = null;
     private static float originalSpeed = float.MinValue;
     private static Vector2 controllingTargetPos = new(0, 0);
     private static Vector2 DollMasterPos = new(0, 0);
@@ -50,6 +52,8 @@ internal class DollMaster : RoleBase
         ReducedVisionPlayers.Clear();
         DollMasterTarget = null;
         controllingTarget = null;
+        controllingOutfit = null;
+        DollMasterOutfit = null;
     }
 
     public override void Add(byte playerId)
@@ -156,8 +160,6 @@ internal class DollMaster : RoleBase
     {
         if (IsControllingPlayer && controllingTarget != null && DollMasterTarget != null)
         {
-            DollMasterTarget.RpcShapeshift(DollMasterTarget, false);
-            controllingTarget.ResetPlayerOutfit();
             UnPossess(DollMasterTarget, controllingTarget);
             Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
             ReducedVisionPlayers.Clear();
@@ -370,9 +372,15 @@ internal class DollMaster : RoleBase
     // Possess Player
     private static void Possess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
     {
+        DollMasterOutfit = new GameData.PlayerOutfit()
+            .Set(pc.GetRealName(), pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId);
+        controllingOutfit = new GameData.PlayerOutfit()
+            .Set(target.GetRealName(), target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
+
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
-        pc?.RpcShapeshift(target, false);
-        target?.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit);
+        pc.RpcShapeshift(target, false);
+        RpcChangeSkin(pc, controllingOutfit);
+        RpcChangeSkin(target, DollMasterOutfit);
         pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
     }
 
@@ -382,8 +390,9 @@ internal class DollMaster : RoleBase
         WaitToUnPossess = false;
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(pc, false);
-        target?.ResetPlayerOutfit();
-        pc.RpcResetAbilityCooldown();
+        RpcChangeSkin(pc, DollMasterOutfit);
+        RpcChangeSkin(target, controllingOutfit);
+        pc?.RpcResetAbilityCooldown();
 
         IsControllingPlayer = false;
         ResetPlayerSpeed = true;
@@ -399,7 +408,7 @@ internal class DollMaster : RoleBase
     {
         if (IsControllingPlayer && HasEnabled)
         {
-            if (!(DollMasterTarget == null || controllingTarget == null))
+            if (DollMasterTarget != null && controllingTarget != null)
             {
                 if (player == DollMasterTarget)
                     return controllingTarget;
@@ -425,6 +434,47 @@ internal class DollMaster : RoleBase
         if (controllingTarget == null) return;
         controllingTarget?.RpcTeleport(DollMasterPos);
         pc?.RpcTeleport(controllingTargetPos);
+    }
+
+    // Set players cosmetics.
+    private static void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit)
+    {
+        if (newOutfit is null) return;
+
+        var sender = CustomRpcSender.Create(name: $"Doppelganger.RpcChangeSkin({pc.Data.PlayerName})");
+        pc.SetName(newOutfit.PlayerName);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetName)
+        .Write(newOutfit.PlayerName)
+        .EndRpc();
+
+        Main.AllPlayerNames[pc.PlayerId] = newOutfit.PlayerName;
+
+        pc.SetColor(newOutfit.ColorId);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetColor)
+        .Write(newOutfit.ColorId)
+        .EndRpc();
+
+        pc.SetHat(newOutfit.HatId, newOutfit.ColorId);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetHatStr)
+            .Write(newOutfit.HatId)
+        .EndRpc();
+
+        pc.SetSkin(newOutfit.SkinId, newOutfit.ColorId);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetSkinStr)
+            .Write(newOutfit.SkinId)
+        .EndRpc();
+
+        pc.SetVisor(newOutfit.VisorId, newOutfit.ColorId);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetVisorStr)
+            .Write(newOutfit.VisorId)
+        .EndRpc();
+
+        pc.SetPet(newOutfit.PetId);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetPetStr)
+            .Write(newOutfit.PetId)
+            .EndRpc();
+
+        sender.SendMessage();
     }
 
     // Set name Suffix for Doll and Main Body under name.
