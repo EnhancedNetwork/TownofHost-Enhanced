@@ -378,10 +378,10 @@ internal class DollMaster : RoleBase
             .Set(target.GetRealName(), target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
 
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
-        pc.RpcShapeshift(target, false);
+        pc?.RpcShapeshift(target, false);
         RpcChangeSkin(pc, controllingOutfit);
         RpcChangeSkin(target, DollMasterOutfit);
-        pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
+        pc?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
     }
 
     // UnPossess Player
