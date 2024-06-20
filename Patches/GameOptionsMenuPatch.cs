@@ -169,19 +169,19 @@ public class TabChange
         {
             case 10:
                 GameSettingMenuInitializeOptionsPatch.SystemButton?.SelectButton(true);
-                _ = new LateTask(() => __instance.MenuDescriptionText.text = "PLACEHOLDER MENU TEXT", 0.05f, "Set Meny Description {{System Settings}}");
-                Logger.Info("Switching to system settings TAB", "System Settigns TEST");
+                __instance.MenuDescriptionText.text = "PLACEHOLDER MENU TEXT";
+                Logger.Info("Switching to system settings TAB", "System Settings TEST");
                 break;
             
             case 11:
                 GameSettingMenuInitializeOptionsPatch.ModConfButton?.SelectButton(true);
-                _ = new LateTask(() => __instance.MenuDescriptionText.text = "PLACEHOLDER MENU TEXT", 0.05f, "Set Meny Description {{Mod Settings}}");
+                __instance.MenuDescriptionText.text = "PLACEHOLDER MENU TEXT";
                 Logger.Info("Switching to Mod Settigns TAB", "Mod Settings TEST");
                 break;
 
             case 12:
                 GameSettingMenuInitializeOptionsPatch.GameModifButton?.SelectButton(true);
-                _ = new LateTask(() => __instance.MenuDescriptionText.text = "PLACEHOLDER MENU TEXT", 0.05f, "Set Meny Description {{Game Modifiers}}");
+                __instance.MenuDescriptionText.text = "PLACEHOLDER MENU TEXT";
                 Logger.Info("Switching to Game Modifiers TAB", "Game Modifiers TEST");
                 break;
         }
