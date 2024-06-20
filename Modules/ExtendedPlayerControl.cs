@@ -594,7 +594,7 @@ static class ExtendedPlayerControl
 
             if (client != null)
             {
-                if (OnPlayerJoinedPatch.realClientName.TryGetValue(client.Id, out var realname))
+                if (Main.AllClientRealNames.TryGetValue(client.Id, out var realname))
                 {
                     return realname;
                 }
