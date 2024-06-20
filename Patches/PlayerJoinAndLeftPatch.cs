@@ -49,6 +49,7 @@ class OnGameJoinedPatch
                 RehostManager.IsAutoRehostDone = true;
             }
 
+            Main.HostRealName = DataManager.Player.Customization.Name;
             if (!Main.AllClientRealNames.ContainsKey(__instance.ClientId))
             {
                 Main.AllClientRealNames.Add(__instance.ClientId, DataManager.Player.Customization.Name);

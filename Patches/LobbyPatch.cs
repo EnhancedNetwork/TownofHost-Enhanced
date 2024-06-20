@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
-namespace TOHE;
+namespace TOHE.Patches;
 
 [HarmonyPatch(typeof(LobbyBehaviour), nameof(LobbyBehaviour.Start))]
 public class LobbyStartPatch
@@ -24,4 +25,23 @@ public class LobbyStartPatch
         }, 3f, "LobbyPaint", shoudLog: false);
     }
 }
+[HarmonyPatch(typeof(HostInfoPanel), nameof(HostInfoPanel.SetUp))]
+public static class HostInfoPanelUpdatePatch
+{
+    private static TextMeshPro HostText;
+    public static void Postfix(HostInfoPanel __instance)
+    {
+        if (AmongUsClient.Instance.AmHost)
+        {
+            if (HostText == null)
+                HostText = __instance.content.transform.FindChild("Name").GetComponent<TextMeshPro>();
 
+            string htmlStringRgb = ColorUtility.ToHtmlStringRGB(Palette.PlayerColors[__instance.player.ColorId]);
+            string hostName = Main.HostRealName;
+            string youLabel = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.HostYouLabel);
+
+            // Set text in host info panel
+            HostText.text = $"<color=#{htmlStringRgb}>{hostName}</color>  <size=90%><b><font=\"Barlow-BoldItalic SDF\" material=\"Barlow-BoldItalic SDF Outline\">({youLabel})";
+        }
+    }
+}

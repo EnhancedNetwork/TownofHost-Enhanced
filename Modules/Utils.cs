@@ -1427,11 +1427,11 @@ public static class Utils
             }
         }
         string name = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n) ? n : "";
-        if (Main.nickName != "" && player.AmOwner) name = Main.nickName;
+        if (Main.HostRealName != "" && player.AmOwner) name = Main.HostRealName;
         if (name == "") return;
         if (AmongUsClient.Instance.IsGameStarted)
         {
-            if (Options.FormatNameMode.GetInt() == 1 && Main.nickName == "") name = Palette.GetColorName(player.Data.DefaultOutfit.ColorId);
+            if (Options.FormatNameMode.GetInt() == 1 && Main.HostRealName == "") name = Palette.GetColorName(player.Data.DefaultOutfit.ColorId);
         }
         else
         {

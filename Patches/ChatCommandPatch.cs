@@ -187,7 +187,7 @@ internal class ChatCommands
                         Utils.SendMessage(GetString("Message.AllowNameLength"), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
-                    else Main.nickName = args.Skip(1).Join(delimiter: " ");
+                    else Main.HostRealName = args.Skip(1).Join(delimiter: " ");
                     Utils.SendMessage(string.Format(GetString("Message.SetName"), args.Skip(1).Join(delimiter: " ")), PlayerControl.LocalPlayer.PlayerId);
                     break;
 
