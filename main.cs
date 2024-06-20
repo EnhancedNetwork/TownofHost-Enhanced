@@ -119,6 +119,7 @@ public class Main : BasePlugin
     
     public static Dictionary<byte, PlayerState> PlayerStates = [];
     public static readonly Dictionary<byte, string> AllPlayerNames = [];
+    public static readonly Dictionary<int, string> AllClientRealNames = [];
     public static readonly Dictionary<byte, CustomRoles> AllPlayerCustomRoles = [];
     public static readonly Dictionary<(byte, byte), string> LastNotifyNames = [];
     public static readonly Dictionary<byte, Action> LateOutfits = [];

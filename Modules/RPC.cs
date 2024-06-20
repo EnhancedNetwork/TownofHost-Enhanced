@@ -34,6 +34,7 @@ enum CustomRPC : byte // 194/255 USED
     PlayCustomSound,
     SetKillTimer,
     SyncAllPlayerNames,
+    SyncAllClientRealNames,
     SyncNameNotify,
     ShowPopUp,
     KillFlash,
@@ -516,6 +517,12 @@ internal class RPCHandlerPatch
                 for (int i = 0; i < num; i++)
                     Main.AllPlayerNames.TryAdd(reader.ReadByte(), reader.ReadString());
                 break;
+            case CustomRPC.SyncAllClientRealNames:
+                Main.AllClientRealNames.Clear();
+                int num2 = reader.ReadPackedInt32();
+                for (int i = 0; i < num2; i++)
+                    Main.AllClientRealNames.TryAdd(reader.ReadInt32(), reader.ReadString());
+                break;
             case CustomRPC.SyncFFANameNotify:
                 FFAManager.ReceiveRPCSyncNameNotify(reader);
                 break;
@@ -717,6 +724,18 @@ internal static class RPC
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAllPlayerNames, SendOption.Reliable, -1);
         writer.WritePacked(Main.AllPlayerNames.Count);
         foreach (var name in Main.AllPlayerNames)
+        {
+            writer.Write(name.Key);
+            writer.Write(name.Value);
+        }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void SyncAllClientRealNames()
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAllClientRealNames, SendOption.Reliable, -1);
+        writer.WritePacked(Main.AllClientRealNames.Count);
+        foreach (var name in Main.AllClientRealNames)
         {
             writer.Write(name.Key);
             writer.Write(name.Value);

@@ -106,6 +106,7 @@ internal class ChangeRoleSettings
 
             // Sync Player Names
             RPC.SyncAllPlayerNames();
+            RPC.SyncAllClientRealNames();
             //Main.AllPlayerNames = [];
 
             GhostRoleAssign.Init();

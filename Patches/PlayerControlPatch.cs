@@ -1553,9 +1553,15 @@ class PlayerControlCompleteTaskPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckName))]
 class PlayerControlCheckNamePatch
 {
-    public static void Postfix(PlayerControl __instance, ref string playerName)
+    public static void Postfix(PlayerControl __instance, string playerName)
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
+
+        if (!Main.AllClientRealNames.ContainsKey(__instance.OwnerId))
+        {
+            Main.AllClientRealNames.Add(__instance.OwnerId, playerName);
+            RPC.SyncAllClientRealNames();
+        }
 
         // Standard nickname
         var name = playerName;
@@ -1570,12 +1576,12 @@ class PlayerControlCheckNamePatch
         }
         Main.AllPlayerNames.Remove(__instance.PlayerId);
         Main.AllPlayerNames.TryAdd(__instance.PlayerId, name);
-        Logger.Info($"PlayerId: {__instance.PlayerId} - playerName： {playerName}", "Name player");
+        Logger.Info($"PlayerId: {__instance.PlayerId} - playerName: {playerName} => {name}", "Name player");
 
         if (__instance != null && !name.Equals(playerName))
         {
-            Logger.Warn($"Standard nickname：{playerName} => {name}", "Name Format");
-            playerName = name;
+            Logger.Warn($"Standard nickname: {playerName} => {name}", "Name Format");
+            __instance.RpcSetName(name);
         }
     }
 }

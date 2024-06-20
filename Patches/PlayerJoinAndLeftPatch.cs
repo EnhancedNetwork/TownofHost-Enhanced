@@ -34,7 +34,7 @@ class OnGameJoinedPatch
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
         EAC.Init();
-        OnPlayerJoinedPatch.realClientName = [];
+        Main.AllClientRealNames.Clear();
 
         // No game end always enabled because the settings are not done
         Options.NoGameEnd.SetValue(1);
@@ -49,9 +49,9 @@ class OnGameJoinedPatch
                 RehostManager.IsAutoRehostDone = true;
             }
 
-            if (!OnPlayerJoinedPatch.realClientName.ContainsKey(__instance.ClientId))
+            if (!Main.AllClientRealNames.ContainsKey(__instance.ClientId))
             {
-                OnPlayerJoinedPatch.realClientName.Add(__instance.ClientId, DataManager.Player.Customization.Name);
+                Main.AllClientRealNames.Add(__instance.ClientId, DataManager.Player.Customization.Name);
             }
 
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
@@ -147,7 +147,7 @@ class OnGameJoinedPatch
                     catch { };
                 }, 1.5f, "Retry Log Local Client");
             }
-        }, 0.6f, "OnGameJoinedPatch");
+        }, 0.7f, "OnGameJoinedPatch");
     }
 }
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.DisconnectInternal))]
@@ -162,7 +162,6 @@ class DisconnectInternalPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
 public static class OnPlayerJoinedPatch
 {
-    public static Dictionary<int, string> realClientName = [];
     public static bool IsDisconnected(this ClientData client)
     {
         var __instance = AmongUsClient.Instance;
@@ -274,10 +273,6 @@ public static class OnPlayerJoinedPatch
         }
         BanManager.CheckBanPlayer(client);
         BanManager.CheckDenyNamePlayer(client);
-        if (!realClientName.ContainsKey(client.Id))
-        {
-            realClientName.Add(client.Id, client.PlayerName);
-        }
 
         if (AmongUsClient.Instance.AmHost)
         {
