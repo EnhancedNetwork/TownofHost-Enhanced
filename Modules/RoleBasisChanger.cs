@@ -58,8 +58,8 @@ internal static class RoleBasisChanger
         GameData.Instance.RemovePlayer(player.PlayerId);
         GameData.Instance.AddPlayer(newplayer, newplayer.GetClient());
 
-        newplayer.RpcSetRoleDesync(targetVNRole, newplayer.GetClientId());
-        //newplayer.RpcSetRole(targetVNRole);
+        //newplayer.RpcSetRoleDesync(targetVNRole, true, newplayer.GetClientId());
+        newplayer.RpcSetRole(targetVNRole, true);
 
         GameData.Instance.DirtyAllData();
         newplayer.ReactorFlash(0.2f);

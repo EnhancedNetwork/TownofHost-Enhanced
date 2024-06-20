@@ -18,9 +18,9 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void SetRole(this PlayerControl player, RoleTypes role)
+    public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride = false)
     {
-        Main.Instance.StartCoroutine(player.CoSetRole(role, true).WrapToManaged());
+        Main.Instance.StartCoroutine(player.CoSetRole(role, canOverride).WrapToManaged());
     }
 
     public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role)
@@ -163,19 +163,19 @@ static class ExtendedPlayerControl
         .EndRpc();
         sender.SendMessage();
     }
-    public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role, int clientId)
+    public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role, bool canOverride, int clientId)
     {
         //player: 名前の変更対象
 
         if (player == null) return;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
-            player.SetRole(role);
+            player.SetRole(role, canOverride);
             return;
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
         writer.Write((ushort)role);
-        writer.Write(false);
+        writer.Write(canOverride);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 

@@ -620,7 +620,7 @@ internal class SelectRolesPatch
 
         RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
         //Set role for host
-        player.SetRole(othersRole);
+        player.SetRole(othersRole, false);
         player.Data.IsDead = true;
 
         Logger.Info($"Registered Role: {player?.Data?.PlayerName} => {role} : RoleType for self => {selfRole}, for others => {othersRole}", "AssignDesyncRoles");
@@ -677,7 +677,7 @@ internal class SelectRolesPatch
                 {
                     try
                     {
-                        seer.SetRole(roleType);
+                        seer.SetRole(roleType, false);
                         sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
                             .Write((ushort)roleType)
                             .Write(false)
