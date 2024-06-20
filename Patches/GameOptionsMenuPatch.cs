@@ -145,11 +145,12 @@ public static class GameSettingMenuInitializeOptionsPatch
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.ChangeTab))]
 public class TabChange
 {
-
-    public static void Prefix(GameSettingMenu __instance, ref int tabNum)
+    public static void Prefix(ref int tabNum, [HarmonyArgument(1)] bool previewOnly)
     {
-        if (tabNum == 0) // Disables preset menu in any instances
+        if (tabNum == 0)
+        { // Disables preset menu in any instances
             tabNum = 1;
+        }
     }
     public static void Postfix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum)
     {
@@ -158,7 +159,7 @@ public class TabChange
         //
         GameSettingMenuInitializeOptionsPatch.DeselectAll();
 
-        if (tabNum == 1)
+        if (tabNum == 1 && __instance.GameSettingsTab.isActiveAndEnabled)
         {
             _ = new LateTask(() => __instance.MenuDescriptionText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameSettingsDescription), 0.05f, "Fix Menu Description Text");
             return;
