@@ -346,6 +346,19 @@ public class GameStartManagerPatch
         }
     }
 }
+[HarmonyPatch(typeof(GamePresetsTab), nameof(GamePresetsTab.SetSelectedText))]
+
+public class PresetTabsPatch
+{
+    public static void Postfix(GamePresetsTab __instance)
+    {
+
+        __instance.PresetDescriptionText.text = "test Babuyaga";
+    }
+}
+
+
+
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.BeginGame))]
 public class GameStartRandomMap
 {
