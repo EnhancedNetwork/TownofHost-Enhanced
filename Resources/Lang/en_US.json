@@ -1123,6 +1123,7 @@
   "AutoStart": "Auto start",
   "EnableCustomButton": "Enable Custom Button Images",
   "EnableCustomSoundEffect": "Enable Custom Sound Effects",
+  "EnableCustomDecorations": "Enable Custom Map Decorations",
   "SwitchVanilla": "Switch Vanilla",
   "ModeForSmallScreen": "Small Screen Mode",
   "UnlockFPS": "Unlock FPS",

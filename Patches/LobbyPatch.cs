@@ -6,8 +6,34 @@ namespace TOHE;
 public class LobbyStartPatch
 {
     private static GameObject Paint;
+    private static GameObject Decorations;
+    private static bool FirstDecorationsLoad = true;
     public static void Postfix()
     {
+        float waitTime = 0f;
+        if (FirstDecorationsLoad)
+            waitTime = 0.25f;
+        else
+            waitTime = 0.05f;
+
+        if (Main.EnableCustomDecorations.Value)
+        {
+            _ = new LateTask(() =>
+            {
+                var Dropship = GameObject.Find("Background");
+                if (Dropship != null)
+                {
+                    Decorations = Object.Instantiate(Dropship, Object.FindAnyObjectByType<LobbyBehaviour>().transform);
+                    Decorations.name = "Lobby_Decorations";
+                    Decorations.transform.DestroyChildren();
+                    Decorations.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.Dropship-Decorations.png", 100f);
+                    Decorations.transform.SetSiblingIndex(1);
+                    Decorations.transform.localPosition = new(0.05f, 0.8334f);
+                    FirstDecorationsLoad = false;
+                }
+            }, waitTime, "Dropship Decorations", shoudLog: false);
+        }
+
         _ = new LateTask(() =>
         {
             if (!GameStates.IsLobby || Paint != null) return;
