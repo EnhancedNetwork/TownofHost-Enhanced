@@ -1494,7 +1494,7 @@ internal class ChatCommands
             "固執者" or "固执者" or "固執" or "固执" => GetString("Stubborn"),
             "無影" or "迅捷" => GetString("Swift"),
             "反噬" or "食尸鬼" => GetString("Ghoul"),
-            "嗜血者" => GetString("Bloodlust"),
+            "嗜血者" => GetString("Bloodthirst"),
             "獵夢者" or "梦魇" or "獵夢"=> GetString("Mare"),
             "地雷" or "爆破者" or "爆破" => GetString("Burst"),
             "偵察員" or "侦察员" or "偵察" or "侦察" => GetString("Sleuth"),
