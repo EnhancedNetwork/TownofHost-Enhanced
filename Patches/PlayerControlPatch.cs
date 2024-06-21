@@ -669,6 +669,46 @@ class ShapeshiftPatch
 }
 
 /*
+ *  InnerSloth is doing careless stuffs. They didnt put amModdedHost check in cmd check vanish appear
+ *  We temporary need to patch the whole cmd function and wait for the next hotfix from them
+ */
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckVanish))]
+class CmdCheckVanishPatch
+{
+    public static bool Prefix(PlayerControl __instance, float maxDuration)
+    {
+        if (AmongUsClient.Instance.AmHost)
+        {
+            __instance.CheckVanish();
+            return false;
+        }
+        __instance.SetRoleInvisibility(true, true, false);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.CheckVanish, SendOption.Reliable, AmongUsClient.Instance.HostId);
+        messageWriter.Write(maxDuration);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckAppear))]
+class CmdCheckAppearPatch
+{
+    public static bool Prefix(PlayerControl __instance, bool shouldAnimate)
+    {
+        if (AmongUsClient.Instance.AmHost)
+        {
+            __instance.CheckAppear(shouldAnimate);
+            return false;
+        }
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.CheckAppear, SendOption.Reliable, AmongUsClient.Instance.HostId);
+        messageWriter.Write(shouldAnimate);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        return false;
+    }
+}
+/*
  *  I have no idea how the check vanish is approved by host & server and how to reject it
  *  Suggest leaving phantom stuffs after 2.1.0
  */
@@ -841,6 +881,8 @@ class ReportDeadBodyPatch
             _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
         }
 
+        // InnerSloth added CheckTaskCompletion() => CheckEndGameViaTasks() in report dead body.
+        // This is patched in NoBlackOut
         return true;
     }
     public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target)
