@@ -176,7 +176,6 @@ internal class Amnesiac : RoleBase
                 __instance.GetRoleClass().OnAdd(__instance.PlayerId);
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                 tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
-                __instance.GetRoleClass().OnAdd(__instance.PlayerId);
             }
             return false;
         }
