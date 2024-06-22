@@ -325,8 +325,6 @@ internal class RPCHandlerPatch
                         option.SetValue(4); // 4 => Preset 5
                     }
                 }
-                if (GameStates.IsLobby)
-                    OptionShower.GetText();
                 break;
 
             case CustomRPC.SetDeathReason:
@@ -480,7 +478,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.RestTOHESetting:
                 OptionItem.AllOptions.ToArray().Where(x => x.Id > 0).Do(x => x.SetValueNoRpc(x.DefaultValue));
-                OptionShower.GetText();
                 break;
             case CustomRPC.GuessKill:
                 GuessManager.RpcClientGuess(Utils.GetPlayerById(reader.ReadByte()));

@@ -240,7 +240,6 @@ internal class ControllerManagerUpdatePatch
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RestTOHESetting, SendOption.Reliable, -1);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                 }
-                OptionShower.GetText();
             }
 
             // Host kill self
