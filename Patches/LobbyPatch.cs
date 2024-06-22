@@ -21,13 +21,14 @@ public class LobbyStartPatch
         {
             _ = new LateTask(() =>
             {
-                var Dropship = GameObject.Find("Background");
+                var Dropship = GameObject.Find("SmallBox");
                 if (Dropship != null)
                 {
                     Decorations = Object.Instantiate(Dropship, Object.FindAnyObjectByType<LobbyBehaviour>().transform);
                     Decorations.name = "Lobby_Decorations";
                     Decorations.transform.DestroyChildren();
-                    Decorations.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.Dropship-Decorations.png", 100f);
+                    Object.Destroy(Decorations.GetComponent<PolygonCollider2D>());
+                    Decorations.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.Dropship-Decorations.png", 60f);
                     Decorations.transform.SetSiblingIndex(1);
                     Decorations.transform.localPosition = new(0.05f, 0.8334f);
                     FirstDecorationsLoad = false;
