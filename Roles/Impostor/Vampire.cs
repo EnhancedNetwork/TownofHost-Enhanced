@@ -120,7 +120,7 @@ internal class Vampire : RoleBase
             }
         }
     }
-    private static void KillBitten(PlayerControl vampire, PlayerControl target, bool isButton = false)
+    private static void KillBitten(PlayerControl vampire, PlayerControl target)
     {
         if (target.Data.Disconnected) return;
 
@@ -131,11 +131,13 @@ internal class Vampire : RoleBase
             target.SetRealKiller(vampire);
 
             Logger.Info($"{target.name} self-kill while being bitten by Vampire.", "Vampire");
-            if (!isButton && vampire.IsAlive())
+            if (vampire.IsAlive())
             {
                 RPC.PlaySoundRPC(vampire.PlayerId, Sounds.KillSound);
+                
                 if (target.Is(CustomRoles.Trapper))
                     vampire.TrapperKilled(target);
+                
                 vampire.Notify(GetString("VampireTargetDead"));
                 vampire.SetKillCooldown();
             }

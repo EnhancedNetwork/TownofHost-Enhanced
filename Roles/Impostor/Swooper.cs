@@ -121,12 +121,13 @@ internal class Swooper : RoleBase
     {
         var nowTime = Utils.GetTimeStamp();
         var playerId = player.PlayerId;
+        var needSync = false;
 
         if (InvisCooldown.TryGetValue(playerId, out var oldTime) && (oldTime + (long)SwooperCooldown.GetFloat() - nowTime) < 0)
         {
             InvisCooldown.Remove(playerId);
             if (!player.IsModClient()) player.Notify(GetString("SwooperCanVent"));
-            SendRPC(player);
+            needSync = true;
         }
 
         foreach (var swoopInfo in InvisDuration)
@@ -142,18 +143,25 @@ internal class Swooper : RoleBase
                 swooper?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(swooperId, out var id) ? id : Main.LastEnteredVent[swooperId].Id);
 
                 ventedId.Remove(swooperId);
-                InvisDuration.Remove(swooperId);
+
+                InvisCooldown.Remove(swooperId);
                 InvisCooldown.Add(swooperId, nowTime);
-                SendRPC(swooper);
 
                 swooper.Notify(GetString("SwooperInvisStateOut"));
-                continue;
+
+                needSync = true;
+                InvisDuration.Remove(swooperId);
             }
             else if (remainTime <= 10)
             {
                 if (!swooper.IsModClient())
                     swooper.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), sendInLog: false);
             }
+        }
+
+        if (needSync)
+        {
+            SendRPC(player);
         }
     }
 

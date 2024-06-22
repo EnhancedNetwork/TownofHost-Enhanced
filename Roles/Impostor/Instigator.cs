@@ -45,7 +45,7 @@ internal class Instigator : RoleBase
     {
         if (exiled == null || !exiled.GetCustomRole().IsCrewmate()) return;
 
-        if (AbilityLimit > 0) return;
+        if (AbilityLimit <= 0) return;
 
         var killer = _Player;
         if (!killer.IsAlive()) return;

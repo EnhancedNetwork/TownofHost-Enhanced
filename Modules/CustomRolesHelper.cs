@@ -295,7 +295,6 @@ public static class CustomRolesHelper
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
                 or CustomRoles.Soulless
-                or CustomRoles.Lovers
                 or CustomRoles.Madmate ||
                 (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool()));
     }
@@ -804,7 +803,9 @@ public static class CustomRolesHelper
                     return false;
                 break;
             case CustomRoles.Tricky:
-                if (pc.Is(CustomRoles.Mastermind))
+                if (pc.Is(CustomRoles.Mastermind)
+                    || pc.Is(CustomRoles.Poisoner)
+                    || pc.Is(CustomRoles.Vampire))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;

@@ -80,7 +80,14 @@ class CheckForEndVotingPatch
                         AntiBlackout.ShowExiledInfo = true;
                         ConfirmEjections(voteTarget.Data, true);
                     }
-                    else __instance.RpcVotingComplete(states, voteTarget.Data, false);
+                    else
+                    {
+                        __instance.RpcVotingComplete(states, voteTarget.Data, false);
+
+                        Main.LastVotedPlayerInfo = voteTarget.Data;
+                        if (Main.LastVotedPlayerInfo != null)
+                            ConfirmEjections(Main.LastVotedPlayerInfo);
+                    }
 
                     Logger.Info($"{voteTarget.GetNameWithRole()} expelled by Dictator", "Dictator");
                     
@@ -89,10 +96,6 @@ class CheckForEndVotingPatch
                     Logger.Info("Dictatorial vote, forced closure of the meeting", "Special Phase");
                     
                     voteTarget.SetRealKiller(pc);
-                    
-                    Main.LastVotedPlayerInfo = voteTarget.Data;
-                    if (Main.LastVotedPlayerInfo != null)
-                        ConfirmEjections(Main.LastVotedPlayerInfo);
 
                     return true;
                 }
@@ -340,15 +343,18 @@ class CheckForEndVotingPatch
                     ConfirmEjections(exiledPlayer, true);
                 }
             }
-            else __instance.RpcVotingComplete(states, exiledPlayer, tie); // Normal processing
+            else
+            {
+                __instance.RpcVotingComplete(states, exiledPlayer, tie); // Normal processing
+                
+                Main.LastVotedPlayerInfo = exiledPlayer;
+                if (Main.LastVotedPlayerInfo != null)
+                {
+                    ConfirmEjections(Main.LastVotedPlayerInfo);
+                }
+            }
 
             CheckForDeathOnExile(PlayerState.DeathReason.Vote, exileId);
-
-            Main.LastVotedPlayerInfo = exiledPlayer;
-            if (Main.LastVotedPlayerInfo != null)
-            {
-                ConfirmEjections(Main.LastVotedPlayerInfo);
-            }
 
             return false;
         }
@@ -374,7 +380,7 @@ class CheckForEndVotingPatch
         var player = Utils.GetPlayerById(exiledPlayer.PlayerId);
         var role = GetString(exiledPlayer.GetCustomRole().ToString());
         var crole = exiledPlayer.GetCustomRole();
-        var coloredRole = Utils.GetDisplayRoleAndSubName(exileId, exileId, true);
+        var coloredRole = Utils.ColorString(Utils.GetRoleColor(crole), role);
 
         if (Options.ConfirmEgoistOnEject.GetBool() && player.Is(CustomRoles.Egoist))
             coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Egoist), coloredRole.RemoveHtmlTags());
@@ -479,7 +485,7 @@ class CheckForEndVotingPatch
             {
                 Logger.Error($"Error after change exiled player name: {error}", "ConfirmEjections");
             }
-        }, 3.0f, "Change Exiled Player Name");
+        }, 4f, "Change Exiled Player Name");
 
         _ = new LateTask(() =>
         {
@@ -502,7 +508,7 @@ class CheckForEndVotingPatch
             {
                 Logger.Error($"Error after change exiled player name back: {error}", "ConfirmEjections");
             }
-        }, 11.5f, "Change Exiled Player Name Back");
+        }, 7f, "Change Exiled Player Name Back");
 
         if (AntiBlackoutStore)
         {
@@ -656,8 +662,12 @@ class CastVotePatch
 
     public static void Postfix(MeetingHud __instance)
     {
-        __instance.CheckForEndVoting();
-        //For stuffs in check for end voting to work
+        // Prevent double check end voting
+        if (GameStates.IsMeeting && MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion)
+        {
+            __instance.CheckForEndVoting();
+            //For stuffs in check for end voting to work
+        }
     }
 }
 static class ExtendedMeetingHud

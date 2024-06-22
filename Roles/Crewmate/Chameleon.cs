@@ -137,12 +137,13 @@ internal class Chameleon : RoleBase
     {
         var nowTime = GetTimeStamp();
         var playerId = player.PlayerId;
+        var needSync = false;
 
         if (InvisCooldown.TryGetValue(playerId, out var oldTime) && (oldTime + (long)ChameleonCooldown.GetFloat() - nowTime) < 0)
         {
             InvisCooldown.Remove(playerId);
             if (!player.IsModClient()) player.Notify(GetString("ChameleonCanVent"));
-            SendRPC(player);
+            needSync = true;
         }
 
         foreach (var chameleonInfo in InvisDuration)
@@ -158,18 +159,25 @@ internal class Chameleon : RoleBase
                 chameleon?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(chameleonId, out var id) ? id : Main.LastEnteredVent[chameleonId].Id);
 
                 ventedId.Remove(chameleonId);
-                InvisDuration.Remove(chameleonId);
+
+                InvisCooldown.Remove(chameleonId);
                 InvisCooldown.Add(chameleonId, nowTime);
-                SendRPC(chameleon);
 
                 chameleon.Notify(GetString("ChameleonInvisStateOut"));
-                continue;
+                
+                needSync = true;
+                InvisDuration.Remove(chameleonId);
             }
             else if (remainTime <= 10)
             {
                 if (!chameleon.IsModClient())
                     chameleon.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime), sendInLog: false);
             }
+        }
+
+        if (needSync)
+        {
+            SendRPC(player);
         }
     }
     public override void OnCoEnterVent(PlayerPhysics physics, int ventId)

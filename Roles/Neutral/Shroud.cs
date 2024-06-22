@@ -149,7 +149,7 @@ internal class Shroud : RoleBase
 
     public override void OnPlayerExiled(PlayerControl shroud, NetworkedPlayerInfo exiled)
     {
-        if (!shroud.IsAlive())
+        if (exiled != null && exiled.PlayerId == shroud.PlayerId)
         {
             ShroudList.Clear();
             SendRPC(byte.MaxValue, byte.MaxValue, 1);

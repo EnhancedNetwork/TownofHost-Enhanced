@@ -65,14 +65,9 @@ internal class Poisoner : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.Bait)) return true;
-        if (Guardian.CannotBeKilled(target)) return true;
-        if (target.Is(CustomRoles.Glitch)) return true;
-        if (target.Is(CustomRoles.Pestilence)) return true;
-        if (Medic.ProtectList.Contains(target.PlayerId)) return false;
 
         killer.SetKillCooldown();
 
-        //誰かに噛まれていなければ登録
         if (!PoisonedPlayers.ContainsKey(target.PlayerId))
         {
             PoisonedPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));

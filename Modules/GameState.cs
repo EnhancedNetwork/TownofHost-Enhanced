@@ -229,7 +229,7 @@ public class PlayerState(byte playerId)
         if (AmongUsClient.Instance.AmHost)
         {
             RPC.SendDeathReason(PlayerId, deathReason);
-            if (GameStates.IsMeeting)
+            if (GameStates.IsMeeting && MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion)
             {
                 MeetingHud.Instance.CheckForEndVoting();
             }
