@@ -24,6 +24,7 @@ public static class Credentials
                 if (DelayUpdate > 0 && sb.Length > 0)
                 {
                     __instance.text.alignment = TextAlignmentOptions.Right;
+                    __instance.aspectPosition.DistanceFromEdge = GetPingPosition();
                     __instance.text.text = sb.ToString();
                     return false;
                 }
@@ -74,32 +75,7 @@ public static class Credentials
                         sb.Append(sbOverlay);
                 }
 
-                var offset_x = 2.5f;
-                var offset_y = 5.7f;
-                Vector3 position;
-                if (!Main.ShowTextOverlay.Value)
-                {
-                    offset_y += 0.1f;
-                }
-                if (AmongUsClient.Instance.IsGameStarted)
-                {
-                    if (DestroyableSingleton<HudManager>.Instance && !HudManager.Instance.Chat.isActiveAndEnabled)
-                    {
-                        offset_x += 0.7f; // Additional offsets for chat button if present
-                    }
-                    else
-                    {
-                        offset_x += 0.1f;
-                    }
-
-                    position = new Vector3(offset_x, offset_y, 0f);
-                }
-                else
-                {
-                    position = new Vector3(offset_x, offset_y, 0f);
-                }
-
-                __instance.aspectPosition.DistanceFromEdge = position;
+                __instance.aspectPosition.DistanceFromEdge = GetPingPosition();
                 __instance.text.text = sb.ToString();
 
                 return false;
@@ -111,6 +87,35 @@ public static class Credentials
 
                 return false;
             }
+        }
+        private static Vector3 GetPingPosition()
+        {
+            var offset_x = 2.5f;
+            var offset_y = 5.7f;
+            Vector3 position;
+            if (!Main.ShowTextOverlay.Value)
+            {
+                offset_y += 0.1f;
+            }
+            if (AmongUsClient.Instance.IsGameStarted)
+            {
+                if (DestroyableSingleton<HudManager>.Instance && !HudManager.Instance.Chat.isActiveAndEnabled)
+                {
+                    offset_x += 0.7f; // Additional offsets for chat button if present
+                }
+                else
+                {
+                    offset_x += 0.1f;
+                }
+
+                position = new Vector3(offset_x, offset_y, 0f);
+            }
+            else
+            {
+                position = new Vector3(offset_x, offset_y, 0f);
+            }
+
+            return position;
         }
     }
     [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
