@@ -75,10 +75,7 @@ internal class Instigator : RoleBase
 
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Retribution, [.. killPlayers]);
 
-        AbilityLimit += 1;
+        AbilityLimit--;
         SendSkillRPC();
-
-
-
     }
 }
