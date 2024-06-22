@@ -185,7 +185,7 @@ class StartPatch
                 Decorations.transform.SetSiblingIndex(1);
                 Decorations.transform.localPosition = new(0.0709f, 0.73f);
             }
-        }3e
+        }
     }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartMeeting))]

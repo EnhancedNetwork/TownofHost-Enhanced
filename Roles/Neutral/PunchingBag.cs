@@ -44,7 +44,7 @@ internal class PunchingBag : RoleBase// bad roll, plz don't use this hosts
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
         writer.Write(punchingbagId);
-        writer.Write(PunchingBagMax[masochistId]);
+        writer.Write(PunchingBagMax[punchingbagId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
@@ -56,7 +56,7 @@ internal class PunchingBag : RoleBase// bad roll, plz don't use this hosts
     }
 
     public override string GetProgressText(byte playerId, bool comms)
-        => ColorString(GetRoleColor(CustomRoles.PunchingBag).ShadeColor(0.25f), $"({(MasochistMax.TryGetValue(playerId, out var count) ? count : 0)}/{PunchingBagKillMax.GetInt()})");
+        => ColorString(GetRoleColor(CustomRoles.PunchingBag).ShadeColor(0.25f), $"({(PunchingBagMax.TryGetValue(playerId, out var count) ? count : 0)}/{PunchingBagKillMax.GetInt()})");
     
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
