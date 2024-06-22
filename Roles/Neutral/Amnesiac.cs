@@ -168,16 +168,16 @@ internal class Amnesiac : RoleBase
                         tempRole = CustomRoles.Imitator;
                         break;
                 }
-                if (tempRole != CustomRoles.Amnesiac)
-                {
-                    __instance.GetRoleClass().Remove(__instance.PlayerId);
-                    __instance.RpcSetCustomRole(tempRole);
-                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
-                    __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
-                    tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
-                    __instance.GetRoleClass().OnAdd(__instance.PlayerId);
-                }
-            }         
+            }
+            if (tempRole != CustomRoles.Amnesiac)
+            {
+                __instance.GetRoleClass().Remove(__instance.PlayerId);
+                __instance.RpcSetCustomRole(tempRole);
+                __instance.GetRoleClass().OnAdd(__instance.PlayerId);
+                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+                __instance.GetRoleClass().OnAdd(__instance.PlayerId);
+            }
             return false;
         }
         return true;
