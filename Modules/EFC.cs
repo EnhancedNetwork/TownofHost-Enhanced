@@ -1,6 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -9,6 +11,7 @@ namespace TOHE;
 // Enhanced File Checker.
 internal class EFC
 {
+    private static bool EFCEnabled = true;
     private static readonly ReadOnlyCollection<string> BannedBepInExMods = new(new List<string> { "MalumMenu", "AUnlocker" }); // Put BepInEx BepInPlugin name, not dll name here lol.
     private static readonly ReadOnlyCollection<string> KeyWordsInVersionInfo = new(new List<string> { "Malum", "Sicko" }); // Banned words for version text
     public static string UnauthorizedReason = string.Empty;
@@ -16,11 +19,12 @@ internal class EFC
     public static bool HasTrySpoofFriendCode = false;
     public static bool HasUnauthorizedFile = false;
     public static bool HasShownPopUp = false;
-    public static string ClientPUIDHash = string.Empty;
 
     // Set up if unauthorized files have been found.
     public static void UpdateUnauthorizedFiles()
     {
+        if (EFCEnabled == false) return;
+
         GameObject PlayButton = GameObject.Find("Main Buttons/PlayButton");
 
         // Disable play button until EAC information is gathered from API
@@ -86,12 +90,11 @@ internal class EFC
         if (EOSManager.Instance.editAccountUsername.gameObject.active || EOSManager.Instance.askToMergeAccount.gameObject.active)
         {
             HasTrySpoofFriendCode = true;
-            HasUnauthorizedFile = true;
         }
 
         if (GameStates.IsOnlineGame && AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
         {
-            if (BanManager.CheckEACList(PlayerControl.LocalPlayer?.FriendCode, PlayerControl.LocalPlayer?.GetClient().GetHashedPuid()))
+            if (BanManager.CheckEACList(PlayerControl.LocalPlayer?.FriendCode, PlayerControl.LocalPlayer?.GetClient().GetHashedPuid()) || HasTrySpoofFriendCode)
             {
                 DisconnectPlayer();
             }
@@ -101,13 +104,20 @@ internal class EFC
     // Check if there's any unauthorized files.
     public static bool CheckIfUnauthorizedFiles()
     {
+        if (EFCEnabled == false) return false;
+
         // Skip check if player is a dev for testing... I promise (- ‿◦ )
         if (DevManager.GetDevUser(EOSManager.Instance?.friendCode).IsDev
-            || DevManager.GetDevUser(PlayerControl.LocalPlayer?.FriendCode).IsDev) return false;
+            || DevManager.GetDevUser(PlayerControl.LocalPlayer?.FriendCode).IsDev)
+        {
+            EFCEnabled = false;
+            return false;
+        }
 
         // Get user info for later use with API.
         string ClientUserName = GameObject.Find("AccountTab")?.GetComponent<AccountTab>()?.userName.text;
         string ClientFriendCode = EOSManager.Instance.friendCode;
+        string ClientPUIDHash = GetHashedPuidFromPuid(EOSManager.Instance.ProductUserId);
 
         // Check EAC list
         foreach (var user in BanManager.EACDict)
@@ -202,6 +212,19 @@ internal class EFC
                 DisconnectPopup.Instance.ShowCustom($"{lines}\n\n\n<size=150%>{GetString("EFC.OnlineMsg")}</size>\n\n\n{lines}");
             }, 0.1f);
         }, 0.2f);
+    }
+
+    // Get hashed puid from puid.
+    public static string GetHashedPuidFromPuid(string puid)
+    {
+        using SHA256 sha256 = SHA256.Create();
+
+        // get sha-256 hash
+        byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
+        string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
+
+        // pick front 5 and last 4
+        return string.Concat(sha256Hash.AsSpan(0, 5), sha256Hash.AsSpan(sha256Hash.Length - 4));
     }
 
     // Get all loaded BepInEx mods and check if one is on the ban list.
