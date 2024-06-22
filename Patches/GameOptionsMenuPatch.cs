@@ -65,7 +65,7 @@ public static class GameSettingMenuInitializeOptionsPatch
 
         //button 1
         GameObject template = gamepreset.gameObject;
-        GameObject targetBox = UnityEngine.Object.Instantiate(template, gamepreset.transform);
+        GameObject targetBox = Object.Instantiate(template, gamepreset.transform);
         targetBox.name = "System Settings";
         targetBox.transform.localScale = new Vector3(0.59f, 0.59f, 1f);
         targetBox.transform.localPosition = new Vector3(targetBox.transform.localPosition.x + 2.95f, rolesettings.transform.localPosition.y - 0.1f, targetBox.transform.localPosition.z);
@@ -89,7 +89,7 @@ public static class GameSettingMenuInitializeOptionsPatch
 
         //button 2
         GameObject template2 = targetBox.gameObject;
-        GameObject targetBox2 = UnityEngine.Object.Instantiate(template2, targetBox.transform);
+        GameObject targetBox2 = Object.Instantiate(template2, targetBox.transform);
         targetBox2.name = "Mod Settings";
         targetBox2.transform.localScale = new Vector3(1f, 1f, 1f);
         targetBox2.transform.localPosition = new Vector3(targetBox2.transform.localPosition.x, targetBox.transform.localPosition.y, targetBox2.transform.localPosition.z);
@@ -105,7 +105,7 @@ public static class GameSettingMenuInitializeOptionsPatch
 
         //button 3
         GameObject template3 = targetBox2.gameObject;
-        GameObject targetBox3 = UnityEngine.Object.Instantiate(template3, targetBox2.transform);
+        GameObject targetBox3 = Object.Instantiate(template3, targetBox2.transform);
         targetBox3.name = "Game Modifiers";
         targetBox3.transform.localScale = new Vector3(1f, 1f, 1f);
         targetBox3.transform.localPosition = new Vector3(targetBox3.transform.localPosition.x, targetBox2.transform.localPosition.y, targetBox3.transform.localPosition.z);
@@ -117,17 +117,6 @@ public static class GameSettingMenuInitializeOptionsPatch
         )); 
         var label3 = GameModifButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>(); 
         _ = new LateTask(() => { label3.text = GetString("TabGroup.ModifierSettings"); }, 0.05f, "Set Button3 Text"); 
-
-
-        /*
-        items
-            .FirstOrDefault(
-                i => i.gameObject.activeSelf && i.name.Equals("MapName", StringComparison.OrdinalIgnoreCase))?
-            .GetComponent<KeyValueOption>()?
-            .Values?
-            // using .Insert will convert managed values and break the struct resulting in crashes
-            .System_Collections_IList_Insert((int)MapNames.Dleks, new Il2CppSystem.Collections.Generic.KeyValuePair<string, int>(Constants.MapNames[(int)MapNames.Dleks], (int)MapNames.Dleks));
-        */
     }
 }
 

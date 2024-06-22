@@ -36,7 +36,26 @@ public static class DleksPatch
         return false;
     }
 }
+[HarmonyPatch(typeof(GameStartManager))]
+class AllMapIconsPatch
+{
+    // Vanilla players getting error when trying get dleks map icon
+    [HarmonyPatch(nameof(GameStartManager.Start)), HarmonyPostfix]
+    public static void Postfix_AllMapIcons(GameStartManager __instance)
+    {
+        MapIconByName DleksIncon = Object.Instantiate(__instance, __instance.gameObject.transform).AllMapIcons[0];
+        //__instance.AllMapIcons.Find((Il2CppSystem.Predicate<MapIconByName>)(m => m.Name == MapNames.Skeld));
 
+        DleksIncon.Name = MapNames.Dleks;
+
+        __instance.AllMapIcons.Add(DleksIncon);
+
+        foreach (var item in __instance.AllMapIcons)
+        {
+            Logger.Info($"{item.Name}", "AllIcons");
+        }
+    }
+}
 [HarmonyPatch(typeof(StringOption), nameof(StringOption.Start))]
 class AutoSelectDleksPatch
 {
