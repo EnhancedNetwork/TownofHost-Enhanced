@@ -806,7 +806,7 @@ public enum CustomRoles
     Aware,
     Bait,
     Bewilder,
-    Bloodlust,
+    Bloodthirst,
     Burst,
     Charmed,
     Circumvent,
