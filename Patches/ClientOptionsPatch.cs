@@ -19,6 +19,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ForceOwnLanguageRoleName;
     private static ClientOptionItem EnableCustomButton;
     private static ClientOptionItem EnableCustomSoundEffect;
+    private static ClientOptionItem EnableCustomDecorations;
     private static ClientOptionItem SwitchVanilla;
 
 #if DEBUG
@@ -116,6 +117,10 @@ public static class OptionsMenuBehaviourStartPatch
         if (EnableCustomSoundEffect == null || EnableCustomSoundEffect.ToggleButton == null)
         {
             EnableCustomSoundEffect = ClientOptionItem.Create("EnableCustomSoundEffect", Main.EnableCustomSoundEffect, __instance);
+        }
+        if (EnableCustomDecorations == null || EnableCustomDecorations.ToggleButton == null)
+        {
+            EnableCustomDecorations = ClientOptionItem.Create("EnableCustomDecorations", Main.EnableCustomDecorations, __instance);
         }
         if (SwitchVanilla == null || SwitchVanilla.ToggleButton == null)
         {
