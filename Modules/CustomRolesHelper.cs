@@ -564,7 +564,7 @@ public static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Bloodlust:
+            case CustomRoles.Bloodthirst:
                 if (pc.Is(CustomRoles.Lazy)
                     || pc.Is(CustomRoles.Merchant)
                     || pc.Is(CustomRoles.Alchemist)

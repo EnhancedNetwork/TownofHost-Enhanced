@@ -1556,8 +1556,8 @@ class PlayerControlCompleteTaskPatch
                             Tired.AfterActionTasks(player);
                             break;
 
-                        case CustomRoles.Bloodlust when player.IsAlive():
-                            Bloodlust.OnTaskComplete(player);
+                        case CustomRoles.Bloodthirst when player.IsAlive():
+                            Bloodthirst.OnTaskComplete(player);
                             break;
 
                         case CustomRoles.Ghoul when taskState.CompletedTasksCount >= taskState.AllTasksCount:
