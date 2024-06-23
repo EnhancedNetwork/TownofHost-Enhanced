@@ -299,7 +299,7 @@ public class SabotageSystemPatch
                 return false;
             }
 
-            Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + nextSabotage.ToString(), "RepairSystem");
+            Logger.Info($"PlayerName: {player.GetNameWithRole()}, SabotageType: {nextSabotage}, amount {amount}", "SabotageSystemType.UpdateSystem");
 
             return CanSabotage(player, nextSabotage);
         }
@@ -359,6 +359,21 @@ public class SabotageSystemPatch
                 }
                 return true;
             }
+        }
+    }
+    [HarmonyPatch(typeof(DoorsSystemType), nameof(DoorsSystemType.UpdateSystem))]
+    public static class DoorsSystemTypePatch
+    {
+        public static void Prefix(/*DoorsSystemType __instance,*/ PlayerControl player, MessageReader msgReader)
+        {
+            byte amount;
+            {
+                var newReader = MessageReader.Get(msgReader);
+                amount = newReader.ReadByte();
+                newReader.Recycle();
+            }
+
+            Logger.Info($"Door is opened by {player?.Data?.PlayerName}, amount: {amount}", "DoorsSystemType.UpdateSystem");
         }
     }
 }

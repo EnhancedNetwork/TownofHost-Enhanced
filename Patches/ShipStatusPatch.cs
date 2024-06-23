@@ -62,11 +62,11 @@ class UpdateSystemPatch
         [HarmonyArgument(1)] PlayerControl player,
         [HarmonyArgument(2)] byte amount)
     {
-        Logger.Msg("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole().RemoveHtmlTags() + ", amount: " + amount, "RepairSystem");
+        Logger.Msg($"SystemType: {systemType}, PlayerName: {player.GetNameWithRole().RemoveHtmlTags()}, amount: {amount}", "ShipStatus.UpdateSystem");
 
         if (RepairSender.enabled && AmongUsClient.Instance.NetworkMode != NetworkModes.OnlineGame)
         {
-            Logger.SendInGame("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole().RemoveHtmlTags() + ", amount: " + amount);
+            Logger.SendInGame($"SystemType: {systemType}, PlayerName: {player.GetNameWithRole().RemoveHtmlTags()}, amount: {amount}");
         }
 
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -136,13 +136,20 @@ class UpdateSystemPatch
     }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CloseDoorsOfType))]
-class CloseDoorsPatch
+class ShipStatusCloseDoorsPatch
 {
-    public static bool Prefix(/*ShipStatus __instance*/)
+    public static bool Prefix(/*ShipStatus __instance,*/ SystemTypes room)
     {
+        Logger.Info($"Trying to close the door in the room: {room}", "CloseDoorsOfType");
+
         bool allow;
         if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()) allow = false;
         else allow = true;
+
+        if (allow)
+        {
+            Logger.Info($"The door is closed in room: {room}", "CloseDoorsOfType");
+        }
         return allow;
     }
 }

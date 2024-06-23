@@ -18,7 +18,7 @@ namespace TOHE;
 enum CustomRPC : byte // 194/255 USED
 {
     // RpcCalls can increase with each AU version
-    // On version 2023.11.28 the last id in RpcCalls: 65
+    // On version 2024.6.18 the last id in RpcCalls: 65
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
     SyncCustomSettings = 100,
