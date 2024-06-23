@@ -1,12 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Sentry.Internal;
-using Sentry.Internal.Extensions;
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.TextCore;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
@@ -444,12 +440,12 @@ public static class GameOptionsMenuStartPatch
     }
 }
 
-//[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Update))]
+//[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Update))]
 public class GameOptionsMenuUpdatePatch
 {
     private static float _timer = 1f;
 
-    public static void fzdPostfix(GameOptionsMenu __instance)
+    public static void Postfix(GameOptionsMenu __instance)
     {
         if (__instance.transform.parent.parent.name == "Game Settings") return;
 
@@ -576,13 +572,13 @@ public class GameOptionsMenuUpdatePatch
     }
 }
 
-//[HarmonyPatch(typeof(StringOption), nameof(StringOption.Start))]
+[HarmonyPatch(typeof(StringOption), nameof(StringOption.SetUpFromData))]
 public class StringOptionEnablePatch
 {
-    public static bool Prefix(StringOption __instance)
+    public static void Postfix(StringOption __instance)
     {
         var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
-        if (option == null) return true;
+        if (option == null) return;
 
         __instance.OnValueChanged = new Action<OptionBehaviour>((o) => { });
         if (option.IsVanillaText)
@@ -595,12 +591,10 @@ public class StringOptionEnablePatch
         }
         __instance.Value = __instance.oldValue = option.CurrentValue;
         __instance.ValueText.text = option.GetString();
-
-        return false;
     }
 }
 
-//[HarmonyPatch(typeof(StringOption), nameof(StringOption.Increase))]
+[HarmonyPatch(typeof(StringOption), nameof(StringOption.Increase))]
 public class StringOptionIncreasePatch
 {
     public static bool Prefix(StringOption __instance)
@@ -644,7 +638,7 @@ public class StringOptionIncreasePatch
     }
 }
 
-//[HarmonyPatch(typeof(StringOption), nameof(StringOption.Decrease))]
+[HarmonyPatch(typeof(StringOption), nameof(StringOption.Decrease))]
 public class StringOptionDecreasePatch
 {
     public static bool Prefix(StringOption __instance)
@@ -695,11 +689,10 @@ public class RpcSyncSettingsPatch
         OptionItem.SyncAllOptions();
     }
 }
-//[HarmonyPatch(typeof(RoleSettingsMenu), nameof(RoleSettingsTabMenu.Start))]
-public static class RoleSettingsTabMenuPatch
+[HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.ChangeTab))]
+public static class RolesSettingsMenu_ChangeTabPatch
 {
-    /*
-    public static void Postfix(RoleSettingsTabMenu __instance)
+    public static void Postfix(RolesSettingsMenu __instance)
     {
         if (GameStates.IsHideNSeek) return;
 
@@ -718,52 +711,132 @@ public static class RoleSettingsTabMenuPatch
             }
         }
     }
-    */
 }
-/*
-[HarmonyPatch(typeof(NormalGameOptionsV08), nameof(NormalGameOptionsV08.SetRecommendations))]
-public static class SetRecommendationsPatch
+[HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.SetQuotaTab))]
+public static class RolesSettingsMenu_ChanceTabPatch
 {
-    public static bool Prefix(NormalGameOptionsV08 __instance, int numPlayers, bool isOnline)
+    public static bool Prefix(RolesSettingsMenu __instance)
     {
-        numPlayers = Mathf.Clamp(numPlayers, 4, 15);
-        __instance.PlayerSpeedMod = __instance.MapId == 4 ? 1.5f : 1.25f;
-        __instance.CrewLightMod = 1.0f;
-        __instance.ImpostorLightMod = 1.75f;
-        __instance.KillCooldown = 27.5f;
-        __instance.NumCommonTasks = 2;
-        __instance.NumLongTasks = 1;
-        __instance.NumShortTasks = 2;
-        __instance.NumEmergencyMeetings = 3;
-        if (!isOnline)
-            __instance.NumImpostors = NormalGameOptionsV08.RecommendedImpostors[numPlayers];
-        __instance.KillDistance = 0;
-        __instance.DiscussionTime = 0;
-        __instance.VotingTime = 120;
-        __instance.IsDefaults = true;
-        __instance.ConfirmImpostor = false;
-        __instance.VisualTasks = false;
+        if (GameStates.IsHideNSeek) return true;
 
-        __instance.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
-        __instance.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
-        __instance.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
-        __instance.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
-        __instance.roleOptions.SetRoleRecommended(RoleTypes.Shapeshifter);
-        __instance.roleOptions.SetRoleRecommended(RoleTypes.Scientist);
-        __instance.roleOptions.SetRoleRecommended(RoleTypes.GuardianAngel);
-        __instance.roleOptions.SetRoleRecommended(RoleTypes.Engineer);
+        float num = 0.662f;
+        float num2 = -1.928f;
+        __instance.roleTabs = new List<PassiveButton>().ToIl2Cpp();
 
-        if (Options.CurrentGameMode == CustomGameMode.FFA) //FFA
+        List<RoleRulesCategory> list = GameManager.Instance.GameSettingsList.AllRoles.ToManaged().FindAll((RoleRulesCategory cat) => cat.Role.TeamType == RoleTeamTypes.Crewmate);
+        List<RoleRulesCategory> list2 = GameManager.Instance.GameSettingsList.AllRoles.ToManaged().FindAll((RoleRulesCategory cat) => cat.Role.TeamType == RoleTeamTypes.Impostor);
+
+        // Impostor Tab
+        AddRoleTabCustom(__instance, Custom_RoleType.ImpostorVanilla, ref num2);
+
+        // Neutral Tab
+        AddRoleTabCustom(__instance, Custom_RoleType.NeutralBenign, ref num2);
+
+
+        CategoryHeaderEditRole categoryHeaderEditRole = Object.Instantiate<CategoryHeaderEditRole>(__instance.categoryHeaderEditRoleOrigin, Vector3.zero, Quaternion.identity, __instance.RoleChancesSettings.transform);
+        categoryHeaderEditRole.SetHeader(StringNames.CrewmateRolesHeader, 20);
+        categoryHeaderEditRole.transform.localPosition = new Vector3(4.986f, num, -2f);
+        num -= 0.522f;
+        int num3 = 0;
+        for (int k = 0; k < list.Count; k++)
         {
-            __instance.CrewLightMod = __instance.ImpostorLightMod = 1.25f;
-            __instance.NumImpostors = 3;
-            __instance.NumCommonTasks = 0;
-            __instance.NumLongTasks = 0;
-            __instance.NumShortTasks = 0;
-            __instance.KillCooldown = 0f;
+            __instance.CreateQuotaOption(list[k], ref num, num3);
+            num3++;
         }
+        num -= 0.22f;
 
+        CategoryHeaderEditRole categoryHeaderEditRole2 = Object.Instantiate<CategoryHeaderEditRole>(__instance.categoryHeaderEditRoleOrigin, Vector3.zero, Quaternion.identity, __instance.RoleChancesSettings.transform);
+        categoryHeaderEditRole2.SetHeader(StringNames.ImpostorRolesHeader, 20);
+        categoryHeaderEditRole2.transform.localPosition = new Vector3(4.986f, num, -2f);
+
+        num -= 0.522f;
+        for (int l = 0; l < list2.Count; l++)
+        {
+            __instance.CreateQuotaOption(list2[l], ref num, num3);
+            num3++;
+        }
         return false;
     }
+
+    private static RoleSettingsTabButton AddRoleTabCustom(RolesSettingsMenu thiz, Custom_RoleType roleType, ref float tabXPos)
+    {
+        RoleSettingsTabButton tab = null;
+        switch (roleType)
+        {
+            case Custom_RoleType.ImpostorVanilla:
+                tab = Object.Instantiate(thiz.roleSettingsTabButtonOriginImpostor, Vector3.zero, Quaternion.identity, thiz.tabParent);
+                break;
+            case Custom_RoleType.NeutralBenign:
+                tab = Object.Instantiate(thiz.roleSettingsTabButtonOrigin, Vector3.zero, Quaternion.identity, thiz.tabParent);
+                RoleBehaviour impRole = RoleManager.Instance.AllRoles.Where(r => r.Role == RoleTypes.Shapeshifter).FirstOrDefault();
+                tab.icon.sprite = impRole.RoleIconWhite;
+                SetTabColor(tab, "#7f8c8d");
+                break;
+            default:
+                tab = Object.Instantiate(thiz.roleSettingsTabButtonOrigin, Vector3.zero, Quaternion.identity, thiz.tabParent);
+                break;
+        }
+        tab.transform.localPosition = new Vector3(tabXPos, 2.27f, -2f);
+
+        tab.button.OnClick.AddListener(new Action(() =>
+        {
+            LoadRoleOptions(roleType, tab.Button);
+        }));
+        tabXPos += 0.762f;
+        thiz.roleTabs.Add(tab.Button);
+        return tab;
+    }
+
+    private static void SetTabColor(RoleSettingsTabButton tab, string hex)
+    {
+        if (tab == null) return;
+
+        Color color = Color.blue;
+        hex = hex.TrimStart('#');
+
+        if (hex.Length != 6)
+        {
+            throw new InvalidOperationException("Hex color should be 6 characters long excluding the '#' symbol.");
+        }
+
+        float r = Convert.ToInt32(hex.Substring(0, 2), 16) / 255f;
+        float g = Convert.ToInt32(hex.Substring(2, 2), 16) / 255f;
+        float b = Convert.ToInt32(hex.Substring(4, 2), 16) / 255f;
+
+        color = new Color(r, g, b);
+        if (tab.button.inactiveSprites.GetComponent<SpriteRenderer>() != null && tab.button.activeSprites.GetComponent<SpriteRenderer>() != null)
+        {
+            SpriteRenderer inactiveSprite = tab.button.inactiveSprites.GetComponent<SpriteRenderer>();
+            SpriteRenderer activeSprite = tab.button.inactiveSprites.GetComponent<SpriteRenderer>();
+            inactiveSprite.color = GetInactiveColor(color);
+            activeSprite.color = color;
+        }
+    }
+
+    private static void LoadRoleOptions(Custom_RoleType type, PassiveButton btn)
+    {
+        if (type == Custom_RoleType.None) return;
+        else Logger.Info(type.ToString(), "LoadRoleOptions");
+    }
+
+    private static Color GetInactiveColor(this Color color, float shadowFactor = 0.5f)
+    {
+        shadowFactor = Mathf.Max(1.0f, shadowFactor);
+
+        Color shadowColor = new(
+            color.r / shadowFactor,
+            color.g / shadowFactor,
+            color.b / shadowFactor,
+            color.a
+        );
+
+        return shadowColor;
+    }
+
+    public enum VanillaLikeRoleTypes : int
+    {
+        Crewmate = 0,
+        Impostor = 1,
+        Neutral = 2,
+    }
 }
-*/
