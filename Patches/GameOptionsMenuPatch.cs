@@ -761,30 +761,41 @@ public static class RolesSettingsMenu_ChanceTabPatch
     private static RoleSettingsTabButton AddRoleTabCustom(RolesSettingsMenu thiz, Custom_RoleType roleType, ref float tabXPos)
     {
         RoleSettingsTabButton tab = null;
+        VanillaLikeRoleTypes realRoleType = VanillaLikeRoleTypes.Crewmate;
         switch (roleType)
         {
+            case Custom_RoleType.CrewmateVanilla:
+                tab = Object.Instantiate(thiz.roleSettingsTabButtonOrigin, Vector3.zero, Quaternion.identity, thiz.tabParent);
+                realRoleType = VanillaLikeRoleTypes.Crewmate;
+                break;
             case Custom_RoleType.ImpostorVanilla:
                 tab = Object.Instantiate(thiz.roleSettingsTabButtonOriginImpostor, Vector3.zero, Quaternion.identity, thiz.tabParent);
+                realRoleType = VanillaLikeRoleTypes.Impostor;
                 break;
             case Custom_RoleType.NeutralBenign:
                 tab = Object.Instantiate(thiz.roleSettingsTabButtonOrigin, Vector3.zero, Quaternion.identity, thiz.tabParent);
                 RoleBehaviour impRole = RoleManager.Instance.AllRoles.Where(r => r.Role == RoleTypes.Shapeshifter).FirstOrDefault();
                 tab.icon.sprite = impRole.RoleIconWhite;
                 SetTabColor(tab, "#7f8c8d");
+                realRoleType = VanillaLikeRoleTypes.Neutral;
                 break;
             default:
-                tab = Object.Instantiate(thiz.roleSettingsTabButtonOrigin, Vector3.zero, Quaternion.identity, thiz.tabParent);
-                break;
+                throw new InvalidOperationException("To prevent issues, you should only create this with: Custom_RoleType.NeutralBenign, Custom_RoleType.ImpostorVanilla, Custom_RoleType.CrewmateVanilla");
         }
         tab.transform.localPosition = new Vector3(tabXPos, 2.27f, -2f);
 
         tab.button.OnClick.AddListener(new Action(() =>
         {
-            LoadRoleOptions(roleType, tab.Button);
+            LoadRoleOptions(realRoleType, tab.Button);
         }));
         tabXPos += 0.762f;
         thiz.roleTabs.Add(tab.Button);
         return tab;
+    }
+
+    private static void LoadRoleOptions(VanillaLikeRoleTypes type, PassiveButton btn)
+    {
+        Logger.Info(type.ToString(), "LoadRoleOptions");
     }
 
     private static void SetTabColor(RoleSettingsTabButton tab, string hex)
@@ -813,12 +824,6 @@ public static class RolesSettingsMenu_ChanceTabPatch
         }
     }
 
-    private static void LoadRoleOptions(Custom_RoleType type, PassiveButton btn)
-    {
-        if (type == Custom_RoleType.None) return;
-        else Logger.Info(type.ToString(), "LoadRoleOptions");
-    }
-
     private static Color GetInactiveColor(this Color color, float shadowFactor = 0.5f)
     {
         shadowFactor = Mathf.Max(1.0f, shadowFactor);
@@ -833,7 +838,7 @@ public static class RolesSettingsMenu_ChanceTabPatch
         return shadowColor;
     }
 
-    public enum VanillaLikeRoleTypes : int
+    enum VanillaLikeRoleTypes : int
     {
         Crewmate = 0,
         Impostor = 1,
