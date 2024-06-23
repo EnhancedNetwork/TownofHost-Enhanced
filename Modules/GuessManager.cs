@@ -222,18 +222,6 @@ public static class GuessManager
                     return true;
                 }
                 
-                if (pc.Is(CustomRoles.Specter) && !Specter.CanGuess.GetBool())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessDisabled"));
-                    return true;
-                }
-                if (role == CustomRoles.Knighted && pc.Is(CustomRoles.Monarch))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessKnighted"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessKnighted"));
-                    return true;
-                }
                 if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessNotifiedBait"), pc.PlayerId);
@@ -256,12 +244,6 @@ public static class GuessManager
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessOnbound"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessOnbound"));
-                    return true;
-                }
-                if (role == CustomRoles.Specter && target.Is(CustomRoles.Specter))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessSpecter"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessSpecter"));
                     return true;
                 }
 

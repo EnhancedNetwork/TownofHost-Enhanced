@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
@@ -43,5 +44,27 @@ internal class Specter : RoleBase
     {
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
+    }
+
+    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (!CanGuess.GetBool())
+        {
+            if (!isUI) Utils.SendMessage(Translator.GetString("GuessDisabled"), guesser.PlayerId);
+            else guesser.ShowPopUp(Translator.GetString("GuessDisabled"));
+            return true;
+        }
+        return false;
+    }
+
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (role == CustomRoles.Specter)
+        {
+            if (!isUI) Utils.SendMessage(Translator.GetString("GuessSpecter"), guesser.PlayerId);
+            else guesser.ShowPopUp(Translator.GetString("GuessSpecter"));
+            return true;
+        }
+        return false;
     }
 }
