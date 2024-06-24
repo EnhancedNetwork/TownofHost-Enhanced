@@ -1285,6 +1285,7 @@
   "ShowShieldedPlayerToAll": "Reveal shielded player to all",
   "RemoveShieldOnFirstDead": "Remove shield on first death",
   "ShieldedCanUseKillButton": "Shielded player can use ability / kill button",
+  "PlayerIsShieldedByGame": "Player is protected by the game!",
 
   "LegacyNemesis": "Use Legacy Version",
   "ArsonistKeepsGameGoing": "<color=#ff6633>Arsonist</color> keeps the game going",
