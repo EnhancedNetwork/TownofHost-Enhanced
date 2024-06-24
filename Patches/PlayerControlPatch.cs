@@ -621,6 +621,13 @@ public static class CheckShapeshiftPatch
             logger.Info("Cancel shapeshifting in meeting");
             return false;
         }
+        if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+        {
+            instance.RpcGuardAndKill(instance);
+            instance.Notify(Utils.ColorString(Utils.GetRoleColor(instance.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
+            logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is protected by the game");
+            return false;
+        }     
         if (Pelican.IsEaten(instance.PlayerId))
         {
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is eaten by Pelican");
