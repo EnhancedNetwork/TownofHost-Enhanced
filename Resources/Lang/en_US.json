@@ -1388,9 +1388,9 @@
   "EngineerBase_InVentMaxTime": "Max Time In Vents",
   "NoisemakerBase_ImpostorAlert": "Impostors And Impostors-Based Can Get Alert",
   "NoisemakerBase_AlertDuration": "Alert Duration",
-  "TrackerBased_TrackingCooldown": "Tracking Cooldown",
-  "TrackerBased_TrackingDuration": "TrackingDuration",
-  "TrackerBased_TrackingDelay": "TrackingDelay",
+  "TrackerBase_TrackingCooldown": "Tracking Cooldown",
+  "TrackerBase_TrackingDuration": "TrackingDuration",
+  "TrackerBase_TrackingDelay": "TrackingDelay",
 
   "KamikazeControversialSymbol": "Use controversial symbol",
   "MareAddSpeedInLightsOut": "Additional Speed During Lights Out",

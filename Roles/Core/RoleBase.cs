@@ -472,8 +472,8 @@ public abstract class RoleBase
         EngineerBase_InVentMaxTime,
         NoisemakerBase_ImpostorAlert,
         NoisemakerBase_AlertDuration,
-        TrackerBased_TrackingCooldown,
-        TrackerBased_TrackingDuration,
-        TrackerBased_TrackingDelay,
+        TrackerBase_TrackingCooldown,
+        TrackerBase_TrackingDuration,
+        TrackerBase_TrackingDelay,
     }
 }
