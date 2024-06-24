@@ -122,6 +122,8 @@ class CheckMurderPatch
 
         if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
         {
+            killer.SetKillCooldown(5f);
+            killer.RpcGuardAndKill(target);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(killer.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
             Logger.Info($"Canceled from ShieldPersonDiedFirst", "FirstDied");
             return false;
