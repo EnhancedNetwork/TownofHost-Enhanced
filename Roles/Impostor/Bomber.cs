@@ -31,9 +31,9 @@ internal class Bomber : RoleBase
         BomberRadius = FloatOptionItem.Create(Id + 2, "BomberRadius", new(0.5f, 100f, 0.5f), 2f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Bomber])
             .SetValueFormat(OptionFormat.Multiplier);
-        BomberCanKill = BooleanOptionItem.Create(Id + 3, "CanKill", false, TabGroup.ImpostorRoles, false)
+        BomberCanKill = BooleanOptionItem.Create(Id + 3, GeneralOption.CanKill, false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Bomber]);
-        BomberKillCD = FloatOptionItem.Create(Id + 4, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
+        BomberKillCD = FloatOptionItem.Create(Id + 4, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(BomberCanKill)
             .SetValueFormat(OptionFormat.Seconds);
         BombCooldown = FloatOptionItem.Create(Id + 5, "BombCooldown", new(5f, 180f, 2.5f), 60f, TabGroup.ImpostorRoles, false)

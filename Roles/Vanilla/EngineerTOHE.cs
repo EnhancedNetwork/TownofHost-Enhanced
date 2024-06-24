@@ -14,16 +14,16 @@ internal class EngineerTOHE : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
     //==================================================================\\
 
-    private static OptionItem EngineerCD;
-    private static OptionItem EngineerInVentTime;
+    private static OptionItem VentUseCooldown;
+    private static OptionItem InVentMaxTime;
 
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.EngineerTOHE);
-        EngineerCD = FloatOptionItem.Create(Id + 2, "VentCooldown", new(0f, 250f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
+        VentUseCooldown = FloatOptionItem.Create(Id + 2, GeneralOption.EngineerBase_VentCooldown, new(0f, 250f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EngineerTOHE])
             .SetValueFormat(OptionFormat.Seconds);
-        EngineerInVentTime = FloatOptionItem.Create(Id + 3, "InVentMaxTime", new(0f, 250f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
+        InVentMaxTime = FloatOptionItem.Create(Id + 3, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 250f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EngineerTOHE])
             .SetValueFormat(OptionFormat.Seconds);
     }
@@ -39,8 +39,8 @@ internal class EngineerTOHE : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.EngineerCooldown = EngineerCD.GetFloat();
-        AURoleOptions.EngineerInVentMaxTime = EngineerInVentTime.GetFloat();
+        AURoleOptions.EngineerCooldown = VentUseCooldown.GetFloat();
+        AURoleOptions.EngineerInVentMaxTime = InVentMaxTime.GetFloat();
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 300f;

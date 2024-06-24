@@ -33,7 +33,7 @@ internal class Witch : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Witch);
-        ModeSwitchActionOpt = StringOptionItem.Create(Id + 10, "WitchModeSwitchAction", EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.ImpostorRoles, false)
+        ModeSwitchActionOpt = StringOptionItem.Create(Id + 10, GeneralOption.ModeSwitchAction, EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Witch]);
     }
     public override void Init()

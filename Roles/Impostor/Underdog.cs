@@ -20,7 +20,7 @@ internal class Underdog : RoleBase
         UnderdogMaximumPlayersNeededToKill = IntegerOptionItem.Create(Id + 2, "UnderdogMaximumPlayersNeededToKill", new(1, 15, 1), 5, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Underdog])
             .SetValueFormat(OptionFormat.Players);
-        UnderdogKillCooldown = FloatOptionItem.Create(Id + 3, "KillCooldown", new(0f, 180f, 2.5f), 12.5f, TabGroup.ImpostorRoles, false)
+        UnderdogKillCooldown = FloatOptionItem.Create(Id + 3, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 12.5f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Underdog])
             .SetValueFormat(OptionFormat.Seconds);
     }

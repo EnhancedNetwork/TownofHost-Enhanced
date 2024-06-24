@@ -22,11 +22,11 @@ internal class Specter : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(14900, TabGroup.NeutralRoles, CustomRoles.Specter);
-        CanVent = BooleanOptionItem.Create(14902, "CanVent", false, TabGroup.NeutralRoles, false)
+        CanVent = BooleanOptionItem.Create(14902, GeneralOption.CanVent, false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Specter]);
         SnatchesWin = BooleanOptionItem.Create(14903, "SpecterSnatchesWin", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Specter]);
-        CanGuess = BooleanOptionItem.Create(14904, "CanGuess", false, TabGroup.NeutralRoles, false)
+        CanGuess = BooleanOptionItem.Create(14904, GeneralOption.CanGuess, false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Specter]);
         OverrideTasksData.Create(14905, TabGroup.NeutralRoles, CustomRoles.Specter);
     }

@@ -22,7 +22,7 @@ internal class Provocateur : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Provocateur);
-        ProvKillCD = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 100f, 2.5f), 15f, TabGroup.NeutralRoles, false)
+        ProvKillCD = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 100f, 2.5f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Provocateur])
             .SetValueFormat(OptionFormat.Seconds);
     }

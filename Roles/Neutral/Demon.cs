@@ -33,8 +33,8 @@ internal class Demon : RoleBase
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Demon, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, "DemonKillCooldown", new(1f, 180f, 1f), 2f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon]);
+        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon]);
         HealthMax = IntegerOptionItem.Create(Id + 15, "DemonHealthMax", new(5, 200, 5), 100, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon])
             .SetValueFormat(OptionFormat.Health);
         Damage = IntegerOptionItem.Create(Id + 16, "DemonDamage", new(1, 100, 1), 15, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Demon])
