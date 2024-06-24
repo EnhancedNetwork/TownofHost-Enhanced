@@ -118,6 +118,14 @@ class CheckMurderPatch
             return false;
         }
 
+        Logger.Info($"Check: FirstDied", "ShieldPersonDiedFirst");
+
+        if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+        {
+            Logger.Info($"Canceled from ShieldPersonDiedFirst", "FirstDied");
+            return false;
+        }
+
         killer.ResetKillCooldown();
         Logger.Info($"Kill Cooldown Resets", "CheckMurder");
 
@@ -261,15 +269,6 @@ class CheckMurderPatch
 
         var targetRoleClass = target.GetRoleClass();
         var targetSubRoles = target.GetCustomSubRoles();
-
-        // Shield Player
-        if (Main.ShieldPlayer != "" && Main.ShieldPlayer == target.GetClient().GetHashedPuid() && Utils.IsAllAlive)
-        {
-            Main.ShieldPlayer = "";
-            killer.RpcGuardAndKill(target);
-            killer.SetKillCooldown(forceAnime: true);
-            return false;
-        }
 
         // Madmate Spawn Mode Is First Kill
         if (Madmate.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && target.CanBeMadmate(inGame:true))
@@ -466,6 +465,21 @@ class MurderPlayerPatch
         }
         if (Main.FirstDied == "")
             Main.FirstDied = target.GetClient().GetHashedPuid();
+
+        if (Options.RemoveShieldOnFirstDead.GetBool() && Main.FirstDiedPrevious != "")
+        {
+            Main.FirstDiedPrevious = "";
+            RPC.SyncAllPlayerNames();
+        }
+
+        // Sync protected player from being killed first info for modded clients
+        if (PlayerControl.LocalPlayer.OwnedByHost())
+        {
+            var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncShieldPersonDiedFirst, SendOption.None, -1);
+            writer.Write(Main.FirstDied);
+            writer.Write(Main.FirstDiedPrevious);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
 
         if (Main.AllKillers.ContainsKey(killer.PlayerId))
             Main.AllKillers.Remove(killer.PlayerId);
@@ -1198,7 +1212,21 @@ class FixedUpdateInNormalGamePatch
 
                 RealName = RealName.ApplyNameColorData(seer, target, false);
                 var seerRole = seer.GetCustomRole();
-
+                
+                // Add protected player icon from ShieldPersonDiedFirst
+                if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+                {
+                    if (Options.ShowShieldedPlayerToAll.GetBool())
+                    {
+                        RealName = "<color=#4fa1ff><u></color>" + RealName + "</u>";
+                        Mark.Append("<color=#4fa1ff>✚</color>");
+                    }
+                    else if (seer == target)
+                    {
+                        RealName = "<color=#4fa1ff><u></color>" + RealName + "</u>";
+                        Mark.Append("<color=#4fa1ff>✚</color>");
+                    }
+                }
 
                 Mark.Append(seerRoleClass?.GetMark(seer, target, false));
                 Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));

@@ -1280,7 +1280,12 @@
   "MenuTitle.TaskSettings": "★ Task Management ★",
   "MenuTitle.Guessers": "★ Guesser Mode ★",
   "MenuTitle.GuesserModeRoles": "★ Roles and Add-ons for Guesser Mode ★",
+
   "ShieldPersonDiedFirst": "Shield player who dead first in the last game",
+  "ShowShieldedPlayerToAll": "Reveal shielded player to all",
+  "RemoveShieldOnFirstDead": "Remove shield on first death",
+  "ShieldedCanUseKillButton": "Shielded player can use ability / kill button",
+
   "LegacyNemesis": "Use Legacy Version",
   "ArsonistKeepsGameGoing": "<color=#ff6633>Arsonist</color> keeps the game going",
   "ArsonistCanIgniteAnytime": "Can Ignite Anytime",
