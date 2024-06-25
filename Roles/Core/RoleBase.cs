@@ -62,6 +62,11 @@ public abstract class RoleBase
     public abstract CustomRoles ThisRoleBase { get; }
 
     /// <summary>
+    /// Defines the custom role
+    /// </summary>
+    public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
+
+    /// <summary>
     /// Defines the role type
     /// </summary>
     public abstract Custom_RoleType ThisRoleType { get; }

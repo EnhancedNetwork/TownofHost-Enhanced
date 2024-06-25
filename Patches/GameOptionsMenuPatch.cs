@@ -751,8 +751,9 @@ public static class RolesSettingsMenu_ChanceTabPatch
 
     private static void CreateCustomQuotaOption(RolesSettingsMenu inst, RoleBase dog, ref float yPos, int index)
     {
-        RoleOptionSetting roleOptionSetting = Object.Instantiate(inst.roleOptionSettingOrigin, Vector3.zero, Quaternion.identity, inst.RoleChancesSettings.transform);
+        RoleOptionSetting roleOptionSetting = Object.Instantiate(inst.roleOptionSettingOrigin, Vector3.zero, Quaternion.identity, inst.RoleChancesSettings.transform); ;
         roleOptionSetting.transform.localPosition = new Vector3(-0.15f, yPos, -2f);
+        roleOptionSetting.transform.Find("Role #").gameObject.SetActive(false);
 
         // Set Role
         SpriteRenderer[] componentsInChildren = roleOptionSetting.GetComponentsInChildren<SpriteRenderer>(true);
@@ -766,15 +767,16 @@ public static class RolesSettingsMenu_ChanceTabPatch
             textMeshPro.fontMaterial.SetFloat("_Stencil", 20);
         }
         roleOptionSetting.role = RoleManager.Instance.AllRoles[0];
-        roleOptionSetting.titleText.text = Utils.GetRoleName(Enum.Parse<CustomRoles>(dog.GetType().Name, true));
+        roleOptionSetting.titleText.text = Utils.GetRoleName(dog.ThisCustomRole);
 
-        if (dog.ThisRoleBase.IsImpostorTeam())
+        if (dog.ThisCustomRole.IsImpostorTeam())
         {
             roleOptionSetting.labelSprite.color = Palette.ImpostorRoleRed;
         }
-        else if (dog.ThisRoleBase.IsNeutral())
+        else if (dog.ThisCustomRole.IsNeutral())
         {
-            roleOptionSetting.labelSprite.color = Palette.AcceptedGreen;
+            _ = ColorUtility.TryParseHtmlString("#7f8c8d", out Color c);
+            roleOptionSetting.labelSprite.color = c;
         }
         else
         {
@@ -786,10 +788,10 @@ public static class RolesSettingsMenu_ChanceTabPatch
 
         plusButton.OnClick.RemoveAllListeners();
         minusButton.OnClick.RemoveAllListeners();
-        plusButton.OnClick.AddListener(new Action(() => IncreaseChance(roleOptionSetting, dog)));
-        minusButton.OnClick.AddListener(new Action(() => DecreaseChance(roleOptionSetting, dog)));
+        plusButton.OnClick.AddListener(new Action(() => IncreaseChance(roleOptionSetting, dog.ThisCustomRole)));
+        minusButton.OnClick.AddListener(new Action(() => DecreaseChance(roleOptionSetting, dog.ThisCustomRole)));
 
-        roleOptionSetting.OnValueChanged = new Action<OptionBehaviour>((OptionBehaviour a) => OnValueChanged(a, dog));
+        roleOptionSetting.OnValueChanged = new Action<OptionBehaviour>((OptionBehaviour a) => OnValueChanged(a, dog.ThisCustomRole));
         roleOptionSetting.SetClickMask(inst.ButtonClickMask);
         inst.roleChances.Add(roleOptionSetting);
         for (int i = 0; i < roleOptionSetting.ControllerSelectable.Count; i++)
@@ -803,34 +805,39 @@ public static class RolesSettingsMenu_ChanceTabPatch
         List<UiElement> quotaMono = inst.QuotaTabSelectables.ToManaged();
         quotaMono.AddRange(roleOptionSetting.ControllerSelectable.ToManaged());
         inst.QuotaTabSelectables = quotaMono.ToIl2Cpp();
-        OnValueChanged(roleOptionSetting, dog);
+        OnValueChanged(roleOptionSetting, Enum.Parse<CustomRoles>(dog.GetType().Name, true));
         yPos -= 0.43f;
     }
 
-    private static void IncreaseChance(OptionBehaviour option, RoleBase role)
+    private static void IncreaseChance(OptionBehaviour option, CustomRoles role)
     {
-        float chance = Options.GetRoleChance(role.ThisRoleBase);
+        Logger.Info("e", "IncreaseChance");
+        float chance = Options.GetRoleChance(role);
 
-        Options.SetRoleChance(role.ThisRoleBase, chance + 1);
+        Options.SetRoleChance(role, chance + 5f);
         OnValueChanged(option, role);
     }
 
-    private static void DecreaseChance(OptionBehaviour option, RoleBase role)
+    private static void DecreaseChance(OptionBehaviour option, CustomRoles role)
     {
-        float chance = Options.GetRoleChance(role.ThisRoleBase);
+        Logger.Info("e", "DecreaseChance");
+        float chance = Options.GetRoleChance(role);
 
-        Options.SetRoleChance(role.ThisRoleBase, chance + 1);
+        Options.SetRoleChance(role, chance - 5f);
         OnValueChanged(option, role);
     }
 
-    private static void OnValueChanged(OptionBehaviour optionnonconv, RoleBase role)
+    private static void OnValueChanged(OptionBehaviour optionnonconv, CustomRoles role)
     {
         RoleOptionSetting option = optionnonconv as RoleOptionSetting;
         if (option == null) return;
 
-        option.roleMaxCount = 99;
-        option.roleChance = (int)role.ThisRoleBase.GetChance();
-        option.countText.text = "nuh uh";
+        float roleChance = Options.GetRoleChance(role);
+        int roleCount = Options.GetRoleCount(role);
+
+        option.roleMaxCount = roleCount;
+        option.roleChance = (int)roleChance;
+        option.countText.text = option.roleMaxCount.ToString();
         option.chanceText.text = option.roleChance.ToString();
     }
 
