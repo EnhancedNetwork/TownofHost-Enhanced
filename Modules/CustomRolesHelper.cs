@@ -1092,11 +1092,14 @@ public static class CustomRolesHelper
     {
         return role is
             CustomRoles.Crewmate or
-            CustomRoles.Engineer or
-            CustomRoles.Scientist or
-            CustomRoles.GuardianAngel or
             CustomRoles.Impostor or
-            CustomRoles.Shapeshifter;
+            CustomRoles.Scientist or
+            CustomRoles.Engineer or
+            CustomRoles.GuardianAngel or
+            CustomRoles.Shapeshifter or
+            CustomRoles.Noisemaker or
+            CustomRoles.Phantom or
+            CustomRoles.Tracker;
     }
     public static Custom_Team GetCustomRoleTeam(this CustomRoles role)
     {
