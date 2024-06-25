@@ -1,5 +1,4 @@
-﻿using AmongUs.GameOptions;
-
+﻿
 namespace TOHE.Roles.Vanilla;
 
 internal class NoisemakerTOHE : RoleBase
@@ -35,7 +34,7 @@ internal class NoisemakerTOHE : RoleBase
         playerIdList.Add(playerId);
     }
 
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    public static void ApplyGameOptionsForOthers()
     {
         AURoleOptions.NoisemakerImpostorAlert = ImpostorAlert.GetBool();
         AURoleOptions.NoisemakerAlertDuration = AlertDuration.GetInt();

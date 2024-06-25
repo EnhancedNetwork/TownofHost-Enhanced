@@ -7,6 +7,7 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Vanilla;
 
 namespace TOHE.Roles.Core;
 
@@ -85,6 +86,8 @@ public static class CustomRoleManager
         }
 
         player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
+
+        if (NoisemakerTOHE.HasEnabled) NoisemakerTOHE.ApplyGameOptionsForOthers();
 
         if (DollMaster.HasEnabled && DollMaster.IsDoll(player.PlayerId))
         {
