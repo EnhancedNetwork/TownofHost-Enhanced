@@ -4,6 +4,7 @@ public class PresetOptionItem(int defaultValue, TabGroup tab, bool vanilla) : Op
 {
     // 必須情報
     public IntegerValueRule Rule = (0, NumPresets - 1, 1);
+    public int ValuePresets = NumPresets;
 
     public static PresetOptionItem Create(int defaultValue, TabGroup tab, bool vanillaText = false)
     {

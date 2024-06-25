@@ -13,9 +13,11 @@ public static class ModGameOptionsMenu
 [HarmonyPatch(typeof(GameOptionsMenu))]
 public static class GameOptionsMenuPatch
 {
+    public static GameOptionsMenu Instance;
     [HarmonyPatch(nameof(GameOptionsMenu.Initialize)), HarmonyPrefix]
     private static bool InitializePrefix(GameOptionsMenu __instance)
     {
+        Instance ??= __instance;
         if (ModGameOptionsMenu.TabIndex < 3) return true;
 
         if (__instance.Children == null || __instance.Children.Count == 0)
@@ -45,6 +47,7 @@ public static class GameOptionsMenuPatch
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings)), HarmonyPrefix]
     private static bool CreateSettingsPrefix(GameOptionsMenu __instance)
     {
+        Instance ??= __instance;
         if (ModGameOptionsMenu.TabIndex < 3) return true;
         var modTab = (TabGroup)(ModGameOptionsMenu.TabIndex - 3);
 
@@ -219,7 +222,14 @@ public static class GameOptionsMenuPatch
                 break;
         }
     }
+    [HarmonyPatch(nameof(GameOptionsMenu.Update)), HarmonyPrefix]
+    private static bool UpdatePrefix(GameOptionsMenu __instance)
+    {
+        Instance ??= __instance;
+        
 
+        return true;
+    }
     [HarmonyPatch(nameof(GameOptionsMenu.ValueChanged)), HarmonyPrefix]
     private static bool ValueChangedPrefix(GameOptionsMenu __instance, OptionBehaviour option)
     {
@@ -320,15 +330,11 @@ public static class GameOptionsMenuPatch
         else if (item is PresetOptionItem)
         {
             PresetOptionItem presetItem = item as PresetOptionItem;
-            baseGameSetting = new IntGameSetting
+            baseGameSetting = new StringGameSetting
             {
-                Type = OptionTypes.Int,
-                Value = presetItem.GetInt(),
-                Increment = presetItem.Rule.Step,
-                ValidRange = new IntRange(presetItem.Rule.MinValue, presetItem.Rule.MaxValue),
-                ZeroIsInfinity = false,
-                SuffixType = NumberSuffixes.Multiplier,
-                FormatString = string.Empty,
+                Type = OptionTypes.String,
+                Values = new StringNames[presetItem.ValuePresets],
+                Index = presetItem.GetInt(),
             };
         }
 
@@ -421,10 +427,6 @@ public static class NumberOptionPatch
             else if (item is FloatOptionItem floatOptionItem)
             {
                 floatOptionItem.SetValue(floatOptionItem.Rule.GetNearestIndex(__instance.GetFloat()));
-            }
-            else if (item is PresetOptionItem presetOptionItem)
-            {
-                presetOptionItem.SetValue(presetOptionItem.Rule.GetNearestIndex(__instance.GetInt()));
             }
 
             return false;
@@ -520,6 +522,15 @@ public static class StringOptionPatch
                 {
                     __instance.oldValue = __instance.Value;
                     __instance.ValueText.text = Translator.GetString(stringOptionItem.Selections[stringOptionItem.Rule.GetValueByIndex(__instance.Value)]);
+                }
+            }
+            else if (item is PresetOptionItem presetOptionItem)
+            {
+                if (__instance.oldValue != __instance.Value)
+                {
+                    __instance.oldValue = __instance.Value;
+                    __instance.ValueText.text = presetOptionItem.GetString();
+                    GameOptionsMenuPatch.Instance?.Update();
                 }
             }
             return false;
