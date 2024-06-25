@@ -27,16 +27,16 @@ public class GameSettingMenuPatch
     }
 
     // ボタンに表示する名前
-    public static string[] buttonName = new string[]{
+    public static string[] buttonName = [
         "Game Settings",
-        "TOH_Y Settings",
+        "System Settings",
+        "Mod Settings",
+        "Game Modifiers",
         "Impostor Roles",
-        "Madmate Roles",
         "Crewmate Roles",
         "Neutral Roles",
-        "Unit Roles",
         "Add-Ons"
-    };
+    ];
 
     // 左側配置ボタン座標
     private static Vector3 buttonPosition_Left = new(-3.9f, -0.4f, 0f);
@@ -49,9 +49,9 @@ public class GameSettingMenuPatch
     private static PassiveButton templateGameSettingsButton;
 
     // MOD設定用ボタン格納変数
-    static Dictionary<TabGroup, PassiveButton> ModSettingsButtons = new();
+    static Dictionary<TabGroup, PassiveButton> ModSettingsButtons = [];
     // MOD設定メニュー用タブ格納変数
-    static Dictionary<TabGroup, GameOptionsMenu> ModSettingsTabs = new();
+    static Dictionary<TabGroup, GameOptionsMenu> ModSettingsTabs = [];
 
     // ゲーム設定メニュー 初期関数
     [HarmonyPatch(nameof(GameSettingMenu.Start)), HarmonyPrefix]
@@ -61,7 +61,7 @@ public class GameSettingMenuPatch
         /******** ボタン作成 ********/
 
         // 各グループ毎にボタンを作成する
-        ModSettingsButtons = new();
+        ModSettingsButtons = [];
         foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {
             // ゲーム設定ボタンを元にコピー
@@ -128,7 +128,7 @@ public class GameSettingMenuPatch
         ModGameOptionsMenu.CategoryHeaderList = new();
 
         // 各グループ毎にタブを作成する/基盤作成
-        ModSettingsTabs = new();
+        ModSettingsTabs = [];
         foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {
             // ゲーム設定タブからコピー
@@ -374,11 +374,11 @@ public class GameSettingMenuPatch
     private static void ClosePostfix(GameSettingMenu __instance)
     {
         foreach (var button in ModSettingsButtons.Values)
-            UnityEngine.Object.Destroy(button);
+            Object.Destroy(button);
         foreach (var tab in ModSettingsTabs.Values)
-            UnityEngine.Object.Destroy(tab);
-        ModSettingsButtons = new();
-        ModSettingsTabs = new();
+            Object.Destroy(tab);
+        ModSettingsButtons = [];
+        ModSettingsTabs = [];
     }
 }
 

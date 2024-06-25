@@ -66,7 +66,7 @@ public static class GameOptionsMenuPatch
 
             if (option is TextOptionItem)
             {
-                CategoryHeaderMasked categoryHeaderMasked = UnityEngine.Object.Instantiate<CategoryHeaderMasked>(__instance.categoryHeaderOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
+                CategoryHeaderMasked categoryHeaderMasked = UnityEngine.Object.Instantiate(__instance.categoryHeaderOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
                 categoryHeaderMasked.SetHeader(StringNames.RolesCategory, 20);
                 categoryHeaderMasked.Title.text = option.GetName();
                 categoryHeaderMasked.transform.localScale = Vector3.one * 0.63f;
@@ -90,7 +90,7 @@ public static class GameOptionsMenuPatch
             {
                 case OptionTypes.Checkbox:
                     {
-                        optionBehaviour = UnityEngine.Object.Instantiate<ToggleOption>(__instance.checkboxOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
+                        optionBehaviour = UnityEngine.Object.Instantiate(__instance.checkboxOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
                         optionBehaviour.transform.localPosition = new Vector3(pos_x, num, pos_z);
 
                         OptionBehaviourSetSizeAndPosition(optionBehaviour, option, baseGameSetting.Type);
@@ -103,7 +103,7 @@ public static class GameOptionsMenuPatch
                     }
                 case OptionTypes.String:
                     {
-                        optionBehaviour = UnityEngine.Object.Instantiate<StringOption>(__instance.stringOptionOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
+                        optionBehaviour = UnityEngine.Object.Instantiate(__instance.stringOptionOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
                         optionBehaviour.transform.localPosition = new Vector3(pos_x, num, pos_z);
 
                         OptionBehaviourSetSizeAndPosition(optionBehaviour, option, baseGameSetting.Type);
@@ -117,7 +117,7 @@ public static class GameOptionsMenuPatch
                 case OptionTypes.Float:
                 case OptionTypes.Int:
                     {
-                        optionBehaviour = UnityEngine.Object.Instantiate<NumberOption>(__instance.numberOptionOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
+                        optionBehaviour = UnityEngine.Object.Instantiate(__instance.numberOptionOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
                         optionBehaviour.transform.localPosition = new Vector3(pos_x, num, pos_z);
 
                         OptionBehaviourSetSizeAndPosition(optionBehaviour, option, baseGameSetting.Type);
