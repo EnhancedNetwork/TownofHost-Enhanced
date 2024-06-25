@@ -811,19 +811,17 @@ public static class RolesSettingsMenu_ChanceTabPatch
 
     private static void IncreaseChance(OptionBehaviour option, CustomRoles role)
     {
-        Logger.Info("e", "IncreaseChance");
         float chance = Options.GetRoleChance(role);
 
-        Options.SetRoleChance(role, chance + 5f);
+        Options.SetRoleChance(role, chance + 1f);
         OnValueChanged(option, role);
     }
 
     private static void DecreaseChance(OptionBehaviour option, CustomRoles role)
     {
-        Logger.Info("e", "DecreaseChance");
         float chance = Options.GetRoleChance(role);
 
-        Options.SetRoleChance(role, chance - 5f);
+        Options.SetRoleChance(role, chance - 1f);
         OnValueChanged(option, role);
     }
 
@@ -832,7 +830,7 @@ public static class RolesSettingsMenu_ChanceTabPatch
         RoleOptionSetting option = optionnonconv as RoleOptionSetting;
         if (option == null) return;
 
-        float roleChance = Options.GetRoleChance(role);
+        float roleChance = Options.GetRoleChance(role) * 5f;
         int roleCount = Options.GetRoleCount(role);
 
         option.roleMaxCount = roleCount;
