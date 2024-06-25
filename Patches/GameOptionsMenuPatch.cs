@@ -60,7 +60,7 @@ public static class GameOptionsMenuPatch
             var enabled = !option.IsHiddenOn(Options.CurrentGameMode)
                          && (option.Parent == null || (!option.Parent.IsHiddenOn(Options.CurrentGameMode) && option.Parent.GetBool()));
 
-            if (option.IsHeader || option is TextOptionItem)
+            if (option is TextOptionItem)
             {
                 CategoryHeaderMasked categoryHeaderMasked = UnityEngine.Object.Instantiate<CategoryHeaderMasked>(__instance.categoryHeaderOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
                 categoryHeaderMasked.SetHeader(StringNames.RolesCategory, 20);
@@ -74,7 +74,7 @@ public static class GameOptionsMenuPatch
 
                 if (enabled) num -= 0.63f;
             }
-            if (option is TextOptionItem) continue;
+            else if (option.IsHeader && enabled) num -= 0.2f;
 
             var baseGameSetting = GetSetting(option);
             if (baseGameSetting == null) continue;
@@ -253,6 +253,7 @@ public static class GameOptionsMenuPatch
                 categoryHeaderMasked.gameObject.SetActive(enabled);
                 if (enabled) num -= 0.63f;
             }
+            if (option.IsHeader && enabled) num -= 0.1f;
             if (ModGameOptionsMenu.BehaviourList.TryGetValue(index, out var optionBehaviour))
             {
                 optionBehaviour.transform.localPosition = new Vector3(0.952f, num, -2f);
