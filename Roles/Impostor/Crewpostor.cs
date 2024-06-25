@@ -27,7 +27,7 @@ internal class Crewpostor : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Crewpostor);
-        CanKillAllies = BooleanOptionItem.Create(Id + 2, "CanKillImpostors", true, TabGroup.ImpostorRoles, false)
+        CanKillAllies = BooleanOptionItem.Create(Id + 2, GeneralOption.CanKillImpostors, true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
         KnowsAllies = BooleanOptionItem.Create(Id + 3, "CrewpostorKnowsAllies", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
