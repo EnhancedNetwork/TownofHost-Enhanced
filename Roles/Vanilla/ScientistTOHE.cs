@@ -42,6 +42,4 @@ internal class ScientistTOHE : RoleBase
         AURoleOptions.ScientistCooldown = BatteryCooldown.GetInt();
         AURoleOptions.ScientistBatteryCharge = BatteryDuration.GetInt();
     }
-
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 300f;
 }

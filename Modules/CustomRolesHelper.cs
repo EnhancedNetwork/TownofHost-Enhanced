@@ -47,13 +47,13 @@ public static class CustomRolesHelper
     {
         if (player == null) return false;
         var customRole = player.GetCustomRole();
-        bool ModSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() == CustomRoles.Impostor || customRole.GetVNRole() == CustomRoles.Shapeshifter;
+        bool ModSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
 
         if (player.IsModClient() || (!considerVanillaShift && !player.IsModClient()))
             return ModSideHasKillButton;
 
         bool vanillaSideHasKillButton = EAC.OriginalRoles.TryGetValue(player.PlayerId, out var OriginalRole) ?
-                                         (OriginalRole.GetDYRole() == RoleTypes.Impostor || OriginalRole.GetVNRole() == CustomRoles.Impostor || OriginalRole.GetVNRole() == CustomRoles.Shapeshifter) : ModSideHasKillButton;
+                                         (OriginalRole.GetDYRole() == RoleTypes.Impostor || OriginalRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom) : ModSideHasKillButton;
 
         return vanillaSideHasKillButton;
     }
@@ -1092,11 +1092,14 @@ public static class CustomRolesHelper
     {
         return role is
             CustomRoles.Crewmate or
-            CustomRoles.Engineer or
-            CustomRoles.Scientist or
-            CustomRoles.GuardianAngel or
             CustomRoles.Impostor or
-            CustomRoles.Shapeshifter;
+            CustomRoles.Scientist or
+            CustomRoles.Engineer or
+            CustomRoles.GuardianAngel or
+            CustomRoles.Shapeshifter or
+            CustomRoles.Noisemaker or
+            CustomRoles.Phantom or
+            CustomRoles.Tracker;
     }
     public static Custom_Team GetCustomRoleTeam(this CustomRoles role)
     {
