@@ -253,7 +253,7 @@ public static class GameOptionsMenuPatch
                 categoryHeaderMasked.gameObject.SetActive(enabled);
                 if (enabled) num -= 0.63f;
             }
-            if (option.IsHeader && enabled) num -= 0.1f;
+            if (option.IsHeader && enabled) num -= 0.15f;
             if (ModGameOptionsMenu.BehaviourList.TryGetValue(index, out var optionBehaviour))
             {
                 optionBehaviour.transform.localPosition = new Vector3(0.952f, num, -2f);
