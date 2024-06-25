@@ -588,7 +588,14 @@ public static class Options
     }
     public static void SetRoleChance(CustomRoles role, float chance)
     {
-        if (chance < 0f || chance > 100f) return;
+        if (chance < 0f)
+        {
+            chance = 20f; // Reset
+        }
+        if (chance > 100f)
+        {
+            chance = 0f;
+        }
 
         if (CustomRoleSpawnChances.TryGetValue(role, out var option))
         {
