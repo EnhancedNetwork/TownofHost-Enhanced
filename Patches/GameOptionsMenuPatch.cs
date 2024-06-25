@@ -767,13 +767,18 @@ public static class RolesSettingsMenu_ChanceTabPatch
         }
         roleOptionSetting.role = RoleManager.Instance.AllRoles[0];
         roleOptionSetting.titleText.text = Utils.GetRoleName(dog.ThisRoleBase);
-        if (dog.ThisRoleBase.IsCrewmateTeamV2())
+
+        if (dog.ThisRoleBase.IsImpostorTeam())
         {
-            roleOptionSetting.labelSprite.color = Palette.CrewmateRoleBlue;
+            roleOptionSetting.labelSprite.color = Palette.ImpostorRoleRed;
+        }
+        else if (dog.ThisRoleBase.IsNeutral())
+        {
+            roleOptionSetting.labelSprite.color = Palette.AcceptedGreen;
         }
         else
         {
-            roleOptionSetting.labelSprite.color = Palette.ImpostorRoleRed;
+            roleOptionSetting.labelSprite.color = Palette.CrewmateRoleBlue;
         }
 
         // figure out later roleOptionSetting.OnValueChanged = new Action<OptionBehaviour>(inst.ValueChanged);
@@ -790,10 +795,7 @@ public static class RolesSettingsMenu_ChanceTabPatch
         List<UiElement> quotaMono = inst.QuotaTabSelectables.ToManaged();
         quotaMono.AddRange(roleOptionSetting.ControllerSelectable.ToManaged());
         inst.QuotaTabSelectables = quotaMono.ToIl2Cpp();
-        if (index < GameManager.Instance.GameSettingsList.AllRoles.Count - 1)
-        {
-            yPos += -0.43f;
-        }
+        yPos -= 0.43f;
     }
 
 
@@ -873,7 +875,6 @@ public static class RolesSettingsMenu_ChanceTabPatch
         }
 
         float num = 0.662f;
-        float num2 = -1.928f;
 
         CategoryHeaderEditRole categoryHeaderEditRole = Object.Instantiate<CategoryHeaderEditRole>(thiz.categoryHeaderEditRoleOrigin, Vector3.zero, Quaternion.identity, thiz.RoleChancesSettings.transform);
 
