@@ -586,6 +586,18 @@ public static class Options
     {
         return CustomRoleSpawnChances.TryGetValue(role, out var option) ? option.GetValue()/* / 10f */ : roleSpawnChances[role];
     }
+    public static void SetRoleChance(CustomRoles role, float chance)
+    {
+        if (CustomRoleSpawnChances.TryGetValue(role, out var option))
+        {
+            option.SetValue((int)chance);
+        }
+        else
+        {
+            roleSpawnChances[role] = chance;
+        }
+    }
+
     public static void Load()
     {
         //#######################################

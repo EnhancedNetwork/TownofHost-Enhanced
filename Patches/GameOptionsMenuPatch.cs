@@ -766,7 +766,7 @@ public static class RolesSettingsMenu_ChanceTabPatch
             textMeshPro.fontMaterial.SetFloat("_Stencil", 20);
         }
         roleOptionSetting.role = RoleManager.Instance.AllRoles[0];
-        roleOptionSetting.titleText.text = Utils.GetRoleName(dog.ThisRoleBase);
+        roleOptionSetting.titleText.text = Utils.GetRoleName(Enum.Parse<CustomRoles>(dog.GetType().Name, true));
 
         if (dog.ThisRoleBase.IsImpostorTeam())
         {
@@ -781,7 +781,15 @@ public static class RolesSettingsMenu_ChanceTabPatch
             roleOptionSetting.labelSprite.color = Palette.CrewmateRoleBlue;
         }
 
-        // figure out later roleOptionSetting.OnValueChanged = new Action<OptionBehaviour>(inst.ValueChanged);
+        PassiveButton minusButton = roleOptionSetting.transform.Find("Chance %").Find("MinusButton (1)").GetComponent<PassiveButton>();
+        PassiveButton plusButton = roleOptionSetting.transform.Find("Chance %").Find("PlusButton (1)").GetComponent<PassiveButton>();
+
+        plusButton.OnClick.RemoveAllListeners();
+        minusButton.OnClick.RemoveAllListeners();
+        plusButton.OnClick.AddListener(new Action(() => IncreaseChance(roleOptionSetting, dog)));
+        minusButton.OnClick.AddListener(new Action(() => DecreaseChance(roleOptionSetting, dog)));
+
+        roleOptionSetting.OnValueChanged = new Action<OptionBehaviour>((OptionBehaviour a) => OnValueChanged(a, dog));
         roleOptionSetting.SetClickMask(inst.ButtonClickMask);
         inst.roleChances.Add(roleOptionSetting);
         for (int i = 0; i < roleOptionSetting.ControllerSelectable.Count; i++)
@@ -795,7 +803,35 @@ public static class RolesSettingsMenu_ChanceTabPatch
         List<UiElement> quotaMono = inst.QuotaTabSelectables.ToManaged();
         quotaMono.AddRange(roleOptionSetting.ControllerSelectable.ToManaged());
         inst.QuotaTabSelectables = quotaMono.ToIl2Cpp();
+        OnValueChanged(roleOptionSetting, dog);
         yPos -= 0.43f;
+    }
+
+    private static void IncreaseChance(OptionBehaviour option, RoleBase role)
+    {
+        float chance = Options.GetRoleChance(role.ThisRoleBase);
+
+        Options.SetRoleChance(role.ThisRoleBase, chance + 1);
+        OnValueChanged(option, role);
+    }
+
+    private static void DecreaseChance(OptionBehaviour option, RoleBase role)
+    {
+        float chance = Options.GetRoleChance(role.ThisRoleBase);
+
+        Options.SetRoleChance(role.ThisRoleBase, chance + 1);
+        OnValueChanged(option, role);
+    }
+
+    private static void OnValueChanged(OptionBehaviour optionnonconv, RoleBase role)
+    {
+        RoleOptionSetting option = optionnonconv as RoleOptionSetting;
+        if (option == null) return;
+
+        option.roleMaxCount = 99;
+        option.roleChance = (int)role.ThisRoleBase.GetChance();
+        option.countText.text = "nuh uh";
+        option.chanceText.text = option.roleChance.ToString();
     }
 
 
@@ -879,7 +915,7 @@ public static class RolesSettingsMenu_ChanceTabPatch
         CategoryHeaderEditRole categoryHeaderEditRole = Object.Instantiate<CategoryHeaderEditRole>(thiz.categoryHeaderEditRoleOrigin, Vector3.zero, Quaternion.identity, thiz.RoleChancesSettings.transform);
 
         // Set Header
-        categoryHeaderEditRole.Title.text = type.ToString();
+        categoryHeaderEditRole.Title.text = GetString(type.ToString());
         categoryHeaderEditRole.Background.material.SetInt(PlayerMaterial.MaskLayer, 20);
         categoryHeaderEditRole.Divider?.material.SetInt(PlayerMaterial.MaskLayer, 20);
         categoryHeaderEditRole.Title.fontMaterial.SetFloat("_StencilComp", 3f);
@@ -888,12 +924,11 @@ public static class RolesSettingsMenu_ChanceTabPatch
         categoryHeaderEditRole.transform.localPosition = new Vector3(4.986f, num, -2f);
         num -= 0.522f;
         int num3 = 0;
-        for (int k = 0; k < roles.Count; k++)
+        foreach (var role in roles)
         {
-            CreateCustomQuotaOption(thiz, roles[k], ref num, num3);
+            CreateCustomQuotaOption(thiz, role, ref num, num3);
             num3++;
         }
-        num -= 0.22f;
 
         Logger.Info($"{type} Count: {roles.Count}", "LoadRoleOptions");
     }
