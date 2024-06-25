@@ -5,6 +5,7 @@ using Object = UnityEngine.Object;
 
 namespace TOHE;
 
+// Thanks: https://github.com/Yumenopai/TownOfHost_Y/blob/main/Patches/GameSettingMenuPatch.cs
 [HarmonyPatch(typeof(GameSettingMenu))]
 public class GameSettingMenuPatch
 {
@@ -72,18 +73,32 @@ public class GameSettingMenuPatch
             var label = button.GetComponentInChildren<TextMeshPro>();
             // ボタンテキストの翻訳破棄
             label.DestroyTranslator();
+            // Temp color tab
+            string tabcolor = tab switch
+            {
+                TabGroup.SystemSettings => Main.ModColor,
+                TabGroup.ModSettings => "#59ef83",
+                TabGroup.ModifierSettings => "#EF59AF",
+                TabGroup.ImpostorRoles => "#f74631",
+                TabGroup.CrewmateRoles => "#8cffff",
+                TabGroup.NeutralRoles => "#7f8c8d",
+                TabGroup.Addons => "#ff9ace",
+                _ => "#ffffff",
+            };
+            // Set color
+            //button.HeldButtonSprite.color = new Color(255, 192, 203);
             // ボタンテキストの名前変更
-            label.text = "";
+            label.text = $"<color={tabcolor}>{Translator.GetString("TabGroup." + tab)}</color>";
             // ボタンテキストの色変更
-            button.activeTextColor = button.inactiveTextColor = Color.black;
+            //button.activeTextColor = button.inactiveTextColor = Color.black;
             // ボタンテキストの選択中の色変更
-            button.selectedTextColor = Color.blue;
+            //button.selectedTextColor = Color.blue;
 
             //var activeButton = Utils.LoadSprite($"TownOfHost_Y.Resources.Tab_Active_{tab}.png", 100f);
             //// 各種スプライトをオリジナルのものに変更
-            //button.inactiveSprites.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite($"TownOfHost_Y.Resources.Tab_Small_{tab}.png", 100f);
-            //button.activeSprites.GetComponent<SpriteRenderer>().sprite = activeButton;
-            //button.selectedSprites.GetComponent<SpriteRenderer>().sprite = activeButton;
+            //button.inactiveSprites.GetComponent<SpriteRenderer>().color = tabcolor;
+            //button.activeSprites.GetComponent<SpriteRenderer>().color = tabcolor;
+            //button.selectedSprites.GetComponent<SpriteRenderer>().color = tabcolor;
 
             // Y座標オフセット
             Vector3 offset = new (0.0f, 0.5f * (((int)tab + 1) / 2), 0.0f);
@@ -203,11 +218,11 @@ public class GameSettingMenuPatch
         // 翻訳破棄
         textLabel.DestroyTranslator();
         // バニラ設定ボタンの名前を設定
-        textLabel.text = "";
+        textLabel.text = Translator.GetString("TabVanilla.GameSettings");
         // ボタンテキストの色変更
-        gameSettingButton.activeTextColor = gameSettingButton.inactiveTextColor = Color.black;
+        //gameSettingButton.activeTextColor = gameSettingButton.inactiveTextColor = Color.black;
         // ボタンテキストの選択中の色変更
-        gameSettingButton.selectedTextColor = Color.blue;
+        //gameSettingButton.selectedTextColor = Color.blue;
 
         //var vanillaActiveButton = Utils.LoadSprite($"TownOfHost_Y.Resources.Tab_Active_VanillaGameSettings.png", 100f);
         //// 各種スプライトをオリジナルのものに変更

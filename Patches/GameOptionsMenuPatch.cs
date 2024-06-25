@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace TOHE;
 
+// Thanks: https://github.com/Yumenopai/TownOfHost_Y/blob/main/Patches/GameOptionsMenuPatch.cs
 public static class ModGameOptionsMenu
 {
     public static int TabIndex = 0;
