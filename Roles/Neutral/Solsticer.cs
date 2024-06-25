@@ -41,9 +41,9 @@ internal class Solsticer : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
         SolsticerKnowKiller = BooleanOptionItem.Create(Id + 11, "SolsticerKnowItsKiller", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-        SolsticerCanVent = BooleanOptionItem.Create(Id + 12, "CanVent", false, TabGroup.NeutralRoles, false)
+        SolsticerCanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-        SolsticerCanGuess = BooleanOptionItem.Create(Id + 13, "CanGuess", false, TabGroup.NeutralRoles, false)
+        SolsticerCanGuess = BooleanOptionItem.Create(Id + 13, GeneralOption.CanGuess, false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
         SolsticerSpeed = FloatOptionItem.Create(Id + 14, "SolsticerSpeed", new(0, 5, 0.1f), 1.5f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);

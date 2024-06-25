@@ -39,7 +39,7 @@ internal class Deathpact : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Deathpact);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
             .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DeathPactCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
             .SetValueFormat(OptionFormat.Seconds);
@@ -55,7 +55,7 @@ internal class Deathpact : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
         PlayersInDeathpactCanCallMeeting = BooleanOptionItem.Create(Id + 19, "DeathpactPlayersInDeathpactCanCallMeeting", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
-        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 20, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false)
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 20, GeneralOption.ShowShapeshiftAnimations, true, TabGroup.ImpostorRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
     }
 

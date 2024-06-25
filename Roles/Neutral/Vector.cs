@@ -30,7 +30,7 @@ internal class Vector : RoleBase
         VectorVentNumWin = IntegerOptionItem.Create(15502, "VectorVentNumWin", new(5, 500, 5), 40, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Vector])
             .SetValueFormat(OptionFormat.Times);
-        VectorVentCD = FloatOptionItem.Create(15503, "VentCooldown", new(0f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
+        VectorVentCD = FloatOptionItem.Create(15503, GeneralOption.EngineerBase_VentCooldown, new(0f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Vector])
             .SetValueFormat(OptionFormat.Seconds);
     }

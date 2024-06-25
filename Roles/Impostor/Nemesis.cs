@@ -36,10 +36,10 @@ internal class Nemesis : RoleBase
                 .SetValueFormat(OptionFormat.Players);
         LegacyNemesis = BooleanOptionItem.Create(Id + 11, "LegacyNemesis", false, TabGroup.ImpostorRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis]);
-        NemesisShapeshiftCD = FloatOptionItem.Create(Id + 12, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
+        NemesisShapeshiftCD = FloatOptionItem.Create(Id + 12, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
                 .SetParent(LegacyNemesis)
                 .SetValueFormat(OptionFormat.Seconds);
-        NemesisShapeshiftDur = FloatOptionItem.Create(Id + 13, "ShapeshiftDuration", new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
+        NemesisShapeshiftDur = FloatOptionItem.Create(Id + 13, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
                 .SetParent(LegacyNemesis)
                 .SetValueFormat(OptionFormat.Seconds);
     }

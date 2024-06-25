@@ -429,4 +429,51 @@ public abstract class RoleBase
     {
         OnReceiveRPC(reader); // Default implementation
     }
+
+    public enum GeneralOption
+    {
+        // Ability
+        Cooldown,
+        AbilityCooldown,
+
+        // Impostor-based settings
+        CanKill,
+        KillCooldown,
+        CanVent,
+        ImpostorVision,
+        CanUseSabotage,
+
+        // General settings
+        CanKillImpostors,
+        CanGuess,
+        HideVote,
+        CanUseMeetingButton,
+        ModeSwitchAction,
+        ShowShapeshiftAnimations,
+
+        // Others custom roles settings
+        DefaultKillCooldown,
+        ReduceKillCooldown,
+        MinKillCooldown,
+        KillAttackerWhenAbilityRemaining,
+
+        // Based on others roles settings
+        ShapeshifterBase_ShapeshiftCooldown,
+        ShapeshifterBase_ShapeshiftDuration,
+        ShapeshifterBase_LeaveShapeshiftingEvidence,
+        PhantomBase_InvisCooldown,
+        PhantomBase_InvisDuration,
+        GuardianAngelBase_ProtectCooldown,
+        GuardianAngelBase_ProtectionDuration,
+        GuardianAngelBase_ImpostorsCanSeeProtect,
+        ScientistBase_BatteryCooldown,
+        ScientistBase_BatteryDuration,
+        EngineerBase_VentCooldown,
+        EngineerBase_InVentMaxTime,
+        NoisemakerBase_ImpostorAlert,
+        NoisemakerBase_AlertDuration,
+        TrackerBase_TrackingCooldown,
+        TrackerBase_TrackingDuration,
+        TrackerBase_TrackingDelay,
+    }
 }
