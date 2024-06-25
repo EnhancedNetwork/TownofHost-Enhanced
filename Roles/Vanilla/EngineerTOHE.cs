@@ -42,6 +42,4 @@ internal class EngineerTOHE : RoleBase
         AURoleOptions.EngineerCooldown = VentUseCooldown.GetInt();
         AURoleOptions.EngineerInVentMaxTime = InVentMaxTime.GetInt();
     }
-
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 300f;
 }
