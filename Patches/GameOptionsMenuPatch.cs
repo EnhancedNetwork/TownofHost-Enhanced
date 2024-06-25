@@ -222,18 +222,30 @@ public static class GameOptionsMenuPatch
                 break;
         }
     }
-    [HarmonyPatch(nameof(GameOptionsMenu.Update)), HarmonyPrefix]
-    private static bool UpdatePrefix(GameOptionsMenu __instance)
+    public static void UpdateSettings()
     {
-        Instance ??= __instance;
-        
+        foreach (var optionBehaviour in ModGameOptionsMenu.OptionList.Keys)
+        {
+            try
+            {
+                optionBehaviour.Initialize();
 
-        return true;
+                //optionBehaviour.SetClickMask(Instance.ButtonClickMask);
+                //var baseGameSetting = GetSetting(OptionItem.AllOptions[index]);
+                //if (baseGameSetting != null)
+                //{
+                //    optionBehaviour.SetUpFromData(baseGameSetting, 20);
+                //}
+                //_ = optionBehaviour.OnValueChanged;
+                Instance?.ValueChanged(optionBehaviour);
+            }
+            catch { }
+        }
     }
     [HarmonyPatch(nameof(GameOptionsMenu.ValueChanged)), HarmonyPrefix]
     private static bool ValueChangedPrefix(GameOptionsMenu __instance, OptionBehaviour option)
     {
-        if (ModGameOptionsMenu.TabIndex < 3) return true;
+        if (__instance == null || ModGameOptionsMenu.TabIndex < 3) return true;
 
         if (ModGameOptionsMenu.OptionList.TryGetValue(option, out var index))
         {
@@ -505,6 +517,10 @@ public static class StringOptionPatch
             Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
             item.SetValue(__instance.GetInt());
+            if (item is PresetOptionItem)
+            {
+                GameOptionsMenuPatch.UpdateSettings();
+            }
             return false;
         }
         return true;
@@ -521,7 +537,7 @@ public static class StringOptionPatch
                 if (__instance.oldValue != __instance.Value)
                 {
                     __instance.oldValue = __instance.Value;
-                    __instance.ValueText.text = Translator.GetString(stringOptionItem.Selections[stringOptionItem.Rule.GetValueByIndex(__instance.Value)]);
+                    __instance.ValueText.text = stringOptionItem.GetString();
                 }
             }
             else if (item is PresetOptionItem presetOptionItem)
@@ -530,7 +546,6 @@ public static class StringOptionPatch
                 {
                     __instance.oldValue = __instance.Value;
                     __instance.ValueText.text = presetOptionItem.GetString();
-                    GameOptionsMenuPatch.Instance?.Update();
                 }
             }
             return false;
