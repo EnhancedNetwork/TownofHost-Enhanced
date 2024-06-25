@@ -20,7 +20,7 @@ internal class God : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.God);
         NotifyGodAlive = BooleanOptionItem.Create(Id + 3, "NotifyGodAlive", true, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.God]);
-        CanGuess = BooleanOptionItem.Create(Id + 4, "CanGuess", false, TabGroup.NeutralRoles, false)
+        CanGuess = BooleanOptionItem.Create(Id + 4, GeneralOption.CanGuess, false, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.God]);
     }
 
