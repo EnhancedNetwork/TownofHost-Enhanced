@@ -185,9 +185,9 @@ public static class GameOptionsMenuPatch
 
         optionBehaviour.transform.FindChild("LabelBackground").GetComponent<SpriteRenderer>().color = color;
         optionBehaviour.transform.FindChild("LabelBackground").localScale += new Vector3(0.9f, -0.2f, 0f) + scaleOffset;
-        optionBehaviour.transform.FindChild("LabelBackground").localPosition += new Vector3(-0.4f, 0f, 0f) + positionOffset;
+        optionBehaviour.transform.FindChild("LabelBackground").localPosition += new Vector3(-0.5f, 0f, 0f) + positionOffset;
 
-        optionBehaviour.transform.FindChild("Title Text").localPosition += new Vector3(-0.4f, 0f, 0f) + positionOffset; ;
+        optionBehaviour.transform.FindChild("Title Text").localPosition += new Vector3(-0.5f, 0f, 0f) + positionOffset; ;
         optionBehaviour.transform.FindChild("Title Text").GetComponent<RectTransform>().sizeDelta = new Vector2(sizeDelta_x, 0.37f);
         optionBehaviour.transform.FindChild("Title Text").GetComponent<TMPro.TextMeshPro>().alignment = TMPro.TextAlignmentOptions.MidlineLeft;
         optionBehaviour.transform.FindChild("Title Text").GetComponent<TMPro.TextMeshPro>().fontStyle = TMPro.FontStyles.Bold;
@@ -253,7 +253,7 @@ public static class GameOptionsMenuPatch
                 categoryHeaderMasked.gameObject.SetActive(enabled);
                 if (enabled) num -= 0.63f;
             }
-            if (option.IsHeader && enabled) num -= 0.15f;
+            if (option.IsHeader && enabled) num -= 0.10f;
             if (ModGameOptionsMenu.BehaviourList.TryGetValue(index, out var optionBehaviour))
             {
                 optionBehaviour.transform.localPosition = new Vector3(0.952f, num, -2f);
