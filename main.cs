@@ -3,6 +3,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
+using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using System;
 using System.IO;
@@ -412,9 +413,22 @@ public class Main : BasePlugin
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_RoleColor.dat", sb.ToString());
     }
 
+    public static void HandleUnityLog(string logString, string stackTrace, LogType type)
+    {
+        switch (type)
+        {
+            case LogType.Error:
+                Logger.LogError($"Caught unity error: {logString}\nat {stackTrace}"); break;
+            case LogType.Exception:
+                Logger.LogError($"Caught unity exception: {logString}\nat {stackTrace}"); break;
+        }
+    }
+
     public override void Load()
     {
         Instance = this;
+
+        Application.add_logMessageReceived(DelegateSupport.ConvertDelegate<Application.LogCallback>(HandleUnityLog));
 
         //Client Options
         HideName = Config.Bind("Client Options", "Hide Game Code Name", "TOHE");
