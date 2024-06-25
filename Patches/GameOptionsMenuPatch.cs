@@ -2,6 +2,7 @@
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using TMPro;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
@@ -712,10 +713,11 @@ public static class RolesSettingsMenu_ChangeTabPatch
         }
     }
 }
-[HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.SetQuotaTab))]
+[HarmonyPatch(typeof(RolesSettingsMenu))]
 public static class RolesSettingsMenu_ChanceTabPatch
 {
-    public static bool Prefix(RolesSettingsMenu __instance)
+    [HarmonyPatch(nameof(RolesSettingsMenu.SetQuotaTab)), HarmonyPrefix]
+    public static bool SetQuotaTab(RolesSettingsMenu __instance)
     {
         if (GameStates.IsHideNSeek) return true;
 
@@ -727,10 +729,10 @@ public static class RolesSettingsMenu_ChanceTabPatch
         List<RoleRulesCategory> list2 = GameManager.Instance.GameSettingsList.AllRoles.ToManaged().FindAll((RoleRulesCategory cat) => cat.Role.TeamType == RoleTeamTypes.Impostor);
 
         // Impostor Tab
-        AddRoleTabCustom(__instance, Custom_RoleType.ImpostorVanilla, ref num2);
+        AddRoleTabCustom(__instance, VanillaLikeRoleTypes.Impostor, ref num2);
 
         // Neutral Tab
-        AddRoleTabCustom(__instance, Custom_RoleType.NeutralBenign, ref num2);
+        AddRoleTabCustom(__instance, VanillaLikeRoleTypes.Neutral, ref num2);
 
 
         CategoryHeaderEditRole categoryHeaderEditRole = Object.Instantiate<CategoryHeaderEditRole>(__instance.categoryHeaderEditRoleOrigin, Vector3.zero, Quaternion.identity, __instance.RoleChancesSettings.transform);
@@ -758,45 +760,88 @@ public static class RolesSettingsMenu_ChanceTabPatch
         return false;
     }
 
-    private static RoleSettingsTabButton AddRoleTabCustom(RolesSettingsMenu thiz, Custom_RoleType roleType, ref float tabXPos)
+    [HarmonyPatch(nameof(RolesSettingsMenu.OpenChancesTab)), HarmonyPrefix]
+    public static bool OpenChancesTab(RolesSettingsMenu __instance)
     {
+        __instance.selectedRoleTab = 0;
+        __instance.RoleChancesSettings.SetActive(false);
+        __instance.ControllerSelectable.Clear();
+
+        List<UiElement> ControllerSelectable = __instance.ControllerSelectable.ToManaged();
+
+        ControllerSelectable.AddRange(__instance.QuotaTabSelectables.ToManaged());
+        __instance.ControllerSelectable = ControllerSelectable.ToIl2Cpp();
+
+        LoadRoleOptions(VanillaLikeRoleTypes.Crewmate);
+
+        return false;
+    }
+
+
+    private static RoleSettingsTabButton AddRoleTabCustom(RolesSettingsMenu thiz, VanillaLikeRoleTypes roleType, ref float tabXPos)
+    {
+        thiz.selectedRoleTab = (int)roleType;
         RoleSettingsTabButton tab = null;
-        VanillaLikeRoleTypes realRoleType = VanillaLikeRoleTypes.Crewmate;
         switch (roleType)
         {
-            case Custom_RoleType.CrewmateVanilla:
+            case VanillaLikeRoleTypes.Crewmate:
                 tab = Object.Instantiate(thiz.roleSettingsTabButtonOrigin, Vector3.zero, Quaternion.identity, thiz.tabParent);
-                realRoleType = VanillaLikeRoleTypes.Crewmate;
                 break;
-            case Custom_RoleType.ImpostorVanilla:
+            case VanillaLikeRoleTypes.Impostor:
                 tab = Object.Instantiate(thiz.roleSettingsTabButtonOriginImpostor, Vector3.zero, Quaternion.identity, thiz.tabParent);
-                realRoleType = VanillaLikeRoleTypes.Impostor;
                 break;
-            case Custom_RoleType.NeutralBenign:
+            case VanillaLikeRoleTypes.Neutral:
                 tab = Object.Instantiate(thiz.roleSettingsTabButtonOrigin, Vector3.zero, Quaternion.identity, thiz.tabParent);
                 RoleBehaviour impRole = RoleManager.Instance.AllRoles.Where(r => r.Role == RoleTypes.Shapeshifter).FirstOrDefault();
                 tab.icon.sprite = impRole.RoleIconWhite;
                 SetTabColor(tab, "#7f8c8d");
-                realRoleType = VanillaLikeRoleTypes.Neutral;
                 break;
             default:
-                throw new InvalidOperationException("To prevent issues, you should only create this with: Custom_RoleType.NeutralBenign, Custom_RoleType.ImpostorVanilla, Custom_RoleType.CrewmateVanilla");
+                throw new InvalidOperationException("Only Crewmate, Impostor and Neutral are supported!");
         }
         tab.transform.localPosition = new Vector3(tabXPos, 2.27f, -2f);
 
         tab.button.OnClick.AddListener(new Action(() =>
         {
-            LoadRoleOptions(realRoleType, tab.Button);
+            LoadRoleOptions(roleType);
         }));
         tabXPos += 0.762f;
         thiz.roleTabs.Add(tab.Button);
         return tab;
     }
 
-    private static void LoadRoleOptions(VanillaLikeRoleTypes type, PassiveButton btn)
+    private static void LoadRoleOptions(VanillaLikeRoleTypes type)
     {
         Logger.Info(type.ToString(), "LoadRoleOptions");
+        List<RoleBase> roles = [];
+        switch (type)
+        {
+            case VanillaLikeRoleTypes.Crewmate:
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanilla));
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmatePower));
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanillaGhosts));
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateGhosts));
+                break;
+            case VanillaLikeRoleTypes.Impostor:
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorVanilla));
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorSupport));
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorKilling));
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorHindering));
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorConcealing));
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorGhosts));
+                break;
+            case VanillaLikeRoleTypes.Neutral:
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralBenign));
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralEvil));
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralKilling));
+                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralChaos));
+                break;
+        }
+
+        Logger.Info($"{type} Count: {roles.Count}", "LoadRoleOptions");
     }
+
+    // Additional methods
 
     private static void SetTabColor(RoleSettingsTabButton tab, string hex)
     {
