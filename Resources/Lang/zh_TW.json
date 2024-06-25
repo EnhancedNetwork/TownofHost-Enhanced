@@ -2647,7 +2647,7 @@
   "ChanceToSpawn": "出現機率",
   "ChanceToSpawnAnother": "出現機率另一個的機率",
   "BloodthirstKillCD": "<color=#630000>嗜血者</color>擊殺冷卻時間",
-  "BloodthirstPlayerCount": "至少要剩餘多少人存活<color=#630000>嗜血者</color>才能擊殺",
+  "BloodthirstPlayerCount": "<color=#630000>嗜血者</color>的最大玩家存活",
   "ReflectHarmfulInteractions": "反射<color=#ff1919>有害的</color>交互",
   "ImpCanBeDiseased": "<color=#ff1919>偽裝者</color>可以成為患病",
   "NeutralCanBeDiseased": "<color=#7f8c8d>中立</color>可以成為患病",
