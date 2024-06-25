@@ -287,7 +287,7 @@ public static class GameOptionsMenuStartPatch
 
             float delay = 0f;
 
-            foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => GameStates.IsNormalGame || (GameStates.IsHideNSeek && (tab is TabGroup.SystemSettings or TabGroup.GameSettings or TabGroup.TaskSettings))).ToArray())
+            foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => GameStates.IsNormalGame || (GameStates.IsHideNSeek && (tab is TabGroup.SystemSettings or TabGroup.ModSettings or TabGroup.ModifierSettings))).ToArray())
             {
                 var obj = gameSettings.transform.parent.Find(tab + "Tab");
                 if (obj != null)
@@ -463,8 +463,8 @@ public class GameOptionsMenuUpdatePatch
             string tabcolor = tab switch
             {
                 TabGroup.SystemSettings => Main.ModColor,
-                TabGroup.GameSettings => "#59ef83",
-                TabGroup.TaskSettings => "#EF59AF",
+                TabGroup.ModSettings => "#59ef83",
+                TabGroup.ModifierSettings => "#EF59AF",
                 TabGroup.ImpostorRoles => "#f74631",
                 TabGroup.CrewmateRoles => "#8cffff",
                 TabGroup.NeutralRoles => "#7f8c8d",
