@@ -73,8 +73,9 @@ public class GameSettingMenuPatch
             var label = button.GetComponentInChildren<TextMeshPro>();
             // ボタンテキストの翻訳破棄
             label.DestroyTranslator();
+            // ボタンテキストの名前変更
             // Temp color tab
-            string tabcolor = tab switch
+            string htmlcolor = tab switch
             {
                 TabGroup.SystemSettings => Main.ModColor,
                 TabGroup.ModSettings => "#59ef83",
@@ -85,20 +86,19 @@ public class GameSettingMenuPatch
                 TabGroup.Addons => "#ff9ace",
                 _ => "#ffffff",
             };
-            // Set color
-            //button.HeldButtonSprite.color = new Color(255, 192, 203);
-            // ボタンテキストの名前変更
-            label.text = $"<color={tabcolor}>{Translator.GetString("TabGroup." + tab)}</color>";
+            label.text = $"<color={htmlcolor}>{Translator.GetString("TabGroup." + tab)}</color>";
             // ボタンテキストの色変更
             //button.activeTextColor = button.inactiveTextColor = Color.black;
             // ボタンテキストの選択中の色変更
             //button.selectedTextColor = Color.blue;
 
             //var activeButton = Utils.LoadSprite($"TownOfHost_Y.Resources.Tab_Active_{tab}.png", 100f);
-            //// 各種スプライトをオリジナルのものに変更
-            //button.inactiveSprites.GetComponent<SpriteRenderer>().color = tabcolor;
-            //button.activeSprites.GetComponent<SpriteRenderer>().color = tabcolor;
-            //button.selectedSprites.GetComponent<SpriteRenderer>().color = tabcolor;
+
+            _ = ColorUtility.TryParseHtmlString(htmlcolor, out Color tabColor);
+
+            button.inactiveSprites.GetComponent<SpriteRenderer>().color = tabColor;
+            button.activeSprites.GetComponent<SpriteRenderer>().color = tabColor;
+            button.selectedSprites.GetComponent<SpriteRenderer>().color = tabColor;
 
             // Y座標オフセット
             Vector3 offset = new (0.0f, 0.5f * (((int)tab + 1) / 2), 0.0f);
