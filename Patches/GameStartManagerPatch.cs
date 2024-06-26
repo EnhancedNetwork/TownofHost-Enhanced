@@ -181,7 +181,7 @@ public class GameStartManagerPatch
                 }
             }
 
-            __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset}");
+            __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
 
             // Lobby timer
             if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer) return;
