@@ -193,6 +193,7 @@ public static class GuessManager
 
                 if (CopyCat.playerIdList.Contains(pc.PlayerId))
                 {
+                    Logger.Info($"Guess Disabled for this player {pc.PlayerId}", "GuessManager");
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessDisabled"));
                     return true;

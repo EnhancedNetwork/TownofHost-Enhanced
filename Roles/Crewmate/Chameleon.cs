@@ -99,29 +99,34 @@ internal class Chameleon : RoleBase
    
     public override void OnReportDeadBody(PlayerControl y, NetworkedPlayerInfo x)
     {
-        InvisCooldown.Clear();
-        InvisDuration.Clear();
-
         foreach (var chameleonId in _playerIdList.ToArray())
         {
-            if (!ventedId.ContainsKey(chameleonId)) continue;
+            if (!IsInvis(chameleonId)) continue;
             var chameleon = GetPlayerById(chameleonId);
             if (chameleon == null) return;
 
             chameleon?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(chameleonId, out var id) ? id : Main.LastEnteredVent[chameleonId].Id);
+            InvisDuration.Remove(chameleonId);
+            ventedId.Remove(chameleonId);
             SendRPC(chameleon);
         }
 
+        InvisCooldown.Clear();
+        InvisDuration.Clear();
         ventedId.Clear();
     }
     public override void AfterMeetingTasks()
     {
         InvisCooldown.Clear();
         InvisDuration.Clear();
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => _playerIdList.Contains(x.PlayerId)).ToArray())
+
+        foreach (var chameleonId in _playerIdList)
         {
-            InvisCooldown.Add(pc.PlayerId, GetTimeStamp());
-            SendRPC(pc);
+            var chameleon = GetPlayerById(chameleonId);
+            if (!chameleon.IsAlive()) continue;
+
+            InvisCooldown.Add(chameleon.PlayerId, GetTimeStamp());
+            SendRPC(chameleon);
         }
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
@@ -154,7 +159,7 @@ internal class Chameleon : RoleBase
 
             var remainTime = chameleonInfo.Value + (long)ChameleonDuration.GetFloat() - nowTime;
 
-            if (remainTime < 0)
+            if (remainTime < 0 || !chameleon.IsAlive())
             {
                 chameleon?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(chameleonId, out var id) ? id : Main.LastEnteredVent[chameleonId].Id);
 
@@ -223,8 +228,7 @@ internal class Chameleon : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (!CustomRoles.Chameleon.HasEnabled()) return;
-        if (!pc.Is(CustomRoles.Chameleon) || !IsInvis(pc.PlayerId)) return;
+        if (!IsInvis(pc.PlayerId)) return;
 
         InvisDuration.Remove(pc.PlayerId);
         InvisCooldown.Add(pc.PlayerId, GetTimeStamp());

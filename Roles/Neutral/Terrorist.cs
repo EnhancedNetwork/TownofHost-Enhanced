@@ -89,6 +89,7 @@ internal class Terrorist : RoleBase
     {
         if (!TerroristCanGuess.GetBool())
         {
+            Logger.Info($"Guess Disabled for this player {guesser.PlayerId}", "GuessManager");
             if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessDisabled"));
             return true;

@@ -49,6 +49,7 @@ internal class Specter : RoleBase
     {
         if (!CanGuess.GetBool())
         {
+            Logger.Info($"Guess Disabled for this player {guesser.PlayerId}", "GuessManager");
             if (!isUI) Utils.SendMessage(Translator.GetString("GuessDisabled"), guesser.PlayerId);
             else guesser.ShowPopUp(Translator.GetString("GuessDisabled"));
             return true;
