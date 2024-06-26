@@ -52,31 +52,101 @@ public static class GameSettingMenuInitializeOptionsPatch
     public static void Postfix(GameSettingMenu __instance)
     {
         var gamepreset = __instance.GamePresetsButton;
+        gamepreset.gameObject.SetActive(false);
 
         var gamesettings = __instance.GameSettingsButton;
-        __instance.GameSettingsButton.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-        __instance.GameSettingsButton.transform.localPosition = new Vector3(gamesettings.transform.localPosition.x, gamepreset.transform.localPosition.y + 0.1f, gamesettings.transform.localPosition.z);
+        __instance.GameSettingsButton.transform.localScale = new Vector3(0.4f, 0.7f, 1f);
+        __instance.GameSettingsButton.transform.localPosition = new Vector3(gamesettings.transform.localPosition.x + 0.5f, gamepreset.transform.localPosition.y - 0.1f, gamesettings.transform.localPosition.z);
+        var GLabel = gamesettings.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+        GLabel.alignment = TextAlignmentOptions.Center;
+        GLabel.transform.localScale = new Vector3(1.2f, GLabel.transform.localScale.y, GLabel.transform.localScale.z);
+        SetButtonColor(ref gamesettings, ref GLabel, new Color32(72, 86, 217, 255));
+
+        var TempMinus = GameObject.Find("MinusButton").gameObject;
+        var GMinus = GameObject.Instantiate(gamepreset, gamesettings.transform);
+        GMinus.gameObject.SetActive(true);
+        GMinus.transform.localScale = new Vector3(0.15f, 0.5f, 1f);
+
+        var MLabel = GMinus.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+        MLabel.alignment = TextAlignmentOptions.Center;
+        _ = new LateTask(() => { 
+            MLabel.text = "-";
+            MLabel.transform.localPosition = new Vector3(MLabel.transform.localPosition.x, MLabel.transform.localPosition.y + 0.2f, MLabel.transform.localPosition.z);
+            MLabel.color = new Color(255f, 255f, 255f);
+            MLabel.SetFaceColor(new Color(255f, 255f, 255f));
+            MLabel.transform.localScale = new Vector3(10f, 3f, 1f); }, 0.05f, shoudLog: false);
+
+        var Minus = GMinus.GetComponent<PassiveButton>();
+        Minus.OnClick.RemoveAllListeners();
+        Minus.activeTextColor = new Color(255f, 255f, 255f);
+        Minus.inactiveTextColor = new Color(255f, 255f, 255f);
+        Minus.disabledTextColor = new Color(255f, 255f, 255f);
+        Minus.selectedTextColor = new Color(255f, 255f, 255f);
+
+        Minus.transform.localPosition = new Vector3(Minus.transform.localPosition.x - 2.2f, Minus.transform.localPosition.y + 0.4f, Minus.transform.localPosition.z);
+        Minus.inactiveSprites.GetComponent<SpriteRenderer>().sprite = TempMinus.GetComponentInChildren<SpriteRenderer>().sprite;
+        Minus.activeSprites.GetComponent<SpriteRenderer>().sprite = TempMinus.GetComponentInChildren<SpriteRenderer>().sprite;
+        Minus.selectedSprites.GetComponent<SpriteRenderer>().sprite = TempMinus.GetComponentInChildren<SpriteRenderer>().sprite;
+
+        Minus.inactiveSprites.GetComponent<SpriteRenderer>().color = new Color32(55, 54, 54, 255);
+        Minus.activeSprites.GetComponent<SpriteRenderer>().color = new Color32(61, 59, 59, 255);
+        Minus.selectedSprites.GetComponent<SpriteRenderer>().color = new Color32(55, 54, 54, 255);
+
+
+
+        var PlusFab = GameObject.Instantiate(GMinus, GMinus.transform);
+        var PLuLabel = PlusFab.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+        PLuLabel.alignment = TextAlignmentOptions.Center;
+        PlusFab.transform.localScale = new Vector3(1f, 1f, 1f);
+        _ = new LateTask(() => { 
+            PLuLabel.text = "+";
+            PLuLabel.color = new Color(255f, 255f, 255f);
+            PLuLabel.transform.localPosition = new Vector3(PLuLabel.transform.localPosition.x, PLuLabel.transform.localPosition.y + 0.2f, PLuLabel.transform.localPosition.z);
+            PLuLabel.transform.localScale = new Vector3(10f, 3f, 1f); }, 0.05f, shoudLog: false);
+        var plus = PlusFab.GetComponent<PassiveButton>();
+        plus.OnClick.RemoveAllListeners();
+        plus.activeTextColor = new Color(255f, 255f, 255f);
+        plus.inactiveTextColor = new Color(255f, 255f, 255f);
+        plus.disabledTextColor = new Color(255f, 255f, 255f);
+        plus.selectedTextColor = new Color(255f, 255f, 255f);
+
+
+        plus.transform.localPosition = new Vector3(plus.transform.localPosition.x + 21.7f, plus.transform.localPosition.y, plus.transform.localPosition.z);
+
+
+
+        var labeltag = GameObject.Find("PrivacyLabel");
+        var preset = Object.Instantiate(labeltag, gamesettings.transform);
+        preset.transform.localPosition = new Vector3(preset.transform.localPosition.x - 0.80f, gamesettings.transform.localPosition.y + 0.46f, gamesettings.transform.localPosition.z);
+        preset.transform.localScale = new Vector3(2.5f, 1.4f, 1.8f);
+        SpriteRenderer sprite = preset.GetComponentInChildren<SpriteRenderer>();
+        Color clr = new(-1, -1, -1);
+        // sprite.set_color_Injected(ref clr);
+        var PLabel = preset.GetComponentInChildren<TextMeshPro>();
+        _ = new LateTask(() => { PLabel.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
+            PLabel.font = PLuLabel.font;
+            PLabel.fontSizeMax = 3.45f; PLabel.fontSizeMin = 3.45f; }, 0.05f, shoudLog: false);
+        plus.transform.parent = preset.transform;
+        Minus.transform.parent = preset.transform;
+       
+
 
         var rolesettings = __instance.RoleSettingsButton;
-        __instance.RoleSettingsButton.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-        __instance.RoleSettingsButton.transform.localPosition = new Vector3(rolesettings.transform.localPosition.x, gamesettings.transform.localPosition.y - 0.4f, rolesettings.transform.localPosition.z);
+        __instance.RoleSettingsButton.transform.localScale = new Vector3(0.4f, 0.7f, 1f);
+        __instance.RoleSettingsButton.transform.localPosition = new Vector3(rolesettings.transform.localPosition.x - 0.9f, gamesettings.transform.localPosition.y - 0.57f, rolesettings.transform.localPosition.z);
+        var RLabel = rolesettings.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+         RLabel.alignment = TextAlignmentOptions.Center; RLabel.transform.localScale = new Vector3(1.2f, RLabel.transform.localScale.y, RLabel.transform.localScale.z);
+        SetButtonColor(ref rolesettings, ref RLabel, new Color32(128, 31, 219, 255));
         //rolesettings.OnClick.RemoveAllListeners();
         // button.OnClick.AddListener( () => {}); // add rolemenu method
 
         //button 1
-        GameObject template = gamepreset.gameObject;
-        GameObject targetBox = Object.Instantiate(template, gamepreset.transform);
+        GameObject template = rolesettings.gameObject;
+        GameObject targetBox = Object.Instantiate(template, rolesettings.transform);
         targetBox.name = "System Settings";
-        targetBox.transform.localScale = new Vector3(0.59f, 0.59f, 1f);
-        targetBox.transform.localPosition = new Vector3(targetBox.transform.localPosition.x + 2.95f, rolesettings.transform.localPosition.y - 0.1f, targetBox.transform.localPosition.z);
+        targetBox.transform.localScale = new Vector3(1f, 1f, 1f);
+        targetBox.transform.localPosition = new Vector3(targetBox.transform.localPosition.x + 7.36f, targetBox.transform.localPosition.y + 1.08f, targetBox.transform.localPosition.z);
 
-        _ = new LateTask(() =>
-        {
-            targetBox.transform.parent = null;
-            // gamepreset.transform.localScale = new Vector3(0f, 0f, 0f);
-            gamepreset.gameObject.SetActive(false);
-            targetBox.transform.parent = __instance.transform.Find("LeftPanel");
-        }, 0.05f, "Remove GamePreset // Set Button 1"); // remove GamePresets
 
         var SystemButton = targetBox.GetComponent<PassiveButton>();
         SystemButton.OnClick.RemoveAllListeners();
@@ -84,15 +154,15 @@ public static class GameSettingMenuInitializeOptionsPatch
             Logger.Info("Activated System Settings", "System Settings TEST")
         )); 
         var label = SystemButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-        _ = new LateTask(() => { label.text = GetString("TabGroup.SystemSettings"); }, 0.05f, "Set Button1 Text"); 
-
+        _ = new LateTask(() => { label.text = GetString("TabGroup.SystemSettings");  label.alignment = TextAlignmentOptions.Center;  }, 0.05f, "Set Button1 Text");
+        SetButtonColor(ref SystemButton, ref label, new Color32(199, 109, 124, 255));
 
         //button 2
         GameObject template2 = targetBox.gameObject;
         GameObject targetBox2 = Object.Instantiate(template2, targetBox.transform);
         targetBox2.name = "Mod Settings";
         targetBox2.transform.localScale = new Vector3(1f, 1f, 1f);
-        targetBox2.transform.localPosition = new Vector3(targetBox2.transform.localPosition.x, targetBox.transform.localPosition.y, targetBox2.transform.localPosition.z);
+        targetBox2.transform.localPosition = new Vector3(targetBox2.transform.localPosition.x - 7f, targetBox.transform.localPosition.y - 0.8f, targetBox2.transform.localPosition.z);
 
         var ModConfButton = targetBox2.GetComponent<PassiveButton>();
         ModConfButton.OnClick.RemoveAllListeners();
@@ -100,15 +170,15 @@ public static class GameSettingMenuInitializeOptionsPatch
             Logger.Info("Activated Mod Settings", "Mop Settings TEST")
         )); 
         var label2 = ModConfButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>(); 
-        _ = new LateTask(() => { label2.text = GetString("TabGroup.ModSettings"); }, 0.05f, "Set Button2 Text"); 
-
+        _ = new LateTask(() => { label2.text = GetString("TabGroup.ModSettings"); label2.alignment = TextAlignmentOptions.Center; }, 0.05f, "Set Button2 Text");
+        SetButtonColor(ref ModConfButton, ref label2, new Color32(89, 239, 131, 255));
 
         //button 3
         GameObject template3 = targetBox2.gameObject;
         GameObject targetBox3 = Object.Instantiate(template3, targetBox2.transform);
         targetBox3.name = "Game Modifiers";
         targetBox3.transform.localScale = new Vector3(1f, 1f, 1f);
-        targetBox3.transform.localPosition = new Vector3(targetBox3.transform.localPosition.x, targetBox2.transform.localPosition.y, targetBox3.transform.localPosition.z);
+        targetBox3.transform.localPosition = new Vector3(targetBox3.transform.localPosition.x + 7f, targetBox2.transform.localPosition.y + 0.8f, targetBox3.transform.localPosition.z);
 
         var GameModifButton = targetBox3.GetComponent<PassiveButton>();
         GameModifButton.OnClick.RemoveAllListeners();
@@ -116,7 +186,29 @@ public static class GameSettingMenuInitializeOptionsPatch
             Logger.Info("Activated game Modifier", "Game Modifiers TEST")
         )); 
         var label3 = GameModifButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>(); 
-        _ = new LateTask(() => { label3.text = GetString("TabGroup.ModifierSettings"); }, 0.05f, "Set Button3 Text"); 
+        _ = new LateTask(() => { label3.text = GetString("TabGroup.ModifierSettings"); label3.alignment = TextAlignmentOptions.Center; }, 0.05f, "Set Button3 Text");
+        SetButtonColor(ref GameModifButton, ref label3, new Color32(239, 89, 175, 255));
+
+
+
+        static void SetButtonColor(ref PassiveButton btn, ref TextMeshPro Tob, Color32 col)
+        {
+            Color clr = col;
+            btn.inactiveSprites.GetComponent<SpriteRenderer>().color = clr;
+            btn.activeSprites.GetComponent<SpriteRenderer>().color = clr.ShadeColor(-0.5f);
+            btn.selectedSprites.GetComponent<SpriteRenderer>().color = clr.ShadeColor(-0.5f);
+            Color textC = clr.ShadeColor(-0.5f);
+
+            btn.activeTextColor = textC.ShadeColor(-2f);
+            btn.disabledTextColor = textC;
+            btn.inactiveTextColor = textC;
+            btn.selectedTextColor = textC.ShadeColor(-2f);
+
+            Tob.color = textC;
+            Tob.SetFaceColor(textC);
+
+
+        }
     }
 }
 
@@ -135,7 +227,11 @@ public class TabChange
 
         if (tabNum == 1 && __instance.GameSettingsTab.isActiveAndEnabled)
         {
-            _ = new LateTask(() => __instance.MenuDescriptionText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameSettingsDescription), 0.05f, "Fix Menu Description Text");
+            
+            _ = new LateTask(() => { 
+                __instance.MenuDescriptionText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameSettingsDescription);
+                __instance.GameSettingsButton.SelectButton(true);
+            }, 0.05f, "Fix Menu Description Text");
             return;
         }
 
