@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using TMPro;
 using UnityEngine;
+using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
 namespace TOHE;
@@ -43,7 +44,7 @@ public class GameSettingMenuPatch
                 TabGroup.Addons => "#ff9ace",
                 _ => "#ffffff",
             };
-            label.text = $"<color={htmlcolor}>{Translator.GetString("TabGroup." + tab)}</color>";
+            label.text = $"<color={htmlcolor}>{GetString("TabGroup." + tab)}</color>";
             
             _ = ColorUtility.TryParseHtmlString(htmlcolor, out Color tabColor);
             button.inactiveSprites.GetComponent<SpriteRenderer>().color = tabColor;
@@ -67,7 +68,7 @@ public class GameSettingMenuPatch
         ModGameOptionsMenu.CategoryHeaderList = new();
 
         ModSettingsTabs = [];
-        foreach (var tab in Enum.GetValues<TabGroup>())
+        foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {
             var setTab = Object.Instantiate(TemplateGameOptionsMenu, __instance.GameSettingsTab.transform.parent);
             setTab.name = "tab_" + tab;
@@ -76,7 +77,7 @@ public class GameSettingMenuPatch
             ModSettingsTabs.Add(tab, setTab);
         }
 
-        foreach (var tab in Enum.GetValues<TabGroup>())
+        foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {
             if (ModSettingsButtons.TryGetValue(tab, out var button))
             {
@@ -93,7 +94,7 @@ public class GameSettingMenuPatch
         
         var textLabel = gameSettingButton.GetComponentInChildren<TextMeshPro>();
         textLabel.DestroyTranslator();
-        textLabel.text = Translator.GetString("TabVanilla.GameSettings");
+        textLabel.text = GetString("TabVanilla.GameSettings");
         //gameSettingButton.activeTextColor = gameSettingButton.inactiveTextColor = Color.black;
         //gameSettingButton.selectedTextColor = Color.blue;
 
@@ -151,37 +152,27 @@ public class GameSettingMenuPatch
             __instance.GameSettingsButton.SelectButton(false);
             __instance.RoleSettingsButton.SelectButton(false);
 
-            if (ModSettingsTabs.TryGetValue((TabGroup)(tabNum - 3), out settingsTab) &&
-                settingsTab != null)
+            if (ModSettingsTabs.TryGetValue((TabGroup)(tabNum - 3), out settingsTab) && settingsTab != null)
             {
                 settingsTab.gameObject.SetActive(true);
                 __instance.MenuDescriptionText.DestroyTranslator();
-                //switch ((TabGroup)(tabNum - 3))
-                //{
-                //    case TabGroup.ModMainSettings:
-                //        __instance.MenuDescriptionText.text = "MOD機能の設定ができる。";
-                //        break;
-                //    case TabGroup.ImpostorRoles:
-                //        __instance.MenuDescriptionText.text = "MODインポスターロールの設定ができる。";
-                //        break;
-                //    case TabGroup.MadmateRoles:
-                //        __instance.MenuDescriptionText.text = "MODマッドメイトロールの設定ができる。";
-                //        break;
-                //    case TabGroup.CrewmateRoles:
-                //        __instance.MenuDescriptionText.text = "MODクルーメイトロールの設定ができる。";
-                //        break;
-                //    case TabGroup.NeutralRoles:
-                //        __instance.MenuDescriptionText.text = "MODニュートラルロールの設定ができる。";
-                //        break;
-                //    case TabGroup.UnitRoles:
-                //        __instance.MenuDescriptionText.text = "MODユニットロールの設定ができる。";
-                //        break;
-                //    case TabGroup.Addons:
-                //        __instance.MenuDescriptionText.text = "MODロール属性の設定ができる。";
-                //        break;
-                //}
+                switch ((TabGroup)(tabNum - 3))
+                {
+                    case TabGroup.SystemSettings:
+                    case TabGroup.ModSettings:
+                    case TabGroup.ModifierSettings:
+                        __instance.MenuDescriptionText.text = GetString("TabMenuDescription_General");
+                        break;
+                    case TabGroup.ImpostorRoles:
+                    case TabGroup.CrewmateRoles:
+                    case TabGroup.NeutralRoles:
+                    case TabGroup.Addons:
+                        __instance.MenuDescriptionText.text = GetString("TabMenuDescription_Roles&AddOns");
+                        break;
+                }
             }
         }
+
         if (previewOnly)
         {
             __instance.ToggleLeftSideDarkener(false);

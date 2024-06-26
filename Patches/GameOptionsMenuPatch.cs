@@ -2,6 +2,7 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;
 using UnityEngine;
+using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
 namespace TOHE;
@@ -529,7 +530,7 @@ public static class StringOptionPatch
         {
             var item = OptionItem.AllOptions[index];
             var name = item.GetName();
-            if (Enum.GetValues<CustomRoles>().Any(x => Translator.GetString($"{x}") == name.RemoveHtmlTags()))
+            if (EnumHelper.GetAllValues<CustomRoles>().Any(x => GetString($"{x}") == name.RemoveHtmlTags()))
             {
                 name = $"<size=3.5>{name}</size>";
                 __instance.TitleText.fontWeight = FontWeight.Black;

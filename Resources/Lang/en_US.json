@@ -2280,6 +2280,8 @@
   "TabGroup.NeutralRoles": "Neutral Roles",
   "TabGroup.ImpostorRoles": "Impostor Roles",
   "TabGroup.Addons": "Add-Ons",
+  "TabMenuDescription_General": "Here you can configure the functions that are in the mod",
+  "TabMenuDescription_Roles&AddOns": "Here you can add, remove and change the settings of all roles or add-ons in the mod",
   "Experimental.Roles": "★ Experimental Roles <size=65%>(NOTICE: Use with caution, as these require testing)</size>",
   "ActiveRolesList": "Active Roles List",
   "ForExample": "Example Use",
