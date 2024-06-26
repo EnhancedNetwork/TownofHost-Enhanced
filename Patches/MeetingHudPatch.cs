@@ -711,9 +711,9 @@ static class ExtendedMeetingHud
                     && ps.TargetPlayerId != ps.VotedFor
                     ) VoteNum += 1;
 
-                if (Schizophrenic.DualVotes.GetBool())
+                if (Paranoia.DualVotes.GetBool())
                 {
-                    if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Schizophrenic)
+                    if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Paranoia)
                         && ps.TargetPlayerId != ps.VotedFor
                         ) VoteNum += VoteNum;
                 }
