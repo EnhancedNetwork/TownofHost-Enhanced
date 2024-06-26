@@ -974,7 +974,7 @@ public static class Options
 
         Rebound.SetupCustomOptions();
 
-        Schizophrenic.SetupCustomOptions();
+        Paranoia.SetupCustomOptions();
 
         Stubborn.SetupCustomOptions();
 
