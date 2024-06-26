@@ -467,7 +467,7 @@ public static class NumberOptionPatch
     {
         if (__instance.ZeroIsInfinity && Mathf.Abs(value) < 0.0001f) return "<b>∞</b>";
         if (item == null) return value.ToString(__instance.FormatString);
-        return item.ApplyFormat(value.ToString());
+        return item.GetString();
     }
     [HarmonyPatch(nameof(NumberOption.Increase)), HarmonyPrefix]
     public static bool IncreasePrefix(NumberOption __instance)
