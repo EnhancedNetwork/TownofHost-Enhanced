@@ -749,9 +749,9 @@ public static class RolesSettingsMenu_ChanceTabPatch
         return false;
     }
 
-    private static void CreateCustomQuotaOption(RolesSettingsMenu inst, RoleBase dog, ref float yPos, int index)
+    private static void CreateCustomQuotaOption(RolesSettingsMenu inst, RoleBase dog, ref float yPos)
     {
-        RoleOptionSetting roleOptionSetting = Object.Instantiate(inst.roleOptionSettingOrigin, Vector3.zero, Quaternion.identity, inst.RoleChancesSettings.transform); ;
+        RoleOptionSetting roleOptionSetting = Object.Instantiate(inst.roleOptionSettingOrigin, Vector3.zero, Quaternion.identity, inst.RoleChancesSettings.transform);
         roleOptionSetting.transform.localPosition = new Vector3(-0.15f, yPos, -2f);
         roleOptionSetting.transform.Find("Role #").gameObject.SetActive(false);
 
@@ -794,14 +794,6 @@ public static class RolesSettingsMenu_ChanceTabPatch
         roleOptionSetting.OnValueChanged = new Action<OptionBehaviour>((OptionBehaviour a) => OnValueChanged(a, dog.ThisCustomRole));
         roleOptionSetting.SetClickMask(inst.ButtonClickMask);
         inst.roleChances.Add(roleOptionSetting);
-        for (int i = 0; i < roleOptionSetting.ControllerSelectable.Count; i++)
-        {
-            if (index != 0)
-            {
-                roleOptionSetting.ControllerSelectable[i].ControllerNav.selectOnUp = inst.roleChances[index - 1].ControllerSelectable[i];
-                inst.roleChances[index - 1].ControllerSelectable[i].ControllerNav.selectOnDown = roleOptionSetting.ControllerSelectable[i];
-            }
-        }
         List<UiElement> quotaMono = inst.QuotaTabSelectables.ToManaged();
         quotaMono.AddRange(roleOptionSetting.ControllerSelectable.ToManaged());
         inst.QuotaTabSelectables = quotaMono.ToIl2Cpp();
@@ -890,34 +882,34 @@ public static class RolesSettingsMenu_ChanceTabPatch
         }
         thiz.roleChances.Clear();
 
-        List<RoleBase> roles = [];
+        Dictionary<string, List<RoleBase>> roles = [];
         switch (type)
         {
             case VanillaLikeRoleTypes.Crewmate:
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanilla));
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmatePower));
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanillaGhosts));
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateGhosts));
+                roles.Add("Vanilla", CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanilla));
+                roles.Add("Power", CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmatePower));
+                roles.Add("Vanilla Ghost", CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateVanillaGhosts));
+                roles.Add("Ghost", CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateGhosts));
                 break;
             case VanillaLikeRoleTypes.Impostor:
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorVanilla));
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorSupport));
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorKilling));
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorHindering));
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorConcealing));
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorGhosts));
+                roles.Add("Vanilla", CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorVanilla));
+                roles.Add("Support", CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorSupport));
+                roles.Add("Killing", CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorKilling));
+                roles.Add("Hindering", CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorHindering));
+                roles.Add("Concealing", CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorConcealing));
+                roles.Add("Ghost", CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorGhosts));
                 break;
             case VanillaLikeRoleTypes.Neutral:
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralBenign));
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralEvil));
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralKilling));
-                roles.AddRange(CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralChaos));
+                roles.Add("Benign", CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralBenign));
+                roles.Add("Evil", CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralEvil));
+                roles.Add("Killing", CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralKilling));
+                roles.Add("Chaos", CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralChaos));
                 break;
         }
 
         float num = 0.662f;
 
-        CategoryHeaderEditRole categoryHeaderEditRole = Object.Instantiate<CategoryHeaderEditRole>(thiz.categoryHeaderEditRoleOrigin, Vector3.zero, Quaternion.identity, thiz.RoleChancesSettings.transform);
+        CategoryHeaderEditRole categoryHeaderEditRole = Object.Instantiate(thiz.categoryHeaderEditRoleOrigin, Vector3.zero, Quaternion.identity, thiz.RoleChancesSettings.transform);
 
         // Set Header
         categoryHeaderEditRole.Title.text = GetString(type.ToString());
@@ -929,16 +921,35 @@ public static class RolesSettingsMenu_ChanceTabPatch
         categoryHeaderEditRole.transform.localPosition = new Vector3(4.986f, num, -2f);
         num -= 0.522f;
         int num3 = 0;
-        foreach (var role in roles)
+        foreach (var roleCategory in roles)
         {
-            CreateCustomQuotaOption(thiz, role, ref num, num3);
+            CreateHeader(roleCategory.Key, thiz, ref num);
             num3++;
+            foreach (var role in roleCategory.Value)
+            {
+                CreateCustomQuotaOption(thiz, role, ref num);
+                num3++;
+            }
         }
 
+        thiz.scrollBar.ContentYBounds.max = (num3 / 2.4f); // 2.5f works better sometimes, needs to find the correct number
         Logger.Info($"{type} Count: {roles.Count}", "LoadRoleOptions");
     }
 
     // Additional methods
+
+    private static void CreateHeader(string name, RolesSettingsMenu thiz, ref float yPos)
+    {
+        CategoryHeaderEditRole categoryHeaderEditRole = Object.Instantiate(thiz.categoryHeaderEditRoleOrigin, Vector3.zero, Quaternion.identity, thiz.RoleChancesSettings.transform);
+        categoryHeaderEditRole.transform.Find("QuotaHeader").gameObject.SetActive(false); ;
+        categoryHeaderEditRole.transform.localPosition = new Vector3(4.98f, yPos - 0.1f, -2f);
+        categoryHeaderEditRole.Title.text = name;
+        categoryHeaderEditRole.Background.material.SetInt(PlayerMaterial.MaskLayer, 20);
+        categoryHeaderEditRole.Divider?.material.SetInt(PlayerMaterial.MaskLayer, 20);
+        categoryHeaderEditRole.Title.fontMaterial.SetFloat("_StencilComp", 3f);
+        categoryHeaderEditRole.Title.fontMaterial.SetFloat("_Stencil", 20);
+        yPos -= 0.43f;
+    }
 
     private static void SetTabColor(RoleSettingsTabButton tab, string hex)
     {
