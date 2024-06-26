@@ -85,14 +85,14 @@ internal class Terrorist : RoleBase
             }
         }
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
+    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if (TerroristCanGuess.GetBool()) return true;
-        else
+        if (!TerroristCanGuess.GetBool())
         {
             if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessDisabled"));
             return true;
         }
+        return false;
     }
 }

@@ -458,7 +458,7 @@ internal static class FFAManager
                             pc.IsAlive() && !pc.inVent && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToArray();
                         if (filtered.Length == 0) break;
 
-                        PlayerControl target = filtered[rd.Next(0, filtered.Length)];
+                        PlayerControl target = filtered.RandomElement();
 
                         if (pc.inVent || target.inVent) continue;
 

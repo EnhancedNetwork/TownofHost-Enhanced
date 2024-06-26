@@ -35,6 +35,8 @@ internal class Minion : RoleBase
     {
         Playerids.Add(playerId);
     }
+    // EAC bans players when GA uses sabotage
+    public override bool CanUseSabotage(PlayerControl pc) => false;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.GuardianAngelCooldown = AbilityCooldown.GetFloat();

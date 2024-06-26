@@ -278,7 +278,7 @@ internal class Solsticer : RoleBase
     }
     public override bool GuessCheck(bool isUI, PlayerControl pc, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if (pc.Is(CustomRoles.Solsticer) && (!CanGuess || !SolsticerCanGuess.GetBool()))
+        if ((!CanGuess || !SolsticerCanGuess.GetBool()))
         {
             if (!isUI) Utils.SendMessage(GetString("SolsticerGuessMax"), pc.PlayerId);
             else pc.ShowPopUp(GetString("SolsticerGuessMax"));

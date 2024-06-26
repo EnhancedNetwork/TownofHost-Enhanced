@@ -51,8 +51,12 @@ internal class Marshall : RoleBase
     
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if (!isUI) Utils.SendMessage(GetString("GuessMarshallTask"), pc.PlayerId);
-        else pc.ShowPopUp(GetString("GuessMarshallTask"));
-        return true;
+        if (target.GetPlayerTaskState().IsTaskFinished)
+        {
+            if (!isUI) Utils.SendMessage(GetString("GuessMarshallTask"), pc.PlayerId);
+            else pc.ShowPopUp(GetString("GuessMarshallTask"));
+            return true;
+        }
+        return false;
     }
 }

@@ -81,7 +81,7 @@ internal class Monarch : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
-        if (target.Is(CustomRoles.Monarch) && CustomRoles.Knighted.RoleExist())
+        if (role == CustomRoles.Monarch && CustomRoles.Knighted.RoleExist())
         {
             if (!isUI) Utils.SendMessage(GetString("GuessMonarch"), guesser.PlayerId);
             else guesser.ShowPopUp(GetString("GuessMonarch"));

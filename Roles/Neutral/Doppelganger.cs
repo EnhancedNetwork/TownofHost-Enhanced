@@ -54,12 +54,6 @@ internal class Doppelganger : RoleBase
         AbilityLimit = MaxSteals.GetInt();
         DoppelVictim[playerId] = Utils.GetPlayerById(playerId)?.GetRealName();
 
-        // Read and write info for the rest of the game!
-        foreach (PlayerControl allPlayers in Main.AllPlayerControls)
-        {
-            PlayerControllerToIDRam[allPlayers] = allPlayers.PlayerId;
-        }
-
         DoppelgangerTarget = Utils.GetPlayerById(playerId);
 
         CurrentIdToSwap = playerId;
@@ -114,6 +108,17 @@ internal class Doppelganger : RoleBase
         var killerOutfit = new GameData.PlayerOutfit()
             .Set(killer.GetRealName(), killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
         var killerLvl = Utils.GetPlayerInfoById(killer.PlayerId).PlayerLevel;
+
+        // Set swap info
+        if (!PlayerControllerToIDRam.ContainsKey(killer))
+            PlayerControllerToIDRam[killer] = killer.PlayerId;
+        if (!DoppelPresentSkin.ContainsKey(killer.PlayerId))
+            DoppelPresentSkin[killer.PlayerId] = killerOutfit;
+
+        if (!PlayerControllerToIDRam.ContainsKey(target))
+            PlayerControllerToIDRam[target] = target.PlayerId;
+        if (!DoppelPresentSkin.ContainsKey(target.PlayerId))
+            DoppelPresentSkin[target.PlayerId] = targetOutfit;
 
         // Change player ID
         PlayerControllerToIDRam[target] = CurrentIdToSwap;
@@ -205,8 +210,6 @@ internal class Doppelganger : RoleBase
             .EndRpc();
 
         sender.SendMessage();
-
-        DoppelPresentSkin[pc.PlayerId] = new GameData.PlayerOutfit().Set(newOutfit.PlayerName, newOutfit.ColorId, newOutfit.HatId, newOutfit.SkinId, newOutfit.VisorId, newOutfit.PetId, newOutfit.NamePlateId);
     }
 
     public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Doppelganger).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");

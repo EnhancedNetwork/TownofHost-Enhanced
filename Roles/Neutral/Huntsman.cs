@@ -138,7 +138,7 @@ internal class Huntsman : RoleBase
             {
                 var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !Targets.Contains(pc.PlayerId) && pc.GetCustomRole() != CustomRoles.Huntsman));
                 var rand = IRandom.Instance;
-                var target = cTargets[rand.Next(0, cTargets.Count)];
+                var target = cTargets.RandomElement();
                 var targetId = target.PlayerId;
                 Targets.Add(targetId);
                 SendRPC(isSetTarget: true, targetId: targetId);

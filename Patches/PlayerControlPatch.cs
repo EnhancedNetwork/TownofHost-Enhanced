@@ -483,8 +483,6 @@ class MurderPlayerPatch
         // Check Kill Flash
         Utils.TargetDies(__instance, target);
 
-        DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
-
         if (Options.LowLoadMode.GetBool())
         {
             __instance.MarkDirtySettings();
@@ -1483,8 +1481,8 @@ class PlayerControlCompleteTaskPatch
                             Tired.AfterActionTasks(player);
                             break;
 
-                        case CustomRoles.Bloodlust when player.IsAlive():
-                            Bloodlust.OnTaskComplete(player);
+                        case CustomRoles.Bloodthirst when player.IsAlive():
+                            Bloodthirst.OnTaskComplete(player);
                             break;
 
                         case CustomRoles.Ghoul when taskState.CompletedTasksCount >= taskState.AllTasksCount:

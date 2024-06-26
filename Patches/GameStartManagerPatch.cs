@@ -356,7 +356,7 @@ public class GameStartRandomMap
 
         if (randomMaps.Any())
         {
-            var mapsId = randomMaps[rand.Next(randomMaps.Count)];
+            var mapsId = randomMaps.RandomElement();
 
             Logger.Info($"{mapsId}", "Chance Select MapId");
             return mapsId;
@@ -370,7 +370,7 @@ public class GameStartRandomMap
             if (Options.AirshipChance.GetInt() > 0) randomMaps.Add(4);
             if (Options.FungleChance.GetInt() > 0) randomMaps.Add(5);
 
-            var mapsId = randomMaps[rand.Next(randomMaps.Count)];
+            var mapsId = randomMaps.RandomElement();
 
             Logger.Info($"{mapsId}", "Random Select MapId");
             return mapsId;

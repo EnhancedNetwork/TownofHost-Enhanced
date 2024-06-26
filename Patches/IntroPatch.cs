@@ -636,10 +636,6 @@ class IntroCutsceneDestroyPatch
             }
         }
         Logger.Info("OnDestroy", "IntroCutscene");
-
-        // Update hud buttons
-        if (!AmongUsClient.Instance.IsGameOver)
-            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
     }
 }
  

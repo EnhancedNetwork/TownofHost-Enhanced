@@ -242,7 +242,7 @@ internal class Snitch : RoleBase
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if (target.Is(CustomRoles.Snitch) && target.GetPlayerTaskState().IsTaskFinished)
+        if (target.GetPlayerTaskState().IsTaskFinished)
         {
             if (!isUI) Utils.SendMessage(GetString("EGGuessSnitchTaskDone"), pc.PlayerId);
             else pc.ShowPopUp(GetString("EGGuessSnitchTaskDone"));

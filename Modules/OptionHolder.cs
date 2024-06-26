@@ -972,7 +972,7 @@ public static class Options
 
         Aware.SetupCustomOptions();
 
-        Bloodlust.SetupCustomOptions();
+        Bloodthirst.SetupCustomOptions();
 
         Diseased.SetupCustomOptions();
 
