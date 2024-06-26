@@ -39,7 +39,7 @@ public static class Rainbow
     }
     public static void OnFixedUpdate(PlayerControl player)
     {
-        // When player in vent and changing color he got stuck
+        // When the player is in the vent and changes color, he gets stuck
         if (!player.IsAlive() || player.inVent || player.walkingToVent) return;
         if (Camouflage.IsCamouflage && !ChangeInCamouflage.GetBool()) return;
 
