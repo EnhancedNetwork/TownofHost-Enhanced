@@ -625,7 +625,7 @@ public static class CheckShapeshiftPatch
         {
             instance.RpcGuardAndKill(instance);
             instance.Notify(Utils.ColorString(Utils.GetRoleColor(instance.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
-            logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is protected by the game");
+            logger.Info($"Cancel shapeshifting because {target.GetRealName()} is protected by the game");
             return false;
         }     
         if (Pelican.IsEaten(instance.PlayerId))
