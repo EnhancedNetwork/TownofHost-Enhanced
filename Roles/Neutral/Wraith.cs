@@ -77,29 +77,34 @@ internal class Wraith : RoleBase
 
     public override void OnReportDeadBody(PlayerControl pa, NetworkedPlayerInfo dum)
     {
-        lastTime.Clear();
-        InvisTime.Clear();
-
         foreach (var wraithId in _playerIdList.ToArray())
         {
-            if (!ventedId.ContainsKey(wraithId)) continue;
+            if (!IsInvis(wraithId)) continue;
             var wraith = Utils.GetPlayerById(wraithId);
-            if (wraith == null) return;
+            if (wraith == null) continue;
 
             wraith?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(wraithId, out var id) ? id : Main.LastEnteredVent[wraithId].Id);
+            InvisTime.Remove(wraithId);
+            ventedId.Remove(wraithId);
             SendRPC(wraith);
         }
 
+        lastTime.Clear();
+        InvisTime.Clear();
         ventedId.Clear();
     }
     public override void AfterMeetingTasks()
     {
         lastTime.Clear();
         InvisTime.Clear();
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => _playerIdList.Contains(x.PlayerId)).ToArray())
+
+        foreach (var wraithId in _playerIdList)
         {
-            lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());
-            SendRPC(pc);
+            var wraith = Utils.GetPlayerById(wraithId);
+            if (!wraith.IsAlive()) continue;
+
+            lastTime.Add(wraith.PlayerId, Utils.GetTimeStamp());
+            SendRPC(wraith);
         }
     }
     public override void OnFixedUpdateLowLoad(PlayerControl player)
@@ -123,7 +128,7 @@ internal class Wraith : RoleBase
                 var pc = Utils.GetPlayerById(it.Key);
                 if (pc == null) continue;
                 var remainTime = it.Value + (long)WraithDuration.GetFloat() - now;
-                if (remainTime < 0)
+                if (remainTime < 0 || !pc.IsAlive())
                 {
                     lastTime.Add(pc.PlayerId, now);
                     pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
@@ -177,8 +182,7 @@ internal class Wraith : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (!HasEnabled) return;
-        if (!pc.Is(CustomRoles.Wraith) || !IsInvis(pc.PlayerId)) return;
+        if (!IsInvis(pc.PlayerId)) return;
 
         InvisTime.Remove(pc.PlayerId);
         lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());

@@ -107,7 +107,7 @@ internal class Workaholic : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if(WorkaholicVisibleToEveryone.GetBool())
+        if (WorkaholicVisibleToEveryone.GetBool())
         {
             if (!isUI) Utils.SendMessage(GetString("GuessWorkaholic"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessWorkaholic"));
