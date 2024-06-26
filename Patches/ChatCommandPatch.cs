@@ -1297,7 +1297,7 @@ internal class ChatCommands
             "守衛者" or "守卫者" => GetString("Keeper"),
             "俠客" or "侠客" or "正义使者" => GetString("Knight"),
             "市長" or "市长" => GetString("Mayor"),
-             // "被害妄想症" or "被害妄想" or "被迫害妄想症" or "被害" or "妄想" or "妄想症" => GetString("Paranoia"), going to make a paranoia rework
+            "被害妄想症" or "被害妄想" or "被迫害妄想症" or "被害" or "妄想" or "妄想症" => GetString("Paranoia"),
             "愚者" => GetString("Psychic"),
             "修理工" or "修理" or "修理大师" => GetString("Mechanic"),
             "警長" or "警长" => GetString("Sheriff"),
@@ -1457,7 +1457,7 @@ internal class ChatCommands
             "Youtuber" or "UP主" or "YT" => GetString("Youtuber"),
             "利己主義者" or "利己主义者" or "利己主義" or "利己主义" => GetString("Egoist"),
             "竊票者" or "窃票者" or "竊票" or "窃票" => GetString("TicketsStealer"),
-            "雙重人格" or "双重人格" => GetString("Schizophrenic"),
+            //"雙重人格" or "双重人格" => GetString("Schizophrenic"),
             "保險箱" or "宝箱怪" => GetString("Mimic"),
             "賭怪" or "赌怪" => GetString("Guesser"),
             "死神" => GetString("Necroview"),
