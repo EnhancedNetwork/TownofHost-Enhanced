@@ -152,7 +152,7 @@ internal class Shroud : RoleBase
         if (!shroud.IsAlive() || (exiled != null && exiled.PlayerId == shroud.PlayerId))
         {
             ShroudList.Clear();
-            SendRPC(byte.MaxValue, byte.MaxValue, 1);
+            SendRPC(byte.MaxValue, byte.MaxValue, 0);
             return;
         }
 
