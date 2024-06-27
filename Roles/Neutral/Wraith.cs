@@ -47,11 +47,8 @@ internal class Wraith : RoleBase
     }
     public override void Add(byte playerId)
     {
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
-
     }
     private void SendRPC(PlayerControl pc)
     {

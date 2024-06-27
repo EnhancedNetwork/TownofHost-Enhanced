@@ -932,6 +932,10 @@ class ReportDeadBodyPatch
                 }
             }
 
+            if (GameStates.FungleIsActive && pc.IsMushroomMixupActive())
+            {
+                pc.FixMixedUpOutfit();
+            }
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 

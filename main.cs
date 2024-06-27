@@ -39,7 +39,7 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0626.200.07000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginVersion = "2024.0628.200.07000"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "2.0.0 Canary 7";
     public const string SupportedVersionAU = "2024.6.18";
 
@@ -468,7 +468,7 @@ public class Main : BasePlugin
             //TOHE.Logger.Disable("CheckMurder");
             TOHE.Logger.Disable("PlayerControl.RpcSetRole");
             TOHE.Logger.Disable("SyncCustomSettings");
-            TOHE.Logger.Disable("DoNotifyRoles");
+            //TOHE.Logger.Disable("DoNotifyRoles");
         }
         //TOHE.Logger.isDetail = true;
 

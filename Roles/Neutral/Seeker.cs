@@ -39,20 +39,18 @@ internal class Seeker : RoleBase
 
     public override void Add(byte playerId)
     {
-
         TotalPoints.Add(playerId, 0);
         DefaultSpeed[playerId] = Main.AllPlayerSpeed[playerId];
         PointsToWinOpt = PointsToWin.GetInt();
+
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
             _ = new LateTask(() =>
             {
                 ResetTarget(Utils.GetPlayerById(playerId));
             }, 10f, "Seeker Round 1");
-
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TagCooldownOpt.GetFloat();
     

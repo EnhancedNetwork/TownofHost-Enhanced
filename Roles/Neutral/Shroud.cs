@@ -41,7 +41,6 @@ internal class Shroud : RoleBase
     {
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -152,7 +151,7 @@ internal class Shroud : RoleBase
         if (!shroud.IsAlive() || (exiled != null && exiled.PlayerId == shroud.PlayerId))
         {
             ShroudList.Clear();
-            SendRPC(byte.MaxValue, byte.MaxValue, 1);
+            SendRPC(byte.MaxValue, byte.MaxValue, 0);
             return;
         }
 

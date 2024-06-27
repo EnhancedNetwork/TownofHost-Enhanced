@@ -69,7 +69,6 @@ internal class Romantic : RoleBase
         
         CustomRoleManager.CheckDeadBodyOthers.Add(OthersAfterPlayerDeathTask);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -307,7 +306,6 @@ internal class VengefulRomantic : RoleBase
     {
         VengefulTarget.Add(playerId, Romantic.VengefulTargetId);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -375,7 +373,6 @@ internal class RuthlessRomantic : RoleBase
     {
         playerIdList.Add(playerId);
         
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

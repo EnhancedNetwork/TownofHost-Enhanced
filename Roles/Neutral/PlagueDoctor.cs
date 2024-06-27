@@ -84,14 +84,13 @@ internal class PlagueDoctor : RoleBase
         if (Main.NormalOptions.MapId == 4)
             InfectInactiveTime += 5f;
 
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateOthers.Add(OnCheckPlayerPosition);
             CustomRoleManager.CheckDeadBodyOthers.Add(OnAnyMurder);
-
-            if (!Main.ResetCamPlayerList.Contains(playerId))
-                Main.ResetCamPlayerList.Add(playerId);
         }
     }
 

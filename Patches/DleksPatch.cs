@@ -43,6 +43,8 @@ class AllMapIconsPatch
     [HarmonyPatch(nameof(GameStartManager.Start)), HarmonyPostfix]
     public static void Postfix_AllMapIcons(GameStartManager __instance)
     {
+        if (__instance == null) return;
+
         MapIconByName DleksIncon = Object.Instantiate(__instance, __instance.gameObject.transform).AllMapIcons[0];
         DleksIncon.Name = MapNames.Dleks;
 
