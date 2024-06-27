@@ -22,9 +22,12 @@ class SetUpRoleTextPatch
     {
         if (!GameStates.IsModHost) return;
 
-        // After showing team for non-modded clients update player names.
-        IsInIntro = false;
-        Utils.NotifyRoles(NoCache: true);
+        if (AmongUsClient.Instance.AmHost)
+        {
+            // After showing team for non-modded clients update player names.
+            IsInIntro = false;
+            Utils.NotifyRoles(NoCache: true);
+        }
 
         _ = new LateTask(() =>
         {
