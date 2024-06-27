@@ -24,8 +24,6 @@ namespace TOHE.Patches
         static Dictionary<TabGroup, PassiveButton> ModSettingsButtons = [];
         static Dictionary<TabGroup, GameOptionsMenu> ModSettingsTabs = [];
 
-        [HarmonyPatch(nameof(GameSettingMenu.OnEnable)), HarmonyPrefix]
-
         private static void SetDefaultButton(GameSettingMenu __instance)
         {
             __instance.GamePresetsButton.gameObject.SetActive(false);
@@ -46,6 +44,7 @@ namespace TOHE.Patches
             __instance.ControllerSelectable = new();
             __instance.ControllerSelectable.Add(gameSettingButton);
         }
+        [HarmonyPatch(nameof(GameSettingMenu.OnEnable)), HarmonyPrefix]
         private static bool OnEnablePrefix(GameSettingMenu __instance)
         {
             TemplateGameSettingsButton ??= GameObject.Instantiate(__instance.GamePresetsButton, __instance.GameSettingsTab.transform.parent);
@@ -71,11 +70,60 @@ namespace TOHE.Patches
 
         [HarmonyPatch(nameof(GameSettingMenu.Start)), HarmonyPrefix]
         [HarmonyPriority(Priority.First)]
-        public static void StartPostFix()
+        public static void StartPostFix(GameSettingMenu __instance)
         {
             foreach (var tab in Enum.GetValues<TabGroup>().TakeWhile(x => (int)x > 20))
             {
+                var button = GameObject.Instantiate(TemplateGameSettingsButton, __instance.GameSettingsButton.transform.parent);
+                button.gameObject.SetActive(true);
+                button.name = "Button_" + tab; 
 
+                var label = button.GetComponentInChildren<TextMeshPro>();
+
+                label.DestroyTranslator();
+
+                string tabcolor = tab switch
+                {
+                    TabGroup.SystemSettings => Main.ModColor,
+                    TabGroup.ModSettings => "#59ef83",
+                    TabGroup.ModifierSettings => "#EF59AF",
+                    TabGroup.ImpostorRoles => "#f74631",
+                    TabGroup.CrewmateRoles => "#8cffff",
+                    TabGroup.NeutralRoles => "#7f8c8d",
+                    TabGroup.Addons => "#ff9ace",
+                    _ => "#ffffff",
+                };
+                // Set color
+                //button.HeldButtonSprite.color = new Color(255, 192, 203);
+                // ボタンテキストの名前変更
+                label.text = $"<color={tabcolor}>{Translator.GetString("TabGroup." + tab)}</color>";
+                // ボタンテキストの色変更
+                //button.activeTextColor = button.inactiveTextColor = Color.black;
+                // ボタンテキストの選択中の色変更
+                //button.selectedTextColor = Color.blue;
+
+                //var activeButton = Utils.LoadSprite($"TownOfHost_Y.Resources.Tab_Active_{tab}.png", 100f);
+                //// 各種スプライトをオリジナルのものに変更
+                //button.inactiveSprites.GetComponent<SpriteRenderer>().color = tabcolor;
+                //button.activeSprites.GetComponent<SpriteRenderer>().color = tabcolor;
+                //button.selectedSprites.GetComponent<SpriteRenderer>().color = tabcolor;
+
+                // Y座標オフセット
+                Vector3 offset = new(0.0f, 0.5f * (((int)tab + 1) / 2), 0.0f);
+                // ボタンの座標設定
+                button.transform.localPosition = ((((int)tab + 1) % 2 == 0) ? ButtonPositionRight : ButtonPositionRight) - offset;
+                // ボタンのサイズ設定
+                button.transform.localScale = new Vector3(1f, 1f, 1f);
+
+                // ボタンがクリックされた時の設定
+                var buttonComponent = button.GetComponent<PassiveButton>();
+                buttonComponent.OnClick = new();
+                // ボタンがクリックされるとタブをそのものに変更する
+                buttonComponent.OnClick.AddListener(
+                    (Action)(() => __instance.ChangeTab((int)tab + 3, false)));
+
+                // ボタン登録
+                ModSettingsButtons.Add(tab, button);
 
             }
 
@@ -84,21 +132,19 @@ namespace TOHE.Patches
         [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPrefix]
         public static bool ChangeTabPrefix(GameSettingMenu __instance, ref int tabNum, [HarmonyArgument(1)] bool previewOnly)
         {
-            ModGameOptionsMenu.TabIndex = tabNum;
-
-            GameOptionsMenu settingsTab;
+            //GameOptionsMenu settingsTab;
             PassiveButton button;
 
             if ((previewOnly && Controller.currentTouchType == Controller.TouchType.Joystick) || !previewOnly)
             {
-                foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
+                /*foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
                 {
                     if (ModSettingsTabs.TryGetValue(tab, out settingsTab) &&
                         settingsTab != null)
                     {
                         settingsTab.gameObject.SetActive(false);
                     }
-                }
+                }*/ // To be decided
                 foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
                 {
                     if (ModSettingsButtons.TryGetValue(tab, out button) &&
@@ -120,7 +166,7 @@ namespace TOHE.Patches
                 __instance.GameSettingsButton.SelectButton(false);
                 __instance.RoleSettingsButton.SelectButton(false);
 
-                if (ModSettingsTabs.TryGetValue((TabGroup)(tabNum - 3), out settingsTab) && settingsTab != null)
+               /* if (ModSettingsTabs.TryGetValue((TabGroup)(tabNum - 3), out settingsTab) && settingsTab != null)
                 {
                     settingsTab.gameObject.SetActive(true);
                     __instance.MenuDescriptionText.DestroyTranslator();
@@ -132,7 +178,7 @@ namespace TOHE.Patches
                             __instance.MenuDescriptionText.text = GetString("TabMenuDescription_General");
                             break;
                     }
-                }
+                }*/ // To be decided
             }
 
             if (previewOnly)
