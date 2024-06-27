@@ -199,11 +199,7 @@ public class GameStartManagerPatch
 
         private static void VanillaUpdate(GameStartManager thiz)
         {
-            if (!GameData.Instance)
-            {
-                return;
-            }
-            if (!GameManager.Instance)
+            if (thiz == null || !GameData.Instance || !GameManager.Instance)
             {
                 return;
             }
