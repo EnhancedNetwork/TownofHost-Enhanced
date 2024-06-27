@@ -49,11 +49,8 @@ public static class GameSettingMenuInitializeOptionsPatch
         __instance.GameSettingsTab.HideForOnline = new Il2CppReferenceArray<Transform>(0);
     }
     // Add Dleks to map selection
-
     public static void Postfix(GameSettingMenu __instance)
     {
-
-
         var gamepreset = __instance.GamePresetsButton;
         gamepreset.gameObject.SetActive(false);
 

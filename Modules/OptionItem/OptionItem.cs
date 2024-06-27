@@ -304,8 +304,7 @@ public enum TabGroup
     SystemSettings,
     ModSettings,
     ModifierSettings,
-    
-    ImpostorRoles = 20,
+    ImpostorRoles,
     CrewmateRoles,
     NeutralRoles,
     Addons
