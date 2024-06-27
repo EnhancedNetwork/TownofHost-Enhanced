@@ -70,11 +70,8 @@ internal class Medic : RoleBase
     {
         AbilityLimit = 1;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            if (!Main.ResetCamPlayerList.Contains(playerId))
-                Main.ResetCamPlayerList.Add(playerId);
-        }
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
     }
     private static void SendRPCForProtectList()
     {

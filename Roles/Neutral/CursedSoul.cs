@@ -46,7 +46,6 @@ internal class CursedSoul : RoleBase
         playerIdList.Add(playerId);
         CurseLimit = CurseMax.GetInt();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

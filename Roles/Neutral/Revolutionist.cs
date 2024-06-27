@@ -74,7 +74,6 @@ internal class Revolutionist : RoleBase
         foreach (var ar in Main.AllPlayerControls)
             IsDraw.Add((playerId, ar.PlayerId), false);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

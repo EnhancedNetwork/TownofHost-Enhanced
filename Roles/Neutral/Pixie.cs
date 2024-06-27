@@ -44,7 +44,6 @@ internal class Pixie : RoleBase
         PixieTargets[playerId] = [];
         PixiePoints.Add(playerId, 0);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

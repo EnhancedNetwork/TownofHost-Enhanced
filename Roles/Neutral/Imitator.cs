@@ -36,7 +36,6 @@ internal class Imitator : RoleBase
     {
         AbilityLimit = 1;
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

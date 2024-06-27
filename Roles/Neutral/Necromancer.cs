@@ -49,7 +49,6 @@ internal class Necromancer : RoleBase
         playerIdList.Add(playerId);
         Timer = RevengeTime.GetInt();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

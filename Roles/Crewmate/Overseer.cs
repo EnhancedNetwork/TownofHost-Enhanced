@@ -103,7 +103,6 @@ internal class Overseer : RoleBase
 
         RandomRole.Add(playerId, GetRandomCrewRoleString());
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

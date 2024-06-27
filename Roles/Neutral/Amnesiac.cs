@@ -43,13 +43,14 @@ internal class Amnesiac : RoleBase
     {
         playerIdList.Add(playerId);
 
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
+
         if (!AmongUsClient.Instance.AmHost) return;
         if (ShowArrows.GetBool())
         {
             CheckDeadBodyOthers.Add(CheckDeadBody);
         }
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

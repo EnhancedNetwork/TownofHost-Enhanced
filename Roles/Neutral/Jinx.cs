@@ -37,7 +37,6 @@ internal class Jinx : RoleBase
     {
         AbilityLimit = JinxSpellTimes.GetInt();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

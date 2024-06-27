@@ -50,7 +50,6 @@ internal class Stalker : RoleBase
 
         DRpcSetKillCount(Utils.GetPlayerById(playerId));
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

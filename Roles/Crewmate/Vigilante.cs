@@ -31,7 +31,6 @@ internal class Vigilante : RoleBase
     {
         playerIdList.Add(playerId);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

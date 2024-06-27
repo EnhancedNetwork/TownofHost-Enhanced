@@ -60,12 +60,12 @@ internal class Spiritcaller : RoleBase
         AbilityLimit = SpiritMax.GetInt();
         ProtectTimeStamp = 0;
 
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
+
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
-
-            if (!Main.ResetCamPlayerList.Contains(playerId))
-                Main.ResetCamPlayerList.Add(playerId);
         }
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
