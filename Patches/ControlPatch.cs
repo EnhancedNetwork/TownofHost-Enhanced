@@ -146,7 +146,7 @@ internal class ControllerManagerUpdatePatch
             }
 
             // Get Position
-            if (Input.GetKeyDown(KeyCode.P))
+            if (Input.GetKeyDown(KeyCode.P) && PlayerControl.LocalPlayer != null)
             {
                 Logger.Info(PlayerControl.LocalPlayer.GetTruePosition().ToString(), "GetLocalPlayerPos GetTruePosition()");
                 Logger.Info(PlayerControl.LocalPlayer.transform.position.ToString(), "GetLocalPlayerPos transform.position");
