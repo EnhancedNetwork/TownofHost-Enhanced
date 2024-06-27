@@ -8,6 +8,7 @@ using static TOHE.Translator;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace TOHE.Patches
 {
@@ -38,7 +39,7 @@ namespace TOHE.Patches
             __instance.GameSettingsTab.HideForOnline = new Il2CppReferenceArray<Transform>(0);
         }
 
-
+        private static Dictionary<TabGroup, PassiveButton> ModButtons = [];
         private static PassiveButton TemplateButton;
 
         [HarmonyPatch(nameof(GameSettingMenu.Start)), HarmonyPostfix]
@@ -137,8 +138,9 @@ namespace TOHE.Patches
             var RLabel = rolesettings.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
             RLabel.alignment = TextAlignmentOptions.Center; RLabel.transform.localScale = new Vector3(1.2f, RLabel.transform.localScale.y, RLabel.transform.localScale.z);
             SetButtonColor(ref rolesettings, ref RLabel, new Color32(128, 31, 219, 255));
-            //rolesettings.OnClick.RemoveAllListeners();
-            // button.OnClick.AddListener( () => {}); // add rolemenu method
+
+
+            // Gonna automate below buttons later ig 
 
             //button 1
             GameObject template = rolesettings.gameObject;
@@ -150,12 +152,13 @@ namespace TOHE.Patches
 
             var SystemButton = targetBox.GetComponent<PassiveButton>();
             SystemButton.OnClick.RemoveAllListeners();
-            SystemButton.OnClick.AddListener((Action)(() =>
-                Logger.Info("Activated System Settings", "System Settings TEST")
-            ));
+            SystemButton.OnClick.AddListener(
+                (Action)(() => __instance.ChangeTab((int)TabGroup.SystemSettings + 3, false)));
+
             var label = SystemButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
             _ = new LateTask(() => { label.text = GetString("TabGroup.SystemSettings"); }, 0.05f, "Set Button1 Text");
             SetButtonColor(ref SystemButton, ref label, new Color32(199, 109, 124, 255));
+            ModButtons.Add(TabGroup.SystemSettings, SystemButton);
 
             //button 2
             GameObject template2 = targetBox.gameObject;
@@ -164,16 +167,15 @@ namespace TOHE.Patches
             targetBox2.transform.localPosition = new Vector3(-3.9f, -1.7f, -2.0f);
             targetBox2.gameObject.SetActive(true);
 
-            Logger.Info($"{targetBox2.transform.localPosition}", "ModSet POS");
-
             var ModConfButton = targetBox2.GetComponent<PassiveButton>();
             ModConfButton.OnClick.RemoveAllListeners();
-            ModConfButton.OnClick.AddListener((Action)(() =>
-                Logger.Info("Activated Mod Settings", "Mop Settings TEST")
-            ));
+            ModConfButton.OnClick.AddListener(
+                (Action)(() => __instance.ChangeTab((int)TabGroup.ModSettings + 3, false)));
+
             var label2 = ModConfButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
             _ = new LateTask(() => { label2.text = GetString("TabGroup.ModSettings"); }, 0.05f, "Set Button2 Text");
             SetButtonColor(ref ModConfButton, ref label2, new Color32(89, 239, 131, 255));
+            ModButtons.Add(TabGroup.ModSettings, ModConfButton);
 
             //button 3
             GameObject template3 = targetBox2.gameObject;
@@ -182,17 +184,16 @@ namespace TOHE.Patches
             targetBox3.transform.localPosition = new Vector3(-2.5f, -1.7f, -2.0f);
             targetBox3.gameObject.SetActive(true);
 
-            Logger.Info($"{targetBox3.transform.localPosition}", "Gamemodif POS");
-
-
             var GameModifButton = targetBox3.GetComponent<PassiveButton>();
             GameModifButton.OnClick.RemoveAllListeners();
-            GameModifButton.OnClick.AddListener((Action)(() =>
-                Logger.Info("Activated game Modifier", "Game Modifiers TEST")
-            ));
+            GameModifButton.OnClick.AddListener(
+                (Action)(() => __instance.ChangeTab((int)TabGroup.ModifierSettings + 3, false)));
+
             var label3 = GameModifButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
             _ = new LateTask(() => { label3.text = GetString("TabGroup.ModifierSettings"); }, 0.05f, "Set Button3 Text");
             SetButtonColor(ref GameModifButton, ref label3, new Color32(239, 89, 175, 255));
+            ModButtons.Add(TabGroup.ModifierSettings, GameModifButton);
+
 
 
 
@@ -219,12 +220,54 @@ namespace TOHE.Patches
 
         [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPrefix]
 
-        public static void ChangePrefix(ref int tabNum, [HarmonyArgument(1)] bool previewOnly)
+        public static bool ChangePrefix(GameSettingMenu __instance, ref int tabNum, [HarmonyArgument(1)] bool previewOnly)
         {
-            if (tabNum == 0)
-            { // Disables preset menu in any instances
-                tabNum = 1;
+
+            if (tabNum == 0) tabNum = 1;
+
+            PassiveButton button;
+
+            if ((previewOnly && Controller.currentTouchType == Controller.TouchType.Joystick) || !previewOnly)
+            {
+                foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
+                {
+                    if (ModButtons.TryGetValue(tab, out button) &&
+                        button != null)
+                    {
+                        button.SelectButton(false);
+                    }
+                }
             }
+
+            if (tabNum < 3) return true;
+
+            if ((previewOnly && Controller.currentTouchType == Controller.TouchType.Joystick) || !previewOnly)
+            {
+                __instance.PresetsTab.gameObject.SetActive(false);
+                __instance.GameSettingsTab.gameObject.SetActive(false);
+                __instance.RoleSettingsTab.gameObject.SetActive(false);
+                __instance.GamePresetsButton.SelectButton(false);
+                __instance.GameSettingsButton.SelectButton(false);
+                __instance.RoleSettingsButton.SelectButton(false);
+
+            }
+
+            if (previewOnly)
+            {
+                __instance.ToggleLeftSideDarkener(false);
+                __instance.ToggleRightSideDarkener(true);
+                return false;
+            }
+            __instance.ToggleLeftSideDarkener(true);
+            __instance.ToggleRightSideDarkener(false);
+
+            if (ModButtons.TryGetValue((TabGroup)(tabNum - 3), out button) &&
+                button != null)
+            {
+                button.SelectButton(true);
+            }
+
+            return false;
         }
         [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPostfix]
         public static void ChangePostfix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum)
