@@ -11,17 +11,33 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+[HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckEndGameViaTasks))]
+class CheckGameEndPatch
+{
+    public static bool Prefix(ref bool __result)
+    {
+        if (GameEndCheckerForNormal.ShouldNotCheck)
+        {
+            __result = false;
+            return false;
+        }
+
+        __result = GameEndCheckerForNormal.predicate?.CheckGameEndByTask(out _) ?? false;
+        return false;
+    }
+}
 [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.CheckEndCriteria))]
 class GameEndCheckerForNormal
 {
-    private static GameEndPredicate predicate;
+    public static GameEndPredicate predicate;
     public static bool ShowAllRolesWhenGameEnd = false;
+    public static bool ShouldNotCheck = false;
 
     public static bool Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return true;
 
-        if (predicate == null) return false;
+        if (predicate == null || ShouldNotCheck) return false;
 
         if (Options.NoGameEnd.GetBool() && CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.Error) return false;
 

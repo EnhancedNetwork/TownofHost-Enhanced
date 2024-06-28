@@ -271,7 +271,6 @@ namespace TOHE.Patches
         }
         [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPostfix]
         public static void ChangePostfix(GameSettingMenu __instance, [HarmonyArgument(0)] int tabNum)
-        {
 
             if (tabNum == 1 && __instance.GameSettingsTab.isActiveAndEnabled)
             {

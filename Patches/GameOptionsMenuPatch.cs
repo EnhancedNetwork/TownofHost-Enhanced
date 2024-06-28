@@ -45,6 +45,7 @@ public static class GameOptionsMenuPatch
     private static bool CreateSettingsPrefix(GameOptionsMenu __instance)
     {
         Instance ??= __instance;
+        // When is vanilla tab, run vanilla code
         if (ModGameOptionsMenu.TabIndex < 3) return true;
         __instance.scrollBar.SetYBoundsMax(CalculateScrollBarYBoundsMax());
         __instance.StartCoroutine(CoRoutine().WrapToIl2Cpp());
@@ -167,8 +168,11 @@ public static class GameOptionsMenuPatch
                 if (option is TextOptionItem) num -= 0.63f;
                 else
                 {
-                    if (option.IsHeader && enabled) num -= 0.3f;
-                    if (enabled) num -= 0.45f;
+                    if (enabled)
+                    {
+                        if (option.IsHeader) num -= 0.3f;
+                        num -= 0.45f;
+                    }
                 }
             }
 
@@ -206,11 +210,11 @@ public static class GameOptionsMenuPatch
 
         var labelBackground = optionBehaviour.transform.FindChild("LabelBackground");
         labelBackground.GetComponent<SpriteRenderer>().color = color;
-        labelBackground.localScale += new Vector3(0.9f, -0.2f, 0f) + scaleOffset;
-        labelBackground.localPosition += new Vector3(-0.5f, 0f, 0f) + positionOffset;
+        labelBackground.localScale += new Vector3(1f, -0.2f, 0f) + scaleOffset;
+        labelBackground.localPosition += new Vector3(-0.6f, 0f, 0f) + positionOffset;
 
         var titleText = optionBehaviour.transform.FindChild("Title Text");
-        titleText.localPosition += new Vector3(-0.5f, 0f, 0f) + positionOffset;
+        titleText.localPosition += new Vector3(-0.7f, 0f, 0f) + positionOffset;
         titleText.GetComponent<RectTransform>().sizeDelta = new(sizeDelta_x, 0.37f);
         var textMeshPro = titleText.GetComponent<TextMeshPro>();
         textMeshPro.alignment = TextAlignmentOptions.MidlineLeft;
@@ -530,12 +534,18 @@ public static class StringOptionPatch
         {
             var item = OptionItem.AllOptions[index];
             var name = item.GetName();
+            var language = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
+            Logger.Info($" Language: {language}", "StringOption.Initialize");
+
             if (EnumHelper.GetAllValues<CustomRoles>().Any(x => GetString($"{x}") == name.RemoveHtmlTags()))
             {
                 name = $"<size=3.5>{name}</size>";
                 __instance.TitleText.fontWeight = FontWeight.Black;
-                __instance.TitleText.outlineColor = new(255, 255, 255, 255);
-                __instance.TitleText.outlineWidth = 0.04f;
+                __instance.TitleText.outlineWidth = language switch
+                {
+                    SupportedLangs.Russian or SupportedLangs.Japanese or SupportedLangs.SChinese or SupportedLangs.TChinese => 0.15f,
+                    _ => 0.35f,
+                };
             }
             __instance.TitleText.text = item.GetName();
             return false;

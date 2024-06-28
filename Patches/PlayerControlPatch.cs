@@ -882,7 +882,7 @@ class ReportDeadBodyPatch
         }
 
         // InnerSloth added CheckTaskCompletion() => CheckEndGameViaTasks() in report dead body.
-        // This is patched in NoBlackOut
+        // This is patched in CheckGameEndPatch
         return true;
     }
     public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target)
