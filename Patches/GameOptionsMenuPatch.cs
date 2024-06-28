@@ -166,13 +166,10 @@ public static class GameOptionsMenuPatch
                 var enabled = !option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null || (!option.Parent.IsHiddenOn(Options.CurrentGameMode) && option.Parent.GetBool()));
 
                 if (option is TextOptionItem) num -= 0.63f;
-                else
+                else if (enabled)
                 {
-                    if (enabled)
-                    {
-                        if (option.IsHeader) num -= 0.3f;
-                        num -= 0.45f;
-                    }
+                    if (option.IsHeader) num -= 0.3f;
+                    num -= 0.45f;
                 }
             }
 
@@ -535,7 +532,7 @@ public static class StringOptionPatch
             var item = OptionItem.AllOptions[index];
             var name = item.GetName();
             var language = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
-            Logger.Info($" Language: {language}", "StringOption.Initialize");
+            //Logger.Info($" Language: {language}", "StringOption.Initialize");
 
             if (EnumHelper.GetAllValues<CustomRoles>().Any(x => GetString($"{x}") == name.RemoveHtmlTags()))
             {
