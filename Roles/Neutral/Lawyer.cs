@@ -142,7 +142,7 @@ internal class Lawyer : RoleBase
         {
             byte LawyerId = reader.ReadByte();
             byte TargetId = reader.ReadByte();
-            Target[LawyerId] = TargetId;
+            Target.Add(LawyerId, TargetId);
         }
         else
             Target.Remove(reader.ReadByte());
@@ -196,14 +196,22 @@ internal class Lawyer : RoleBase
     {
         if (seer == null || target == null) return string.Empty;
 
-        if (!seer.Is(CustomRoles.Lawyer))
+        if (seer.Is(CustomRoles.Lawyer))
         {
-            if (!TargetKnowsLawyer.GetBool()) return string.Empty;
+            return Target.TryGetValue(seer.PlayerId, out var targetId) && targetId == target.PlayerId
+                ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : string.Empty;
+        }
+        else if (seer.IsAlive() && TargetKnowsLawyer.GetBool())
+        {
             return (Target.TryGetValue(target.PlayerId, out var x) && seer.PlayerId == x) ?
                 Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : string.Empty;
         }
-        var GetValue = Target.TryGetValue(seer.PlayerId, out var targetId);
-        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : string.Empty;
+        else if (!seer.IsAlive() && Target.ContainsValue(target.PlayerId))
+        {
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦");
+        }
+
+        return string.Empty;
     }
     public override void AfterMeetingTasks()
     {
@@ -213,7 +221,7 @@ internal class Lawyer : RoleBase
             {
                 var lawyer = Utils.GetPlayerById(x.Key);
 
-                if (lawyer != null && lawyer.IsAlive())
+                if (lawyer.IsAlive())
                 {
                     ChangeRole(lawyer);
                 }
