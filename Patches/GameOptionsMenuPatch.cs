@@ -166,13 +166,10 @@ public static class GameOptionsMenuPatch
                 var enabled = !option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null || (!option.Parent.IsHiddenOn(Options.CurrentGameMode) && option.Parent.GetBool()));
 
                 if (option is TextOptionItem) num -= 0.63f;
-                else
+                else if (enabled)
                 {
-                    if (enabled)
-                    {
-                        if (option.IsHeader) num -= 0.3f;
-                        num -= 0.45f;
-                    }
+                    if (option.IsHeader) num -= 0.3f;
+                    num -= 0.45f;
                 }
             }
 
