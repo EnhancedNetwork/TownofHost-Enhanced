@@ -1636,7 +1636,7 @@
   "MadmateCountMode.Imp": "<color=#ff1919>Impostors</color>",
   "MadmateCountMode.Original": "Original Team",
 
-  "SpecterSnatchesWin": "Snatches victory",
+  "SnatchesWin": "Snatches victory",
   "DemonKillCooldown": "Attack Cooldown",
   "DemonHealthMax": "Player max health",
   "DemonDamage": "Damage ",

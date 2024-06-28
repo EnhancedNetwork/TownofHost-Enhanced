@@ -456,6 +456,7 @@ public abstract class RoleBase
         ReduceKillCooldown,
         MinKillCooldown,
         KillAttackerWhenAbilityRemaining,
+        SnatchesWin,
 
         // Based on others roles settings
         ShapeshifterBase_ShapeshiftCooldown,
