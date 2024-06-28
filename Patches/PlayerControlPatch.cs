@@ -1143,9 +1143,6 @@ class FixedUpdateInNormalGamePatch
                     if (Radar.IsEnable)
                         Radar.OnFixedUpdate(player);
 
-                    if (Rainbow.isEnabled && player.Is(CustomRoles.Rainbow))
-                        Rainbow.OnFixedUpdate(player);
-
                     if (Options.LadderDeath.GetBool() && player.IsAlive())
                         FallFromLadder.FixedUpdate(player);
 
@@ -1157,6 +1154,9 @@ class FixedUpdateInNormalGamePatch
                     if (player.AmOwner)
                     {
                         DisableDevice.FixedUpdate();
+
+                        if (Rainbow.isEnabled)
+                            Rainbow.OnFixedUpdate();
                     }
                 }
             }
