@@ -138,7 +138,7 @@ internal class Swooper : RoleBase
 
             var remainTime = swoopInfo.Value + (long)SwooperDuration.GetFloat() - nowTime;
 
-            if (remainTime < 0)
+            if (remainTime < 0 || !swooper.IsAlive())
             {
                 swooper?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(swooperId, out var id) ? id : Main.LastEnteredVent[swooperId].Id);
 
@@ -179,19 +179,20 @@ internal class Swooper : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        InvisCooldown.Clear();
-        InvisDuration.Clear();
-
         foreach (var swooperId in _playerIdList)
         {
-            if (!ventedId.ContainsKey(swooperId)) continue;
+            if (!IsInvis(swooperId)) continue;
             var swooper = Utils.GetPlayerById(swooperId);
             if (swooper == null) continue;
 
             swooper?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(swooperId, out var id) ? id : Main.LastEnteredVent[swooperId].Id);
+            InvisDuration.Remove(swooperId);
+            ventedId.Remove(swooperId);
             SendRPC(swooper);
         }
 
+        InvisCooldown.Clear();
+        InvisDuration.Clear();
         ventedId.Clear();
     }
     public override void AfterMeetingTasks()
@@ -202,7 +203,7 @@ internal class Swooper : RoleBase
         foreach (var swooperId in _playerIdList)
         {
             var swooper = Utils.GetPlayerById(swooperId);
-            if (swooper == null) continue;
+            if (!swooper.IsAlive()) continue;
 
             InvisCooldown.Add(swooperId, Utils.GetTimeStamp());
             SendRPC(swooper);

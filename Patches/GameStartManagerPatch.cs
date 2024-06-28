@@ -35,9 +35,12 @@ public class GameStartManagerPatch
             GameCountdown.transform.localPosition = new Vector3(gameCountdownTransformPosition.x - 0.8f, gameCountdownTransformPosition.y - 0.6f, gameCountdownTransformPosition.z);
             GameCountdown.text = "";
 
-            __instance.GameStartTextParent.GetComponent<SpriteRenderer>().sprite = null;
-            __instance.StartButton.ChangeButtonText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.StartLabel));
-            __instance.GameStartText.transform.localPosition = new Vector3(__instance.GameStartText.transform.localPosition.x, 2f, __instance.GameStartText.transform.localPosition.z);
+            if (AmongUsClient.Instance.AmHost)
+            {
+                __instance.GameStartTextParent.GetComponent<SpriteRenderer>().sprite = null;
+                __instance.StartButton.ChangeButtonText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.StartLabel));
+                __instance.GameStartText.transform.localPosition = new Vector3(__instance.GameStartText.transform.localPosition.x, 2f, __instance.GameStartText.transform.localPosition.z);
+            }
             __instance.GameRoomNameCode.text = GameCode.IntToGameName(AmongUsClient.Instance.GameId);
             // Reset lobby countdown timer
             timer = 600f;
@@ -82,7 +85,10 @@ public class GameStartManagerPatch
         private static int minPlayer;
         public static bool Prefix(GameStartManager __instance)
         {
-            VanillaUpdate(__instance);
+            if (AmongUsClient.Instance.AmHost)
+            {
+                VanillaUpdate(__instance);
+            }
 
             minWait = Options.MinWaitAutoStart.GetFloat();
             maxWait = Options.MaxWaitAutoStart.GetFloat();
@@ -175,7 +181,7 @@ public class GameStartManagerPatch
                 }
             }
 
-            __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset}");
+            __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
 
             // Lobby timer
             if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer) return;
@@ -193,11 +199,7 @@ public class GameStartManagerPatch
 
         private static void VanillaUpdate(GameStartManager thiz)
         {
-            if (!GameData.Instance)
-            {
-                return;
-            }
-            if (!GameManager.Instance)
+            if (thiz == null || !GameData.Instance || !GameManager.Instance)
             {
                 return;
             }
@@ -491,6 +493,8 @@ public class GameStartManagerBeginPatch
     {
         public static bool Prefix(GameStartManager __instance)
         {
+            if (!AmongUsClient.Instance.AmHost) return true;
+
             if (__instance.startState == GameStartManager.StartingStates.Countdown)
             {
                 __instance.ResetStartState();

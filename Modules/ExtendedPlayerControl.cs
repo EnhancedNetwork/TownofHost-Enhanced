@@ -280,7 +280,7 @@ static class ExtendedPlayerControl
             player.SetColor(Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
                 .Write(player.Data.NetId)
-                .Write(Outfit.ColorId)
+                .Write((byte)Outfit.ColorId)
             .EndRpc();
 
             player.SetHat(Outfit.HatId, Outfit.ColorId);

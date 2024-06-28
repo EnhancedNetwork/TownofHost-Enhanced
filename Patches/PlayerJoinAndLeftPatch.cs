@@ -36,10 +36,6 @@ class OnGameJoinedPatch
         EAC.Init();
         Main.AllClientRealNames.Clear();
 
-        // No game end always enabled because the settings are not done
-        Options.NoGameEnd.SetValue(1);
-        Options.FormatNameMode.SetValue(0);
-
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
             EndGameManagerPatch.IsRestarting = false;

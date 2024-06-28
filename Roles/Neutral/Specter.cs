@@ -24,7 +24,7 @@ internal class Specter : RoleBase
         SetupRoleOptions(14900, TabGroup.NeutralRoles, CustomRoles.Specter);
         CanVent = BooleanOptionItem.Create(14902, GeneralOption.CanVent, false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Specter]);
-        SnatchesWin = BooleanOptionItem.Create(14903, "SpecterSnatchesWin", false, TabGroup.NeutralRoles, false)
+        SnatchesWin = BooleanOptionItem.Create(14903, GeneralOption.SnatchesWin, false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Specter]);
         CanGuess = BooleanOptionItem.Create(14904, GeneralOption.CanGuess, false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Specter]);
@@ -49,6 +49,7 @@ internal class Specter : RoleBase
     {
         if (!CanGuess.GetBool())
         {
+            Logger.Info($"Guess Disabled for this player {guesser.PlayerId}", "GuessManager");
             if (!isUI) Utils.SendMessage(Translator.GetString("GuessDisabled"), guesser.PlayerId);
             else guesser.ShowPopUp(Translator.GetString("GuessDisabled"));
             return true;

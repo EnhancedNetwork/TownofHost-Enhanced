@@ -62,7 +62,6 @@ internal class Virus : RoleBase
     {
         AbilityLimit = InfectMax.GetInt();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

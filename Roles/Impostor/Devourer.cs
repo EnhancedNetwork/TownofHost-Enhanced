@@ -139,7 +139,7 @@ internal class Devourer : RoleBase
         target.SetColor(outfit.ColorId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetColor)
             .Write(target.Data.NetId)
-            .Write(outfit.ColorId)
+            .Write((byte)outfit.ColorId)
             .EndRpc();
 
         target.SetHat(outfit.HatId, outfit.ColorId);

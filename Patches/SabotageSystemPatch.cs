@@ -170,20 +170,23 @@ public class SabotageSystemPatch
             {
                 Logger.Info($" IsEnd", "MushroomMixupSabotageSystem.Deteriorate.Postfix");
 
-                _ = new LateTask(() =>
+                if (AmongUsClient.Instance.AmHost)
                 {
-                    // After MushroomMixup sabotage, shapeshift cooldown sets to 0
-                    foreach (var pc in Main.AllAlivePlayerControls)
+                    _ = new LateTask(() =>
                     {
-                        // Reset Ability Cooldown To Default For Alive Players
-                        pc.RpcResetAbilityCooldown();
-                    }
-                }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
+                        // After MushroomMixup sabotage, shapeshift cooldown sets to 0
+                        foreach (var pc in Main.AllAlivePlayerControls)
+                        {
+                            // Reset Ability Cooldown To Default For Alive Players
+                            pc.RpcResetAbilityCooldown();
+                        }
+                    }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
 
-                foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
-                {
-                    // Need for display player names if player is desync Impostor
-                    Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
+                    foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
+                    {
+                        // Need for display player names if player is desync Impostor
+                        Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
+                    }
                 }
             }
         }

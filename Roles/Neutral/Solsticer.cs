@@ -76,11 +76,15 @@ internal class Solsticer : RoleBase
         AURoleOptions.PlayerSpeedMod = !patched ? SolsticerSpeed.GetFloat() : 0.5f;
     } //Enabled Solsticer can vent
 
-    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => true;
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player == null) return true;
+        
+        // Sycn for modded clients
+        SendRPC();
+        
         if (patched)
         {
             ResetTasks(player);
@@ -191,7 +195,7 @@ internal class Solsticer : RoleBase
             }
         }
     }
-    public void SendRPC()
+    private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player); //SyncSolsticerNotify
@@ -318,6 +322,6 @@ internal class Solsticer : RoleBase
                 else return Main.roleColors[seer.GetCustomRole()];
             }
         }
-        return "";
+        return string.Empty;
     }
 }

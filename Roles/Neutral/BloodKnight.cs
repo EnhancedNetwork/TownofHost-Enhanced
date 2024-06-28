@@ -38,7 +38,6 @@ internal class BloodKnight : RoleBase
     {
         TimeStamp = 0;
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

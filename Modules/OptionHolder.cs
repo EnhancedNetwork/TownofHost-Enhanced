@@ -974,7 +974,7 @@ public static class Options
 
         Rebound.SetupCustomOptions();
 
-        Schizophrenic.SetupCustomOptions();
+        Paranoia.SetupCustomOptions();
 
         Stubborn.SetupCustomOptions();
 
@@ -1890,7 +1890,7 @@ public static class Options
             .SetGameMode(customGameMode) as StringOptionItem;
         
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 15, 1), 1, tab, false)
-        .SetParent(spawnOption)
+            .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
             .SetGameMode(customGameMode);
 
@@ -1951,7 +1951,7 @@ public static class Options
             .SetGameMode(customGameMode) as StringOptionItem;
 
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, canSetNum ? 10 : 1, 1), 1, tab, false)
-        .SetParent(spawnOption)
+            .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
             .SetHidden(!canSetNum)
             .SetGameMode(customGameMode);

@@ -53,7 +53,6 @@ internal class PlagueBearer : RoleBase
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -218,8 +217,6 @@ internal class Pestilence : RoleBase
 
     public override void Add(byte playerId)
     {
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

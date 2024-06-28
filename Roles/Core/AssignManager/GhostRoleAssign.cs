@@ -16,7 +16,12 @@ public static class GhostRoleAssign
     private static readonly List<CustomRoles> ImpHauntedList = [];
     public static void GhostAssignPatch(PlayerControl player)
     {
-        if (GameStates.IsHideNSeek  || Options.CurrentGameMode == CustomGameMode.FFA || player == null || player.Data.Disconnected || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
+        if (GameStates.IsHideNSeek  
+            || Options.CurrentGameMode == CustomGameMode.FFA 
+            || player == null 
+            || player.Data.Disconnected 
+            || GhostGetPreviousRole.ContainsKey(player.PlayerId)
+            || player.GetCustomRole().IsDesyncRole()) return;
         if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) {
             Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");
             player.GetRoleClass()?.Remove(player.PlayerId);

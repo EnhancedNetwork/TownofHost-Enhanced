@@ -932,6 +932,10 @@ class ReportDeadBodyPatch
                 }
             }
 
+            if (GameStates.FungleIsActive && pc.IsMushroomMixupActive())
+            {
+                pc.FixMixedUpOutfit();
+            }
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
@@ -1139,9 +1143,6 @@ class FixedUpdateInNormalGamePatch
                     if (Radar.IsEnable)
                         Radar.OnFixedUpdate(player);
 
-                    if (Rainbow.isEnabled)
-                        Rainbow.OnFixedUpdate();
-
                     if (Options.LadderDeath.GetBool() && player.IsAlive())
                         FallFromLadder.FixedUpdate(player);
 
@@ -1153,6 +1154,9 @@ class FixedUpdateInNormalGamePatch
                     if (player.AmOwner)
                     {
                         DisableDevice.FixedUpdate();
+
+                        if (Rainbow.isEnabled)
+                            Rainbow.OnFixedUpdate();
                     }
                 }
             }
@@ -1233,7 +1237,6 @@ class FixedUpdateInNormalGamePatch
                 var seer = PlayerControl.LocalPlayer;
                 var seerRoleClass = seer.GetRoleClass();
                 var target = __instance;
-                var realTarget = target;
 
                 if (seer != target && seer != DollMaster.DollMasterTarget)
                     target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
@@ -1357,7 +1360,7 @@ class FixedUpdateInNormalGamePatch
                     }
 
                     RoleText.transform.SetLocalY(offset);
-                    realTarget.cosmetics.colorBlindText.transform.SetLocalY(colorBlind);
+                    target.cosmetics.colorBlindText.transform.SetLocalY(colorBlind);
                 }
             }
             else

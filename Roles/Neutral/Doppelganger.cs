@@ -58,7 +58,6 @@ internal class Doppelganger : RoleBase
 
         CurrentIdToSwap = playerId;
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -178,7 +177,7 @@ internal class Doppelganger : RoleBase
         pc.SetColor(newOutfit.ColorId);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetColor)
             .Write(pc.Data.NetId)
-            .Write(newOutfit.ColorId)
+            .Write((byte)newOutfit.ColorId)
         .EndRpc();
 
         pc.SetHat(newOutfit.HatId, newOutfit.ColorId);

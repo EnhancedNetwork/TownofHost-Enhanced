@@ -56,7 +56,6 @@ internal class Demon : RoleBase
         foreach (var pc in Main.AllAlivePlayerControls)
             PlayerHealth[pc.PlayerId] = HealthMax.GetInt();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

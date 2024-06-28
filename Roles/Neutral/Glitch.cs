@@ -73,16 +73,12 @@ internal class Glitch : RoleBase
         LastMimic = ts;
         lastRpcSend = ts;
 
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            if (!Main.ResetCamPlayerList.Contains(playerId))
-                Main.ResetCamPlayerList.Add(playerId);
-
-            // Double Trigger
-            var pc = Utils.GetPlayerById(playerId);
-            pc.AddDoubleTrigger();
-        }
+        // Double Trigger
+        var pc = Utils.GetPlayerById(playerId);
+        pc.AddDoubleTrigger();
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 1f;

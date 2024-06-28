@@ -58,7 +58,6 @@ internal class Huntsman : RoleBase
 
         KCD = KillCooldown.GetFloat();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
