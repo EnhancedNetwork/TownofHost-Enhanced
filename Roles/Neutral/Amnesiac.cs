@@ -172,7 +172,7 @@ internal class Amnesiac : RoleBase
             }
             if (tempRole != CustomRoles.Amnesiac)
             {
-                __instance.GetRoleClass().Remove(__instance.PlayerId);
+                __instance.GetRoleClass().OnRemove(__instance.PlayerId);
                 __instance.RpcSetCustomRole(tempRole);
                 __instance.GetRoleClass().OnAdd(__instance.PlayerId);
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));

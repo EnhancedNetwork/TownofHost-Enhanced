@@ -24,7 +24,7 @@ public static class GhostRoleAssign
             || player.GetCustomRole().IsDesyncRole()) return;
         if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) {
             Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");
-            player.GetRoleClass()?.Remove(player.PlayerId);
+            player.GetRoleClass()?.OnRemove(player.PlayerId);
             player.RpcSetCustomRole(forcerole);
             player.GetRoleClass().OnAdd(player.PlayerId);
             forceRole.Remove(player.PlayerId);
@@ -91,7 +91,7 @@ public static class GhostRoleAssign
             {
                 CrewCount++;
                 getCount[ChosenRole]--; // Only deduct if role has been set.
-                player.GetRoleClass().Remove(player.PlayerId);
+                player.GetRoleClass().OnRemove(player.PlayerId);
                 player.RpcSetCustomRole(ChosenRole);
                 player.GetRoleClass().OnAdd(player.PlayerId);
             }
@@ -111,7 +111,7 @@ public static class GhostRoleAssign
             {
                 ImpCount++;
                 getCount[ChosenRole]--;
-                player.GetRoleClass().Remove(player.PlayerId);
+                player.GetRoleClass().OnRemove(player.PlayerId);
                 player.RpcSetCustomRole(ChosenRole);
                 player.GetRoleClass().OnAdd(player.PlayerId);
             }

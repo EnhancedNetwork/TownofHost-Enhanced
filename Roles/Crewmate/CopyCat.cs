@@ -65,7 +65,7 @@ internal class CopyCat : RoleBase
             {
                 if (pcRole != CustomRoles.CopyCat)
                 {
-                    pc.GetRoleClass()?.Remove(pc.PlayerId);
+                    pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                 }
                 pc.RpcSetCustomRole(CustomRoles.CopyCat);
             }

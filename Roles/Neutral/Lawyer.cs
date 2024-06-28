@@ -95,7 +95,7 @@ internal class Lawyer : RoleBase
                 var lawyer = Utils.GetPlayerById(playerId);
                 if (lawyer.IsAlive())
                 {
-                    lawyer.GetRoleClass()?.Remove(playerId);
+                    lawyer.GetRoleClass()?.OnRemove(playerId);
                     lawyer.RpcSetCustomRole(changedRole);
                     lawyer.GetRoleClass()?.OnAdd(playerId);
                 }
@@ -172,7 +172,7 @@ internal class Lawyer : RoleBase
         if (lawyer == null) return;
 
         // Change role
-        lawyer.GetRoleClass()?.Remove(lawyerId);
+        lawyer.GetRoleClass()?.OnRemove(lawyerId);
         lawyer.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         lawyer.GetRoleClass()?.OnAdd(lawyerId);
 
@@ -228,7 +228,7 @@ internal class Lawyer : RoleBase
             Logger.Info($"Laywer target dead, but change role setting is off", "Lawyer");
             return;
         }
-        lawyer.GetRoleClass()?.Remove(lawyer.PlayerId);
+        lawyer.GetRoleClass()?.OnRemove(lawyer.PlayerId);
         lawyer.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         lawyer.GetRoleClass()?.OnAdd(lawyer.PlayerId);
         var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), GetString(""));

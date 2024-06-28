@@ -37,7 +37,11 @@ public abstract class RoleBase
             CustomRoleManager.Add();
         }
     }
-
+    public void OnRemove(byte playerId) // CustomRoleManager.RoleClass executes this
+    {
+        Remove(playerId);
+        IsEnable = false;
+    }
 
     /// <summary>
     /// Variable resets when the game starts.
