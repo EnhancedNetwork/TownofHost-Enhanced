@@ -23,9 +23,7 @@ public static class Credentials
 
                 if (DelayUpdate > 0 && sb.Length > 0)
                 {
-                    __instance.text.alignment = TextAlignmentOptions.Right;
-                    __instance.text.outlineColor = Color.black;
-                    __instance.text.outlineWidth = 0.40f;
+                    ChangeText(__instance);
                     __instance.aspectPosition.DistanceFromEdge = GetPingPosition();
                     __instance.text.text = sb.ToString();
                     return false;
@@ -33,10 +31,7 @@ public static class Credentials
 
                 DelayUpdate = 500;
 
-                __instance.text.alignment = TextAlignmentOptions.Right;
-                __instance.text.outlineColor = Color.black;
-                __instance.text.outlineWidth = 0.40f;
-
+                ChangeText(__instance);
                 sb.Clear();
 
                 sb.Append(Main.credentialsText);
@@ -121,6 +116,25 @@ public static class Credentials
             }
 
             return position;
+        }
+        private static void ChangeText(PingTracker __instance)
+        {
+            __instance.text.alignment = TextAlignmentOptions.Right;
+            __instance.text.outlineColor = Color.black;
+
+            if (Main.ShowTextOverlay.Value)
+            {
+                var language = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
+                __instance.text.outlineWidth = language switch
+                {
+                    SupportedLangs.Russian or SupportedLangs.Japanese or SupportedLangs.SChinese or SupportedLangs.TChinese => 0.25f,
+                    _ => 0.40f,
+                };
+            }
+            else
+            {
+                __instance.text.outlineWidth = 0.40f;
+            }
         }
     }
     [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
