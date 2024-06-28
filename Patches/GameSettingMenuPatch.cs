@@ -366,6 +366,16 @@ namespace TOHE.Patches
 
             return false;
         }
+        [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPostfix]
+        public static void ChangeTabpostfix(GameSettingMenu __instance, int tabNum)
+        {
+            if (tabNum == 1 && __instance.GameSettingsTab.isActiveAndEnabled)
+            {
+                __instance.GameSettingsButton.SelectButton(true);
+                __instance.GameSettingsButton.DestroyTranslator();
+                __instance.MenuDescriptionText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameSettingsDescription);
+            }
+        }
 
         [HarmonyPatch(nameof(GameSettingMenu.Close)), HarmonyPostfix]
         private static void ClosePostfix(GameSettingMenu __instance)
