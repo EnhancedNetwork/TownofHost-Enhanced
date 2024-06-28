@@ -6,6 +6,7 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using UnityEngine;
 using TOHE.Roles.Core;
+using TOHE.Patches;
 
 namespace TOHE;
 
@@ -600,7 +601,7 @@ public static class Options
         OptionSaver.Initialize();
 
         // Preset Option
-        _ = PresetOptionItem.Create(0, TabGroup.SystemSettings)
+        GameSettingMenuPatch.Presetitem = PresetOptionItem.Create(0, TabGroup.SystemSettings)
                 .SetColor(new Color32(255, 235, 4, byte.MaxValue))
                 .SetHeader(true);
 

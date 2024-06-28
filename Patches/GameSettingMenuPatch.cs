@@ -84,6 +84,9 @@ namespace TOHE.Patches
         static Dictionary<TabGroup, GameOptionsMenu> ModSettingsTabs = [];
         private static GameOptionsMenu TemplateGameOptionsMenu;
         private static PassiveButton TemplateGameSettingsButton;
+        public static OptionItem Presetitem;
+        public static Action UpdatePreset;
+        public static StringOption PresetBehaviour;
 
         [HarmonyPatch(nameof(GameSettingMenu.Start)), HarmonyPostfix]
         public static void StartPostfix(GameSettingMenu __instance)
@@ -115,18 +118,25 @@ namespace TOHE.Patches
             GMinus.gameObject.SetActive(true);
             GMinus.transform.localScale = new Vector3(0.08f, 0.4f, 1f);
 
+
             var MLabel = GMinus.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
             MLabel.alignment = TextAlignmentOptions.Center;
-            _ = new LateTask(() => {
+                MLabel.DestroyTranslator();
                 MLabel.text = "-";
                 MLabel.transform.localPosition = new Vector3(MLabel.transform.localPosition.x, MLabel.transform.localPosition.y + 0.26f, MLabel.transform.localPosition.z);
                 MLabel.color = new Color(255f, 255f, 255f);
                 MLabel.SetFaceColor(new Color(255f, 255f, 255f));
                 MLabel.transform.localScale = new Vector3(12f, 4f, 1f);
-            }, 0.05f, shoudLog: false);
+            
 
             var Minus = GMinus.GetComponent<PassiveButton>();
             Minus.OnClick.RemoveAllListeners();
+            Minus.OnClick.AddListener(
+                    (Action)(() => { Presetitem.CurrentValue = Presetitem.CurrentValue - 1; 
+                        GameSettingMenuPatch.UpdatePreset?.Invoke();
+                        PresetBehaviour.Value = Presetitem.CurrentValue;
+                        GameOptionsMenuPatch.UpdateSettings();
+                    }));
             Minus.activeTextColor = new Color(255f, 255f, 255f);
             Minus.inactiveTextColor = new Color(255f, 255f, 255f);
             Minus.disabledTextColor = new Color(255f, 255f, 255f);
@@ -146,15 +156,20 @@ namespace TOHE.Patches
             var PlusFab = GameObject.Instantiate(GMinus, ParentLeftPanel);
             var PLuLabel = PlusFab.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
             PLuLabel.alignment = TextAlignmentOptions.Center;
-           // PlusFab.transform.localScale = new Vector3(1f, 1f, 1f);
-            _ = new LateTask(() => {
+            PLuLabel.DestroyTranslator();
                 PLuLabel.text = "+";
                 PLuLabel.color = new Color(255f, 255f, 255f);
                 PLuLabel.transform.localPosition = new Vector3(PLuLabel.transform.localPosition.x, PLuLabel.transform.localPosition.y + 0.26f, PLuLabel.transform.localPosition.z);
                 PLuLabel.transform.localScale = new Vector3(12f, 4f, 1f);
-            }, 0.05f, shoudLog: false);
+            
             var plus = PlusFab.GetComponent<PassiveButton>();
             plus.OnClick.RemoveAllListeners();
+            plus.OnClick.AddListener(
+                    (Action)(() => { Presetitem.CurrentValue = Presetitem.CurrentValue + 1; 
+                        GameSettingMenuPatch.UpdatePreset?.Invoke();
+                        PresetBehaviour.Value = Presetitem.CurrentValue;
+                        GameOptionsMenuPatch.UpdateSettings();
+                    }));
             plus.activeTextColor = new Color(255f, 255f, 255f);
             plus.inactiveTextColor = new Color(255f, 255f, 255f);
             plus.disabledTextColor = new Color(255f, 255f, 255f);
@@ -173,11 +188,12 @@ namespace TOHE.Patches
             Color clr = new(-1, -1, -1);
             // sprite.set_color_Injected(ref clr);
             var PLabel = preset.GetComponentInChildren<TextMeshPro>();
-            _ = new LateTask(() => {
+                PLabel.DestroyTranslator();
                 PLabel.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
                 PLabel.font = PLuLabel.font;
                 PLabel.fontSizeMax = 3.45f; PLabel.fontSizeMin = 3.45f;
-            }, 0.05f, shoudLog: false);
+            UpdatePreset = () => { PLabel.text = Presetitem.GetString(); };
+            
             plus.transform.parent = preset.transform;
             Minus.transform.parent = preset.transform;
 
@@ -298,6 +314,9 @@ namespace TOHE.Patches
             }
 
             if (tabNum < 3) return true;
+
+
+            
 
             var tabGroupId = (TabGroup)(tabNum - 3);
             if ((previewOnly && Controller.currentTouchType == Controller.TouchType.Joystick) || !previewOnly)

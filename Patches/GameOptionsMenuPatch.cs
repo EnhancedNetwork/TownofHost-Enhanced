@@ -1,6 +1,7 @@
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;
+using TOHE.Patches;
 using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
@@ -114,6 +115,12 @@ public static class GameOptionsMenuPatch
                             optionBehaviour.SetClickMask(__instance.ButtonClickMask);
                             optionBehaviour.SetUpFromData(baseGameSetting, 20);
                             ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour, index);
+
+                            if (index == 0)
+                            {
+                                GameSettingMenuPatch.PresetBehaviour = optionBehaviour as StringOption;
+                            }
+                            if (GameSettingMenuPatch.PresetBehaviour) Logger.Info($"{GameSettingMenuPatch.PresetBehaviour}", "Stringoption? HOOORAY");
                             break;
                         }
                     case OptionTypes.Float:
@@ -560,6 +567,7 @@ public static class StringOptionPatch
             item.SetValue(__instance.GetInt());
             if (item is PresetOptionItem)
             {
+                GameSettingMenuPatch.UpdatePreset?.Invoke();
                 GameOptionsMenuPatch.UpdateSettings();
             }
             return false;
@@ -585,8 +593,11 @@ public static class StringOptionPatch
             {
                 if (__instance.oldValue != __instance.Value)
                 {
+                    GameSettingMenuPatch.UpdatePreset?.Invoke();
+
                     __instance.oldValue = __instance.Value;
                     __instance.ValueText.text = presetOptionItem.GetString();
+
                 }
             }
             return false;
