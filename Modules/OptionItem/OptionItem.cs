@@ -301,7 +301,7 @@ public abstract class OptionItem
 
 public enum TabGroup
 {
-    SystemSettings,
+    SystemSettings = 1,
     ModSettings,
     ModifierSettings,
     ImpostorRoles,
