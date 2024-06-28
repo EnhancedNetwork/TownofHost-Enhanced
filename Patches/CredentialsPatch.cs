@@ -24,6 +24,8 @@ public static class Credentials
                 if (DelayUpdate > 0 && sb.Length > 0)
                 {
                     __instance.text.alignment = TextAlignmentOptions.Right;
+                    __instance.text.outlineColor = Color.black;
+                    __instance.text.outlineWidth = 0.40f;
                     __instance.aspectPosition.DistanceFromEdge = GetPingPosition();
                     __instance.text.text = sb.ToString();
                     return false;
@@ -32,6 +34,8 @@ public static class Credentials
                 DelayUpdate = 500;
 
                 __instance.text.alignment = TextAlignmentOptions.Right;
+                __instance.text.outlineColor = Color.black;
+                __instance.text.outlineWidth = 0.40f;
 
                 sb.Clear();
 
@@ -90,8 +94,9 @@ public static class Credentials
         }
         private static Vector3 GetPingPosition()
         {
-            var offset_x = 2.5f;
-            var offset_y = 5.7f;
+            var settingButtonTransformPosition = DestroyableSingleton<HudManager>.Instance.SettingsButton.transform.localPosition;
+            var offset_x = settingButtonTransformPosition.x - 1.58f;
+            var offset_y = settingButtonTransformPosition.y + 3.2f;
             Vector3 position;
             if (!Main.ShowTextOverlay.Value)
             {
