@@ -143,6 +143,7 @@ public class GameSettingMenuPatch
 
         if (tabNum < 3) return true;
 
+        var tabGroupId = (TabGroup)(tabNum - 3);
         if ((previewOnly && Controller.currentTouchType == Controller.TouchType.Joystick) || !previewOnly)
         {
             __instance.PresetsTab.gameObject.SetActive(false);
@@ -152,11 +153,11 @@ public class GameSettingMenuPatch
             __instance.GameSettingsButton.SelectButton(false);
             __instance.RoleSettingsButton.SelectButton(false);
 
-            if (ModSettingsTabs.TryGetValue((TabGroup)(tabNum - 3), out settingsTab) && settingsTab != null)
+            if (ModSettingsTabs.TryGetValue(tabGroupId, out settingsTab) && settingsTab != null)
             {
                 settingsTab.gameObject.SetActive(true);
                 __instance.MenuDescriptionText.DestroyTranslator();
-                switch ((TabGroup)(tabNum - 3))
+                switch (tabGroupId)
                 {
                     case TabGroup.SystemSettings:
                     case TabGroup.ModSettings:
@@ -182,7 +183,7 @@ public class GameSettingMenuPatch
         __instance.ToggleLeftSideDarkener(true);
         __instance.ToggleRightSideDarkener(false);
 
-        if (ModSettingsButtons.TryGetValue((TabGroup)(tabNum - 3), out button) &&
+        if (ModSettingsButtons.TryGetValue(tabGroupId, out button) &&
             button != null)
         {
             button.SelectButton(true);
