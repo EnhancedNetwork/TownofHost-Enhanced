@@ -44,6 +44,7 @@ public class GameSettingMenuPatch
                 TabGroup.Addons => "#ff9ace",
                 _ => "#ffffff",
             };
+            label.fontStyle = FontStyles.UpperCase;
             label.text = $"<color={htmlcolor}>{GetString("TabGroup." + tab)}</color>";
             
             _ = ColorUtility.TryParseHtmlString(htmlcolor, out Color tabColor);
@@ -94,6 +95,7 @@ public class GameSettingMenuPatch
         
         var textLabel = gameSettingButton.GetComponentInChildren<TextMeshPro>();
         textLabel.DestroyTranslator();
+        textLabel.fontStyle = FontStyles.UpperCase;
         textLabel.text = GetString("TabVanilla.GameSettings");
         //gameSettingButton.activeTextColor = gameSettingButton.inactiveTextColor = Color.black;
         //gameSettingButton.selectedTextColor = Color.blue;
