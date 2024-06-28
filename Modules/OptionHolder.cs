@@ -603,7 +603,9 @@ public static class Options
         // Preset Option
         GameSettingMenuPatch.Presetitem = PresetOptionItem.Create(0, TabGroup.SystemSettings)
                 .SetColor(new Color32(255, 235, 4, byte.MaxValue))
-                .SetHeader(true);
+                .SetHeader(true)
+                .SetHidden(true);
+
 
         // Game Mode
         GameMode = StringOptionItem.Create(60000, "GameMode", gameModes, 0, TabGroup.ModSettings, false)
