@@ -50,8 +50,8 @@ internal class Detective : RoleBase
     {
         if ((target.IsDisconnected() && killer.PlayerId == target.PlayerId) || inMeeting) return;
 
-        InfoAboutDeadPlayerAndKiller[killer.PlayerId] = killer.GetDisplayRoleAndSubName(killer, false);
-        InfoAboutDeadPlayerAndKiller[target.PlayerId] = target.GetDisplayRoleAndSubName(target, false);
+        InfoAboutDeadPlayerAndKiller[killer.PlayerId] = Utils.GetRoleName(killer.GetCustomRole());
+        InfoAboutDeadPlayerAndKiller[target.PlayerId] = Utils.GetRoleName(target.GetCustomRole());
     }
     public override void OnReportDeadBody(PlayerControl player, NetworkedPlayerInfo deadBody)
     {
