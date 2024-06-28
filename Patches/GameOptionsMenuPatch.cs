@@ -120,7 +120,6 @@ public static class GameOptionsMenuPatch
                             {
                                 GameSettingMenuPatch.PresetBehaviour = optionBehaviour as StringOption;
                             }
-                            if (GameSettingMenuPatch.PresetBehaviour) Logger.Info($"{GameSettingMenuPatch.PresetBehaviour}", "Stringoption? HOOORAY");
                             break;
                         }
                     case OptionTypes.Float:
