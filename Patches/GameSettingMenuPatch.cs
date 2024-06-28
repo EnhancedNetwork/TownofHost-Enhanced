@@ -22,6 +22,12 @@ namespace TOHE.Patches
             __instance.GamePresetsButton.gameObject.SetActive(false);
 
             var gameSettingButton = __instance.GameSettingsButton;
+            __instance.GameSettingsButton.transform.localScale = new Vector3(0.4f, 0.7f, 1f);
+            __instance.GameSettingsButton.transform.localPosition = new Vector3(-2.5f, -0.5f, -2.0f);
+            var GLabel = gameSettingButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+            GLabel.alignment = TextAlignmentOptions.Center;
+            GLabel.transform.localScale = new Vector3(1.2f, GLabel.transform.localScale.y, GLabel.transform.localScale.z);
+            SetButtonColor(ref gameSettingButton, ref GLabel, new Color32(72, 86, 217, 255));
 
             var textLabel = gameSettingButton.GetComponentInChildren<TextMeshPro>();
             textLabel.DestroyTranslator();
@@ -103,15 +109,6 @@ namespace TOHE.Patches
             var gamepreset = __instance.GamePresetsButton;
             gamepreset.gameObject.SetActive(false);
 
-            var gamesettings = __instance.GameSettingsButton;
-            __instance.GameSettingsButton.transform.localScale = new Vector3(0.4f, 0.7f, 1f);
-            __instance.GameSettingsButton.transform.localPosition = new Vector3(-2.5f, -0.5f, -2.0f);
-            var GLabel = gamesettings.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
-            GLabel.alignment = TextAlignmentOptions.Center;
-            GLabel.transform.localScale = new Vector3(1.2f, GLabel.transform.localScale.y, GLabel.transform.localScale.z);
-            SetButtonColor(ref gamesettings, ref GLabel, new Color32(72, 86, 217, 255));
-
-            Logger.Info($"{gamesettings.transform.localPosition}", "GameSettings POS");
 
             var TempMinus = GameObject.Find("MinusButton").gameObject;
             var GMinus = GameObject.Instantiate(gamepreset, ParentLeftPanel);
@@ -261,29 +258,25 @@ namespace TOHE.Patches
                 }
             }
 
-
-
-
-            static void SetButtonColor(ref PassiveButton btn, ref TextMeshPro Tob, Color32 col)
-            {
-                Color clr = col;
-                btn.inactiveSprites.GetComponent<SpriteRenderer>().color = clr;
-                btn.activeSprites.GetComponent<SpriteRenderer>().color = clr.ShadeColor(-0.5f);
-                btn.selectedSprites.GetComponent<SpriteRenderer>().color = clr.ShadeColor(-0.5f);
-                Color textC = clr.ShadeColor(-0.5f);
-
-                btn.activeTextColor = textC.ShadeColor(-2f);
-                btn.disabledTextColor = textC;
-                btn.inactiveTextColor = textC;
-                btn.selectedTextColor = textC.ShadeColor(-2f);
-
-                Tob.color = textC;
-                Tob.SetFaceColor(textC);
-
-
-            }
         }
+        static void SetButtonColor(ref PassiveButton btn, ref TextMeshPro Tob, Color32 col)
+        {
+            Color clr = col;
+            btn.inactiveSprites.GetComponent<SpriteRenderer>().color = clr;
+            btn.activeSprites.GetComponent<SpriteRenderer>().color = clr.ShadeColor(-0.5f);
+            btn.selectedSprites.GetComponent<SpriteRenderer>().color = clr.ShadeColor(-0.5f);
+            Color textC = clr.ShadeColor(-0.5f);
 
+            btn.activeTextColor = textC.ShadeColor(-2f);
+            btn.disabledTextColor = textC;
+            btn.inactiveTextColor = textC;
+            btn.selectedTextColor = textC.ShadeColor(-2f);
+
+            Tob.color = textC;
+            Tob.SetFaceColor(textC);
+
+
+        }
 
         [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPrefix]
         public static bool ChangeTabPrefix(GameSettingMenu __instance, ref int tabNum, [HarmonyArgument(1)] bool previewOnly)
@@ -292,6 +285,8 @@ namespace TOHE.Patches
 
             GameOptionsMenu settingsTab;
             PassiveButton button;
+
+            if (tabNum == 0) tabNum = 1;
 
             if ((previewOnly && Controller.currentTouchType == Controller.TouchType.Joystick) || !previewOnly)
             {
@@ -369,10 +364,11 @@ namespace TOHE.Patches
         [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPostfix]
         public static void ChangeTabpostfix(GameSettingMenu __instance, int tabNum)
         {
-            if (tabNum == 1 && __instance.GameSettingsTab.isActiveAndEnabled)
+             string strang = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameSettingsDescription);
+            if (__instance.MenuDescriptionText.text != strang && __instance.GameSettingsTab.isActiveAndEnabled)
             {
                 __instance.GameSettingsButton.SelectButton(true);
-                __instance.GameSettingsButton.DestroyTranslator();
+                __instance.MenuDescriptionText.DestroyTranslator();
                 __instance.MenuDescriptionText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.GameSettingsDescription);
             }
         }
