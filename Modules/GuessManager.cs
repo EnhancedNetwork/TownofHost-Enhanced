@@ -389,48 +389,60 @@ public static class GuessManager
     public static TextMeshPro NameText(this PoolablePlayer p) => p.cosmetics.nameText;
     public static void RpcGuesserMurderPlayer(this PlayerControl pc) //ゲッサー用の殺し方
     {
-        // DEATH STUFF //
-        var amOwner = pc.AmOwner;
-        pc.Data.IsDead = true;
-        pc.RpcExileV2();
-        Main.PlayerStates[pc.PlayerId].SetDead();
-        var meetingHud = MeetingHud.Instance;
-        var hudManager = DestroyableSingleton<HudManager>.Instance;
-        SoundManager.Instance.PlaySound(pc.KillSfx, false, 0.8f);
-        if (!Options.DisableKillAnimationOnGuess.GetBool()) hudManager.KillOverlay.ShowKillAnimation(pc.Data, pc.Data);
-        if (amOwner)
+        try
         {
-            hudManager.ShadowQuad.gameObject.SetActive(false);
-            pc.NameText().GetComponent<MeshRenderer>().material.SetInt("_Mask", 0);
-            pc.RpcSetScanner(false);
-            ImportantTextTask importantTextTask = new GameObject("_Player").AddComponent<ImportantTextTask>();
-            importantTextTask.transform.SetParent(AmongUsClient.Instance.transform, false);
-            meetingHud.SetForegroundForDead();
+            // DEATH STUFF //
+            GameEndCheckerForNormal.ShouldNotCheck = true;
+            var amOwner = pc.AmOwner;
+            pc.Data.IsDead = true;
+            pc.RpcExileV2();
+            Main.PlayerStates[pc.PlayerId].SetDead();
+            var meetingHud = MeetingHud.Instance;
+            var hudManager = DestroyableSingleton<HudManager>.Instance;
+            SoundManager.Instance.PlaySound(pc.KillSfx, false, 0.8f);
+            if (!Options.DisableKillAnimationOnGuess.GetBool()) hudManager.KillOverlay.ShowKillAnimation(pc.Data, pc.Data);
+            if (amOwner)
+            {
+                hudManager.ShadowQuad.gameObject.SetActive(false);
+                pc.NameText().GetComponent<MeshRenderer>().material.SetInt("_Mask", 0);
+                pc.RpcSetScanner(false);
+                ImportantTextTask importantTextTask = new GameObject("_Player").AddComponent<ImportantTextTask>();
+                importantTextTask.transform.SetParent(AmongUsClient.Instance.transform, false);
+                meetingHud.SetForegroundForDead();
+            }
+            PlayerVoteArea voteArea = MeetingHud.Instance.playerStates.First(
+                x => x.TargetPlayerId == pc.PlayerId
+            );
+            if (voteArea == null) return;
+            if (voteArea.DidVote) voteArea.UnsetVote();
+            voteArea.AmDead = true;
+            voteArea.Overlay.gameObject.SetActive(true);
+            voteArea.Overlay.color = Color.white;
+            voteArea.XMark.gameObject.SetActive(true);
+            voteArea.XMark.transform.localScale = Vector3.one;
+            foreach (var playerVoteArea in meetingHud.playerStates.ToArray())
+            {
+                if (playerVoteArea.VotedFor != pc.PlayerId) continue;
+                playerVoteArea.UnsetVote();
+                var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
+                if (!voteAreaPlayer.AmOwner) continue;
+                meetingHud.ClearVote();
+            }
+            Swapper.CheckSwapperTarget(pc.PlayerId);
+            meetingHud.CheckForEndVoting();
+            _ = new LateTask(() => hudManager.SetHudActive(false), 0.3f, "SetHudActive in GuesserMurderPlayer", shoudLog: false);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
+            writer.Write(pc.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+            GameEndCheckerForNormal.ShouldNotCheck = false;
         }
-        PlayerVoteArea voteArea = MeetingHud.Instance.playerStates.First(
-            x => x.TargetPlayerId == pc.PlayerId
-        );
-        if (voteArea == null) return;
-        if (voteArea.DidVote) voteArea.UnsetVote();
-        voteArea.AmDead = true;
-        voteArea.Overlay.gameObject.SetActive(true);
-        voteArea.Overlay.color = Color.white;
-        voteArea.XMark.gameObject.SetActive(true);
-        voteArea.XMark.transform.localScale = Vector3.one;
-        foreach (var playerVoteArea in meetingHud.playerStates.ToArray())
+        catch (Exception error)
         {
-            if (playerVoteArea.VotedFor != pc.PlayerId) continue;
-            playerVoteArea.UnsetVote();
-            var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
-            if (!voteAreaPlayer.AmOwner) continue;
-            meetingHud.ClearVote();
+            // try{} catch{} added in case an exception occurs, and "ShouldNotCheck" will remain true forever
+            Logger.Error($"Error after guesser murder: {error}", "RpcGuesserMurderPlayer");
+            GameEndCheckerForNormal.ShouldNotCheck = false;
         }
-        Swapper.CheckSwapperTarget(pc.PlayerId);
-        meetingHud.CheckForEndVoting();
-        _ = new LateTask(() => hudManager.SetHudActive(false), 0.3f, "SetHudActive in GuesserMurderPlayer", shoudLog: false);
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
-        writer.Write(pc.PlayerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcClientGuess(PlayerControl pc)
     {
