@@ -244,7 +244,7 @@ namespace TOHE.Patches
                 ModSettingsButtons.Add(tab, button);
             }
 
-            foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
+            foreach (var tab in customTabs)
             {
                 var setTab = Object.Instantiate(TemplateGameOptionsMenu, ParentLeftPanel);
                 setTab.name = "tab_" + tab;
@@ -253,7 +253,7 @@ namespace TOHE.Patches
                 ModSettingsTabs.Add(tab, setTab);
             }
 
-            foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
+            foreach (var tab in customTabs)
             {
                 if (ModSettingsButtons.TryGetValue(tab, out var button))
                 {
@@ -295,7 +295,7 @@ namespace TOHE.Patches
 
             if ((previewOnly && Controller.currentTouchType == Controller.TouchType.Joystick) || !previewOnly)
             {
-                foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
+                foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Take(3))
                 {
                     if (ModSettingsTabs.TryGetValue(tab, out settingsTab) &&
                         settingsTab != null)
@@ -303,7 +303,7 @@ namespace TOHE.Patches
                         settingsTab.gameObject.SetActive(false);
                     }
                 }
-                foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
+                foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Take(3))
                 {
                     if (ModSettingsButtons.TryGetValue(tab, out button) &&
                         button != null)
