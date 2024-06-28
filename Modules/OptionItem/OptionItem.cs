@@ -31,6 +31,7 @@ public abstract class OptionItem
     public CustomGameMode HideOptionInHnS { get; protected set; }
     public bool IsHeader { get; protected set; }
     public bool IsHidden { get; protected set; }
+    public bool IsFixValue { get; protected set; }
     public bool IsText { get; protected set; }
     public bool IsVanillaText { get; protected set; }
     public Dictionary<string, string> ReplacementDictionary
@@ -79,6 +80,7 @@ public abstract class OptionItem
         HideOptionInHnS = CustomGameMode.All;
         IsHeader = false;
         IsHidden = false;
+        IsFixValue = false;
         IsText = false;
 
         // Initialize Objects
@@ -129,6 +131,7 @@ public abstract class OptionItem
     public OptionItem SetHeader(bool value) => Do(i => i.IsHeader = value);
     public OptionItem SetHidden(bool value) => Do(i => i.IsHidden = value);
     public OptionItem SetText(bool value) => Do(i => i.IsText = value);
+    public OptionItem SetFixValue(bool value) => Do(i => i.IsFixValue = value);
     public OptionItem HideInFFA(CustomGameMode value = CustomGameMode.FFA) => Do(i => i.HideOptionInFFA = value);
     public OptionItem HideInHnS(CustomGameMode value = CustomGameMode.HidenSeekTOHE) => Do(i => i.HideOptionInHnS = value);
 

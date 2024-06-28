@@ -4,7 +4,6 @@ namespace TOHE;
 
 public class StringOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, string[] selections, bool vanilla) : OptionItem(id, name, defaultValue, tab, isSingleValue, vanillaStr:vanilla)
 {
-    // 必須情報
     public IntegerValueRule Rule = (0, selections.Length - 1, 1);
     public string[] Selections = selections;
 
