@@ -57,7 +57,7 @@ public static class Rainbow
         player.SetColor(color);
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
             .Write(player.Data.NetId)
-            .Write(color)
+            .Write((byte)color)
             .EndRpc();
         sender.SendMessage();
     }
