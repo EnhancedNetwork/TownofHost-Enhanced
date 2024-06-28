@@ -2786,7 +2786,8 @@
   "ImpostorsSurviveBombs": "<color=#ff1919>Impostors</color> survive bombs",
 
   "PunchingBagKillMax": "Amount of attacks needed to win",
-  "GuessPunchingBag": "You just tried to guess a Punching Bag!\nThey're now one step closer to winning!\n\nDo not guess them again.",
+  "GuessPunchingBag": "You just tried to guess a Punching Bag!\nThey're now one step closer to winning!",
+  "GuessPunchingBagAgain": "You just tried to guess a Punching Bag again!\n\nIt no longer counts your attacks by guessing",
   "PunchingBagKill": "You were attacked!",
   "SelfGuessPunchingBag": "You can't self-guess as a Punching Bag, you cheater!",
   "GuessPunchingBagBlocked": "Punching Bag cannot guess due to self-guessing.",

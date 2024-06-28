@@ -1,8 +1,8 @@
-﻿using static TOHE.Options;
+﻿using Hazel;
+using InnerNet;
+using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
-using Hazel;
-using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 
@@ -19,7 +19,8 @@ internal class PunchingBag : RoleBase// bad roll, plz don't use this hosts
 
     private static OptionItem PunchingBagKillMax;
     
-    private static readonly Dictionary<byte, int> PunchingBagMax = [];
+    private readonly Dictionary<byte, int> PunchingBagMax = [];
+    private readonly HashSet<byte> BlockGuess = [];
 
     public override void SetupCustomOption()
     {
@@ -32,6 +33,7 @@ internal class PunchingBag : RoleBase// bad roll, plz don't use this hosts
     {
         PlayerIds.Clear();
         PunchingBagMax.Clear();
+        BlockGuess.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -66,33 +68,40 @@ internal class PunchingBag : RoleBase// bad roll, plz don't use this hosts
         SendRPC(target.PlayerId);
 
         target.Notify(string.Format(GetString("PunchingBagKill"), PunchingBagMax[target.PlayerId]));
-        if (PunchingBagMax[target.PlayerId] >= PunchingBagKillMax.GetInt())
-        {
-            if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PunchingBag);
-                CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
-            }
-        }
+        CheckWin();
         return false;
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
+        if (BlockGuess.Contains(pc.PlayerId))
+        {
+            if (!isUI) SendMessage(GetString("GuessPunchingBagAgain"), pc.PlayerId);
+            else pc.ShowPopUp(GetString("GuessPunchingBagAgain"));
+            return true;
+        }
+
         if (!isUI) SendMessage(GetString("GuessPunchingBag"), pc.PlayerId);
         else pc.ShowPopUp(GetString("GuessPunchingBag"));
 
+        BlockGuess.Add(pc.PlayerId);
         PunchingBagMax[target.PlayerId]++;
         SendRPC(target.PlayerId);
 
-        if (PunchingBagMax[target.PlayerId] >= PunchingBagKillMax.GetInt())
+        CheckWin();
+        return true;
+    }
+    private void CheckWin()
+    {
+        var punchingBagId = _Player.PlayerId;
+        
+        if (PunchingBagMax[punchingBagId] >= PunchingBagKillMax.GetInt())
         {
-            if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
+            if (!CustomWinnerHolder.CheckForConvertedWinner(punchingBagId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PunchingBag);
-                CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
+                CustomWinnerHolder.WinnerIds.Add(punchingBagId);
             }
         }
-        return true;
     }
     public override bool GuessCheck(bool isUI, PlayerControl pc, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
