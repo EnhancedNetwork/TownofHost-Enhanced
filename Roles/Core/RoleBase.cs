@@ -37,7 +37,7 @@ public abstract class RoleBase
             CustomRoleManager.Add();
         }
     }
-    public void OnRemove(byte playerId) // CustomRoleManager.RoleClass executes this
+    public void OnRemove(byte playerId)
     {
         Remove(playerId);
         IsEnable = false;
