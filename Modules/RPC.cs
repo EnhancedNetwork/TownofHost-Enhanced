@@ -800,7 +800,7 @@ internal static class RPC
     public static void GetDeathReason(MessageReader reader)
     {
         var playerId = reader.ReadByte();
-        var deathReason = (PlayerState.DeathReason)reader.ReadInt32();
+        var deathReason = (PlayerState.DeathReason)reader.ReadPackedInt32();
         Main.PlayerStates[playerId].deathReason = deathReason;
         Main.PlayerStates[playerId].IsDead = true;
     }
