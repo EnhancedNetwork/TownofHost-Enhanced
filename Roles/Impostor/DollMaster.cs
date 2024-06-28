@@ -451,7 +451,7 @@ internal class DollMaster : RoleBase
 
         pc.SetColor(newOutfit.ColorId);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetColor)
-        .Write(newOutfit.ColorId)
+        .Write((byte)newOutfit.ColorId)
         .EndRpc();
 
         pc.SetHat(newOutfit.HatId, newOutfit.ColorId);

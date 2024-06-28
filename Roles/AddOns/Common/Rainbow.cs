@@ -37,28 +37,30 @@ public static class Rainbow
     {
         isEnabled = true;
     }
-    public static void OnFixedUpdate(PlayerControl player)
+    public static void OnFixedUpdate()
     {
-        // When the player is in the vent and changes color, he gets stuck
-        if (!player.IsAlive() || player.inVent || player.walkingToVent || player.onLadder) return;
         if (Camouflage.IsCamouflage && !ChangeInCamouflage.GetBool()) return;
 
         if (LastColorChange + RainbowColorChangeCoolDown.GetInt() <= Utils.GetTimeStamp())
         {
             LastColorChange = Utils.GetTimeStamp();
-            ChangeAllColor(player);
+            ChangeAllColor();
         }
 
     }
-    private static void ChangeAllColor(PlayerControl player)
+    private static void ChangeAllColor()
     {
         var sender = CustomRpcSender.Create("Rainbow Sender");
-        int color = PickRandomColor();
-        player.SetColor(color);
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
-            .Write(player.Data.NetId)
-            .Write(color)
-            .EndRpc();
+        // When the player is in the vent and changes color, he gets stuck
+        foreach (var player in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rainbow) && x.IsAlive() && !x.inVent && !x.walkingToVent && !x.onLadder))
+        {
+            int color = PickRandomColor();
+            player.SetColor(color);
+            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
+                .Write(player.Data.NetId)
+                .Write((byte)color)
+                .EndRpc();
+        }
         sender.SendMessage();
     }
     private static int PickRandomColor()

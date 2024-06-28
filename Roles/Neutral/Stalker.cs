@@ -33,7 +33,7 @@ internal class Stalker : RoleBase
         HasImpostorVision = BooleanOptionItem.Create(Id + 11, GeneralOption.ImpostorVision, false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Stalker]);
         CanVent = BooleanOptionItem.Create(Id + 14, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Stalker]);
         CanCountNeutralKiller = BooleanOptionItem.Create(Id + 12, "CanCountNeutralKiller", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Stalker]);
-        SnatchesWin = BooleanOptionItem.Create(Id + 13, "SnatchesWin", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Stalker]);
+        SnatchesWin = BooleanOptionItem.Create(Id + 13, GeneralOption.SnatchesWin, false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Stalker]);
 
     }
     public override void Init()

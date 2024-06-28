@@ -212,7 +212,7 @@ public static class Camouflage
         target.SetColor(newOutfit.ColorId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetColor)
             .Write(target.Data.NetId)
-            .Write(newOutfit.ColorId)
+            .Write((byte)newOutfit.ColorId)
             .EndRpc();
 
         target.SetHat(newOutfit.HatId, newOutfit.ColorId);
