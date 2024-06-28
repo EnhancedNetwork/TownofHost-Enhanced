@@ -131,7 +131,11 @@ namespace TOHE.Patches
             Minus.OnClick.AddListener(
                     (Action)(() => { Presetitem.CurrentValue = Presetitem.CurrentValue - 1; 
                         GameSettingMenuPatch.UpdatePreset?.Invoke();
-                        if (PresetBehaviour != null) PresetBehaviour.Value = Presetitem.CurrentValue;
+                        if (PresetBehaviour != null)
+                        {
+                            PresetBehaviour.Value = Presetitem.CurrentValue;
+                            PresetBehaviour.OnValueChanged?.Invoke(PresetBehaviour);
+                        }
                         GameOptionsMenuPatch.UpdateSettings();
                     }));
             Minus.activeTextColor = new Color(255f, 255f, 255f);
@@ -164,7 +168,11 @@ namespace TOHE.Patches
             plus.OnClick.AddListener(
                     (Action)(() => { Presetitem.CurrentValue = Presetitem.CurrentValue + 1; 
                         GameSettingMenuPatch.UpdatePreset?.Invoke();
-                        if (PresetBehaviour != null) PresetBehaviour.Value = Presetitem.CurrentValue;
+                        if (PresetBehaviour != null)
+                        {
+                            PresetBehaviour.Value = Presetitem.CurrentValue;
+                            PresetBehaviour.OnValueChanged?.Invoke(PresetBehaviour);
+                        }
                         GameOptionsMenuPatch.UpdateSettings();
                     }));
             plus.activeTextColor = new Color(255f, 255f, 255f);
