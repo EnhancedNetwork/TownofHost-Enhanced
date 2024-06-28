@@ -231,7 +231,7 @@ namespace TOHE.Patches
                 };
                 lable.fontStyle = FontStyles.UpperCase;
                 _ = ColorUtility.TryParseHtmlString(htmlcolor, out Color tabColor);
-                lable.text = $"<color={htmlcolor}>{GetString("TabGroup." + tab)}</color>";
+                lable.text = $"{GetString("TabGroup." + tab)}";
                 SetButtonColor(ref button, ref lable, tabColor);
 
                 Vector3 offset = new(0.0f, currentoffset, 0.0f);
