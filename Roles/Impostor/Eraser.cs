@@ -44,7 +44,7 @@ internal class Eraser : RoleBase
         => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, $"({AbilityLimit})");
 
     public override bool HideVote(PlayerVoteArea votedPlayer)
-        => CheckForEndVotingPatch.CheckRole(votedPlayer.TargetPlayerId, CustomRoles.Eraser) && HideVoteOpt.GetBool() && TempEraseLimit > 0;
+        => HideVoteOpt.GetBool() && TempEraseLimit > 0;
 
     public override void OnVote(PlayerControl player, PlayerControl target)
     {
@@ -81,11 +81,19 @@ internal class Eraser : RoleBase
 
         Utils.NotifyRoles(SpecifySeer: player);
     }
+    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (PlayerToErase.Contains(target.PlayerId) && !role.IsAdditionRole())
+        {
+            if (!isUI) Utils.SendMessage(GetString("EraserTryingGuessErasedPlayer"), guesser.PlayerId);
+            else guesser.ShowPopUp(GetString("EraserTryingGuessErasedPlayer"));
+            return true;
+        }
+        return false;
+    }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         TempEraseLimit = (int)AbilityLimit;
-
-        PlayerToErase.Clear();
         didVote.Clear();
     }
     public override void NotifyAfterMeeting()
