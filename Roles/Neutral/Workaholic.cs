@@ -121,8 +121,8 @@ internal class Workaholic : RoleBase
         {
             if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessDisabled"));
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }

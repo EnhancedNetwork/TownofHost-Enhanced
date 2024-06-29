@@ -11,6 +11,7 @@ internal class Doppelganger : RoleBase
     //===========================SETUP================================\\
     private const int Id = 25000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doppelganger);
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -51,14 +52,7 @@ internal class Doppelganger : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = MaxSteals.GetInt();
-        if (playerId == PlayerControl.LocalPlayer.PlayerId && Main.nickName.Length != 0) DoppelVictim[playerId] = Main.nickName;
-        else DoppelVictim[playerId] = Utils.GetPlayerById(playerId).Data.PlayerName;
-
-        // Read and write info for the rest of the game!
-        foreach (PlayerControl allPlayers in Main.AllPlayerControls)
-        {
-            PlayerControllerToIDRam[allPlayers] = allPlayers.PlayerId;
-        }
+        DoppelVictim[playerId] = Utils.GetPlayerById(playerId)?.GetRealName();
 
         DoppelgangerTarget = Utils.GetPlayerById(playerId);
 
@@ -78,7 +72,7 @@ internal class Doppelganger : RoleBase
     // A quick check if a player has been killed by the doppelganger.
     public static bool CheckDoppelVictim(byte playerId) => DoppelVictim.ContainsKey(playerId);
 
-    public static PlayerControl GetDoppelControl(PlayerControl player) => DoppelgangerTarget != null ? DoppelgangerTarget : player;
+    public static PlayerControl GetDoppelControl(PlayerControl player) => DoppelgangerTarget ?? player;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -114,6 +108,17 @@ internal class Doppelganger : RoleBase
         var killerOutfit = new GameData.PlayerOutfit()
             .Set(killer.GetRealName(), killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
         var killerLvl = Utils.GetPlayerInfoById(killer.PlayerId).PlayerLevel;
+
+        // Set swap info
+        if (!PlayerControllerToIDRam.ContainsKey(killer))
+            PlayerControllerToIDRam[killer] = killer.PlayerId;
+        if (!DoppelPresentSkin.ContainsKey(killer.PlayerId))
+            DoppelPresentSkin[killer.PlayerId] = killerOutfit;
+
+        if (!PlayerControllerToIDRam.ContainsKey(target))
+            PlayerControllerToIDRam[target] = target.PlayerId;
+        if (!DoppelPresentSkin.ContainsKey(target.PlayerId))
+            DoppelPresentSkin[target.PlayerId] = targetOutfit;
 
         // Change player ID
         PlayerControllerToIDRam[target] = CurrentIdToSwap;
@@ -205,8 +210,6 @@ internal class Doppelganger : RoleBase
             .EndRpc();
 
         sender.SendMessage();
-
-        DoppelPresentSkin[pc.PlayerId] = new GameData.PlayerOutfit().Set(newOutfit.PlayerName, newOutfit.ColorId, newOutfit.HatId, newOutfit.SkinId, newOutfit.VisorId, newOutfit.PetId, newOutfit.NamePlateId);
     }
 
     public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Doppelganger).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");

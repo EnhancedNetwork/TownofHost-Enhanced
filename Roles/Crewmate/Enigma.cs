@@ -91,9 +91,9 @@ internal class Enigma : RoleBase
 
     public override void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo target)
     {
-        if (target == null || target.Object == null) return;
+        if (target == null) return;
 
-        PlayerControl killer = target.Object.GetRealKiller();
+        PlayerControl killer = target.PlayerId.GetRealKillerById();
         if (killer == null) return;
 
         string title;
@@ -131,7 +131,7 @@ internal class Enigma : RoleBase
             if (showStageClue && clues.Any(a => a.ClueStage == stage))
                 clues = clues.Where(a => a.ClueStage == stage).ToList();
 
-            EnigmaClue clue = clues[rd.Next(0, clues.Count)];
+            EnigmaClue clue = clues.RandomElement();
             title = clue.Title;
             msg = clue.GetMessage(killer, showStageClue);
 
@@ -173,7 +173,7 @@ internal class Enigma : RoleBase
 
         public override string GetMessage(PlayerControl killer, bool showStageClue)
         {
-            var killerOutfit = Camouflage.PlayerSkins[killer.PlayerId];
+            var killerOutfit = Main.PlayerStates[killer.Data.PlayerId].NormalOutfit;
             if (killerOutfit.HatId == "hat_EmptyHat")
                 return GetString("EnigmaClueHat2");
 
@@ -197,7 +197,7 @@ internal class Enigma : RoleBase
 
         public override string GetMessage(PlayerControl killer, bool showStageClue)
         {
-            var killerOutfit = Camouflage.PlayerSkins[killer.PlayerId];
+            var killerOutfit = Main.PlayerStates[killer.Data.PlayerId].NormalOutfit;
             if (killerOutfit.VisorId == "visor_EmptyVisor")
                 return GetString("EnigmaClueVisor2");
 
@@ -221,7 +221,7 @@ internal class Enigma : RoleBase
 
         public override string GetMessage(PlayerControl killer, bool showStageClue)
         {
-            var killerOutfit = Camouflage.PlayerSkins[killer.PlayerId];
+            var killerOutfit = Main.PlayerStates[killer.Data.PlayerId].NormalOutfit;
             if (killerOutfit.SkinId == "skin_EmptySkin")
                 return GetString("EnigmaClueSkin2");
 
@@ -245,7 +245,7 @@ internal class Enigma : RoleBase
 
         public override string GetMessage(PlayerControl killer, bool showStageClue)
         {
-            var killerOutfit = Camouflage.PlayerSkins[killer.PlayerId];
+            var killerOutfit = Main.PlayerStates[killer.Data.PlayerId].NormalOutfit;
             if (killerOutfit.PetId == "pet_EmptyPet")
                 return GetString("EnigmaCluePet2");
 
@@ -271,7 +271,7 @@ internal class Enigma : RoleBase
 
         public override string GetMessage(PlayerControl killer, bool showStageClue)
         {
-            string killerName = killer.GetRealName();
+            string killerName = Main.PlayerStates[killer.Data.PlayerId].NormalOutfit.PlayerName;
             string letter = killerName[rd.Next(0, killerName.Length)].ToString().ToLower();
 
             switch (this.ClueStage)
@@ -320,7 +320,7 @@ internal class Enigma : RoleBase
         private string GetRandomLetter(PlayerControl killer, string letter)
         {
             var alivePlayers = Main.AllAlivePlayerControls.Where(a => a.PlayerId != killer.PlayerId).ToList();
-            var rndPlayer = alivePlayers[rd.Next(0, alivePlayers.Count)];
+            var rndPlayer = alivePlayers.RandomElement();
             string rndPlayerName = rndPlayer.GetRealName().Replace(letter, "");
             string letter2 = rndPlayerName[rd.Next(0, rndPlayerName.Length)].ToString().ToLower();
             return letter2;
@@ -334,7 +334,7 @@ internal class Enigma : RoleBase
 
         public override string GetMessage(PlayerControl killer, bool showStageClue)
         {
-            int length = killer.GetRealName().Length;
+            int length = Main.PlayerStates[killer.Data.PlayerId].NormalOutfit.PlayerName.Length;
 
             switch (this.ClueStage)
             {

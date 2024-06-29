@@ -44,6 +44,8 @@ internal class Bloodmoon : RoleBase
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOther);
 
     }
+    // EAC bans players when GA uses sabotage
+    public override bool CanUseSabotage(PlayerControl pc) => false;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();

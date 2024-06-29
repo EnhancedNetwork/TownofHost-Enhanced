@@ -83,8 +83,7 @@ public static class AddonAssign
         // Add addons randomly
         while (addonsIsEnableList.Any())
         {
-            int randomItem = rd.Next(addonsIsEnableList.Count);
-            var randomAddOn = addonsIsEnableList[randomItem];
+            var randomAddOn = addonsIsEnableList.RandomElement();
 
             if (!addonsList.Contains(randomAddOn) && AddonRolesList.Contains(randomAddOn))
             {

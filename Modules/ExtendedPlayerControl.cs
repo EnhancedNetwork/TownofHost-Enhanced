@@ -565,6 +565,7 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
+        if (GameStates.IsLobby) return false;
         if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return false;
         if (DollMaster.IsDoll(pc.PlayerId)) return false;
         if (pc.Is(CustomRoles.Killer) || Mastermind.PlayerIsManipulated(pc)) return true;
@@ -1000,8 +1001,7 @@ static class ExtendedPlayerControl
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
         var vents = UnityEngine.Object.FindObjectsOfType<Vent>();
-        var rand = IRandom.Instance;
-        var vent = vents[rand.Next(0, vents.Count)];
+        var vent = vents.RandomElement();
 
         Logger.Info($" {vent.transform.position}", "RpcVentTeleportPosition");
         player.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));
@@ -1044,6 +1044,11 @@ static class ExtendedPlayerControl
     public static PlayerControl GetRealKiller(this PlayerControl target)
     {
         var killerId = Main.PlayerStates[target.Data.PlayerId].GetRealKiller();
+        return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
+    }
+    public static PlayerControl GetRealKillerById(this byte targetId)
+    {
+        var killerId = Main.PlayerStates[targetId].GetRealKiller();
         return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
     }
     public static PlainShipRoom GetPlainShipRoom(this PlayerControl pc)

@@ -39,12 +39,12 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0613.200.040000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 Canary 4";
+    public const string PluginVersion = "2024.0618.200.050000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 Canary 5";
     public static readonly string SupportedVersionAU = "2024.3.5"; // Also 2024.6.4
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 4
+    public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 5
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
     public static readonly bool devRelease = false; // INACTIVE - Latest: V2.0.0 Dev 25
 
@@ -93,6 +93,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
     public static ConfigEntry<bool> EnableCustomSoundEffect { get; private set; }
+    public static ConfigEntry<bool> EnableCustomDecorations { get; private set; }
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
 
     // Debug
@@ -432,6 +433,7 @@ public class Main : BasePlugin
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);
         EnableCustomSoundEffect = Config.Bind("Client Options", "EnableCustomSoundEffect", true);
+        EnableCustomDecorations = Config.Bind("Client Options", "EnableCustomDecorations", true);
         SwitchVanilla = Config.Bind("Client Options", "SwitchVanilla", false);
 
         // Debug
@@ -743,7 +745,6 @@ public enum CustomRoles
     Jinx,
     Juggernaut,
     Lawyer,
-    Masochist,
     Maverick,
     Medusa,
     Necromancer,
@@ -759,6 +760,7 @@ public enum CustomRoles
     PotionMaster,
     Poisoner,
     Provocateur,
+    PunchingBag,
     Pursuer,
     Pyromaniac,
     Quizmaster,
@@ -809,7 +811,7 @@ public enum CustomRoles
     Aware,
     Bait,
     Bewilder,
-    Bloodlust,
+    Bloodthirst,
     Burst,
     Charmed,
     Circumvent,
@@ -930,7 +932,7 @@ public enum CustomWinner
     Spiritcaller = CustomRoles.Spiritcaller,
     Glitch = CustomRoles.Glitch,
     PlagueDoctor = CustomRoles.PlagueDoctor,
-    Masochist = CustomRoles.Masochist,
+    PunchingBag = CustomRoles.PunchingBag,
     Doomsayer = CustomRoles.Doomsayer,
     Shroud = CustomRoles.Shroud,
     Seeker = CustomRoles.Seeker,

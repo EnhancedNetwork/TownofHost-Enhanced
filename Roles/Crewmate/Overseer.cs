@@ -252,8 +252,7 @@ internal class Overseer : RoleBase
 
     private static string GetRandomCrewRoleString() // Random role for trickster
     {
-        var rd = IRandom.Instance;
-        var randomRole = randomRolesForTrickster[rd.Next(0, randomRolesForTrickster.Count)];
+        var randomRole = randomRolesForTrickster.RandomElement();
 
         //string roleName = GetRoleName(randomRole);
         string RoleText = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));

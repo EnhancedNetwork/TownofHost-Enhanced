@@ -218,7 +218,7 @@ internal class BountyHunter : RoleBase
         }
 
         var rand = IRandom.Instance;
-        var target = cTargets[rand.Next(0, cTargets.Count)];
+        var target = cTargets.RandomElement();
         var targetId = target.PlayerId;
         Targets[playerId] = targetId;
         

@@ -326,13 +326,13 @@ internal class ChatCommands
                 case "/icon":
                 case "/icons":
                     {
-                        Utils.SendMessage(GetString("Command.icons"), PlayerControl.LocalPlayer.PlayerId);
+                        Utils.SendMessage(GetString("Command.icons"), PlayerControl.LocalPlayer.PlayerId, GetString("IconsTitle"));
                         break;
                     }
 
                 case "/iconhelp":
                     {
-                        Utils.SendMessage(GetString("Command.icons"));
+                        Utils.SendMessage(GetString("Command.icons"), title: GetString("IconsTitle"));
                         break;
                     }
 
@@ -1421,7 +1421,7 @@ internal class ChatCommands
             "模仿家" or "效仿者" => GetString("Imitator"),
             "強盜" => GetString("Bandit"),
             "分身者" => GetString("Doppelganger"),
-            "受虐狂" => GetString("Masochist"),
+            "受虐狂" => GetString("PunchingBag"),
             "賭神" or "末日赌怪" => GetString("Doomsayer"),
             "裹屍布" or "裹尸布" => GetString("Shroud"),
             "月下狼人" or "狼人" => GetString("Werewolf"),
@@ -1498,7 +1498,7 @@ internal class ChatCommands
             "固執者" or "固执者" or "固執" or "固执" => GetString("Stubborn"),
             "無影" or "迅捷" => GetString("Swift"),
             "反噬" or "食尸鬼" => GetString("Ghoul"),
-            "嗜血者" => GetString("Bloodlust"),
+            "嗜血者" => GetString("Bloodthirst"),
             "獵夢者" or "梦魇" or "獵夢"=> GetString("Mare"),
             "地雷" or "爆破者" or "爆破" => GetString("Burst"),
             "偵察員" or "侦察员" or "偵察" or "侦察" => GetString("Sleuth"),
@@ -1879,7 +1879,7 @@ internal class ChatCommands
             case "/icon":
             case "/icons":
                 {
-                    Utils.SendMessage(GetString("Command.icons"), player.PlayerId);
+                    Utils.SendMessage(GetString("Command.icons"), player.PlayerId, GetString("IconsTitle"));
                     break;
                 }
 

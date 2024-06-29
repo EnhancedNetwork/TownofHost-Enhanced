@@ -292,7 +292,7 @@ public class RoleAssign
             {
                 while (AlwaysImpRoles.Any())
                 {
-                    var selected = AlwaysImpRoles[rd.Next(0, AlwaysImpRoles.Count)];
+                    var selected = AlwaysImpRoles.RandomElement();
                     var info = ImpRoleCounts.FirstOrDefault(x => x.Role == selected);
                     AlwaysImpRoles.Remove(selected);
                     if (info.AssignedCount >= info.MaxCount) continue;
@@ -314,8 +314,7 @@ public class RoleAssign
             {
                 while (ChanceImpRoles.Any())
                 {
-                    var selectesItem = rd.Next(0, ChanceImpRoles.Count);
-                    var selected = ChanceImpRoles[selectesItem];
+                    var selected = ChanceImpRoles.RandomElement();
                     var info = ImpRoleCounts.FirstOrDefault(x => x.Role == selected);
 
                     // Remove 'x' times
@@ -395,7 +394,7 @@ public class RoleAssign
                 {
                     while (AlwaysNonNKRoles.Any() && optNonNeutralKillingNum > 0)
                     {
-                        var selected = AlwaysNonNKRoles[rd.Next(0, AlwaysNonNKRoles.Count)];
+                        var selected = AlwaysNonNKRoles.RandomElement();
                         var info = NonNKRoleCounts.FirstOrDefault(x => x.Role == selected);
                         AlwaysNonNKRoles.Remove(selected);
                         if (info.AssignedCount >= info.MaxCount) continue;
@@ -417,8 +416,7 @@ public class RoleAssign
                 {
                     while (ChanceNonNKRoles.Any() && optNonNeutralKillingNum > 0)
                     {
-                        var selectesItem = rd.Next(0, ChanceNonNKRoles.Count);
-                        var selected = ChanceNonNKRoles[selectesItem];
+                        var selected = ChanceNonNKRoles.RandomElement();
                         var info = NonNKRoleCounts.FirstOrDefault(x => x.Role == selected);
 
                         // Remove 'x' times
@@ -496,7 +494,7 @@ public class RoleAssign
                 {
                     while (AlwaysNKRoles.Any() && optNeutralKillingNum > 0)
                     {
-                        var selected = AlwaysNKRoles[rd.Next(0, AlwaysNKRoles.Count)];
+                        var selected = AlwaysNKRoles.RandomElement();
                         var info = NKRoleCounts.FirstOrDefault(x => x.Role == selected);
                         AlwaysNKRoles.Remove(selected);
                         if (info.AssignedCount >= info.MaxCount) continue;
@@ -518,8 +516,7 @@ public class RoleAssign
                 {
                     while (ChanceNKRoles.Any() && optNeutralKillingNum > 0)
                     {
-                        var selectesItem = rd.Next(0, ChanceNKRoles.Count);
-                        var selected = ChanceNKRoles[selectesItem];
+                        var selected = ChanceNKRoles.RandomElement();
                         var info = NKRoleCounts.FirstOrDefault(x => x.Role == selected);
 
                         // Remove 'x' times
@@ -694,7 +691,7 @@ public class RoleAssign
             {
                 while (AlwaysCrewRoles.Any())
                 {
-                    var selected = AlwaysCrewRoles[rd.Next(0, AlwaysCrewRoles.Count)];
+                    var selected = AlwaysCrewRoles.RandomElement();
                     var info = CrewRoleCounts.FirstOrDefault(x => x.Role == selected);
                     AlwaysCrewRoles.Remove(selected);
                     if (info.AssignedCount >= info.MaxCount) continue;
@@ -714,8 +711,7 @@ public class RoleAssign
             {
                 while (ChanceCrewRoles.Any())
                 {
-                    var selectesItem = rd.Next(0, ChanceCrewRoles.Count);
-                    var selected = ChanceCrewRoles[selectesItem];
+                    var selected = ChanceCrewRoles.RandomElement();
                     var info = CrewRoleCounts.FirstOrDefault(x => x.Role == selected);
 
                     // Remove 'x' times
@@ -773,8 +769,8 @@ public class RoleAssign
                 FinalRolesList = FinalRolesList.Shuffle(rd).ToList();
 
             // Select random role and player from list
-            var randomPlayer = AllPlayers[rd.Next(AllPlayers.Count)];
-            var assignedRole = FinalRolesList[rd.Next(FinalRolesList.Count)];
+            var randomPlayer = AllPlayers.RandomElement();
+            var assignedRole = FinalRolesList.RandomElement();
 
             // Assign random role for random player
             RoleResult[randomPlayer] = assignedRole;
