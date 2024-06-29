@@ -1243,7 +1243,7 @@ internal class ChatCommands
             "裂縫製造者" or "裂缝制造者" => GetString("RiftMaker"),
             "邪惡的追踪者" or "邪恶追踪者" or "邪恶的追踪者" => GetString("EvilTracker"),
             "邪惡賭怪" or "邪恶赌怪" or "坏赌" or "恶赌" or "邪恶赌怪" => GetString("EvilGuesser"),
-            "監管者" or "监管者" or "监管" => GetString("AntiAdminer"),
+            "監管者" or "监管者" or "监管" => GetString("Cyberpunk"),
             "狂妄殺手" or "狂妄杀手" => GetString("Arrogance"),
             "自爆兵" or "自爆" => GetString("Bomber"),
             "清道夫" or "清道" => GetString("Scavenger"),
