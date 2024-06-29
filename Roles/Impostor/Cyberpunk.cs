@@ -9,7 +9,7 @@ namespace TOHE.Roles.Impostor;
 
 // 参考 : https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Mode/SuperHostRoles/BlockTool.cs
 // 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/AntiAdminer
-internal class AntiAdminer : RoleBase
+internal class Cyberpunk : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 2800;
@@ -29,8 +29,8 @@ internal class AntiAdminer : RoleBase
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.AntiAdminer);
-        CanCheckCamera = BooleanOptionItem.Create(Id + 10, "CanCheckCamera", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.AntiAdminer]);
+        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Cyberpunk);
+        CanCheckCamera = BooleanOptionItem.Create(Id + 10, "CanCheckCamera", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Cyberpunk]);
     }
     public override void Init()
     {
@@ -148,10 +148,10 @@ internal class AntiAdminer : RoleBase
         if (seer.PlayerId != seen.PlayerId || isForMeeting) return string.Empty;
 
         StringBuilder sb = new();
-        if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("AdminWarning")));
-        if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("VitalsWarning")));
-        if (IsDoorLogWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("DoorlogWarning")));
-        if (IsCameraWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("CameraWarning")));
+        if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Cyberpunk), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.Cyberpunk), GetString("AdminWarning")));
+        if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Cyberpunk), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.Cyberpunk), GetString("VitalsWarning")));
+        if (IsDoorLogWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Cyberpunk), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.Cyberpunk), GetString("DoorlogWarning")));
+        if (IsCameraWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Cyberpunk), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.Cyberpunk), GetString("CameraWarning")));
 
         return sb.ToString();
     }
