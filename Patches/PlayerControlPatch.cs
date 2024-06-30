@@ -118,17 +118,6 @@ class CheckMurderPatch
             return false;
         }
 
-        Logger.Info($"Check: FirstDied", "ShieldPersonDiedFirst");
-
-        if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
-        {
-            killer.SetKillCooldown(5f);
-            killer.RpcGuardAndKill(target);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(killer.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
-            Logger.Info($"Canceled from ShieldPersonDiedFirst", "FirstDied");
-            return false;
-        }
-
         killer.ResetKillCooldown();
         Logger.Info($"Kill Cooldown Resets", "CheckMurder");
 
@@ -272,6 +261,17 @@ class CheckMurderPatch
 
         var targetRoleClass = target.GetRoleClass();
         var targetSubRoles = target.GetCustomSubRoles();
+
+        Logger.Info($"Start", "FirstDied.CheckMurder");
+
+        if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+        {
+            killer.SetKillCooldown(5f);
+            killer.RpcGuardAndKill(target);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(killer.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
+            Logger.Info($"Canceled from ShieldPersonDiedFirst", "FirstDied");
+            return false;
+        }
 
         // Madmate Spawn Mode Is First Kill
         if (Madmate.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && target.CanBeMadmate(inGame:true))
@@ -466,22 +466,25 @@ class MurderPlayerPatch
             return;
             //Imagine youtuber is converted
         }
+
         if (Main.FirstDied == "")
+        {
             Main.FirstDied = target.GetClient().GetHashedPuid();
 
-        if (Options.RemoveShieldOnFirstDead.GetBool() && Main.FirstDiedPrevious != "")
-        {
-            Main.FirstDiedPrevious = "";
-            RPC.SyncAllPlayerNames();
-        }
+            if (Options.RemoveShieldOnFirstDead.GetBool() && Main.FirstDiedPrevious != "")
+            {
+                Main.FirstDiedPrevious = "";
+                RPC.SyncAllPlayerNames();
+            }
 
-        // Sync protected player from being killed first info for modded clients
-        if (PlayerControl.LocalPlayer.OwnedByHost())
-        {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncShieldPersonDiedFirst, SendOption.None, -1);
-            writer.Write(Main.FirstDied);
-            writer.Write(Main.FirstDiedPrevious);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            // Sync protected player from being killed first info for modded clients
+            if (PlayerControl.LocalPlayer.OwnedByHost())
+            {
+                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncShieldPersonDiedFirst, SendOption.None, -1);
+                writer.Write(Main.FirstDied);
+                writer.Write(Main.FirstDiedPrevious);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
         }
 
         if (Main.AllKillers.ContainsKey(killer.PlayerId))
