@@ -41,6 +41,13 @@ public static class GameOptionsMenuPatch
 
         return false;
     }
+    // Thanks: https://github.com/Gurge44/EndlessHostRoles
+    [HarmonyPatch(nameof(GameOptionsMenu.Initialize)), HarmonyPostfix]
+    private static void InitializePostfix()
+    {
+        GameObject.Find("PlayerOptionsMenu(Clone)")?.transform.FindChild("Background")?.gameObject.SetActive(false);
+    }
+
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings)), HarmonyPrefix]
     private static bool CreateSettingsPrefix(GameOptionsMenu __instance)
     {
