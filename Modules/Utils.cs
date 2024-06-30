@@ -1903,7 +1903,9 @@ public static class Utils
 
                         // ====== Seer know target role ======
 
-                        string TargetRoleText = ExtendedPlayerControl.KnowRoleTarget(seer, target)
+                        bool KnowRoleTarget = ExtendedPlayerControl.KnowRoleTarget(seer, target, true);
+                        
+                        string TargetRoleText = KnowRoleTarget
                                 ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
 
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
