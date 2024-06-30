@@ -365,7 +365,7 @@ class CheckForEndVotingPatch
         }
     }
 
-    // 参考：https://github.com/music-discussion/TownOfHost-TheOtherRoles
+    // Credit：https://github.com/music-discussion/TownOfHost-TheOtherRoles
     private static void ConfirmEjections(NetworkedPlayerInfo exiledPlayer, bool AntiBlackoutStore = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -380,7 +380,7 @@ class CheckForEndVotingPatch
         var player = Utils.GetPlayerById(exiledPlayer.PlayerId);
         var role = GetString(exiledPlayer.GetCustomRole().ToString());
         var crole = exiledPlayer.GetCustomRole();
-        var coloredRole = Utils.ColorString(Utils.GetRoleColor(crole), role);
+        var coloredRole = Utils.GetDisplayRoleAndSubName(exileId, exileId, true);
 
         if (Options.ConfirmEgoistOnEject.GetBool() && player.Is(CustomRoles.Egoist))
             coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Egoist), coloredRole.RemoveHtmlTags());
