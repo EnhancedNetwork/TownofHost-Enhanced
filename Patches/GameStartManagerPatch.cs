@@ -107,7 +107,8 @@ public class GameStartManagerPatch
                 GameStartManagerStartPatch.HideName.enabled = false;
             }
 
-            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return true; // Not host or no instance or LocalGame
+            if (AmongUsClient.Instance.AmHost && AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return false;
+            if (!AmongUsClient.Instance.AmHost || !GameData.Instance) return true; // Not host or no instance or LocalGame
 
             if (Main.AutoStart.Value)
             {
@@ -368,6 +369,8 @@ public class GameStartRandomMap
             return false;
         }
 
+        Logger.SendInGame($"{__instance.startState}");
+
         if (Options.RandomMapsMode.GetBool())
         {
             if (GameStates.IsNormalGame)
@@ -389,14 +392,31 @@ public class GameStartRandomMap
 
         if (GameStates.IsNormalGame)
         {
-            Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
-            Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
-            Main.NormalOptions.KillCooldown = 0f;
+            var startStateIsCountdown = __instance.startState == GameStartManager.StartingStates.Countdown;
+            
+            if (startStateIsCountdown)
+            {
+                Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
+            }
+            else
+            {
+                Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
+                Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
+                Main.NormalOptions.KillCooldown = 0f;
+            }
 
             AURoleOptions.SetOpt(opt);
-            Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
-            AURoleOptions.ShapeshifterCooldown = 0f;
-            AURoleOptions.ImpostorsCanSeeProtect = false;
+
+            if (startStateIsCountdown)
+            {
+                AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+            }
+            else
+            {
+                Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
+                AURoleOptions.ShapeshifterCooldown = 0f;
+                AURoleOptions.ImpostorsCanSeeProtect = false;
+            }
         }
 
         PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, AprilFoolsMode.IsAprilFoolsModeToggledOn));
