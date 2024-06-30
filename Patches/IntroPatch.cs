@@ -186,7 +186,7 @@ class CoBeginPatch
                 5 => new RandomSpawn.FungleSpawnMap(),
                 _ => null,
             };
-            if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
+            if (map != null && AmongUsClient.Instance.AmHost) Main.AllPlayerControls.Do(map.RandomTeleport);
         }
     }
     public static byte[] EncryptDES(byte[] data, string key)

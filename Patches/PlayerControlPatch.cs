@@ -20,34 +20,6 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.OnEnable))]
-class PlayerControlOnEnablePatch
-{
-    public static void Postfix(PlayerControl __instance)
-    {
-        //Shortly after this postfix, playercontrol is started but the amowner is not installed.
-        //Need to delay for amowner to work
-        _ = new LateTask(() =>
-        {
-            if (__instance.AmOwner)
-            {
-                Logger.Info("am owner version check, local player id is " + __instance.PlayerId, "PlayerControlOnEnable");
-                RPC.RpcVersionCheck();
-                return;
-            }
-
-            if (AmongUsClient.Instance.AmHost && __instance.PlayerId != PlayerControl.LocalPlayer.PlayerId)
-            {
-                Logger.Info("Host send version check, target player id is " + __instance.PlayerId, "PlayerControlOnEnable");
-                RPC.RpcVersionCheck();
-            }
-        }, 0.2f, "Player Spawn LateTask ", false);
-
-        //This late task happens where a playercontrol spawns, it will cause huge logs, so we have to hide it.
-        //Its for host and joining client to recognize each other. Client and client recognize should be put in playerjoin latetask
-    }
-}
-
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckProtect))]
 class CheckProtectPatch
 {
@@ -1628,6 +1600,15 @@ class PlayerControlCheckNamePatch
             Logger.Warn($"Standard nickname: {playerName} => {name}", "Name Format");
             __instance.RpcSetName(name);
         }
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckName))]
+class CmdCheckNameVersionCheckPatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        RPC.RpcVersionCheck();
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ProtectPlayer))]
