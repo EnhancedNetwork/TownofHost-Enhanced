@@ -263,7 +263,7 @@ internal class RPCHandlerPatch
                     // Kick Unmached Player Start
                     if (AmongUsClient.Instance.AmHost)
                     {
-                        if (!IsVersionMatch(__instance.GetClientId()))
+                        if (!IsVersionMatch(__instance.GetClientId()) && !Main.VersionCheat.Value)
                         {
                             _ = new LateTask(() =>
                             {
