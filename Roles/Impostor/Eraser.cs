@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
@@ -103,6 +104,7 @@ internal class Eraser : RoleBase
             var player = Utils.GetPlayerById(pc);
             if (player == null) continue;
 
+            player.RPCPlayCustomSound("Oiiai");
             player.Notify(GetString("LostRoleByEraser"));
         }
     }
