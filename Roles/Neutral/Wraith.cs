@@ -3,7 +3,6 @@ using Hazel;
 using InnerNet;
 using System.Text;
 using TOHE.Roles.Core;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
