@@ -244,6 +244,12 @@ internal class RPCHandlerPatch
                     bool cheating = reader.ReadBoolean();
                     if (__instance.GetClientId() < 0)
                         break;
+
+                    if (!Main.playerVersion.TryGetValue(__instance.GetClientId(), out _))
+                    {
+                        RPC.RpcVersionCheck();
+                    }
+
                     Main.playerVersion[__instance.GetClientId()] = new PlayerVersion(version, tag, forkId);
 
                     if (Main.VersionCheat.Value && __instance.GetClientId() == AmongUsClient.Instance.HostId) RPC.RpcVersionCheck();

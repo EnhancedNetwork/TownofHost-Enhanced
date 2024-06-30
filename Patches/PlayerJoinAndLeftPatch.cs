@@ -208,11 +208,7 @@ public static class OnPlayerJoinedPatch
         {
             try
             {
-                if (!client.IsDisconnected() && !AmongUsClient.Instance.AmHost)
-                {
-                    RPC.RpcVersionCheck();
-                }
-                if (AmongUsClient.Instance.AmHost && !client.IsDisconnected() && client.Character == null)
+                if (AmongUsClient.Instance.AmHost && !client.IsDisconnected() && client.Character.Data.IsIncomplete && !client.Character.Data.Disconnected)
                 {
                     Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");
                     AmongUsClient.Instance.KickPlayer(client.Id, false);
