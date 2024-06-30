@@ -107,7 +107,7 @@ public class GameStartManagerPatch
                 GameStartManagerStartPatch.HideName.enabled = false;
             }
 
-            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return false; // Not host or no instance or LocalGame
+            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return true; // Not host or no instance or LocalGame
 
             if (Main.AutoStart.Value)
             {
