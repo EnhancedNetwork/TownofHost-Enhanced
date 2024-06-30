@@ -175,7 +175,7 @@ class CoBeginPatch
         // Do not move this code, it should be executed at the very end to prevent a visual bug
         Utils.DoNotifyRoles(ForceLoop: true);
 
-        if (GameStates.IsHideNSeek && RandomSpawn.IsRandomSpawn())
+        if (AmongUsClient.Instance.AmHost && GameStates.IsHideNSeek && RandomSpawn.IsRandomSpawn())
         {
             RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
             {
@@ -186,7 +186,7 @@ class CoBeginPatch
                 5 => new RandomSpawn.FungleSpawnMap(),
                 _ => null,
             };
-            if (map != null && AmongUsClient.Instance.AmHost) Main.AllPlayerControls.Do(map.RandomTeleport);
+            if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
         }
     }
     public static byte[] EncryptDES(byte[] data, string key)

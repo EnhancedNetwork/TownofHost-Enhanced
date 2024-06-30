@@ -199,6 +199,10 @@ class ExileControllerWrapUpPatch
         GameStates.AlreadyDied |= !Utils.IsAllAlive;
         RemoveDisableDevicesPatch.UpdateDisableDevices();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
+
+        if (!AmongUsClient.Instance.IsGameOver)
+            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+
         Logger.Info("Start of Task Phase", "Phase");
     }
 
