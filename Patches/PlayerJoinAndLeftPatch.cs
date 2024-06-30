@@ -213,10 +213,17 @@ public static class OnPlayerJoinedPatch
                     Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");
                     AmongUsClient.Instance.KickPlayer(client.Id, false);
                     Logger.Info($"Kicked client {client.Id}/{client.PlayerName} bcz PlayerControl is not spawned in time.", "OnPlayerJoinedPatchPostfix");
+                    return;
+                }
+
+                if (AmongUsClient.Instance.AmHost && !Main.playerVersion.TryGetValue(client.Id, out _))
+                {
+                    var retry = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, client.Id);
+                    AmongUsClient.Instance.FinishRpcImmediately(retry);
                 }
             }
             catch { }
-        }, 2.5f, "OnPlayerJoined Client <=> Client VersionCheck", false);
+        }, 2.5f, "green bean kick late task", false);
 
 
         if (AmongUsClient.Instance.AmHost && HasInvalidFriendCode(client.FriendCode) && Options.KickPlayerFriendCodeInvalid.GetBool() && !GameStates.IsLocalGame)
