@@ -11,6 +11,8 @@ using Object = UnityEngine.Object;
 using static UnityEngine.RemoteConfigSettingsHelper;
 using TOHE;
 
+// Thanks: https://github.com/Yumenopai/TownOfHost_Y/blob/main/Patches/GameSettingMenuPatch.cs
+
 namespace TOHE.Patches
 {
     [HarmonyPatch(typeof(GameSettingMenu))]
