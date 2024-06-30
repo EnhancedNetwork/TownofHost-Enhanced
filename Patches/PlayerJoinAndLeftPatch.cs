@@ -223,7 +223,7 @@ public static class OnPlayerJoinedPatch
                 }
             }
             catch { }
-        }, 2.5f, "green bean kick late task", false);
+        }, 3f, "green bean kick late task", false);
 
 
         if (AmongUsClient.Instance.AmHost && HasInvalidFriendCode(client.FriendCode) && Options.KickPlayerFriendCodeInvalid.GetBool() && !GameStates.IsLocalGame)
