@@ -92,7 +92,6 @@ public static class Credentials
 
                 if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
                 {
-                    if (PlayerControl.LocalPlayer.GetClient() != null) EFC.ClientPUIDHash = PlayerControl.LocalPlayer.GetClient().GetHashedPuid();
                     EFC.UpdateUnauthorizedFiles();
                 }
 
