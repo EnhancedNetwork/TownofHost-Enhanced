@@ -805,7 +805,9 @@ public static class CustomRolesHelper
             case CustomRoles.Tricky:
                 if (pc.Is(CustomRoles.Mastermind)
                     || pc.Is(CustomRoles.Poisoner)
-                    || pc.Is(CustomRoles.Vampire))
+                    || pc.Is(CustomRoles.Vampire)
+                    || pc.Is(CustomRoles.Puppeteer)
+                    || pc.Is(CustomRoles.Shroud))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
