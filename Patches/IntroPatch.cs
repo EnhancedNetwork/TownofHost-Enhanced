@@ -211,12 +211,8 @@ class BeginCrewmatePatch
     public static bool Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToDisplay)
     {
         var role = PlayerControl.LocalPlayer.GetCustomRole();
-        if (PlayerControl.LocalPlayer.Is(Custom_Team.Neutral) && !role.IsMadmate())
-        {
-            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-            teamToDisplay.Add(PlayerControl.LocalPlayer);
-        }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+
+        if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
@@ -224,11 +220,10 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
-        else if (PlayerControl.LocalPlayer.GetCustomRole().IsMadmate())
+        else if (PlayerControl.LocalPlayer.Is(Custom_Team.Neutral) && !role.IsMadmate())
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
-            return false;
         }
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Executioner))
         {
@@ -260,6 +255,7 @@ class BeginCrewmatePatch
         CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
 
         __instance.ImpostorText.gameObject.SetActive(false);
+
         switch (role.GetCustomRoleTeam())
         {
             case Custom_Team.Impostor:
@@ -418,9 +414,40 @@ class BeginImpostorPatch
 {
     public static bool Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
     {
+        var role = PlayerControl.LocalPlayer.GetCustomRole();
+        
+        if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+        {
+            yourTeam = new();
+            yourTeam.Add(PlayerControl.LocalPlayer);
+            __instance.overlayHandle.color = Palette.ImpostorRed;
+            return true;
+        }
+
+        if (role.IsCrewmate() && role.GetDYRole() == RoleTypes.Impostor)
+        {
+            yourTeam = new();
+            yourTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
+            __instance.BeginCrewmate(yourTeam);
+            __instance.overlayHandle.color = Palette.CrewmateBlue;
+            return false;
+        }
+
+        if (role.IsNeutral())
+        {
+            yourTeam = new();
+            yourTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
+            __instance.BeginCrewmate(yourTeam);
+            __instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
+            return false;
+        }
+
         BeginCrewmatePatch.Prefix(__instance, ref yourTeam);
         return true;
     }
+
     public static void Postfix(IntroCutscene __instance)
     {
         BeginCrewmatePatch.Postfix(__instance);

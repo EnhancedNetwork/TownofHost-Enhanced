@@ -184,17 +184,17 @@ internal class InnerNetObjectSerializePatch
     }
 }
 
-[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.SendClientReady))]
-internal class SendClientReadyPatch
-{
-    public static void Postfix()
-    {
-        if (!AmongUsClient.Instance.AmHost)
-        {
-            if (PlayerControl.LocalPlayer)
-            {
-                RPC.RpcVersionCheck();
-            }
-        }
-    }
-}
+//[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.SendClientReady))]
+//internal class SendClientReadyPatch
+//{
+//    public static void Postfix()
+//    {
+//        if (!AmongUsClient.Instance.AmHost)
+//        {
+//            if (PlayerControl.LocalPlayer)
+//            {
+//                RPC.RpcVersionCheck();
+//            }
+//        }
+//    }
+//}
