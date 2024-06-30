@@ -39,8 +39,8 @@ internal class NoisemakerTOHE : RoleBase
         AURoleOptions.NoisemakerAlertDuration = AlertDuration.GetInt();
 
         var playerRole = player.GetCustomRole();
-        // When impostor alert is off, and player is desync crewamte make impostor alert as true
-        if (player.GetCustomRole().IsDesyncRole() && playerRole.IsCrewmate() && !ImpostorAlert.GetBool())
+        // When impostor alert is off, and player is desync crewamte, make impostor alert as true
+        if (playerRole.IsDesyncRole() && playerRole.IsCrewmate() && !ImpostorAlert.GetBool())
         {
             AURoleOptions.NoisemakerImpostorAlert = true;
         }
