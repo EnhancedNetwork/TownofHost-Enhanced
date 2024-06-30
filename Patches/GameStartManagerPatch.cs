@@ -369,8 +369,6 @@ public class GameStartRandomMap
             return false;
         }
 
-        Logger.SendInGame($"{__instance.startState}");
-
         if (Options.RandomMapsMode.GetBool())
         {
             if (GameStates.IsNormalGame)

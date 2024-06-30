@@ -277,10 +277,8 @@ internal class ChatCommands
                 case "/р":
                 case "/роль":
                     canceled = true;
-                    byte sendTo = args.Length >= 3 && args[2] == "all" ? (byte)255 : PlayerControl.LocalPlayer.PlayerId;
-                    if (args.Length >= 2)
-                        subArgs = args[1];
-                    SendRolesInfo(subArgs, sendTo);
+                    subArgs = text.Remove(0, 2);
+                    SendRolesInfo(subArgs, PlayerControl.LocalPlayer.PlayerId);
                     break;
 
                 case "/up":
