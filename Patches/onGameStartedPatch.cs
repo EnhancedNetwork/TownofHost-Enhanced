@@ -607,13 +607,20 @@ internal class SelectRolesPatch
     {
         foreach (var seer in Main.AllPlayerControls)
         {
-            var sender = senders[seer.PlayerId];
             foreach (var target in Main.AllPlayerControls)
             {
                 if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var roleType))
                 {
                     try
                     {
+                        // Change Scientist to Noisemaker when role is desync and target have Noisemaker role
+                        if (roleType is RoleTypes.Scientist && RoleAssign.RoleResult.Any(x => x.Key.PlayerId == seer.PlayerId && x.Value is CustomRoles.NoisemakerTOHE or CustomRoles.Noisemaker))
+                        {
+                            Logger.Info($"seer: {seer.PlayerId}, target: {target.PlayerId}, {roleType} => {RoleTypes.Noisemaker}", "OverrideRoleForDesync");
+                            roleType = RoleTypes.Noisemaker;
+                        }
+
+                        var sender = senders[seer.PlayerId];
                         sender.RpcSetRole(seer, roleType, target.GetClientId());
                     }
                     catch

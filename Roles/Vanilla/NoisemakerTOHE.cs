@@ -34,9 +34,19 @@ internal class NoisemakerTOHE : RoleBase
         playerIdList.Add(playerId);
     }
 
-    public static void ApplyGameOptionsForOthers()
+    public static void ApplyGameOptionsForOthers(PlayerControl player)
     {
-        AURoleOptions.NoisemakerImpostorAlert = ImpostorAlert.GetBool();
         AURoleOptions.NoisemakerAlertDuration = AlertDuration.GetInt();
+
+        var playerRole = player.GetCustomRole();
+        // When impostor alert is off, and player is desync crewamte make impostor alert as true
+        if (player.GetCustomRole().IsDesyncRole() && playerRole.IsCrewmate() && !ImpostorAlert.GetBool())
+        {
+            AURoleOptions.NoisemakerImpostorAlert = true;
+        }
+        else
+        {
+            AURoleOptions.NoisemakerImpostorAlert = ImpostorAlert.GetBool();
+        }
     }
 }
