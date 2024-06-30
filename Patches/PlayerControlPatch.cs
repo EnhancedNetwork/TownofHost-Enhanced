@@ -904,7 +904,7 @@ class ReportDeadBodyPatch
                 }
             }
 
-            if (GameStates.FungleIsActive && pc.IsMushroomMixupActive())
+            if (GameStates.FungleIsActive && (pc.IsMushroomMixupActive() || Utils.IsActive(SystemTypes.MushroomMixupSabotage)))
             {
                 pc.FixMixedUpOutfit();
             }
@@ -922,14 +922,6 @@ class ReportDeadBodyPatch
 
         // Sync all settings on meeting start
         _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
-    }
-    public static async void ChangeLocalNameAndRevert(string name, int time)
-    {
-        //async Taskじゃ警告出るから仕方ないよね。
-        var revertName = PlayerControl.LocalPlayer.name;
-        PlayerControl.LocalPlayer.RpcSetNameEx(name);
-        await Task.Delay(time);
-        PlayerControl.LocalPlayer.RpcSetNameEx(revertName);
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
