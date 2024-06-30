@@ -208,19 +208,25 @@ public static class Credentials
     [HarmonyPatch(typeof(ModManager), nameof(ModManager.LateUpdate))]
     class ModManagerLateUpdatePatch
     {
-        public static void Prefix(ModManager __instance)
+        public static bool Prefix(ModManager __instance)
         {
             __instance.ShowModStamp();
 
             LateTask.Update(Time.deltaTime);
             CheckMurderPatch.Update();
+
+            return false;
         }
         public static void Postfix(ModManager __instance)
         {
-            var offset_y = HudManager.InstanceExists ? 1.6f : 0.9f;
-            __instance.ModStamp.transform.position = AspectPosition.ComputeWorldPosition(
-                __instance.localCamera, AspectPosition.EdgeAlignments.RightTop,
-                new Vector3(0.4f, offset_y, __instance.localCamera.nearClipPlane + 0.1f));
+            __instance.localCamera = !DestroyableSingleton<HudManager>.InstanceExists ? Camera.main : DestroyableSingleton<HudManager>.Instance.GetComponentInChildren<Camera>();
+            if (__instance.localCamera != null)
+            {
+                var offset_y = HudManager.InstanceExists ? 1.8f : 0.9f;
+                __instance.ModStamp.transform.position = AspectPosition.ComputeWorldPosition(
+                    __instance.localCamera, AspectPosition.EdgeAlignments.RightTop,
+                    new Vector3(0.4f, offset_y, __instance.localCamera.nearClipPlane + 0.1f));
+            }
         }
     }
 }
