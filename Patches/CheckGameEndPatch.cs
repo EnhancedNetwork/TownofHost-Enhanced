@@ -102,7 +102,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Cultist:
-                        if (pc.Is(CustomRoles.Charmed) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Charmed) || pc.Is(CustomRoles.Cultist)) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         {
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         }
