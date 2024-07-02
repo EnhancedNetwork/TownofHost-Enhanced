@@ -981,7 +981,7 @@
   "NoGameEnd": "测试模式",
   "AllowConsole": "BepInEx控制台",
   "DebugMode": "调试模式",
-  "SyncButtonMode": "所有船员共享会议次数",
+  "SyncButtonMode": "限制会议时间",
   "RandomMapsMode": "随机地图模式",
   "SyncedButtonCount": "紧急会议可用次数",
   "HHSuccessKCDDecrease": "击杀目标的冷却时间",
