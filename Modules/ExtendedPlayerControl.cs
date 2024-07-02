@@ -154,6 +154,8 @@ static class ExtendedPlayerControl
         HudManagerPatch.LastSetNameDesyncCount++;
         Logger.Info($"Set:{player?.Data?.PlayerName}:{name} for {seer.GetNameWithRole().RemoveHtmlTags()}", "RpcSetNamePrivate");
 
+        if (seer == null || player == null) return;
+
         var clientId = seer.GetClientId();
 
         var sender = CustomRpcSender.Create(name: $"SetNamePrivate");
