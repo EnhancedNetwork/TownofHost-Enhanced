@@ -80,7 +80,7 @@ internal class Veteran : RoleBase
                 {
                     target.RpcMurderPlayer(killer);
                     killer.SetRealKiller(target);
-                    Logger.Info($"{target.GetRealName()} kill {killer.GetRealName()}", "Veteran Kill");
+                    Logger.Info($"{target.GetRealName()} kill {killer.GetRealName()}", "Veteran");
                     return false;
                 }
             }
