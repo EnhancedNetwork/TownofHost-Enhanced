@@ -61,21 +61,26 @@ internal class Veteran : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (VeteranInProtect.ContainsKey(target.PlayerId) && killer.PlayerId != target.PlayerId)
-            if (VeteranInProtect[target.PlayerId] + VeteranSkillDuration.GetInt() >= GetTimeStamp())
+        if (killer.PlayerId != target.PlayerId && VeteranInProtect.TryGetValue(target.PlayerId, out var time))
+            if (time + VeteranSkillDuration.GetInt() >= GetTimeStamp())
             {
-                if (!killer.Is(CustomRoles.Pestilence))
-                {
-                    killer.SetRealKiller(target);
-                    target.RpcMurderPlayer(killer);
-                    Logger.Info($"{target.GetRealName()} 老兵反弹击杀：{killer.GetRealName()}", "Veteran Kill");
-                    return false;
-                }
                 if (killer.Is(CustomRoles.Pestilence))
                 {
-                    target.SetRealKiller(killer);
                     killer.RpcMurderPlayer(target);
-                    Logger.Info($"{target.GetRealName()} 老兵反弹击杀：{target.GetRealName()}", "Pestilence Reflect");
+                    target.SetRealKiller(killer);
+                    Logger.Info($"{killer.GetRealName()} kill {target.GetRealName()} because killer Pestilence", "Veteran");
+                    return false;
+                }
+                else if (killer.Is(CustomRoles.Jailer))
+                {
+                    Logger.Info($"{killer.GetRealName()} is Jailer try kill {target.GetRealName()} but it is canceled", "Veteran");
+                    return false;
+                }
+                else
+                {
+                    target.RpcMurderPlayer(killer);
+                    killer.SetRealKiller(target);
+                    Logger.Info($"{target.GetRealName()} kill {killer.GetRealName()}", "Veteran Kill");
                     return false;
                 }
             }
