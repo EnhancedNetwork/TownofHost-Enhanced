@@ -158,7 +158,7 @@ static class ExtendedPlayerControl
 
         var sender = CustomRpcSender.Create(name: $"SetNamePrivate");
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, clientId)
-            .Write(player.Data.NetId)
+            .Write(seer.Data.NetId)
             .Write(name)
         .EndRpc();
         sender.SendMessage();
