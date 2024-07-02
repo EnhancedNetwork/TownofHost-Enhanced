@@ -858,8 +858,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Berserker)
                     || pc.Is(CustomRoles.BountyHunter)
                     || pc.Is(CustomRoles.Lightning)
-                    || pc.Is(CustomRoles.Hangman)
-                    || pc.Is(CustomRoles.Escapist))
+                    || pc.Is(CustomRoles.Hangman))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
