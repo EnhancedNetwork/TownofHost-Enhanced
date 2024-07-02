@@ -71,9 +71,9 @@ internal class Veteran : RoleBase
                     Logger.Info($"{killer.GetRealName()} kill {target.GetRealName()} because killer Pestilence", "Veteran");
                     return false;
                 }
-                else if (killer.Is(CustomRoles.Jailer))
+                else if (killer.Is(CustomRoles.Jinx))
                 {
-                    Logger.Info($"{killer.GetRealName()} is Jailer try kill {target.GetRealName()} but it is canceled", "Veteran");
+                    Logger.Info($"{killer.GetRealName()} is Jinx try kill {target.GetRealName()} but it is canceled", "Veteran");
                     return false;
                 }
                 else
