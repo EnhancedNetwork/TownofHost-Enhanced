@@ -12,17 +12,11 @@ using static TOHE.Translator;
 namespace TOHE;
 
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckEndGameViaTasks))]
-class CheckGameEndPatch
+class CheckEndGameViaTasksForNormalPatch
 {
     public static bool Prefix(ref bool __result)
     {
-        if (GameEndCheckerForNormal.ShouldNotCheck)
-        {
-            __result = false;
-            return false;
-        }
-
-        __result = GameEndCheckerForNormal.predicate?.CheckGameEndByTask(out _) ?? false;
+        __result = false;
         return false;
     }
 }
