@@ -2,8 +2,6 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;
 using UnityEngine;
-using static Il2CppSystem.Linq.Expressions.Interpreter.CastInstruction.CastInstructionNoT;
-using static Rewired.ComponentControls.Data.CustomControllerElementTarget;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
