@@ -2150,7 +2150,7 @@ public static class Utils
         tmp += input;
         ChangeTo = Math.Clamp(tmp, 0, max);
     }
-    public static void CountAlivePlayers(bool sendLog = false)
+    public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = true)
     {
         int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor));
         if (Main.AliveImpostorCount != AliveImpostorCount)
@@ -2175,7 +2175,7 @@ public static class Utils
             sb.Append($"All:{AllAlivePlayersCount}/{AllPlayersCount}");
             Logger.Info(sb.ToString(), "CountAlivePlayers");
 
-            if (AmongUsClient.Instance.AmHost)
+            if (AmongUsClient.Instance.AmHost && checkGameEnd)
                 GameManager.Instance?.LogicFlow?.CheckEndCriteria();
         }
     }

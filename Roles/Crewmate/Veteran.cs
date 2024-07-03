@@ -73,6 +73,7 @@ internal class Veteran : RoleBase
                 }
                 else if (killer.Is(CustomRoles.Jinx))
                 {
+                    target.RpcCheckAndMurder(killer);
                     Logger.Info($"{killer.GetRealName()} is Jinx try kill {target.GetRealName()} but it is canceled", "Veteran");
                     return false;
                 }
