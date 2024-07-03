@@ -215,7 +215,7 @@ public static class BanManager
         if (code == "" && hashedPuid == "") return false;
         foreach (var user in EACDict)
         {
-            if ((user["friendcode"].ToString().ToLower().Trim() == code.ToLower().Trim())
+            if ((user["friendcode"].ToString().ToLower().Trim().StartsWith(code.ToLower().Trim()))
                 || (user["hashPUID"].ToString().ToLower().Trim() == hashedPuid.ToLower().Trim()))
             {
                 Logger.Warn($"friendcode : {code}, hashedPUID : {hashedPuid} banned by EAC reason : {user["reason"]}", "CheckEACList");
