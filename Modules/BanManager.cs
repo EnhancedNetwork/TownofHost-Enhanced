@@ -213,9 +213,17 @@ public static class BanManager
     public static bool CheckEACList(string code, string hashedPuid)
     {
         if (code == "" && hashedPuid == "") return false;
+
+        string noDiscrim = "";
+        if (code.Contains('#'))
+        {
+            int index = code.ToLower().Trim().IndexOf('#');
+            noDiscrim = code[..index];
+        }
+
         foreach (var user in EACDict)
         {
-            if ((user["friendcode"].ToString().ToLower().Trim().StartsWith(code.ToLower().Trim()))
+            if (user["friendcode"].ToString().ToLower().Trim().StartsWith(noDiscrim)
                 || (user["hashPUID"].ToString().ToLower().Trim() == hashedPuid.ToLower().Trim()))
             {
                 Logger.Warn($"friendcode : {code}, hashedPUID : {hashedPuid} banned by EAC reason : {user["reason"]}", "CheckEACList");
