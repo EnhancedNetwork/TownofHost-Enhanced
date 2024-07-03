@@ -212,7 +212,7 @@ public static class BanManager
     }
     public static bool CheckEACList(string code, string hashedPuid)
     {
-        if (code == "" && hashedPuid == "") return false;
+        if (string.IsNullOrEmpty(code) && hashedPuid == "") return false;
 
         string noDiscrim = "";
         if (code.Contains('#'))
