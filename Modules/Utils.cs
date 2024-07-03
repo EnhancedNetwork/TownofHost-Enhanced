@@ -2174,7 +2174,9 @@ public static class Utils
             }
             sb.Append($"All:{AllAlivePlayersCount}/{AllPlayersCount}");
             Logger.Info(sb.ToString(), "CountAlivePlayers");
-            GameManager.Instance?.LogicFlow?.CheckEndCriteria();
+
+            if (AmongUsClient.Instance.AmHost)
+                GameManager.Instance?.LogicFlow?.CheckEndCriteria();
         }
     }
     public static string GetVoteName(byte num)
