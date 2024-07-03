@@ -2,6 +2,8 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;
 using UnityEngine;
+using static Il2CppSystem.Linq.Expressions.Interpreter.CastInstruction.CastInstructionNoT;
+using static Rewired.ComponentControls.Data.CustomControllerElementTarget;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
@@ -319,34 +321,64 @@ public static class GameOptionsMenuPatch
             __instance.ControllerSelectable.Add(x);
         __instance.scrollBar.SetYBoundsMax(-num - 1.65f);
     }
-
     private static BaseGameSetting GetSetting(OptionItem item)
     {
+        static t CreateAndInvoke<t>(Func<t> func) where t : BaseGameSetting
+        {
+            return func.Invoke();
+        }
+
+        // Redundant casts are here for clarity
+        // C# dosen't support intra switch statement methods 😭
+
         BaseGameSetting baseGameSetting = item switch
         {
-            BooleanOptionItem => new CheckboxGameSetting { Type = OptionTypes.Checkbox, },
-            IntegerOptionItem integerOptionItem => new IntGameSetting
-            {
-                Type = OptionTypes.Int,
-                Value = integerOptionItem.GetInt(),
-                Increment = integerOptionItem.Rule.Step,
-                ValidRange = new(integerOptionItem.Rule.MinValue, integerOptionItem.Rule.MaxValue),
-                ZeroIsInfinity = false,
-                SuffixType = NumberSuffixes.Multiplier,
-                FormatString = string.Empty,
-            },
-            FloatOptionItem floatOptionItem => new FloatGameSetting
-            {
-                Type = OptionTypes.Float,
-                Value = floatOptionItem.GetFloat(),
-                Increment = floatOptionItem.Rule.Step,
-                ValidRange = new(floatOptionItem.Rule.MinValue, floatOptionItem.Rule.MaxValue),
-                ZeroIsInfinity = false,
-                SuffixType = NumberSuffixes.Multiplier,
-                FormatString = string.Empty,
-            },
-            StringOptionItem stringOptionItem => new StringGameSetting { Type = OptionTypes.String, Values = new StringNames[stringOptionItem.Selections.Length], Index = stringOptionItem.GetInt(), },
-            PresetOptionItem presetOptionItem => new StringGameSetting { Type = OptionTypes.String, Values = new StringNames[presetOptionItem.ValuePresets], Index = presetOptionItem.GetInt(), },
+            BooleanOptionItem => CreateAndInvoke<CheckboxGameSetting>(() => {
+                var x = ScriptableObject.CreateInstance<CheckboxGameSetting>();
+                x.Type = OptionTypes.Checkbox;
+
+                return x;
+            }),
+            IntegerOptionItem integerOptionItem => CreateAndInvoke<IntGameSetting>(() => {
+                var x = ScriptableObject.CreateInstance<IntGameSetting>();
+                x.Type = OptionTypes.Int;
+                x.Value = integerOptionItem.GetInt();
+                x.Increment = integerOptionItem.Rule.Step;
+                x.ValidRange = new(integerOptionItem.Rule.MinValue, integerOptionItem.Rule.MaxValue);
+                x.ZeroIsInfinity = false;
+                x.SuffixType = NumberSuffixes.Multiplier;
+                x.FormatString = string.Empty;
+
+                return x;
+            }),
+            FloatOptionItem floatOptionItem => CreateAndInvoke<FloatGameSetting>(() => {
+                var x = ScriptableObject.CreateInstance<FloatGameSetting>();
+                x.Type = OptionTypes.Int;
+                x.Value = floatOptionItem.GetInt();
+                x.Increment = floatOptionItem.Rule.Step;
+                x.ValidRange = new(floatOptionItem.Rule.MinValue, floatOptionItem.Rule.MaxValue);
+                x.ZeroIsInfinity = false;
+                x.SuffixType = NumberSuffixes.Multiplier;
+                x.FormatString = string.Empty;
+
+                return x;
+            }),
+            StringOptionItem stringOptionItem => CreateAndInvoke<StringGameSetting>(() => {
+                var x = ScriptableObject.CreateInstance<StringGameSetting>();
+                x.Type = OptionTypes.String; 
+                x.Values = new StringNames[stringOptionItem.Selections.Length]; 
+                x.Index = stringOptionItem.GetInt();
+
+                return x;
+            }),
+            PresetOptionItem presetOptionItem => CreateAndInvoke<StringGameSetting>(() => {
+                var x = ScriptableObject.CreateInstance<StringGameSetting>();
+                x.Type = OptionTypes.String;
+                x.Values = new StringNames[presetOptionItem.ValuePresets];
+                x.Index = presetOptionItem.GetInt();
+
+                return x;
+            }),
             _ => null
         };
 
