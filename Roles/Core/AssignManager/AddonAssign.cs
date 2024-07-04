@@ -97,6 +97,9 @@ public static class AddonAssign
 
         Logger.Info($" Is Started", "Assign Add-ons");
 
+        if (addonsList.Count > 2)
+            addonsList.Shuffle(rd);
+
         // Assign add-ons
         foreach (var role in addonsList.ToArray())
         {
