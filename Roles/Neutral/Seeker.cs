@@ -118,6 +118,8 @@ internal class Seeker : RoleBase
     {
         if (player == null) return;
         var targetId = GetTarget(player);
+        if (targetId == 0xff) return;
+
         var seekerId = player.PlayerId;
         var playerState = Main.PlayerStates[targetId];
         var totalPoints = TotalPoints[seekerId];
@@ -148,14 +150,16 @@ internal class Seeker : RoleBase
     }
     private static void FreezeSeeker(PlayerControl player)
     {
-        Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
-        ReportDeadBodyPatch.CanReport[player.PlayerId] = false;
-        player.MarkDirtySettings();
+        var playerId = player.PlayerId;
+        Main.AllPlayerSpeed[playerId] = Main.MinSpeed;
+        ReportDeadBodyPatch.CanReport[playerId] = false;
+        player?.MarkDirtySettings();
+
         _ = new LateTask(() =>
         {
-            Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed[player.PlayerId];
-            ReportDeadBodyPatch.CanReport[player.PlayerId] = true;
-            player.MarkDirtySettings();
+            Main.AllPlayerSpeed[playerId] = DefaultSpeed[playerId];
+            ReportDeadBodyPatch.CanReport[playerId] = true;
+            player?.MarkDirtySettings();
         }, 5f, "Freeze Seeker");
     }
     private byte ResetTarget(PlayerControl player)
@@ -175,7 +179,6 @@ internal class Seeker : RoleBase
             return 0xff;
         }
 
-        var rand = IRandom.Instance;
         var target = cTargets.RandomElement();
         var targetId = target.PlayerId;
         Targets[playerId] = targetId;
@@ -209,7 +212,5 @@ internal class Seeker : RoleBase
             player.Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
             Utils.GetPlayerById(targetId)?.Notify(GetString("SeekerTargetNotify"));
         }
-
-
     }
 }
