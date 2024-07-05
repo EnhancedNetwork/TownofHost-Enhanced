@@ -983,7 +983,7 @@
   "DebugMode": "偵錯模式",
   "SyncButtonMode": "限制會議時間",
   "RandomMapsMode": "隨機地圖模式",
-  "SyncedButtonCount": "可用拍桌次數",
+  "SyncedButtonCount": "可用緊急會議次數",
   "HHSuccessKCDDecrease": "殺死目標的冷卻時間",
   "HHFailureKCDIncrease": "殺死非目標的冷卻時間",
   "HHNumOfTargets": "目標數量",
