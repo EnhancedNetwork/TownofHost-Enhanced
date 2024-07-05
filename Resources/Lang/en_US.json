@@ -1150,7 +1150,7 @@
   "ExileSpamMsg": "Someone is trying to be a smart ass by lava chatting",
 
   "EnableYTPlan": "Enable Youtuber Plan",
-  "InvalidPermissionCMD": "You do not have the required permissions to use this command, use /me to see all your permissions.",
+  "InvalidPermissionCMD": "<color=#ff1919><size=150%><b>INVALID PERMISSION</b></size></color>\n\n<color=#ff1919>Sorry, you do not have the permission to use this command, check /me for all permissions</color>",
   "KickLowLevelPlayer": "Kick players whose level is lower than",
   "TempBanLowLevelPlayer": "Temporarily ban low-level players",
   "ApplyWhiteList": "Turn on Whitelist to bypass level kick",

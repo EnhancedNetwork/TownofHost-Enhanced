@@ -285,7 +285,7 @@ internal class ChatCommands
                     canceled = true;
                     subArgs = text.Remove(0, 3);
                     if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsUp){
-                        Utils.SendMessage($"<#400602>{GetString("InvalidPermissionCMD")}</color>", PlayerControl.LocalPlayer.PlayerId);
+                        Utils.SendMessage($"{GetString("InvalidPermissionCMD")}", PlayerControl.LocalPlayer.PlayerId);
                         break; 
                     }
                     if (!Options.EnableUpMode.GetBool())
