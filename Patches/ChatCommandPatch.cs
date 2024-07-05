@@ -286,9 +286,8 @@ internal class ChatCommands
                     subArgs = text.Remove(0, 3);
                     if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsUp){
                         Utils.SendMessage($"<#400602>{GetString("InvalidPermissionCMD")}</color>", PlayerControl.LocalPlayer.PlayerId);
-                        
-                        
-                        break; }
+                        break; 
+                    }
                     if (!Options.EnableUpMode.GetBool())
                     {
                         Utils.SendMessage(string.Format(GetString("Message.YTPlanDisabled"), GetString("EnableYTPlan")), PlayerControl.LocalPlayer.PlayerId);
