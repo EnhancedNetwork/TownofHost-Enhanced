@@ -1888,3 +1888,12 @@ class PlayerControlLocalSetRolePatch
         }
     }
 }
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.AssertWithTimeout))]
+class AssertWithTimeoutPatch
+{
+    public static bool Prefix()
+    {
+        return false;
+    }
+}
