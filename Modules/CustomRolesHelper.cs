@@ -801,7 +801,8 @@ public static class CustomRolesHelper
                     return false;
                 break;
             case CustomRoles.Tricky:
-                if (pc.Is(CustomRoles.Mastermind))
+                if (pc.Is(CustomRoles.Mastermind)
+                    || pc.Is(CustomRoles.Lightning))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
