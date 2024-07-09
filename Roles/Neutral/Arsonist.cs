@@ -235,7 +235,7 @@ internal class Arsonist : RoleBase
 
                 if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
                 {
-                    CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist);
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Arsonist);
                     CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
                 }
                 return;
@@ -258,7 +258,7 @@ internal class Arsonist : RoleBase
                     {
                         if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
                         {
-                            CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist);
+                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Arsonist);
                             CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
                         }
                     }
