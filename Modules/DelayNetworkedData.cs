@@ -11,6 +11,7 @@ public class InnerNetClientPatch
     [HarmonyPrefix]
     public static bool SendInitialDataPrefix(InnerNetClient __instance, int clientId)
     {
+        if (!Constants.IsVersionModded()) return true;
         // We make sure other stuffs like playercontrol and Lobby behavior is spawned properly
         // Then we spawn networked data for new clients
         MessageWriter messageWriter = MessageWriter.Get(SendOption.Reliable);
