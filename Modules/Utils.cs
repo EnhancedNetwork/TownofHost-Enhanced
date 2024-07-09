@@ -1878,7 +1878,7 @@ public static class Utils
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
                     if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
                     {
-                        realTarget.RpcSetNamePrivate("<size=0%>", force: NoCache);
+                        realTarget.RpcSetNamePrivate("<size=0%>", seer, force: NoCache);
                     }
                     else
                     {

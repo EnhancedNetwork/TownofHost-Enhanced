@@ -3,6 +3,7 @@ using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
 using static TOHE.Roles.Core.CustomRoleManager;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Neutral;
 
@@ -61,6 +62,10 @@ internal class Amnesiac : RoleBase
         {
             CheckDeadBodyOthers.Remove(CheckDeadBody);
         }
+    }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        opt.SetVision(false);
     }
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

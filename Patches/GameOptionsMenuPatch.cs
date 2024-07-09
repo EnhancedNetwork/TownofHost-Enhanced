@@ -331,13 +331,13 @@ public static class GameOptionsMenuPatch
 
         BaseGameSetting baseGameSetting = item switch
         {
-            BooleanOptionItem => CreateAndInvoke<CheckboxGameSetting>(() => {
+            BooleanOptionItem => CreateAndInvoke(() => {
                 var x = ScriptableObject.CreateInstance<CheckboxGameSetting>();
                 x.Type = OptionTypes.Checkbox;
 
                 return x;
             }),
-            IntegerOptionItem integerOptionItem => CreateAndInvoke<IntGameSetting>(() => {
+            IntegerOptionItem integerOptionItem => CreateAndInvoke(() => {
                 var x = ScriptableObject.CreateInstance<IntGameSetting>();
                 x.Type = OptionTypes.Int;
                 x.Value = integerOptionItem.GetInt();
@@ -349,10 +349,10 @@ public static class GameOptionsMenuPatch
 
                 return x;
             }),
-            FloatOptionItem floatOptionItem => CreateAndInvoke<FloatGameSetting>(() => {
+            FloatOptionItem floatOptionItem => CreateAndInvoke(() => {
                 var x = ScriptableObject.CreateInstance<FloatGameSetting>();
-                x.Type = OptionTypes.Int;
-                x.Value = floatOptionItem.GetInt();
+                x.Type = OptionTypes.Float;
+                x.Value = floatOptionItem.GetFloat();
                 x.Increment = floatOptionItem.Rule.Step;
                 x.ValidRange = new(floatOptionItem.Rule.MinValue, floatOptionItem.Rule.MaxValue);
                 x.ZeroIsInfinity = false;
@@ -361,7 +361,7 @@ public static class GameOptionsMenuPatch
 
                 return x;
             }),
-            StringOptionItem stringOptionItem => CreateAndInvoke<StringGameSetting>(() => {
+            StringOptionItem stringOptionItem => CreateAndInvoke(() => {
                 var x = ScriptableObject.CreateInstance<StringGameSetting>();
                 x.Type = OptionTypes.String; 
                 x.Values = new StringNames[stringOptionItem.Selections.Length]; 
@@ -369,7 +369,7 @@ public static class GameOptionsMenuPatch
 
                 return x;
             }),
-            PresetOptionItem presetOptionItem => CreateAndInvoke<StringGameSetting>(() => {
+            PresetOptionItem presetOptionItem => CreateAndInvoke(() => {
                 var x = ScriptableObject.CreateInstance<StringGameSetting>();
                 x.Type = OptionTypes.String;
                 x.Values = new StringNames[presetOptionItem.ValuePresets];

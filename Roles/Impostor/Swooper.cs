@@ -96,9 +96,7 @@ internal class Swooper : RoleBase
                 ventedId.Remove(swooperId);
                 ventedId.Add(swooperId, ventId);
 
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, swooper.GetClientId());
-                writer.WritePacked(ventId);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                physics.RpcBootFromVentDesync(ventId, swooper);
 
                 InvisDuration.Remove(swooperId);
                 InvisDuration.Add(swooperId, Utils.GetTimeStamp());
