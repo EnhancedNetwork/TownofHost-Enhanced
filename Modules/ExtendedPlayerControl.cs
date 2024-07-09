@@ -1143,7 +1143,7 @@ static class ExtendedPlayerControl
         if (player == null) return;
         var netTransform = player.NetTransform;
         var clientId = seer.GetClientId();
-        ushort addSid = GameStates.IsLocalGame ? (ushort)4 : (ushort)20;
+        ushort addSid = GameStates.IsLocalGame ? (ushort)4 : (ushort)40;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
             netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + addSid));
