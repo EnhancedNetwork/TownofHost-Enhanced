@@ -800,13 +800,13 @@ internal static class RPC
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDeathReason, SendOption.Reliable, -1);
         writer.Write(playerId);
-        writer.WritePacked((int)deathReason);
+        writer.Write((int)deathReason);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void GetDeathReason(MessageReader reader)
     {
         var playerId = reader.ReadByte();
-        var deathReason = (PlayerState.DeathReason)reader.ReadPackedInt32();
+        var deathReason = (PlayerState.DeathReason)reader.ReadInt32();
         Main.PlayerStates[playerId].deathReason = deathReason;
         Main.PlayerStates[playerId].IsDead = true;
     }

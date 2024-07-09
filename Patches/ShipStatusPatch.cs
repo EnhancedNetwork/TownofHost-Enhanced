@@ -173,7 +173,7 @@ class StartPatch
         Logger.CurrentMethod();
         Logger.Info("-----------Start of game-----------", "Phase");
 
-        Utils.CountAlivePlayers(true);
+        Utils.CountAlivePlayers(sendLog: true, checkGameEnd: false);
 
         if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
         {

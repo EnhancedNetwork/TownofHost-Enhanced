@@ -59,6 +59,11 @@ internal class Demon : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public override void Remove(byte playerId)
+    {
+        DemonHealth.Remove(playerId);
+        PlayerHealth.Clear();
+    }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 

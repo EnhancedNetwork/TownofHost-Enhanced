@@ -1688,6 +1688,20 @@ public static class PlayerControlMixupOutfitPatch
         }
     }
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixMixedUpOutfit))]
+public static class PlayerControlFixMixedUpOutfitPatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        if (!__instance.IsAlive())
+        {
+            return;
+        }
+
+        // Show names
+        __instance.cosmetics.ToggleNameVisible(true);
+    }
+}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckSporeTrigger))]
 public static class PlayerControlCheckSporeTriggerPatch
 {
@@ -1935,5 +1949,15 @@ class PlayerControlLocalSetRolePatch
                 Main.PlayerStates[__instance.PlayerId].SetMainRole(modRole);
             }
         }
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.AssertWithTimeout))]
+class AssertWithTimeoutPatch
+{
+    // Completely disable the trash put by Innersloth
+    public static bool Prefix()
+    {
+        return false;
     }
 }

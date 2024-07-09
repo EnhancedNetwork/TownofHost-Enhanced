@@ -84,7 +84,7 @@ public static class Madmate
     public static bool CanBeMadmate(this PlayerControl pc, bool inGame = false, bool forGangster = false)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || (pc.GetCustomRole().IsNeutral() && inGame)) && !pc.Is(CustomRoles.Madmate)
-        && !(!pc.CheckCanBeMadmate(forGangster) ||
+        && !(pc.CheckCanBeMadmate(forGangster) ||
             pc.Is(CustomRoles.LazyGuy) ||
             pc.Is(CustomRoles.Lazy) ||
             pc.Is(CustomRoles.Loyal) ||
@@ -102,13 +102,13 @@ public static class Madmate
     public static bool CheckCanBeMadmate(this PlayerControl pc, bool forGangster = false)
     {
         return
-            (pc.Is(CustomRoles.Sheriff) && (!forGangster ? SheriffCanBeMadmate.GetBool() : Gangster.SheriffCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Mayor) && (!forGangster ? MayorCanBeMadmate.GetBool() : Gangster.MayorCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.NiceGuesser) && (!forGangster ? !NGuesserCanBeMadmate.GetBool() : Gangster.NGuesserCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Snitch) && SnitchCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Judge) && (!forGangster ? JudgeCanBeMadmate.GetBool() : Gangster.JudgeCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Marshall) && (!forGangster ? MarshallCanBeMadmate.GetBool() : Gangster.MarshallCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Retributionist) && (!forGangster ? RetributionistCanBeMadmate.GetBool() : Gangster.RetributionistCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Overseer) && (!forGangster ? OverseerCanBeMadmate.GetBool() : Gangster.OverseerCanBeMadmate.GetBool()));
+            (pc.Is(CustomRoles.Sheriff) && (!forGangster ? !SheriffCanBeMadmate.GetBool() : !Gangster.SheriffCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.Mayor) && (!forGangster ? !MayorCanBeMadmate.GetBool() : !Gangster.MayorCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.NiceGuesser) && (!forGangster ? !NGuesserCanBeMadmate.GetBool() : !Gangster.NGuesserCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.Snitch) && !SnitchCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.Judge) && (!forGangster ? !JudgeCanBeMadmate.GetBool() : !Gangster.JudgeCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.Marshall) && (!forGangster ? !MarshallCanBeMadmate.GetBool() : !Gangster.MarshallCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.Retributionist) && (!forGangster ? !RetributionistCanBeMadmate.GetBool() : !Gangster.RetributionistCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.Overseer) && (!forGangster ? !OverseerCanBeMadmate.GetBool() : !Gangster.OverseerCanBeMadmate.GetBool()));
     }
 }

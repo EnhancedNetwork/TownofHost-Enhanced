@@ -208,7 +208,7 @@ public static class OnPlayerJoinedPatch
         {
             try
             {
-                if (AmongUsClient.Instance.AmHost && !client.IsDisconnected() && client.Character.Data.IsIncomplete && !client.Character.Data.Disconnected)
+                if (AmongUsClient.Instance.AmHost && !client.IsDisconnected() && client.Character.Data.IsIncomplete)
                 {
                     Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");
                     AmongUsClient.Instance.KickPlayer(client.Id, false);
@@ -218,7 +218,7 @@ public static class OnPlayerJoinedPatch
 
                 if (AmongUsClient.Instance.AmHost && !Main.playerVersion.TryGetValue(client.Id, out _))
                 {
-                    var retry = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, client.Id);
+                    var retry = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.None, client.Id);
                     AmongUsClient.Instance.FinishRpcImmediately(retry);
                 }
             }
@@ -320,25 +320,38 @@ class OnPlayerLeftPatch
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
             MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
+
+        if (AmongUsClient.Instance.AmHost && data.Character != null)
+        {
+            // Remove messages sending to left player
+            for (int i = 0; i < Main.MessagesToSend.Count; i++)
+            {
+                var (msg, sendTo, title) = Main.MessagesToSend[i];
+                if (sendTo == data.Character.PlayerId)
+                {
+                    Main.MessagesToSend.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            // This latetask is to make sure that the player control is completely despawned for everyone so nobody gonna disconnect itself
+            var netid = data.Character.NetId;
+            _ = new LateTask(() =>
+            {
+                if (GameStates.IsOnlineGame && AmongUsClient.Instance.AmHost)
+                {
+                    MessageWriter messageWriter = AmongUsClient.Instance.Streams[1];
+                    messageWriter.StartMessage(5);
+                    messageWriter.WritePacked(netid);
+                    messageWriter.EndMessage();
+                }
+            }, 2.5f, "Repeat Despawn", false);
+        }
     }
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
         try
         {
-            if (AmongUsClient.Instance.AmHost && data.Character != null)
-            {
-                for (int i = 0; i < Main.MessagesToSend.Count; i++)
-                {
-                    var (msg, sendTo, title) = Main.MessagesToSend[i];
-                    if (sendTo == data.Character.PlayerId)
-                    {
-                        Main.MessagesToSend.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-            // Remove messages sending to left player
-
             if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
 

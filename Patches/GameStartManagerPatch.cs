@@ -30,7 +30,16 @@ public class GameStartManagerPatch
         public static void Postfix(GameStartManager __instance)
         {
             var temp = __instance.PlayerCounter;
-            GameCountdown = Object.Instantiate(temp, __instance.StartButton.transform);
+            if (AmongUsClient.Instance.AmHost)
+            {
+                // Host have start button can be pressed
+                GameCountdown = Object.Instantiate(temp, __instance.StartButton.transform);
+            }
+            else
+            {
+                // Others players have start button cannot be pressed
+                GameCountdown = Object.Instantiate(temp, __instance.StartButtonClient.transform);
+            }
             var gameCountdownTransformPosition = GameCountdown.transform.localPosition;
             GameCountdown.transform.localPosition = new Vector3(gameCountdownTransformPosition.x - 0.8f, gameCountdownTransformPosition.y - 0.6f, gameCountdownTransformPosition.z);
             GameCountdown.text = "";

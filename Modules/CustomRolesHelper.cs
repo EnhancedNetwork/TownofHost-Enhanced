@@ -609,7 +609,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Pestilence)
                     || pc.Is(CustomRoles.Spy)
                     || pc.Is(CustomRoles.Necromancer)
-                    || pc.Is(CustomRoles.Demon))
+                    || pc.Is(CustomRoles.Demon)
+                    || pc.Is(CustomRoles.Shaman))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Fragile.CrewCanBeFragile.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Fragile.NeutralCanBeFragile.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Fragile.ImpCanBeFragile.GetBool()))
                     return false;
@@ -804,10 +805,10 @@ public static class CustomRolesHelper
                 break;
             case CustomRoles.Tricky:
                 if (pc.Is(CustomRoles.Mastermind)
-                    || pc.Is(CustomRoles.Poisoner)
                     || pc.Is(CustomRoles.Vampire)
                     || pc.Is(CustomRoles.Puppeteer)
-                    || pc.Is(CustomRoles.Shroud))
+                    || pc.Is(CustomRoles.Scavenger)
+                    || pc.Is(CustomRoles.Lightning))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;

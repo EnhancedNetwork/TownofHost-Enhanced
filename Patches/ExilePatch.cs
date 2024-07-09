@@ -123,7 +123,7 @@ class ExileControllerWrapUpPatch
         Main.MeetingsPassed++;
 
         FallFromLadder.Reset();
-        Utils.CountAlivePlayers(true);
+        Utils.CountAlivePlayers(true, Options.CurrentGameMode is CustomGameMode.Standard);
         Utils.AfterMeetingTasks();
         Utils.SyncAllSettings();
         Utils.NotifyRoles(NoCache: true);

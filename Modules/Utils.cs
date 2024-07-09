@@ -709,7 +709,7 @@ public static class Utils
             var text = sb.ToString();
             sb.Clear().Append(text.RemoveHtmlTags());
         }
-        sb.Append("\n\n ★ " + GetString("TabGroup.GameSettings"));
+        sb.Append("\n\n ★ " + GetString("TabGroup.ModSettings"));
         foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Tab is TabGroup.ModSettings && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
         {
             sb.Append($"\n{opt.GetName(true)}: {opt.GetString()}");
@@ -1877,7 +1877,7 @@ public static class Utils
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
                     if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
                     {
-                        realTarget.RpcSetNamePrivate("<size=0%>", force: NoCache);
+                        realTarget.RpcSetNamePrivate("<size=0%>", seer, force: NoCache);
                     }
                     else
                     {
@@ -2150,7 +2150,7 @@ public static class Utils
         tmp += input;
         ChangeTo = Math.Clamp(tmp, 0, max);
     }
-    public static void CountAlivePlayers(bool sendLog = false)
+    public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = true)
     {
         int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor));
         if (Main.AliveImpostorCount != AliveImpostorCount)
@@ -2174,6 +2174,9 @@ public static class Utils
             }
             sb.Append($"All:{AllAlivePlayersCount}/{AllPlayersCount}");
             Logger.Info(sb.ToString(), "CountAlivePlayers");
+
+            if (AmongUsClient.Instance.AmHost && checkGameEnd)
+                GameManager.Instance?.LogicFlow?.CheckEndCriteria();
         }
     }
     public static string GetVoteName(byte num)

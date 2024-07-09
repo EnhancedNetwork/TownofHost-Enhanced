@@ -12,17 +12,11 @@ using static TOHE.Translator;
 namespace TOHE;
 
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckEndGameViaTasks))]
-class CheckGameEndPatch
+class CheckEndGameViaTasksForNormalPatch
 {
     public static bool Prefix(ref bool __result)
     {
-        if (GameEndCheckerForNormal.ShouldNotCheck)
-        {
-            __result = false;
-            return false;
-        }
-
-        __result = GameEndCheckerForNormal.predicate?.CheckGameEndByTask(out _) ?? false;
+        __result = false;
         return false;
     }
 }
@@ -102,7 +96,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Cultist:
-                        if (pc.Is(CustomRoles.Charmed) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Charmed) || pc.Is(CustomRoles.Cultist)) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         {
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         }
@@ -353,18 +347,6 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Follower)).ToArray())
-                {
-                    if (Follower.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) && (
-                        CustomWinnerHolder.WinnerIds.Contains(betTarget) ||
-                        (Main.PlayerStates.TryGetValue(betTarget, out var ps) && CustomWinnerHolder.WinnerRoles.Contains(ps.MainRole)
-                        )))
-                    {
-                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Follower);
-                    }
-                }
-
                 //Romantic win condition
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Romantic)).ToArray())
                 {
@@ -415,6 +397,20 @@ class GameEndCheckerForNormal
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Lawyer);
                     }
                 }
+
+
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Follower)).ToArray())
+                {
+                    if (Follower.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) && (
+                        CustomWinnerHolder.WinnerIds.Contains(betTarget) ||
+                        (Main.PlayerStates.TryGetValue(betTarget, out var ps) && CustomWinnerHolder.WinnerRoles.Contains(ps.MainRole)
+                        )))
+                    {
+                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Follower);
+                    }
+                }
+
 
                 //补充恋人胜利名单
                 if (CustomWinnerHolder.WinnerTeam == CustomWinner.Lovers || CustomWinnerHolder.AdditionalWinnerTeams.Contains(AdditionalWinners.Lovers))

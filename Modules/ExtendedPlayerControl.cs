@@ -19,7 +19,7 @@ static class ExtendedPlayerControl
 {
     public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride = false)
     {
-        AmongUsClient.Instance.StartCoroutine(player.CoSetRole(role, canOverride));
+        player.StartCoroutine(player.CoSetRole(role, canOverride));
     }
 
     public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role)
@@ -153,11 +153,13 @@ static class ExtendedPlayerControl
         HudManagerPatch.LastSetNameDesyncCount++;
         Logger.Info($"Set:{player?.Data?.PlayerName}:{name} for {seer.GetNameWithRole().RemoveHtmlTags()}", "RpcSetNamePrivate");
 
+        if (seer == null || player == null) return;
+
         var clientId = seer.GetClientId();
 
         var sender = CustomRpcSender.Create(name: $"SetNamePrivate");
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, clientId)
-            .Write(player.Data.NetId)
+            .Write(seer.Data.NetId)
             .Write(name)
         .EndRpc();
         sender.SendMessage();
@@ -360,7 +362,12 @@ static class ExtendedPlayerControl
             var OutfitTypeSet = player.CurrentOutfitType != PlayerOutfitType.Shapeshifted ? PlayerOutfitType.Default : PlayerOutfitType.Shapeshifted;
 
             player.Data.SetOutfit(OutfitTypeSet, Outfit);
-            GameData.Instance.DirtyAllData();
+
+            //Used instead of GameData.Instance.DirtyAllData();
+            foreach (var innerNetObject in GameData.Instance.AllPlayers)
+            {
+                innerNetObject.SetDirtyBit(uint.MaxValue);
+            }
         }
         if (player.CheckCamoflague() && !force)
         {
@@ -680,7 +687,7 @@ static class ExtendedPlayerControl
         if (DollMaster.IsDoll(pc.PlayerId) || Circumvent.CantUseVent(pc)) return false;
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
         if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
-        if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
+        //if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
 
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseImpostorVentButton(pc)) return true;

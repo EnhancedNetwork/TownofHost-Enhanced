@@ -153,7 +153,7 @@ internal class Mastermind : RoleBase
         ManipulatedPlayers.Remove(killer.PlayerId);
 
         var mastermind = GetPlayerById(playerIdList.First());
-        mastermind?.Notify(string.Format(GetString("ManipulatedKilled"), target.GetRealName()), 4f);
+        mastermind?.Notify(string.Format(GetString("ManipulatedKilled"), killer.GetRealName()), 4f);
         mastermind?.SetKillCooldown(time: KillCooldown.GetFloat());
         killer.Notify(GetString("SurvivedManipulation"));
 

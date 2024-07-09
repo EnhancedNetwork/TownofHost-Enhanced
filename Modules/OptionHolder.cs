@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
@@ -22,19 +21,23 @@ public enum CustomGameMode
 [HarmonyPatch]
 public static class Options
 {
-    static Task taskOptionsLoad;
     [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.Initialize)), HarmonyPostfix]
     public static void OptionsLoadStart_Postfix()
     {
         Logger.Msg("Mod option loading start", "Load Options");
-        taskOptionsLoad = Task.Run(Load);
+        try
+        {
+            Load();
+        }
+        catch (Exception error)
+        {
+            Logger.Error($"Fatal error after loading mod options: {error}", "Load Options");
+        }
+        finally
+        {
+            Logger.Msg("Mod option loading eng", "Load Options");
+        }
         //taskOptionsLoad.ContinueWith(t => { Logger.Msg("Mod option loading end", "Load Options"); });
-    }
-    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
-    public static void WaitOptionsLoad_Postfix()
-    {
-        taskOptionsLoad.Wait();
-        Logger.Msg("Mod option loading eng", "Load Options");
     }
 
     // Presets

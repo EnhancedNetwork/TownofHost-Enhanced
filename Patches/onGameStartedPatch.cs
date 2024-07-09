@@ -79,6 +79,7 @@ internal class ChangeRoleSettings
             Main.MeetingsPassed = 0;
             Main.MeetingIsStarted = false;
             Main.introDestroyed = false;
+            GameEndCheckerForNormal.ShouldNotCheck = false;
             GameEndCheckerForNormal.ForEndGame = false;
             GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
 
@@ -299,17 +300,34 @@ internal class SelectRolesPatch
 
         //There is a delay of 0.8 seconds because after the player exits during the assign of desync roles, either a black screen will occur or the Scientist role will be set
         _ = new LateTask(() => {
-            // Set roles
-            SetRolesAfterSelect();
 
-            // Assign tasks again
-            ShipStatus.Instance.Begin();
+            try
+            {
+                // Set roles
+                SetRolesAfterSelect();
+
+                // Assign tasks again
+                ShipStatus.Instance.Begin();
+            }
+            catch (Exception ex)
+            {
+                Utils.ErrorEnd("Set Roles After Select In LateTask");
+                Logger.Fatal(ex.ToString(), "SetRolesAfterSelectInLateTask");
+            }
         }, 1f, "Set Role Types After Select");
 
         _ = new LateTask(() => {
 
-            // Update name players
-            Utils.NotifyRoles(NoCache: true);
+            try
+            {
+                // Update name players
+                Utils.NotifyRoles(NoCache: true);
+            }
+            catch (Exception ex)
+            {
+                Utils.ErrorEnd("Notify Roles In LateTask");
+                Logger.Fatal(ex.ToString(), "NotifyRolesInLateTask");
+            }
         }, 1.3f, "Do Notify Roles After Assign", shoudLog: false);
     }
     private static void SetRolesAfterSelect()
@@ -565,15 +583,15 @@ internal class SelectRolesPatch
 
             EAC.LogAllRoles();
 
-            Utils.CountAlivePlayers(true);
+            Utils.CountAlivePlayers(sendLog: true, checkGameEnd: false);
             Utils.SyncAllSettings();
 
             Logger.Msg("Ended", "AssignRoles");
         }
         catch (Exception ex)
         {
-            Utils.ErrorEnd("Select Role Postfix");
-            Logger.Fatal(ex.ToString(), "Select Role Prefix");
+            Utils.ErrorEnd("Set Roles After Select");
+            Logger.Fatal(ex.ToString(), "SetRolesAfterSelect");
         }
     }
     private static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), RoleTypes> rolesMap, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
