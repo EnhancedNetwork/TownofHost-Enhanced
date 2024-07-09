@@ -966,7 +966,8 @@ internal class ChatCommands
                             PollQuestions.Clear();
                             PollVoted.Clear();
                             
-                            yield break; }
+                            yield break;
+                        }
                         bool playervoted = (Main.AllPlayerControls.Length - 1) > Pollvotes.Values.Sum();
 
 
