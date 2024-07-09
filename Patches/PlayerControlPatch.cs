@@ -683,6 +683,8 @@ class CmdCheckAppearPatch
 /*
  *  I have no idea how the check vanish is approved by host & server and how to reject it
  *  Suggest leaving phantom stuffs after 2.1.0
+ *  
+ *  Called when Phantom press vanish button when visible
  */
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckVanish))]
 class CheckVanishPatch
@@ -693,6 +695,7 @@ class CheckVanishPatch
     }
 }
 
+// Called when Phantom press appear button when is invisible
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckAppear))]
 class CheckAppearPatch
 {
@@ -705,9 +708,40 @@ class CheckAppearPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRoleInvisibility))]
 class SetRoleInvisibilityPatch
 {
-    public static void Postfix(PlayerControl __instance, bool isActive, bool shouldAnimate, bool playFullAnimation)
+    public static readonly Dictionary<byte, Vent> PhantomIsInvisibility = [];
+    public static void Prefix(PlayerControl __instance, bool isActive, bool shouldAnimate, bool playFullAnimation)
     {
-        return;
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        Logger.Info($"Player: {__instance.GetRealName()} => Is Active {isActive}, Animate:{shouldAnimate}, Full Animation:{playFullAnimation}", "SetRoleInvisibility");
+
+        if (GameStates.IsMeeting) return;
+
+        var phantom = __instance;
+        var randomVent = ShipStatus.Instance.AllVents.RandomElement();
+
+        foreach (var target in Main.AllAlivePlayerControls)
+        {
+            if (phantom == target || target.AmOwner || !target.GetCustomRole().IsDesyncRole()) continue;
+
+            if (isActive)
+            {
+                var randomVentId = randomVent.Id;
+                var ventPosition = randomVent.transform.position;
+
+                phantom.RpcDesyncTeleport(ventPosition, target);
+                phantom.MyPhysics.RpcEnterVentDesync(randomVentId, target);
+            }
+            else if (!isActive && shouldAnimate)
+            {
+                _ = PhantomIsInvisibility.TryGetValue(phantom.PlayerId, out var vent);
+                phantom.MyPhysics.RpcExitVentDesync(vent.Id, target);
+                phantom.RpcDesyncTeleport(phantom.GetCustomPosition(), target);
+            }
+        }
+
+        if (isActive) PhantomIsInvisibility.Add(phantom.PlayerId, randomVent);
+        else PhantomIsInvisibility.Remove(phantom.PlayerId);
     }
 }
 
@@ -908,6 +942,7 @@ class ReportDeadBodyPatch
             {
                 pc.FixMixedUpOutfit();
             }
+
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
