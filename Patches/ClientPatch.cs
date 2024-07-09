@@ -198,16 +198,3 @@ internal class InnerNetObjectSerializePatch
 //        }
 //    }
 //}
-
-[HarmonyPatch(typeof(GameData), nameof(GameData.DirtyAllData))]
-internal class DirtyAllDataPatch
-{
-    // Currently this function only occurs in CreatePlayer
-    // It's believed to lag host, delay the playercontrol spawn mesasge & blackout new client
-    // & send huge packets to all clients & completely no need to run
-    // Temporarily disable it until Innersloth get a better fix.
-    public static bool Prefix()
-    {
-        return false;
-    }
-}
