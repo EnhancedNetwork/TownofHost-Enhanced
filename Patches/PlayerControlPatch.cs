@@ -943,21 +943,6 @@ class ReportDeadBodyPatch
                 pc.FixMixedUpOutfit();
             }
 
-            //if (SetRoleInvisibilityPatch.PhantomIsInvisibility.TryGetValue(pc.PlayerId, out var vent))
-            //{
-            //    _ = new LateTask(() =>
-            //    {
-            //        var phantom = pc;
-
-            //        foreach (var seer in Main.AllAlivePlayerControls)
-            //        {
-            //            if (phantom == seer || !seer.GetCustomRole().IsDesyncRole()) continue;
-            //            phantom.MyPhysics.RpcBootFromVent(vent.Id);
-            //        }
-            //    },
-            //    1.5f, $"Set Phantom {pc.PlayerId} Visible In Meeting");
-            //}
-
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
