@@ -722,7 +722,7 @@ class SetRoleInvisibilityPatch
 
         foreach (var target in Main.AllAlivePlayerControls)
         {
-            if (phantom == target || !target.GetCustomRole().IsDesyncRole()) continue;
+            if (phantom == target || target.AmOwner || !target.GetCustomRole().IsDesyncRole()) continue;
 
             if (isActive)
             {
@@ -735,7 +735,8 @@ class SetRoleInvisibilityPatch
             else if (!isActive && shouldAnimate)
             {
                 _ = PhantomIsInvisibility.TryGetValue(phantom.PlayerId, out var vent);
-                phantom.MyPhysics.RpcBootFromVentDesync(vent.Id, target);
+                phantom.MyPhysics.RpcExitVentDesync(vent.Id, target);
+                phantom.RpcDesyncTeleport(phantom.GetCustomPosition(), target);
             }
         }
 

@@ -171,8 +171,8 @@ static class ExtendedPlayerControl
         var clientId = seer.GetClientId();
         if (AmongUsClient.Instance.ClientId == clientId)
         {
-            AmongUsClient.Instance.StopAllCoroutines();
-            AmongUsClient.Instance.StartCoroutine(physics.CoEnterVent(ventId));
+            physics.StopAllCoroutines();
+            physics.StartCoroutine(physics.CoEnterVent(ventId));
             return;
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.EnterVent, SendOption.Reliable, seer.GetClientId());
@@ -186,8 +186,8 @@ static class ExtendedPlayerControl
         var clientId = seer.GetClientId();
         if (AmongUsClient.Instance.ClientId == clientId)
         {
-            AmongUsClient.Instance.StopAllCoroutines();
-            AmongUsClient.Instance.StartCoroutine(physics.CoExitVent(ventId));
+            physics.StopAllCoroutines();
+            physics.StartCoroutine(physics.CoExitVent(ventId));
             return;
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.ExitVent, SendOption.Reliable, seer.GetClientId());
@@ -1143,13 +1143,13 @@ static class ExtendedPlayerControl
         if (player == null) return;
         var netTransform = player.NetTransform;
         var clientId = seer.GetClientId();
+        ushort addSid = GameStates.IsLocalGame ? (ushort)4 : (ushort)328;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
-            ushort addSid = GameStates.IsLocalGame ? (ushort)8 : (ushort)328;
             netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + addSid));
             return;
         }
-        ushort newSid = (ushort)(netTransform.lastSequenceId + 8);
+        ushort newSid = (ushort)(netTransform.lastSequenceId + addSid);
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, clientId);
         NetHelpers.WriteVector2(position, writer);
         writer.Write(newSid);
