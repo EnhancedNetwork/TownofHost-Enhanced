@@ -1225,7 +1225,8 @@ public static class Utils
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /qt {GetString("Command.quit")}"
             + $"\n ○ /death {GetString("Command.death")}"
-     //       + $"\n ○ /icons {GetString("Command.iconinfo")}"
+            + $"\n ○ /icons {GetString("Command.iconinfo")}"
+            + $"\n ○ /poll "
             , ID);
     }
     public static void ShowHelp(byte ID)
