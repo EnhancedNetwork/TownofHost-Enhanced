@@ -358,8 +358,11 @@ public static class CustomRoleManager
         // Check dead body for others roles
         CheckDeadBody(killer, target, inMeeting);
 
-        // Check Lovers Suicide
-        FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
+        if (!(killer.PlayerId == target.PlayerId && target.IsDisconnected()))
+        {
+            // Check Lovers Suicide
+            FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
+        }
     }
     
     /// <summary>
