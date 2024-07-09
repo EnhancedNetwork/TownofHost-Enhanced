@@ -961,11 +961,14 @@ internal class ChatCommands
 
                     static System.Collections.IEnumerator StartPollCountdown()
                     {
-                        if (!Pollvotes.Any()) yield break;
+                        if (!Pollvotes.Any() || !GameStates.IsLobby) {
+                            Pollvotes.Clear();
+                            PollQuestions.Clear();
+                            PollVoted.Clear();
+                            
+                            yield break; }
                         bool playervoted = (Main.AllPlayerControls.Length - 1) > Pollvotes.Values.Sum();
 
-
-                        Logger.Info($"AllPlayer: {Main.AllPlayerControls.Length} / Pollvotes: {Pollvotes.Values.Sum()}", "CheckAllplayerControl & pollvotes");
 
                         while (playervoted && Polltimer > 0f)
                         {
@@ -974,7 +977,7 @@ internal class ChatCommands
                             yield return null;
                         }
 
-                        Logger.Info($"FINNISHED!! playervote?: {!playervoted} polltime?: {Polltimer <= 0}", "CheckTrueStartPollCD");
+                        Logger.Info($"FINNISHED!! playervote?: {!playervoted} polltime?: {Polltimer <= 0}", "/poll - StartPollCountdown");
 
                          DetermineResults();
                     }
@@ -1023,6 +1026,18 @@ internal class ChatCommands
                         PollVoted.Clear();
                     }
 
+                    if (Main.AllPlayerControls.Length < 3)
+                    {
+                        Utils.SendMessage(GetString("Poll.MissingPlayers"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+
+                    if (!GameStates.IsLobby)
+                    {
+                        Utils.SendMessage(GetString("Poll.OnlyInLobby"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+
                     if (args.SkipWhile(x => !x.Contains('?')).ToArray().Length < 3 || !args.Any(x => x.Contains('?')))
                     {
                         Utils.SendMessage(GetString("PollUsage"), PlayerControl.LocalPlayer.PlayerId);
@@ -1060,9 +1075,9 @@ internal class ChatCommands
                     {
                         byte r, g, b;
 
-                        r = (byte)IRandom.Instance.Next(0, 145);
-                        g = (byte)IRandom.Instance.Next(0, 145);
-                        b = (byte)IRandom.Instance.Next(0, 145);
+                        r = (byte)IRandom.Instance.Next(45, 185);
+                        g = (byte)IRandom.Instance.Next(45, 185);
+                        b = (byte)IRandom.Instance.Next(45, 185);
 
                         return new Color32(r, g, b, 255); 
                     }
@@ -2001,7 +2016,7 @@ internal class ChatCommands
 
 
             case "/pv":
-
+                canceled = true;
                 if (!Pollvotes.Any())
                 {
                     Utils.SendMessage(GetString("Poll.Inactive"), player.PlayerId);
@@ -2029,7 +2044,7 @@ internal class ChatCommands
 
                 PollVoted.Add(player.PlayerId);
                 Pollvotes[vote]++;
-                Utils.SendMessage(string.Format(GetString("Poll.YouVoted"), Pollvotes.Keys.First(x => x == vote), Pollvotes[vote]), player.PlayerId);
+                Utils.SendMessage(string.Format(GetString("Poll.YouVoted"), vote, Pollvotes[vote]), player.PlayerId);
                 Logger.Info($"The new value of {vote} is {Pollvotes[vote]}", "TestPV_CHAR");
 
                 break;
