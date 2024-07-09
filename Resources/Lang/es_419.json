@@ -266,7 +266,7 @@
   "Imitator": "Imitador",
   "Bandit": "Bandido",
   "Doppelganger": "Doble",
-  "PunchingBag": "Saco de Boxeo",
+  "PunchingBag": "Punching Bag",
   "Doomsayer": "Agorero",
   "Shroud": "Mortaja",
   "Werewolf": "Hombre Lobo",
@@ -3496,5 +3496,5 @@
   "WardenIncreaseSpeed": "Aumentar velocidad por",
   "WardenWarn": "PELIGRO! HUYE!",
   "MinionAbilityTime": "Duración del Habilidad",
-  "Minion_Blind": "blinded"
+  "Minion_Blind": "cegado"
 }
