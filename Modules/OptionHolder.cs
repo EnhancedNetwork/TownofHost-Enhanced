@@ -22,7 +22,7 @@ public enum CustomGameMode
 public static class Options
 {
     [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.Initialize)), HarmonyPostfix]
-    public static void OptionsLoadStart_Postfix(TranslationController __instance)
+    public static void OptionsLoadStart_Postfix()
     {
         Logger.Msg("Mod option loading start", "Load Options");
         try
