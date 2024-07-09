@@ -32,7 +32,7 @@ public static class Options
         }
         catch (Exception error)
         {
-            Logger.Error($"Fatal error after loading mad options: {error}", "Load Options");
+            Logger.Error($"Fatal error after loading mod options: {error}", "Load Options");
         }
         finally
         {
