@@ -24,6 +24,11 @@ internal class ChatCommands
     private static readonly string modTagsFiles = @"./TOHE-DATA/Tags/MOD_TAGS";
     private static readonly string sponsorTagsFiles = @"./TOHE-DATA/Tags/SPONSOR_TAGS";
     private static readonly string vipTagsFiles = @"./TOHE-DATA/Tags/VIP_TAGS";
+    
+    private static readonly Dictionary<char, int> Pollvotes = [];
+    private static readonly Dictionary<char, string> PollQuestions = [];
+    private static readonly List<byte> PollVoted = [];
+    private static float Polltimer = 120f;
 
     public const string Csize = "85%"; // CustomRole Settings Font-Size
     public const string Asize = "75%"; // All Appended Addons Font-Size
@@ -945,6 +950,123 @@ internal class ChatCommands
                     subArgs = text.Remove(0, 3);
                     if (args.Length < 1 || !int.TryParse(args[1], out int sound1)) break;
                     RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, (Sounds)sound1);
+                    break;
+
+                case "/poll":
+                    canceled = true;
+                    Pollvotes.Clear();
+                    PollQuestions.Clear();
+                    PollVoted.Clear();
+                    Polltimer = 120f;
+
+                    static System.Collections.IEnumerator StartPollCountdown()
+                    {
+                        if (!Pollvotes.Any()) yield break;
+                        bool playervoted = (Main.AllPlayerControls.Length - 1) > Pollvotes.Values.Sum();
+
+
+                        Logger.Info($"AllPlayer: {Main.AllPlayerControls.Length} / Pollvotes: {Pollvotes.Values.Sum()}", "CheckAllplayerControl & pollvotes");
+
+                        while (playervoted && Polltimer > 0f)
+                        {
+                            playervoted = (Main.AllPlayerControls.Length - 1) > Pollvotes.Values.Sum();
+                            Polltimer -= Time.deltaTime;
+                            yield return null;
+                        }
+
+                        Logger.Info($"FINNISHED!! playervote?: {!playervoted} polltime?: {Polltimer <= 0}", "CheckTrueStartPollCD");
+
+                         DetermineResults();
+                    }
+
+                    static void DetermineResults()
+                    {
+                        int basenum = Pollvotes.Values.Max();
+                        var winners = Pollvotes.Where(x => x.Value == basenum);
+
+                        string msg = "";
+
+                        Color32 clr = new Color32(47, 234, 45, 255); //Main.PlayerColors.First(x => x.Key == PlayerControl.LocalPlayer.PlayerId).Value;
+                        var tytul = Utils.ColorString(clr, GetString("PollResultTitle"));
+
+                        if (winners.Count() == 1)
+                        {
+                            var losers = Pollvotes.Where(x => x.Key != winners.First().Key);
+                            msg = string.Format(GetString("Poll.Result"), $"{winners.First().Key}{PollQuestions[winners.First().Key]}", winners.First().Value);
+
+                            for (int i = 0; i < losers.Count(); i++)
+                            {
+                                msg += $"\n{losers.ElementAt(i).Key} / {losers.ElementAt(i).Value} {PollQuestions[losers.ElementAt(i).Key]}";                            
+                            
+                            }
+                            msg += "</size>";
+
+
+                            Utils.SendMessage(msg, title: tytul);
+                        }
+                        else
+                        {
+                            var tienum = Pollvotes.Values.Max();
+                            var tied = Pollvotes.Where(x => x.Value == tienum);
+                            
+                            for (int i = 0; i < (tied.Count() - 1); i++)
+                            {
+                                msg +=  "\n" + tied.ElementAt(i).Key + PollQuestions[tied.ElementAt(i).Key] + " & ";
+                            }
+                            msg += "\n" + tied.Last().Key + PollQuestions[tied.Last().Key];
+
+                            Utils.SendMessage(string.Format(GetString("Poll.Tied"), msg, tienum), title: tytul);
+                        }
+                        
+                        Pollvotes.Clear();
+                        PollQuestions.Clear();
+                        PollVoted.Clear();
+                    }
+
+                    if (args.SkipWhile(x => !x.Contains('?')).ToArray().Length < 3 || !args.Any(x => x.Contains('?')))
+                    {
+                        Utils.SendMessage(GetString("PollUsage"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    var resultat = args.TakeWhile(x => !x.Contains('?')).Concat(args.SkipWhile(x => !x.Contains('?')).Take(1));
+
+                    string tytul = string.Join(" ", resultat.Skip(1));
+                    var ClearTIT = args.ToList();
+                    ClearTIT.RemoveRange(0, resultat.ToArray().Length);
+
+                    var Questions = ClearTIT.ToArray();
+                    string msg = "";
+
+
+
+                    for (int i = 0; i < Math.Clamp(Questions.Length, 2, 5); i++)
+                    {
+                        msg += Utils.ColorString(RndCLR(), $"{char.ToUpper((char)(i + 65))}) {Questions[i]}\n");
+                        Pollvotes[char.ToUpper((char)(i + 65))] = 0;
+                        PollQuestions[char.ToUpper((char)(i + 65))] = $"<size=45%>〖 {Questions[i]} 〗</size>";
+                    }
+                    msg += $"\n{GetString("Poll.Begin")}";
+                    msg += $"\n<size=55%><i>{GetString("Poll.TimeInfo")}</i></size>";
+
+
+                    Logger.Info($"Poll message: {msg}", "MEssapoll");
+
+                    Utils.SendMessage(msg, title: tytul);
+
+                    Main.Instance.StartCoroutine(StartPollCountdown());
+
+
+                    static Color32 RndCLR()
+                    {
+                        byte r, g, b;
+
+                        r = (byte)IRandom.Instance.Next(0, 145);
+                        g = (byte)IRandom.Instance.Next(0, 145);
+                        b = (byte)IRandom.Instance.Next(0, 145);
+
+                        return new Color32(r, g, b, 255); 
+                    }
+
                     break;
 
                 case "/rps":
@@ -1875,6 +1997,41 @@ internal class ChatCommands
             case "/vencedor":
                 if (Main.winnerNameList.Count == 0) Utils.SendMessage(GetString("NoInfoExists"), player.PlayerId);
                 else Utils.SendMessage("Winner: " + string.Join(", ", Main.winnerNameList), player.PlayerId);
+                break;
+
+
+            case "/pv":
+
+                if (!Pollvotes.Any())
+                {
+                    Utils.SendMessage(GetString("Poll.Inactive"), player.PlayerId);
+                    break;
+                }
+                if (PollVoted.Contains(player.PlayerId))
+                {
+                    Utils.SendMessage(GetString("Poll.AlreadyVoted"), player.PlayerId);
+                    break;
+                }
+
+                subArgs = args.Length != 2 ? "" : args[1];
+                char vote = ' ';
+
+                if (int.TryParse(subArgs, out int integer) && (Pollvotes.Count - 1) >= integer)
+                {
+                    vote = char.ToUpper((char)(integer + 65));
+                }
+                else if (!(char.TryParse(subArgs, out vote) && Pollvotes.ContainsKey(char.ToUpper(vote))))
+                {
+                    Utils.SendMessage(GetString("Poll.VotingInfo"), player.PlayerId);
+                    break;
+                }
+                vote = char.ToUpper(vote);
+
+                PollVoted.Add(player.PlayerId);
+                Pollvotes[vote]++;
+                Utils.SendMessage(string.Format(GetString("Poll.YouVoted"), Pollvotes.Keys.First(x => x == vote), Pollvotes[vote]), player.PlayerId);
+                Logger.Info($"The new value of {vote} is {Pollvotes[vote]}", "TestPV_CHAR");
+
                 break;
 
             case "/icon":
