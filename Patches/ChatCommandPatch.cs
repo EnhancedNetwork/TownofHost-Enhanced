@@ -1047,6 +1047,7 @@ internal class ChatCommands
                     var resultat = args.TakeWhile(x => !x.Contains('?')).Concat(args.SkipWhile(x => !x.Contains('?')).Take(1));
 
                     string tytul = string.Join(" ", resultat.Skip(1));
+                    tytul = Utils.ColorString(Palette.PlayerColors[PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId], tytul);
                     var ClearTIT = args.ToList();
                     ClearTIT.RemoveRange(0, resultat.ToArray().Length);
 
