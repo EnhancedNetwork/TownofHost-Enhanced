@@ -1149,7 +1149,7 @@ static class ExtendedPlayerControl
             netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + addSid));
             return;
         }
-        ushort newSid = (ushort)(netTransform.lastSequenceId + addSid);
+        ushort newSid = (ushort)(netTransform.lastSequenceId + 4);
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, clientId);
         NetHelpers.WriteVector2(position, writer);
         writer.Write(newSid);
