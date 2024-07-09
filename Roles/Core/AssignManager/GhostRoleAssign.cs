@@ -39,7 +39,7 @@ public static class GhostRoleAssign
 
         var IsNeutralAllowed = !player.IsAnySubRole(x => x.IsConverted() || x is CustomRoles.Madmate) || Options.ConvertedCanBecomeGhost.GetBool();
         var IsCrewmate = (getplrRole.IsCrewmate() || player.Is(CustomRoles.Admired)) && IsNeutralAllowed;
-        var IsImpostor = (getplrRole.IsImpostor() || player.Is(CustomRoles.Madmate)) && IsNeutralAllowed;
+        var IsImpostor = (getplrRole.IsImpostor()) && (IsNeutralAllowed || player.Is(CustomRoles.Madmate));
 
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole() || x == CustomRoles.Gravestone) || !Options.CustomGhostRoleCounts.Any()) return;
 
