@@ -61,7 +61,12 @@ internal static class RoleBasisChanger
         //newplayer.RpcSetRoleDesync(targetVNRole, true, newplayer.GetClientId());
         newplayer.RpcSetRole(targetVNRole, true);
 
-        GameData.Instance.DirtyAllData();
+        //Used instead of GameData.Instance.DirtyAllData();
+        foreach (var innerNetObject in GameData.Instance.AllPlayers)
+        {
+            innerNetObject.SetDirtyBit(uint.MaxValue);
+        }
+
         newplayer.ReactorFlash(0.2f);
         newplayer.RpcTeleport(position);
 

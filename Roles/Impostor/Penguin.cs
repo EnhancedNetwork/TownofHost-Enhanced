@@ -209,7 +209,13 @@ internal class Penguin : RoleBase
             {
                 // Set IsDead to true first (prevents ladder chase)
                 AbductVictim.Data.IsDead = true;
-                GameData.Instance.DirtyAllData();
+
+                //Used instead of GameData.Instance.DirtyAllData();
+                foreach (var innerNetObject in GameData.Instance.AllPlayers)
+                {
+                    innerNetObject.SetDirtyBit(uint.MaxValue);
+                }
+
                 // If the penguin himself is on a ladder, kill him after getting off the ladder.
                 if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                 {

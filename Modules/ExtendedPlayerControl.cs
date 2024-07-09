@@ -320,7 +320,12 @@ static class ExtendedPlayerControl
             var OutfitTypeSet = player.CurrentOutfitType != PlayerOutfitType.Shapeshifted ? PlayerOutfitType.Default : PlayerOutfitType.Shapeshifted;
 
             player.Data.SetOutfit(OutfitTypeSet, Outfit);
-            GameData.Instance.DirtyAllData();
+
+            //Used instead of GameData.Instance.DirtyAllData();
+            foreach (var innerNetObject in GameData.Instance.AllPlayers)
+            {
+                innerNetObject.SetDirtyBit(uint.MaxValue);
+            }
         }
         if (player.CheckCamoflague() && !force)
         {
