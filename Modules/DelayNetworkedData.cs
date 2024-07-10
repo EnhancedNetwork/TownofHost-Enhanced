@@ -148,7 +148,7 @@ public class InnerNetClientPatch
             return;
         }
 
-        var player = GameData.Instance.AllPlayers.ToArray().Where(x => x.IsDirty).FirstOrDefault();
+        var player = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(x => x.IsDirty);
         if (player != null)
         {
             timer = 0;
