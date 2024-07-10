@@ -493,7 +493,9 @@ class GameEndCheckerForNormal
 
             void SetGhostRole(bool ToGhostImpostor)
             {
-                if (!pc.Data.IsDead) ReviveRequiredPlayerIds.Add(pc.PlayerId);
+                var isDead = pc.Data.IsDead;
+                if (!isDead) ReviveRequiredPlayerIds.Add(pc.PlayerId);
+
                 if (ToGhostImpostor)
                 {
                     Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()}: changed to ImpostorGhost", "ResetRoleAndEndGame");
@@ -504,6 +506,8 @@ class GameEndCheckerForNormal
                     Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()}: changed to CrewmateGhost", "ResetRoleAndEndGame");
                     pc.RpcSetRole(RoleTypes.CrewmateGhost);
                 }
+                // Put it back on so it can't be auto-muted during the delay until resuscitation ~~ TOH comment
+                pc.Data.IsDead = isDead;
             }
         }
 
