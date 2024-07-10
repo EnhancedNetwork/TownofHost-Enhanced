@@ -1455,6 +1455,7 @@ class CoEnterVentPatch
             {
                 __instance?.RpcBootFromVent(id);
             }, 0.5f, "Prevent Enter Vents");
+            return true;
         }
 
         playerRoleClass?.OnCoEnterVent(__instance, id);
