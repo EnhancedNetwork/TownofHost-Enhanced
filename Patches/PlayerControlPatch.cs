@@ -434,9 +434,12 @@ class MurderPlayerPatch
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Youtuber);
                 CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
             }
+            target.SetDeathReason(PlayerState.DeathReason.Kill);
+            target.SetRealKiller(killer, false);
             return;
             //Imagine youtuber is converted
         }
+
         if (Main.FirstDied == "")
             Main.FirstDied = target.GetClient().GetHashedPuid();
 
@@ -1451,13 +1454,12 @@ class CoEnterVentPatch
             try
             {
                 __instance?.RpcBootFromVent(id);
-                return false;
             }
             catch
             {
                 _ = new LateTask(() => __instance?.RpcBootFromVent(id), 0.5f, "Prevent Enter Vents");
-                return false;
             }
+            return false;
         }
 
         playerRoleClass?.OnCoEnterVent(__instance, id);

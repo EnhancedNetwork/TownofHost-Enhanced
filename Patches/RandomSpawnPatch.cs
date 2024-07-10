@@ -40,7 +40,7 @@ class RandomSpawn
                     if (IsAirshipVanillaSpawnPosition(position))
                     {
                         AirshipSpawn(player);
-                        return false;
+                        return !IsRandomSpawn();
                     }
                     else
                     {

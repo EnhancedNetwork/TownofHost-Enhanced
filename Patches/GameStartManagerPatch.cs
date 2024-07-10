@@ -127,19 +127,20 @@ public class GameStartManagerPatch
                     Main.updateTime = 0;
                     if (!GameStates.IsCountDown)
                     {
-                        if ((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait)
-                        {
-                            BeginAutoStart(Options.AutoStartTimer.GetInt());
-                            return false;
-                        }
-                        else if (Options.ImmediateAutoStart.GetBool())
+                        if (Options.ImmediateAutoStart.GetBool())
                         {
                             if ((GameData.Instance.PlayerCount >= Options.StartWhenPlayersReach.GetInt() && Options.StartWhenPlayersReach.GetInt() > 1) ||
                                 (timer <= Options.StartWhenTimerLowerThan.GetInt() && Options.StartWhenTimerLowerThan.GetInt() > 0))
                             {
-                                BeginAutoStart(Options.AutoStartTimer.GetInt());
+                                BeginAutoStart(Options.ImmediateStartTimer.GetInt());
                                 return false;
                             }
+                        }
+
+                        if ((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait)
+                        {
+                            BeginAutoStart(Options.AutoStartTimer.GetInt());
+                            return false;
                         }
                     }
                 }

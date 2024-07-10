@@ -40,8 +40,22 @@ public static class Bait
         BaitAlive = [];
     }
     public static void BaitAfterDeathTasks(PlayerControl killer, PlayerControl target)
-    {
-        if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith) || !killer.Is(CustomRoles.KillingMachine) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Oblivious.ObliviousBaitImmune.GetBool()))
+    {        
+        if (killer.PlayerId == target.PlayerId)
+        {
+            if (target.GetRealKiller() != null)
+            {
+                if (!target.GetRealKiller().IsAlive()) return;
+                killer = target.GetRealKiller();
+            }
+        }
+
+        if (killer.PlayerId == target.PlayerId) return;
+
+        if (killer.Is(CustomRoles.KillingMachine)
+            || (killer.Is(CustomRoles.Oblivious) && Oblivious.ObliviousBaitImmune.GetBool()))
+            return;
+
         {
             killer.RPCPlayCustomSound("Congrats");
             target.RPCPlayCustomSound("Congrats");
