@@ -119,7 +119,7 @@ public static class Camouflage
 
             case 8: // ryuk
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
-                    .Set("", 7, "hat_crownDouble", "skin_D2Saint14", "visor_anime", "pet_Bush", "");
+                    .Set("", 7, "hat_theohair", "skin_Theoskin", "visor_Carrot", "pet_Snow", "");
                 break;
 
             case 9: // Gurge44
@@ -130,6 +130,10 @@ public static class Camouflage
             case 10: // TommyXL
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 17, "hat_baseball_Black", "skin_Scientist-Darkskin", "visor_pusheenSmileVisor", "pet_Pip", "");
+                break;
+            case 11: // Sarha, Sponsor
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
+                    .Set("", 17, "hat_mira_flower", "skin_PusheenPurpleskin", "visor_hl_hmph", "pet_Charles", "");
                 break;
         }
     }

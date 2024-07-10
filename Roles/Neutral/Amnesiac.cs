@@ -21,6 +21,7 @@ internal class Amnesiac : RoleBase
     private static OptionItem IncompatibleNeutralMode;
     private static OptionItem ShowArrows;
 
+    private static readonly Dictionary<byte, bool> CanUseVent = [];
     private enum AmnesiacIncompatibleNeutralModeSelectList
     {
         Role_Amnesiac,
@@ -39,10 +40,12 @@ internal class Amnesiac : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
+        CanUseVent.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        CanUseVent[playerId] = true;
 
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
@@ -68,6 +71,7 @@ internal class Amnesiac : RoleBase
         opt.SetVision(false);
     }
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
+    public static bool PreviousAmnesiacCanVent(PlayerControl pc) => CanUseVent.ContainsKey(pc.PlayerId) && CanUseVent[pc.PlayerId];
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.ReportButton.OverrideText(GetString("RememberButtonText"));
@@ -182,6 +186,15 @@ internal class Amnesiac : RoleBase
                 __instance.GetRoleClass().OnAdd(__instance.PlayerId);
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                 tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+
+                var roleClass = tar.GetRoleClass();
+                CanUseVent[__instance.PlayerId] = (roleClass?.ThisRoleBase) switch
+                {
+                    CustomRoles.Engineer => true,
+                    CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom => roleClass.CanUseImpostorVentButton(tar),
+                    _ => false,
+                };
+                Logger.Info($"player id: {__instance.PlayerId}, Can use vent: {CanUseVent[__instance.PlayerId]}", "Previous Amne Vent");
             }
             return false;
         }
