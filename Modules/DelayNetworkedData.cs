@@ -49,7 +49,7 @@ public class InnerNetClientPatch
         return false;
     }
 
-    public static void DelaySpawnPlayerInfo(InnerNetClient __instance, int clientId)
+    private static void DelaySpawnPlayerInfo(InnerNetClient __instance, int clientId)
     {
         List<NetworkedPlayerInfo> players = GameData.Instance.AllPlayers.ToArray().ToList();
 
