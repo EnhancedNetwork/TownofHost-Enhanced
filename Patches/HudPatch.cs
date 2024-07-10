@@ -235,7 +235,7 @@ class SetHudActivePatch
 
         IsActive = isActive;
 
-        if (!isActive) return;
+        if (GameStates.IsLobby || !isActive) return;
         if (player == null) return;
 
         if (player.Is(CustomRoles.Oblivious))
@@ -289,6 +289,7 @@ class TaskPanelBehaviourPatch
     public static void Postfix(TaskPanelBehaviour __instance)
     {
         if (!GameStates.IsModHost) return;
+        if (GameStates.IsLobby) return;
 
         if (GameStates.IsHideNSeek)
         {
