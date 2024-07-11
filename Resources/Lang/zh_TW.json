@@ -694,7 +694,7 @@
   "ArroganceInfoLong": "(偽裝者陣營):\n狂妄殺手每次殺人都會減少他的殺人冷卻。",
   "BomberInfoLong": "(偽裝者陣營):\n自爆兵能使用變形來炸死一定範圍內的玩家，但是作為代價，自爆兵自己也會被炸死。請注意: 自爆兵爆炸時全部玩家會看到螢幕閃爍作為提示(這個閃爍是跟網紅一樣的，請注意區別)。",
   "ScavengerInfoLong": "(偽裝者陣營):\n清道夫在殺人之後不會留下屍體。此外如果受害者為誘餌，則清道夫不會報告誘餌的屍體。",
-  "TrapsterInfoLong": "(Impostors):\nThe Trapster has a unique method of killing. By initiating a body report, the Trapster can eliminate the player attempting to report the body the Trapster killed.\nNote: If Trapster kills the Bait, the Trapster will die immediately.",
+  "TrapsterInfoLong": "(偽裝者陣營):\n陷阱師在殺人之後會在屍體上裝上一個炸彈，報告此屍體的玩家將立刻被炸死。\n請注意: 若陷阱師擊殺目標為誘餌，則陷阱師將與誘餌一同死亡，且不會報告屍體。",
   "GangsterInfoLong": "(偽裝者陣營):\n教父可以通過嘗試按殺人鍵來招募一位小弟，若招募成功雙方都會看到身上出現盾牌破碎的效果作為提示。剩餘的招募次數會在教父的名字旁顯示(招募數量依據房主設定)，若教父嘗試招募一些不能招募的玩家，像是中立陣營或一些特殊船員職業玩家時(例如擺爛人)，則會改為正常殺人。當教父沒有剩餘招募次數時則為正常殺人。",
   "CleanerInfoLong": "(偽裝者陣營):\n清理工嘗試報告一個屍體時將會清理該屍體(由於技術限制，被清理的屍體還是可見)，若清理成功身上會出現盾牌破碎的效果作為提示。被清理的屍體將不能被報告。清理屍體將會重置殺人冷卻時間",
   "LightningInfoLong": "(偽裝者陣營):\n球狀閃電無法正常殺人，當球狀閃電對目標使用殺人鍵時，目標將會在一段時間後汽化為量子幽靈，所有人都可以看到量子幽靈的名字旁有「■」作為提示。\n若目標在量子幽靈狀態下接觸了非球狀閃電或非量子幽靈的玩家，量子幽靈會立刻量子化而死，如果量子幽靈存活到會議中，那麼它將會在會議結束後立刻量子化而死。\n根據房主設定，殺死球狀閃電的玩家可能會變成量子幽靈。",
