@@ -427,7 +427,7 @@ internal class DollMaster : RoleBase
     }
 
     // Set players cosmetics.
-    private static void RpcChangeSkin(PlayerControl player, PlayerControl target = null, NetworkedPlayerInfo.PlayerOutfit Outfit = null)
+        private static void RpcChangeSkin(PlayerControl player, PlayerControl target = null, NetworkedPlayerInfo.PlayerOutfit Outfit = null)
     {
         target ??= player;
         Outfit ??= Main.PlayerStates[target.PlayerId].NormalOutfit;
@@ -437,38 +437,45 @@ internal class DollMaster : RoleBase
             var sender = CustomRpcSender.Create(name: $"Reset PlayerOufit for 『{player.Data.PlayerName}』");
 
             player.SetName(Outfit.PlayerName);
+            player.Data.DefaultOutfit.PlayerName = Main.PlayerStates[player.PlayerId].NormalOutfit.PlayerName;
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName)
                 .Write(player.Data.NetId)
                 .Write(Outfit.PlayerName)
             .EndRpc();
 
+
             Main.AllPlayerNames[player.PlayerId] = Outfit.PlayerName;
 
             player.SetColor(Outfit.ColorId);
+            player.Data.DefaultOutfit.ColorId = Main.PlayerStates[player.PlayerId].NormalOutfit.ColorId;
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
                 .Write(player.Data.NetId)
                 .Write((byte)Outfit.ColorId)
             .EndRpc();
 
             player.SetHat(Outfit.HatId, Outfit.ColorId);
+            player.Data.DefaultOutfit.HatId = Main.PlayerStates[player.PlayerId].NormalOutfit.HatId;
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
                 .Write(Outfit.HatId)
                 .Write(player.GetNextRpcSequenceId(RpcCalls.SetHatStr))
             .EndRpc();
 
             player.SetSkin(Outfit.SkinId, Outfit.ColorId);
+            player.Data.DefaultOutfit.SkinId = Main.PlayerStates[player.PlayerId].NormalOutfit.SkinId;
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetSkinStr)
                 .Write(Outfit.SkinId)
                 .Write(player.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
             .EndRpc();
 
             player.SetVisor(Outfit.VisorId, Outfit.ColorId);
+            player.Data.DefaultOutfit.VisorId = Main.PlayerStates[player.PlayerId].NormalOutfit.VisorId;
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetVisorStr)
                 .Write(Outfit.VisorId)
                 .Write(player.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
             .EndRpc();
 
             player.SetPet(Outfit.PetId);
+            player.Data.DefaultOutfit.PetId = Main.PlayerStates[player.PlayerId].NormalOutfit.PetId;
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetPetStr)
                 .Write(Outfit.PetId)
                 .Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr))
