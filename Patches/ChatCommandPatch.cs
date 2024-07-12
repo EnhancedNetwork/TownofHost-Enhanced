@@ -961,11 +961,12 @@ internal class ChatCommands
 
                     static System.Collections.IEnumerator StartPollCountdown()
                     {
-                        if (!Pollvotes.Any() || !GameStates.IsLobby) {
+                        if (!Pollvotes.Any() || !GameStates.IsLobby)
+                        {
                             Pollvotes.Clear();
                             PollQuestions.Clear();
                             PollVoted.Clear();
-                            
+
                             yield break;
                         }
                         bool playervoted = (Main.AllPlayerControls.Length - 1) > Pollvotes.Values.Sum();
@@ -973,9 +974,26 @@ internal class ChatCommands
 
                         while (playervoted && Polltimer > 0f)
                         {
+                            if (!Pollvotes.Any() || !GameStates.IsLobby)
+                            {
+                                Pollvotes.Clear();
+                                PollQuestions.Clear();
+                                PollVoted.Clear();
+
+                                yield break;
+                            }
                             playervoted = (Main.AllPlayerControls.Length - 1) > Pollvotes.Values.Sum();
                             Polltimer -= Time.deltaTime;
                             yield return null;
+                        }
+
+                        if (!Pollvotes.Any() || !GameStates.IsLobby)
+                        {
+                            Pollvotes.Clear();
+                            PollQuestions.Clear();
+                            PollVoted.Clear();
+
+                            yield break;
                         }
 
                         Logger.Info($"FINNISHED!! playervote?: {!playervoted} polltime?: {Polltimer <= 0}", "/poll - StartPollCountdown");
