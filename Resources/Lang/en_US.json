@@ -3299,6 +3299,7 @@
   "CantShroud": "You can't control a Mini that hasn't grown up.",
   "CantBoom": "You can't blow yourself up with a Mini that hasn't grown up.",
   "CantRecruit": "You can't recruit a Mini that hasn't grown up.",
+  "CantDuel": "You can't duel a Mini that hasn't grown up.",
   "ExiledNiceMini": "You ejected a <color=#8cffff>Nice Mini</color> before they grew up.\n<color=#ff1919>You all lose</color>",
   "MiniUp": "You're a year older!",
   "MiniMisGuessed": "You are supposed to misguess to death!\nHowever you are still a kid, so you are free of guilt while you can no longer guess.\nYou can guess again after you have grown up.",
