@@ -2093,6 +2093,7 @@
   "WraithInvisInCooldown": "Ability still on cooldown, vanish failed",
   "WraithInvisStateCountdown": "Invisibility will expire in {0}s",
   "WraithInvisCooldownRemain": "{0}s left in invisibility",
+  "WerewolfKillButtonText": "Maul",
   "BKInProtect": "Currently immortal",
   "BKProtectOut": "Shield expired",
   "BKSkillTimeRemain": "You're immune for {0} seconds",
