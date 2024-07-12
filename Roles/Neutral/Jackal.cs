@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;

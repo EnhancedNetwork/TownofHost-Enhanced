@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using BepInEx.Unity.IL2CPP.Utils.Collections;
+using TMPro;
 using UnityEngine;
 
 namespace TOHE.Patches;
@@ -6,10 +7,18 @@ namespace TOHE.Patches;
 [HarmonyPatch(typeof(LobbyBehaviour), nameof(LobbyBehaviour.Start))]
 public class LobbyStartPatch
 {
-    private static GameObject Paint;
-    private static GameObject Decorations;
+    private static GameObject LobbyPaintObject;
+    private static GameObject DropshipDecorationsObject;
+    private static Sprite LobbyPaintSprite;
+    private static Sprite DropshipDecorationsSprite;
+
     private static bool FirstDecorationsLoad = true;
-    public static void Postfix()
+    public static void Prefix()
+    {
+        LobbyPaintSprite = Utils.LoadSprite("TOHE.Resources.Images.LobbyPaint.png", 290f);
+        DropshipDecorationsSprite = Utils.LoadSprite("TOHE.Resources.Images.Dropship-Decorations.png", 60f);
+    }
+    public static void Postfix(LobbyBehaviour __instance)
     {
         float waitTime = 0f;
         if (FirstDecorationsLoad)
@@ -17,39 +26,44 @@ public class LobbyStartPatch
         else
             waitTime = 0.05f;
 
-        if (Main.EnableCustomDecorations.Value)
+        _ = new LateTask(() =>
         {
-            _ = new LateTask(() =>
+            __instance.StartCoroutine(CoLoadDecorations().WrapToIl2Cpp());
+        }, waitTime, "Co Load Dropship Decorations", shoudLog: false);
+
+        static System.Collections.IEnumerator CoLoadDecorations()
+        {
+            var LeftBox = GameObject.Find("Leftbox");
+            if (LeftBox != null)
+            {
+                LobbyPaintObject = Object.Instantiate(LeftBox, LeftBox.transform.parent.transform);
+                LobbyPaintObject.name = "Lobby Paint";
+                LobbyPaintObject.transform.localPosition = new Vector3(0.042f, -2.59f, -10.5f);
+                SpriteRenderer renderer = LobbyPaintObject.GetComponent<SpriteRenderer>();
+                renderer.sprite = LobbyPaintSprite;
+            }
+
+            yield return null;
+
+            if (Main.EnableCustomDecorations.Value)
             {
                 var Dropship = GameObject.Find("SmallBox");
                 if (Dropship != null)
                 {
-                    Decorations = Object.Instantiate(Dropship, Object.FindAnyObjectByType<LobbyBehaviour>().transform);
-                    Decorations.name = "Lobby_Decorations";
-                    Decorations.transform.DestroyChildren();
-                    Object.Destroy(Decorations.GetComponent<PolygonCollider2D>());
-                    Decorations.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.Dropship-Decorations.png", 60f);
-                    Decorations.transform.SetSiblingIndex(1);
-                    Decorations.transform.localPosition = new(0.05f, 0.8334f);
-                    FirstDecorationsLoad = false;
+                    DropshipDecorationsObject = Object.Instantiate(Dropship, Object.FindAnyObjectByType<LobbyBehaviour>().transform);
+                    DropshipDecorationsObject.name = "Lobby_Decorations";
+                    DropshipDecorationsObject.transform.DestroyChildren();
+                    Object.Destroy(DropshipDecorationsObject.GetComponent<PolygonCollider2D>());
+                    DropshipDecorationsObject.GetComponent<SpriteRenderer>().sprite = DropshipDecorationsSprite;
+                    DropshipDecorationsObject.transform.SetSiblingIndex(1);
+                    DropshipDecorationsObject.transform.localPosition = new(0.05f, 0.8334f);
                 }
-            }, waitTime, "Dropship Decorations", shoudLog: false);
-        }
-
-        _ = new LateTask(() =>
-        {
-            if (!GameStates.IsLobby || Paint != null) return;
-            
-            var LeftBox = GameObject.Find("Leftbox");
-            if (LeftBox != null)
-            {
-                Paint = Object.Instantiate(LeftBox, LeftBox.transform.parent.transform);
-                Paint.name = "Lobby Paint";
-                Paint.transform.localPosition = new Vector3(0.042f, -2.59f, -10.5f);
-                SpriteRenderer renderer = Paint.GetComponent<SpriteRenderer>();
-                renderer.sprite = Utils.LoadSprite("TOHE.Resources.Images.LobbyPaint.png", 290f);
             }
-        }, 3f, "LobbyPaint", shoudLog: false);
+
+            yield return null;
+
+            FirstDecorationsLoad = false;
+        }
     }
 }
 [HarmonyPatch(typeof(HostInfoPanel), nameof(HostInfoPanel.SetUp))]

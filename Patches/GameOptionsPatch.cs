@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using static TOHE.Translator;
 
 namespace TOHE;
 

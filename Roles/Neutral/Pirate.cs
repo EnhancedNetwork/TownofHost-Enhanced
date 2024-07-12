@@ -1,6 +1,5 @@
 ﻿using Hazel;
 using InnerNet;
-using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;

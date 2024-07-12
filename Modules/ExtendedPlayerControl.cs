@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using InnerNet;
 using System;
@@ -20,7 +19,7 @@ static class ExtendedPlayerControl
 {
     public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride = false)
     {
-        AmongUsClient.Instance.StartCoroutine(player.CoSetRole(role, canOverride));
+        player.StartCoroutine(player.CoSetRole(role, canOverride));
     }
 
     public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role)
@@ -165,10 +164,52 @@ static class ExtendedPlayerControl
         .EndRpc();
         sender.SendMessage();
     }
+    public static void RpcEnterVentDesync(this PlayerPhysics physics, int ventId, PlayerControl seer)
+    {
+        if (physics == null) return;
+
+        var clientId = seer.GetClientId();
+        if (AmongUsClient.Instance.ClientId == clientId)
+        {
+            physics.StopAllCoroutines();
+            physics.StartCoroutine(physics.CoEnterVent(ventId));
+            return;
+        }
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.EnterVent, SendOption.Reliable, seer.GetClientId());
+        writer.WritePacked(ventId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void RpcExitVentDesync(this PlayerPhysics physics, int ventId, PlayerControl seer)
+    {
+        if (physics == null) return;
+
+        var clientId = seer.GetClientId();
+        if (AmongUsClient.Instance.ClientId == clientId)
+        {
+            physics.StopAllCoroutines();
+            physics.StartCoroutine(physics.CoExitVent(ventId));
+            return;
+        }
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.ExitVent, SendOption.Reliable, seer.GetClientId());
+        writer.WritePacked(ventId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void RpcBootFromVentDesync(this PlayerPhysics physics, int ventId, PlayerControl seer)
+    {
+        if (physics == null) return;
+
+        var clientId = seer.GetClientId();
+        if (AmongUsClient.Instance.ClientId == clientId)
+        {
+            physics.BootFromVent(ventId);
+            return;
+        }
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, seer.GetClientId());
+        writer.WritePacked(ventId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
     public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role, bool canOverride, int clientId)
     {
-        //player: 名前の変更対象
-
         if (player == null) return;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
@@ -321,7 +362,12 @@ static class ExtendedPlayerControl
             var OutfitTypeSet = player.CurrentOutfitType != PlayerOutfitType.Shapeshifted ? PlayerOutfitType.Default : PlayerOutfitType.Shapeshifted;
 
             player.Data.SetOutfit(OutfitTypeSet, Outfit);
-            GameData.Instance.DirtyAllData();
+
+            //Used instead of GameData.Instance.DirtyAllData();
+            foreach (var innerNetObject in GameData.Instance.AllPlayers)
+            {
+                innerNetObject.SetDirtyBit(uint.MaxValue);
+            }
         }
         if (player.CheckCamoflague() && !force)
         {
@@ -641,7 +687,7 @@ static class ExtendedPlayerControl
         if (DollMaster.IsDoll(pc.PlayerId) || Circumvent.CantUseVent(pc)) return false;
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
         if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
-        if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
+        //if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
 
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseImpostorVentButton(pc)) return true;
@@ -1092,7 +1138,23 @@ static class ExtendedPlayerControl
             pc.RpcTeleport(location);
         }
     }
-
+    public static void RpcDesyncTeleport(this PlayerControl player, Vector2 position, PlayerControl seer)
+    {
+        if (player == null) return;
+        var netTransform = player.NetTransform;
+        var clientId = seer.GetClientId();
+        ushort addSid = GameStates.IsLocalGame ? (ushort)4 : (ushort)40;
+        if (AmongUsClient.Instance.ClientId == clientId)
+        {
+            netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + addSid));
+            return;
+        }
+        ushort newSid = (ushort)(netTransform.lastSequenceId + addSid);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, clientId);
+        NetHelpers.WriteVector2(position, writer);
+        writer.Write(newSid);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
     public static void RpcTeleport(this PlayerControl player, Vector2 position, bool isRandomSpawn = false, bool sendInfoInLogs = true)
     {
         if (sendInfoInLogs)
