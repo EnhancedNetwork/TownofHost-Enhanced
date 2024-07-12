@@ -1134,7 +1134,7 @@
   "HideExileChat": "隱藏逐出動畫時死亡玩家傳送的訊息",
   "ExileSpamMsg": "已攔截在逐出動畫期間玩家的發言",
   "EnableYTPlan": "啟用創作者素材保護計畫",
-  "InvalidPermissionCMD": "<color=#ff1919><size=125%><b>無效權限</b></size></color>\n\n<color=#ff1919>抱歉，您沒有使用此命令的權限，請使用 /me 以檢查所有權限</color>",
+  "InvalidPermissionCMD": "<color=#ff1919><size=125%><b>無效權限</b></size></color>\n\n<color=#ff1919>抱歉，您沒有使用此指令的權限，請使用 /me 以檢查所有權限</color>",
   "KickLowLevelPlayer": "踢出沒有達到指定等級的玩家",
   "TempBanLowLevelPlayer": "暫時封禁低等級的玩家",
   "ApplyWhiteList": "打開白名單來避免因等級過低而被踢出",
