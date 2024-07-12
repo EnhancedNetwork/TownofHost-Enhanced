@@ -76,6 +76,12 @@ internal class Hawk : RoleBase
     }
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+        {
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("CantSlice")));
+            return true;
+        }
+
         if (!KillerChanceMiss.ContainsKey(target.PlayerId))
             KillerChanceMiss.Add(target.PlayerId, MissChance.GetFloat());
 

@@ -3303,6 +3303,7 @@
   "CantMark": "You can't mark a Mini that hasn't grown up.",
   "CantBlood": "You can't blood a Mini that hasn't grown up.",
   "CantPosses": "You can't possess a Mini that hasn't grown up.",
+  "CantSlice": "You can't slice a Mini that hasn't grown up.",
   "ExiledNiceMini": "You ejected a <color=#8cffff>Nice Mini</color> before they grew up.\n<color=#ff1919>You all lose</color>",
   "MiniUp": "You're a year older!",
   "MiniMisGuessed": "You are supposed to misguess to death!\nHowever you are still a kid, so you are free of guilt while you can no longer guess.\nYou can guess again after you have grown up.",
