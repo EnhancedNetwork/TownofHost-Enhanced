@@ -427,7 +427,7 @@ internal class DollMaster : RoleBase
     }
 
     // Set players cosmetics.
-        private static void RpcChangeSkin(PlayerControl player, PlayerControl target = null, NetworkedPlayerInfo.PlayerOutfit Outfit = null)
+    private static void RpcChangeSkin(PlayerControl player, PlayerControl target = null, NetworkedPlayerInfo.PlayerOutfit Outfit = null)
     {
         target ??= player;
         Outfit ??= Main.PlayerStates[target.PlayerId].NormalOutfit;
