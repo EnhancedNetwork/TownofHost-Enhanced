@@ -1833,10 +1833,7 @@ public static class Utils
 
                 // Camouflage
                 if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
-                {
                     SelfName = $"<size=0%>{SelfName}</size>";
-                    IsDisplayInfo = false;
-                }
 
                 if (!SelfName.Contains(seer.GetRealName()))
                     IsDisplayInfo = false;
