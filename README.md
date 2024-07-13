@@ -32,15 +32,15 @@
 **Credit to these mods and their developers for the code and help:**
 ### :star: [TOHRE](https://github.com/Loonie-Toons/) 
 > 
-> - TOH: Enhanced was forked from TOH-RE
+> - Town of Host: Enhanced was forked from Town of Host: Re-Edited.
 >
 ### :star: [TOHE](https://github.com/KARPED1EM/TownOfHostEdited) :
 > 
-> - TOHRE was forked from TOHE
+> - Town of Host: Re-Edited was forked from Town of Host: Edited. (TONX)
 > 
 ### :star: [TOH](https://github.com/tukasa0001/TownOfHost) :
 > 
-> - Our repo is based initially on TOH
+> - Our repo is based initially on Town of Host.
 > 
 ### :star: [TOHY](https://github.com/Yumenopai/TownOfHost_Y) :
 > 
