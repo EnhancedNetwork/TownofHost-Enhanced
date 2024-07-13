@@ -214,6 +214,48 @@ public static class Translator
             }
         return str;
     }
+    public static bool TryGetStrings(string strItem, out string[] s) 
+    {
+        // Basically if you wanna let the user infinitely expand a function to their liking
+        // I need to test if this shit works lol, I plan a usecase for it in 2.1.0 (see: https://discord.com/channels/1094344790910455908/1251264307052675134)
+
+        var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
+        if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
+        s = [""];
+
+        try
+        {
+
+            var CaptureStr = translateMaps
+                 .Where(x => x.Key.ToLower().Contains(strItem.ToLower()))
+                 .ToDictionary(
+                          x => x.Key,
+                          x => x.Value
+                          .Where(inner => inner.Key == (int)langId)
+                          .Select(x => x.Value).ToArray()
+                 );
+
+            if (CaptureStr.Keys.Any())
+            {
+                List<string> strings = [];
+
+                foreach (var melon in CaptureStr)
+                {
+                    var cache = GetString(melon.Key, langId);
+                    Logger.Info($" Adding < {cache} > to the list of strings", "Translator.TryGetStrings");
+                    strings.Add(cache);
+                }
+                s = [.. strings];
+                return true;
+            }
+        }
+        catch (Exception err)
+        {
+            Logger.Exception(err, "Translator.TryGetStrings");
+        }
+
+        return false;
+    }
 
     public static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
     {

@@ -79,20 +79,18 @@ internal class Medium : RoleBase
         }
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl reported, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo target)
     {
         ContactPlayer.Clear();
-        if (target == null) return;
+        if (target == null || target.Object == null) return;
 
         if (AbilityLimit > 0)
         {
             AbilityLimit--;
-            ContactPlayer[target.PlayerId] = _Player.PlayerId;
+            ContactPlayer.TryAdd(target.PlayerId, _Player.PlayerId);
             SendRPC(_Player.PlayerId, target.PlayerId, true);
-            Logger.Info($"Psychics Make Connections： {_Player.GetNameWithRole()} => {target.PlayerName}", "Medium");
+            Logger.Info($"Psychics Make Connections： {_Player.GetRealName} => {target.PlayerName}", "Medium");
         }
-        
-
     }
     public static bool MsMsg(PlayerControl pc, string msg)
     {

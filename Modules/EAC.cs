@@ -33,6 +33,8 @@ internal class EAC
     }
     public static bool ReceiveRpc(PlayerControl pc, byte callId, MessageReader reader)
     {
+        /* Disable eac until NikoCat233 rework it */
+
         if (!AmongUsClient.Instance.AmHost) return false;
         if (RoleBasisChanger.IsChangeInProgress) return false;
         if (pc == null || reader == null) return false;
@@ -77,6 +79,7 @@ internal class EAC
                 //    break;
                 case RpcCalls.SetRole:
                     var role = (RoleTypes)sr.ReadUInt16();
+                    var canOverrideRole = sr.ReadBoolean();
                     if (GameStates.IsLobby && (role is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost))
                     {
                         WarnHost();
@@ -138,35 +141,35 @@ internal class EAC
                         }
                     }
                     break;
-                case RpcCalls.SetColor:
-                case RpcCalls.CheckColor:
-                    var color = sr.ReadByte();
-                    if (!GameStates.IsLobby)
-                    {
-                        WarnHost();
-                        Report(pc, "Set color in game");
-                        HandleCheat(pc, "Set color in game");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内设置颜色，已驳回", "EAC");
-                        return true;
-                    }
-                    if (pc.Data.DefaultOutfit.ColorId != -1 &&
-                        (Main.AllPlayerControls.Count(x => x.Data.DefaultOutfit.ColorId == color) >= 5
-                        || color < 0 || color > 18))
-                    {
-                        WarnHost();
-                        Report(pc, "非法设置颜色");
-                        AmongUsClient.Instance.KickPlayer(pc.GetClientId(), false);
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置颜色，已驳回", "EAC");
-                        return true;
-                    }
-                    if (pc.AmOwner)
-                    {
-                        WarnHost();
-                        Report(pc, "非法设置房主颜色");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置房主颜色，已驳回", "EAC");
-                        return true;
-                    }
-                    break;
+                //case RpcCalls.SetColor:
+                //case RpcCalls.CheckColor:
+                //    var color = sr.ReadByte();
+                //    if (!GameStates.IsLobby)
+                //    {
+                //        WarnHost();
+                //        Report(pc, "Set color in game");
+                //        HandleCheat(pc, "Set color in game");
+                //        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内设置颜色，已驳回", "EAC");
+                //        return true;
+                //    }
+                //    if (pc.Data.DefaultOutfit.ColorId != -1 &&
+                //        (Main.AllPlayerControls.Count(x => x.Data.DefaultOutfit.ColorId == color) >= 5
+                //        || color < 0 || color > 18))
+                //    {
+                //        WarnHost();
+                //        Report(pc, "非法设置颜色");
+                //        AmongUsClient.Instance.KickPlayer(pc.GetClientId(), false);
+                //        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置颜色，已驳回", "EAC");
+                //        return true;
+                //    }
+                //    if (pc.AmOwner)
+                //    {
+                //        WarnHost();
+                //        Report(pc, "非法设置房主颜色");
+                //        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置房主颜色，已驳回", "EAC");
+                //        return true;
+                //    }
+                //    break;
                 case RpcCalls.CheckMurder:
                     if (GameStates.IsLobby)
                     {
@@ -378,14 +381,16 @@ internal class EAC
 
         if (systemType == SystemTypes.Sabotage) //Normal sabotage using buttons
         {
-            if (!player.HasImpKillButton(true))
-            {
-                WarnHost();
-                Report(player, "Bad Sabotage A : Non Imp");
-                HandleCheat(player, "Bad Sabotage A : Non Imp");
-                Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage A，已驳回", "EAC");
-                return true;
-            }
+            //if (!player.HasImpKillButton(true))
+            //{
+            //    WarnHost();
+            //    Report(player, "Bad Sabotage A : Non Imp");
+            //    HandleCheat(player, "Bad Sabotage A : Non Imp");
+            //    Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage A，已驳回", "EAC");
+            //    return true;
+            //}
+
+            // Disable this check since haskillbutton needs rework
         } //Cheater directly send 128 systemtype rpc
         else if (systemType == SystemTypes.LifeSupp)
         {
@@ -456,7 +461,7 @@ internal class EAC
     }
 
     public static Dictionary<byte, int> ReportTimes = [];
-    public static bool RpcReportDeadBodyCheck(PlayerControl player, GameData.PlayerInfo target)
+    public static bool RpcReportDeadBodyCheck(PlayerControl player, NetworkedPlayerInfo target)
     {
         if (!ReportTimes.ContainsKey(player.PlayerId))
         {

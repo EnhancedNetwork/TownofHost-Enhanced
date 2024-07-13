@@ -84,7 +84,7 @@ internal class Spy : RoleBase
         if (killer == null || target == null) return false;
         if (killer.PlayerId == target.PlayerId) return true;
 
-        if (AbilityLimit >= 1)
+        if (AbilityLimit >= 1 && killer.IsAlive())
         {
             AbilityLimit -= 1;
             SendSkillRPC();

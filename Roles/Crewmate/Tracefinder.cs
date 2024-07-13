@@ -26,10 +26,10 @@ internal class Tracefinder : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Tracefinder);
-        VitalsCooldown = FloatOptionItem.Create(Id + 10, "VitalsCooldown", new(1f, 60f, 1f), 5f, TabGroup.CrewmateRoles, false)
+        VitalsCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.ScientistBase_BatteryCooldown, new(1f, 60f, 1f), 5f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracefinder])
             .SetValueFormat(OptionFormat.Seconds);
-        VitalsDuration = FloatOptionItem.Create(Id + 11, "VitalsDuration", new(1f, 30f, 1f), 25f, TabGroup.CrewmateRoles, false)
+        VitalsDuration = FloatOptionItem.Create(Id + 11, GeneralOption.ScientistBase_BatteryDuration, new(1f, 30f, 1f), 25f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracefinder])
             .SetValueFormat(OptionFormat.Seconds);
         ArrowDelayMin = FloatOptionItem.Create(Id + 12, "ArrowDelayMin", new(0f, 30f, 1f), 2f, TabGroup.CrewmateRoles, false)
@@ -84,7 +84,7 @@ internal class Tracefinder : RoleBase
             LocateArrow.RemoveAllTarget(playerId);
     }
 
-    public override void OnReportDeadBody(PlayerControl GODZILLA_VS, GameData.PlayerInfo KINGKONG)
+    public override void OnReportDeadBody(PlayerControl GODZILLA_VS, NetworkedPlayerInfo KINGKONG)
     {
         foreach (var apc in playerIdList)
         {

@@ -96,7 +96,7 @@ internal class Mortician : RoleBase
             SendRPC(pc, true, target.transform.position);
         }
     }
-    public override void OnReportDeadBody(PlayerControl pc, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl pc, NetworkedPlayerInfo target)
     {
         foreach (var apc in playerIdList.ToArray())
         {

@@ -1,4 +1,5 @@
-﻿using TOHE.Roles.Core;
+﻿using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using static TOHE.Translator;
@@ -17,7 +18,7 @@ public static class Oiiai
     private static OptionItem CanPassOn;
     private static OptionItem ChangeNeutralRole;
 
-    private enum ChangeRolesSelect
+    private enum ChangeRolesSelectList
     {
         Role_NoChange,
         Role_Amnesiac,
@@ -37,7 +38,7 @@ public static class Oiiai
         CanBeOnCrew = BooleanOptionItem.Create(Id + 12, "CrewCanBeOiiai", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
         CanBeOnNeutral = BooleanOptionItem.Create(Id + 13, "NeutralCanBeOiiai", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
         CanPassOn = BooleanOptionItem.Create(Id + 14, "OiiaiCanPassOn", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
-        ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", EnumHelper.GetAllNames<ChangeRolesSelect>(), 1, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
+        ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 1, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
     }
     public static void Init()
     {
@@ -112,6 +113,7 @@ public static class Oiiai
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         killer.Notify(GetString("LostRoleByOiiai"));
+        killer.RPCPlayCustomSound("Oiiai");
         Logger.Info($"{killer.GetRealName()} was OIIAIed", "Oiiai");
     }
 

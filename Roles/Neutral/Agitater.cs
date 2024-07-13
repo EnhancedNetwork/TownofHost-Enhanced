@@ -42,7 +42,7 @@ internal class Agitater : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         AgitaterCanGetBombed = BooleanOptionItem.Create(Id + 13, "AgitaterCanGetBombed", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Agitater]);
         AgitaterAutoReportBait = BooleanOptionItem.Create(Id + 14, "AgitaterAutoReportBait", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Agitater]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 15, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Agitater]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 15, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Agitater]);
     }
     public override void Init()
     {
@@ -58,7 +58,6 @@ internal class Agitater : RoleBase
         playerIdList.Add(playerId);
         CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -115,7 +114,7 @@ internal class Agitater : RoleBase
         return false;
     }
 
-    public override void OnReportDeadBody(PlayerControl reported, GameData.PlayerInfo agitatergoatedrole)
+    public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo agitatergoatedrole)
     {
         if (CurrentBombedPlayer == byte.MaxValue) return;
         var target = Utils.GetPlayerById(CurrentBombedPlayer);

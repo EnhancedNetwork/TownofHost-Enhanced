@@ -26,12 +26,12 @@ internal class Vampire : RoleBase
     private static OptionItem CanVent;
     private static OptionItem ActionModeOpt;
 
-    private enum ActionMode
+    private enum ActionModeList
     {
         Vampire_OnlyBites,
         TriggerDouble
     }
-    private static ActionMode NowActionMode;
+    private static ActionModeList NowActionMode;
 
     private static float KillDelay = new();
     private static readonly Dictionary<byte, BittenInfo> BittenPlayers = [];
@@ -41,8 +41,8 @@ internal class Vampire : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Vampire);
         OptionKillDelay = FloatOptionItem.Create(Id + 10, "VampireKillDelay", new(1f, 60f, 1f), 10f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Vampire])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Vampire]);
-        ActionModeOpt = StringOptionItem.Create(Id + 12, "VampireActionMode", EnumHelper.GetAllNames<ActionMode>(), 2, TabGroup.ImpostorRoles, false)
+        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Vampire]);
+        ActionModeOpt = StringOptionItem.Create(Id + 12, "VampireActionMode", EnumHelper.GetAllNames<ActionModeList>(), 2, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Vampire]);
     }
     public override void Init()
@@ -51,13 +51,13 @@ internal class Vampire : RoleBase
         BittenPlayers.Clear();
 
         KillDelay = OptionKillDelay.GetFloat();
-        NowActionMode = (ActionMode)ActionModeOpt.GetValue();
+        NowActionMode = (ActionModeList)ActionModeOpt.GetValue();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
 
-        if (NowActionMode == ActionMode.TriggerDouble)
+        if (NowActionMode == ActionModeList.TriggerDouble)
         {
             Utils.GetPlayerById(playerId)?.AddDoubleTrigger();
         }
@@ -70,7 +70,7 @@ internal class Vampire : RoleBase
     {
         if (target.Is(CustomRoles.Bait)) return true;
 
-        if (NowActionMode == ActionMode.Vampire_OnlyBites)
+        if (NowActionMode == ActionModeList.Vampire_OnlyBites)
         {
             killer.SetKillCooldown();
             killer.RPCPlayCustomSound("Bite");
@@ -80,7 +80,7 @@ internal class Vampire : RoleBase
                 BittenPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));
             }
         }
-        else if (NowActionMode == ActionMode.TriggerDouble)
+        else if (NowActionMode == ActionModeList.TriggerDouble)
         {
             return killer.CheckDoubleTrigger(target, () =>
             {
@@ -120,7 +120,7 @@ internal class Vampire : RoleBase
             }
         }
     }
-    private static void KillBitten(PlayerControl vampire, PlayerControl target, bool isButton = false)
+    private static void KillBitten(PlayerControl vampire, PlayerControl target)
     {
         if (target.Data.Disconnected) return;
 
@@ -131,11 +131,13 @@ internal class Vampire : RoleBase
             target.SetRealKiller(vampire);
 
             Logger.Info($"{target.name} self-kill while being bitten by Vampire.", "Vampire");
-            if (!isButton && vampire.IsAlive())
+            if (vampire.IsAlive())
             {
                 RPC.PlaySoundRPC(vampire.PlayerId, Sounds.KillSound);
+                
                 if (target.Is(CustomRoles.Trapper))
                     vampire.TrapperKilled(target);
+                
                 vampire.Notify(GetString("VampireTargetDead"));
                 vampire.SetKillCooldown();
             }
@@ -146,7 +148,7 @@ internal class Vampire : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody)
     {
         foreach (var targetId in BittenPlayers.Keys)
         {

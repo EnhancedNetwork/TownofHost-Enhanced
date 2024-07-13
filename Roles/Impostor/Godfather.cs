@@ -17,7 +17,7 @@ internal class Godfather : RoleBase
 
     private static readonly HashSet<byte> GodfatherTarget = [];
 
-    private enum GodfatherChangeMode
+    private enum GodfatherChangeModeList
     {
         GodfatherCount_Refugee,
         GodfatherCount_Madmate
@@ -26,7 +26,7 @@ internal class Godfather : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Godfather);
-        GodfatherChangeOpt = StringOptionItem.Create(Id + 2, "GodfatherTargetCountMode", EnumHelper.GetAllNames<GodfatherChangeMode>(), 0, TabGroup.ImpostorRoles, false)
+        GodfatherChangeOpt = StringOptionItem.Create(Id + 2, "GodfatherTargetCountMode", EnumHelper.GetAllNames<GodfatherChangeModeList>(), 0, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Godfather]);
     }
 
@@ -45,7 +45,7 @@ internal class Godfather : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target) => GodfatherTarget.Clear();
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => GodfatherTarget.Clear();
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (GodfatherTarget.Contains(target.PlayerId) && !(killer.GetCustomRole().IsImpostor() || killer.GetCustomRole().IsMadmate() || killer.Is(CustomRoles.Madmate)))

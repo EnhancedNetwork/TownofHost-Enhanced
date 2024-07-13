@@ -2,6 +2,7 @@
 using Hazel;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -32,7 +33,7 @@ internal class Ninja : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         AssassinateCooldownOpt = FloatOptionItem.Create(Id + 11, "NinjaAssassinateCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja])
             .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftDurationOpt = FloatOptionItem.Create(Id + 13, "ShapeshiftDuration", new(0f, 180f, 2.5f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja])
+        ShapeshiftDurationOpt = FloatOptionItem.Create(Id + 13, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(0f, 180f, 2.5f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()
@@ -79,6 +80,12 @@ internal class Ninja : RoleBase
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("CantMark")));
+            return true;
+        }
+        
         return killer.CheckDoubleTrigger(target,
             () => 
             {

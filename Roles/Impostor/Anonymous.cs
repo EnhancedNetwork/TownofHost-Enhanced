@@ -25,7 +25,7 @@ internal class Anonymous : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Anonymous);
-        KillCooldown = FloatOptionItem.Create(Id + 2, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Anonymous])
+        KillCooldown = FloatOptionItem.Create(Id + 2, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Anonymous])
             .SetValueFormat(OptionFormat.Seconds);
         HackLimitOpt = IntegerOptionItem.Create(Id + 4, "HackLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Anonymous])
             .SetValueFormat(OptionFormat.Times);
@@ -55,7 +55,7 @@ internal class Anonymous : RoleBase
             hud.AbilityButton.SetUsesRemaining((int)AbilityLimit);
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target) => DeadBodyList.Clear();
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => DeadBodyList.Clear();
     public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         if (inMeeting || isSuicide) return;

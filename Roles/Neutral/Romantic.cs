@@ -66,13 +66,19 @@ internal class Romantic : RoleBase
     public override void Add(byte playerId)
     {
         BetTimes.Add(playerId, 1);
-        
+
         CustomRoleManager.CheckDeadBodyOthers.Add(OthersAfterPlayerDeathTask);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public override void Remove(byte playerId)
+    {
+        BetTimes.Remove(playerId);
+
+        CustomRoleManager.CheckDeadBodyOthers.Remove(OthersAfterPlayerDeathTask);
+    }
+
     private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
@@ -114,7 +120,14 @@ internal class Romantic : RoleBase
         if (!KnowTargetRole.GetBool()) return false;
         return player.Is(CustomRoles.Romantic) && BetPlayer.TryGetValue(player.PlayerId, out var tar) && tar == target.PlayerId;
     }
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        if (!isProtect)
+            hud.KillButton.OverrideText(GetString("RomanticPartnerButtonText"));
+        else
+            hud.KillButton.OverrideText(GetString("RomanticProtectButtonText"));
+    }
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return true;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
@@ -215,11 +228,28 @@ internal class Romantic : RoleBase
         if (player == null) return null;
         return Utils.ColorString(BetTimes.TryGetValue(playerId, out var timesV1) && timesV1 >= 1 ? Color.white : Utils.GetRoleColor(CustomRoles.Romantic), $"<color=#ffffff>-</color> {(BetTimes.TryGetValue(playerId, out var timesV2) && timesV2 >= 1 && timesV2 >= 1 ? "♡" : "♥")}");
     }
-    public override void OnReportDeadBody(PlayerControl ugandan, GameData.PlayerInfo knuckles)
+    public override void OnReportDeadBody(PlayerControl ugandan, NetworkedPlayerInfo knuckles)
     {
         isPartnerProtected = false;
     }
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
+    {
+        if (exiled == null) return;
+
+        var exiledId = exiled.PlayerId;
+        if (BetPlayer.ContainsValue(exiledId))
+        {
+            player = Utils.GetPlayerById(exiledId);
+            if (player == null) return;
+
+            ChangeRole(player);
+        }
+    }
     private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl player, bool inMeeting)
+    {
+        ChangeRole(player);
+    }
+    private static void ChangeRole(PlayerControl player)
     {
         var playerId = player.PlayerId;
         if (!BetPlayer.ContainsValue(playerId) || player == null) return;
@@ -262,7 +292,7 @@ internal class Romantic : RoleBase
                     pc.GetRoleClass().OnAdd(pc.PlayerId);
                     Logger.Info($"No real killer for {player.GetRealName().RemoveHtmlTags()}, role changed to ruthless romantic", "Romantic");
                 }
-                else 
+                else
                 {
                     VengefulTargetId = killer.PlayerId;
 
@@ -300,7 +330,6 @@ internal class VengefulRomantic : RoleBase
     {
         VengefulTarget.Add(playerId, Romantic.VengefulTargetId);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -368,7 +397,6 @@ internal class RuthlessRomantic : RoleBase
     {
         playerIdList.Add(playerId);
         
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

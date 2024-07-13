@@ -31,7 +31,6 @@ internal class Monarch : RoleBase
     {
         AbilityLimit = KnightMax.GetInt();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -81,7 +80,7 @@ internal class Monarch : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
-        if (target.Is(CustomRoles.Monarch) && CustomRoles.Knighted.RoleExist())
+        if (role == CustomRoles.Monarch && CustomRoles.Knighted.RoleExist())
         {
             if (!isUI) Utils.SendMessage(GetString("GuessMonarch"), guesser.PlayerId);
             else guesser.ShowPopUp(GetString("GuessMonarch"));
@@ -103,6 +102,17 @@ internal class Monarch : RoleBase
             !pc.IsAnySubRole(x => x is CustomRoles.Knighted or CustomRoles.Stubborn or CustomRoles.TicketsStealer);
     }
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.Monarch) && target.Is(CustomRoles.Knighted) ? Main.roleColors[CustomRoles.Knighted] : "";
+
+    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (role == CustomRoles.Knighted)
+        {
+            if (!isUI) Utils.SendMessage(GetString("GuessKnighted"), guesser.PlayerId);
+            else guesser.ShowPopUp(GetString("GuessKnighted"));
+            return true;
+        }
+        return false;
+    }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

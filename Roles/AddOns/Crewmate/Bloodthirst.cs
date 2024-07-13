@@ -3,7 +3,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
-public static class Bloodlust
+public static class Bloodthirst
 {
     private const int Id = 21700;
 
@@ -13,7 +13,7 @@ public static class Bloodlust
 
     public static void SetupCustomOptions()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Bloodlust, canSetNum: true);
+        SetupAdtRoleOptions(Id, CustomRoles.Bloodthirst, canSetNum: true);
     }
 
     public static void Add()
@@ -23,9 +23,9 @@ public static class Bloodlust
 
     public static void OnTaskComplete(PlayerControl player)
     {
-        if (Alchemist.BloodlustList.ContainsKey(player.PlayerId)) return;
+        if (Alchemist.BloodthirstList.ContainsKey(player.PlayerId)) return;
 
-        Alchemist.BloodlustList[player.PlayerId] = player.PlayerId;
-        player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bloodlust), Translator.GetString("BloodlustAdded")));
+        Alchemist.BloodthirstList[player.PlayerId] = player.PlayerId;
+        player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bloodthirst), Translator.GetString("BloodthirstAdded")));
     }
 }

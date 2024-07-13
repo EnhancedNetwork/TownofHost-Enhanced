@@ -85,7 +85,7 @@ internal class Grenadier : RoleBase
 
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         GrenadierBlinding.Clear();
         MadGrenadierBlinding.Clear();

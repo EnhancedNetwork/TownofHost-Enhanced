@@ -15,25 +15,29 @@ public class ShowHostMeetingPatch
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.OnDestroy))]
     [HarmonyPostfix]
-    public static void OnDestroyPostfix()
+    public static void OnDestroy_Postfix()
     {
-        if (GameStates.IsInGame && HostControl == null)
+        try
         {
-            HostControl = AmongUsClient.Instance.GetHost().Character;
-            hostName = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.PlayerName;
-            hostColor = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.ColorId;
-
-            if (Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1 && Doppelganger.CheckDoppelVictim(AmongUsClient.Instance.GetHost().Character.PlayerId))
+            if (GameStates.IsInGame && HostControl == null)
             {
-                hostName = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].PlayerName;
-                hostColor = Doppelganger.DoppelPresentSkin[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].ColorId;
+                HostControl = AmongUsClient.Instance.GetHost().Character;
+                hostName = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.PlayerName;
+                hostColor = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.ColorId;
+
+                if (Doppelganger.HasEnabled && Doppelganger.CheckDoppelVictim(AmongUsClient.Instance.GetHost().Character.PlayerId))
+                {
+                    hostName = Main.PlayerStates[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].NormalOutfit.PlayerName;
+                    hostColor = Main.PlayerStates[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].NormalOutfit.ColorId;
+                }
             }
         }
+        catch { }
     }
 
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
     [HarmonyPostfix]
-    public static void ShowRolePostfix()
+    public static void ShowRole_Postfix()
     {
         HostControl = AmongUsClient.Instance.GetHost().Character;
         hostName = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.PlayerName;
@@ -42,7 +46,7 @@ public class ShowHostMeetingPatch
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
     [HarmonyPostfix]
-    public static void UpdatePostfix(MeetingHud __instance)
+    public static void Update_Postfix(MeetingHud __instance)
     {
         // Not display in local game, because it will be impossible to complete the meeting
         if (!GameStates.IsOnlineGame) return;
@@ -54,7 +58,7 @@ public class ShowHostMeetingPatch
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     [HarmonyPostfix]
 
-    public static void Setup(MeetingHud __instance)
+    public static void Setup_Postfix(MeetingHud __instance)
     {
         if (!GameStates.IsOnlineGame) return;
 

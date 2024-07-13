@@ -29,7 +29,7 @@ internal class Medic : RoleBase
 
     private static byte TempMarkProtected;
 
-    private enum SelectOptions
+    private enum SelectOptionsList
     {
         Medic_SeeMedicAndTarget,
         Medic_SeeMedic,
@@ -37,7 +37,7 @@ internal class Medic : RoleBase
         Medic_SeeNoOne
     }
 
-    private enum ShieldDeactivationIsVisible
+    private enum ShieldDeactivationIsVisibleList
     {
         MedicShieldDeactivationIsVisible_Immediately,
         MedicShieldDeactivationIsVisible_AfterMeeting,
@@ -47,13 +47,13 @@ internal class Medic : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Medic);
-        WhoCanSeeProtectOpt = StringOptionItem.Create(Id + 10, "MedicWhoCanSeeProtect", EnumHelper.GetAllNames<SelectOptions>(), 0, TabGroup.CrewmateRoles, false)
+        WhoCanSeeProtectOpt = StringOptionItem.Create(Id + 10, "MedicWhoCanSeeProtect", EnumHelper.GetAllNames<SelectOptionsList>(), 0, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medic]);
-        KnowShieldBrokenOpt = StringOptionItem.Create(Id + 16, "MedicKnowShieldBroken", EnumHelper.GetAllNames<SelectOptions>(), 1, TabGroup.CrewmateRoles, false)
+        KnowShieldBrokenOpt = StringOptionItem.Create(Id + 16, "MedicKnowShieldBroken", EnumHelper.GetAllNames<SelectOptionsList>(), 1, TabGroup.CrewmateRoles, false)
            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medic]);
         ShieldDeactivatesWhenMedicDies = BooleanOptionItem.Create(Id + 24, "MedicShieldDeactivatesWhenMedicDies", true, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medic]);
-        ShieldDeactivationIsVisibleOpt = StringOptionItem.Create(Id + 25, "MedicShielDeactivationIsVisible", EnumHelper.GetAllNames<ShieldDeactivationIsVisible>(), 0, TabGroup.CrewmateRoles, false)
+        ShieldDeactivationIsVisibleOpt = StringOptionItem.Create(Id + 25, "MedicShielDeactivationIsVisible", EnumHelper.GetAllNames<ShieldDeactivationIsVisibleList>(), 0, TabGroup.CrewmateRoles, false)
             .SetParent(ShieldDeactivatesWhenMedicDies);
         ResetCooldown = FloatOptionItem.Create(Id + 30, "MedicResetCooldown", new(0f, 120f, 1f), 10f, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medic])
@@ -70,15 +70,13 @@ internal class Medic : RoleBase
     {
         AbilityLimit = 1;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            if (!Main.ResetCamPlayerList.Contains(playerId))
-                Main.ResetCamPlayerList.Add(playerId);
-        }
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
     }
     private static void SendRPCForProtectList()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMedicalerProtectList, SendOption.Reliable, -1);
+        writer.Write(TempMarkProtected);
         writer.Write(ProtectList.Count);
         for (int i = 0; i < ProtectList.Count; i++)
             writer.Write(ProtectList[i]);
@@ -86,6 +84,7 @@ internal class Medic : RoleBase
     }
     public static void ReceiveRPCForProtectList(MessageReader reader)
     {
+        TempMarkProtected = reader.ReadByte();
         int count = reader.ReadInt32();
         ProtectList.Clear();
         for (int i = 0; i < count; i++)
@@ -190,6 +189,7 @@ internal class Medic : RoleBase
         if (ShieldDeactivationIsVisibleOpt.GetInt() == 1)
         {
             TempMarkProtected = byte.MaxValue;
+            SendRPCForProtectList();
             NotifyRoles();
         }
     }
@@ -205,6 +205,7 @@ internal class Medic : RoleBase
         {
             TempMarkProtected = byte.MaxValue;
         }
+        SendRPCForProtectList();
         NotifyRoles(ForceLoop: true);
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)

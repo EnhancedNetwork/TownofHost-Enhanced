@@ -36,11 +36,11 @@ internal class Vulture : RoleBase
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Vulture);
         ArrowsPointingToDeadBody = BooleanOptionItem.Create(Id + 10, "VultureArrowsPointingToDeadBody", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Vulture]);
         NumberOfReportsToWin = IntegerOptionItem.Create(Id + 11, "VultureNumberOfReportsToWin", new(1, 14, 1), 5, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Vulture]);
-        CanVent = BooleanOptionItem.Create(Id + 12, "CanVent", true, TabGroup.NeutralRoles, true).SetParent(CustomRoleSpawnChances[CustomRoles.Vulture]);
+        CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.NeutralRoles, true).SetParent(CustomRoleSpawnChances[CustomRoles.Vulture]);
         VultureReportCD = FloatOptionItem.Create(Id + 13, "VultureReportCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Vulture])
                 .SetValueFormat(OptionFormat.Seconds);
         MaxEaten = IntegerOptionItem.Create(Id + 14, "VultureMaxEatenInOneRound", new(1, 14, 1), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Vulture]);
-        HasImpVision = BooleanOptionItem.Create(Id + 15, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Vulture]);
+        HasImpVision = BooleanOptionItem.Create(Id + 15, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Vulture]);
     }
     public override void Init()
     {
@@ -123,6 +123,8 @@ internal class Vulture : RoleBase
     }
     public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
+        if (!player.IsAlive()) return;
+
         if (BodyReportCount[player.PlayerId] >= NumberOfReportsToWin.GetInt())
         {
             BodyReportCount[player.PlayerId] = NumberOfReportsToWin.GetInt();
@@ -133,7 +135,7 @@ internal class Vulture : RoleBase
             }
         }
     }
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         // Vulture was eat body
         if (UnreportablePlayers.Contains(deadBody.PlayerId)) return false;
@@ -168,7 +170,7 @@ internal class Vulture : RoleBase
         }
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var apc in playerIdList)
         {
@@ -176,7 +178,7 @@ internal class Vulture : RoleBase
             SendRPC(apc, false);
         }
     }
-    private static void OnEatDeadBody(PlayerControl pc, GameData.PlayerInfo target)
+    private static void OnEatDeadBody(PlayerControl pc, NetworkedPlayerInfo target)
     {       
         BodyReportCount[pc.PlayerId]++;
         AbilityLeftInRound[pc.PlayerId]--;

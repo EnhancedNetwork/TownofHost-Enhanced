@@ -22,6 +22,8 @@ internal class DollMaster : RoleBase
     private static bool WaitToUnPossess = false;
     public static PlayerControl controllingTarget = null; // Personal possessed player identifier for reference.
     public static PlayerControl DollMasterTarget = null; // Personal possessed player identifier for reference.
+    public static NetworkedPlayerInfo.PlayerOutfit controllingOutfit = null;
+    public static NetworkedPlayerInfo.PlayerOutfit DollMasterOutfit = null;
     private static float originalSpeed = float.MinValue;
     private static Vector2 controllingTargetPos = new(0, 0);
     private static Vector2 DollMasterPos = new(0, 0);
@@ -35,7 +37,7 @@ internal class DollMaster : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.DollMaster);
-        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
+        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DollMasterPossessionCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DollMaster])
             .SetValueFormat(OptionFormat.Seconds);
@@ -50,6 +52,8 @@ internal class DollMaster : RoleBase
         ReducedVisionPlayers.Clear();
         DollMasterTarget = null;
         controllingTarget = null;
+        controllingOutfit = null;
+        DollMasterOutfit = null;
     }
 
     public override void Add(byte playerId)
@@ -117,8 +121,8 @@ internal class DollMaster : RoleBase
             _ = new LateTask(() =>
             {
                 if (!target.inVent || target.walkingToVent) return;
-                target.MyPhysics.RpcBootFromVent(GetPlayerVentId(target));
-            }, 0.25f, "Boot Possessed Player from vent: " + GetPlayerVentId(target));
+                target.MyPhysics.RpcBootFromVent(target.GetPlayerVentId());
+            }, 0.25f, "Boot Possessed Player from vent: " + target.GetPlayerVentId());
         }
     }
 
@@ -133,8 +137,8 @@ internal class DollMaster : RoleBase
                 _ = new LateTask(() =>
                 {
                     if (!pc.inVent || pc.walkingToVent || pc.MyPhysics.Animations.IsPlayingEnterVentAnimation()) return;
-                    pc.MyPhysics.RpcBootFromVent(GetPlayerVentId(pc));
-                }, 0.3f, "Boot DollMaster from vent: " + GetPlayerVentId(pc));
+                    pc.MyPhysics.RpcBootFromVent(pc.GetPlayerVentId());
+                }, 0.3f, "Boot DollMaster from vent: " + pc.GetPlayerVentId());
             }
 
             // Unpossessed after waiting for DollMaster.
@@ -151,23 +155,11 @@ internal class DollMaster : RoleBase
         }
     }
 
-    // Get vent Id that the player is in.
-    private static int GetPlayerVentId(PlayerControl pc)
-    {
-        if (!(ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) &&
-              systemType.TryCast<VentilationSystem>() is VentilationSystem ventilationSystem))
-            return 0;
-
-        return ventilationSystem.PlayersInsideVents.TryGetValue(pc.PlayerId, out var playerIdVentId) ? playerIdVentId : 0;
-    }
-
     // Prepare for a meeting if possessing.
-    public override void OnReportDeadBody(PlayerControl pc, GameData.PlayerInfo target) // Fix crap when meeting gets called.
+    public override void OnReportDeadBody(PlayerControl pc, NetworkedPlayerInfo target) // Fix crap when meeting gets called.
     {
         if (IsControllingPlayer && controllingTarget != null && DollMasterTarget != null)
         {
-            DollMasterTarget.RpcShapeshift(DollMasterTarget, false);
-            controllingTarget.ResetPlayerOutfit();
             UnPossess(DollMasterTarget, controllingTarget);
             Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
             ReducedVisionPlayers.Clear();
@@ -175,7 +167,7 @@ internal class DollMaster : RoleBase
     }
 
     // If Dollmaster reports a body or is forced to while possessing redirect it to possessed player
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (controllingTarget == null || DollMasterTarget == null) return true;
 
@@ -196,7 +188,7 @@ internal class DollMaster : RoleBase
     // If Dollmaster starts a meeting while possessing redirect it to possessed player
     public override bool OnCheckStartMeeting(PlayerControl reporter)
     {
-        if (controllingTarget == null || DollMasterTarget == null) return false;
+        if (controllingTarget == null || DollMasterTarget == null) return true;
 
         if (IsControllingPlayer && IsDoll(reporter.PlayerId)) return false; // Prevent possessed player from starting meeting.
 
@@ -218,9 +210,11 @@ internal class DollMaster : RoleBase
     // Handle specific killing roles when interacting with a Dollmaster or Player while possessing.
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (IsControllingPlayer)
+        if (IsControllingPlayer && DollMasterTarget != null && controllingTarget != null)
         {
             if (!CanKillerUseAbility(killer)) return true;
+
+            if (killer.GetCustomRole().IsImpostorTeam() && target == controllingTarget) return true;
 
             if (killer.Is(CustomRoles.Sheriff) && killer != DollMasterTarget && target == DollMasterTarget)
             {
@@ -378,10 +372,16 @@ internal class DollMaster : RoleBase
     // Possess Player
     private static void Possess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
     {
+        DollMasterOutfit = new NetworkedPlayerInfo.PlayerOutfit()
+            .Set(pc.GetRealName(), pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId);
+        controllingOutfit = new NetworkedPlayerInfo.PlayerOutfit()
+            .Set(target.GetRealName(), target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
+
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(target, false);
-        target?.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit);
-        pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
+        RpcChangeSkin(pc, controllingOutfit);
+        RpcChangeSkin(target, DollMasterOutfit);
+        pc?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
     }
 
     // UnPossess Player
@@ -390,8 +390,9 @@ internal class DollMaster : RoleBase
         WaitToUnPossess = false;
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(pc, false);
-        target?.ResetPlayerOutfit();
-        pc.RpcResetAbilityCooldown();
+        RpcChangeSkin(pc, DollMasterOutfit);
+        RpcChangeSkin(target, controllingOutfit);
+        pc?.RpcResetAbilityCooldown();
 
         IsControllingPlayer = false;
         ResetPlayerSpeed = true;
@@ -407,7 +408,7 @@ internal class DollMaster : RoleBase
     {
         if (IsControllingPlayer && HasEnabled)
         {
-            if (!(DollMasterTarget == null || controllingTarget == null))
+            if (DollMasterTarget != null && controllingTarget != null)
             {
                 if (player == DollMasterTarget)
                     return controllingTarget;
@@ -433,6 +434,47 @@ internal class DollMaster : RoleBase
         if (controllingTarget == null) return;
         controllingTarget?.RpcTeleport(DollMasterPos);
         pc?.RpcTeleport(controllingTargetPos);
+    }
+
+    // Set players cosmetics.
+    private static void RpcChangeSkin(PlayerControl pc, NetworkedPlayerInfo.PlayerOutfit newOutfit)
+    {
+        if (newOutfit is null) return;
+
+        var sender = CustomRpcSender.Create(name: $"Doppelganger.RpcChangeSkin({pc.Data.PlayerName})");
+        pc.SetName(newOutfit.PlayerName);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetName)
+        .Write(newOutfit.PlayerName)
+        .EndRpc();
+
+        Main.AllPlayerNames[pc.PlayerId] = newOutfit.PlayerName;
+
+        pc.SetColor(newOutfit.ColorId);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetColor)
+        .Write((byte)newOutfit.ColorId)
+        .EndRpc();
+
+        pc.SetHat(newOutfit.HatId, newOutfit.ColorId);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetHatStr)
+            .Write(newOutfit.HatId)
+        .EndRpc();
+
+        pc.SetSkin(newOutfit.SkinId, newOutfit.ColorId);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetSkinStr)
+            .Write(newOutfit.SkinId)
+        .EndRpc();
+
+        pc.SetVisor(newOutfit.VisorId, newOutfit.ColorId);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetVisorStr)
+            .Write(newOutfit.VisorId)
+        .EndRpc();
+
+        pc.SetPet(newOutfit.PetId);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetPetStr)
+            .Write(newOutfit.PetId)
+            .EndRpc();
+
+        sender.SendMessage();
     }
 
     // Set name Suffix for Doll and Main Body under name.

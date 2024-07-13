@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using static TOHE.Options;
@@ -62,7 +62,6 @@ internal class Jailer : RoleBase
         JailerHasExe.Add(playerId, false);
         JailerDidVote.Add(playerId, false);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -139,7 +138,7 @@ internal class Jailer : RoleBase
         return false;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
-    public override void OnReportDeadBody(PlayerControl sob, GameData.PlayerInfo bakugan)
+    public override void OnReportDeadBody(PlayerControl sob, NetworkedPlayerInfo bakugan)
     {
         foreach (var targetId in JailerTarget.Values)
         {
@@ -172,6 +171,11 @@ internal class Jailer : RoleBase
             else JailerHasExe[voter.PlayerId] = false;
         }
         SendRPC(voter.PlayerId, setTarget: false);
+    }
+
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting)
+    {
+        return JailerTarget.TryGetValue(seer.PlayerId, out var targetID) && isForMeeting && seer != seen && seen.PlayerId == targetID ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), "⊠") : "";
     }
 
     private static bool CanBeExecuted(CustomRoles role)
