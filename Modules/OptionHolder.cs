@@ -119,7 +119,8 @@ public static class Options
         "CamouflageMode.Pyro",
         "CamouflageMode.ryuk",
         "CamouflageMode.Gurge44",
-        "CamouflageMode.TommyXL"
+        "CamouflageMode.TommyXL",
+        "CamouflageMode.Sarha"
     ];
 
 
