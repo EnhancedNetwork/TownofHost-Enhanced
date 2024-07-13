@@ -468,6 +468,11 @@ class GameEndCheckerForNormal
     }
     public static void StartEndGame(GameOverReason reason)
     {
+        // Sync of CustomWinnerHolder info
+        var winnerWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame, SendOption.Reliable);
+        CustomWinnerHolder.WriteTo(winnerWriter);
+        AmongUsClient.Instance.FinishRpcImmediately(winnerWriter);
+
         AmongUsClient.Instance.StartCoroutine(CoEndGame(AmongUsClient.Instance, reason).WrapToIl2Cpp());
     }
     public static bool ForEndGame = false;
@@ -510,11 +515,6 @@ class GameEndCheckerForNormal
                 pc.Data.IsDead = isDead;
             }
         }
-
-        // Sync of CustomWinnerHolder info
-        var winnerWriter = self.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame, SendOption.Reliable);
-        CustomWinnerHolder.WriteTo(winnerWriter);
-        self.FinishRpcImmediately(winnerWriter);
 
         // Delay to ensure that resuscitation is delivered after the ghost roll setting
         yield return new WaitForSeconds(EndGameDelay);
