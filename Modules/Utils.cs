@@ -1828,12 +1828,15 @@ public static class Utils
                 if (CustomRoles.DollMaster.HasEnabled() && seerRole != CustomRoles.DollMaster)
                 {
                     if (DollMaster.IsDoll(seer.PlayerId))
-                        SelfName = "<size=10000%><color=#000000>■</size></color>";
+                        SelfName = "<size=10000%><color=#000000>■</color></size>";
                 }
 
                 // Camouflage
                 if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
+                {
                     SelfName = $"<size=0%>{SelfName}</size>";
+                    IsDisplayInfo = false;
+                }
 
                 if (!SelfName.Contains(seer.GetRealName()))
                     IsDisplayInfo = false;

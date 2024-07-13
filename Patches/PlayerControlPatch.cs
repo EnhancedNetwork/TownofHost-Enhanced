@@ -1329,7 +1329,7 @@ class FixedUpdateInNormalGamePatch
                 if (CustomRoles.DollMaster.HasEnabled() && seerRole != CustomRoles.DollMaster)
                 {
                     if (DollMaster.IsDoll(seer.PlayerId))
-                        RealName = "<size=10000%><color=#000000>■</size></color>";
+                        RealName = "<size=10000%><color=#000000>■</color></size>";
                 }
 
                 // Camouflage
