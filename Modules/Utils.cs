@@ -1225,7 +1225,7 @@ public static class Utils
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /qt {GetString("Command.quit")}"
             + $"\n ○ /death {GetString("Command.death")}"
-     //       + $"\n ○ /icons {GetString("Command.iconinfo")}"
+            + $"\n ○ /icons {GetString("Command.iconinfo")}"
             , ID);
     }
     public static void ShowHelp(byte ID)
@@ -1241,11 +1241,12 @@ public static class Utils
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"
             + $"\n  ○ /qt {GetString("Command.quit")}"
-       //     + $"\n  ○ /icons {GetString("Command.iconinfo")}"
+            + $"\n  ○ /icons {GetString("Command.iconinfo")}"
             + $"\n  ○ /death {GetString("Command.death")}"
             + "\n\n" + GetString("CommandHostList")
             + $"\n  ○ /s {GetString("Command.say")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"
+            + $"\n  ○ /poll {GetString("Command.Poll")}"
             + $"\n  ○ /xf {GetString("Command.solvecover")}"
             + $"\n  ○ /mw {GetString("Command.mw")}"
             + $"\n  ○ /kill {GetString("Command.kill")}"

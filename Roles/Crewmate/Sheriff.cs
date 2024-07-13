@@ -101,7 +101,7 @@ internal class Sheriff : RoleBase
 
     public override bool CanUseKillButton(PlayerControl pc) => IsUseKillButton(pc);
     public bool IsUseKillButton(PlayerControl pc)
-        => !Main.PlayerStates[pc.PlayerId].IsDead
+        => pc.IsAlive()
         && (CanKillAllAlive.GetBool() || GameStates.AlreadyDied)
         && AbilityLimit > 0;
 

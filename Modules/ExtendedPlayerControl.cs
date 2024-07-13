@@ -689,6 +689,8 @@ static class ExtendedPlayerControl
         if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
         //if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
 
+        if (Amnesiac.PreviousAmnesiacCanVent(pc)) return true; //this is done because amnesiac has imp basis and if amnesiac remembers a role with different basis then player will not vent as `CanUseImpostorVentButton` is false
+
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseImpostorVentButton(pc)) return true;
 
@@ -1208,7 +1210,7 @@ static class ExtendedPlayerControl
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
-        var vents = UnityEngine.Object.FindObjectsOfType<Vent>();
+        var vents = ShipStatus.Instance.AllVents;
         var vent = vents.RandomElement();
 
         Logger.Info($" {vent.transform.position}", "RpcVentTeleportPosition");

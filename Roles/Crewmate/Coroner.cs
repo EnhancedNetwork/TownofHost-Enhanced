@@ -145,7 +145,7 @@ internal class Coroner : RoleBase
         }
         return true;
     }
-
+    public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.ReportButton.OverrideText(GetString("CoronerReportButtonText"));
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (UnreportablePlayers.Contains(deadBody.PlayerId)) return false;

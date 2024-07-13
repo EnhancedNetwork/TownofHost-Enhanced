@@ -16,6 +16,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         foreach (var sender in AllSenders.OfType<PlayerGameOptionsSender>().Where(sender => sender.player.PlayerId == playerId).ToArray())
         {
             sender.SetDirty();
+            break; // Only one sender can have the same player id
         }
     }
     public static void SetDirtyToAll()

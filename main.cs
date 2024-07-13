@@ -62,7 +62,7 @@ public class Main : BasePlugin
     public static readonly string WebsiteInviteUrl = "https://tohre.dev";
     
     public static readonly bool ShowKofiButton = true;
-    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
+    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);

@@ -97,7 +97,7 @@ internal partial class Mayor : RoleBase
             {
                 MayorUsedButtonCount[pc.PlayerId] += 1;
                 pc?.MyPhysics?.RpcBootFromVent(vent.Id);
-                pc?.NoCheckStartMeeting(pc?.Data);
+                pc?.NoCheckStartMeeting(null);
             }
         }
     }

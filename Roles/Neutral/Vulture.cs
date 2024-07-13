@@ -123,6 +123,8 @@ internal class Vulture : RoleBase
     }
     public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
+        if (!player.IsAlive()) return;
+
         if (BodyReportCount[player.PlayerId] >= NumberOfReportsToWin.GetInt())
         {
             BodyReportCount[player.PlayerId] = NumberOfReportsToWin.GetInt();
