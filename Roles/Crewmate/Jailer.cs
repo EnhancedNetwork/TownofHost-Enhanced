@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using static TOHE.Options;
@@ -171,6 +171,11 @@ internal class Jailer : RoleBase
             else JailerHasExe[voter.PlayerId] = false;
         }
         SendRPC(voter.PlayerId, setTarget: false);
+    }
+
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting)
+    {
+        return JailerTarget.TryGetValue(seer.PlayerId, out var targetID) && isForMeeting && seer != seen && seen.PlayerId == targetID ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), "⊠") : "";
     }
 
     private static bool CanBeExecuted(CustomRoles role)
