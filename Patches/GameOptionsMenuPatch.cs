@@ -573,7 +573,7 @@ public static class StringOptionPatch
 
             if (EnumHelper.GetAllValues<CustomRoles>().Any(x => GetString($"{x}") == name.RemoveHtmlTags()))
             {
-                //name = $"<size=3.5>{name}</size>";
+                name = $"<size=3.5>{name}</size>";
                 __instance.TitleText.fontWeight = FontWeight.Black;
                 __instance.TitleText.outlineWidth = language switch
                 {
@@ -581,7 +581,7 @@ public static class StringOptionPatch
                     _ => 0.35f,
                 };
             }
-            __instance.TitleText.text = item.GetName();
+            __instance.TitleText.text = name;
             return false;
         }
         return true;
