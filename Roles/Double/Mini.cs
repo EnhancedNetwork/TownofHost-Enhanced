@@ -25,7 +25,7 @@ internal class Mini : RoleBase
 
 
     public static int Age = new();
-    private static bool IsEvilMini = false;
+    public static bool IsEvilMini = false;
     private static int GrowUpTime = new();
     //private static int GrowUp = new();
     private static long LastFixedUpdate = new();
@@ -54,7 +54,8 @@ internal class Mini : RoleBase
         Age = 0;
         misguessed = false;
 
-        if (AmongUsClient.Instance.AmHost)
+        IsEvilMini = false;
+        if (AmongUsClient.Instance.AmHost && CustomRoles.Mini.IsEnable())
         {
             var rand = IRandom.Instance;
             IsEvilMini = CanBeEvil.GetBool() && (rand.Next(0, 100) < EvilMiniSpawnChances.GetInt());
