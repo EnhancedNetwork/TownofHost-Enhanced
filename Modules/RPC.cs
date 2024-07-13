@@ -12,7 +12,6 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
-using static TOHE.EAC;
 
 namespace TOHE;
 
@@ -154,7 +153,7 @@ internal class RPCHandlerPatch
     {
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
-        //if (EAC.ReceiveRpc(__instance, callId, reader)) return false;
+        // if (EAC.PlayerControlReceiveRpc(__instance, callId, reader)) return false;
         Logger.Info($"{__instance?.Data?.PlayerId}({(__instance.OwnedByHost() ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
         switch (rpcType)
         {
@@ -646,115 +645,16 @@ internal class PlayerPhysicsRPCHandlerPatch
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
 
+        if (EAC.PlayerPhysicsRpcCheck(__instance, callId, reader)) return false;
+
         var player = __instance.myPlayer;
 
         if (!player)
         {
-            Logger.Warn("Received Physics RPC without a player", "RPC_PlayerPhysics");
+            Logger.Warn("Received Physics RPC without a player", "PlayerPhysics_ReceiveRPC");
             return false;
         }
-
-        if (GameStates.IsLobby && rpcType is not RpcCalls.Pet and not RpcCalls.CancelPet)
-        {
-            WarnHost();
-            Report(player, $"Physics {rpcType} in lobby (can be spoofed by others)");
-            HandleCheat(player, $"Physics {rpcType} in lobby (can be spoofed by others)");
-            Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to {rpcType} in lobby.", "EAC_physics");
-            return false;
-        }
-
-        switch (rpcType)
-        {
-            case RpcCalls.EnterVent:
-            case RpcCalls.ExitVent:
-                // Hey tommy, just come across that how is random spawn on vent achieved? Hope you are using rpc snap to =(
-                int ventid = subReader.ReadPackedInt32();
-                if (!hasVent(ventid))
-                {
-                    if (AmongUsClient.Instance.AmHost)
-                    {
-                        WarnHost();
-                        Report(player, "Vent null vent (can be spoofed by others)");
-                        HandleCheat(player, "Vent null vent (can be spoofed by others)");
-                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to enter a unexisting vent. {ventid}", "EAC_physics");
-                    }
-                    else
-                    {
-                        // Not sure whether host will send null vent to a player huh
-                        Logger.Warn($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to enter a unexisting vent. {ventid}", "EAC_physics");
-                        if (rpcType is RpcCalls.ExitVent)
-                        {
-                            player.Visible = true;
-                            player.inVent = false;
-                            player.moveable = true;
-                            player.NetTransform.SetPaused(false);
-                        }
-                    }
-                    return false;
-                }
-                break;
-
-            case RpcCalls.BootFromVent:
-                int ventid2 = subReader.ReadPackedInt32();
-                if (!hasVent(ventid2))
-                {
-                    if (AmongUsClient.Instance.AmHost)
-                    {
-                        WarnHost();
-                        Report(player, "Got booted from a null vent (can be spoofed by others)");
-                        AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
-                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to boot from a unexisting vent. {ventid2}", "EAC_physics");
-                    }
-                    else
-                    {
-                        // Not sure whether host will send null vent to a player huh
-                        // Nah, host may send 99 boot from vent, which is stupid
-                        Logger.Warn($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to boot from a unexisting vent. {ventid2}", "EAC_physics");
-                        if (ventid2 == 99 && player.inVent)
-                        {
-                            __instance.BootFromVent(ventid2);
-                            return false;
-                        }
-                        player.Visible = true;
-                        player.inVent = false;
-                        player.moveable = true;
-                        player.NetTransform.SetPaused(false);
-                    }
-                    return false;
-                }
-                break;
-
-            case RpcCalls.ClimbLadder:
-                int ladderId = subReader.ReadPackedInt32();
-                if (!hasLadder(ladderId))
-                {
-                    if (AmongUsClient.Instance.AmHost)
-                    {
-                        WarnHost();
-                        Report(player, "climb null ladder (can be spoofed by others)");
-                        HandleCheat(player, "climb null ladder (can be spoofed by others)");
-                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to climb a unexisting ladder.", "EAC_physics");
-                    }
-                    return false;
-                }
-                if (player.AmOwner)
-                {
-                    Logger.Fatal($"Got climb ladder for my self, this is impossible", "EAC_physics");
-                    return false;
-                }
-                break;
-
-            case RpcCalls.Pet:
-                if (player.AmOwner)
-                {
-                    Logger.Fatal($"Got pet pet for my self, this is impossible", "EAC_physics");
-                    return false;
-                }
-
-                // if (player.CurrentOutfit.PetId == "")
-                // Petting air is fine i guess lol
-                break;
-        }
+        Logger.Info($"{player.PlayerId}({(__instance.OwnedByHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
 
         return true;
     }
