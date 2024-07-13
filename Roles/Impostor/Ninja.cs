@@ -2,6 +2,7 @@
 using Hazel;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -79,6 +80,12 @@ internal class Ninja : RoleBase
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("CantMark")));
+            return true;
+        }
+        
         return killer.CheckDoubleTrigger(target,
             () => 
             {
