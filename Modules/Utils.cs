@@ -1835,7 +1835,7 @@ public static class Utils
                 if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                     SelfName = $"<size=0%>{SelfName}</size>";
 
-                if (!SelfName.Contains(seer.GetRealName()))
+                if (!Regex.IsMatch(SelfName, seer.GetRealName()))
                     IsDisplayInfo = false;
 
                 switch (Options.CurrentGameMode)
