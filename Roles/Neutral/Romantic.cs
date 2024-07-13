@@ -66,7 +66,7 @@ internal class Romantic : RoleBase
     public override void Add(byte playerId)
     {
         BetTimes.Add(playerId, 1);
-        
+
         CustomRoleManager.CheckDeadBodyOthers.Add(OthersAfterPlayerDeathTask);
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -120,6 +120,13 @@ internal class Romantic : RoleBase
     {
         if (!KnowTargetRole.GetBool()) return false;
         return player.Is(CustomRoles.Romantic) && BetPlayer.TryGetValue(player.PlayerId, out var tar) && tar == target.PlayerId;
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId) 
+    {
+        if (!isProtect)
+            hud.KillButton.OverrideText(GetString("RomanticPartnerButtonText"));
+        else
+            hud.KillButton.OverrideText(GetString("RomanticProtectButtonText"));
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
