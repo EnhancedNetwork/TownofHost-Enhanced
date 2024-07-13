@@ -123,6 +123,10 @@ class EndGamePatch
 
         Main.winnerNameList.Clear();
         Main.winnerList.Clear();
+
+        // Remove duplicates
+        winner = winner.Distinct().ToList();
+
         foreach (var pc in winner.ToArray())
         {
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw && pc.Is(CustomRoles.GM)) continue;
