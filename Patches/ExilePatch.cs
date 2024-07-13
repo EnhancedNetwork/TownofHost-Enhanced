@@ -7,7 +7,7 @@ namespace TOHE;
 
 class ExileControllerWrapUpPatch
 {
-    public static GameData.PlayerInfo AntiBlackout_LastExiled;
+    public static NetworkedPlayerInfo AntiBlackout_LastExiled;
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
@@ -47,7 +47,7 @@ class ExileControllerWrapUpPatch
             }
         }
     }
-    static void WrapUpPostfix(GameData.PlayerInfo exiled)
+    static void WrapUpPostfix(NetworkedPlayerInfo exiled)
     {
         if (AntiBlackout.BlackOutIsActive) exiled = AntiBlackout_LastExiled;
 
@@ -123,7 +123,7 @@ class ExileControllerWrapUpPatch
         Main.MeetingsPassed++;
 
         FallFromLadder.Reset();
-        Utils.CountAlivePlayers(true);
+        Utils.CountAlivePlayers(true, Options.CurrentGameMode is CustomGameMode.Standard);
         Utils.AfterMeetingTasks();
         Utils.SyncAllSettings();
         Utils.NotifyRoles(NoCache: true);
@@ -147,7 +147,7 @@ class ExileControllerWrapUpPatch
         }
     }
 
-    static void WrapUpFinalizer(GameData.PlayerInfo exiled)
+    static void WrapUpFinalizer(NetworkedPlayerInfo exiled)
     {
         // Even if an exception occurs in WrapUpPostfix, this is the only part that will be executed reliably.
         if (AmongUsClient.Instance.AmHost)
@@ -199,6 +199,10 @@ class ExileControllerWrapUpPatch
         GameStates.AlreadyDied |= !Utils.IsAllAlive;
         RemoveDisableDevicesPatch.UpdateDisableDevices();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
+
+        if (!AmongUsClient.Instance.IsGameOver)
+            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+
         Logger.Info("Start of Task Phase", "Phase");
     }
 

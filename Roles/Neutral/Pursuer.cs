@@ -37,7 +37,6 @@ internal class Pursuer : RoleBase
     {
         AbilityLimit = PursuerSkillLimitTimes.GetInt();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

@@ -14,7 +14,7 @@ internal class Terrorist : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public static OptionItem CanTerroristSuicideWin;
     public static OptionItem TerroristCanGuess;
@@ -25,7 +25,7 @@ internal class Terrorist : RoleBase
         SetupRoleOptions(15400, TabGroup.NeutralRoles, CustomRoles.Terrorist);
         CanTerroristSuicideWin = BooleanOptionItem.Create(15402, "CanTerroristSuicideWin", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
-        TerroristCanGuess = BooleanOptionItem.Create(15403, "CanGuess", true, TabGroup.NeutralRoles, false)
+        TerroristCanGuess = BooleanOptionItem.Create(15403, GeneralOption.CanGuess, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
         OverrideTasksData.Create(15404, TabGroup.NeutralRoles, CustomRoles.Terrorist);
     }
@@ -48,11 +48,11 @@ internal class Terrorist : RoleBase
         Logger.Info(target?.Data?.PlayerName + " was Terrorist", "AfterPlayerDeathTasks");
         CheckTerroristWin(target.Data);
     }
-    public override void CheckExile(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public override void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
         CheckTerroristWin(exiled);
     }
-    private static void CheckTerroristWin(GameData.PlayerInfo terrorist)
+    private static void CheckTerroristWin(NetworkedPlayerInfo terrorist)
     {
         var taskState = Utils.GetPlayerById(terrorist.PlayerId).GetPlayerTaskState();
         if (taskState.IsTaskFinished && (!Main.PlayerStates[terrorist.PlayerId].IsSuicide || CanTerroristSuicideWin.GetBool()))
@@ -85,14 +85,15 @@ internal class Terrorist : RoleBase
             }
         }
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
+    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if (TerroristCanGuess.GetBool()) return true;
-        else
+        if (!TerroristCanGuess.GetBool())
         {
+            Logger.Info($"Guess Disabled for this player {guesser.PlayerId}", "GuessManager");
             if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessDisabled"));
             return true;
         }
+        return false;
     }
 }

@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
 using TOHE.Roles.AddOns.Common;
 using static TOHE.Translator;
@@ -38,8 +37,8 @@ internal class Poisoner : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         OptionKillDelay = FloatOptionItem.Create(Id + 11, "PoisonerKillDelay", new(1f, 60f, 1f), 10f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 12, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
+        CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
     }
 
     public override void Init()
@@ -53,7 +52,6 @@ internal class Poisoner : RoleBase
     {
         playerIdList.Add(playerId);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -65,14 +63,9 @@ internal class Poisoner : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.Bait)) return true;
-        if (Guardian.CannotBeKilled(target)) return true;
-        if (target.Is(CustomRoles.Glitch)) return true;
-        if (target.Is(CustomRoles.Pestilence)) return true;
-        if (Medic.ProtectList.Contains(target.PlayerId)) return false;
 
         killer.SetKillCooldown();
 
-        //誰かに噛まれていなければ登録
         if (!PoisonedPlayers.ContainsKey(target.PlayerId))
         {
             PoisonedPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));
@@ -126,7 +119,7 @@ internal class Poisoner : RoleBase
             Logger.Info($"{target.GetRealName()} was in an unkillable state, poison was canceled", "Poisoner");
         }
     }
-    public override void OnReportDeadBody(PlayerControl sans, GameData.PlayerInfo bateman)
+    public override void OnReportDeadBody(PlayerControl sans, NetworkedPlayerInfo bateman)
     {
         foreach (var targetId in PoisonedPlayers.Keys)
         {

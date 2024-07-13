@@ -116,7 +116,7 @@ internal class Chronomancer : RoleBase
         }
         _Player.SyncSettings();
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         ChargedTime = 0;
         IsInMassacre = false;

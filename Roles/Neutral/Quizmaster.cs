@@ -201,7 +201,7 @@ internal class Quizmaster : RoleBase
         return chosenRole;
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (reporter == null) return;
 
@@ -275,7 +275,7 @@ internal class Quizmaster : RoleBase
             AddMsg(GetString("QuizmasterChat.MarkedPublic").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer)?.GetRealName(isMeeting: true)), pc.PlayerId, GetString("QuizmasterChat.Title"));
         }
     }
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
         if (exiled == null) return;
 

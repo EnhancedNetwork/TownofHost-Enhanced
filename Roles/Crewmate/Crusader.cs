@@ -33,7 +33,6 @@ internal class Crusader : RoleBase
         AbilityLimit = SkillLimitOpt.GetInt();
         CurrentKillCooldown = SkillCooldown.GetFloat();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -45,8 +44,8 @@ internal class Crusader : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Crusader).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-    
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (ForCrusade.Contains(target.PlayerId) || AbilityLimit <= 0) return false;
 

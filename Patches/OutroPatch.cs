@@ -25,34 +25,34 @@ class EndGamePatch
 
         // if game is H&S or Host no have mod
         if (!GameStates.IsModHost || GameStates.IsHideNSeek) return;
-        
+
+        Logger.Info("-----------Game over-----------", "Phase");
+
         try
         {
-            foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
+            if (AmongUsClient.Instance.AmHost)
             {
-                var plr = Utils.GetPlayerById(pvc);
-                if (plr == null || !plr.GetCustomRole().IsGhostRole()) continue;
-
-                CustomRoles prevrole = GhostRoleAssign.GhostGetPreviousRole[pvc];
-                Main.PlayerStates[pvc].SetMainRole(prevrole);
-
-                if (AmongUsClient.Instance.AmHost)
+                foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
                 {
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
+                    if (!Main.PlayerStates.TryGetValue(pvc, out var state) || !state.MainRole.IsGhostRole()) continue;
+                    if (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole)) continue;
+
+                    Main.PlayerStates[pvc].MainRole = prevrole;
+
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
                     writer.Write(pvc);
                     writer.WritePacked((int)prevrole);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                 }
-            }
-            if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
-            // Seems to be a problem with Exiled() Patch. I plan to diligently attempt fixes in RoleBase PR.
-        }
-        catch(Exception e)
-        {
-            Logger.Warn($"{e} at EndGamePatch", "GhostGetPreviousRole");
-        }
 
-        Logger.Info("-----------Game over-----------", "Phase");
+                if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
+            }
+
+        }
+        catch (Exception e)
+        {
+            Logger.Error($"{e} at EndGamePatch", "GhostGetPreviousRole");
+        }
 
         SummaryText = [];
 
@@ -110,7 +110,7 @@ class EndGamePatch
             Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
         
         //winnerListリセット
-        TempData.winners = new Il2CppSystem.Collections.Generic.List<WinningPlayerData>();
+        EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
         var winner = new List<PlayerControl>();
         foreach (var pc in Main.AllPlayerControls)
         {
@@ -127,7 +127,7 @@ class EndGamePatch
         {
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw && pc.Is(CustomRoles.GM)) continue;
 
-            TempData.winners.Add(new WinningPlayerData(pc.Data));
+            EndGameResult.CachedWinners.Add(new CachedPlayerData(pc.Data));
             Main.winnerList.Add(pc.PlayerId);
             Main.winnerNameList.Add(pc.GetRealName());
         }
@@ -347,6 +347,7 @@ class SetEverythingUpPatch
         RoleSummaryRectTransform.anchoredPosition = new Vector2(Pos.x + 3.5f, Pos.y - 0.1f);
         RoleSummary.text = sb.ToString();
 
+        Logger.Info($"{LastWinsReason}", "Wins Reason");
         Logger.Info($"{RoleSummary.text.RemoveHtmlTags()}", "Role Summary");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

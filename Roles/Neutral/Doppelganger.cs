@@ -11,6 +11,7 @@ internal class Doppelganger : RoleBase
     //===========================SETUP================================\\
     private const int Id = 25000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doppelganger);
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -18,10 +19,11 @@ internal class Doppelganger : RoleBase
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
     private static OptionItem MaxSteals;
+    public static OptionItem CurrentVictimCanSeeRolesAsDead;
 
     public static readonly Dictionary<byte, string> DoppelVictim = [];
     public static readonly Dictionary<PlayerControl, byte> PlayerControllerToIDRam = []; // Edit ids!
-    public static readonly Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
+    public static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> DoppelPresentSkin = [];
     public static readonly Dictionary<byte, string> TrueNames = []; // Don't edit ids!
     public static PlayerControl DoppelgangerTarget = null;
     public static byte CurrentIdToSwap = byte.MaxValue;
@@ -30,10 +32,11 @@ internal class Doppelganger : RoleBase
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Doppelganger, 1, zeroOne: false);
         MaxSteals = IntegerOptionItem.Create(Id + 10, "DoppelMaxSteals", new(1, 14, 1), 9, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
-        KillCooldown = FloatOptionItem.Create(Id + 11, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger])
+        CurrentVictimCanSeeRolesAsDead = BooleanOptionItem.Create(Id + 11, "DoppelCurrentVictimCanSeeRolesAsDead", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
+        KillCooldown = FloatOptionItem.Create(Id + 12, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 12, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
+        CanVent = BooleanOptionItem.Create(Id + 13, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 14, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
     }
 
     public override void Init()
@@ -49,20 +52,12 @@ internal class Doppelganger : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = MaxSteals.GetInt();
-        if (playerId == PlayerControl.LocalPlayer.PlayerId && Main.nickName.Length != 0) DoppelVictim[playerId] = Main.nickName;
-        else DoppelVictim[playerId] = Utils.GetPlayerById(playerId).Data.PlayerName;
-
-        // Read and write info for the rest of the game!
-        foreach (PlayerControl allPlayers in Main.AllPlayerControls)
-        {
-            PlayerControllerToIDRam[allPlayers] = allPlayers.PlayerId;
-        }
+        DoppelVictim[playerId] = Utils.GetPlayerById(playerId)?.GetRealName();
 
         DoppelgangerTarget = Utils.GetPlayerById(playerId);
 
         CurrentIdToSwap = playerId;
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -76,7 +71,7 @@ internal class Doppelganger : RoleBase
     // A quick check if a player has been killed by the doppelganger.
     public static bool CheckDoppelVictim(byte playerId) => DoppelVictim.ContainsKey(playerId);
 
-    public static PlayerControl GetDoppelControl(PlayerControl player) => DoppelgangerTarget != null ? DoppelgangerTarget : player;
+    public static PlayerControl GetDoppelControl(PlayerControl player) => DoppelgangerTarget ?? player;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -104,14 +99,25 @@ internal class Doppelganger : RoleBase
         DoppelVictim[target.PlayerId] = target.GetRealName();
 
         // Make new outfit for taget
-        var targetOutfit = new GameData.PlayerOutfit()
+        var targetOutfit = new NetworkedPlayerInfo.PlayerOutfit()
             .Set(target.GetRealName(), target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
         var targetLvl = Utils.GetPlayerInfoById(target.PlayerId).PlayerLevel;
 
         // Make new outfit for killer
-        var killerOutfit = new GameData.PlayerOutfit()
+        var killerOutfit = new NetworkedPlayerInfo.PlayerOutfit()
             .Set(killer.GetRealName(), killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
         var killerLvl = Utils.GetPlayerInfoById(killer.PlayerId).PlayerLevel;
+
+        // Set swap info
+        if (!PlayerControllerToIDRam.ContainsKey(killer))
+            PlayerControllerToIDRam[killer] = killer.PlayerId;
+        if (!DoppelPresentSkin.ContainsKey(killer.PlayerId))
+            DoppelPresentSkin[killer.PlayerId] = killerOutfit;
+
+        if (!PlayerControllerToIDRam.ContainsKey(target))
+            PlayerControllerToIDRam[target] = target.PlayerId;
+        if (!DoppelPresentSkin.ContainsKey(target.PlayerId))
+            DoppelPresentSkin[target.PlayerId] = targetOutfit;
 
         // Change player ID
         PlayerControllerToIDRam[target] = CurrentIdToSwap;
@@ -157,44 +163,51 @@ internal class Doppelganger : RoleBase
     }
 
     // Change cosmetic.
-    private static void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit, uint level)
+    private static void RpcChangeSkin(PlayerControl pc, NetworkedPlayerInfo.PlayerOutfit newOutfit, uint level)
     {
         var sender = CustomRpcSender.Create(name: $"Doppelganger.RpcChangeSkin({pc.Data.PlayerName})");
         pc.SetName(newOutfit.PlayerName);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetName)
-        .Write(newOutfit.PlayerName)
+            .Write(pc.Data.NetId)
+            .Write(newOutfit.PlayerName)
         .EndRpc();
 
         Main.AllPlayerNames[pc.PlayerId] = newOutfit.PlayerName;
 
         pc.SetColor(newOutfit.ColorId);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetColor)
-        .Write(newOutfit.ColorId)
+            .Write(pc.Data.NetId)
+            .Write((byte)newOutfit.ColorId)
         .EndRpc();
 
         pc.SetHat(newOutfit.HatId, newOutfit.ColorId);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetHatStr)
             .Write(newOutfit.HatId)
+            .Write(pc.GetNextRpcSequenceId(RpcCalls.SetHatStr))
         .EndRpc();
 
         pc.SetSkin(newOutfit.SkinId, newOutfit.ColorId);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetSkinStr)
             .Write(newOutfit.SkinId)
+            .Write(pc.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
         .EndRpc();
 
         pc.SetVisor(newOutfit.VisorId, newOutfit.ColorId);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetVisorStr)
             .Write(newOutfit.VisorId)
+            .Write(pc.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
         .EndRpc();
 
         pc.SetPet(newOutfit.PetId);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetPetStr)
             .Write(newOutfit.PetId)
+            .Write(pc.GetNextRpcSequenceId(RpcCalls.SetPetStr))
             .EndRpc();
 
         pc.SetNamePlate(newOutfit.NamePlateId);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetNamePlateStr)
             .Write(newOutfit.NamePlateId)
+            .Write(pc.GetNextRpcSequenceId(RpcCalls.SetNamePlateStr))
             .EndRpc();
 
         pc.SetLevel(level);
@@ -203,8 +216,6 @@ internal class Doppelganger : RoleBase
             .EndRpc();
 
         sender.SendMessage();
-
-        DoppelPresentSkin[pc.PlayerId] = new GameData.PlayerOutfit().Set(newOutfit.PlayerName, newOutfit.ColorId, newOutfit.HatId, newOutfit.SkinId, newOutfit.VisorId, newOutfit.PetId, newOutfit.NamePlateId);
     }
 
     public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Doppelganger).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");

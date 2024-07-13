@@ -37,7 +37,7 @@ internal class Arsonist : RoleBase
         SetupRoleOptions(id, TabGroup.NeutralRoles, CustomRoles.Arsonist);
         ArsonistDouseTime = FloatOptionItem.Create(id + 10, "ArsonistDouseTime", new(0f, 10f, 1f), 0f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist])
             .SetValueFormat(OptionFormat.Seconds);
-        ArsonistCooldown = FloatOptionItem.Create(id + 11, "Cooldown", new(0f, 180f, 1f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist])
+        ArsonistCooldown = FloatOptionItem.Create(id + 11, GeneralOption.Cooldown, new(0f, 180f, 1f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist])
             .SetValueFormat(OptionFormat.Seconds);
         ArsonistCanIgniteAnytimeOpt = BooleanOptionItem.Create(id + 12, "ArsonistCanIgniteAnytime", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Arsonist]);
         ArsonistMinPlayersToIgnite = IntegerOptionItem.Create(id + 13, "ArsonistMinPlayersToIgnite", new(1, 14, 1), 1, TabGroup.NeutralRoles, false).SetParent(ArsonistCanIgniteAnytimeOpt);
@@ -58,7 +58,6 @@ internal class Arsonist : RoleBase
         foreach (var ar in Main.AllPlayerControls)
             IsDoused.Add((playerId, ar.PlayerId), false);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -155,7 +154,7 @@ internal class Arsonist : RoleBase
                 }
                 else
                 {
-                    float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                    float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
                     float distance = Vector2.Distance(player.GetCustomPosition(), arTarget.GetCustomPosition());
 
                     if (distance <= range)
@@ -175,7 +174,7 @@ internal class Arsonist : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
         => ArsonistTimer.Clear();
     
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
@@ -236,7 +235,7 @@ internal class Arsonist : RoleBase
 
                 if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
                 {
-                    CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist);
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Arsonist);
                     CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
                 }
                 return;
@@ -259,7 +258,7 @@ internal class Arsonist : RoleBase
                     {
                         if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
                         {
-                            CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist);
+                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Arsonist);
                             CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
                         }
                     }

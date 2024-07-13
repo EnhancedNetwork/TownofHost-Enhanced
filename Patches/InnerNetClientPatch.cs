@@ -42,13 +42,6 @@ internal class GameDataHandlerPatch
                         {
                             if (AmongUsClient.Instance.AmHost)
                             {
-                                if (obj == GameData.Instance)
-                                {
-                                    Logger.Warn(string.Format("Received DataFlag for GameData {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
-                                    EAC.WarnHost();
-                                    return false;
-                                }
-
                                 if (obj == MeetingHud.Instance)
                                 {
                                     Logger.Warn(string.Format("Received DataFlag for MeetingHud {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
@@ -59,6 +52,13 @@ internal class GameDataHandlerPatch
                                 if (obj == VoteBanSystem.Instance)
                                 {
                                     Logger.Warn(string.Format("Received DataFlag for VoteBanSystem {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                    EAC.WarnHost();
+                                    return false;
+                                }
+
+                                if (obj is NetworkedPlayerInfo)
+                                {
+                                    Logger.Warn(string.Format("Received DataFlag for NetworkedPlayerInfo {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
                                     EAC.WarnHost();
                                     return false;
                                 }

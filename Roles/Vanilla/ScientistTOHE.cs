@@ -14,16 +14,16 @@ internal class ScientistTOHE : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
     //==================================================================\\
 
-    private static OptionItem ScientistCD;
-    private static OptionItem ScientistDur;
+    private static OptionItem BatteryCooldown;
+    private static OptionItem BatteryDuration;
 
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.ScientistTOHE);
-        ScientistCD = FloatOptionItem.Create(Id + 2, "VitalsCooldown", new(1f, 250f, 1f), 3f, TabGroup.CrewmateRoles, false)
+        BatteryCooldown = IntegerOptionItem.Create(Id + 2, GeneralOption.ScientistBase_BatteryCooldown, new(1, 250, 1), 15, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.ScientistTOHE])
             .SetValueFormat(OptionFormat.Seconds);
-        ScientistDur = FloatOptionItem.Create(Id + 3, "VitalsDuration", new(1f, 250f, 1f), 15f, TabGroup.CrewmateRoles, false)
+        BatteryDuration = IntegerOptionItem.Create(Id + 3, GeneralOption.ScientistBase_BatteryDuration, new(1, 250, 1), 5, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.ScientistTOHE])
             .SetValueFormat(OptionFormat.Seconds);
     }
@@ -39,9 +39,7 @@ internal class ScientistTOHE : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ScientistCooldown = ScientistCD.GetFloat();
-        AURoleOptions.ScientistBatteryCharge = ScientistDur.GetFloat();
+        AURoleOptions.ScientistCooldown = BatteryCooldown.GetInt();
+        AURoleOptions.ScientistBatteryCharge = BatteryDuration.GetInt();
     }
-
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 300f;
 }

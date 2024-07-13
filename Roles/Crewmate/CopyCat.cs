@@ -10,7 +10,6 @@ internal class CopyCat : RoleBase
     private const int Id = 11500;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -41,7 +40,6 @@ internal class CopyCat : RoleBase
         playerIdList.Add(playerId);
         CurrentKillCooldown = KillCooldown.GetFloat();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -59,7 +57,7 @@ internal class CopyCat : RoleBase
         foreach (var player in playerIdList.ToArray())
         {
             var pc = Utils.GetPlayerById(player);
-            if (pc == null) continue;
+            if (!pc.IsAlive()) continue;
             ////////////           /*remove the settings for current role*/             /////////////////////
             
             var pcRole = pc.GetCustomRole();
@@ -67,7 +65,7 @@ internal class CopyCat : RoleBase
             {
                 if (pcRole != CustomRoles.CopyCat)
                 {
-                    pc.GetRoleClass()?.Remove(pc.PlayerId);
+                    pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                 }
                 pc.RpcSetCustomRole(CustomRoles.CopyCat);
             }
@@ -144,9 +142,9 @@ internal class CopyCat : RoleBase
                 case CustomRoles.Taskinator:
                     role = CustomRoles.Benefactor;
                     break;
-                case CustomRoles.EvilTracker:
-                    role = CustomRoles.Tracker;
-                    break;
+                //case CustomRoles.EvilTracker:
+                //    role = CustomRoles.Tracker;
+                //    break;
                 case CustomRoles.AntiAdminer:
                     role = CustomRoles.Telecommunication;
                     break;

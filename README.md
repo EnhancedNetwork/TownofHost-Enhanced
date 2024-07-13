@@ -47,6 +47,7 @@
 > - Many role ideas
 > - Provided roles: AntiAdminer, CursedWolf, Workaholic, Greedier (Greedy), DarkHide (Stalker)
 > - Reference: Modify game announcement
+> - Ported new UI for settings (for version AU v2024.6.18)
 > 
 ### :star: [TOH:TOR](https://github.com/music-discussion/TownOfHost-TheOtherRoles) :
 > 
