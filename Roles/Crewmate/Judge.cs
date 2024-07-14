@@ -138,7 +138,7 @@ internal class Judge : RoleBase
                 {
                     if (!isUI) SendMessage(GetString("Judge_LaughToWhoTrialSelf"), pc.PlayerId, ColorString(Color.cyan, GetString("MessageFromKPD")));
                     else pc.ShowPopUp(ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("Judge_LaughToWhoTrialSelf"));
-                    judgeSuicide = true;
+                    goto SkipToPerform;
                 }
                 if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
                 {
@@ -146,7 +146,8 @@ internal class Judge : RoleBase
                     else pc.ShowPopUp(GetString("GuessMini"));
                     return true;
                 }
-                else if  (target.Is(CustomRoles.Rebound))
+
+                if (target.Is(CustomRoles.Rebound))
                 {
                     Logger.Info($"{pc.GetNameWithRole()} judged {target.GetNameWithRole()}, judge sucide = true because target rebound", "JudgeTrialMsg");
                     judgeSuicide = true;
@@ -157,11 +158,7 @@ internal class Judge : RoleBase
                     else pc.ShowPopUp(GetString("GuessSolsticer"));
                     return true;
                 }
-                else if (pc.Is(CustomRoles.Madmate)) judgeSuicide = false;
-                else if (pc.Is(CustomRoles.Charmed)) judgeSuicide = false;
-                else if (pc.Is(CustomRoles.Recruit)) judgeSuicide = false;
-                else if (pc.Is(CustomRoles.Infected)) judgeSuicide = false;
-                else if (pc.Is(CustomRoles.Contagious)) judgeSuicide = false;
+                else if (pc.IsAnySubRole(x => x.IsConverted())) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Rascal)) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Pestilence)) judgeSuicide = true;
                 else if (target.Is(CustomRoles.Trickster)) judgeSuicide = true;
@@ -175,9 +172,14 @@ internal class Judge : RoleBase
                 else if (target.GetCustomRole().IsNB() && CanTrialNeutralB.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNE() && CanTrialNeutralE.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNC() && CanTrialNeutralC.GetBool()) judgeSuicide = false;
-                else if (target.GetCustomRole().IsImpostor() && !target.Is(CustomRoles.Trickster)) judgeSuicide = false;
-                else judgeSuicide = true;
+                else if (target.GetCustomRole().IsImpostor()) judgeSuicide = false;
+                else
+                {
+                    Logger.Warn("Impossibe to reach here!", "JudgeTrial");
+                    judgeSuicide = true;
+                }
 
+            SkipToPerform:
                 var dp = judgeSuicide ? pc : target;
                 target = dp;
 

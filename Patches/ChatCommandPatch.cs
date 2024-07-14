@@ -1849,7 +1849,7 @@ internal class ChatCommands
             case "/роль":
                 Logger.Info($"Command '/r' was activated", "OnReceiveChat");
                 subArgs = text.Remove(0, 2);
-                SendRolesInfo(subArgs, player.PlayerId);
+                SendRolesInfo(subArgs, player.PlayerId, isDev: player.FriendCode.GetDevUser().DeBug);
                 break;
 
             case "/m":
