@@ -158,6 +158,8 @@ internal class Judge : RoleBase
                     else pc.ShowPopUp(GetString("GuessSolsticer"));
                     return true;
                 }
+                else if (target.Is(CustomRoles.Pestilence)) judgeSuicide = true;
+                else if (target.Is(CustomRoles.Trickster)) judgeSuicide = true;
                 else if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessShielded"), pc.PlayerId);
@@ -170,8 +172,6 @@ internal class Judge : RoleBase
                     else pc.ShowPopUp(GetString("GuessGuardianTask"));
                     return true;
                 }
-                else if (target.Is(CustomRoles.Pestilence)) judgeSuicide = true;
-                else if (target.Is(CustomRoles.Trickster)) judgeSuicide = true;
                 else if (pc.IsAnySubRole(x => x.IsConverted())) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Rascal)) judgeSuicide = false;
                 else if ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)) && CanTrialSidekick.GetBool()) judgeSuicide = false;

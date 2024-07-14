@@ -153,6 +153,8 @@ internal class Councillor : RoleBase
                     else pc.ShowPopUp(GetString("GuessSolsticer"));
                     return true;
                 }
+                else if (target.Is(CustomRoles.Pestilence)) CouncillorSuicide = true;
+                else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
                 else if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessShielded"), pc.PlayerId);
@@ -177,8 +179,6 @@ internal class Councillor : RoleBase
                     else pc.ShowPopUp(GetString("EGGuessSnitchTaskDone"));
                     return true;
                 }
-                else if (target.Is(CustomRoles.Pestilence)) CouncillorSuicide = true;
-                else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
                 else if ((target.Is(CustomRoles.Madmate) ||
                         target.Is(CustomRoles.Refugee) || target.Is(CustomRoles.Parasite) || target.Is(CustomRoles.Crewpostor)))
                 {
