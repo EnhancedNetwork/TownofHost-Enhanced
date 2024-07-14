@@ -153,8 +153,34 @@ internal class Councillor : RoleBase
                     else pc.ShowPopUp(GetString("GuessSolsticer"));
                     return true;
                 }
+                else if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessShielded"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessShielded"));
+                    return true;
+                }
+                else if (Guardian.CannotBeKilled(target))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessGuardianTask"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessGuardianTask"));
+                    return true;
+                }
+                else if (target.Is(CustomRoles.Merchant) && Merchant.IsBribedKiller(pc, target))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("BribedByMerchant2"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("BribedByMerchant2"));
+                    return true;
+                }
+                else if (target.Is(CustomRoles.Snitch) && target.AllTasksCompleted() && !CanMurderTaskDoneSnitch.GetBool())
+                {
+                    if (!isUI) Utils.SendMessage(GetString("EGGuessSnitchTaskDone"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("EGGuessSnitchTaskDone"));
+                    return true;
+                }
+                else if (target.Is(CustomRoles.Pestilence)) CouncillorSuicide = true;
+                else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
                 else if ((target.Is(CustomRoles.Madmate) ||
-                    target.Is(CustomRoles.Refugee) || target.Is(CustomRoles.Parasite) || target.Is(CustomRoles.Crewpostor)))
+                        target.Is(CustomRoles.Refugee) || target.Is(CustomRoles.Parasite) || target.Is(CustomRoles.Crewpostor)))
                 {
                     if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
                     {
@@ -176,31 +202,6 @@ internal class Councillor : RoleBase
                         else pc.ShowPopUp(GetString("Councillor_SuidiceForMurderImps"));
                         CouncillorSuicide = true;
                     }
-                }
-                else if (target.Is(CustomRoles.Pestilence)) CouncillorSuicide = true;
-                else if (target.Is(CustomRoles.Snitch) && target.AllTasksCompleted() && !CanMurderTaskDoneSnitch.GetBool())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("EGGuessSnitchTaskDone"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("EGGuessSnitchTaskDone"));
-                    return true;
-                }
-                else if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessShielded"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessShielded"));
-                    return true;
-                }
-                else if (Guardian.CannotBeKilled(target))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessGuardianTask"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessGuardianTask"));
-                    return true;
-                }
-                else if (target.Is(CustomRoles.Merchant) && Merchant.IsBribedKiller(pc, target))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("BribedByMerchant2"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("BribedByMerchant2"));
-                    return true;
                 }
                 else if ((target.GetCustomRole().IsImpostor()))
                 {
