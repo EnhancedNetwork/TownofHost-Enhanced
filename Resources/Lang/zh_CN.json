@@ -2164,7 +2164,7 @@
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>错误</b></size></color>\n<color=#ff1919>该指令只能由房主使用.</color>",
   "Message.MaxPlayers": "最大玩家数量设置为",
   "Message.GhostRoleInfo": "<size=90%>幽灵职业信息</size>\n关于幽灵职业的一些信息…<size=75%>\n幽灵职业会对游戏产生巨大影响，因此如果您不熟悉幽灵职业，不建议在少人房间中使用。如果描述中没有明确说明，守护按钮就是幽灵的技能按钮 :)\n<b>出现：</b>\n幽灵职业只有在死亡后才会出现，阵营中最先死亡的人会获得幽灵职业（除中立阵营）</size>\n<size=50%>注：如果您之前的职业没有任务（如警长），则变成幽灵职业的您不需要为任务胜利而去做任务（前提是你没任务）</b></size>",
-  "Message.MeCommandInfo": "<size=100%><b>嗨[{0}] {1} ！</b></size>\n<size=80%><align=\"flush\"><color=#f34c50>好友代码</color><color=#a6a832>Hash-Puid</color><color=#6632a8>类型</color> <br>{2} {3} {4}<br><br>是Dev</color><color=#349972>有UP权限</color> <size=50%><color=#252dc4>/color-Bypass</color></size><br>{5} {6} {7}<br><br></align>",
+  "Message.MeCommandInfo": "<size=100%><b>嗨 [{0}] {1} ！</b></size>\n<size=80%><align=\"flush\"><color=#f34c50>好友代码</color> <color=#a6a832>Hash-Puid</color><color=#6632a8>类型</color> <br>{2} {3} {4}<br><br><color=#7a0000>是Dev</color>\n<color=#349972>是Up</color> <size=50%><color=#252dc4>/color-Bypass</color></size><br>{5} {6} {7}<br><br></align>",
   "Message.MeCommandTargetInfo": "<size=100%><b>已选择 【{0}】 玩家 【{1}】</b></size>\n<size=90%>你的 <color=#f34c50>好友代码</color> 是 <u>【{2}】</u></size>\n<size=90%>你的 <color=#f34c50>HashPuid</color> 是 <u>【{3}】</u></size>\n<size=90%>你的 <b><color=#ffc0cb>TOHE</color> <color=#5865F2>Discord</color></b> 职业是 <u>【{4}】</u></size>\n",
   "Message.MeCommandInvalidID": "你输入的 ID 似乎不正确\n请使用 /id 获取在线玩家的 ID",
   "Message.MeCommandNoPermission": "不允许其他人使用/me指令",
