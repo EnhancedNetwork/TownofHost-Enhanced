@@ -200,8 +200,11 @@ class ExileControllerWrapUpPatch
         RemoveDisableDevicesPatch.UpdateDisableDevices();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
 
-        if (!AmongUsClient.Instance.IsGameOver)
-            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+        _ = new LateTask(() =>
+        {
+            if (!AmongUsClient.Instance.IsGameOver)
+                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+        }, 0.8f, "Set Hud Active");
 
         Logger.Info("Start of Task Phase", "Phase");
     }
