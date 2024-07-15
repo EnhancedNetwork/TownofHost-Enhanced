@@ -223,24 +223,26 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                //神抢夺胜利
                 if (CustomRoles.God.RoleExist())
                 {
                     bool isGodWinConverted = false;
-                    var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God)).ToArray();
+                    var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God));
                     
-                    foreach (var god in godArray)
+                    if (godArray.Any())
                     {
-                        if (CustomWinnerHolder.CheckForConvertedWinner(god.PlayerId))
+                        foreach (var god in godArray.ToArray())
                         {
-                            isGodWinConverted = true;
-                            break;
+                            if (CustomWinnerHolder.CheckForConvertedWinner(god.PlayerId))
+                            {
+                                isGodWinConverted = true;
+                                break;
+                            }
                         }
-                    }
-                    if (!isGodWinConverted) 
-                    {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.God);
-                        godArray.Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
+                        if (!isGodWinConverted)
+                        {
+                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.God);
+                            godArray.Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
+                        }
                     }
                 }
 
