@@ -104,7 +104,7 @@ internal static class FFAManager
         {
             try
             {
-                Utils.SetChatVisible();
+                Utils.SetChatVisibleForEveryone();
             }
             catch (Exception error)
             {
