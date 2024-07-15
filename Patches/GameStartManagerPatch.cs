@@ -394,10 +394,12 @@ public class GameStartRandomMap
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.ResetStartState))]
 class ResetStartStatePatch
 {
-    public static void Prefix()
+    public static void Prefix(GameStartManager __instance)
     {
         if (GameStates.IsCountDown)
         {
+            SoundManager.Instance.StopSound(__instance.gameStartSound);
+
             if (GameStates.IsNormalGame)
                 Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
 
