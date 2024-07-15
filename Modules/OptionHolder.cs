@@ -595,10 +595,11 @@ public static class Options
         //#######################################
 
 
-
         // Start Load Settings
         if (IsLoaded) yield break;
         OptionSaver.Initialize();
+
+        yield return null;
 
         // Preset Option
         _ = PresetOptionItem.Create(0, TabGroup.SystemSettings)
