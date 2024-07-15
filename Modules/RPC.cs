@@ -153,7 +153,7 @@ internal class RPCHandlerPatch
     {
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
-        //if (EAC.ReceiveRpc(__instance, callId, reader)) return false;
+        // if (EAC.PlayerControlReceiveRpc(__instance, callId, reader)) return false;
         Logger.Info($"{__instance?.Data?.PlayerId}({(__instance.OwnedByHost() ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
         switch (rpcType)
         {
@@ -635,6 +635,32 @@ internal class RPCHandlerPatch
             || tag != $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})"
             || forkId != Main.ForkId)
             return false;
+
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
+internal class PlayerPhysicsRPCHandlerPatch
+{
+    private static bool hasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId);
+    private static bool hasLadder(int ladderId) => ShipStatus.Instance.Ladders.Any(l => l.Id == ladderId);
+
+    public static bool Prefix(PlayerPhysics __instance, byte callId, MessageReader reader)
+    {
+        var rpcType = (RpcCalls)callId;
+        MessageReader subReader = MessageReader.Get(reader);
+
+        if (EAC.PlayerPhysicsRpcCheck(__instance, callId, reader)) return false;
+
+        var player = __instance.myPlayer;
+
+        if (!player)
+        {
+            Logger.Warn("Received Physics RPC without a player", "PlayerPhysics_ReceiveRPC");
+            return false;
+        }
+        Logger.Info($"{player.PlayerId}({(__instance.OwnedByHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
 
         return true;
     }
