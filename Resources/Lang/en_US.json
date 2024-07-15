@@ -2815,6 +2815,7 @@
   "PunchingBagKill": "You were attacked!",
   "SelfGuessPunchingBag": "You can't self-guess as a Punching Bag, you cheater!",
   "GuessPunchingBagBlocked": "Punching Bag cannot guess due to self-guessing.",
+  "EradicatePunchingBag": "You just tried to terminate punching bag, that is not allowed.",
 
   "RememberCooldown": "Imitate Cooldown",
   "RefugeeKillCD": "<color=#ff1919>Refugee</color>'s Kill Cooldown",
