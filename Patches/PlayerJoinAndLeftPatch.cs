@@ -509,7 +509,12 @@ class OnPlayerLeftPatch
                 if (GameStates.IsMeeting)
                 {
                     Swapper.CheckSwapperTarget(data.Character.PlayerId);
-                    MeetingHud.Instance.CheckForEndVoting();
+
+                    // Prevent double check end voting
+                    if (MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion)
+                    {
+                        MeetingHud.Instance.CheckForEndVoting();
+                    }
                 }
             }
         }

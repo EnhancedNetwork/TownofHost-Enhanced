@@ -414,7 +414,12 @@ public static class GuessManager
                 meetingHud.ClearVote();
             }
             Swapper.CheckSwapperTarget(pc.PlayerId);
-            meetingHud.CheckForEndVoting();
+
+            // Prevent double check end voting
+            if (MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion)
+            {
+                meetingHud.CheckForEndVoting();
+            }
             _ = new LateTask(() => hudManager.SetHudActive(false), 0.3f, "SetHudActive in GuesserMurderPlayer", shoudLog: false);
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
             writer.Write(pc.PlayerId);
