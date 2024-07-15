@@ -44,7 +44,7 @@ internal class Butcher : RoleBase
 
         target.SetRealKiller(killer);
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Dismembered;
-        target.Data.IsDead = true;
+        Main.PlayerStates[target.PlayerId].SetDead();
 
         if (!Main.OverDeadPlayerList.Contains(target.PlayerId)) Main.OverDeadPlayerList.Add(target.PlayerId);
         //var ops = target.GetCustomPosition();
@@ -55,11 +55,12 @@ internal class Butcher : RoleBase
             var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId); //No need to do extra check cause nobody is winning
             pcList.Do(x =>
             {
+                Main.PlayerStates[x.PlayerId].IsDead = true;
                 Main.PlayerStates[x.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
                 target.RpcSpecificMurderPlayer(x, x);
-                x.Data.IsDead = true;
                 x.SetRealKiller(target);
             });
+
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
             return;
         }
@@ -70,7 +71,9 @@ internal class Butcher : RoleBase
             {
                 if (GameStates.IsMeeting) break;
                 if (!target.AmOwner)
+                {
                     target.MurderPlayer(target, ExtendedPlayerControl.ResultFlags);
+                }
                 Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !x.AmOwner)
                 .Do(x => target.RpcSpecificMurderPlayer(target, x));
             }
