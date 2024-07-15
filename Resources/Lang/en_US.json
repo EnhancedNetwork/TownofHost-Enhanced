@@ -1118,6 +1118,8 @@
   "MaxCrewGhostRole": "Max Crewmate Ghost-Roles",
   "DefaultAngelCooldown": "Default Ability Cooldown",
   "DisableTaskWin": "Disable Task Win",
+  "DisableTaskWinIfAllCrewsAreDead": "Disable Task Win If All <#8cffff>Crewmates</color> Are Dead",
+  "DisableTaskWinIfAllCrewsAreConverted": "Disable Task Win If All <#8cffff>Crewmates</color> Are <#ffab1b>Converted</color>",
   "HideGameSettings": "Hide Game Settings",
   "DIYGameSettings": "Enable only custom /n messages",
   "Settings:": "Settings:",

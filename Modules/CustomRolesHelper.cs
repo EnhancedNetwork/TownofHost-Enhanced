@@ -288,16 +288,15 @@ public static class CustomRolesHelper
     /// <summary>
     /// Role Changes the Crewmates Team, Including changing to Impostor.
     /// </summary>
-    public static bool IsConverted(this CustomRoles role)
-    {
-        return (role is CustomRoles.Charmed
-                or CustomRoles.Recruit
-                or CustomRoles.Infected
-                or CustomRoles.Contagious
-                or CustomRoles.Soulless
-                or CustomRoles.Madmate ||
-                (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool()));
-    }
+    public static bool IsConverted(this CustomRoles role) => (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool())
+        || role is
+            CustomRoles.Charmed or
+            CustomRoles.Recruit or
+            CustomRoles.Infected or
+            CustomRoles.Contagious or
+            CustomRoles.Soulless or
+            CustomRoles.Madmate;
+
     public static bool IsNotKnightable(this CustomRoles role)
     {
         return role is
