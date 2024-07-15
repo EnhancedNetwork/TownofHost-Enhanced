@@ -531,7 +531,7 @@ class GameEndCheckerForNormal
                 // resuscitation
                 playerInfo.IsDead = false;
                 // transmission
-                playerInfo.SetDirtyBit(0b_1u << playerId);
+                playerInfo.MarkDirty();
                 AmongUsClient.Instance.SendAllStreamedObjects();
             }
             // Delay to ensure that the end of the game is delivered at the end of the game
