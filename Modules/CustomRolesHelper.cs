@@ -710,7 +710,6 @@ public static class CustomRolesHelper
             case CustomRoles.Unlucky:
                 if (pc.Is(CustomRoles.Vector)
                     || pc.Is(CustomRoles.Lucky)
-                    || pc.Is(CustomRoles.Lucky)
                     || pc.Is(CustomRoles.Vector)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Taskinator))
