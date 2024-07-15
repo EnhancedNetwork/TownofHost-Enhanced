@@ -138,7 +138,7 @@ internal class Nemesis : RoleBase
             pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
             return true;
         }
-        else if (!pc.RpcCheckAndMurder(target, true) == false)
+        else if (pc.RpcCheckAndMurder(target, true) == false)
         {
             pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true;
