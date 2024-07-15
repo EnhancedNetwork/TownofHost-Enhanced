@@ -971,7 +971,11 @@ public static class GuessManager
                         else SendRPC(playerId, role);
 
                         // Reset the GUI
-                        __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
+                        __instance.playerStates.ToList().ForEach(x =>
+                        {
+                            x.gameObject.SetActive(true);
+                            x.Buttons.transform.gameObject.SetActive(false);
+                        });
                         UnityEngine.Object.Destroy(container.gameObject);
                         textTemplate.enabled = false;
 
