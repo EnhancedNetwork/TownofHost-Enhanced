@@ -86,8 +86,7 @@ internal class Eraser : RoleBase
     {
         if (PlayerToErase.Contains(target.PlayerId) && !role.IsAdditionRole())
         {
-            if (!isUI) Utils.SendMessage(GetString("EraserTryingGuessErasedPlayer"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("EraserTryingGuessErasedPlayer"));
+            guesser.ShowInfoMessage(isUI, GetString("EraserTryingGuessErasedPlayer"));
             return true;
         }
         return false;

@@ -109,8 +109,7 @@ internal partial class Mayor : RoleBase
     {
         if (MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessMayor"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessMayor"));
+            guesser.ShowInfoMessage(isUI, GetString("GuessMayor"));
             return true;
         }
         return false;

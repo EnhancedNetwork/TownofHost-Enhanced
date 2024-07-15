@@ -1,4 +1,5 @@
-﻿using static TOHE.Options;
+﻿using TOHE.Roles.AddOns.Common;
+using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -221,8 +222,7 @@ internal class Merchant : RoleBase
     {
         if (IsBribedKiller(pc, target))
         {
-            if (!isUI) Utils.SendMessage(GetString("BribedByMerchant2"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("BribedByMerchant2"));
+            pc.ShowInfoMessage(isUI, GetString("BribedByMerchant2"));
             return true;
         }
         return false;

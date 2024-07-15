@@ -240,8 +240,7 @@ internal class Snitch : RoleBase
     {
         if (target.GetPlayerTaskState().IsTaskFinished)
         {
-            if (!isUI) Utils.SendMessage(GetString("EGGuessSnitchTaskDone"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("EGGuessSnitchTaskDone"));
+            pc.ShowInfoMessage(isUI, GetString("EGGuessSnitchTaskDone"));
             return true;
         }
         return false;

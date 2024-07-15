@@ -6,6 +6,7 @@ using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -91,7 +92,7 @@ internal class Judge : RoleBase
 
         if (!pc.IsAlive())
         {
-            SendMessage(GetString("JudgeDead"), pc.PlayerId);
+            pc.ShowInfoMessage(isUI, GetString("JudgeDead"));
             return true;
         }
 
@@ -124,26 +125,22 @@ internal class Judge : RoleBase
                 bool judgeSuicide = true;
                 if (TrialLimit[pc.PlayerId] < 1)
                 {
-                    if (!isUI) SendMessage(GetString("JudgeTrialMax"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("JudgeTrialMax"));
+                    pc.ShowInfoMessage(isUI, GetString("JudgeTrialMax"));
                     return true;
                 }
                 if (Jailer.IsTarget(target.PlayerId))
                 {
-                    if (!isUI) SendMessage(GetString("CanNotTrialJailed"), pc.PlayerId, title: ColorString(GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
-                    else pc.ShowPopUp(ColorString(GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")) + "\n" + GetString("CanNotTrialJailed"));
+                    pc.ShowInfoMessage(isUI, GetString("CanNotTrialJailed"), ColorString(GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
                     return true;
                 }
                 if (pc.PlayerId == target.PlayerId)
                 {
-                    if (!isUI) SendMessage(GetString("Judge_LaughToWhoTrialSelf"), pc.PlayerId, ColorString(Color.cyan, GetString("MessageFromKPD")));
-                    else pc.ShowPopUp(ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("Judge_LaughToWhoTrialSelf"));
+                    pc.ShowInfoMessage(isUI, GetString("Judge_LaughToWhoTrialSelf"), ColorString(Color.cyan, GetString("MessageFromKPD")));
                     goto SkipToPerform;
                 }
                 if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
                 {
-                    if (!isUI) SendMessage(GetString("GuessMini"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessMini"));
+                    pc.ShowInfoMessage(isUI, GetString("GuessMini"));
                     return true;
                 }
 
@@ -154,22 +151,19 @@ internal class Judge : RoleBase
                 }
                 else if (target.Is(CustomRoles.Solsticer))
                 {
-                    if (!isUI) SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessSolsticer"));
+                    pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
                     return true;
                 }
                 else if (target.Is(CustomRoles.Pestilence)) judgeSuicide = true;
                 else if (target.Is(CustomRoles.Trickster)) judgeSuicide = true;
                 else if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
                 {
-                    if (!isUI) Utils.SendMessage(GetString("GuessShielded"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessShielded"));
+                    pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
                     return true;
                 }
                 else if (Guardian.CannotBeKilled(target))
                 {
-                    if (!isUI) Utils.SendMessage(GetString("GuessGuardianTask"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessGuardianTask"));
+                    pc.ShowInfoMessage(isUI, GetString("GuessGuardianTask"));
                     return true;
                 }
                 else if (pc.IsAnySubRole(x => x.IsConverted())) judgeSuicide = false;

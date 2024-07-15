@@ -75,13 +75,11 @@ internal class PunchingBag : RoleBase// bad roll, plz don't use this hosts
     {
         if (BlockGuess.Contains(pc.PlayerId))
         {
-            if (!isUI) SendMessage(GetString("GuessPunchingBagAgain"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessPunchingBagAgain"));
+            pc.ShowInfoMessage(isUI, GetString("GuessPunchingBagAgain"));
             return true;
         }
 
-        if (!isUI) SendMessage(GetString("GuessPunchingBag"), pc.PlayerId);
-        else pc.ShowPopUp(GetString("GuessPunchingBag"));
+        pc.ShowInfoMessage(isUI, GetString("GuessPunchingBag"));
 
         BlockGuess.Add(pc.PlayerId);
         PunchingBagMax[target.PlayerId]++;
@@ -105,8 +103,7 @@ internal class PunchingBag : RoleBase// bad roll, plz don't use this hosts
     }
     public override bool GuessCheck(bool isUI, PlayerControl pc, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if (!isUI) SendMessage(GetString("GuessPunchingBagBlocked"), pc.PlayerId);
-        else pc.ShowPopUp(GetString("GuessPunchingBagBlocked"));
+        pc.ShowInfoMessage(isUI, GetString("GuessPunchingBagBlocked"));
         return true;
     }
 }

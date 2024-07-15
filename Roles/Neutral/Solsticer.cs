@@ -6,6 +6,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
 using InnerNet;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Neutral;
 
@@ -274,18 +275,16 @@ internal class Solsticer : RoleBase
     {
         if (role == CustomRoles.Solsticer)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessSolsticer"));
+            pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
             return true;
         }
         return false;
     }
     public override bool GuessCheck(bool isUI, PlayerControl pc, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if ((!CanGuess || !SolsticerCanGuess.GetBool()))
+        if (!CanGuess || !SolsticerCanGuess.GetBool())
         {
-            if (!isUI) Utils.SendMessage(GetString("SolsticerGuessMax"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("SolsticerGuessMax"));
+            pc.ShowInfoMessage(isUI, GetString("SolsticerGuessMax"));
             return true;
         }
         return false;

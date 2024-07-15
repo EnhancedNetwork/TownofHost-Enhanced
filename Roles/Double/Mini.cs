@@ -160,8 +160,7 @@ internal class Mini : RoleBase
     {
         if (guesser.Is(CustomRoles.NiceMini) && Age < 18 && misguessed)
         {
-            if (!isUI) SendMessage(GetString("MiniGuessMax"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("MiniGuessMax"));
+            guesser.ShowInfoMessage(isUI, GetString("MiniGuessMax"));
             return true;
         }
         return false;
@@ -170,8 +169,7 @@ internal class Mini : RoleBase
     {
         if (target.Is(CustomRoles.NiceMini) && Age < 18)
         {
-            if (!isUI) SendMessage(GetString("GuessMini"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessMini"));
+            guesser.ShowInfoMessage(isUI, GetString("GuessMini"));
             return true;
         }
         return false;
