@@ -376,7 +376,7 @@ class OnPlayerLeftPatch
                 if (NameNotifyManager.Notifying(data.Character))
                 {
                     NameNotifyManager.Notice.Remove(data.Character.PlayerId);
-                    Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
+                    //Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
                 }
 
                 try
