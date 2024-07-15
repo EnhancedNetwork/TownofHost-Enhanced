@@ -1637,6 +1637,15 @@ class PlayerControlCheckNamePatch
             Logger.Warn($"Standard nickname: {playerName} => {name}", "Name Format");
             __instance.RpcSetName(name);
         }
+
+        _ = new LateTask(() =>
+        {
+            if (__instance != null && !__instance.Data.Disconnected && !__instance.IsModClient())
+            {
+                var sender = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.OwnerId);
+                AmongUsClient.Instance.FinishRpcImmediately(sender);
+            }
+        }, 0.6f, "Retry Version Check", false);
     }
 }
 
