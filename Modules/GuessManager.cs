@@ -416,7 +416,7 @@ public static class GuessManager
             Swapper.CheckSwapperTarget(pc.PlayerId);
 
             // Prevent double check end voting
-            if (MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion)
+            if (meetingHud.state == MeetingHud.VoteStates.Discussion)
             {
                 meetingHud.CheckForEndVoting();
             }
