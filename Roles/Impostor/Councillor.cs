@@ -21,9 +21,12 @@ internal class Councillor : RoleBase
 
     private static OptionItem MurderLimitPerMeeting;
     private static OptionItem MurderLimitPerGame;
+    private static OptionItem MakeEvilJudgeClear;
     private static OptionItem TryHideMsg;
     private static OptionItem CanMurderMadmate;
     private static OptionItem CanMurderImpostor;
+    private static OptionItem SuidiceOnJudgeImpTeam;
+    private static OptionItem CanMurderTaskDoneSnitch;
     private static OptionItem KillCooldown;
     
     private int MurderLimitMeeting;
@@ -38,8 +41,11 @@ internal class Councillor : RoleBase
             .SetValueFormat(OptionFormat.Times);
         MurderLimitPerGame = IntegerOptionItem.Create(Id + 12, "CouncillorMurderLimitPerGame", new(1, 15, 1), 4, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
             .SetValueFormat(OptionFormat.Times);
+        MakeEvilJudgeClear = BooleanOptionItem.Create(Id + 18, "CouncillorMakeEvilJudgeClear", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
         CanMurderMadmate = BooleanOptionItem.Create(Id + 13, "CouncillorCanMurderMadmate", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
         CanMurderImpostor = BooleanOptionItem.Create(Id + 14, "CouncillorCanMurderImpostor", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
+        CanMurderTaskDoneSnitch = BooleanOptionItem.Create(Id + 16, "CouncillorCanMurderTaskDoneSnitch", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
+        SuidiceOnJudgeImpTeam = BooleanOptionItem.Create(Id + 17, "CouncillorSuidiceOnJudgeImpTeam", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
         TryHideMsg = BooleanOptionItem.Create(Id + 15, "CouncillorTryHideMsg", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
             .SetColor(Color.green);
     }
@@ -85,7 +91,6 @@ internal class Councillor : RoleBase
         }
         else if (operate == 2)
         {
-
             if (TryHideMsg.GetBool())
             {
                 //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
@@ -103,7 +108,7 @@ internal class Councillor : RoleBase
             var target = Utils.GetPlayerById(targetId);
             if (target != null)
             {
-                Logger.Info($"{pc.GetNameWithRole()} 审判了 {target.GetNameWithRole()}", "Councillor");
+                Logger.Info($"{pc.GetNameWithRole()} trialed =>  {target.GetNameWithRole()}", "Councillor");
                 bool CouncillorSuicide = true;
                 if (MurderLimitMeeting <= 0)
                 {
@@ -115,8 +120,9 @@ internal class Councillor : RoleBase
                 {
                     if (!isUI) Utils.SendMessage(GetString("CouncillorMurderMaxGame"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("CouncillorMurderMaxGame"));
-                    return true;
+                    return true; 
                 }
+
                 if (Jailer.IsTarget(target.PlayerId))
                 {
                     if (!isUI) Utils.SendMessage(GetString("CanNotTrialJailed"), pc.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
@@ -128,14 +134,17 @@ internal class Councillor : RoleBase
                     if (!isUI) Utils.SendMessage(GetString("Councillor_LaughToWhoMurderSelf"), pc.PlayerId, Utils.ColorString(Color.cyan, GetString("MessageFromKPD")));
                     else pc.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("Councillor_LaughToWhoMurderSelf"));
                     CouncillorSuicide = true;
+                    goto SkipToPerform;
                 }
+
                 if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessMini"));
                     return true;
                 }
-                else if (target.Is(CustomRoles.Rebound))
+
+                if (target.Is(CustomRoles.Rebound))
                 {
                     Logger.Info($"{pc.GetNameWithRole()} judged {target.GetNameWithRole()}, councillor sucide = true because target rebound", "CouncillorTrialMsg");
                     CouncillorSuicide = true;
@@ -146,21 +155,88 @@ internal class Councillor : RoleBase
                     else pc.ShowPopUp(GetString("GuessSolsticer"));
                     return true;
                 }
-                else if (target.Is(CustomRoles.Madmate) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
-                else if (target.Is(CustomRoles.Parasite) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
-                else if (target.Is(CustomRoles.Refugee) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
-                else if (target.Is(CustomRoles.Crewpostor) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
-                else if (target.Is(CustomRoles.SuperStar)) CouncillorSuicide = true;
                 else if (target.Is(CustomRoles.Pestilence)) CouncillorSuicide = true;
-                else if (target.Is(CustomRoles.Marshall) && target.AllTasksCompleted()) CouncillorSuicide = true;
-                else if (target.Is(CustomRoles.Snitch) && target.AllTasksCompleted()) CouncillorSuicide = true;
-                else if (Guardian.CannotBeKilled(target)) CouncillorSuicide = true;
-                else if (target.Is(CustomRoles.Merchant) && Merchant.IsBribedKiller(pc, target)) CouncillorSuicide = true;
-                else if ((target.GetCustomRole().IsImpostor()) && CanMurderImpostor.GetBool()) CouncillorSuicide = false;
+                else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
+                else if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessShielded"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessShielded"));
+                    return true;
+                }
+                else if (Guardian.CannotBeKilled(target))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessGuardianTask"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessGuardianTask"));
+                    return true;
+                }
+                else if (target.Is(CustomRoles.Merchant) && Merchant.IsBribedKiller(pc, target))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("BribedByMerchant2"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("BribedByMerchant2"));
+                    return true;
+                }
+                else if (target.Is(CustomRoles.Snitch) && target.AllTasksCompleted() && !CanMurderTaskDoneSnitch.GetBool())
+                {
+                    if (!isUI) Utils.SendMessage(GetString("EGGuessSnitchTaskDone"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("EGGuessSnitchTaskDone"));
+                    return true;
+                }
+                else if ((target.Is(CustomRoles.Madmate) ||
+                        target.Is(CustomRoles.Refugee) || target.Is(CustomRoles.Parasite) || target.Is(CustomRoles.Crewpostor)))
+                {
+                    if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
+                    {
+                        CouncillorSuicide = false;
+                    }
+                    else if (CanMurderMadmate.GetBool())
+                    {
+                        CouncillorSuicide = false;
+                    }
+                    else if (!SuidiceOnJudgeImpTeam.GetBool())
+                    {
+                        if (!isUI) Utils.SendMessage(GetString("Councillor_CannotMurderImpTeam"), pc.PlayerId);
+                        else pc.ShowPopUp(GetString("Councillor_CannotMurderImpTeam"));
+                        return true;
+                    }
+                    else
+                    {
+                        if (!isUI) Utils.SendMessage(GetString("Councillor_SuidiceForMurderImps"), pc.PlayerId);
+                        else pc.ShowPopUp(GetString("Councillor_SuidiceForMurderImps"));
+                        CouncillorSuicide = true;
+                    }
+                }
+                else if ((target.GetCustomRole().IsImpostor()))
+                {
+                    if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
+                    {
+                        CouncillorSuicide = false;
+                    }
+                    else if (CanMurderImpostor.GetBool())
+                    {
+                        CouncillorSuicide = false;
+                    }
+                    else if (!SuidiceOnJudgeImpTeam.GetBool())
+                    {
+                        if (!isUI) Utils.SendMessage(GetString("Councillor_CannotMurderImpTeam"), pc.PlayerId);
+                        else pc.ShowPopUp(GetString("Councillor_CannotMurderImpTeam"));
+                        return true;
+                    }
+                    else
+                    {
+                        if (!isUI) Utils.SendMessage(GetString("Councillor_SuidiceForMurderImps"), pc.PlayerId);
+                        else pc.ShowPopUp(GetString("Councillor_SuidiceForMurderImps"));
+                        CouncillorSuicide = true;
+                    }
+                }
                 else if (target.GetCustomRole().IsCrewmate()) CouncillorSuicide = false;
                 else if (target.GetCustomRole().IsNeutral()) CouncillorSuicide = false;
-                else CouncillorSuicide = true;
+                else
+                {
+                    Logger.Warn("Impossibe to reach here!", "CouncillorTrial");
+                    CouncillorSuicide = true;
+                }
 
+            SkipToPerform:
                 var dp = CouncillorSuicide ? pc : target;
                 target = dp;
 
@@ -182,7 +258,16 @@ internal class Councillor : RoleBase
 
                     Utils.NotifyRoles(isForMeeting: false, NoCache: true);
 
-                    _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("Councillor_MurderKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("Councillor_MurderKillTitle")), true); }, 0.6f, "Guess Msg");
+                    _ = new LateTask(() => {
+                        if (!MakeEvilJudgeClear.GetBool())
+                        {
+                            Utils.SendMessage(string.Format(GetString("Judge_TrialKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("Judge_TrialKillTitle")), true);
+                        }
+                        else
+                        {
+                            Utils.SendMessage(string.Format(GetString("Councillor_MurderKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), GetString("Councillor_MurderKillTitle")), true);
+                        }
+                    }, 0.6f, "Guess Msg");
 
                 }, 0.2f, "Murder Kill");
             }

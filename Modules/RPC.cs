@@ -764,6 +764,7 @@ internal static class RPC
         target.FriendCode = fc;
         target.Data.FriendCode = fc;
         target.GetClient().FriendCode = fc;
+        target.Data.MarkDirty();
     }
     public static async void RpcVersionCheck()
     {
