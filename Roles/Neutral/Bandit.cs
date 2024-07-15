@@ -211,8 +211,8 @@ internal class Bandit : RoleBase
             SendRPC(targetId, role, true);
 
             if (role == CustomRoles.Aware && !Aware.AwareInteracted.ContainsKey(targetId)) Aware.AwareInteracted[targetId] = [];
-            _Player.RpcSetCustomRole(role);
-            Logger.Info($"Successfully Added {role} addon to {_Player.GetNameWithRole()}", "Bandit");
+            _Player?.RpcSetCustomRole(role);
+            Logger.Info($"Successfully Added {role} addon to {_Player?.GetNameWithRole()}", "Bandit");
         }
     }
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Bandit).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
