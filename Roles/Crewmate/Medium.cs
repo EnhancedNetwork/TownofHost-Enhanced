@@ -82,7 +82,7 @@ internal class Medium : RoleBase
     public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo target)
     {
         ContactPlayer.Clear();
-        if (target == null || target.Object == null) return;
+        if (target == null || target.Object == null || _Player == null) return;
 
         if (AbilityLimit > 0)
         {

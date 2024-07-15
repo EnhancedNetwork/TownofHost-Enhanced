@@ -198,7 +198,7 @@ internal class Bandit : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reportash, NetworkedPlayerInfo panagustava)
     {
-        if (StealMode.GetValue() == 1) return;
+        if (StealMode.GetValue() == 1 || _Player == null) return;
         foreach (var kvp2 in Targets)
         {
             byte targetId = kvp2.Key;
@@ -211,7 +211,7 @@ internal class Bandit : RoleBase
             SendRPC(targetId, role, true);
 
             if (role == CustomRoles.Aware && !Aware.AwareInteracted.ContainsKey(targetId)) Aware.AwareInteracted[targetId] = [];
-            _Player?.RpcSetCustomRole(role);
+            _Player.RpcSetCustomRole(role);
             Logger.Info($"Successfully Added {role} addon to {_Player?.GetNameWithRole()}", "Bandit");
         }
     }
