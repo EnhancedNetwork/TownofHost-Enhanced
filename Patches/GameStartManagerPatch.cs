@@ -50,7 +50,7 @@ public class GameStartManagerPatch
             //timerText.transform.localPosition += new Vector3(-8.6f, -5f, 0f);
             timerText.transform.localPosition += new Vector3(-0.5f, -2.6f, 0f);
             timerText.transform.localScale = new(0.7f, 0.7f, 1f);
-            timerText.gameObject.SetActive(true /*AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && GameStates.IsVanillaServer*/);
+            timerText.gameObject.SetActive(AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && GameStates.IsVanillaServer);
             timerText.DestroyChildren();
             timerText.DestroySubMeshObjects();
 
