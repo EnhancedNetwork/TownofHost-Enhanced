@@ -112,7 +112,7 @@ internal class Retributionist : RoleBase
         }
         else
         {
-            RetributionistRevenged.Add(pc.PlayerId, 0);
+            RetributionistRevenged.TryAdd(pc.PlayerId, 0);
         }
 
         int targetId;
