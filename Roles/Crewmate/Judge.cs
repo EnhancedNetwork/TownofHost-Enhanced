@@ -142,6 +142,11 @@ internal class Judge : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("GuessMini"));
                     return true;
                 }
+                if (target.Is(CustomRoles.PunchingBag))
+                {
+                    pc.ShowInfoMessage(isUI, GetString("EradicatePunchingBag"));
+                    return true;
+                }
 
                 if (target.Is(CustomRoles.Rebound))
                 {
