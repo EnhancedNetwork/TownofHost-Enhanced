@@ -39,12 +39,12 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0709.200.09000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 Canary 9";
+    public const string PluginVersion = "2024.0715.200.10000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 Canary 10";
     public const string SupportedVersionAU = "2024.6.18";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 9
+    public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 10
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
     public static readonly bool devRelease = false; // INACTIVE - Latest: V2.0.0 Dev 25
 
@@ -62,7 +62,7 @@ public class Main : BasePlugin
     public static readonly string WebsiteInviteUrl = "https://tohre.dev";
     
     public static readonly bool ShowKofiButton = true;
-    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
+    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);

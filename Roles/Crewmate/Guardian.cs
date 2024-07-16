@@ -42,8 +42,7 @@ internal class Guardian : RoleBase
     {
         if (role == CustomRoles.Guardian && target.GetPlayerTaskState().IsTaskFinished)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessGuardianTask"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessGuardianTask"));
+            guesser.ShowInfoMessage(isUI, GetString("GuessGuardianTask"));
             return true;
         }
         return false;

@@ -123,6 +123,10 @@ class EndGamePatch
 
         Main.winnerNameList.Clear();
         Main.winnerList.Clear();
+
+        // Remove duplicates
+        winner = winner.Distinct().ToList();
+
         foreach (var pc in winner.ToArray())
         {
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw && pc.Is(CustomRoles.GM)) continue;
@@ -347,6 +351,7 @@ class SetEverythingUpPatch
         RoleSummaryRectTransform.anchoredPosition = new Vector2(Pos.x + 3.5f, Pos.y - 0.1f);
         RoleSummary.text = sb.ToString();
 
+        Logger.Info($"{CustomWinnerHolder.WinnerTeam}", "Winner Team");
         Logger.Info($"{LastWinsReason}", "Wins Reason");
         Logger.Info($"{RoleSummary.text.RemoveHtmlTags()}", "Role Summary");
 

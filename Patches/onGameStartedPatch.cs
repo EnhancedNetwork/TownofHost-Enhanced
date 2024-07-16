@@ -231,15 +231,19 @@ internal class ChangeRoleSettings
 internal class SelectRolesPatch
 {
     private static RoleOptionsCollectionV08 RoleOpt => Main.NormalOptions.roleOptions;
-    private static readonly Dictionary<RoleTypes, int> RoleTypeNums = new() // From EHR
+    private static Dictionary<RoleTypes, int> RoleTypeNums = [];
+    public static void UpdateRoleTypeNums()
     {
-        { RoleTypes.Scientist, RoleAssign.AddScientistNum },
-        { RoleTypes.Engineer, RoleAssign.AddEngineerNum },
-        { RoleTypes.Shapeshifter, RoleAssign.AddShapeshifterNum },
-        { RoleTypes.Noisemaker, RoleAssign.AddNoisemakerNum },
-        { RoleTypes.Phantom, RoleAssign.AddPhantomNum },
-        { RoleTypes.Tracker, RoleAssign.AddTrackerNum }
-    };
+        RoleTypeNums = new()
+        {
+            { RoleTypes.Scientist, RoleAssign.AddScientistNum },
+            { RoleTypes.Engineer, RoleAssign.AddEngineerNum },
+            { RoleTypes.Shapeshifter, RoleAssign.AddShapeshifterNum },
+            { RoleTypes.Noisemaker, RoleAssign.AddNoisemakerNum },
+            { RoleTypes.Phantom, RoleAssign.AddPhantomNum },
+            { RoleTypes.Tracker, RoleAssign.AddTrackerNum }
+        };
+    }
     public static void Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -280,6 +284,7 @@ internal class SelectRolesPatch
             // Set count vanilla roles
             RoleAssign.CalculateVanillaRoleCount();
 
+            UpdateRoleTypeNums();
             // Set Rate For Vanilla Roles
             foreach (var roleType in RoleTypeNums)
             {

@@ -223,24 +223,26 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                //神抢夺胜利
                 if (CustomRoles.God.RoleExist())
                 {
                     bool isGodWinConverted = false;
-                    var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God)).ToArray();
+                    var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God));
                     
-                    foreach (var god in godArray)
+                    if (godArray.Any())
                     {
-                        if (CustomWinnerHolder.CheckForConvertedWinner(god.PlayerId))
+                        foreach (var god in godArray.ToArray())
                         {
-                            isGodWinConverted = true;
-                            break;
+                            if (CustomWinnerHolder.CheckForConvertedWinner(god.PlayerId))
+                            {
+                                isGodWinConverted = true;
+                                break;
+                            }
                         }
-                    }
-                    if (!isGodWinConverted) 
-                    {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.God);
-                        godArray.Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
+                        if (!isGodWinConverted)
+                        {
+                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.God);
+                            godArray.Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
+                        }
                     }
                 }
 
@@ -468,6 +470,11 @@ class GameEndCheckerForNormal
     }
     public static void StartEndGame(GameOverReason reason)
     {
+        // Sync of CustomWinnerHolder info
+        var winnerWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame, SendOption.Reliable);
+        CustomWinnerHolder.WriteTo(winnerWriter);
+        AmongUsClient.Instance.FinishRpcImmediately(winnerWriter);
+
         AmongUsClient.Instance.StartCoroutine(CoEndGame(AmongUsClient.Instance, reason).WrapToIl2Cpp());
     }
     public static bool ForEndGame = false;
@@ -511,11 +518,6 @@ class GameEndCheckerForNormal
             }
         }
 
-        // Sync of CustomWinnerHolder info
-        var winnerWriter = self.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame, SendOption.Reliable);
-        CustomWinnerHolder.WriteTo(winnerWriter);
-        self.FinishRpcImmediately(winnerWriter);
-
         // Delay to ensure that resuscitation is delivered after the ghost roll setting
         yield return new WaitForSeconds(EndGameDelay);
 
@@ -529,7 +531,7 @@ class GameEndCheckerForNormal
                 // resuscitation
                 playerInfo.IsDead = false;
                 // transmission
-                playerInfo.SetDirtyBit(0b_1u << playerId);
+                playerInfo.MarkDirty();
                 AmongUsClient.Instance.SendAllStreamedObjects();
             }
             // Delay to ensure that the end of the game is delivered at the end of the game
@@ -723,6 +725,10 @@ public abstract class GameEndPredicate
     {
         reason = GameOverReason.ImpostorByKill;
         if (Options.DisableTaskWin.GetBool() || TaskState.InitialTotalTasks == 0) return false;
+        if (Options.DisableTaskWinIfAllCrewsAreDead.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.Is(Custom_Team.Crewmate))) return false;
+        if (Options.DisableTaskWinIfAllCrewsAreConverted.GetBool() && Main.AllPlayerControls
+            .Where(x => x.Is(Custom_Team.Crewmate) && x.GetCustomRole().GetRoleTypes() is RoleTypes.Crewmate or RoleTypes.Engineer or RoleTypes.Scientist or RoleTypes.Noisemaker or RoleTypes.Tracker or RoleTypes.CrewmateGhost or RoleTypes.GuardianAngel)
+            .All(x => x.GetCustomSubRoles().Any(y => y.IsConverted()))) return false;
 
         if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks)
         {

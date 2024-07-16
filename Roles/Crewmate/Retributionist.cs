@@ -70,20 +70,15 @@ internal class Retributionist : RoleBase
         if (msg.Length < 4 || msg[..4] != "/ret") return false;
         if (RetributionistCanKillNum.GetInt() < 1)
         {
-            if (!isUI) SendMessage(GetString("RetributionistKillDisable"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("RetributionistKillDisable"));
+            pc.ShowInfoMessage(isUI, GetString("RetributionistKillDisable"));
             return true;
         }
         int playerCount = Main.AllAlivePlayerControls.Length;
 
-        if (playerCount <= MinimumPlayersAliveToRetri.GetInt())
+        if (playerCount <= MinimumPlayersAliveToRetri.GetInt() && !pc.IsAlive())
         {
-            if (!pc.IsAlive())
-            {
-                if (!isUI) SendMessage(GetString("RetributionistKillTooManyDead"), pc.PlayerId);
-                else pc.ShowPopUp(GetString("RetributionistKillTooManyDead"));
-                return true;
-            }
+            pc.ShowInfoMessage(isUI, GetString("RetributionistKillTooManyDead"));
+            return true;
         }
 
 
@@ -91,14 +86,13 @@ internal class Retributionist : RoleBase
         {
             if (!pc.GetPlayerTaskState().IsTaskFinished && !pc.IsAlive() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId))
             {
-                if (!isUI) SendMessage(GetString("RetributionistKillDisable"), pc.PlayerId);
-                else pc.ShowPopUp(GetString("RetributionistKillDisable"));
+                pc.ShowInfoMessage(isUI, GetString("RetributionistKillDisable"));
                 return true;
             }
         }
         if (pc.IsAlive())
         {
-            SendMessage(GetString("RetributionistAliveKill"), pc.PlayerId);
+            pc.ShowInfoMessage(isUI, GetString("RetributionistAliveKill"));
             return true;
         }
 
@@ -111,14 +105,10 @@ internal class Retributionist : RoleBase
             return true;
         }
 
-        if (RetributionistRevenged.ContainsKey(pc.PlayerId))
+        if (RetributionistRevenged.TryGetValue(pc.PlayerId, out var killNum) && killNum >= RetributionistCanKillNum.GetInt())
         {
-            if (RetributionistRevenged[pc.PlayerId] >= RetributionistCanKillNum.GetInt())
-            {
-                if (!isUI) SendMessage(GetString("RetributionistKillMax"), pc.PlayerId);
-                else pc.ShowPopUp(GetString("RetributionistKillMax"));
-                return true;
-            }
+            pc.ShowInfoMessage(isUI, GetString("RetributionistKillMax"));
+            return true;
         }
         else
         {
@@ -134,43 +124,37 @@ internal class Retributionist : RoleBase
         }
         catch
         {
-            if (!isUI) SendMessage(GetString("RetributionistKillDead"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("RetributionistKillDead"));
+            pc.ShowInfoMessage(isUI, GetString("RetributionistKillDead"));
             return true;
         }
 
         if (target == null || !target.IsAlive())
         {
-            if (!isUI) SendMessage(GetString("RetributionistKillDead"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("RetributionistKillDead"));
+            pc.ShowInfoMessage(isUI, GetString("RetributionistKillDead"));
             return true;
         }
         else if (target.Is(CustomRoles.Pestilence))
         {
-            if (!isUI) SendMessage(GetString("PestilenceImmune"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("PestilenceImmune"));
+            pc.ShowInfoMessage(isUI, GetString("PestilenceImmune"));
             return true;
         }
         else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
-            if (!isUI) SendMessage(GetString("GuessMini"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessMini"));
+            pc.ShowInfoMessage(isUI, GetString("GuessMini"));
             return true;
         }
         else if (target.Is(CustomRoles.Solsticer))
         {
-            if (!isUI) SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessSolsticer"));
+            pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
             return true;
         }
-        else if (!pc.RpcCheckAndMurder(target, true))
+        else if (pc.RpcCheckAndMurder(target, true) == false)
         {
-            if (!isUI) SendMessage(GetString("GuessImmune"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessImmune"));
+            pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true;
         }
 
-        Logger.Info($"{pc.GetNameWithRole()} 复仇了 {target.GetNameWithRole()}", "Retributionist");
+        Logger.Info($"{pc.GetNameWithRole()} revenge {target.GetNameWithRole()}", "Retributionist");
 
         string Name = target.GetRealName();
 
@@ -216,7 +200,7 @@ internal class Retributionist : RoleBase
     private static void RetributionistOnClick(byte playerId /*, MeetingHud __instance*/)
     {
         Logger.Msg($"Click: ID {playerId}", "Retributionist UI");
-        var pc = Utils.GetPlayerById(playerId);
+        var pc = GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
         if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/ret {playerId}", true);
         else SendRPC(playerId);

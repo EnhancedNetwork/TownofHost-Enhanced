@@ -82,8 +82,7 @@ internal class Monarch : RoleBase
     {
         if (role == CustomRoles.Monarch && CustomRoles.Knighted.RoleExist())
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessMonarch"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessMonarch"));
+            guesser.ShowInfoMessage(isUI, GetString("GuessMonarch"));
             return true;
         }
         return false;
@@ -107,8 +106,7 @@ internal class Monarch : RoleBase
     {
         if (role == CustomRoles.Knighted)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessKnighted"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessKnighted"));
+            guesser.ShowInfoMessage(isUI, GetString("GuessKnighted"));
             return true;
         }
         return false;

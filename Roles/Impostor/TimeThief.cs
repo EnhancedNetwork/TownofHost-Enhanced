@@ -36,6 +36,10 @@ internal class TimeThief : RoleBase
     {
         playerIdList.Add(playerId);
     }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+    }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     

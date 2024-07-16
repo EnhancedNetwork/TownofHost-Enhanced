@@ -187,7 +187,7 @@ internal class Revolutionist : RoleBase
     }
 
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
-        => ColorString(GetRoleColor(CustomRoles.Revolutionist), string.Format(GetString("EnterVentWinCountDown"), RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10));
+        => !isForMeeting ? ColorString(GetRoleColor(CustomRoles.Revolutionist), string.Format(GetString("EnterVentWinCountDown"), RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10)) : string.Empty;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
