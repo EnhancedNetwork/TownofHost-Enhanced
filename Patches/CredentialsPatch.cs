@@ -122,7 +122,7 @@ class PingTrackerUpdatePatch
         __instance.text.alignment = TextAlignmentOptions.Right;
         __instance.text.outlineColor = Color.black;
 
-        if (Main.ShowTextOverlay.Value)
+        if (Main.ShowTextOverlay.Value || Main.ShowFPS.Value)
         {
             var language = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
             __instance.text.outlineWidth = language switch
