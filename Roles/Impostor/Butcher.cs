@@ -58,10 +58,10 @@ internal class Butcher : RoleBase
             var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId); //No need to do extra check cause nobody is winning
             pcList.Do(x =>
             {
-                Main.PlayerStates[x.PlayerId].IsDead = true;
                 Main.PlayerStates[x.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
                 target.RpcSpecificMurderPlayer(x, x);
                 x.SetRealKiller(target);
+                Main.PlayerStates[x.PlayerId].SetDead();
             });
 
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
