@@ -86,7 +86,7 @@ class CheckMurderPatch
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
-        if (CheckForInvalidMurdering(killer, target) == false)
+        if (CheckForInvalidMurdering(killer, target, true) == false)
         {
             return false;
         }
@@ -133,7 +133,7 @@ class CheckMurderPatch
             Utils.NotifyRoles(SpecifySeer: target);
         }
     }
-    public static bool CheckForInvalidMurdering(PlayerControl killer, PlayerControl target)
+    public static bool CheckForInvalidMurdering(PlayerControl killer, PlayerControl target, bool checkCanUseKillButton = false)
     {
         // Killer is already dead
         if (!killer.IsAlive())
@@ -180,7 +180,7 @@ class CheckMurderPatch
         TimeSinceLastKill[killer.PlayerId] = 0f;
 
         // killable decision
-        if (killer.PlayerId != target.PlayerId && !killer.CanUseKillButton())
+        if (killer.PlayerId != target.PlayerId && !killer.CanUseKillButton() && checkCanUseKillButton)
         {
             Logger.Info(killer.GetNameWithRole().RemoveHtmlTags() + " The hitter is not allowed to use the kill button and the kill is canceled", "CheckMurder");
             return false;
