@@ -478,8 +478,6 @@ public class Main : BasePlugin
         // 認証関連-認証
         DebugModeManager.Auth(DebugKeyAuth, DebugKeyInput.Value);
 
-
-
         Preset1 = Config.Bind("Preset Name Options", "Preset1", "Preset_1");
         Preset2 = Config.Bind("Preset Name Options", "Preset2", "Preset_2");
         Preset3 = Config.Bind("Preset Name Options", "Preset3", "Preset_3");
