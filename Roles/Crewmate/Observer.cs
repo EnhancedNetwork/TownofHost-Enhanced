@@ -26,7 +26,7 @@ internal class Observer : RoleBase
     {
         playerIdList.Add(playerId);
     }
-    public static void ActivateGuardAnimation(byte killerId, PlayerControl target, int colorId)
+    public static void ActivateGuardAnimation(byte killerId, PlayerControl target)
     {
         foreach (var observerId in playerIdList.ToArray())
         {
@@ -34,7 +34,7 @@ internal class Observer : RoleBase
             var observer = Utils.GetPlayerById(observerId);
             if (observer == null) continue;
 
-            observer.RpcGuardAndKill(target, colorId, true);
+            observer.RpcGuardAndKill(target, true);
         }
     }
 }

@@ -447,6 +447,8 @@ class MurderPlayerPatch
         if (Main.AllKillers.ContainsKey(killer.PlayerId))
             Main.AllKillers.Remove(killer.PlayerId);
 
+        killer.SetKillTimer();
+
         if (!killer.Is(CustomRoles.Trickster))
             Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
 
@@ -1114,6 +1116,7 @@ class FixedUpdateInNormalGamePatch
             }
 
             DoubleTrigger.OnFixedUpdate(player);
+            KillTimerManager.FixedUpdate(player);
 
             //Mini's count down needs to be done outside if intask if we are counting meeting time
             if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
@@ -1444,6 +1447,11 @@ class CoEnterVentPatch
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.CheckCoEnterVent(__instance, id))
         {
             return true;
+        }
+
+        if (KillTimerManager.AllKillTimers.TryGetValue(__instance.myPlayer.PlayerId, out var timer))
+        {
+            KillTimerManager.AllKillTimers[__instance.myPlayer.PlayerId] = timer + 0.5f;
         }
 
         // Check others enter to vent

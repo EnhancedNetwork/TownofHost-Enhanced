@@ -2172,6 +2172,12 @@ public static class Utils
             playerState.RoleClass?.AfterMeetingTasks();
         }
 
+        //Set kill timer
+        foreach (var player in Main.AllAlivePlayerControls)
+        {
+            player.SetKillTimer();
+        }
+
         if (LateExileTask.Any())
         {
             LateExileTask.Do(t => t.Invoke(true));

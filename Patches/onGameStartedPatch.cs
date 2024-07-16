@@ -48,6 +48,7 @@ internal class ChangeRoleSettings
 
             Main.PlayerStates = [];
 
+            KillTimerManager.Initializate();
             Main.AllPlayerKillCooldown.Clear();
             Main.AllPlayerSpeed.Clear();
             Main.AllPlayerCustomRoles.Clear();

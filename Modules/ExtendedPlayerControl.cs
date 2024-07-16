@@ -222,7 +222,7 @@ static class ExtendedPlayerControl
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, int colorId = 0, bool forObserver = false)
+    public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, bool forObserver = false, bool fromSetKCD = false)
     {
         if (!AmongUsClient.Instance.AmHost)
         {
@@ -239,7 +239,7 @@ static class ExtendedPlayerControl
         // Check Observer
         if (Observer.HasEnabled && !forObserver && !MeetingStates.FirstMeeting)
         {
-            Observer.ActivateGuardAnimation(killer.PlayerId, target, colorId);
+            Observer.ActivateGuardAnimation(killer.PlayerId, target);
         }
 
         // Host
@@ -255,15 +255,18 @@ static class ExtendedPlayerControl
             writer.Write((int)MurderResultFlags.FailedProtected);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
+
+        if (!fromSetKCD) killer.SetKillTimer(half: true);
     }
     public static void SetKillCooldownV2(this PlayerControl player, float time = -1f)
     {
         if (player == null) return;
         if (!player.CanUseKillButton()) return;
+        player.SetKillTimer(CD: time);
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
         player.SyncSettings();
-        player.RpcGuardAndKill();
+        player.RpcGuardAndKill(fromSetKCD: true);
         player.ResetKillCooldown();
     }
     public static void SetKillCooldown(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
@@ -272,7 +275,8 @@ static class ExtendedPlayerControl
 
         if (!player.HasImpKillButton(considerVanillaShift: true)) return;
         if (player.HasImpKillButton(false) && !player.CanUseKillButton()) return;
-
+        
+        player.SetKillTimer(CD: time);
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
@@ -284,7 +288,7 @@ static class ExtendedPlayerControl
         else if (forceAnime || !player.IsModClient() || !Options.DisableShieldAnimations.GetBool())
         {
             player.SyncSettings();
-            player.RpcGuardAndKill(target, 11);
+            player.RpcGuardAndKill(target, fromSetKCD: true);
         }
         else
         {
@@ -299,7 +303,7 @@ static class ExtendedPlayerControl
             // Check Observer
             if (Observer.HasEnabled)
             {
-                Observer.ActivateGuardAnimation(target.PlayerId, target, 11);
+                Observer.ActivateGuardAnimation(target.PlayerId, target);
             }
         }
         player.ResetKillCooldown();
@@ -383,13 +387,14 @@ static class ExtendedPlayerControl
     {
         if (player == null) return;
         if (!player.CanUseKillButton()) return;
+        player.SetKillTimer(CD: time);
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
         if (forceAnime || !player.IsModClient() || !Options.DisableShieldAnimations.GetBool())
         {
             player.SyncSettings();
-            player.RpcGuardAndKill(target, 11);
+            player.RpcGuardAndKill(target, fromSetKCD: true);
         }
         else
         {
@@ -404,7 +409,7 @@ static class ExtendedPlayerControl
             // Check Observer
             if (Observer.HasEnabled)
             {
-                Observer.ActivateGuardAnimation(target.PlayerId, target, 11);
+                Observer.ActivateGuardAnimation(target.PlayerId, target);
             }
         }
         player.ResetKillCooldown();
