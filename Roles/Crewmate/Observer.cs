@@ -34,7 +34,7 @@ internal class Observer : RoleBase
             var observer = Utils.GetPlayerById(observerId);
             if (observer == null) continue;
 
-            observer.RpcGuardAndKill(target, true);
+            observer.RpcGuardAndKill(target, forObserver: true);
         }
     }
 }
