@@ -370,6 +370,7 @@ internal class Quizmaster : RoleBase
         Main.PlayerStates[plrToKill.PlayerId].SetDead();
         plrToKill.Data.IsDead = true;
         plrToKill.RpcExileV2();
+        plrToKill.SetRealKiller(Player);
         ResetMarkedPlayer(true);
     }
 
