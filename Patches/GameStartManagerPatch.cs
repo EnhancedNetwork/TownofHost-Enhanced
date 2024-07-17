@@ -57,7 +57,7 @@ public class GameStartManagerPatch
             //timerText.transform.localPosition += new Vector3(-0.5f, -2.6f, 0f);
             timerText.transform.localPosition += new Vector3(-0.55f, -0.25f, 0f);
             timerText.transform.localScale = new(0.7f, 0.7f, 1f);
-            timerText.gameObject.SetActive(true /*AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && GameStates.IsVanillaServer*/);
+            timerText.gameObject.SetActive(AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && GameStates.IsVanillaServer);
             timerText.DestroyChildren();
             timerText.DestroySubMeshObjects();
 
@@ -229,7 +229,7 @@ public class GameStartManagerPatch
             __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
 
             // Lobby timer
-            if (!GameData.Instance /*|| AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer*/) return;
+            if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer) return;
 
             if (update) currentText = __instance.PlayerCounter.text;
 
