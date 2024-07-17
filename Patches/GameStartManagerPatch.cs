@@ -50,6 +50,8 @@ public class GameStartManagerPatch
             timerText.fontSize = 6.2f;
             timerText.autoSizeTextContainer = true;
             timerText.name = "Timer";
+            timerText.DestroyChildren();
+            timerText.DestroySubMeshObjects();
             timerText.alignment = TextAlignmentOptions.Center;
             timerText.outlineColor = Color.black;
             timerText.outlineWidth = 0.40f;
@@ -58,8 +60,6 @@ public class GameStartManagerPatch
             timerText.transform.localPosition += new Vector3(-0.55f, -0.25f, 0f);
             timerText.transform.localScale = new(0.7f, 0.7f, 1f);
             timerText.gameObject.SetActive(AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && GameStates.IsVanillaServer);
-            timerText.DestroyChildren();
-            timerText.DestroySubMeshObjects();
 
             cancelButton = Object.Instantiate(__instance.StartButton, __instance.transform);
             cancelButton.name = "CancelButton";
