@@ -93,9 +93,7 @@ static class ExtendedPlayerControl
             Logger.Warn($"{callerClassName}.{callerMethodName} tried to retrieve CustomRole, but the target was null", "GetCustomRole");
             return CustomRoles.Crewmate;
         }
-        var GetValue = Main.PlayerStates.TryGetValue(player.PlayerId, out var State);
-
-        return GetValue ? State.MainRole : CustomRoles.Crewmate;
+        return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.MainRole : CustomRoles.Crewmate;
     }
 
     public static List<CustomRoles> GetCustomSubRoles(this PlayerControl player)
@@ -109,7 +107,7 @@ static class ExtendedPlayerControl
             Logger.Warn($"{callerClassName}.{callerMethodName} tried to get CustomSubRole, but the target was null", "GetCustomRole");
             return [CustomRoles.NotAssigned];
         }
-        return Main.PlayerStates[player.PlayerId].SubRoles;
+        return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.SubRoles : [CustomRoles.NotAssigned];
     }
     public static CountTypes GetCountTypes(this PlayerControl player)
     {
