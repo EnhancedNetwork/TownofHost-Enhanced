@@ -39,7 +39,14 @@ public class GameStartManagerPatch
                     ? $"<color={Main.HideColor.Value}>{Main.HideName.Value}</color>"
                     : $"<color={Main.ModColor}>{Main.HideName.Value}</color>";
 
-            timerText = Object.Instantiate(__instance.PlayerCounter, DestroyableSingleton<HudManager>.Instance.Chat.transform.parent);
+            if (AmongUsClient.Instance.AmHost)
+            {
+                timerText = Object.Instantiate(__instance.PlayerCounter, __instance.StartButton.transform.parent);
+            }
+            else
+            {
+                timerText = Object.Instantiate(__instance.PlayerCounter, __instance.StartButtonClient.transform.parent);
+            }
             timerText.fontSize = 6.2f;
             timerText.autoSizeTextContainer = true;
             timerText.name = "Timer";
@@ -47,10 +54,10 @@ public class GameStartManagerPatch
             timerText.outlineColor = Color.black;
             timerText.outlineWidth = 0.40f;
             timerText.hideFlags = HideFlags.None;
-            //timerText.transform.localPosition += new Vector3(-8.6f, -5f, 0f);
-            timerText.transform.localPosition += new Vector3(-0.5f, -2.6f, 0f);
+            //timerText.transform.localPosition += new Vector3(-0.5f, -2.6f, 0f);
+            timerText.transform.localPosition += new Vector3(-0.55f, -0.25f, 0f);
             timerText.transform.localScale = new(0.7f, 0.7f, 1f);
-            timerText.gameObject.SetActive(AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && GameStates.IsVanillaServer);
+            timerText.gameObject.SetActive(true /*AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && GameStates.IsVanillaServer*/);
             timerText.DestroyChildren();
             timerText.DestroySubMeshObjects();
 
@@ -222,7 +229,7 @@ public class GameStartManagerPatch
             __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
 
             // Lobby timer
-            if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer) return;
+            if (!GameData.Instance /*|| AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer*/) return;
 
             if (update) currentText = __instance.PlayerCounter.text;
 
