@@ -147,6 +147,15 @@ public static class CustomRoleManager
     public static bool OnCheckMurder(ref PlayerControl killer, ref PlayerControl target, ref bool __state)
     {
         if (killer == target) return true;
+
+        if (target!= null || target.Is(CustomRoles.Fragile))
+        {
+            if (Fragile.KillFragile(killer, target))
+            {
+                Logger.Info("Fragile killed in OnChecMurder, returning false", "Fragile");
+                return false;
+            }
+        }
         var canceled = false;
         var cancelbutkill = false;
 
