@@ -291,10 +291,10 @@ class CheckMurderPatch
                         Susceptible.CallEnabledAndChange(target);
                         break;
 
-                    case CustomRoles.Fragile:
-                        if (Fragile.KillFragile(killer, target))
-                            return false;
-                        break;
+                    //case CustomRoles.Fragile:
+                    //    if (Fragile.KillFragile(killer, target))
+                    //        return false;
+                    //    break;
 
                     case CustomRoles.Aware:
                         Aware.OnCheckMurder(killerRole, target);
