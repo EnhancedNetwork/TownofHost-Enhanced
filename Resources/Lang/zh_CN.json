@@ -2726,7 +2726,7 @@
   "PunchingBagKill": "你被袭击了！",
   "SelfGuessPunchingBag": "你不能猜测自己是受虐狂，你是个\n作 弊 者 ！",
   "GuessPunchingBagBlocked": "受虐狂无法猜测自己",
-  "EradicatePunchingBag": "你刚刚尝试害死受虐狂，这是不允许的。",
+  "EradicatePunchingBag": "你尝试害死受虐狂！",
   "RememberCooldown": "模仿冷却时间",
   "RefugeeKillCD": "<color=#ff1919>逃亡者</color>的击杀冷却",
   "RememberedNeutralKiller": "你记得你是个带刀中立！",
