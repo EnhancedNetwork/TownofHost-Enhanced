@@ -768,6 +768,7 @@ public enum CustomRoles
     Sidekick,
     Solsticer,
     SoulCollector,
+    Specter,
     Spiritcaller,
     Stalker,
     Sunnyboy,
