@@ -1067,7 +1067,7 @@ internal class ChatCommands
                     string tytul = string.Join(" ", resultat.Skip(1));
                     bool Longtitle = tytul.Length > 30;
                     tytul = Utils.ColorString(Palette.PlayerColors[PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId], tytul);
-                    var altTitle = Utils.ColorString(new Color32(124, 213, 54, 255), GetString("PollTitle"));
+                    var altTitle = Utils.ColorString(new Color32(151, 198, 230, 255), GetString("PollTitle"));
 
                     var ClearTIT = args.ToList();
                     ClearTIT.RemoveRange(0, resultat.ToArray().Length);
