@@ -35,8 +35,8 @@ internal class Pelican : RoleBase
         Options.SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pelican, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, "PelicanKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pelican])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pelican]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 12, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pelican]);
+        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pelican]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 12, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pelican]);
     }
     public override void Init()
     {
@@ -48,8 +48,6 @@ internal class Pelican : RoleBase
     }
     public override void Add(byte playerId)
     {
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -174,7 +172,7 @@ internal class Pelican : RoleBase
         Logger.Info($"{pc.GetRealName()} eat player => {target.GetRealName()}", "Pelican");
     }
 
-    public override void OnReportDeadBody(PlayerControl Nah_Id, GameData.PlayerInfo win)
+    public override void OnReportDeadBody(PlayerControl Nah_Id, NetworkedPlayerInfo win)
     {
         foreach (var pc in eatenList)
         {

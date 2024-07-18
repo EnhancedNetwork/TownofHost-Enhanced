@@ -20,7 +20,7 @@ internal class KillingMachine : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.KillingMachine);
-        MNKillCooldown = FloatOptionItem.Create(Id + 5, "KillCooldown", new(2.5f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false)
+        MNKillCooldown = FloatOptionItem.Create(Id + 5, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.KillingMachine])
             .SetValueFormat(OptionFormat.Seconds);
     }

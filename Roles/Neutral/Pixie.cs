@@ -44,7 +44,6 @@ internal class Pixie : RoleBase
         PixieTargets[playerId] = [];
         PixiePoints.Add(playerId, 0);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -133,7 +132,7 @@ internal class Pixie : RoleBase
         return false;
     }
 
-    public override void OnPlayerExiled(PlayerControl pc, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl pc, NetworkedPlayerInfo exiled)
     {
         byte pixieId = pc.PlayerId;
         if (PixieTargets.ContainsKey(pixieId))

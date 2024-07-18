@@ -4,7 +4,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using UnityEngine;
-using MS.Internal.Xml.XPath;
+using TOHE.Roles.Double;
 
 namespace TOHE.Roles._Ghosts_.Crewmate
 {
@@ -55,6 +55,11 @@ namespace TOHE.Roles._Ghosts_.Crewmate
         }
         public override bool OnCheckProtect(PlayerControl angel, PlayerControl target)
         {
+            if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+            {
+                angel.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("CantPosses")));
+                return true;
+            }
             if (AbilityLimit <= 0)
             {
                 angel.Notify(GetString("GhastlyNoMorePossess"));

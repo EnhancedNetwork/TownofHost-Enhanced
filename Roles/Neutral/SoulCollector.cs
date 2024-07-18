@@ -108,7 +108,7 @@ internal class SoulCollector : RoleBase
         killer.Notify(string.Format(GetString("SoulCollectorTarget"), target.GetRealName()));
         return false;
     }
-    public override void OnReportDeadBody(PlayerControl ryuak, GameData.PlayerInfo iscute)
+    public override void OnReportDeadBody(PlayerControl ryuak, NetworkedPlayerInfo iscute)
     {
         PlayerControl sc = Utils.GetPlayerById(playerIdList.First());
         foreach (var playerId in SoulCollectorTarget.Keys)

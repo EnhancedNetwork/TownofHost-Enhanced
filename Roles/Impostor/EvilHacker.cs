@@ -81,7 +81,7 @@ internal class EvilHacker : RoleBase
             RpcCreateMurderNotify(target.GetPlainShipRoom()?.RoomId ?? SystemTypes.Hallway);
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (!evilHackerPlayer.IsAlive())
         {

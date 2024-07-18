@@ -41,7 +41,7 @@ internal class Camouflager : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Camouflager]);
         DisableReportWhenCamouflageIsActiveOpt = BooleanOptionItem.Create(Id + 8, "DisableReportWhenCamouflageIsActive", false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Camouflager]);
-        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 9, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false)
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 9, GeneralOption.ShowShapeshiftAnimations, true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Camouflager]);
 
     }
@@ -113,7 +113,7 @@ internal class Camouflager : RoleBase
             }
         }, timer, "Camouflager Use Shapeshift");
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         ClearCamouflage();
     }
@@ -127,7 +127,7 @@ internal class Camouflager : RoleBase
 
     public static bool CantPressCommsSabotageButton(PlayerControl player) => player.Is(CustomRoles.Camouflager) && !CanUseCommsSabotage;
 
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (deadBody.Object != null && deadBody.Object.Is(CustomRoles.Bait) && Bait.BaitCanBeReportedUnderAllConditions.GetBool()) return true;
 

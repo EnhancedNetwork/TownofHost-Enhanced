@@ -6,7 +6,7 @@ namespace TOHE;
 [HarmonyPatch(typeof(Console), nameof(Console.CanUse))]
 class CanUsePatch
 {
-    public static bool Prefix(Console __instance, [HarmonyArgument(0)] GameData.PlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse)
+    public static bool Prefix(Console __instance, [HarmonyArgument(0)] NetworkedPlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse)
     {
         canUse = couldUse = false;
         // Even if you return this one with false, anything usable (buttons, etc.) other than tasks (including sabots) will remain usable.
@@ -26,7 +26,7 @@ class EmergencyMinigamePatch
 [HarmonyPatch(typeof(Vent), nameof(Vent.CanUse))]
 class CanUseVentPatch
 {
-    public static bool Prefix(Vent __instance, [HarmonyArgument(0)] GameData.PlayerInfo pc,
+    public static bool Prefix(Vent __instance, [HarmonyArgument(0)] NetworkedPlayerInfo pc,
         [HarmonyArgument(1)] ref bool canUse,
         [HarmonyArgument(2)] ref bool couldUse,
         ref float __result)

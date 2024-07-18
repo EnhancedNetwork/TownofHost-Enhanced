@@ -119,7 +119,7 @@ internal class BountyHunter : RoleBase
 
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target) => ChangeTimer.Clear();
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => ChangeTimer.Clear();
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!ChangeTimer.ContainsKey(player.PlayerId)) return;

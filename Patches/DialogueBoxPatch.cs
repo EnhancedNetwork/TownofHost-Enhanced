@@ -5,7 +5,7 @@ internal class DialogueBoxPatch
     [HarmonyPatch(nameof(DialogueBox.Show)), HarmonyPostfix]
     public static void Show_Postfix(DialogueBox __instance, [HarmonyArgument(0)]string dialouge)
     {
-        if (dialouge.Contains("<size=0%>tohe</size>") && GameStates.IsInTask)
+        if (!PlayerControl.LocalPlayer.inVent && dialouge.Contains("<size=0%>tohe</size>") && GameStates.IsInTask)
         {
             PlayerControl.LocalPlayer.ForceKillTimerContinue = true;
         }

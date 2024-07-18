@@ -31,11 +31,11 @@ internal class Warlock : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Warlock);
-        WarlockCanKillAllies = BooleanOptionItem.Create(Id + 2, "CanKillImpostors", true, TabGroup.ImpostorRoles, false)
+        WarlockCanKillAllies = BooleanOptionItem.Create(Id + 2, GeneralOption.CanKillImpostors, true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Warlock]);
         WarlockCanKillSelf = BooleanOptionItem.Create(Id + 3, "Warlock_CanKillSelf", false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Warlock]);
-        WarlockShiftDuration = FloatOptionItem.Create(Id + 4, "ShapeshiftDuration", new(1, 180, 1), 1, TabGroup.ImpostorRoles, false)
+        WarlockShiftDuration = FloatOptionItem.Create(Id + 4, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1, 180, 1), 1, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Warlock])
             .SetValueFormat(OptionFormat.Seconds);
     }
@@ -170,7 +170,7 @@ internal class Warlock : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var warlockId in playerIdList)
         {

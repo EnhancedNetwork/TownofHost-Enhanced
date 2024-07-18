@@ -72,7 +72,7 @@ internal class Overseer : RoleBase
         CustomRoles.Retributionist,
         CustomRoles.Guardian,
         CustomRoles.Spiritualist,
-        CustomRoles.Tracker,
+        //CustomRoles.Tracker,
     ];
 
     public override void SetupCustomOption()
@@ -103,7 +103,6 @@ internal class Overseer : RoleBase
 
         RandomRole.Add(playerId, GetRandomCrewRoleString());
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -224,7 +223,7 @@ internal class Overseer : RoleBase
             else
             {
 
-                float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
                 float dis = Vector2.Distance(player.GetCustomPosition(), farTarget.GetCustomPosition());
                 if (dis <= range)
                 {
@@ -244,7 +243,7 @@ internal class Overseer : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         OverseerTimer.Clear();
         SendTimerRPC(0, byte.MaxValue);

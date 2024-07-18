@@ -28,7 +28,7 @@ internal class Addict : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Addict);
-        VentCooldown = FloatOptionItem.Create(Id + 11, "VentCooldown", new(5f, 180f, 1f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Addict])
+        VentCooldown = FloatOptionItem.Create(Id + 11, GeneralOption.EngineerBase_VentCooldown, new(5f, 180f, 1f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Addict])
             .SetValueFormat(OptionFormat.Seconds);
         TimeLimit = FloatOptionItem.Create(Id + 12, "AddictSuicideTimer", new(5f, 180f, 1f), 45f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Addict])
             .SetValueFormat(OptionFormat.Seconds);
@@ -72,7 +72,7 @@ internal class Addict : RoleBase
     {
         return !IsImmortal(target);
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var player in playerIdList.ToArray())
         {

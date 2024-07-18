@@ -7,6 +7,26 @@ namespace TOHE;
 public static class CollectionExtensions
 {
     /// <summary>
+    /// Returns the key of a dictionary by its value
+    /// </summary>
+    /// <param name="dictionary">The <see cref="Dictionary{TKey,TValue}"/> to search</param>
+    /// <param name="value">The <typeparamref name="TValue"/> used to search for the corresponding key</param>
+    /// <typeparam name="TKey">The type of the keys in the <paramref name="dictionary"/></typeparam>
+    /// <typeparam name="TValue">The type of the values in the <paramref name="dictionary"/></typeparam>
+    /// <returns>The key of the <paramref name="dictionary"/> that corresponds to the given <paramref name="value"/>, or the default value of <typeparamref name="TKey"/> if the <paramref name="value"/> is not found in the <paramref name="dictionary"/></returns>
+    public static TKey GetKeyByValue<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TValue value)
+    {
+        foreach (KeyValuePair<TKey, TValue> pair in dictionary)
+        {
+            if (pair.Value.Equals(value))
+            {
+                return pair.Key;
+            }
+        }
+
+        return default;
+    }
+    /// <summary>
     /// Returns a random element from a collection
     /// </summary>
     /// <param name="collection">The collection</param>
@@ -72,4 +92,22 @@ public static class CollectionExtensions
     /// </summary>
     public static byte First(this HashSet<byte> source)
         => source.ToArray().First();
+
+    /// <summary>
+    /// Get the line number where the exception occurred
+    /// </summary>
+    public static int GetLineNumber(this Exception ex)
+    {
+        var lineNumber = 0;
+        const string lineSearch = ":line ";
+        var index = ex.StackTrace.LastIndexOf(lineSearch);
+        if (index != -1)
+        {
+            var lineNumberText = ex.StackTrace[(index + lineSearch.Length)..];
+            if (int.TryParse(lineNumberText, out lineNumber))
+            {
+            }
+        }
+        return lineNumber;
+    }
 }

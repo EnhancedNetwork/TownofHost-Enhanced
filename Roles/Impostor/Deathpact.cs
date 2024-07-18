@@ -39,7 +39,7 @@ internal class Deathpact : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Deathpact);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
             .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DeathPactCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
             .SetValueFormat(OptionFormat.Seconds);
@@ -55,7 +55,7 @@ internal class Deathpact : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
         PlayersInDeathpactCanCallMeeting = BooleanOptionItem.Create(Id + 19, "DeathpactPlayersInDeathpactCanCallMeeting", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
-        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 20, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false)
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 20, GeneralOption.ShowShapeshiftAnimations, true, TabGroup.ImpostorRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
     }
 
@@ -171,7 +171,7 @@ internal class Deathpact : RoleBase
         if (PlayersInDeathpactCanCallMeeting.GetBool()) return true;
         return !IsInActiveDeathpact(reporter);
     }
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (PlayersInDeathpactCanCallMeeting.GetBool()) return true;
         return !IsInActiveDeathpact(reporter);
@@ -190,7 +190,7 @@ internal class Deathpact : RoleBase
 
         foreach (var player in PlayersInDeathpact[deathpact.PlayerId])
         {
-            float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+            float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
             foreach (var otherPlayerInPact in PlayersInDeathpact[deathpact.PlayerId].Where(a => a.PlayerId != player.PlayerId).ToArray())
             {
                 float dis = Vector2.Distance(player.transform.position, otherPlayerInPact.transform.position);
@@ -303,7 +303,7 @@ internal class Deathpact : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var deathpact in ActiveDeathpacts.ToArray())
         {

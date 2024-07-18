@@ -35,7 +35,6 @@ internal class Deceiver : RoleBase
     {
         AbilityLimit = DeceiverSkillLimitTimes.GetInt();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -95,7 +94,7 @@ internal class Deceiver : RoleBase
         Logger.Info($"The customer {target.GetRealName()} of {pc.GetRealName()}, a counterfeiter, commits suicide by using counterfeits", "Deceiver");
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl rafaeu, GameData.PlayerInfo dinosaurs)
+    public override void OnReportDeadBody(PlayerControl rafaeu, NetworkedPlayerInfo dinosaurs)
     {
         notActiveList.Clear();
         foreach (var pc in clientList)

@@ -40,7 +40,6 @@ internal class CopyCat : RoleBase
         playerIdList.Add(playerId);
         CurrentKillCooldown = KillCooldown.GetFloat();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -66,7 +65,7 @@ internal class CopyCat : RoleBase
             {
                 if (pcRole != CustomRoles.CopyCat)
                 {
-                    pc.GetRoleClass()?.Remove(pc.PlayerId);
+                    pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                 }
                 pc.RpcSetCustomRole(CustomRoles.CopyCat);
             }
@@ -143,9 +142,9 @@ internal class CopyCat : RoleBase
                 case CustomRoles.Taskinator:
                     role = CustomRoles.Benefactor;
                     break;
-                case CustomRoles.EvilTracker:
-                    role = CustomRoles.Tracker;
-                    break;
+                //case CustomRoles.EvilTracker:
+                //    role = CustomRoles.Tracker;
+                //    break;
                 case CustomRoles.AntiAdminer:
                     role = CustomRoles.Telecommunication;
                     break;

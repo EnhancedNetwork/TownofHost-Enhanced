@@ -115,7 +115,7 @@ internal class Bastion : RoleBase
             pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (BombsClearAfterMeeting.GetBool())
         {
