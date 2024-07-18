@@ -32,7 +32,7 @@ internal class Sunnyboy : RoleBase
         var Rand = IRandom.Instance;
         return Rand.Next(0, 100) < Jester.SunnyboyChance.GetInt();
     }
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => false;
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => false;
 
     public static bool CheckGameEnd()
         => CustomRoles.Sunnyboy.RoleExist() && Main.AllAlivePlayerControls.Length > 1;

@@ -146,7 +146,7 @@ internal class Coroner : RoleBase
         return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.ReportButton.OverrideText(GetString("CoronerReportButtonText"));
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (UnreportablePlayers.Contains(deadBody.PlayerId)) return false;
 
@@ -165,7 +165,7 @@ internal class Coroner : RoleBase
         return true;
     }
 
-    private bool FindKiller(PlayerControl pc, GameData.PlayerInfo deadBody, PlayerControl killer)
+    private bool FindKiller(PlayerControl pc, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (CoronerTargets.TryGetValue(pc.PlayerId, out var target) && target.Contains(killer.PlayerId))
         {
@@ -203,7 +203,7 @@ internal class Coroner : RoleBase
         return true;
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var apc in _playerIdList.ToArray())
         {

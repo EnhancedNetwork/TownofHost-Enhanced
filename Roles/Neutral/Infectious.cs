@@ -37,8 +37,8 @@ internal class Infectious : RoleBase
             .SetValueFormat(OptionFormat.Times);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "InfectiousKnowTargetRole", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         TargetKnowOtherTarget = BooleanOptionItem.Create(Id + 14, "InfectiousTargetKnowOtherTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 15, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
-        CanVent = BooleanOptionItem.Create(Id + 17, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);        
+        HasImpostorVision = BooleanOptionItem.Create(Id + 15, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
+        CanVent = BooleanOptionItem.Create(Id + 17, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);        
         DoubleClickKill = BooleanOptionItem.Create(Id + 18, "DoubleClickKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
     }
     public override void Init()
@@ -53,7 +53,6 @@ internal class Infectious : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc?.AddDoubleTrigger();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -138,7 +137,7 @@ internal class Infectious : RoleBase
         }
         return false;
     }
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
         if (!player.IsAlive())
         {

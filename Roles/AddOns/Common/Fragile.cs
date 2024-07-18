@@ -28,6 +28,7 @@ public static class Fragile
 
     public static bool KillFragile(PlayerControl killer, PlayerControl target)
     {
+        if (target == null || !target.IsAlive()) return false;
         var killerRole = killer.GetCustomRole();
         if ((killerRole.IsImpostorTeamV3() && ImpCanKillFragile.GetBool())
             || (killerRole.IsNeutral() && NeutralCanKillFragile.GetBool())

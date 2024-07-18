@@ -21,10 +21,10 @@ internal class SoulCatcher : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.SoulCatcher);
-        ShapeSoulCatcherShapeshiftDuration = FloatOptionItem.Create(Id + 2, "ShapeshiftDuration", new(2.5f, 180f, 2.5f), 300, TabGroup.ImpostorRoles, false)
+        ShapeSoulCatcherShapeshiftDuration = FloatOptionItem.Create(Id + 2, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(2.5f, 180f, 2.5f), 300, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.SoulCatcher])
             .SetValueFormat(OptionFormat.Seconds);
-        SoulCatcherShapeshiftCooldown = FloatOptionItem.Create(Id + 3, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
+        SoulCatcherShapeshiftCooldown = FloatOptionItem.Create(Id + 3, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.SoulCatcher])
             .SetValueFormat(OptionFormat.Seconds);
     }

@@ -29,7 +29,7 @@ internal class Dazzler : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Dazzler);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
             .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DazzleCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
             .SetValueFormat(OptionFormat.Seconds);
@@ -39,7 +39,7 @@ internal class Dazzler : RoleBase
             .SetValueFormat(OptionFormat.Times);
         ResetDazzledVisionOnDeath = BooleanOptionItem.Create(Id + 15, "DazzlerResetDazzledVisionOnDeath", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler]);
-        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 16, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false)
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 16, GeneralOption.ShowShapeshiftAnimations, true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler]);
     }
 

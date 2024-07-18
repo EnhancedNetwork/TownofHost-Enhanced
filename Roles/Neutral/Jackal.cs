@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -51,12 +50,12 @@ internal class Jackal : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Jackal, 1, zeroOne: false);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
-        CanUsesSabotage = BooleanOptionItem.Create(Id + 12, "CanUseSabotage", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
+        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
+        CanUsesSabotage = BooleanOptionItem.Create(Id + 12, GeneralOption.CanUseSabotage, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         CanWinBySabotageWhenNoImpAlive = BooleanOptionItem.Create(Id + 14, "JackalCanWinBySabotageWhenNoImpAlive", true, TabGroup.NeutralRoles, false).SetParent(CanUsesSabotage);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         OptionResetKillCooldownWhenSbGetKilled = BooleanOptionItem.Create(Id + 16, "JackalResetKillCooldownWhenPlayerGetKilled", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         ResetKillCooldownOn = FloatOptionItem.Create(Id + 28, "JackalResetKillCooldownOn", new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(OptionResetKillCooldownWhenSbGetKilled)
@@ -67,10 +66,10 @@ internal class Jackal : RoleBase
                 .SetHidden(false);
         SidekickRecruitLimitOpt = IntegerOptionItem.Create(Id + 33, "JackalSidekickRecruitLimit", new(0, 15, 1), 2, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
                 .SetValueFormat(OptionFormat.Times);
-        KillCooldownSK = FloatOptionItem.Create(Id + 20, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
+        KillCooldownSK = FloatOptionItem.Create(Id + 20, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
             .SetValueFormat(OptionFormat.Seconds);
-        CanVentSK = BooleanOptionItem.Create(Id + 21, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
-        CanUseSabotageSK = BooleanOptionItem.Create(Id + 22, "CanUseSabotage", true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
+        CanVentSK = BooleanOptionItem.Create(Id + 21, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
+        CanUseSabotageSK = BooleanOptionItem.Create(Id + 22, GeneralOption.CanUseSabotage, true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         SidekickCanKillJackal = BooleanOptionItem.Create(Id + 23, "Jackal_SidekickCanKillJackal", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         SidekickCanKillSidekick = BooleanOptionItem.Create(Id + 24, "Jackal_SidekickCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         SidekickCountMode = StringOptionItem.Create(Id + 25, "Jackal_SidekickCountMode", EnumHelper.GetAllNames<SidekickCountModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
@@ -84,12 +83,12 @@ internal class Jackal : RoleBase
     {
         AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
 
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
+
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.CheckDeadBodyOthers.Add(OthersPlayersDead);
-
-            if (!Main.ResetCamPlayerList.Contains(playerId))
-                Main.ResetCamPlayerList.Add(playerId);
         }
     }
     public override void ApplyGameOptions(IGameOptions opt, byte babuyaga) => opt.SetVision(HasImpostorVision.GetBool());
@@ -140,7 +139,7 @@ internal class Jackal : RoleBase
                 AbilityLimit--;
                 SendSkillRPC();
                 
-                target.GetRoleClass()?.Remove(target.PlayerId);
+                target.GetRoleClass()?.OnRemove(target.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Sidekick);
                 target.GetRoleClass()?.OnAdd(target.PlayerId);
 

@@ -97,7 +97,7 @@ internal partial class Mayor : RoleBase
             {
                 MayorUsedButtonCount[pc.PlayerId] += 1;
                 pc?.MyPhysics?.RpcBootFromVent(vent.Id);
-                pc?.NoCheckStartMeeting(pc?.Data);
+                pc?.NoCheckStartMeeting(null);
             }
         }
     }
@@ -109,8 +109,7 @@ internal partial class Mayor : RoleBase
     {
         if (MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessMayor"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessMayor"));
+            guesser.ShowInfoMessage(isUI, GetString("GuessMayor"));
             return true;
         }
         return false;

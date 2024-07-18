@@ -29,11 +29,11 @@ internal class Reverie : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Reverie);
-        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "Arrogance/Juggernaut___DefaultKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.DefaultKillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
-        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "Arrogance/Juggernaut___ReduceKillCooldown", new(0f, 180f, 2.5f), 7.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, GeneralOption.ReduceKillCooldown, new(0f, 180f, 2.5f), 7.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
-        MinKillCooldown = FloatOptionItem.Create(Id + 12, "Arrogance/Juggernaut___MinKillCooldown", new(0f, 180f, 2.5f), 2.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        MinKillCooldown = FloatOptionItem.Create(Id + 12, GeneralOption.MinKillCooldown, new(0f, 180f, 2.5f), 2.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
         IncreaseKillCooldown = FloatOptionItem.Create(Id + 13, "ReverieIncreaseKillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
@@ -53,7 +53,6 @@ internal class Reverie : RoleBase
         playerIdList.Add(playerId);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -62,7 +61,7 @@ internal class Reverie : RoleBase
         playerIdList.Remove(playerId);
         NowCooldown.Remove(playerId);
     }
-    public override void OnReportDeadBody(PlayerControl HES, GameData.PlayerInfo HIM)
+    public override void OnReportDeadBody(PlayerControl HES, NetworkedPlayerInfo HIM)
     {
         foreach (var playerId in NowCooldown.Keys)
         {

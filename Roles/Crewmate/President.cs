@@ -228,7 +228,7 @@ internal class President : RoleBase
     {
         if (CheckPresidentReveal[target.PlayerId] && !PresidentCanBeGuessedAfterRevealing.GetBool())
         {
-            Utils.SendMessage(GetString("GuessPresident"), guesser.PlayerId);
+            guesser.ShowInfoMessage(isUI, GetString("GuessPresident"));
             return true;
         }
         return false;

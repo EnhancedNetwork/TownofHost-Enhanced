@@ -31,8 +31,10 @@ internal class EAC
                 ErrorText.Instance.Clear();
         }
     }
-    public static bool ReceiveRpc(PlayerControl pc, byte callId, MessageReader reader)
+    public static bool PlayerControlReceiveRpc(PlayerControl pc, byte callId, MessageReader reader)
     {
+        /* Disable eac until NikoCat233 rework it */
+
         if (!AmongUsClient.Instance.AmHost) return false;
         if (RoleBasisChanger.IsChangeInProgress) return false;
         if (pc == null || reader == null) return false;
@@ -77,6 +79,7 @@ internal class EAC
                 //    break;
                 case RpcCalls.SetRole:
                     var role = (RoleTypes)sr.ReadUInt16();
+                    var canOverrideRole = sr.ReadBoolean();
                     if (GameStates.IsLobby && (role is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost))
                     {
                         WarnHost();
@@ -138,35 +141,35 @@ internal class EAC
                         }
                     }
                     break;
-                case RpcCalls.SetColor:
-                case RpcCalls.CheckColor:
-                    var color = sr.ReadByte();
-                    if (!GameStates.IsLobby)
-                    {
-                        WarnHost();
-                        Report(pc, "Set color in game");
-                        HandleCheat(pc, "Set color in game");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内设置颜色，已驳回", "EAC");
-                        return true;
-                    }
-                    if (pc.Data.DefaultOutfit.ColorId != -1 &&
-                        (Main.AllPlayerControls.Count(x => x.Data.DefaultOutfit.ColorId == color) >= 5
-                        || color < 0 || color > 18))
-                    {
-                        WarnHost();
-                        Report(pc, "非法设置颜色");
-                        AmongUsClient.Instance.KickPlayer(pc.GetClientId(), false);
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置颜色，已驳回", "EAC");
-                        return true;
-                    }
-                    if (pc.AmOwner)
-                    {
-                        WarnHost();
-                        Report(pc, "非法设置房主颜色");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置房主颜色，已驳回", "EAC");
-                        return true;
-                    }
-                    break;
+                //case RpcCalls.SetColor:
+                //case RpcCalls.CheckColor:
+                //    var color = sr.ReadByte();
+                //    if (!GameStates.IsLobby)
+                //    {
+                //        WarnHost();
+                //        Report(pc, "Set color in game");
+                //        HandleCheat(pc, "Set color in game");
+                //        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内设置颜色，已驳回", "EAC");
+                //        return true;
+                //    }
+                //    if (pc.Data.DefaultOutfit.ColorId != -1 &&
+                //        (Main.AllPlayerControls.Count(x => x.Data.DefaultOutfit.ColorId == color) >= 5
+                //        || color < 0 || color > 18))
+                //    {
+                //        WarnHost();
+                //        Report(pc, "非法设置颜色");
+                //        AmongUsClient.Instance.KickPlayer(pc.GetClientId(), false);
+                //        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置颜色，已驳回", "EAC");
+                //        return true;
+                //    }
+                //    if (pc.AmOwner)
+                //    {
+                //        WarnHost();
+                //        Report(pc, "非法设置房主颜色");
+                //        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置房主颜色，已驳回", "EAC");
+                //        return true;
+                //    }
+                //    break;
                 case RpcCalls.CheckMurder:
                     if (GameStates.IsLobby)
                     {
@@ -378,14 +381,16 @@ internal class EAC
 
         if (systemType == SystemTypes.Sabotage) //Normal sabotage using buttons
         {
-            if (!player.HasImpKillButton(true))
-            {
-                WarnHost();
-                Report(player, "Bad Sabotage A : Non Imp");
-                HandleCheat(player, "Bad Sabotage A : Non Imp");
-                Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage A，已驳回", "EAC");
-                return true;
-            }
+            //if (!player.HasImpKillButton(true))
+            //{
+            //    WarnHost();
+            //    Report(player, "Bad Sabotage A : Non Imp");
+            //    HandleCheat(player, "Bad Sabotage A : Non Imp");
+            //    Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage A，已驳回", "EAC");
+            //    return true;
+            //}
+
+            // Disable this check since haskillbutton needs rework
         } //Cheater directly send 128 systemtype rpc
         else if (systemType == SystemTypes.LifeSupp)
         {
@@ -456,7 +461,7 @@ internal class EAC
     }
 
     public static Dictionary<byte, int> ReportTimes = [];
-    public static bool RpcReportDeadBodyCheck(PlayerControl player, GameData.PlayerInfo target)
+    public static bool RpcReportDeadBodyCheck(PlayerControl player, NetworkedPlayerInfo target)
     {
         if (!ReportTimes.ContainsKey(player.PlayerId))
         {
@@ -499,6 +504,134 @@ internal class EAC
         // but concerning roles like bait, hacker somehow never use report dead body,
         // Niko gave up
     }
+
+    public static bool PlayerPhysicsRpcCheck(PlayerPhysics __instance, byte callId, MessageReader reader)
+    {
+        if (!AmongUsClient.Instance.AmHost) return false;
+
+        var rpcType = (RpcCalls)callId;
+        MessageReader subReader = MessageReader.Get(reader);
+
+        bool hasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId);
+        bool hasLadder(int ladderId) => ShipStatus.Instance.Ladders.Any(l => l.Id == ladderId);
+
+        var player = __instance.myPlayer;
+
+        if (!player)
+        {
+            Logger.Warn("Received Physics RPC without a player", "EAC_PlayerPhysics");
+            return true;
+        }
+
+        if (GameStates.IsLobby && rpcType is not RpcCalls.Pet and not RpcCalls.CancelPet)
+        {
+            WarnHost();
+            Report(player, $"Physics {rpcType} in lobby (can be spoofed by others)");
+            HandleCheat(player, $"Physics {rpcType} in lobby (can be spoofed by others)");
+            Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to {rpcType} in lobby.", "EAC_physics");
+            return true;
+        }
+
+        switch (rpcType)
+        {
+            case RpcCalls.EnterVent:
+            case RpcCalls.ExitVent:
+                int ventid = subReader.ReadPackedInt32();
+                if (!hasVent(ventid))
+                {
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        WarnHost();
+                        Report(player, "Vent null vent (can be spoofed by others)");
+                        HandleCheat(player, "Vent null vent (can be spoofed by others)");
+                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to enter a unexisting vent. {ventid}", "EAC_physics");
+                    }
+                    else
+                    {
+                        // Not sure whether host will send null vent to a player huh
+                        Logger.Warn($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to enter a unexisting vent. {ventid}", "EAC_physics");
+                        if (rpcType is RpcCalls.ExitVent)
+                        {
+                            player.Visible = true;
+                            player.inVent = false;
+                            player.moveable = true;
+                            player.NetTransform.SetPaused(false);
+                        }
+                    }
+                    return true;
+                }
+                break;
+
+            case RpcCalls.BootFromVent:
+                //int ventid2 = subReader.ReadPackedInt32();
+                //if (!hasVent(ventid2))
+                //{
+                //    if (AmongUsClient.Instance.AmHost)
+                //    {
+                //        WarnHost();
+                //        Report(player, "Got booted from a null vent (can be spoofed by others)");
+                //        AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
+                //        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to boot from a unexisting vent. {ventid2}", "EAC_physics");
+                //    }
+                //    else
+                //    {
+                //        // Not sure whether host will send null vent to a player huh
+                //        // Nah, host may send 99 boot from vent, which is stupid
+                //        Logger.Warn($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to boot from a unexisting vent. {ventid2}", "EAC_physics");
+                //        if (ventid2 == 99 && player.inVent)
+                //        {
+                //            __instance.BootFromVent(ventid2);
+                //            return true;
+                //        }
+                //        player.Visible = true;
+                //        player.inVent = false;
+                //        player.moveable = true;
+                //        player.NetTransform.SetPaused(false);
+                //    }
+                //    return true;
+                //}
+
+                // BootFromVent can only be sent by host
+                WarnHost();
+                Report(player, "Got boot from vent from clients, can be spoofed");
+                HandleCheat(player, "Got boot from vent from clients, can be spoofed");
+                Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 sent boot from vent, can be spoofed.", "EAC_physics");
+                break;
+
+            case RpcCalls.ClimbLadder:
+                int ladderId = subReader.ReadPackedInt32();
+                if (!hasLadder(ladderId))
+                {
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        WarnHost();
+                        Report(player, "climb null ladder (can be spoofed by others)");
+                        HandleCheat(player, "climb null ladder (can be spoofed by others)");
+                        Logger.Fatal($"【{player.GetClientId()}:{player.GetRealName()}】 attempted to climb a unexisting ladder.", "EAC_physics");
+                    }
+                    return true;
+                }
+                if (player.AmOwner)
+                {
+                    Logger.Fatal($"Got climb ladder for my self, this is impossible", "EAC_physics");
+                    return true;
+                }
+                break;
+
+            case RpcCalls.Pet:
+                if (player.AmOwner)
+                {
+                    Logger.Fatal($"Got pet pet for my self, this is impossible", "EAC_physics");
+                    return true;
+                }
+
+                // if (player.CurrentOutfit.PetId == "")
+                // Petting air is fine i guess lol
+                break;
+        }
+        return false;
+    }
+
     public static void Report(PlayerControl pc, string reason)
     {
         if (pc == null)

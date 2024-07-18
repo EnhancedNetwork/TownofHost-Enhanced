@@ -3,10 +3,10 @@
 namespace TOHE.Patches;
 
 // Thanks Galster (https://github.com/Galster-dev)
-[HarmonyPatch(typeof(AmongUsClient._CoStartGameHost_d__30), nameof(AmongUsClient._CoStartGameHost_d__30.MoveNext))]
+[HarmonyPatch(typeof(AmongUsClient._CoStartGameHost_d__32), nameof(AmongUsClient._CoStartGameHost_d__32.MoveNext))]
 public static class DleksPatch
 {
-    private static bool Prefix(AmongUsClient._CoStartGameHost_d__30 __instance, ref bool __result)
+    private static bool Prefix(AmongUsClient._CoStartGameHost_d__32 __instance, ref bool __result)
     {
         if (__instance.__1__state != 0)
         {
@@ -36,16 +36,30 @@ public static class DleksPatch
         return false;
     }
 }
+[HarmonyPatch(typeof(GameStartManager))]
+class AllMapIconsPatch
+{
+    // Vanilla players getting error when trying get dleks map icon
+    [HarmonyPatch(nameof(GameStartManager.Start)), HarmonyPostfix]
+    public static void Postfix_AllMapIcons(GameStartManager __instance)
+    {
+        if (__instance == null) return;
 
-[HarmonyPatch(typeof(KeyValueOption), nameof(KeyValueOption.OnEnable))]
+        MapIconByName DleksIncon = Object.Instantiate(__instance, __instance.gameObject.transform).AllMapIcons[0];
+        DleksIncon.Name = MapNames.Dleks;
+
+        __instance.AllMapIcons.Add(DleksIncon);
+    }
+}
+[HarmonyPatch(typeof(StringOption), nameof(StringOption.Start))]
 class AutoSelectDleksPatch
 {
-    private static void Postfix(KeyValueOption __instance)
+    private static void Postfix(StringOption __instance)
     {
         if (__instance.Title == StringNames.GameMapName)
         {
             // vanilla clamps this to not auto select dleks
-            __instance.Selected = GameOptionsManager.Instance.CurrentGameOptions.MapId;
+            __instance.Value = GameOptionsManager.Instance.CurrentGameOptions.MapId;
         }
     }
 }

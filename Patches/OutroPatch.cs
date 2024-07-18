@@ -110,7 +110,7 @@ class EndGamePatch
             Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
         
         //winnerListリセット
-        TempData.winners = new Il2CppSystem.Collections.Generic.List<WinningPlayerData>();
+        EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
         var winner = new List<PlayerControl>();
         foreach (var pc in Main.AllPlayerControls)
         {
@@ -123,11 +123,15 @@ class EndGamePatch
 
         Main.winnerNameList.Clear();
         Main.winnerList.Clear();
+
+        // Remove duplicates
+        winner = winner.Distinct().ToList();
+
         foreach (var pc in winner.ToArray())
         {
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw && pc.Is(CustomRoles.GM)) continue;
 
-            TempData.winners.Add(new WinningPlayerData(pc.Data));
+            EndGameResult.CachedWinners.Add(new CachedPlayerData(pc.Data));
             Main.winnerList.Add(pc.PlayerId);
             Main.winnerNameList.Add(pc.GetRealName());
         }
@@ -347,6 +351,8 @@ class SetEverythingUpPatch
         RoleSummaryRectTransform.anchoredPosition = new Vector2(Pos.x + 3.5f, Pos.y - 0.1f);
         RoleSummary.text = sb.ToString();
 
+        Logger.Info($"{CustomWinnerHolder.WinnerTeam}", "Winner Team");
+        Logger.Info($"{LastWinsReason}", "Wins Reason");
         Logger.Info($"{RoleSummary.text.RemoveHtmlTags()}", "Role Summary");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

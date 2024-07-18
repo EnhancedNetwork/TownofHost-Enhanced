@@ -42,17 +42,10 @@ class HudManagerPatch
                 player.Collider.offset = new Vector2(0f, -0.3636f);
             }
         }
-        if (GameStates.IsLobby)
-        {
-            var POM = GameObject.Find("PlayerOptionsMenu(Clone)");
-            __instance.GameSettings.text = POM != null ? "" : OptionShower.GetTextNoFresh(); //OptionShower.GetText();
-            __instance.GameSettings.fontSizeMin =
-            __instance.GameSettings.fontSizeMax = 1.1f;
-        }
-        //ゲーム中でなければ以下は実行されない
+
         if (!AmongUsClient.Instance.IsGameStarted || GameStates.IsHideNSeek) return;
 
-        Utils.CountAlivePlayers();
+        Utils.CountAlivePlayers(false, false);
 
         if (SetHudActivePatch.IsActive)
         {
@@ -242,10 +235,10 @@ class SetHudActivePatch
 
         IsActive = isActive;
 
-        if (!isActive) return;
+        if (GameStates.IsLobby || !isActive) return;
         if (player == null) return;
 
-        if (player.Is(CustomRoles.Oblivious))
+        if (player.Is(CustomRoles.Oblivious) || player.Is(CustomRoles.KillingMachine))
             __instance.ReportButton.ToggleVisible(false);
         
         if (player.Is(CustomRoles.Mare) && !Utils.IsActive(SystemTypes.Electrical))
@@ -296,6 +289,7 @@ class TaskPanelBehaviourPatch
     public static void Postfix(TaskPanelBehaviour __instance)
     {
         if (!GameStates.IsModHost) return;
+        if (GameStates.IsLobby) return;
 
         if (GameStates.IsHideNSeek)
         {

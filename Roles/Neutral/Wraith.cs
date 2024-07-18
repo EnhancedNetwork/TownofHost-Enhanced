@@ -37,7 +37,7 @@ internal class Wraith : RoleBase
         WraithDuration = FloatOptionItem.Create(Id + 4, "WraithDuration", new(1f, 60f, 1f), 15f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Wraith])
             .SetValueFormat(OptionFormat.Seconds);
         WraithVentNormallyOnCooldown = BooleanOptionItem.Create(Id + 5, "WraithVentNormallyOnCooldown", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Wraith]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 6, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Wraith]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 6, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Wraith]);
     }
     public override void Init()
     {
@@ -47,11 +47,8 @@ internal class Wraith : RoleBase
     }
     public override void Add(byte playerId)
     {
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
-
     }
     private void SendRPC(PlayerControl pc)
     {
@@ -75,31 +72,36 @@ internal class Wraith : RoleBase
         => GameStates.IsInTask && !InvisTime.ContainsKey(id) && !lastTime.ContainsKey(id);
     private static bool IsInvis(byte id) => InvisTime.ContainsKey(id);
 
-    public override void OnReportDeadBody(PlayerControl pa, GameData.PlayerInfo dum)
+    public override void OnReportDeadBody(PlayerControl pa, NetworkedPlayerInfo dum)
     {
-        lastTime.Clear();
-        InvisTime.Clear();
-
         foreach (var wraithId in _playerIdList.ToArray())
         {
-            if (!ventedId.ContainsKey(wraithId)) continue;
+            if (!IsInvis(wraithId)) continue;
             var wraith = Utils.GetPlayerById(wraithId);
-            if (wraith == null) return;
+            if (wraith == null) continue;
 
             wraith?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(wraithId, out var id) ? id : Main.LastEnteredVent[wraithId].Id);
+            InvisTime.Remove(wraithId);
+            ventedId.Remove(wraithId);
             SendRPC(wraith);
         }
 
+        lastTime.Clear();
+        InvisTime.Clear();
         ventedId.Clear();
     }
     public override void AfterMeetingTasks()
     {
         lastTime.Clear();
         InvisTime.Clear();
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => _playerIdList.Contains(x.PlayerId)).ToArray())
+
+        foreach (var wraithId in _playerIdList)
         {
-            lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());
-            SendRPC(pc);
+            var wraith = Utils.GetPlayerById(wraithId);
+            if (!wraith.IsAlive()) continue;
+
+            lastTime.Add(wraith.PlayerId, Utils.GetTimeStamp());
+            SendRPC(wraith);
         }
     }
     public override void OnFixedUpdateLowLoad(PlayerControl player)
@@ -123,7 +125,7 @@ internal class Wraith : RoleBase
                 var pc = Utils.GetPlayerById(it.Key);
                 if (pc == null) continue;
                 var remainTime = it.Value + (long)WraithDuration.GetFloat() - now;
-                if (remainTime < 0)
+                if (remainTime < 0 || !pc.IsAlive())
                 {
                     lastTime.Add(pc.PlayerId, now);
                     pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
@@ -154,9 +156,7 @@ internal class Wraith : RoleBase
                 ventedId.Remove(pc.PlayerId);
                 ventedId.Add(pc.PlayerId, ventId);
 
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, pc.GetClientId());
-                writer.WritePacked(ventId);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                __instance.RpcBootFromVentDesync(ventId, pc);
 
                 InvisTime.Add(pc.PlayerId, Utils.GetTimeStamp());
                 SendRPC(pc);
@@ -177,8 +177,7 @@ internal class Wraith : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (!HasEnabled) return;
-        if (!pc.Is(CustomRoles.Wraith) || !IsInvis(pc.PlayerId)) return;
+        if (!IsInvis(pc.PlayerId)) return;
 
         InvisTime.Remove(pc.PlayerId);
         lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());

@@ -30,8 +30,8 @@ internal class Shroud : RoleBase
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Shroud, 1, zeroOne: false);
         ShroudCooldown = FloatOptionItem.Create(Id + 10, "ShroudCooldown", new(0f, 180f, 1f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Shroud])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Shroud]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Shroud]);
+        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Shroud]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Shroud]);
     }
     public override void Init()
     {
@@ -41,7 +41,6 @@ internal class Shroud : RoleBase
     {
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -126,7 +125,7 @@ internal class Shroud : RoleBase
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);
-                var KillRange = NormalGameOptionsV07.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
+                var KillRange = NormalGameOptionsV08.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
                 if (min.Value <= KillRange && shroud.CanMove && target.CanMove)
                 {
                     if (shroud.RpcCheckAndMurder(target, true))
@@ -147,12 +146,12 @@ internal class Shroud : RoleBase
         }
     }
 
-    public override void OnPlayerExiled(PlayerControl shroud, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl shroud, NetworkedPlayerInfo exiled)
     {
-        if (!shroud.IsAlive())
+        if (!shroud.IsAlive() || (exiled != null && exiled.PlayerId == shroud.PlayerId))
         {
             ShroudList.Clear();
-            SendRPC(byte.MaxValue, byte.MaxValue, 1);
+            SendRPC(byte.MaxValue, byte.MaxValue, 0);
             return;
         }
 

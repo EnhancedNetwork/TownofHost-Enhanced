@@ -52,7 +52,6 @@ internal class Hater : RoleBase
     {
         playerIdList.Add(playerId);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -62,12 +61,12 @@ internal class Hater : RoleBase
         if (killer == null || target == null) return false;
         if (killer.PlayerId == target.PlayerId) return true;  // Return true to allow suicides
 
-        if (target.GetCustomSubRoles().Any(x => x.IsConverted() || x == CustomRoles.Madmate || x == CustomRoles.Admired)
+        if (target.GetCustomSubRoles().Any(addOn => addOn.IsConverted() || addOn is CustomRoles.Madmate or CustomRoles.Admired or CustomRoles.Lovers)
             || IsConvertedMainRole(target.GetCustomRole()))
         {
             if (!ChooseConverted.GetBool())
             {
-                if (killer.RpcCheckAndMurder(target)) isWon = true; // Only win if target can be killed - this kills the target if they can be killed
+                isWon = true; // Only win if target can be killed - this kills the target if they can be killed
                 Logger.Info($"{killer.GetRealName()} killed right target case 1", "FFF");
                 return false;  // The murder is already done if it could be done, so return false to avoid double killing
             }
@@ -84,18 +83,15 @@ internal class Hater : RoleBase
                 || ((target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Admirer)) && CanKillAdmired.GetBool())
                 )
             {
-                if (killer.RpcCheckAndMurder(target)) isWon = true; // Only win if target can be killed - this kills the target if they can be killed
+                isWon = true; // Only win if target can be killed - this kills the target if they can be killed
                 Logger.Info($"{killer.GetRealName()} killed right target case 2", "FFF");
                 return false;  // The murder is already done if it could be done, so return false to avoid double killing
             }
         }
-        //Not return trigger following fail check ---- I'm sorry, what?
-        if (MisFireKillTarget.GetBool() && killer.RpcCheckAndMurder(target, true)) // RpcCheckAndMurder checks if the target can be murdered or not (checks for shields and other stuff); the 'true' parameter indicates that we just want a check, and not murder yet.
+        if (MisFireKillTarget.GetBool())
         {
-            target.SetRealKiller(killer);
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
             killer.RpcMurderPlayer(target); // Murder the target only if the setting is on and the target can be killed
-
         }
 
         Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;

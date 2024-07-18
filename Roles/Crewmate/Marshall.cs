@@ -53,8 +53,7 @@ internal class Marshall : RoleBase
     {
         if (target.GetPlayerTaskState().IsTaskFinished)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessMarshallTask"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessMarshallTask"));
+            pc.ShowInfoMessage(isUI, GetString("GuessMarshallTask"));
             return true;
         }
         return false;

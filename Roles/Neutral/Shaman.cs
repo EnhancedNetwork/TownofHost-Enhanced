@@ -32,7 +32,6 @@ internal class Shaman : RoleBase
     }
     public override void Add(byte playerId)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -65,17 +64,16 @@ internal class Shaman : RoleBase
         ShamanTarget = byte.MaxValue;
         return false;
     }
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (ShamanTargetChoosen == false)
         {
             ShamanTarget = target.PlayerId;
-            _Player.RpcGuardAndKill(_Player);
+            _Player.RpcGuardAndKill(target);
             ShamanTargetChoosen = true;
         }
         else _Player.Notify(GetString("ShamanTargetAlreadySelected"));
         return false;
-
     }
     private PlayerControl ChangeTarget(PlayerControl target)
         => target.IsAlive() && ShamanTargetChoosen ? Utils.GetPlayerById(ShamanTarget) : target;

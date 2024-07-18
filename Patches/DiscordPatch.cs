@@ -27,13 +27,7 @@ namespace TOHE.Patches
                         if (GameStates.IsLobby)
                         {
                             lobbycode = GameStartManager.Instance.GameRoomNameCode.text;
-                            region = ServerManager.Instance.CurrentRegion.Name;
-                            if (region == "North America") region = "NA";
-                            else if (region == "Europe") region = "EU";
-                            else if (region == "Asia") region = "AS";
-                            else if (region.Contains("MNA")) region = "MNA";
-                            else if (region.Contains("MEU")) region = "MEU";
-                            else if (region.Contains("MAS")) region = "MAS";
+                            region = Utils.GetRegionName();
                         }
 
                         if (lobbycode != "" && region != "")

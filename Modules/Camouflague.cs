@@ -6,7 +6,7 @@ namespace TOHE;
 
 static class PlayerOutfitExtension
 {
-    public static GameData.PlayerOutfit Set(this GameData.PlayerOutfit instance, string playerName, int colorId, string hatId, string skinId, string visorId, string petId, string nameplateId)
+    public static NetworkedPlayerInfo.PlayerOutfit Set(this NetworkedPlayerInfo.PlayerOutfit instance, string playerName, int colorId, string hatId, string skinId, string visorId, string petId, string nameplateId)
     {
         instance.PlayerName = playerName;
         instance.ColorId = colorId;
@@ -17,7 +17,7 @@ static class PlayerOutfitExtension
         instance.NamePlateId = nameplateId;
         return instance;
     }
-    public static bool Compare(this GameData.PlayerOutfit instance, GameData.PlayerOutfit targetOutfit)
+    public static bool Compare(this NetworkedPlayerInfo.PlayerOutfit instance, NetworkedPlayerInfo.PlayerOutfit targetOutfit)
     {
         return instance.ColorId == targetOutfit.ColorId &&
                 instance.HatId == targetOutfit.HatId &&
@@ -26,11 +26,11 @@ static class PlayerOutfitExtension
                 instance.PetId == targetOutfit.PetId;
 
     }
-    public static string GetString(this GameData.PlayerOutfit instance)
+    public static string GetString(this NetworkedPlayerInfo.PlayerOutfit instance)
     {
         return $"{instance.PlayerName} Color:{instance.ColorId} {instance.HatId} {instance.SkinId} {instance.VisorId} {instance.PetId}";
     }
-    public static GameData.PlayerOutfit GetRandomOutfit()
+    public static NetworkedPlayerInfo.PlayerOutfit GetRandomOutfit()
     {
         var random = IRandom.Instance;
         var tempChanceSetRandomSkin = random.Next(0, 101);
@@ -38,7 +38,7 @@ static class PlayerOutfitExtension
         return Options.KPDCamouflageMode.GetValue() switch
         {
             // Random outfit
-            2 => new GameData.PlayerOutfit()
+            2 => new NetworkedPlayerInfo.PlayerOutfit()
             {
                 ColorId = random.Next(Palette.PlayerColors.Length),
                 HatId = HatManager.Instance.allHats[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allHats.Length) : 0].ProdId,
@@ -48,9 +48,9 @@ static class PlayerOutfitExtension
                 //NamePlateId = HatManager.Instance.allNamePlates[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allNamePlates.Length) : 0].ProdId,
             },
 
-            3 => new GameData.PlayerOutfit().Set("", random.Next(Palette.PlayerColors.Length), "", "", "", "", ""), // Only random colors
+            3 => new NetworkedPlayerInfo.PlayerOutfit().Set("", random.Next(Palette.PlayerColors.Length), "", "", "", "", ""), // Only random colors
 
-            _ => new GameData.PlayerOutfit().Set("", 15, "", "", "", "", ""), // defalt
+            _ => new NetworkedPlayerInfo.PlayerOutfit().Set("", 15, "", "", "", "", ""), // defalt
         };
     }
 }
@@ -58,10 +58,10 @@ public static class Camouflage
 {
     public static bool IsCamouflage;
 
-    static GameData.PlayerOutfit CamouflageOutfit = new GameData.PlayerOutfit().Set("", 15, "", "", "", "", ""); // Default
+    static NetworkedPlayerInfo.PlayerOutfit CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set("", 15, "", "", "", "", ""); // Default
 
     public static List<byte> ResetSkinAfterDeathPlayers = [];
-    public static Dictionary<byte, GameData.PlayerOutfit> PlayerSkins = [];
+    public static Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> PlayerSkins = [];
     public static bool IsActive;
 
     public static void Init()
@@ -83,12 +83,12 @@ public static class Camouflage
         switch (Options.KPDCamouflageMode.GetValue())
         {
             case 0: // Default
-                CamouflageOutfit = new GameData.PlayerOutfit()
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 15, "", "", "", "", "");
                 break;
 
             case 1: // Host's outfit
-                CamouflageOutfit = new GameData.PlayerOutfit()
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", DataManager.Player.Customization.Color, DataManager.Player.Customization.Hat, DataManager.Player.Customization.Skin, DataManager.Player.Customization.Visor, DataManager.Player.Customization.Pet, "");
                 break;
 
@@ -98,38 +98,42 @@ public static class Camouflage
                 break;
 
             case 4: // Karpe
-                CamouflageOutfit = new GameData.PlayerOutfit()
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 13, "hat_pk05_Plant", "", "visor_BubbleBumVisor", "", "");
                 break;
 
             case 5: // Lauryn
-                CamouflageOutfit = new GameData.PlayerOutfit()
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 13, "hat_rabbitEars", "skin_Bananaskin", "visor_BubbleBumVisor", "pet_Pusheen", "");
                 break;
 
             case 6: // Moe
-                CamouflageOutfit = new GameData.PlayerOutfit()
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 0, "hat_mira_headset_yellow", "skin_SuitB", "visor_lollipopCrew", "pet_EmptyPet", "");
                 break;
 
             case 7: // Pyro
-                CamouflageOutfit = new GameData.PlayerOutfit()
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 17, "hat_pkHW01_Witch", "skin_greedygrampaskin", "visor_Plsno", "pet_Pusheen", "");
                 break;
 
             case 8: // ryuk
-                CamouflageOutfit = new GameData.PlayerOutfit()
-                    .Set("", 7, "hat_crownDouble", "skin_D2Saint14", "visor_anime", "pet_Bush", "");
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
+                    .Set("", 7, "hat_theohair", "skin_Theoskin", "visor_Carrot", "pet_Snow", "");
                 break;
 
             case 9: // Gurge44
-                CamouflageOutfit = new GameData.PlayerOutfit()
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 7, "hat_pk04_Snowman", "", "", "", "");
                 break;
 
             case 10: // TommyXL
-                CamouflageOutfit = new GameData.PlayerOutfit()
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 17, "hat_baseball_Black", "skin_Scientist-Darkskin", "visor_pusheenSmileVisor", "pet_Pip", "");
+                break;
+            case 11: // Sarha, Sponsor
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
+                    .Set("", 17, "hat_mira_flower", "skin_PusheenPurpleskin", "visor_hl_hmph", "pet_Charles", "");
                 break;
         }
     }
@@ -204,34 +208,39 @@ public static class Camouflage
         // if the current Outfit is the same, return it
         if (newOutfit.Compare(target.Data.DefaultOutfit)) return;
 
-        Logger.Info($"newOutfit={newOutfit.GetString().RemoveHtmlTags()}", "RpcSetSkin");
+        Logger.Info($"playerId {target.PlayerId} newOutfit={newOutfit.GetString().RemoveHtmlTags()}", "RpcSetSkin");
 
         // Start to set Outfit
         var sender = CustomRpcSender.Create(name: $"Camouflage.RpcSetSkin({target.Data.PlayerName})");
 
         target.SetColor(newOutfit.ColorId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetColor)
-            .Write(newOutfit.ColorId)
+            .Write(target.Data.NetId)
+            .Write((byte)newOutfit.ColorId)
             .EndRpc();
 
         target.SetHat(newOutfit.HatId, newOutfit.ColorId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetHatStr)
             .Write(newOutfit.HatId)
+            .Write(target.GetNextRpcSequenceId(RpcCalls.SetHatStr))
             .EndRpc();
 
         target.SetSkin(newOutfit.SkinId, newOutfit.ColorId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetSkinStr)
             .Write(newOutfit.SkinId)
+            .Write(target.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
             .EndRpc();
 
         target.SetVisor(newOutfit.VisorId, newOutfit.ColorId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetVisorStr)
             .Write(newOutfit.VisorId)
+            .Write(target.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
             .EndRpc();
 
         target.SetPet(newOutfit.PetId);
         sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetPetStr)
             .Write(newOutfit.PetId)
+            .Write(target.GetNextRpcSequenceId(RpcCalls.SetPetStr))
             .EndRpc();
 
         sender.SendMessage();

@@ -1,7 +1,5 @@
 ﻿using TOHE.Roles.Core;
 using UnityEngine;
-using System;
-using TOHE.Modules;
 
 namespace TOHE;
 
@@ -10,19 +8,19 @@ public static class CustomButton
     public static Sprite Get(string name) => Utils.LoadSprite($"TOHE.Resources.Images.Skills.{name}.png", 115f);
 }
 
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
-[HarmonyPatch(new Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
+[HarmonyPriority(520)]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
 public static class HudSpritePatch
 {
     private static Sprite Kill;
     private static Sprite Ability;
     private static Sprite Vent;
     private static Sprite Report;
-    public static void Postfix(HudManager __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(2)] bool isActive)
+    public static void Postfix(HudManager __instance)
     {
-        if (player == null || GameStates.IsHideNSeek || !GameStates.IsModHost) return;
-        if (!isActive || !player.IsAlive()) return;
-        if (!Main.EnableCustomButton.Value) return;
+        var player = PlayerControl.LocalPlayer;
+        if (player == null || !Main.EnableCustomButton.Value || AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameStates.IsHideNSeek || !GameStates.IsModHost) return;
+        if (!SetHudActivePatch.IsActive || !player.IsAlive()) return;
 
         if (!AmongUsClient.Instance.IsGameStarted || !Main.introDestroyed)
         {
@@ -36,7 +34,7 @@ public static class HudSpritePatch
         bool shapeshifting = Main.CheckShapeshift.TryGetValue(player.PlayerId, out bool ss) && ss;
 
         if (!Kill) Kill = __instance.KillButton.graphic.sprite;
-        if (!Ability) Ability = AbilityButtonSetFromSettingsPatch.abilityButton;
+        if (!Ability) Ability = __instance.AbilityButton.graphic.sprite;
         if (!Vent) Vent = __instance.ImpostorVentButton.graphic.sprite;
         if (!Report) Report = __instance.ReportButton.graphic.sprite;
 
@@ -84,30 +82,5 @@ public static class HudSpritePatch
         __instance.ImpostorVentButton.graphic.SetCooldownNormalizedUvs();
         __instance.AbilityButton.graphic.SetCooldownNormalizedUvs();
         __instance.ReportButton.graphic.SetCooldownNormalizedUvs();
-    }
-}
-
-[HarmonyPatch(typeof(AbilityButton), nameof(AbilityButton.SetFromSettings))]
-public static class AbilityButtonSetFromSettingsPatch
-{
-    public static Sprite abilityButton;
-    public static bool Prefix(AbilityButton __instance, AbilityButtonSettings settings)
-    {
-        // When Custom Buttons is disabled run vanilla code
-        if (!Main.EnableCustomButton.Value || __instance == null || settings == null) return true;
-
-        __instance.SetInfiniteUses();
-
-        abilityButton = settings.Image;
-        // When ability button is initialize or player is dead, set default image
-        if (!Main.introDestroyed || PlayerControl.LocalPlayer.Data.IsDead || AmongUsClient.Instance.IsGameOver || RoleBasisChanger.SkipTasksAfterAssignRole)
-        {
-            __instance.graphic.sprite = settings.Image;
-        }
-
-        __instance.graphic.SetCooldownNormalizedUvs();
-        __instance.buttonLabelText.fontSharedMaterial = settings.FontMaterial;
-        __instance.buttonLabelText.text = TranslationController.Instance.GetString(settings.Text);
-        return false;
     }
 }

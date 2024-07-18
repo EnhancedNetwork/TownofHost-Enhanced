@@ -1,10 +1,8 @@
-﻿using Hazel;
-using TOHE.Roles.Core;
+﻿using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -19,19 +17,16 @@ internal class Kamikaze : RoleBase
 
     private static OptionItem KillCooldown;
     private static OptionItem OptMaxMarked;
-    private static OptionItem BuddhaSymbol;
 
     private readonly HashSet<byte> KamikazedList = [];
 
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Kamikaze);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Kamikaze])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Kamikaze])
             .SetValueFormat(OptionFormat.Seconds);
         OptMaxMarked = IntegerOptionItem.Create(Id + 11, "KamikazeMaxMarked", new(1, 14, 1), 14, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Kamikaze])
            .SetValueFormat(OptionFormat.Times);
-        BuddhaSymbol = BooleanOptionItem.Create(Id + 12, "KamikazeControversialSymbol", false, TabGroup.ImpostorRoles, false)
-                .SetParent(CustomRoleSpawnChances[CustomRoles.Kamikaze]);
 
     }
     public override void Add(byte playerId)
@@ -45,13 +40,7 @@ internal class Kamikaze : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (KamikazedList.Contains(seen.PlayerId) && BuddhaSymbol.GetBool())
-        {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), "<rotate=-45> 卐</rotate>");
-        }
-
-
-        return KamikazedList.Contains(seen.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), "⊗") : string.Empty;
+        return KamikazedList.Contains(seen.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), "∇") : string.Empty;
     }
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

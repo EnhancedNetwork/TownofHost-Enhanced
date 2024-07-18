@@ -97,12 +97,15 @@ public static class AddonAssign
 
         Logger.Info($" Is Started", "Assign Add-ons");
 
+        if (addonsList.Count > 2)
+            addonsList = addonsList.Shuffle(rd).ToList();
+
         // Assign add-ons
-        foreach (var role in addonsList.ToArray())
+        foreach (var addOn in addonsList.ToArray())
         {
-            if (rd.Next(1, 101) <= (Options.CustomAdtRoleSpawnRate.TryGetValue(role, out var sc) ? sc.GetFloat() : 0))
+            if (rd.Next(1, 101) <= (Options.CustomAdtRoleSpawnRate.TryGetValue(addOn, out var sc) ? sc.GetFloat() : 0))
             {
-                AssignSubRoles(role);
+                AssignSubRoles(addOn);
             }
         }
     }

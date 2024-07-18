@@ -670,27 +670,42 @@ public class RoleAssign
         RoleAssignInfo GetAssignInfo(CustomRoles role) => Roles.Values.FirstOrDefault(x => x.Any(y => y.Role == role))?.FirstOrDefault(x => x.Role == role);
     }
 
-    public static int addScientistNum;
-    public static int addEngineerNum;
-    public static int addShapeshifterNum;
+    public static int AddScientistNum;
+    public static int AddEngineerNum;
+    public static int AddShapeshifterNum;
+    public static int AddNoisemakerNum;
+    public static int AddPhantomNum;
+    public static int AddTrackerNum;
     public static void CalculateVanillaRoleCount()
     {
         // Calculate the number of base roles
-        addEngineerNum = 0;
-        addScientistNum = 0;
-        addShapeshifterNum = 0;
+        AddEngineerNum = 0;
+        AddScientistNum = 0;
+        AddShapeshifterNum = 0;
+        AddNoisemakerNum = 0;
+        AddPhantomNum = 0;
+        AddTrackerNum = 0;
         foreach (var role in AllRoles)
         {
             switch (role.GetVNRole())
             {
                 case CustomRoles.Scientist:
-                    addScientistNum++;
+                    AddScientistNum++;
                     break;
                 case CustomRoles.Engineer:
-                    addEngineerNum++;
+                    AddEngineerNum++;
                     break;
                 case CustomRoles.Shapeshifter:
-                    addShapeshifterNum++;
+                    AddShapeshifterNum++;
+                    break;
+                case CustomRoles.Noisemaker:
+                    AddNoisemakerNum++;
+                    break;
+                case CustomRoles.Phantom:
+                    AddPhantomNum++;
+                    break;
+                case CustomRoles.Tracker:
+                    AddTrackerNum++;
                     break;
             }
         }

@@ -25,6 +25,4 @@ internal class CrewmateTOHE : RoleBase
     {
         playerIdList.Add(playerId);
     }
-
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 300f;
 }

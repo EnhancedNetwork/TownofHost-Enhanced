@@ -1,5 +1,4 @@
-using AmongUs.GameOptions;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;
 using UnityEngine;
@@ -8,646 +7,651 @@ using Object = UnityEngine.Object;
 
 namespace TOHE;
 
-[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
-[HarmonyPriority(Priority.First)]
-class GameSettingMenuStartPatch
+// Thanks: https://github.com/Yumenopai/TownOfHost_Y/blob/main/Patches/GameOptionsMenuPatch.cs
+public static class ModGameOptionsMenu
 {
-    public static void Postfix(GameSettingMenu __instance)
-    {
-        // Need for Hide&Seek because tabs are disabled by default
-        __instance.Tabs.SetActive(true);
-    }
+    public static int TabIndex = 0;
+    public static Il2CppSystem.Collections.Generic.Dictionary<OptionBehaviour, int> OptionList = new();
+    public static Il2CppSystem.Collections.Generic.Dictionary<int, OptionBehaviour> BehaviourList = new();
+    public static Il2CppSystem.Collections.Generic.Dictionary<int, CategoryHeaderMasked> CategoryHeaderList = new();
 }
-[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Close))]
-class GameSettingMenuClosePatch
+[HarmonyPatch(typeof(GameOptionsMenu))]
+public static class GameOptionsMenuPatch
 {
-    public static void Postfix()
+    public static GameOptionsMenu Instance;
+    [HarmonyPatch(nameof(GameOptionsMenu.Initialize)), HarmonyPrefix]
+    private static bool InitializePrefix(GameOptionsMenu __instance)
     {
-        // if custom game mode is HideNSeekTOHE in normal game, set standart
-        if (GameStates.IsNormalGame && Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+        Instance ??= __instance;
+        if (ModGameOptionsMenu.TabIndex < 3) return true;
+
+        if (__instance.Children == null || __instance.Children.Count == 0)
         {
-            // Select standart custom game mode
-            Options.GameMode.SetValue(0);
-        }
-    }
-}
-[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.InitializeOptions))]
-public static class GameSettingMenuInitializeOptionsPatch
-{
-    public static void Prefix(GameSettingMenu __instance)
-    {
-        // Unlocks map/impostor amount changing in online (for testing on your custom servers)
-        // Changed to be able to change the map in online mode without having to re-establish the room.
-        __instance.HideForOnline = new Il2CppReferenceArray<Transform>(0);
-    }
-
-    // Add Dleks to map selection
-    public static void Postfix([HarmonyArgument(0)] Il2CppReferenceArray<Transform> items)
-    {
-        items
-            .FirstOrDefault(
-                i => i.gameObject.activeSelf && i.name.Equals("MapName", StringComparison.OrdinalIgnoreCase))?
-            .GetComponent<KeyValueOption>()?
-            .Values?
-            // using .Insert will convert managed values and break the struct resulting in crashes
-            .System_Collections_IList_Insert((int)MapNames.Dleks, new Il2CppSystem.Collections.Generic.KeyValuePair<string, int>(Constants.MapNames[(int)MapNames.Dleks], (int)MapNames.Dleks));
-    }
-}
-[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Start))]
-[HarmonyPriority(799)]
-public static class GameOptionsMenuStartPatch
-{
-    public static void Postfix(GameOptionsMenu __instance)
-    {
-        try
-        {
-            var modeForSmallScreen = Main.ModeForSmallScreen.Value;
-
-            StringOption template = Object.FindObjectOfType<StringOption>();
-            GameObject gameSettings = GameObject.Find("Game Settings");
-            GameSettingMenu gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
-
-            if (GameStates.IsNormalGame)
+            __instance.MapPicker.gameObject.SetActive(false);
+            __instance.Children = new Il2CppSystem.Collections.Generic.List<OptionBehaviour>();
+            __instance.CreateSettings();
+            __instance.cachedData = GameOptionsManager.Instance.CurrentGameOptions;
+            for (int i = 0; i < __instance.Children.Count; i++)
             {
-                if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
-                {
-                    // Select standart custom game mode for normal game
-                    Options.GameMode.SetValue(0);
-                }
-
-                template = Object.FindObjectOfType<StringOption>();
-                if (template == null) return;
-
-                gameSettings = GameObject.Find("Game Settings");
-                if (gameSettings == null) return;
-
-                gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
-                if (gameSettingMenu == null) return;
-
-                GameObject.Find("Tint")?.SetActive(false);
-
-                _ = new LateTask(() =>
-                {
-                    var children = __instance.Children.ToArray();
-                    foreach (var ob in children)
-                    {
-                        switch (ob.Title)
-                        {
-                            case StringNames.GameVotingTime:
-                                ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 600);
-                                break;
-                            case StringNames.GameShortTasks:
-                            case StringNames.GameLongTasks:
-                            case StringNames.GameCommonTasks:
-                                ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 99);
-                                break;
-                            case StringNames.GameKillCooldown:
-                                ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }, 2f, "StringNames options", shoudLog: false);
+                OptionBehaviour optionBehaviour = __instance.Children[i];
+                optionBehaviour.OnValueChanged = new Action<OptionBehaviour>(__instance.ValueChanged);
             }
-            else if (GameStates.IsHideNSeek)
-            {
-                // Select custom game mode for Hide & Seek
-                Options.GameMode.SetValue(2);
-
-                gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
-                if (gameSettingMenu == null) return;
-
-                gameSettingMenu.RegularGameSettings.gameObject.SetActive(true);
-                gameSettingMenu.RolesSettings.gameObject.SetActive(true);
-
-                GameObject.Find("Tint")?.SetActive(false);
-
-                template = Object.FindObjectsOfType<StringOption>().FirstOrDefault();
-                if (template == null) return;
-
-                gameSettings = GameObject.Find("Game Settings");
-                if (gameSettings == null) return;
-
-                gameSettingMenu.RegularGameSettings.gameObject.SetActive(false);
-                gameSettingMenu.RolesSettings.gameObject.SetActive(false);
-
-                var children = __instance.Children.ToArray();
-                foreach (var ob in children)
-                {
-                    switch (ob.Title)
-                    {
-                        case StringNames.EscapeTime:
-                            ob.Cast<NumberOption>().ValidRange = new FloatRange(10, 600);
-                            break;
-                        case StringNames.FinalEscapeTime:
-                            ob.Cast<NumberOption>().ValidRange = new FloatRange(10, 300);
-                            break;
-                        case StringNames.GameShortTasks:
-                        case StringNames.GameLongTasks:
-                        case StringNames.GameCommonTasks:
-                            ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 10);
-                            break;
-                        case StringNames.GameNumImpostors:
-                            ob.Cast<NumberOption>().ValidRange = new FloatRange(1, 3);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            gameSettings.transform.Find("GameGroup").GetComponent<Scroller>().ScrollWheelSpeed = 1.2f;
-
-            var roleTab = GameObject.Find("RoleTab");
-            var gameTab = GameObject.Find("GameTab");
-
-            List<GameObject> menus = [gameSettingMenu.RegularGameSettings, gameSettingMenu.RolesSettings.gameObject];
-            List<SpriteRenderer> highlights = [gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight];
-            List<GameObject> tabs = [gameTab, roleTab];
-
-            // No add roleTab in Hide & Seek
-            if (GameStates.IsHideNSeek)
-            {
-                menus = [gameSettingMenu.RegularGameSettings];
-                highlights = [gameSettingMenu.GameSettingsHightlight];
-                tabs = [gameTab];
-            }
-
-            float delay = 0f;
-
-            foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => GameStates.IsNormalGame || (GameStates.IsHideNSeek && (tab is TabGroup.SystemSettings or TabGroup.GameSettings or TabGroup.TaskSettings))).ToArray())
-            {
-                var obj = gameSettings.transform.parent.Find(tab + "Tab");
-                if (obj != null)
-                {
-                    obj.transform.Find("../../GameGroup/Text").GetComponent<TextMeshPro>().SetText(GetString("TabGroup." + tab));
-                    continue;
-                }
-
-                var tohSettings = Object.Instantiate(gameSettings, gameSettings.transform.parent);
-                tohSettings.name = tab + "Tab";
-
-                var tohSettingsTransform = tohSettings.transform;
-                var backPanel = tohSettingsTransform.Find("BackPanel");
-
-                if (!modeForSmallScreen)
-                {
-                    backPanel.transform.localScale =
-                    tohSettingsTransform.Find("Bottom Gradient").transform.localScale = new Vector3(1.6f, 1f, 1f);
-                    tohSettingsTransform.Find("Bottom Gradient").transform.localPosition += new Vector3(0.2f, 0f, 0f);
-                    tohSettingsTransform.Find("BackPanel").transform.localPosition += new Vector3(0.2f, 0f, 0f);
-                    tohSettingsTransform.Find("Background").transform.localScale = new Vector3(1.8f, 1f, 1f);
-                    tohSettingsTransform.Find("UI_Scrollbar").transform.localPosition += new Vector3(1.4f, 0f, 0f);
-                    tohSettingsTransform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(1.4f, 0f, 0f);
-                    tohSettingsTransform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.3f, 0f, 0f);
-                }
-                else
-                {
-                    backPanel.transform.localScale =
-                    tohSettingsTransform.Find("Bottom Gradient").transform.localScale = new Vector3(1.2f, 1f, 1f);
-                    tohSettingsTransform.Find("Background").transform.localScale = new Vector3(1.3f, 1f, 1f);
-                    tohSettingsTransform.Find("UI_Scrollbar").transform.localPosition += new Vector3(0.35f, 0f, 0f);
-                    tohSettingsTransform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(0.35f, 0f, 0f);
-                    tohSettingsTransform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.15f, 0f, 0f);
-                }
-
-                var tohMenu = tohSettingsTransform.Find("GameGroup/SliderInner").GetComponent<GameOptionsMenu>();
-                List<OptionBehaviour> scOptions = [];
-
-                _ = new LateTask(() =>
-                {
-                    tohMenu.GetComponentsInChildren<OptionBehaviour>().Do(x => Object.Destroy(x.gameObject));
-
-                    foreach (var option in OptionItem.AllOptions.Where(opt => opt.Tab == tab).ToArray())
-                    {
-
-                        if (option.OptionBehaviour == null)
-                        {
-                            float yoffset = option.IsText ? 300f : 0f;
-                            float xoffset = option.IsText ? 300f : 0.3f;
-                            var stringOption = Object.Instantiate(template, tohMenu.transform);
-                            scOptions.Add(stringOption);
-                            stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
-                            stringOption.TitleText.text = option.Name;
-                            stringOption.Value = stringOption.oldValue = option.CurrentValue;
-                            stringOption.ValueText.text = option.GetString();
-                            stringOption.name = option.Name;
-
-                            var stringOptionTransform = stringOption.transform;
-                            if (!modeForSmallScreen)
-                            {
-                                stringOptionTransform.Find("Background").localScale = new Vector3(1.6f, 1f, 1f);
-                                stringOptionTransform.Find("Plus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.4f, yoffset, 0f);
-                                stringOptionTransform.Find("Minus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.0f, yoffset, 0f);
-                                stringOptionTransform.Find("Value_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.2f, yoffset, 0f);
-                                stringOptionTransform.Find("Value_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(1.6f, 0.26f);
-                                stringOptionTransform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.25f : 0.1f, option.IsText ? -0.1f : 0f, 0f);
-                                stringOptionTransform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(5.5f, 0.37f);
-                            }
-                            else
-                            {
-                                stringOptionTransform.Find("Background").localScale = new Vector3(1.2f, 1f, 1f);
-                                stringOptionTransform.Find("Plus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
-                                stringOptionTransform.Find("Minus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
-                                stringOptionTransform.Find("Value_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
-                                stringOptionTransform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.3f : 0.15f, option.IsText ? -0.1f : 0f, 0f);
-                                stringOptionTransform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(3.5f, 0.37f);
-                            }
-
-                            option.OptionBehaviour = stringOption;
-                        }
-                        option.OptionBehaviour.gameObject.SetActive(true);
-                    }
-                }, delay, "Settings", shoudLog: false);
-
-                delay += 0.1f;
-                
-                tohMenu.Children = scOptions.ToArray();
-                tohSettings.gameObject.SetActive(false);
-                menus.Add(tohSettings.gameObject);
-
-                var tohTab = Object.Instantiate(roleTab, roleTab.transform.parent);
-                var hatButton = tohTab.transform.Find("Hat Button");
-
-                hatButton.Find("Icon").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite($"TOHE.Resources.Images.TabIcon_{tab}.png", 100f);
-                tabs.Add(tohTab);
-                var tohTabHighlight = hatButton.Find("Tab Background").GetComponent<SpriteRenderer>();
-                highlights.Add(tohTabHighlight);
-            }
-
-            // hide roleTab in Hide & Seek
-            if (GameStates.IsHideNSeek)
-            {
-                roleTab.active = false;
-            }
-
-            var tabsCount = tabs.Count;
-            var menusCount = menus.Count;
-            var tabsCountDividedBy323 = tabsCount / 3.23f;
-
-            for (var i = 0; i < tabsCount; i++)
-            {
-                var tab = tabs[i];
-                var transform = tab.transform;
-
-                var xValue = modeForSmallScreen ? 0.6f * (i - 1) - tabsCountDividedBy323 : 0.65f * (i - 1) - tabsCountDividedBy323;
-                transform.localPosition = new(xValue, transform.localPosition.y, transform.localPosition.z);
-
-                var button = tab.GetComponentInChildren<PassiveButton>();
-                if (button != null)
-                {
-                    var copiedIndex = i;
-                    button.OnClick ??= new UnityEngine.UI.Button.ButtonClickedEvent();
-                    void value()
-                    {
-                        if (GameStates.IsHideNSeek)
-                        {
-                            gameSettingMenu.RegularGameSettings.SetActive(false);
-                            gameSettingMenu.RolesSettings.gameObject.SetActive(false);
-                            gameSettingMenu.HideNSeekSettings.gameObject.SetActive(false);
-                            gameSettingMenu.GameSettingsHightlight.enabled = false;
-                            gameSettingMenu.RolesSettingsHightlight.enabled = false;
-
-                            if (copiedIndex == 0)
-                            {
-                                gameSettingMenu.HideNSeekSettings.gameObject.SetActive(true);
-                                gameSettingMenu.GameSettingsHightlight.enabled = true;
-                            }
-                        }
-                        for (var j = 0; j < menusCount; j++)
-                        {
-                            if (GameStates.IsHideNSeek && j == 0 && copiedIndex == 0) continue;
-                            menus[j].SetActive(j == copiedIndex);
-                            highlights[j].enabled = j == copiedIndex;
-                        }
-                    }
-                    button.OnClick.AddListener((Action)value);
-                }
-            }
+            __instance.InitializeControllerNavigation();
         }
-        catch
-        {
-        }
-    }
-}
-
-[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Update))]
-public class GameOptionsMenuUpdatePatch
-{
-    private static float _timer = 1f;
-
-    public static void Postfix(GameOptionsMenu __instance)
-    {
-        if (__instance.transform.parent.parent.name == "Game Settings") return;
-
-        if (GameStates.IsHideNSeek)
-        {
-            Main.HideNSeekOptions.NumImpostors = Options.NumImpostorsHnS.GetInt();
-        }
-
-        foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
-        {
-            string tabcolor = tab switch
-            {
-                TabGroup.SystemSettings => Main.ModColor,
-                TabGroup.GameSettings => "#59ef83",
-                TabGroup.TaskSettings => "#EF59AF",
-                TabGroup.ImpostorRoles => "#f74631",
-                TabGroup.CrewmateRoles => "#8cffff",
-                TabGroup.NeutralRoles => "#7f8c8d",
-                TabGroup.Addons => "#ff9ace",
-                _ => "#ffffff",
-            };
-            if (__instance.transform.parent.parent.name != tab + "Tab") continue;
-            __instance.transform.Find("../../GameGroup/Text").GetComponent<TextMeshPro>().SetText($"<color={tabcolor}>" + GetString("TabGroup." + tab) + "</color>");
-
-            _timer += Time.deltaTime;
-            if (_timer < 0.1f) return;
-            _timer = 0f;
-
-            float numItems = __instance.Children.Length;
-            var offset = 2.7f;
-
-            foreach (var option in OptionItem.AllOptions.Where(opt => tab == opt.Tab && opt.OptionBehaviour != null && opt.OptionBehaviour.gameObject != null).ToArray())
-            {
-                var enabled = true;
-                var parent = option.Parent;
-
-                enabled = AmongUsClient.Instance.AmHost &&
-                    !option.IsHiddenOn(Options.CurrentGameMode);
-
-                var opt = option.OptionBehaviour.transform.Find("Background").GetComponent<SpriteRenderer>();
-                opt.size = new(5.0f, 0.45f);
-                while (parent != null && enabled)
-                {
-                    enabled = parent.GetBool() && !parent.IsHiddenOn(Options.CurrentGameMode);
-                    parent = parent.Parent;
-                    opt.color = new(0f, 1f, 0f);
-                    opt.size = new(4.8f, 0.45f);
-
-                    if (!Main.ModeForSmallScreen.Value)
-                    {
-                        opt.transform.localPosition = new Vector3(0.11f, 0f);
-                        option.OptionBehaviour.transform.Find("Title_TMP").transform.localPosition = new Vector3(-1.08f, 0f);
-                        option.OptionBehaviour.transform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(5.1f, 0.28f);
-                        if (option.Parent?.Parent != null)
-                        {
-                            opt.color = new(0f, 0f, 1f);
-                            opt.size = new(4.6f, 0.45f);
-                            opt.transform.localPosition = new Vector3(0.24f, 0f);
-                            option.OptionBehaviour.transform.Find("Title_TMP").transform.localPosition = new Vector3(-0.88f, 0f);
-                            option.OptionBehaviour.transform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(4.9f, 0.28f);
-                            if (option.Parent?.Parent?.Parent != null)
-                            {
-                                opt.color = new(1f, 0f, 0f);
-                                opt.size = new(4.4f, 0.45f);
-                                opt.transform.localPosition = new Vector3(0.37f, 0f);
-                                option.OptionBehaviour.transform.Find("Title_TMP").transform.localPosition = new Vector3(-0.68f, 0f);
-                                option.OptionBehaviour.transform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(4.7f, 0.28f);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        option.OptionBehaviour.transform.Find("Title_TMP").transform.localPosition = new Vector3(-0.95f, 0f);
-                        option.OptionBehaviour.transform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(3.4f, 0.37f);
-                        if (option.Parent?.Parent != null)
-                        {
-                            opt.color = new(0f, 0f, 1f);
-                            opt.size = new(4.6f, 0.45f);
-                            opt.transform.localPosition = new Vector3(0.24f, 0f);
-                            option.OptionBehaviour.transform.Find("Title_TMP").transform.localPosition = new Vector3(-0.7f, 0f);
-                            option.OptionBehaviour.transform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(3.3f, 0.37f);
-                            if (option.Parent?.Parent?.Parent != null)
-                            {
-                                opt.color = new(1f, 0f, 0f);
-                                opt.size = new(4.4f, 0.45f);
-                                opt.transform.localPosition = new Vector3(0.37f, 0f);
-                                option.OptionBehaviour.transform.Find("Title_TMP").transform.localPosition = new Vector3(-0.55f, 0f);
-                                option.OptionBehaviour.transform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(3.2f, 0.37f);
-                            }
-                        }
-                    }
-                }
-
-                if (option.IsText)
-                {
-                    opt.color = new(0, 0, 0);
-                    opt.transform.localPosition = new(300f, 300f, 300f);
-                }
-
-                option.OptionBehaviour.gameObject.SetActive(enabled);
-                if (enabled)
-                {
-                    offset -= option.IsHeader ? 0.7f : 0.5f;
-                    option.OptionBehaviour.transform.localPosition = new Vector3(
-                        option.OptionBehaviour.transform.localPosition.x,
-                        offset,
-                        option.OptionBehaviour.transform.localPosition.z);
-
-                    if (option.IsHeader)
-                    {
-                        if (!Main.ModeForSmallScreen.Value)
-                            numItems += 0.3f;
-                        else
-                            numItems += 0.5f;
-                    }
-                }
-                else
-                {
-                    numItems--;
-                }
-            }
-            __instance.GetComponentInParent<Scroller>().ContentYBounds.max = (-offset) - 1.5f;
-        }
-    }
-}
-
-[HarmonyPatch(typeof(StringOption), nameof(StringOption.OnEnable))]
-public class StringOptionEnablePatch
-{
-    public static bool Prefix(StringOption __instance)
-    {
-        var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
-        if (option == null) return true;
-
-        __instance.OnValueChanged = new Action<OptionBehaviour>((o) => { });
-        if (option.IsVanillaText)
-        {
-            __instance.TitleText.text = option.GetNameVanilla();
-        }
-        else
-        {
-            __instance.TitleText.text = option.GetName();
-        }
-        __instance.Value = __instance.oldValue = option.CurrentValue;
-        __instance.ValueText.text = option.GetString();
 
         return false;
     }
-}
-
-[HarmonyPatch(typeof(StringOption), nameof(StringOption.Increase))]
-public class StringOptionIncreasePatch
-{
-    public static bool Prefix(StringOption __instance)
+    // Thanks: https://github.com/Gurge44/EndlessHostRoles
+    [HarmonyPatch(nameof(GameOptionsMenu.Initialize)), HarmonyPostfix]
+    private static void InitializePostfix()
     {
-        var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
-        if (option == null) return true;
+        GameObject.Find("PlayerOptionsMenu(Clone)")?.transform.FindChild("Background")?.gameObject.SetActive(false);
+    }
 
-        if (option.Name == "GameMode")
+    [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings)), HarmonyPrefix]
+    private static bool CreateSettingsPrefix(GameOptionsMenu __instance)
+    {
+        Instance ??= __instance;
+        // When is vanilla tab, run vanilla code
+        if (ModGameOptionsMenu.TabIndex < 3) return true;
+        __instance.scrollBar.SetYBoundsMax(CalculateScrollBarYBoundsMax());
+        __instance.StartCoroutine(CoRoutine().WrapToIl2Cpp());
+        return false;
+
+        System.Collections.IEnumerator CoRoutine()
         {
-            var gameModeCount = Options.gameModes.Length - 1;
-            switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
+            var modTab = (TabGroup)(ModGameOptionsMenu.TabIndex - 3);
+
+            float num = 2.0f;
+            const float posX = 0.952f;
+            const float posZ = -2.0f;
+            for (int index = 0; index < OptionItem.AllOptions.Count; index++)
             {
-                // To prevent the Host from selecting CustomGameMode.HidenSeekTOHE
-                case GameModes.NormalFools when option.CurrentValue == 0:
-                case GameModes.Normal when option.CurrentValue == gameModeCount - 1:
-                // To prevent the Host from selecting CustomGameMode.Standard/FFA
-                case GameModes.SeekFools when option.CurrentValue == gameModeCount:
-                case GameModes.HideNSeek when option.CurrentValue == gameModeCount:
-                    return false;
-                default:
-                    break;
+                var option = OptionItem.AllOptions[index];
+                if (option.Tab != modTab) continue;
+
+                var enabled = !option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null || (!option.Parent.IsHiddenOn(Options.CurrentGameMode) && option.Parent.GetBool()));
+
+                if (option is TextOptionItem)
+                {
+                    CategoryHeaderMasked categoryHeaderMasked = Object.Instantiate(__instance.categoryHeaderOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
+                    categoryHeaderMasked.SetHeader(StringNames.RolesCategory, 20);
+                    categoryHeaderMasked.Title.text = option.GetName();
+                    categoryHeaderMasked.transform.localScale = Vector3.one * 0.63f;
+                    categoryHeaderMasked.transform.localPosition = new(-0.903f, num, posZ);
+                    var chmText = categoryHeaderMasked.transform.FindChild("HeaderText").GetComponent<TextMeshPro>();
+                    chmText.fontStyle = FontStyles.Bold;
+                    chmText.outlineWidth = 0.17f;
+                    categoryHeaderMasked.gameObject.SetActive(enabled);
+                    ModGameOptionsMenu.CategoryHeaderList.TryAdd(index, categoryHeaderMasked);
+
+                    if (enabled) num -= 0.63f;
+                }
+                else if (option.IsHeader && enabled) num -= 0.3f;
+
+                if (option is TextOptionItem) continue;
+
+                var baseGameSetting = GetSetting(option);
+                if (baseGameSetting == null) continue;
+
+
+                OptionBehaviour optionBehaviour;
+
+                switch (baseGameSetting.Type)
+                {
+                    case OptionTypes.Checkbox:
+                        {
+                            optionBehaviour = Object.Instantiate(__instance.checkboxOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
+                            optionBehaviour.transform.localPosition = new(posX, num, posZ);
+
+                            OptionBehaviourSetSizeAndPosition(optionBehaviour, option, baseGameSetting.Type);
+
+                            optionBehaviour.SetClickMask(__instance.ButtonClickMask);
+                            optionBehaviour.SetUpFromData(baseGameSetting, 20);
+                            ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour, index);
+                            break;
+                        }
+                    case OptionTypes.String:
+                        {
+                            optionBehaviour = Object.Instantiate(__instance.stringOptionOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
+                            optionBehaviour.transform.localPosition = new(posX, num, posZ);
+
+                            OptionBehaviourSetSizeAndPosition(optionBehaviour, option, baseGameSetting.Type);
+
+                            optionBehaviour.SetClickMask(__instance.ButtonClickMask);
+                            optionBehaviour.SetUpFromData(baseGameSetting, 20);
+                            ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour, index);
+                            break;
+                        }
+                    case OptionTypes.Float:
+                    case OptionTypes.Int:
+                        {
+                            optionBehaviour = Object.Instantiate(__instance.numberOptionOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
+                            optionBehaviour.transform.localPosition = new(posX, num, posZ);
+
+                            OptionBehaviourSetSizeAndPosition(optionBehaviour, option, baseGameSetting.Type);
+
+                            optionBehaviour.SetClickMask(__instance.ButtonClickMask);
+                            optionBehaviour.SetUpFromData(baseGameSetting, 20);
+                            ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour, index);
+                            break;
+                        }
+                    default:
+                        continue;
+                }
+
+                optionBehaviour.transform.localPosition = new(0.952f, num, -2f);
+                optionBehaviour.SetClickMask(__instance.ButtonClickMask);
+                optionBehaviour.SetUpFromData(baseGameSetting, 20);
+                ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour, index);
+                ModGameOptionsMenu.BehaviourList.TryAdd(index, optionBehaviour);
+                optionBehaviour.gameObject.SetActive(enabled);
+                optionBehaviour.OnValueChanged = new Action<OptionBehaviour>(__instance.ValueChanged);
+                __instance.Children.Add(optionBehaviour);
+
+                if (enabled) num -= 0.45f;
+
+                if (index % 50 == 0) yield return null;
+            }
+
+            yield return null;
+
+            __instance.ControllerSelectable.Clear();
+            foreach (var x in __instance.scrollBar.GetComponentsInChildren<UiElement>())
+            {
+                __instance.ControllerSelectable.Add(x);
             }
         }
 
-        option.SetValue(option.CurrentValue + (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
-
-        if (option.Name == "Preset")
+        float CalculateScrollBarYBoundsMax()
         {
-            if (GameStates.IsHideNSeek)
+            float num = 2.0f;
+            foreach (var option in OptionItem.AllOptions)
             {
-                // Set Hide & Seek game mode
-                Options.GameMode.SetValue(2);
+                if (option.Tab != (TabGroup)(ModGameOptionsMenu.TabIndex - 3)) continue;
+
+                var enabled = !option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null || (!option.Parent.IsHiddenOn(Options.CurrentGameMode) && option.Parent.GetBool()));
+
+                if (option is TextOptionItem) num -= 0.63f;
+                else if (enabled)
+                {
+                    if (option.IsHeader) num -= 0.3f;
+                    num -= 0.45f;
+                }
             }
-            else if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+
+            return -num - 1.65f;
+        }
+    }
+    private static void OptionBehaviourSetSizeAndPosition(OptionBehaviour optionBehaviour, OptionItem option, OptionTypes type)
+    {
+        Vector3 positionOffset = new(0f, 0f, 0f);
+        Vector3 scaleOffset = new(0f, 0f, 0f);
+        Color color = new(0.8f, 0.8f, 0.8f);
+        float sizeDelta_x = 5.7f;
+
+        if (option.Parent?.Parent?.Parent != null)
+        {
+            scaleOffset = new(-0.18f, 0, 0);
+            positionOffset = new(0.3f, 0f, 0f);
+            color = new(0.8f, 0.8f, 0.2f);
+            sizeDelta_x = 5.1f;
+        }
+        else if (option.Parent?.Parent != null)
+        {
+            scaleOffset = new(-0.12f, 0, 0);
+            positionOffset = new(0.2f, 0f, 0f);
+            color = new(0.5f, 0.2f, 0.8f);
+            sizeDelta_x = 5.3f;
+        }
+        else if (option.Parent != null)
+        {
+            scaleOffset = new(-0.05f, 0, 0);
+            positionOffset = new(0.1f, 0f, 0f);
+            color = new(0.2f, 0.8f, 0.8f);
+            sizeDelta_x = 5.5f;
+        }
+
+        var labelBackground = optionBehaviour.transform.FindChild("LabelBackground");
+        labelBackground.GetComponent<SpriteRenderer>().color = color;
+        labelBackground.localScale += new Vector3(1f, -0.2f, 0f) + scaleOffset;
+        labelBackground.localPosition += new Vector3(-0.6f, 0f, 0f) + positionOffset;
+
+        var titleText = optionBehaviour.transform.FindChild("Title Text");
+        titleText.localPosition += new Vector3(-0.7f, 0f, 0f) + positionOffset;
+        titleText.GetComponent<RectTransform>().sizeDelta = new(sizeDelta_x, 0.37f);
+        var textMeshPro = titleText.GetComponent<TextMeshPro>();
+        textMeshPro.alignment = TextAlignmentOptions.MidlineLeft;
+        textMeshPro.fontStyle = FontStyles.Bold;
+        textMeshPro.outlineWidth = 0.17f;
+
+        switch (type)
+        {
+            case OptionTypes.Checkbox:
+                optionBehaviour.transform.FindChild("Toggle").localPosition = new(1.46f, -0.042f);
+                break;
+
+            case OptionTypes.String:
+                optionBehaviour.transform.FindChild("PlusButton (1)").localPosition += new Vector3(option.IsText ? 500f : 1.7f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
+                optionBehaviour.transform.FindChild("MinusButton (1)").localPosition += new Vector3(option.IsText ? 500f : 0.9f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
+                var valueTMP = optionBehaviour.transform.FindChild("Value_TMP (1)");
+                valueTMP.localPosition += new Vector3(1.3f, 0f, 0f);
+                valueTMP.GetComponent<RectTransform>().sizeDelta = new(2.3f, 0.4f);
+                goto default;
+
+            case OptionTypes.Float:
+            case OptionTypes.Int:
+                optionBehaviour.transform.FindChild("PlusButton").localPosition += new Vector3(option.IsText ? 500f : 1.7f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
+                optionBehaviour.transform.FindChild("MinusButton").localPosition += new Vector3(option.IsText ? 500f : 0.9f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
+                optionBehaviour.transform.FindChild("Value_TMP").localPosition += new Vector3(1.3f, 0f, 0f);
+                goto default;
+
+            default:
+                var valueBox = optionBehaviour.transform.FindChild("ValueBox");
+                valueBox.localScale += new Vector3(0.2f, 0f, 0f);
+                valueBox.localPosition += new Vector3(1.3f, 0f, 0f);
+                break;
+        }
+    }
+    public static void UpdateSettings()
+    {
+        foreach (var optionBehaviour in ModGameOptionsMenu.OptionList.Keys)
+        {
+            try
             {
-                // Set standart game mode
-                Options.GameMode.SetValue(0);
+                optionBehaviour.Initialize();
+
+                //optionBehaviour.SetClickMask(Instance.ButtonClickMask);
+                //var baseGameSetting = GetSetting(OptionItem.AllOptions[index]);
+                //if (baseGameSetting != null)
+                //{
+                //    optionBehaviour.SetUpFromData(baseGameSetting, 20);
+                //}
+                //_ = optionBehaviour.OnValueChanged;
+                Instance?.ValueChanged(optionBehaviour);
             }
+            catch { }
+        }
+    }
+    [HarmonyPatch(nameof(GameOptionsMenu.ValueChanged)), HarmonyPrefix]
+    private static bool ValueChangedPrefix(GameOptionsMenu __instance, OptionBehaviour option)
+    {
+        if (__instance == null || ModGameOptionsMenu.TabIndex < 3) return true;
+
+        if (ModGameOptionsMenu.OptionList.TryGetValue(option, out var index))
+        {
+            var item = OptionItem.AllOptions[index];
+            if (item != null && item.Children.Count > 0) ReCreateSettings(__instance);
         }
         return false;
     }
-}
-
-[HarmonyPatch(typeof(StringOption), nameof(StringOption.Decrease))]
-public class StringOptionDecreasePatch
-{
-    public static bool Prefix(StringOption __instance)
+    private static void ReCreateSettings(GameOptionsMenu __instance)
     {
-        var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
-        if (option == null) return true;
+        if (ModGameOptionsMenu.TabIndex < 3) return;
+        var modTab = (TabGroup)(ModGameOptionsMenu.TabIndex - 3);
 
-        if (option.Name == "GameMode")
+        float num = 2.0f;
+        for (int index = 0; index < OptionItem.AllOptions.Count; index++)
         {
-            switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
+            var option = OptionItem.AllOptions[index];
+            if (option.Tab != modTab) continue;
+
+            var enabled = !option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null || (!option.Parent.IsHiddenOn(Options.CurrentGameMode) && option.Parent.GetBool()));
+
+            if (ModGameOptionsMenu.CategoryHeaderList.TryGetValue(index, out var categoryHeaderMasked))
             {
-                // To prevent the Host from selecting CustomGameMode.HidenSeekTOHE
-                case GameModes.NormalFools when option.CurrentValue == 0:
-                case GameModes.Normal when option.CurrentValue == 0:
-                // To prevent the Host from selecting CustomGameMode.Standard/FFA
-                case GameModes.SeekFools when option.CurrentValue == Options.gameModes.Length - 1:
-                case GameModes.HideNSeek when option.CurrentValue == Options.gameModes.Length - 1:
-                    return false;
-                default:
-                    break;
+                categoryHeaderMasked.transform.localPosition = new(-0.903f, num, -2f);
+                categoryHeaderMasked.gameObject.SetActive(enabled);
+                if (enabled) num -= 0.63f;
+            }
+            else if (option.IsHeader && enabled) num -= 0.3f;
+
+            if (ModGameOptionsMenu.BehaviourList.TryGetValue(index, out var optionBehaviour))
+            {
+                optionBehaviour.transform.localPosition = new(0.952f, num, -2f);
+                optionBehaviour.gameObject.SetActive(enabled);
+                if (enabled) num -= 0.45f;
             }
         }
 
-        option.SetValue(option.CurrentValue - (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
-
-        if (option.Name == "Preset")
+        __instance.ControllerSelectable.Clear();
+        foreach (var x in __instance.scrollBar.GetComponentsInChildren<UiElement>())
+            __instance.ControllerSelectable.Add(x);
+        __instance.scrollBar.SetYBoundsMax(-num - 1.65f);
+    }
+    private static BaseGameSetting GetSetting(OptionItem item)
+    {
+        static t CreateAndInvoke<t>(Func<t> func) where t : BaseGameSetting
         {
-            if (GameStates.IsHideNSeek)
-            {
-                // Set Hide & Seek game mode
-                Options.GameMode.SetValue(2);
-            }
-            else if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
-            {
-                // Set standart game mode
-                Options.GameMode.SetValue(0);
-            }
+            return func.Invoke();
         }
-        return false;
+
+        // Redundant casts are here for clarity
+        // C# dosen't support intra switch statement methods 😭
+
+        BaseGameSetting baseGameSetting = item switch
+        {
+            BooleanOptionItem => CreateAndInvoke(() => {
+                var x = ScriptableObject.CreateInstance<CheckboxGameSetting>();
+                x.Type = OptionTypes.Checkbox;
+
+                return x;
+            }),
+            IntegerOptionItem integerOptionItem => CreateAndInvoke(() => {
+                var x = ScriptableObject.CreateInstance<IntGameSetting>();
+                x.Type = OptionTypes.Int;
+                x.Value = integerOptionItem.GetInt();
+                x.Increment = integerOptionItem.Rule.Step;
+                x.ValidRange = new(integerOptionItem.Rule.MinValue, integerOptionItem.Rule.MaxValue);
+                x.ZeroIsInfinity = false;
+                x.SuffixType = NumberSuffixes.Multiplier;
+                x.FormatString = string.Empty;
+
+                return x;
+            }),
+            FloatOptionItem floatOptionItem => CreateAndInvoke(() => {
+                var x = ScriptableObject.CreateInstance<FloatGameSetting>();
+                x.Type = OptionTypes.Float;
+                x.Value = floatOptionItem.GetFloat();
+                x.Increment = floatOptionItem.Rule.Step;
+                x.ValidRange = new(floatOptionItem.Rule.MinValue, floatOptionItem.Rule.MaxValue);
+                x.ZeroIsInfinity = false;
+                x.SuffixType = NumberSuffixes.Multiplier;
+                x.FormatString = string.Empty;
+
+                return x;
+            }),
+            StringOptionItem stringOptionItem => CreateAndInvoke(() => {
+                var x = ScriptableObject.CreateInstance<StringGameSetting>();
+                x.Type = OptionTypes.String; 
+                x.Values = new StringNames[stringOptionItem.Selections.Length]; 
+                x.Index = stringOptionItem.GetInt();
+
+                return x;
+            }),
+            PresetOptionItem presetOptionItem => CreateAndInvoke(() => {
+                var x = ScriptableObject.CreateInstance<StringGameSetting>();
+                x.Type = OptionTypes.String;
+                x.Values = new StringNames[presetOptionItem.ValuePresets];
+                x.Index = presetOptionItem.GetInt();
+
+                return x;
+            }),
+            _ => null
+        };
+
+        if (baseGameSetting != null)
+        {
+            baseGameSetting.Title = StringNames.Accept;
+        }
+
+        return baseGameSetting;
     }
 }
 
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSyncSettings))]
-public class RpcSyncSettingsPatch
+[HarmonyPatch(typeof(ToggleOption))]
+public static class ToggleOptionPatch
 {
-    public static void Postfix()
+    [HarmonyPatch(nameof(ToggleOption.Initialize)), HarmonyPrefix]
+    private static bool InitializePrefix(ToggleOption __instance)
     {
-        OptionItem.SyncAllOptions();
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        {
+            var item = OptionItem.AllOptions[index];
+            //Logger.Info($"{item.Name}, {index}", "ToggleOption.Initialize.TryGetValue");
+            __instance.TitleText.text = item.GetName();
+            __instance.CheckMark.enabled = item.GetBool();
+            return false;
+        }
+        return true;
+    }
+    [HarmonyPatch(nameof(ToggleOption.UpdateValue)), HarmonyPrefix]
+    private static bool UpdateValuePrefix(ToggleOption __instance)
+    {
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        {
+            var item = OptionItem.AllOptions[index];
+            //Logger.Info($"{item.Name}, {index}", "ToggleOption.UpdateValue.TryGetValue");
+            item.SetValue(__instance.GetBool() ? 1 : 0);
+            return false;
+        }
+        return true;
     }
 }
-[HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.Start))]
-public static class RolesSettingsMenuPatch
+[HarmonyPatch(typeof(NumberOption))]
+public static class NumberOptionPatch
 {
-    public static void Postfix(RolesSettingsMenu __instance)
+    private static int IncrementMultiplier
     {
-        if (GameStates.IsHideNSeek) return;
-
-        foreach (var ob in __instance.Children.ToArray())
+        get
         {
-            switch (ob.Title)
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) return 5;
+            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) return 10;
+            return 1;
+        }
+    }
+    [HarmonyPatch(nameof(NumberOption.Initialize)), HarmonyPrefix]
+    private static bool InitializePrefix(NumberOption __instance)
+    {
+        switch (__instance.Title)
+        {
+            case StringNames.GameVotingTime:
+                __instance.ValidRange = new(0, 600);
+                __instance.Value = (float)Math.Round(__instance.Value, 2);
+                break;
+            case StringNames.GameShortTasks:
+            case StringNames.GameLongTasks:
+            case StringNames.GameCommonTasks:
+                __instance.ValidRange = new(0, 90);
+                __instance.Value = (float)Math.Round(__instance.Value, 2);
+                break;
+            case StringNames.GameKillCooldown:
+                __instance.ValidRange = new(0, 180);
+                __instance.Increment = 0.5f;
+                __instance.Value = (float)Math.Round(__instance.Value, 2);
+                break;
+            case StringNames.GamePlayerSpeed:
+            case StringNames.GameCrewLight:
+            case StringNames.GameImpostorLight:
+                __instance.Increment = 0.05f;
+                __instance.Value = (float)Math.Round(__instance.Value, 2);
+                break;
+            case StringNames.GameNumImpostors when DebugModeManager.IsDebugMode:
+                __instance.ValidRange.min = 0;
+                break;
+        }
+
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        {
+            var item = OptionItem.AllOptions[index];
+            __instance.TitleText.text = item.GetName();
+            return false;
+        }
+
+        return true;
+    }
+    [HarmonyPatch(nameof(NumberOption.UpdateValue)), HarmonyPrefix]
+    private static bool UpdateValuePrefix(NumberOption __instance)
+    {
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        {
+            var item = OptionItem.AllOptions[index];
+            //Logger.Info($"{item.Name}, {index}", "NumberOption.UpdateValue.TryGetValue");
+
+            if (item is IntegerOptionItem integerOptionItem)
             {
-                case StringNames.EngineerCooldown:
-                    ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
-                    break;
-                case StringNames.ShapeshifterCooldown:
-                    ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
-                    break;
-                default:
-                    break;
+                integerOptionItem.SetValue(integerOptionItem.Rule.GetNearestIndex(__instance.GetInt()));
             }
+            else if (item is FloatOptionItem floatOptionItem)
+            {
+                floatOptionItem.SetValue(floatOptionItem.Rule.GetNearestIndex(__instance.GetFloat()));
+            }
+
+            return false;
         }
+        return true;
+    }
+    [HarmonyPatch(nameof(NumberOption.FixedUpdate)), HarmonyPrefix]
+    private static bool FixedUpdatePrefix(NumberOption __instance)
+    {
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        {
+            var item = OptionItem.AllOptions[index];
+            //Logger.Info($"{item.Name}, {index}", "NumberOption.FixedUpdate.TryGetValue");
+
+            if (__instance.oldValue != __instance.Value)
+            {
+                __instance.oldValue = __instance.Value;
+                __instance.ValueText.text = GetValueString(__instance, __instance.Value, item);
+            }
+            return false;
+        }
+        return true;
+    }
+    public static string GetValueString(NumberOption __instance, float value, OptionItem item)
+    {
+        if (__instance.ZeroIsInfinity && Mathf.Abs(value) < 0.0001f) return "<b>∞</b>";
+        return item == null ? value.ToString(__instance.FormatString) : item.GetString();
+    }
+    [HarmonyPatch(nameof(NumberOption.Increase)), HarmonyPrefix]
+    public static bool IncreasePrefix(NumberOption __instance)
+    {
+        if (__instance.Value == __instance.ValidRange.max)
+        {
+            __instance.Value = __instance.ValidRange.min;
+            __instance.UpdateValue();
+            __instance.OnValueChanged.Invoke(__instance);
+            return false;
+        }
+
+        var increment = IncrementMultiplier * __instance.Increment;
+        if (__instance.Value + increment < __instance.ValidRange.max)
+        {
+            __instance.Value += increment;
+            __instance.UpdateValue();
+            __instance.OnValueChanged.Invoke(__instance);
+            return false;
+        }
+
+        return true;
+    }
+    [HarmonyPatch(nameof(NumberOption.Decrease)), HarmonyPrefix]
+    public static bool DecreasePrefix(NumberOption __instance)
+    {
+        if (__instance.Value == __instance.ValidRange.min)
+        {
+            __instance.Value = __instance.ValidRange.max;
+            __instance.UpdateValue();
+            __instance.OnValueChanged.Invoke(__instance);
+            return false;
+        }
+
+        var increment = IncrementMultiplier * __instance.Increment;
+        if (__instance.Value - increment > __instance.ValidRange.min)
+        {
+            __instance.Value -= increment;
+            __instance.UpdateValue();
+            __instance.OnValueChanged.Invoke(__instance);
+            return false;
+        }
+
+        return true;
     }
 }
-[HarmonyPatch(typeof(NormalGameOptionsV07), nameof(NormalGameOptionsV07.SetRecommendations))]
-public static class SetRecommendationsPatch
+[HarmonyPatch(typeof(StringOption))]
+public static class StringOptionPatch
 {
-    public static bool Prefix(NormalGameOptionsV07 __instance, int numPlayers, bool isOnline)
+    [HarmonyPatch(nameof(StringOption.Initialize)), HarmonyPrefix]
+    private static bool InitializePrefix(StringOption __instance)
     {
-        numPlayers = Mathf.Clamp(numPlayers, 4, 15);
-        __instance.PlayerSpeedMod = __instance.MapId == 4 ? 1.5f : 1.25f;
-        __instance.CrewLightMod = 1.0f;
-        __instance.ImpostorLightMod = 1.75f;
-        __instance.KillCooldown = 27.5f;
-        __instance.NumCommonTasks = 2;
-        __instance.NumLongTasks = 1;
-        __instance.NumShortTasks = 2;
-        __instance.NumEmergencyMeetings = 3;
-        if (!isOnline)
-            __instance.NumImpostors = NormalGameOptionsV07.RecommendedImpostors[numPlayers];
-        __instance.KillDistance = 0;
-        __instance.DiscussionTime = 0;
-        __instance.VotingTime = 120;
-        __instance.IsDefaults = true;
-        __instance.ConfirmImpostor = false;
-        __instance.VisualTasks = false;
-
-        __instance.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
-        __instance.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
-        __instance.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
-        __instance.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
-        __instance.roleOptions.SetRoleRecommended(RoleTypes.Shapeshifter);
-        __instance.roleOptions.SetRoleRecommended(RoleTypes.Scientist);
-        __instance.roleOptions.SetRoleRecommended(RoleTypes.GuardianAngel);
-        __instance.roleOptions.SetRoleRecommended(RoleTypes.Engineer);
-
-        if (Options.CurrentGameMode == CustomGameMode.FFA) //FFA
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
         {
-            __instance.CrewLightMod = __instance.ImpostorLightMod = 1.25f;
-            __instance.NumImpostors = 3;
-            __instance.NumCommonTasks = 0;
-            __instance.NumLongTasks = 0;
-            __instance.NumShortTasks = 0;
-            __instance.KillCooldown = 0f;
-        }
+            var item = OptionItem.AllOptions[index];
+            var name = item.GetName();
+            var language = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
+            //Logger.Info($" Language: {language}", "StringOption.Initialize");
 
-        return false;
+            if (EnumHelper.GetAllValues<CustomRoles>().Any(x => GetString($"{x}") == name.RemoveHtmlTags()))
+            {
+                name = $"<size=3.5>{name}</size>";
+                __instance.TitleText.fontWeight = FontWeight.Black;
+                __instance.TitleText.outlineWidth = language switch
+                {
+                    SupportedLangs.Russian or SupportedLangs.Japanese or SupportedLangs.SChinese or SupportedLangs.TChinese => 0.15f,
+                    _ => 0.35f,
+                };
+            }
+            __instance.TitleText.text = name;
+            return false;
+        }
+        return true;
+    }
+    [HarmonyPatch(nameof(StringOption.UpdateValue)), HarmonyPrefix]
+    private static bool UpdateValuePrefix(StringOption __instance)
+    {
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        {
+            var item = OptionItem.AllOptions[index];
+            //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
+
+            item.SetValue(__instance.GetInt());
+            if (item is PresetOptionItem)
+            {
+                GameOptionsMenuPatch.UpdateSettings();
+            }
+            return false;
+        }
+        return true;
+    }
+    [HarmonyPatch(nameof(StringOption.FixedUpdate)), HarmonyPrefix]
+    private static bool FixedUpdatePrefix(StringOption __instance)
+    {
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        {
+            var item = OptionItem.AllOptions[index];
+
+            if (item is StringOptionItem stringOptionItem)
+            {
+                if (__instance.oldValue != __instance.Value)
+                {
+                    __instance.oldValue = __instance.Value;
+                    __instance.ValueText.text = stringOptionItem.GetString();
+                }
+            }
+            else if (item is PresetOptionItem presetOptionItem)
+            {
+                if (__instance.oldValue != __instance.Value)
+                {
+                    __instance.oldValue = __instance.Value;
+                    __instance.ValueText.text = presetOptionItem.GetString();
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+    [HarmonyPatch(nameof(StringOption.Increase)), HarmonyPrefix]
+    public static bool IncreasePrefix(StringOption __instance)
+    {
+        if (__instance.Value == __instance.Values.Length - 1)
+        {
+            __instance.Value = 0;
+            __instance.UpdateValue();
+            __instance.OnValueChanged?.Invoke(__instance);
+            return false;
+        }
+        return true;
+    }
+    [HarmonyPatch(nameof(StringOption.Decrease)), HarmonyPrefix]
+    public static bool DecreasePrefix(StringOption __instance)
+    {
+        if (__instance.Value == 0)
+        {
+            __instance.Value = __instance.Values.Length - 1;
+            __instance.UpdateValue();
+            __instance.OnValueChanged?.Invoke(__instance);
+            return false;
+        }
+        return true;
     }
 }

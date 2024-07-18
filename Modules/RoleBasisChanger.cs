@@ -56,12 +56,17 @@ internal static class RoleBasisChanger
         newplayer.MyPhysics.ResetMoveState();
 
         GameData.Instance.RemovePlayer(player.PlayerId);
-        GameData.Instance.AddPlayer(newplayer);
+        GameData.Instance.AddPlayer(newplayer, newplayer.GetClient());
 
-        newplayer.RpcSetRoleDesync(targetVNRole, newplayer.GetClientId());
-        //newplayer.RpcSetRole(targetVNRole);
+        //newplayer.RpcSetRoleDesync(targetVNRole, true, newplayer.GetClientId());
+        newplayer.RpcSetRole(targetVNRole, true);
 
-        GameData.Instance.SetDirty();
+        //Used instead of GameData.Instance.DirtyAllData();
+        foreach (var innerNetObject in GameData.Instance.AllPlayers)
+        {
+            innerNetObject.SetDirtyBit(uint.MaxValue);
+        }
+
         newplayer.ReactorFlash(0.2f);
         newplayer.RpcTeleport(position);
 
