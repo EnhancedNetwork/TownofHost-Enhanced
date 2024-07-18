@@ -60,11 +60,10 @@ internal class Necromancer : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return true;
-        if (killer == null) return false;
-        if (target == null) return false;
+        if (!killer.IsAlive() || !target.IsAlive()) return false;
         if (IsRevenge) return true;
 
-        _ = new LateTask(() => { target.RpcRandomVentTeleport(); }, 0.01f, "Random Vent Teleport - Necromancer");
+        _ = new LateTask(target.RpcRandomVentTeleport, 0.01f, "Random Vent Teleport - Necromancer");
 
         Timer = RevengeTime.GetInt();
         Countdown(Timer, target);
