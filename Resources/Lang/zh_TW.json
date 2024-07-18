@@ -1206,7 +1206,7 @@
   "RandomSpawn_SpawnRandomLocation": "隨機出生的地點",
   "RandomSpawn_AirshipAdditionalSpawn": "額外出生點(<color=#ed0007>Airship</color>)",
   "RandomSpawn_SpawnRandomVents": "偶爾出生在管道上",
-  "CommsCamouflage": "通訊破壞時小灰人(有Bug慎開)",
+  "CommsCamouflage": "通訊破壞時小灰人",
   "DisableOnSomeMaps": "在特定地圖中禁用通訊破壞的隱蔽效果",
   "DisableOnSkeld": "在<color=#66a186>The Skeld</color>上禁用",
   "DisableOnMira": "在<color=#e84b56>MIRA HQ</color>上禁用",
