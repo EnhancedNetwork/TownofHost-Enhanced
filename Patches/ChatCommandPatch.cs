@@ -1065,7 +1065,10 @@ internal class ChatCommands
                     var resultat = args.TakeWhile(x => !x.Contains('?')).Concat(args.SkipWhile(x => !x.Contains('?')).Take(1));
 
                     string tytul = string.Join(" ", resultat.Skip(1));
+                    bool Longtitle = tytul.Length > 30;
                     tytul = Utils.ColorString(Palette.PlayerColors[PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId], tytul);
+                    var altTitle = Utils.ColorString(new Color32(124, 213, 54, 255), GetString("PollTitle"));
+
                     var ClearTIT = args.ToList();
                     ClearTIT.RemoveRange(0, resultat.ToArray().Length);
 
@@ -1073,7 +1076,7 @@ internal class ChatCommands
                     string msg = "";
 
 
-
+                    if (Longtitle) msg += "<voffset=-0.5em>" + tytul + "</voffset>\n\n";
                     for (int i = 0; i < Math.Clamp(Questions.Length, 2, 5); i++)
                     {
                         msg += Utils.ColorString(RndCLR(), $"{char.ToUpper((char)(i + 65))}) {Questions[i]}\n");
@@ -1083,10 +1086,9 @@ internal class ChatCommands
                     msg += $"\n{GetString("Poll.Begin")}";
                     msg += $"\n<size=55%><i>{GetString("Poll.TimeInfo")}</i></size>";
 
-
                     Logger.Info($"Poll message: {msg}", "MEssapoll");
 
-                    Utils.SendMessage(msg, title: tytul);
+                    Utils.SendMessage(msg, title: !Longtitle ? tytul: altTitle);
 
                     Main.Instance.StartCoroutine(StartPollCountdown());
 
