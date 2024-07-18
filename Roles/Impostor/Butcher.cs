@@ -43,8 +43,6 @@ internal class Butcher : RoleBase
         if (inMeeting || isSuicide) return;
         if (target == null) return;
 
-        CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
-
         target.SetRealKiller(killer);
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Dismembered;
         Main.PlayerStates[target.PlayerId].SetDead();
@@ -55,6 +53,7 @@ internal class Butcher : RoleBase
 
         if (target.Is(CustomRoles.Avanger))
         {
+            CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
             var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId); //No need to do extra check cause nobody is winning
             pcList.Do(x =>
             {
