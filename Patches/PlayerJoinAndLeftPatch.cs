@@ -554,6 +554,14 @@ class InnerNetClientSpawnPatch
                 else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
             }, 3f, "Welcome Message");
 
+            _ = new LateTask(() =>
+            {
+                if (client == null || client.Character == null) return;
+
+                var sender = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, client.Character.OwnerId);
+                AmongUsClient.Instance.FinishRpcImmediately(sender);
+            }, 3f, "RPC Request Retry Version Check");
+
             if (GameStates.IsOnlineGame)
             {
                 _ = new LateTask(() =>
@@ -576,7 +584,7 @@ class InnerNetClientSpawnPatch
                             AmongUsClient.Instance.FinishRpcImmediately(writer);
                         }
                     }
-                }, 3f, "Send RPC or Sync Lobby Timer");
+                }, 3.1f, "Send RPC or Sync Lobby Timer");
             }
 
             if (Options.GradientTagsOpt.GetBool())
