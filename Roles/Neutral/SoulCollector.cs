@@ -222,4 +222,9 @@ internal class Death : RoleBase
     {
         SoulCollector.OnCheckForEndVoting(deathReason, exileIds);
     }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
+    {
+        guesser.ShowInfoMessage(isUI, GetString("GuessImmune"));
+        return true;
+    }
 }

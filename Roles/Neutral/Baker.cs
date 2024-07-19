@@ -115,7 +115,7 @@ internal class Baker : RoleBase
         return countItem1 >= countItem2;
     }
 
-    public override void OnReportDeadBody(PlayerControl marg, GameData.PlayerInfo iscute)
+    public override void OnReportDeadBody(PlayerControl marg, NetworkedPlayerInfo iscute)
     {
         CanUseAbility = true;
     }
@@ -239,7 +239,7 @@ internal class Famine : RoleBase
             }
         }
     }
-    public override void OnReportDeadBody(PlayerControl sylveon, GameData.PlayerInfo iscute)
+    public override void OnReportDeadBody(PlayerControl sylveon, NetworkedPlayerInfo iscute)
     {
         foreach (var pc in Baker.FamineList)
         {
@@ -261,5 +261,10 @@ internal class Famine : RoleBase
     public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
         Baker.OnCheckForEndVoting(deathReason, exileIds);
+    }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
+    {
+        guesser.ShowInfoMessage(isUI, GetString("GuessImmune"));
+        return true;
     }
 }

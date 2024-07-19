@@ -98,9 +98,9 @@ class GameEndCheckerForNormal
                         break;
                     case CustomWinner.Apocalypse:
                         if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
-                            && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                            && !WinnerIds.Contains(pc.PlayerId))
                         {
-                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                            WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Cultist:
@@ -345,8 +345,8 @@ class GameEndCheckerForNormal
                 }
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse() && Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse())))
                 {
-                    if (!CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                    if (!WinnerIds.Contains(pc.PlayerId))
+                        WinnerIds.Add(pc.PlayerId);
 
                 //Lovers follow winner
                 if (WinnerTeam is not CustomWinner.Lovers)
