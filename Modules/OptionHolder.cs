@@ -1027,8 +1027,6 @@ public static class Options
 
         Stealer.SetupCustomOption();
 
-        Swift.SetupCustomOption();
-
         /*
          * Tricky
          */
@@ -1044,7 +1042,7 @@ public static class Options
         Egoist.SetupCustomOption();
 
         SetupLoversRoleOptionsToggle(23600);
-
+        
         Reach.SetupCustomOptions();
 
         Rainbow.SetupCustomOptions();
@@ -1057,6 +1055,7 @@ public static class Options
 
         Glow.SetupCustomOptions();
 
+        Swift.SetupCustomOption();
 
         #endregion
 
