@@ -14,8 +14,8 @@ internal class ControllerManagerUpdatePatch
     private static readonly (int, int)[] resolutions = [(480, 270), (640, 360), (800, 450), (1280, 720), (1600, 900), (1920, 1080)];
     private static int resolutionIndex = 0;
 
-    public static List<string> addDes = [];
-    public static int addonIndex = -1;
+    private static int addonInfoIndex = -1;
+    private static int addonSettingsIndex = -1;
 
     public static void Postfix(/*ControllerManager __instance*/)
     {
@@ -70,7 +70,7 @@ internal class ControllerManagerUpdatePatch
                 }
                 catch (Exception ex)
                 {
-                    Logger.Exception(ex, "ControllerManagerUpdatePatch");
+                    Utils.ThrowException(ex);
                     throw;
                 }
             }
@@ -79,24 +79,66 @@ internal class ControllerManagerUpdatePatch
             {
                 try
                 {
-                    var role = PlayerControl.LocalPlayer.GetCustomRole();
                     var lp = PlayerControl.LocalPlayer;
                     if (Main.PlayerStates[lp.PlayerId].SubRoles.Count == 0) return;
 
-                    addDes = [];
+                    List<string> addDes = [];
                     foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed).ToArray())
                     {
                         addDes.Add(GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
                     }
 
-                    addonIndex++;
-                    if (addonIndex >= addDes.Count) addonIndex = 0;
-                    HudManager.Instance.ShowPopUp(addDes[addonIndex] + "<size=0%>tohe</size>");
+                    addonInfoIndex++;
+                    if (addonInfoIndex >= addDes.Count) addonInfoIndex = 0;
+                    HudManager.Instance.ShowPopUp(addDes[addonInfoIndex] + "<size=0%>tohe</size>");
                 }
                 catch (Exception ex)
                 {
-                    Logger.Exception(ex, "ControllerManagerUpdatePatch");
+                    Utils.ThrowException(ex);
                     throw;
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.F3) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            {
+                try
+                {
+                    var lp = PlayerControl.LocalPlayer;
+                    var role = lp.GetCustomRole();
+                    var sb = new StringBuilder();
+                    if (Options.CustomRoleSpawnChances.TryGetValue(role, out var soi))
+                        Utils.ShowChildrenSettings(soi, ref sb, command: false);
+                    HudManager.Instance.ShowPopUp(sb.ToString().Trim());
+                }
+                catch (Exception ex)
+                {
+                    Utils.ThrowException(ex);
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.F4) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            {
+                try
+                {
+                    var lp = PlayerControl.LocalPlayer;
+                    if (Main.PlayerStates[lp.PlayerId].SubRoles.Count == 0) return;
+
+                    var sb = new StringBuilder();
+                    List<string> addSett = [];
+
+                    foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed).ToArray())
+                    {
+                        if (Options.CustomRoleSpawnChances.TryGetValue(subRole, out var soi))
+                            Utils.ShowChildrenSettings(soi, ref sb, command: false);
+                        
+                        addSett.Add(sb.ToString());
+                    }
+
+                    addonSettingsIndex++;
+                    if (addonSettingsIndex >= addSett.Count) addonSettingsIndex = 0;
+                    HudManager.Instance.ShowPopUp(addSett[addonSettingsIndex] + "<size=0%>tohe</size>");
+                }
+                catch (Exception ex)
+                {
+                    Utils.ThrowException(ex);
                 }
             }
             //Changing the resolution
@@ -246,7 +288,7 @@ internal class ControllerManagerUpdatePatch
             if (GetKeysDown(KeyCode.LeftControl, KeyCode.LeftShift, KeyCode.E, KeyCode.Return) && GameStates.IsInGame)
             {
                 PlayerControl.LocalPlayer.Data.IsDead = true;
-                Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason = PlayerState.DeathReason.etc;
+                PlayerControl.LocalPlayer.SetDeathReason(PlayerState.DeathReason.etc);
                 PlayerControl.LocalPlayer.SetRealKiller(PlayerControl.LocalPlayer);
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
                 PlayerControl.LocalPlayer.RpcExileV2();
@@ -374,8 +416,7 @@ internal class ControllerManagerUpdatePatch
         }
         catch (Exception error)
         {
-            var LineNum = error.GetLineNumber();
-            Logger.Warn($"Error when using keyboard shortcuts: line: {LineNum} - error: {error}", "ControllerManagerUpdatePatch.Postfix");
+            Utils.ThrowException(error);
         }
     }
 

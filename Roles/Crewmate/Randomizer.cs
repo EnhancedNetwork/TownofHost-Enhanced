@@ -127,8 +127,9 @@ internal class Randomizer : RoleBase
             {
                 var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && target.RpcCheckAndMurder(x, true)).ToList();
                 var pc = pcList[IRandom.Instance.Next(0, pcList.Count)];
-                if (!pc.IsTransformedNeutralApocalypse()) { 
-                    Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+                if (!pc.IsTransformedNeutralApocalypse())
+                {
+                    pc.SetDeathReason(PlayerState.DeathReason.Revenge);
                     pc.RpcMurderPlayer(pc);
                     pc.SetRealKiller(target);
                 }

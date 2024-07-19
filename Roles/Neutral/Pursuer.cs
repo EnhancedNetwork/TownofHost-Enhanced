@@ -95,8 +95,8 @@ internal class Pursuer : RoleBase
         var killer = Utils.GetPlayerById(cfId);
         var target = pc;
         if (killer == null) return false;
-        
-        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
+
+        target.SetDeathReason(PlayerState.DeathReason.Misfire);
         target.RpcMurderPlayer(target);
         target.SetRealKiller(killer);
 

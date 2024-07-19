@@ -37,7 +37,7 @@ internal partial class Mayor : RoleBase
         MayorNumOfUseButton = IntegerOptionItem.Create(Id + 12, "MayorNumOfUseButton", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false)
             .SetParent(MayorHasPortableButton)
             .SetValueFormat(OptionFormat.Times);
-        MayorHideVote = BooleanOptionItem.Create(Id + 13, "MayorHideVote", false, TabGroup.CrewmateRoles, false)
+        MayorHideVote = BooleanOptionItem.Create(Id + 13, GeneralOption.HideAdditionalVotes, false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
         MayorRevealWhenDoneTasks = BooleanOptionItem.Create(Id + 14, "MayorRevealWhenDoneTasks", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
@@ -66,7 +66,7 @@ internal partial class Mayor : RoleBase
     {
         if (MayorHideVote.GetBool()) return;
 
-        for (var i2 = 0; i2 < MayorAdditionalVote.GetFloat(); i2++)
+        for (var i = 0; i < MayorAdditionalVote.GetFloat(); i++)
         {
             statesList.Add(new MeetingHud.VoterState()
             {

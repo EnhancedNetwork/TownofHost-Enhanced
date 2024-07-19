@@ -72,7 +72,7 @@ class MurderPlayerInHidenSeekPatch
         }
         if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.etc)
         {
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill;
+            target.SetDeathReason(PlayerState.DeathReason.Kill);
         }
 
         Main.PlayerStates[target.PlayerId].SetDead();

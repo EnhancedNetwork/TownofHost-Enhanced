@@ -456,6 +456,7 @@ public abstract class RoleBase
         CanKillImpostors,
         CanGuess,
         HideVote,
+        HideAdditionalVotes,
         CanUseMeetingButton,
         ModeSwitchAction,
         ShowShapeshiftAnimations,

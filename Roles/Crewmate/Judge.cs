@@ -204,7 +204,7 @@ internal class Judge : RoleBase
                 
                 _ = new LateTask(() =>
                 {
-                    Main.PlayerStates[dp.PlayerId].deathReason = PlayerState.DeathReason.Trialed;
+                    dp.SetDeathReason(PlayerState.DeathReason.Trialed);
                     dp.SetRealKiller(pc);
                     GuessManager.RpcGuesserMurderPlayer(dp);
 

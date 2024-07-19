@@ -50,7 +50,7 @@ public static class Burst
             {
                 if (!killer.inVent && killer.IsAlive() && !GameStates.IsMeeting && GameStates.IsInGame)
                 {
-                    Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                    killer.SetDeathReason(PlayerState.DeathReason.Bombed);
                     target.RpcMurderPlayer(killer);
                     killer.SetRealKiller(target);
                 }

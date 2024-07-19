@@ -19,7 +19,7 @@ class ExileControllerWrapUpPatch
             }
             catch (Exception error)
             {
-                Logger.Error($"Error after exiled: {error}", "WrapUpPostfix");
+                Utils.ThrowException(error);
             }
             finally
             {
@@ -79,7 +79,7 @@ class ExileControllerWrapUpPatch
             }
 
             exiled.IsDead = true;
-            Main.PlayerStates[exiled.PlayerId].deathReason = PlayerState.DeathReason.Vote;
+            exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
 
             var exiledPC = Utils.GetPlayerById(exiled.PlayerId);
             var exiledRoleClass = exiledPC.GetRoleClass();

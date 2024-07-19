@@ -85,10 +85,9 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableGM { get; private set; }
     public static ConfigEntry<bool> AutoStart { get; private set; }
     public static ConfigEntry<bool> DarkTheme { get; private set; }
+    public static ConfigEntry<bool> DisableLobbyMusic { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
-    public static ConfigEntry<bool> ModeForSmallScreen { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
-    public static ConfigEntry<bool> AutoMuteUs { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
@@ -426,10 +425,9 @@ public class Main : BasePlugin
         EnableGM = Config.Bind("Client Options", "EnableGM", false);
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
         DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
+        DisableLobbyMusic = Config.Bind("Client Options", "DisableLobbyMusic", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
-        ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
-        AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);
@@ -534,29 +532,29 @@ public enum CustomRoles
 
     // Crewmate(Vanilla)
     Crewmate = 0,
-    Scientist,
     Engineer,
     GuardianAngel,
-    Tracker,
     Noisemaker,
+    Scientist,
+    Tracker,
 
     // Impostor(Vanilla)
     Impostor,
-    Shapeshifter,
     Phantom,
+    Shapeshifter,
 
     // Crewmate Vanilla Remakes
     CrewmateTOHE,
-    ScientistTOHE,
     EngineerTOHE,
     GuardianAngelTOHE,
-    TrackerTOHE,
     NoisemakerTOHE,
+    ScientistTOHE,
+    TrackerTOHE,
 
     // Impostor Vanilla Remakes
     ImpostorTOHE,
-    ShapeshifterTOHE,
     PhantomTOHE,
+    ShapeshifterTOHE,
 
     // Impostor Ghost
     Bloodmoon,
@@ -618,10 +616,9 @@ public enum CustomRoles
     Scavenger,
     ShapeMaster,
     Sniper,
-    Witch,
     SoulCatcher,
-    Swooper,
     Stealth,
+    Swooper,
     TimeThief,
     Trapster,
     Trickster,
@@ -633,6 +630,7 @@ public enum CustomRoles
     Visionary,
     Warlock,
     Wildling,
+    Witch,
     Zombie,
 
     //Crewmate Ghost
@@ -650,20 +648,21 @@ public enum CustomRoles
     Captain,
     Celebrity, 
     Chameleon,
+    ChiefOfPolice, //police commisioner ///// UNUSED
     Cleanser,
     CopyCat,
     Coroner, 
     Crusader,
-    Detective,
     Deceiver, 
     Deputy,
+    Detective,
     Dictator,
     Doctor,
     Enigma,
     FortuneTeller, 
+    Grenadier,
     Guardian,
     GuessMaster,
-    Grenadier,
     Inspector, 
     Investigator,
     Jailer,
@@ -688,12 +687,11 @@ public enum CustomRoles
     Oracle,
     Overseer, 
     Pacifist, 
-    ChiefOfPolice, //police commisioner ///// UNUSED
     President,
     Psychic,
     Randomizer,
-    Reverie,
     Retributionist,
+    Reverie,
     Sheriff,
     Snitch,
     SpeedBooster,
@@ -703,11 +701,10 @@ public enum CustomRoles
     Swapper,
     TaskManager,
     Telecommunication,
-    Tracefinder,
-    //Tracker,
-    Transporter,
     TimeManager,
     TimeMaster,
+    Tracefinder,
+    Transporter,
     Veteran,
     Vigilante,
     Witness,
@@ -750,14 +747,13 @@ public enum CustomRoles
     Opportunist,
     Pelican,
     Pestilence,
-    Specter,
     Pickpocket,
     Pirate,
     Pixie,
     PlagueBearer,
     PlagueDoctor,
-    PotionMaster,
     Poisoner,
+    PotionMaster,
     Provocateur,
     PunchingBag,
     Pursuer,
@@ -774,6 +770,7 @@ public enum CustomRoles
     Sidekick,
     Solsticer,
     SoulCollector,
+    Specter,
     Spiritcaller,
     Stalker,
     Sunnyboy,
@@ -789,7 +786,7 @@ public enum CustomRoles
     Workaholic,
     Wraith,
 
-   //two-way camp
+    //two-way camp
     Mini,
 
     //FFA
@@ -804,7 +801,6 @@ public enum CustomRoles
     // Add-ons
     Admired,
     Antidote,
-    Glow,
     Autopsy,
     Avanger,
     Aware,
@@ -818,7 +814,6 @@ public enum CustomRoles
     Clumsy,
     Contagious,
     Cyber,
-    Unreportable, //disregarded
     Diseased,
     DoubleShot,
     Egoist,
@@ -827,6 +822,7 @@ public enum CustomRoles
     Fool,
     Fragile,
     Ghoul,
+    Glow,
     Gravestone,
     Guesser,
     Hurried,
@@ -840,7 +836,6 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
-    Tricky,
     Mimic,
     Mundane,
     Necroview,
@@ -858,18 +853,20 @@ public enum CustomRoles
     Recruit,
     Seer,
     Silent,
-    Statue,
     Sleuth,
     Soulless,
-    TicketsStealer, //stealer
+    Statue,
     Stubborn,
     Susceptible,
     Swift,
     Tiebreaker,
+    TicketsStealer, //stealer
     Torch,
     Trapper,
+    Tricky,
     Tired,
     Unlucky,
+    Unreportable, //disregarded
     VoidBallot,
     Watcher,
     Workhorse,

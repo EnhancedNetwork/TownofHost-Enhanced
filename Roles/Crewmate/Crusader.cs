@@ -79,7 +79,7 @@ internal class Crusader : RoleBase
 
         if (killer.Is(CustomRoles.Pestilence))
         {
-            Main.PlayerStates[crusader.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
+            crusader.SetDeathReason(PlayerState.DeathReason.PissedOff);
             killer.RpcMurderPlayer(crusader);
             ForCrusade.Remove(target.PlayerId);
             target.RpcGuardAndKill(killer);

@@ -288,7 +288,7 @@ internal class Alchemist : RoleBase
                 player.MyPhysics.RpcBootFromVent(vent.Id);
                 _ = new LateTask(() =>
                 {
-                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Poison;
+                    player.SetDeathReason(PlayerState.DeathReason.Poison);
                     player.SetRealKiller(player);
                     player.RpcMurderPlayer(player);
 

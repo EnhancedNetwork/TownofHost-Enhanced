@@ -34,7 +34,7 @@ public static class Fragile
             || (killerRole.IsNeutral() && NeutralCanKillFragile.GetBool())
             || (killerRole.IsCrewmate() && CrewCanKillFragile.GetBool()))
         {
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
+            target.SetDeathReason(PlayerState.DeathReason.Shattered);
             if (FragileKillerLunge.GetBool())
             {
                 killer.RpcMurderPlayer(target);

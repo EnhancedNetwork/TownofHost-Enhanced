@@ -59,8 +59,7 @@ internal class Necromancer : RoleBase
     
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer.PlayerId == target.PlayerId) return true;
-        if (!killer.IsAlive() || !target.IsAlive()) return false;
+        if (!killer.IsAlive() && killer.Is(CustomRoles.Avanger)) return false;
         if (IsRevenge) return true;
 
         _ = new LateTask(target.RpcRandomVentTeleport, 0.01f, "Random Vent Teleport - Necromancer");

@@ -132,7 +132,7 @@ internal class Shroud : RoleBase
                     {
                         var shroudId = ShroudList[shroud.PlayerId];
                         RPC.PlaySoundRPC(shroudId, Sounds.KillSound);
-                        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
+                        target.SetDeathReason(PlayerState.DeathReason.Shrouded);
                         shroud.RpcMurderPlayer(target);
                         target.SetRealKiller(Utils.GetPlayerById(shroudId));
                         Utils.MarkEveryoneDirtySettings();
@@ -160,7 +160,7 @@ internal class Shroud : RoleBase
             PlayerControl shrouded = Utils.GetPlayerById(shroudedId);
             if (!shrouded.IsAlive()) continue;
 
-            Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
+            shrouded.SetDeathReason(PlayerState.DeathReason.Shrouded);
             shrouded.RpcMurderPlayer(shrouded);
             shrouded.SetRealKiller(shroud);
 

@@ -347,7 +347,7 @@ public static class GuessManager
                 {
                     _ = new LateTask(() =>
                     {
-                        Main.PlayerStates[dp.PlayerId].deathReason = PlayerState.DeathReason.Gambled;
+                        dp.SetDeathReason(PlayerState.DeathReason.Gambled);
                         dp.SetRealKiller(pc);
                         RpcGuesserMurderPlayer(dp);
 

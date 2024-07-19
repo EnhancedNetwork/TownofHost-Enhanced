@@ -154,7 +154,7 @@ internal class Nemesis : RoleBase
 
         _ = new LateTask(() =>
         {
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+            target.SetDeathReason(PlayerState.DeathReason.Revenge);
             if (GameStates.IsMeeting)
             {
                 GuessManager.RpcGuesserMurderPlayer(target);

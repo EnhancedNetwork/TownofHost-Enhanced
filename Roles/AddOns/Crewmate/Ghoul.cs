@@ -39,7 +39,7 @@ public class Ghoul
         {
             _ = new LateTask(() =>
             {
-                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                player.SetDeathReason(PlayerState.DeathReason.Suicide);
                 player.RpcMurderPlayer(player);
 
             }, 0.2f, "Ghoul Suicide");
@@ -48,7 +48,7 @@ public class Ghoul
         {
             foreach (var killer in Main.AllAlivePlayerControls.Where(x => KillGhoul.Contains(x.PlayerId)))
             {
-                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Kill;
+                killer.SetDeathReason(PlayerState.DeathReason.Kill);
                 player.RpcMurderPlayer(killer);
             }
         }

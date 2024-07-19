@@ -355,7 +355,7 @@ public static class CustomRoleManager
                 switch (subRole)
                 {
                     case CustomRoles.TicketsStealer when !inMeeting && !isSuicide:
-                        killer.Notify(string.Format(Translator.GetString("TicketsStealerGetTicket"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * Stealer.TicketsPerKill.GetFloat()).ToString("0.0#####")));
+                        Stealer.OnMurderPlayer(killer);
                         break;
 
                     case CustomRoles.Tricky:

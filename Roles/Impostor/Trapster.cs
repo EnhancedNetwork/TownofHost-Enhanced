@@ -60,7 +60,7 @@ internal class Trapster : RoleBase
         {
             var killerId = deadBody.PlayerId;
 
-            Main.PlayerStates[reporter.PlayerId].deathReason = PlayerState.DeathReason.Trap;
+            reporter.SetDeathReason(PlayerState.DeathReason.Trap);
             reporter.RpcMurderPlayer(reporter);
             reporter.SetRealKiller(deadBody.Object);
 
@@ -79,8 +79,8 @@ internal class Trapster : RoleBase
             && !reporter.IsTransformedNeutralApocalypse() && _Player.RpcCheckAndMurder(reporter, true))
         {
             var killerId = deadBody.PlayerId;
-            
-            Main.PlayerStates[reporter.PlayerId].deathReason = PlayerState.DeathReason.Trap;
+
+            reporter.SetDeathReason(PlayerState.DeathReason.Trap);
             reporter.RpcMurderPlayer(reporter);
             reporter.SetRealKiller(_Player);
 

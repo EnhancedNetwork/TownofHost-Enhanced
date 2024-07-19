@@ -132,7 +132,7 @@ internal class Taskinator : RoleBase
                     var taskinatorPC = Utils.GetPlayerById(taskinatorId);
                     if (taskinatorPC == null) continue;
 
-                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                    player.SetDeathReason(PlayerState.DeathReason.Bombed);
                     player.RpcMurderPlayer(player);
                     player.SetRealKiller(taskinatorPC);
 

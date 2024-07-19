@@ -43,7 +43,7 @@ internal class CursedWolf : RoleBase
         if (KillAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
         {
             Logger.Info($"{target.GetNameWithRole()} Spell Count: {AbilityLimit}", "Cursed Wolf");
-            Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Curse;
+            killer.SetDeathReason(PlayerState.DeathReason.Curse);
             killer.RpcMurderPlayer(killer);
             killer.SetRealKiller(target);
         }

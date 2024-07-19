@@ -86,8 +86,8 @@ internal class Deceiver : RoleBase
         var killer = _Player;
         var target = pc;
         if (killer == null) return true;
-        
-        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
+
+        target.SetDeathReason(PlayerState.DeathReason.Misfire);
         target.RpcMurderPlayer(target);
         target.SetRealKiller(killer);
 

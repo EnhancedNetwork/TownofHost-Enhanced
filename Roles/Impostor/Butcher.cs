@@ -44,7 +44,7 @@ internal class Butcher : RoleBase
         if (target == null) return;
 
         target.SetRealKiller(killer);
-        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Dismembered;
+        target.SetDeathReason(PlayerState.DeathReason.Dismembered);
         Main.PlayerStates[target.PlayerId].SetDead();
 
         Main.OverDeadPlayerList.Add(target.PlayerId);
@@ -57,7 +57,7 @@ internal class Butcher : RoleBase
             var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId); //No need to do extra check cause nobody is winning
             pcList.Do(x =>
             {
-                Main.PlayerStates[x.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+                x.SetDeathReason(PlayerState.DeathReason.Revenge);
                 target.RpcSpecificMurderPlayer(x, x);
                 x.SetRealKiller(target);
                 Main.PlayerStates[x.PlayerId].SetDead();

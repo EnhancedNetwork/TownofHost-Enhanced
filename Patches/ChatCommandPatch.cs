@@ -776,7 +776,7 @@ internal class ChatCommands
                     if (player != null)
                     {
                         player.Data.IsDead = true;
-                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.etc;
+                        player.SetDeathReason(PlayerState.DeathReason.etc);
                         player.SetRealKiller(PlayerControl.LocalPlayer);
                         Main.PlayerStates[player.PlayerId].SetDead();
                         player.RpcExileV2();
