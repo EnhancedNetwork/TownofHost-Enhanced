@@ -49,7 +49,7 @@ internal class Maverick : RoleBase
         int numKills = mr.NumKills;
         int minKills = MinKillsForWin.GetInt();
         Color color = numKills >= minKills ? Color.green : Color.red;
-        return Utils.ColorString(color, $"{numKills}/{minKills}");
+        return Utils.ColorString(color, $"({numKills}/{minKills})");
     }
     public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
