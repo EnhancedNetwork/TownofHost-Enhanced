@@ -1,5 +1,4 @@
 ﻿using static TOHE.Options;
-using static TOHE.RoleBase;
 
 namespace TOHE.Roles.AddOns.Impostor;
 
@@ -15,7 +14,7 @@ public static class Stealer
         SetupAdtRoleOptions(Id, CustomRoles.TicketsStealer, canSetNum: true, tab: TabGroup.Addons);
         TicketsPerKill = FloatOptionItem.Create(Id + 3, "TicketsPerKill", new(0.1f, 10f, 0.1f), 0.5f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TicketsStealer]);
-        HideAdditionalVotes = BooleanOptionItem.Create(Id + 4, GeneralOption.HideAdditionalVotes, false, TabGroup.Addons, false)
+        HideAdditionalVotes = BooleanOptionItem.Create(Id + 4, "HideAdditionalVotes", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TicketsStealer]);
     }
     public static int AddRealVotesNum(PlayerVoteArea ps)

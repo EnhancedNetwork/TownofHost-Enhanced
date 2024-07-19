@@ -1,4 +1,3 @@
-using Il2CppSystem.Runtime.InteropServices;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -215,6 +214,18 @@ class CheckForEndVotingPatch
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
                 {
                     Stealer.AddVisualVotes(ps, ref statesList);
+                }
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.Paranoia) && Paranoia.DualVotes.GetBool())
+                {
+                    Paranoia.AddVisualVotes(ps, ref statesList);
+                }
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.Knighted) && !Monarch.HideAdditionalVotesForKnighted.GetBool())
+                {
+                    statesList.Add(new MeetingHud.VoterState()
+                    {
+                        VoterId = ps.TargetPlayerId,
+                        VotedForId = ps.VotedFor
+                    });
                 }
             }
 

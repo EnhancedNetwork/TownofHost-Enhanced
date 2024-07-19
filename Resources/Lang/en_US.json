@@ -2140,6 +2140,7 @@
   "HauntedByEvilSpirit": "Haunted by an Evil Spirit",
   "MonarchKnightCooldown": "Knight Cooldown",
   "MonarchKnightMax": "Maximum Knights",
+  "HideAdditionalVotesForKnighted": "Hide additional vote for <color=#FFA500>Knighted</color> players",
   "MonarchKnightedPlayer": "You successfully knighted a player!",
   "KnightedByMonarch": "A Monarch has knighted you!",
   "MonarchInvalidTarget": "Target cannot be knighted",
