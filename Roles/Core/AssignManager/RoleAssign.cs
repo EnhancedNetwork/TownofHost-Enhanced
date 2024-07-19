@@ -87,7 +87,7 @@ public class RoleAssign
             switch (role)
             {
                 case CustomRoles.Stalker when GameStates.FungleIsActive:
-                case CustomRoles.Lighter when GameStates.FungleIsActive:
+                //case CustomRoles.Lighter when GameStates.FungleIsActive:
                 case CustomRoles.Doctor when Options.EveryoneCanSeeDeathReason.GetBool():
                 case CustomRoles.VengefulRomantic:
                 case CustomRoles.RuthlessRomantic:
