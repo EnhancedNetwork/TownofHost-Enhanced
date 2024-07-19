@@ -2170,6 +2170,7 @@
   "Message.MeCommandTargetInfo": "<size=100%><b>Selezionato [{0}] Giocatore {1} ,</b></size>\n\n<size=90%>Il loro <color=#f34c50>codice amico</color> è <u>{2}</u>.</size>\n\n<size=90%>Il loro <color=#f34c50>hash puid</color> è <u>{3}</u>.</size>\n\n<size=90%>Il loro ruolo sul <color=#5865F2>Discord</color></b> di <b><color=#ffc0cb>TOHE</color> è <u>{4}</u>.</size>\n\n",
   "Message.MeCommandInvalidID": "L'ID che hai inserito non sembra corretto. \nUtilizza /id per ottenere l'ID dei giocatori online",
   "Message.MeCommandNoPermission": "Non ti è consentito usare il comando /me per altri",
+  "PollTitle": "〖 Poll 〗",
   "PollResultTitle": "Risultati Sondaggio",
   "Poll.Result": "E... Il vincitore è stato {0} con {1} voti!\n\n<size=75%>Secondi classificati:",
   "Poll.Tied": "Uh oh, il voto è in parità tra {0}, tutti avendo {1} voti.",
