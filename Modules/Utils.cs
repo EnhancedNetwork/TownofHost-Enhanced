@@ -2236,7 +2236,7 @@ public static class Utils
             Logger.Info(sb.ToString(), "CountAlivePlayers");
 
             if (AmongUsClient.Instance.AmHost && checkGameEnd)
-                GameManager.Instance?.LogicFlow?.CheckEndCriteria();
+                GameEndCheckerForNormal.Prefix();
         }
     }
     public static string GetVoteName(byte num)

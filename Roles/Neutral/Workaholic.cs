@@ -67,6 +67,12 @@ internal class Workaholic : RoleBase
 
         Logger.Info("The Workaholic task is done", "Workaholic");
 
+        if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+        {
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic win
+            CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+        }
+
         RPC.PlaySoundRPC(player.PlayerId, Sounds.KillSound);
         foreach (var pc in Main.AllAlivePlayerControls)
         {
@@ -78,12 +84,6 @@ internal class Workaholic : RoleBase
                 pc.RpcMurderPlayer(pc);
                 pc.SetRealKiller(player);
             }
-        }
-
-        if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
-        {
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic win
-            CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
         }
 
         return true;
