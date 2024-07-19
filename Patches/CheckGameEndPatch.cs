@@ -281,7 +281,7 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Sunnyboy);
                             break;
-                        case CustomRoles.Maverick when pc.IsAlive():
+                        case CustomRoles.Maverick when pc.IsAlive() && Main.PlayerStates[pc.PlayerId].RoleClass is Maverick mr && mr.NumKills >= Maverick.MinKillsForWin.GetInt():
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Maverick);
                             break;
