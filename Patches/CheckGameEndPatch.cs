@@ -308,15 +308,11 @@ class GameEndCheckerForNormal
                             }
                             break;
                         case CustomRoles.Romantic:
-                        case CustomRoles.RuthlessRomantic:
                             if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) 
                                 && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))))
                             {
                                 WinnerIds.Add(pc.PlayerId);
-                                if (pc.Is(CustomRoles.Romantic))
-                                {
-                                    AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
-                                }
+                                AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
                             }
                             break;
                         case CustomRoles.VengefulRomantic when VengefulRomantic.hasKilledKiller:
