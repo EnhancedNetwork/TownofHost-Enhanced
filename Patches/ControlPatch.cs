@@ -99,6 +99,22 @@ internal class ControllerManagerUpdatePatch
                     throw;
                 }
             }
+            if (Input.GetKeyDown(KeyCode.F3) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            {
+                try
+                {
+                    var lp = PlayerControl.LocalPlayer;
+                    var role = lp.GetCustomRole();
+                    var sb = new StringBuilder();
+                    if (Options.CustomRoleSpawnChances.TryGetValue(role, out var soi))
+                        Utils.ShowChildrenSettings(soi, ref sb, command: true);
+                    HudManager.Instance.ShowPopUp(sb.ToString().Trim());
+                }
+                catch (Exception ex)
+                {
+                    Utils.ThrowException(ex);
+                }
+            }
             //Changing the resolution
             if (GetKeysDown(KeyCode.F11, KeyCode.LeftAlt))
             {
@@ -374,8 +390,7 @@ internal class ControllerManagerUpdatePatch
         }
         catch (Exception error)
         {
-            var LineNum = error.GetLineNumber();
-            Logger.Warn($"Error when using keyboard shortcuts: line: {LineNum} - error: {error}", "ControllerManagerUpdatePatch.Postfix");
+            Utils.ThrowException(error);
         }
     }
 

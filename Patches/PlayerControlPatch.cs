@@ -842,7 +842,7 @@ class ReportDeadBodyPatch
                 if (target.Object.Is(CustomRoles.Unreportable)) return false;
 
 
-                // 胆小鬼不敢报告
+                // Oblivious try report body
                 var tpc = Utils.GetPlayerById(target.PlayerId);
                 if (__instance.Is(CustomRoles.Oblivious))
                 {
@@ -877,21 +877,13 @@ class ReportDeadBodyPatch
                     Logger.Info("The maximum number of meeting buttons has been reached", "ReportDeadBody");
                 }
             }
-
-            AfterReportTasks(__instance, target);
-
         }
         catch (Exception e)
         {
-            Logger.Exception(e, "ReportDeadBodyPatch");
-            Logger.SendInGame("Error: " + e.ToString());
-
-            // If there is an error in ReportDeadBodyPatch, update the player nicknames anyway
-            MeetingTimeManager.OnReportDeadBody();
-            NameNotifyManager.Reset();
-            Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
-            _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
+            Utils.ThrowException(e);
         }
+
+        AfterReportTasks(__instance, target);
 
         // InnerSloth added CheckTaskCompletion() => CheckEndGameViaTasks() in report dead body.
         // This is patched in CheckGameEndPatch
@@ -903,28 +895,35 @@ class ReportDeadBodyPatch
         // Hereinafter, it is assumed that the button is confirmed to be pressed
         //=============================================
 
-        Main.MeetingIsStarted = true;
-        Main.LastVotedPlayerInfo = null;
-        Main.GuesserGuessed.Clear();
-        Main.AllKillers.Clear();
-
-        Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
-        Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
-        Logger.Info($"target.PlayerId is - {target?.PlayerId}", "AfterReportTasks");
-
-        foreach (var playerStates in Main.PlayerStates.Values.ToArray())
+        try
         {
-            playerStates.RoleClass?.OnReportDeadBody(player, target);
+            Main.MeetingIsStarted = true;
+            Main.LastVotedPlayerInfo = null;
+            Main.GuesserGuessed.Clear();
+            Main.AllKillers.Clear();
+
+            Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
+            Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
+            Logger.Info($"target.PlayerId is - {target?.PlayerId}", "AfterReportTasks");
+
+            foreach (var playerStates in Main.PlayerStates.Values.ToArray())
+            {
+                playerStates.RoleClass?.OnReportDeadBody(player, target);
+            }
+
+            // Alchemist & Bloodlust
+            Alchemist.OnReportDeadBodyGlobal();
+
+            if (Aware.IsEnable) Aware.OnReportDeadBody();
+
+            Sleuth.OnReportDeadBody(player, target);
+
         }
-
-        // Alchemist & Bloodlust
-        Alchemist.OnReportDeadBodyGlobal();
-
-        if (Aware.IsEnable) Aware.OnReportDeadBody();
-        
-        Sleuth.OnReportDeadBody(player, target);
-
-
+        catch (Exception error)
+        {
+            Utils.ThrowException(error);
+            Logger.SendInGame($"Error: {error}");
+        }
 
         foreach (var pc in Main.AllPlayerControls)
         {
@@ -999,7 +998,8 @@ class FixedUpdateInNormalGamePatch
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}:  {ex}", "FixedUpdateInNormalGamePatch");
+            Utils.ThrowException(ex);
+            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}", "FixedUpdateInNormalGamePatch");
         }
     }
 
