@@ -3,7 +3,7 @@ using InnerNet;
 
 namespace TOHE.Patches;
 
-enum GameDataTag : byte
+public enum GameDataTag : byte
 {
     DataFlag = 1,
     RpcFlag = 2,
