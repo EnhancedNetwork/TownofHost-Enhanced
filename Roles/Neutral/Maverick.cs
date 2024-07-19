@@ -45,9 +45,11 @@ internal class Maverick : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override string GetProgressText(byte playerId, bool comms)
     {
+        int minKills = MinKillsForWin.GetInt();
+        if (minKills == 0) return string.Empty;
+
         if (Main.PlayerStates[playerId].RoleClass is not Maverick mr) return string.Empty;
         int numKills = mr.NumKills;
-        int minKills = MinKillsForWin.GetInt();
         Color color = numKills >= minKills ? Color.green : Color.red;
         return Utils.ColorString(color, $"({numKills}/{minKills})");
     }
