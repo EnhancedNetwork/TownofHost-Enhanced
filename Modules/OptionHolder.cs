@@ -894,8 +894,6 @@ public static class Options
 
         Cyber.SetupCustomOptions();
 
-        DoubleShot.SetupCustomOption();
-
         Flash.SetupCustomOption();
 
         Lazy.SetupCustomOptions();
@@ -982,8 +980,6 @@ public static class Options
         Guesser.SetupCustomOptions();
 
         Oiiai.SetupCustomOptions();
-
-        Rebound.SetupCustomOptions();
 
         Paranoia.SetupCustomOptions();
 
@@ -1774,8 +1770,11 @@ public static class Options
             .SetColor(Color.yellow)
             .SetHeader(true);
 
+        DoubleShot.SetupCustomOption();
+
         Onbound.SetupCustomOptions();
 
+        Rebound.SetupCustomOptions();
 
 
         // Meeting Settings
