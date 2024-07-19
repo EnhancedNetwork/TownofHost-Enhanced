@@ -52,7 +52,7 @@ public static class Rainbow
     {
         var sender = CustomRpcSender.Create("Rainbow Sender");
         // When the player is in the vent and changes color, he gets stuck
-        foreach (var player in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rainbow) && x.IsAlive() && !x.inVent && !x.walkingToVent && !x.onLadder))
+        foreach (var player in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rainbow) && x.IsAlive() && !x.inMovingPlat && !x.inVent && !x.walkingToVent && !x.onLadder))
         {
             int color = PickRandomColor();
             player.SetColor(color);

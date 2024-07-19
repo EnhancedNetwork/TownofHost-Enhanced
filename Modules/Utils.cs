@@ -7,6 +7,7 @@ using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Diagnostics;
@@ -22,7 +23,6 @@ using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using TOHE.Patches;
-using System.Linq;
 
 
 namespace TOHE;
@@ -621,7 +621,8 @@ public static class Utils
         }
         catch (Exception error)
         {
-            Logger.Error(error.ToString(), $"GetProgressText(PlayerControl pc) - PlayerId: {pc.PlayerId}, Role: {Main.PlayerStates[pc.PlayerId].MainRole}");
+            ThrowException(error);
+            Logger.Error($"PlayerId: {pc.PlayerId}, Role: {Main.PlayerStates[pc.PlayerId].MainRole}", "GetProgressText(PlayerControl pc)");
             return "Error1";
         }
     }
@@ -672,7 +673,8 @@ public static class Utils
         }
         catch (Exception error)
         {
-            Logger.Error(error.ToString(), $"GetProgressText(byte playerId, bool comms = false) - PlayerId: {playerId}, Role: {Main.PlayerStates[playerId].MainRole}");
+            ThrowException(error);
+            Logger.Error($"PlayerId: {playerId}, Role: {Main.PlayerStates[playerId].MainRole}", "GetProgressText(byte playerId, bool comms = false)");
             return "Error2";
         }
     }
@@ -1015,7 +1017,44 @@ public static class Utils
 
         return name;
     }
+    // From EHR by Gurge44
+    public static void ThrowException(Exception ex, [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string callerMemberName = "")
+    {
+        try
+        {
+            StackTrace st = new(1, true);
+            StackFrame[] stFrames = st.GetFrames();
 
+            StackFrame firstFrame = stFrames.FirstOrDefault();
+
+            var sb = new StringBuilder();
+            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName} at line {lineNumber} in {callerMemberName}\n------ Stack Trace ------");
+
+            bool skip = true;
+            foreach (StackFrame sf in stFrames)
+            {
+                if (skip)
+                {
+                    skip = false;
+                    continue;
+                }
+
+                var callerMethod = sf.GetMethod();
+
+                string callerMethodName = callerMethod?.Name;
+                string callerClassName = callerMethod?.DeclaringType?.FullName;
+
+                sb.Append($"\n      at {callerClassName}.{callerMethodName}");
+            }
+
+            sb.Append("\n------ End of Stack Trace ------");
+
+            Logger.Error(sb.ToString(), firstFrame?.GetMethod()?.ToString(), multiLine: true);
+        }
+        catch
+        {
+        }
+    }
     public static byte MsgToColor(string text, bool isHost = false)
     {
         text = text.ToLowerInvariant();
@@ -1463,19 +1502,34 @@ public static class Utils
     }
     public static void ApplySuffix(PlayerControl player)
     {
-        if (!AmongUsClient.Instance.AmHost || player == null || Main.AutoMuteUs.Value) return;
+        // Only host
+        if (!AmongUsClient.Instance.AmHost || player == null) return;
         // Check invalid color
         if (player.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= player.Data.DefaultOutfit.ColorId) return;
+
+        // Hide all tags
+        if (Options.HideAllTagsAndText.GetBool())
+        {
+            SetRealName();
+            return;
+        }
 
         if (!(player.AmOwner || player.FriendCode.GetDevUser().HasTag()))
         {
             if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode))
             {
-                string name1 = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n1) ? n1 : "";
-                if (GameStates.IsLobby && name1 != player.name && player.CurrentOutfitType == PlayerOutfitType.Default) player.RpcSetName(name1);
+                SetRealName();
                 return;
             }
         }
+
+        void SetRealName()
+        {
+            string realName = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var namePlayer) ? namePlayer : "";
+            if (GameStates.IsLobby && realName != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
+                player.RpcSetName(realName);
+        }
+
         string name = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n) ? n : "";
         if (Main.HostRealName != "" && player.AmOwner) name = Main.HostRealName;
         if (name == "") return;
@@ -2237,7 +2291,7 @@ public static class Utils
             Logger.Info(sb.ToString(), "CountAlivePlayers");
 
             if (AmongUsClient.Instance.AmHost && checkGameEnd)
-                GameManager.Instance?.LogicFlow?.CheckEndCriteria();
+                GameEndCheckerForNormal.Prefix();
         }
     }
     public static string GetVoteName(byte num)

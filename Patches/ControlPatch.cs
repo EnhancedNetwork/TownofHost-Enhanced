@@ -14,8 +14,8 @@ internal class ControllerManagerUpdatePatch
     private static readonly (int, int)[] resolutions = [(480, 270), (640, 360), (800, 450), (1280, 720), (1600, 900), (1920, 1080)];
     private static int resolutionIndex = 0;
 
-    public static List<string> addDes = [];
-    public static int addonIndex = -1;
+    private static List<string> addDes = [];
+    private static int addonIndex = -1;
 
     public static void Postfix(/*ControllerManager __instance*/)
     {
@@ -79,7 +79,6 @@ internal class ControllerManagerUpdatePatch
             {
                 try
                 {
-                    var role = PlayerControl.LocalPlayer.GetCustomRole();
                     var lp = PlayerControl.LocalPlayer;
                     if (Main.PlayerStates[lp.PlayerId].SubRoles.Count == 0) return;
 
@@ -97,6 +96,22 @@ internal class ControllerManagerUpdatePatch
                 {
                     Logger.Exception(ex, "ControllerManagerUpdatePatch");
                     throw;
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.F3) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            {
+                try
+                {
+                    var lp = PlayerControl.LocalPlayer;
+                    var role = lp.GetCustomRole();
+                    var sb = new StringBuilder();
+                    if (Options.CustomRoleSpawnChances.TryGetValue(role, out var soi))
+                        Utils.ShowChildrenSettings(soi, ref sb, command: true);
+                    HudManager.Instance.ShowPopUp(sb.ToString().Trim());
+                }
+                catch (Exception ex)
+                {
+                    Utils.ThrowException(ex);
                 }
             }
             //Changing the resolution
@@ -374,8 +389,7 @@ internal class ControllerManagerUpdatePatch
         }
         catch (Exception error)
         {
-            var LineNum = error.GetLineNumber();
-            Logger.Warn($"Error when using keyboard shortcuts: line: {LineNum} - error: {error}", "ControllerManagerUpdatePatch.Postfix");
+            Utils.ThrowException(error);
         }
     }
 

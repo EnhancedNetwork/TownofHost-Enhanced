@@ -567,7 +567,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Merchant)
                     || pc.Is(CustomRoles.Alchemist)
                     || pc.Is(CustomRoles.LazyGuy)
-                    || pc.Is(CustomRoles.Crewpostor))
+                    || pc.Is(CustomRoles.Crewpostor)
+                    || pc.Is(CustomRoles.Bodyguard))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsTasklessCrewmate())
                     return false;

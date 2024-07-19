@@ -308,15 +308,11 @@ class GameEndCheckerForNormal
                             }
                             break;
                         case CustomRoles.Romantic:
-                        case CustomRoles.RuthlessRomantic:
                             if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) 
                                 && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))))
                             {
                                 WinnerIds.Add(pc.PlayerId);
-                                if (pc.Is(CustomRoles.Romantic))
-                                {
-                                    AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
-                                }
+                                AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
                             }
                             break;
                         case CustomRoles.VengefulRomantic when VengefulRomantic.hasKilledKiller:
@@ -393,10 +389,6 @@ class GameEndCheckerForNormal
             /*Keep Schrodinger cat win condition at last*/
             Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
 
-            // Remember true win to display in chat
-            var winner = WinnerTeam;
-            SetEverythingUpPatch.LastWinsReason = winner is CustomWinner.Crewmate or CustomWinner.Impostor ? GetString($"GameOverReason.{reason}") : "";
-
             ShipStatus.Instance.enabled = false;
             // When crewmates win, show as impostor win, for displaying all names players
             //reason = reason is GameOverReason.HumansByVote or GameOverReason.HumansByTask ? GameOverReason.ImpostorByVote : reason;
@@ -434,6 +426,7 @@ class GameEndCheckerForNormal
                     WinnerRoles.Contains(pc.GetCustomRole());
             bool isCrewmateWin = reason.Equals(GameOverReason.HumansByVote) || reason.Equals(GameOverReason.HumansByTask);
             SetGhostRole(ToGhostImpostor: canWin ^ isCrewmateWin);
+            continue;
 
             void SetGhostRole(bool ToGhostImpostor)
             {
@@ -454,6 +447,9 @@ class GameEndCheckerForNormal
                 pc.Data.IsDead = isDead;
             }
         }
+
+        // Remember true win to display in chat
+        SetEverythingUpPatch.LastWinsReason = winner is CustomWinner.Crewmate or CustomWinner.Impostor ? GetString($"GameOverReason.{reason}") : "";
 
         // Delay to ensure that resuscitation is delivered after the ghost roll setting
         yield return new WaitForSeconds(EndGameDelay);
