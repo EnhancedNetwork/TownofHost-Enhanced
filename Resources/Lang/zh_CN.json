@@ -2170,6 +2170,7 @@
   "Message.MeCommandTargetInfo": "<size=100%><b>已选择 【{0}】 玩家 【{1}】</b></size>\n<size=90%>你的 <color=#f34c50>好友代码</color> 是 <u>【{2}】</u></size>\n<size=90%>你的 <color=#f34c50>HashPuid</color> 是 <u>【{3}】</u></size>\n<size=90%>你的 <b><color=#ffc0cb>TOHE</color> <color=#5865F2>Discord</color></b> 职业是 <u>【{4}】</u></size>\n",
   "Message.MeCommandInvalidID": "你输入的 ID 似乎不正确\n请使用 /id 获取在线玩家的 ID",
   "Message.MeCommandNoPermission": "不允许其他人使用/me指令",
+  "PollTitle": "〖 民意调查 〗",
   "PollResultTitle": "投票结果",
   "Poll.Result": "然后... 获胜者为{0}，得票数为{1}！\n\n<size=75%>亚军：",
   "Poll.Tied": "呃哦，{0}票与{1}票之间票数相同。",
