@@ -343,7 +343,7 @@ class GameEndCheckerForNormal
                 {
                     if (!WinnerIds.Contains(pc.PlayerId))
                         WinnerIds.Add(pc.PlayerId);
-
+                }
                 if (WinnerTeam is CustomWinner.Youtuber)
                 {
                     var youTuber = Main.AllPlayerControls.FirstOrDefault(x => x.Is(CustomRoles.Youtuber) && WinnerIds.Contains(x.PlayerId));
