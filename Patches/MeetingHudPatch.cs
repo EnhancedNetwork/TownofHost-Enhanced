@@ -1,3 +1,4 @@
+using Il2CppSystem.Runtime.InteropServices;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -207,9 +208,14 @@ class CheckForEndVotingPatch
                 });
 
                 // Swapper swap votes
-                 if(voter.GetRoleClass() is Swapper sw) sw.SwapVotes(__instance);
+                if (voter.GetRoleClass() is Swapper sw) sw.SwapVotes(__instance);
 
                 playerRoleClass?.AddVisualVotes(ps, ref statesList);
+
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
+                {
+                    Stealer.AddVisualVotes(ps, ref statesList);
+                }
             }
 
             var VotingData = __instance.CustomCalculateVotes(); //Influenced vote mun isnt counted here
@@ -731,7 +737,7 @@ static class ExtendedMeetingHud
                 // Additional votes
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
                 {
-                    VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Stealer.TicketsPerKill.GetFloat());
+                    VoteNum += Stealer.AddRealVotesNum(ps);
                 }
 
                 // Madmate assign by vote
