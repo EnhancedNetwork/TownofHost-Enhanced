@@ -428,15 +428,7 @@ class MurderPlayerPatch
         // Check Youtuber first died
         if (Main.FirstDied == "" && target.Is(CustomRoles.Youtuber) && !killer.Is(CustomRoles.KillingMachine))
         {
-            target.SetDeathReason(PlayerState.DeathReason.Kill);
-            target.SetRealKiller(killer, false);
-            Main.PlayerStates[target.PlayerId].SetDead();
-            CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
-            if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Youtuber);
-                CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
-            }
+            Youtuber.OnMurderPlayer(killer, target);
             return;
             //Imagine youtuber is converted
         }

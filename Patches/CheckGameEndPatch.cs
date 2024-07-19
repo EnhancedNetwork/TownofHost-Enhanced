@@ -9,6 +9,7 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.CustomWinnerHolder;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -330,6 +331,19 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Follower);
                             break;
+                    }
+                }
+
+                if (WinnerTeam is CustomWinner.Youtuber)
+                {
+                    var youTuber = Main.AllPlayerControls.FirstOrDefault(x => x.Is(CustomRoles.Youtuber) && WinnerIds.Contains(x.PlayerId));
+
+                    if (youTuber != null && Youtuber.KillerWinsWithYouTuber.GetBool())
+                    {
+                        var realKiller = youTuber.GetRealKiller();
+
+                        if (realKiller != null && !WinnerIds.Contains(realKiller.PlayerId))
+                            WinnerIds.Add(realKiller.PlayerId);
                     }
                 }
 
