@@ -2509,6 +2509,7 @@
   "EAC.CheatDetected.EAC": "Cheating usage detected (Using AUM)",
   "PressF1ShowMainRoleDes": "Press F1: Show Role Description",
   "PressF2ShowAddRoleDes": "Press F2: Show Add-on Description",
+  "PressF3ShowRoleSettings": "F3: Show Role Settings",
   "FakeTask": "Fake Tasks:",
   "PVP.ATK": "Attack",
   "PVP.DF": "Defend",

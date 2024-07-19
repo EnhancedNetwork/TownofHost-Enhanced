@@ -30,7 +30,7 @@ internal class Monarch : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Monarch])
             .SetValueFormat(OptionFormat.Times);
         HideAdditionalVotesForKnighted = BooleanOptionItem.Create(Id + 13, "HideAdditionalVotesForKnighted", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mortician]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Monarch]);
     }
     public override void Add(byte playerId)
     {
