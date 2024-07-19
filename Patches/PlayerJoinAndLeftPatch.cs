@@ -556,7 +556,11 @@ class InnerNetClientSpawnPatch
 
             _ = new LateTask(() =>
             {
-                if (client == null || client.Character == null) return;
+                if (client == null || client.Character == null)
+                {
+                    Logger.Warn("client is null", "Spawn.RPCRequestRetryVersionCheck");
+                    return;
+                }
 
                 var sender = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, client.Character.OwnerId);
                 AmongUsClient.Instance.FinishRpcImmediately(sender);
