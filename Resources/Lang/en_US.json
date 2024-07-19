@@ -2227,6 +2227,7 @@
   "Message.MeCommandInvalidID": "The ID you entered seems incorrect. \nPlease use /id to get the player ID of online players",
   "Message.MeCommandNoPermission": "You are not allowed to use /me command for others",
 
+  "PollTitle": "〖 Poll 〗",
   "PollResultTitle": "Poll Results",
   "Poll.Result": "And... The winner was {0} with {1} votes!\n\n<size=75%>Runner ups:",
   "Poll.Tied": "Uh oh, The vote was tied between {0}, all having {1} votes.",
