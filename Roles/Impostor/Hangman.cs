@@ -41,7 +41,7 @@ internal class Hangman : RoleBase
 
         if (Main.CheckShapeshift.TryGetValue(killer.PlayerId, out var isShapeshift) && isShapeshift)
         {
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.LossOfHead;
+            target.SetDeathReason(PlayerState.DeathReason.LossOfHead);
             target.RpcExileV2();
             Main.PlayerStates[target.PlayerId].SetDead();
             target.Data.IsDead = true;

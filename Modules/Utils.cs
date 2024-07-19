@@ -232,14 +232,6 @@ public static class Utils
         return;
     }
 
-    /// <summary>
-    /// Make sure to call PlayerState.Deathreason and not Vanilla Deathreason
-    /// </summary>
-    public static void SetDeathReason(this PlayerControl target, PlayerState.DeathReason reason)
-    {
-        Main.PlayerStates[target.PlayerId].deathReason = reason;
-    }
-    
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
         if (!target.Data.IsDead || GameStates.IsMeeting) return;

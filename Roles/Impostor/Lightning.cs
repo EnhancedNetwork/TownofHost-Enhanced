@@ -140,7 +140,8 @@ internal class Lightning : RoleBase
                 if (dis > 0.3f) continue;
 
                 deList.Add(gs.PlayerId);
-                Main.PlayerStates[gs.PlayerId].deathReason = PlayerState.DeathReason.Quantization;
+
+                gs.SetDeathReason(PlayerState.DeathReason.Quantization);
                 gs.RpcMurderPlayer(gs);
                 gs.SetRealKiller(RealKiller[gs.PlayerId]);
 

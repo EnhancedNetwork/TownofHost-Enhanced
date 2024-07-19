@@ -1153,7 +1153,7 @@ class MeetingHudUpdatePatch
                 var player = Utils.GetPlayerById(x.TargetPlayerId);
                 if (player != null && !player.Data.IsDead)
                 {
-                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Execution;
+                    player.SetDeathReason(PlayerState.DeathReason.Execution);
                     player.SetRealKiller(PlayerControl.LocalPlayer);
                     player.RpcExileV2();
                     Main.PlayerStates[player.PlayerId].SetDead();

@@ -422,7 +422,7 @@ class MurderPlayerPatch
         }
         if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.etc)
         {
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill;
+            target.SetDeathReason(PlayerState.DeathReason.Kill);
         }
 
         // Check Youtuber first died
@@ -1398,7 +1398,8 @@ class FixedUpdateInNormalGamePatch
                     {
                         if (partnerPlayer.Is(CustomRoles.Lovers))
                         {
-                            Main.PlayerStates[partnerPlayer.PlayerId].deathReason = PlayerState.DeathReason.FollowingSuicide;
+                            partnerPlayer.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
+
                             if (isExiled)
                                 CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
                             else

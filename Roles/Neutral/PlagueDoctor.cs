@@ -285,7 +285,7 @@ internal class PlagueDoctor : RoleBase
             foreach (PlayerControl player in Main.AllAlivePlayerControls)
             {
                 if (player.Is(CustomRoles.PlagueDoctor)) continue;
-                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Infected;
+                player.SetDeathReason(PlayerState.DeathReason.Infected);
                 player.RpcMurderPlayer(player);
             }
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);

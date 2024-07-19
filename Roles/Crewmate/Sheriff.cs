@@ -123,7 +123,7 @@ internal class Sheriff : RoleBase
             }
             return true;
         }
-        Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
+        killer.SetDeathReason(PlayerState.DeathReason.Misfire);
         killer.RpcMurderPlayer(killer);
         return MisfireKillsTarget.GetBool();
     }

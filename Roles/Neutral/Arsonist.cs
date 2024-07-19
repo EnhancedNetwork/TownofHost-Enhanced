@@ -225,7 +225,7 @@ internal class Arsonist : RoleBase
                 {
                     if (pc != __instance.myPlayer)
                     {
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Torched;
+                        pc.SetDeathReason(PlayerState.DeathReason.Torched);
                         pc.RpcMurderPlayer(pc);
                         pc.SetRealKiller(__instance.myPlayer);
                     }
@@ -250,7 +250,7 @@ internal class Arsonist : RoleBase
                     {
                         if (!IsDousedPlayer(__instance.myPlayer, pc)) continue;
                         pc.KillFlash();
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Torched;
+                        pc.SetDeathReason(PlayerState.DeathReason.Torched);
                         pc.RpcMurderPlayer(pc);
                         pc.SetRealKiller(__instance.myPlayer);
                     }

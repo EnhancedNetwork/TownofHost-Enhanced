@@ -77,7 +77,7 @@ internal class Reverie : RoleBase
     public override bool CanUseSabotage(PlayerControl pc) => false;
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
-    public override bool OnCheckMurderAsKiller(PlayerControl killer,PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return true;
 
@@ -90,7 +90,7 @@ internal class Reverie : RoleBase
         killer.SyncSettings();
         if (NowCooldown[killer.PlayerId] >= MaxKillCooldown.GetFloat() && MisfireSuicide.GetBool())
         {
-            Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
+            killer.SetDeathReason(PlayerState.DeathReason.Misfire);
             killer.RpcMurderPlayer(killer);
         }
         return true;

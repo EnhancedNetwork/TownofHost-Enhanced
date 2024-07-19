@@ -93,7 +93,7 @@ internal class Revolutionist : RoleBase
             var tar = GetPlayerById(x);
             if (tar == null) continue;
             tar.Data.IsDead = true;
-            Main.PlayerStates[tar.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
+            tar.SetDeathReason(PlayerState.DeathReason.Sacrifice);
             tar.RpcExileV2();
             Main.PlayerStates[tar.PlayerId].SetDead();
             Logger.Info($"{tar.GetRealName()} 因会议革命失败", "Revolutionist");
@@ -230,7 +230,7 @@ internal class Revolutionist : RoleBase
                     ResetCurrentDrawTarget(playerId);
                     if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt())
                     {
-                        Main.PlayerStates[rvTargetId].deathReason = PlayerState.DeathReason.Sacrifice;
+                        rvTargetId.SetDeathReason(PlayerState.DeathReason.Sacrifice);
                         player.RpcMurderPlayer(rv_target);
                         rv_target.SetRealKiller(player);
                         Main.PlayerStates[rvTargetId].SetDead();
@@ -279,13 +279,13 @@ internal class Revolutionist : RoleBase
                         foreach (var pc in list.Where(x => x != null && x.IsAlive()).ToArray())
                         {
                             pc.Data.IsDead = true;
-                            Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
+                            pc.SetDeathReason(PlayerState.DeathReason.Sacrifice);
                             pc.RpcMurderPlayer(pc);
                             Main.PlayerStates[pc.PlayerId].SetDead();
                             NotifyRoles(SpecifySeer: pc);
                         }
                         player.Data.IsDead = true;
-                        Main.PlayerStates[playerId].deathReason = PlayerState.DeathReason.Sacrifice;
+                        playerId.SetDeathReason(PlayerState.DeathReason.Sacrifice);
                         player.RpcMurderPlayer(player);
                         Main.PlayerStates[playerId].SetDead();
                     }

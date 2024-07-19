@@ -87,7 +87,7 @@ internal class Addict : RoleBase
 
         if (SuicideTimer[player.PlayerId] >= TimeLimit.GetFloat())
         {
-            Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+            player.SetDeathReason(PlayerState.DeathReason.Suicide);
             player.RpcMurderPlayer(player);
             SuicideTimer.Remove(player.PlayerId);
         }

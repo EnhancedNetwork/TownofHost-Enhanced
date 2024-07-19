@@ -63,16 +63,16 @@ internal class Terrorist : RoleBase
                 {
                     if (Main.PlayerStates[pc.PlayerId].deathReason == PlayerState.DeathReason.Vote)
                     {
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.etc;
+                        pc.SetDeathReason(PlayerState.DeathReason.etc);
                     }
                     else
                     {
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                        pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                     }
                 }
                 else if (!pc.Data.IsDead)
                 {
-                    Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                    pc.SetDeathReason(PlayerState.DeathReason.Bombed);
                     Main.PlayerStates[pc.PlayerId].SetDead();
                     pc.RpcMurderPlayer(pc);
                     pc.SetRealKiller(terrorist.Object);

@@ -89,7 +89,7 @@ internal class Mercenary : RoleBase
         }
         else if (timer >= OptTimeLimit)
         {
-            Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+            player.SetDeathReason(PlayerState.DeathReason.Suicide);
             player.RpcMurderPlayer(player);
             SuicideTimer.Remove(player.PlayerId);
         }

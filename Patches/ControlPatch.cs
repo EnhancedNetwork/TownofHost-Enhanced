@@ -288,7 +288,7 @@ internal class ControllerManagerUpdatePatch
             if (GetKeysDown(KeyCode.LeftControl, KeyCode.LeftShift, KeyCode.E, KeyCode.Return) && GameStates.IsInGame)
             {
                 PlayerControl.LocalPlayer.Data.IsDead = true;
-                Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason = PlayerState.DeathReason.etc;
+                PlayerControl.LocalPlayer.SetDeathReason(PlayerState.DeathReason.etc);
                 PlayerControl.LocalPlayer.SetRealKiller(PlayerControl.LocalPlayer);
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
                 PlayerControl.LocalPlayer.RpcExileV2();

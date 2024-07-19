@@ -79,7 +79,7 @@ class ExileControllerWrapUpPatch
             }
 
             exiled.IsDead = true;
-            Main.PlayerStates[exiled.PlayerId].deathReason = PlayerState.DeathReason.Vote;
+            exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
 
             var exiledPC = Utils.GetPlayerById(exiled.PlayerId);
             var exiledRoleClass = exiledPC.GetRoleClass();

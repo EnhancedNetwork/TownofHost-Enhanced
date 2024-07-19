@@ -85,7 +85,7 @@ internal class Bomber : RoleBase
             var dis = Vector2.Distance(pos, target.transform.position);
             if (dis > BomberRadius.GetFloat()) continue;
 
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+            target.SetDeathReason(PlayerState.DeathReason.Bombed);
             target.RpcMurderPlayer(target);
             target.SetRealKiller(shapeshifter);
         }
@@ -97,7 +97,7 @@ internal class Bomber : RoleBase
                 var totalAlive = Main.AllAlivePlayerControls.Length;
                 if (totalAlive > 0 && !GameStates.IsEnded)
                 {
-                    Main.PlayerStates[shapeshifter.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                    shapeshifter.SetDeathReason(PlayerState.DeathReason.Bombed);
                     shapeshifter.RpcMurderPlayer(shapeshifter);
                 }
                 Utils.NotifyRoles();

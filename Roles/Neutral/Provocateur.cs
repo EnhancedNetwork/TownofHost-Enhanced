@@ -44,7 +44,7 @@ internal class Provocateur : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantBoom")));
             return false;
         }
-        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
+        target.SetDeathReason(PlayerState.DeathReason.PissedOff);
         killer.RpcMurderPlayer(target);
         killer.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
