@@ -305,6 +305,7 @@ class BeginCrewmatePatch
                 break;
 
             case CustomRoles.Terrorist:
+            case CustomRoles.Bomber:
                 var sound = ShipStatus.Instance.CommonTasks.FirstOrDefault(task => task.TaskType == TaskTypes.FixWiring)
                 .MinigamePrefab.OpenSound;
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = sound;
