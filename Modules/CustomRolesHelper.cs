@@ -633,6 +633,8 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Glow:
+                if (pc.Is(CustomRoles.KillingMachine))
+                    return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Glow.CrewCanBeGlow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Glow.NeutralCanBeGlow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Glow.ImpCanBeGlow.GetBool()))
                     return false;
                 break;
