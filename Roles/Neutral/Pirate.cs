@@ -3,6 +3,7 @@ using InnerNet;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -99,6 +100,12 @@ internal class Pirate : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+        {
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("CantDuel")));
+            return true;
+        }
+
         if (target.Is(CustomRoles.Pestilence)) return true;
         if (PirateTarget != byte.MaxValue)
         {
@@ -188,7 +195,7 @@ internal class Pirate : RoleBase
 
         if (!pc.IsAlive())
         {
-            SendMessage(GetString("PirateDead"), pc.PlayerId);
+            pc.ShowInfoMessage(isUI, GetString("PirateDead"));
             return true;
         }
 
@@ -216,8 +223,7 @@ internal class Pirate : RoleBase
             {
                 _ = new LateTask(() =>
                 {
-                    if (!isUI) SendMessage(GetString("DuelAlreadyDone"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("DuelAlreadyDone"));
+                    pc.ShowInfoMessage(isUI, GetString("DuelAlreadyDone"));
                     Logger.Msg("Duel attempted more than once", "Pirate");
                 }, 0.2f, "Pirate Duel Already Done");
                 return true;
@@ -233,20 +239,12 @@ internal class Pirate : RoleBase
                 else
                 {
                     targetChose = rpsOption;
-                    //_ = new LateTask(() =>
-                    //{
-                    //    if (!isUI) SendMessage(String.Format(GetString("TargetDuelDone"), OptionList[pirateChose]), pc.PlayerId);
-                    //    else pc.ShowPopUp(String.Format(GetString("TargetDuelDone"), OptionList[pirateChose]));
-                    //    Logger.Msg($"Target chose {targetChose}", "Pirate");
-                    //}, 0.2f, "Pirate");
-                    //DuelDone[pc.PlayerId] = true;
-                    //return true;
                 }
                 _ = new LateTask(() =>
                 {
-                    if (!isUI) SendMessage(string.Format(GetString("DuelDone"), rpsOption), pc.PlayerId);
-                    else pc.ShowPopUp(string.Format(GetString("DuelDone"), rpsOption));
+                    pc.ShowInfoMessage(isUI, string.Format(GetString("DuelDone"), rpsOption));
                 }, 0.2f, "Pirate Duel Done");
+
                 DuelDone[pc.PlayerId] = true;
                 return true;
 

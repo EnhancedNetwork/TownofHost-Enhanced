@@ -71,6 +71,11 @@ public abstract class RoleBase
     public abstract Custom_RoleType ThisRoleType { get; }
 
     /// <summary>
+    /// Defines the custom role
+    /// </summary>
+    public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
+
+    /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.
     /// </summary>
     public virtual bool CanUseKillButton(PlayerControl pc) => pc.Is(Custom_Team.Impostor) && pc.IsAlive();

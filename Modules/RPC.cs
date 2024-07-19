@@ -154,7 +154,7 @@ internal class RPCHandlerPatch
     {
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
-        //if (EAC.ReceiveRpc(__instance, callId, reader)) return false;
+        // if (EAC.PlayerControlReceiveRpc(__instance, callId, reader)) return false;
         Logger.Info($"{__instance?.Data?.PlayerId}({(__instance.OwnedByHost() ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
         switch (rpcType)
         {
@@ -349,8 +349,14 @@ internal class RPCHandlerPatch
                 RPC.PlaySound(playerID, sound);
                 break;
             case CustomRPC.ShowPopUp:
-                string msg = reader.ReadString();
-                HudManager.Instance.ShowPopUp(msg);
+                string message = reader.ReadString();
+                string title = reader.ReadString();
+
+                // add title
+                if (title != "")
+                    message = $"{title}\n{message}";
+
+                HudManager.Instance.ShowPopUp(message);
                 break;
             case CustomRPC.SetCustomRole:
                 byte CustomRoleTargetId = reader.ReadByte();
@@ -642,6 +648,32 @@ internal class RPCHandlerPatch
     }
 }
 
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
+internal class PlayerPhysicsRPCHandlerPatch
+{
+    private static bool hasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId);
+    private static bool hasLadder(int ladderId) => ShipStatus.Instance.Ladders.Any(l => l.Id == ladderId);
+
+    public static bool Prefix(PlayerPhysics __instance, byte callId, MessageReader reader)
+    {
+        var rpcType = (RpcCalls)callId;
+        MessageReader subReader = MessageReader.Get(reader);
+
+        if (EAC.PlayerPhysicsRpcCheck(__instance, callId, reader)) return false;
+
+        var player = __instance.myPlayer;
+
+        if (!player)
+        {
+            Logger.Warn("Received Physics RPC without a player", "PlayerPhysics_ReceiveRPC");
+            return false;
+        }
+        Logger.Info($"{player.PlayerId}({(__instance.OwnedByHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
+
+        return true;
+    }
+}
+
 internal static class RPC
 {
     //SyncCustomSettingsRPC Sender
@@ -744,11 +776,12 @@ internal static class RPC
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ShowPopUp(this PlayerControl pc, string msg)
+    public static void ShowPopUp(this PlayerControl pc, string message, string title = "")
     {
         if (!AmongUsClient.Instance.AmHost) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShowPopUp, SendOption.Reliable, pc.GetClientId());
-        writer.Write(msg);
+        writer.Write(message);
+        writer.Write(title);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ExileAsync(PlayerControl player)
@@ -772,6 +805,7 @@ internal static class RPC
         target.FriendCode = fc;
         target.Data.FriendCode = fc;
         target.GetClient().FriendCode = fc;
+        target.Data.MarkDirty();
     }
     public static async void RpcVersionCheck()
     {

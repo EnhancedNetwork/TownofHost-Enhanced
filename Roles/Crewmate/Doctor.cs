@@ -50,8 +50,7 @@ internal class Doctor : RoleBase
     {
         if (VisibleToEveryoneOpt.GetBool() && !target.GetCustomSubRoles().Any(sub => sub.IsBetrayalAddon()))
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessDoctor"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessDoctor"));
+            pc.ShowInfoMessage(isUI, GetString("GuessDoctor"));
             return true;
         }
         return false;

@@ -21,11 +21,11 @@ public static class Avanger
 
     public static void OnMurderPlayer(PlayerControl target)
     {
-        var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && x.RpcCheckAndMurder(target, true)).ToList();
+        var pcList = Main.AllAlivePlayerControls.Where(pc => pc.PlayerId != target.PlayerId && target.RpcCheckAndMurder(pc, true)).ToList();
         
         if (pcList.Any())
         {
-            PlayerControl rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
+            PlayerControl rp = pcList.RandomElement();
             Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
             rp.RpcMurderPlayer(rp);
             rp.SetRealKiller(target);

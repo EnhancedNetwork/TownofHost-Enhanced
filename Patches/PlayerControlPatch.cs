@@ -86,7 +86,7 @@ class CheckMurderPatch
 
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
-        if (CheckForInvalidMurdering(killer, target) == false)
+        if (CheckForInvalidMurdering(killer, target, true) == false)
         {
             return false;
         }
@@ -133,7 +133,7 @@ class CheckMurderPatch
             Utils.NotifyRoles(SpecifySeer: target);
         }
     }
-    public static bool CheckForInvalidMurdering(PlayerControl killer, PlayerControl target)
+    public static bool CheckForInvalidMurdering(PlayerControl killer, PlayerControl target, bool checkCanUseKillButton = false)
     {
         // Killer is already dead
         if (!killer.IsAlive())
@@ -174,13 +174,13 @@ class CheckMurderPatch
         //↓ If not permitted
         if (TimeSinceLastKill.TryGetValue(killer.PlayerId, out var time) && time < minTime)
         {
-            Logger.Info("Kill intervals are too short and kills are canceled", "CheckMurder");
+            Logger.Info($"Last kill was too shortly before, canceled - time: {time}, minTime: {minTime}", "CheckMurder");
             return false;
         }
         TimeSinceLastKill[killer.PlayerId] = 0f;
 
         // killable decision
-        if (killer.PlayerId != target.PlayerId && !killer.CanUseKillButton())
+        if (killer.PlayerId != target.PlayerId && !killer.CanUseKillButton() && checkCanUseKillButton)
         {
             Logger.Info(killer.GetNameWithRole().RemoveHtmlTags() + " The hitter is not allowed to use the kill button and the kill is canceled", "CheckMurder");
             return false;
@@ -428,14 +428,15 @@ class MurderPlayerPatch
         // Check Youtuber first died
         if (Main.FirstDied == "" && target.Is(CustomRoles.Youtuber) && !killer.Is(CustomRoles.KillingMachine))
         {
+            target.SetDeathReason(PlayerState.DeathReason.Kill);
+            target.SetRealKiller(killer, false);
+            Main.PlayerStates[target.PlayerId].SetDead();
             CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
             if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Youtuber);
                 CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
             }
-            target.SetDeathReason(PlayerState.DeathReason.Kill);
-            target.SetRealKiller(killer, false);
             return;
             //Imagine youtuber is converted
         }
@@ -445,6 +446,8 @@ class MurderPlayerPatch
 
         if (Main.AllKillers.ContainsKey(killer.PlayerId))
             Main.AllKillers.Remove(killer.PlayerId);
+
+        killer.SetKillTimer();
 
         if (!killer.Is(CustomRoles.Trickster))
             Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
@@ -1113,6 +1116,7 @@ class FixedUpdateInNormalGamePatch
             }
 
             DoubleTrigger.OnFixedUpdate(player);
+            KillTimerManager.FixedUpdate(player);
 
             //Mini's count down needs to be done outside if intask if we are counting meeting time
             if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
@@ -1325,6 +1329,13 @@ class FixedUpdateInNormalGamePatch
                         RealName = GetString("DevouredName");
                 }
 
+                // Dollmaster, Prevent seeing self in mushroom cloud
+                if (CustomRoles.DollMaster.HasEnabled() && seerRole != CustomRoles.DollMaster)
+                {
+                    if (DollMaster.IsDoll(seer.PlayerId))
+                        RealName = "<size=10000%><color=#000000>■</color></size>";
+                }
+
                 // Camouflage
                 if ((Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated)
                     RealName = $"<size=0%>{RealName}</size> ";
@@ -1436,6 +1447,11 @@ class CoEnterVentPatch
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.CheckCoEnterVent(__instance, id))
         {
             return true;
+        }
+
+        if (KillTimerManager.AllKillTimers.TryGetValue(__instance.myPlayer.PlayerId, out var timer))
+        {
+            KillTimerManager.AllKillTimers[__instance.myPlayer.PlayerId] = timer + 0.5f;
         }
 
         // Check others enter to vent
@@ -1629,6 +1645,15 @@ class PlayerControlCheckNamePatch
             Logger.Warn($"Standard nickname: {playerName} => {name}", "Name Format");
             __instance.RpcSetName(name);
         }
+
+        _ = new LateTask(() =>
+        {
+            if (__instance != null && !__instance.Data.Disconnected && !__instance.IsModClient())
+            {
+                var sender = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.OwnerId);
+                AmongUsClient.Instance.FinishRpcImmediately(sender);
+            }
+        }, 0.6f, "Retry Version Check", false);
     }
 }
 

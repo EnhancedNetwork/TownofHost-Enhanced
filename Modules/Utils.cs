@@ -1,7 +1,6 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
 using Hazel;
-using Il2CppInterop.Runtime.InteropTypes;
 using InnerNet;
 using System;
 using System.Data;
@@ -23,6 +22,7 @@ using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using TOHE.Patches;
+using System.Linq;
 
 
 namespace TOHE;
@@ -970,6 +970,52 @@ public static class Utils
         return sb.ToString();
     }
 
+    public static string GetRegionName(IRegionInfo region = null)
+    {
+        if (region == null)
+        {
+            region = ServerManager.Instance.CurrentRegion;
+        }
+
+        string name = region.Name;
+
+        if (AmongUsClient.Instance.NetworkMode != NetworkModes.OnlineGame)
+        {
+            name = "Local Games";
+            return name;
+        }
+
+        if (region.PingServer.EndsWith("among.us", StringComparison.Ordinal))
+        {
+            // Official server
+            if (name == "North America") name = "NA";
+            else if (name == "Europe") name = "EU";
+            else if (name == "Asia") name = "AS";
+
+            return name;
+        }
+
+        var Ip = region.Servers.FirstOrDefault()?.Ip ?? string.Empty;
+
+        if (Ip.Contains("aumods.us", StringComparison.Ordinal)
+            || Ip.Contains("duikbo.at", StringComparison.Ordinal))
+        {
+            // Official Modded Server
+            if (Ip.Contains("au-eu")) name = "MEU";
+            else if (Ip.Contains("au-as")) name = "MAS";
+            else if (Ip.Contains("www.")) name = "MNA";
+
+            return name;
+        }
+
+        if (name.Contains("nikocat233", StringComparison.OrdinalIgnoreCase))
+        {
+            name = name.Replace("nikocat233", "Niko233", StringComparison.OrdinalIgnoreCase);
+        }
+
+        return name;
+    }
+
     public static byte MsgToColor(string text, bool isHost = false)
     {
         text = text.ToLowerInvariant();
@@ -1226,7 +1272,7 @@ public static class Utils
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /qt {GetString("Command.quit")}"
             + $"\n ○ /death {GetString("Command.death")}"
-     //       + $"\n ○ /icons {GetString("Command.iconinfo")}"
+            + $"\n ○ /icons {GetString("Command.iconinfo")}"
             , ID);
     }
     public static void ShowHelp(byte ID)
@@ -1242,11 +1288,12 @@ public static class Utils
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"
             + $"\n  ○ /qt {GetString("Command.quit")}"
-       //     + $"\n  ○ /icons {GetString("Command.iconinfo")}"
+            + $"\n  ○ /icons {GetString("Command.iconinfo")}"
             + $"\n  ○ /death {GetString("Command.death")}"
             + "\n\n" + GetString("CommandHostList")
             + $"\n  ○ /s {GetString("Command.say")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"
+            + $"\n  ○ /poll {GetString("Command.Poll")}"
             + $"\n  ○ /xf {GetString("Command.solvecover")}"
             + $"\n  ○ /mw {GetString("Command.mw")}"
             + $"\n  ○ /kill {GetString("Command.kill")}"
@@ -1825,11 +1872,18 @@ public static class Utils
                         SelfName = GetString("DevouredName");
                 }
 
+                // Dollmaster, Prevent seeing self in mushroom cloud
+                if (CustomRoles.DollMaster.HasEnabled() && seerRole != CustomRoles.DollMaster)
+                {
+                    if (DollMaster.IsDoll(seer.PlayerId))
+                        SelfName = "<size=10000%><color=#000000>■</color></size>";
+                }
+
                 // Camouflage
                 if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                     SelfName = $"<size=0%>{SelfName}</size>";
 
-                if (!SelfName.Contains(seer.GetRealName()))
+                if (!Regex.IsMatch(SelfName, seer.GetRealName()))
                     IsDisplayInfo = false;
 
                 switch (Options.CurrentGameMode)
@@ -2119,6 +2173,12 @@ public static class Utils
             playerState.RoleClass?.AfterMeetingTasks();
         }
 
+        //Set kill timer
+        foreach (var player in Main.AllAlivePlayerControls)
+        {
+            player.SetKillTimer();
+        }
+
         if (LateExileTask.Any())
         {
             LateExileTask.Do(t => t.Invoke(true));
@@ -2332,7 +2392,7 @@ public static class Utils
         return new Color(R, G, B, color.a);
     }
 
-    public static void SetChatVisible()
+    public static void SetChatVisibleForEveryone()
     {
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
         
@@ -2342,73 +2402,6 @@ public static class Utils
         MeetingHud.Instance.RpcClose();
     }
 
-    public static void SetChatVisibleSpecific(this PlayerControl player)
-    {
-        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost || GameStates.IsMeeting) return;
-
-        if (player.AmOwner)
-        {
-            HudManager.Instance.Chat.SetVisible(true);
-            return;
-        }
-
-        if (player.IsModClient())
-        {
-            var modsend = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShowChat, SendOption.Reliable, player.OwnerId);
-            modsend.WritePacked(player.OwnerId);
-            modsend.Write(true);
-            AmongUsClient.Instance.FinishRpcImmediately(modsend);
-            return;
-        }
-
-        var customNetId = AmongUsClient.Instance.NetIdCnt++;
-        var vanillasend = MessageWriter.Get(SendOption.Reliable);
-        vanillasend.StartMessage(6);
-        vanillasend.Write(AmongUsClient.Instance.GameId);
-        vanillasend.Write(player.OwnerId);
-
-        vanillasend.StartMessage((byte)GameDataTag.SpawnFlag);
-        vanillasend.WritePacked(1); // 1 Meeting Hud Spawn id
-        vanillasend.WritePacked(-2); // Owned by host
-        vanillasend.Write((byte)SpawnFlags.None);
-        vanillasend.WritePacked(1);
-        vanillasend.WritePacked(customNetId);
-
-        vanillasend.StartMessage(1);
-        vanillasend.WritePacked(0);
-        vanillasend.EndMessage();
-
-        vanillasend.EndMessage();
-        vanillasend.EndMessage();
-
-        vanillasend.StartMessage(6);
-        vanillasend.Write(AmongUsClient.Instance.GameId);
-        vanillasend.Write(player.OwnerId);
-        vanillasend.StartMessage((byte)GameDataTag.RpcFlag);
-        vanillasend.WritePacked(customNetId);
-        vanillasend.Write((byte)RpcCalls.CloseMeeting);
-        vanillasend.EndMessage();
-        vanillasend.EndMessage();
-
-        //vanillasend.StartMessage(6);
-        //vanillasend.Write(AmongUsClient.Instance.GameId);
-        //vanillasend.Write(player.OwnerId);
-        //vanillasend.StartMessage((byte)GameDataTag.DespawnFlag);
-        //vanillasend.WritePacked(customNetId);
-        //vanillasend.EndMessage();
-        //vanillasend.EndMessage();
-        // Despawn here dont show chat button somehow
-
-        AmongUsClient.Instance.SendOrDisconnect(vanillasend);
-        vanillasend.Recycle();
-    }
-
-    public static bool TryCast<T>(this Il2CppObjectBase obj, out T casted)
-    where T : Il2CppObjectBase
-    {
-        casted = obj.TryCast<T>();
-        return casted != null;
-    }
     public static int AllPlayersCount => Main.PlayerStates.Values.Count(state => state.countTypes != CountTypes.OutOfGame);
     public static int AllAlivePlayersCount => Main.AllAlivePlayerControls.Count(pc => !pc.Is(CountTypes.OutOfGame));
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);

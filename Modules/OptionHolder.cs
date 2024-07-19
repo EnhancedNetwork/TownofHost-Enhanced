@@ -119,7 +119,8 @@ public static class Options
         "CamouflageMode.Pyro",
         "CamouflageMode.ryuk",
         "CamouflageMode.Gurge44",
-        "CamouflageMode.TommyXL"
+        "CamouflageMode.TommyXL",
+        "CamouflageMode.Sarha"
     ];
 
 
@@ -294,6 +295,8 @@ public static class Options
     public static OptionItem DisableKillAnimationOnGuess;
     public static OptionItem DisableVanillaRoles;
     public static OptionItem DisableTaskWin;
+    public static OptionItem DisableTaskWinIfAllCrewsAreDead;
+    public static OptionItem DisableTaskWinIfAllCrewsAreConverted;
     public static OptionItem DisableMeeting;
     public static OptionItem DisableSabotage;
     public static OptionItem DisableCloseDoor;
@@ -592,10 +595,11 @@ public static class Options
         //#######################################
 
 
-
         // Start Load Settings
         if (IsLoaded) yield break;
         OptionSaver.Initialize();
+
+        yield return null;
 
         // Preset Option
         _ = PresetOptionItem.Create(0, TabGroup.SystemSettings)
@@ -1069,12 +1073,10 @@ public static class Options
         GradientTagsOpt = BooleanOptionItem.Create(60031, "EnableGadientTags", false, TabGroup.SystemSettings, false)
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
-            .SetColor(Color.green)
             .HideInHnS();
         ShowMadmatesInLeftCommand = BooleanOptionItem.Create(60042, "ShowMadmatesInLeftCommand", true, TabGroup.SystemSettings, false)
             .SetParent(EnableKillerLeftCommand);
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
-            .SetColor(Color.green)
             .HideInHnS();
         
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
@@ -1466,6 +1468,12 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableTaskWin = BooleanOptionItem.Create(60563, "DisableTaskWin", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
+        DisableTaskWinIfAllCrewsAreDead = BooleanOptionItem.Create(60900, "DisableTaskWinIfAllCrewsAreDead", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
+        DisableTaskWinIfAllCrewsAreConverted = BooleanOptionItem.Create(60901, "DisableTaskWinIfAllCrewsAreConverted", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableMeeting = BooleanOptionItem.Create(60564, "DisableMeeting", false, TabGroup.ModSettings, false)

@@ -45,9 +45,12 @@ internal class SuperStar : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if (!isUI) SendMessage(GetString("GuessSuperStar"), pc.PlayerId);
-        else pc.ShowPopUp(GetString("GuessSuperStar"));
-        return true;
+        if (role is CustomRoles.SuperStar)
+        {
+            pc.ShowInfoMessage(isUI, GetString("GuessSuperStar"));
+            return true;
+        }
+        return false;
     }
     public static bool VisibleToEveryone(PlayerControl target) => target.Is(CustomRoles.SuperStar) && EveryOneKnowSuperStar.GetBool();
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);

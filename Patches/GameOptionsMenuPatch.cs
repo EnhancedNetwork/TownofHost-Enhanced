@@ -581,7 +581,7 @@ public static class StringOptionPatch
                     _ => 0.35f,
                 };
             }
-            __instance.TitleText.text = item.GetName();
+            __instance.TitleText.text = name;
             return false;
         }
         return true;

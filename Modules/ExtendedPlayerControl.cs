@@ -93,9 +93,7 @@ static class ExtendedPlayerControl
             Logger.Warn($"{callerClassName}.{callerMethodName} tried to retrieve CustomRole, but the target was null", "GetCustomRole");
             return CustomRoles.Crewmate;
         }
-        var GetValue = Main.PlayerStates.TryGetValue(player.PlayerId, out var State);
-
-        return GetValue ? State.MainRole : CustomRoles.Crewmate;
+        return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.MainRole : CustomRoles.Crewmate;
     }
 
     public static List<CustomRoles> GetCustomSubRoles(this PlayerControl player)
@@ -109,7 +107,7 @@ static class ExtendedPlayerControl
             Logger.Warn($"{callerClassName}.{callerMethodName} tried to get CustomSubRole, but the target was null", "GetCustomRole");
             return [CustomRoles.NotAssigned];
         }
-        return Main.PlayerStates[player.PlayerId].SubRoles;
+        return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.SubRoles : [CustomRoles.NotAssigned];
     }
     public static CountTypes GetCountTypes(this PlayerControl player)
     {
@@ -222,7 +220,7 @@ static class ExtendedPlayerControl
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, int colorId = 0, bool forObserver = false)
+    public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, bool forObserver = false, bool fromSetKCD = false)
     {
         if (!AmongUsClient.Instance.AmHost)
         {
@@ -239,7 +237,7 @@ static class ExtendedPlayerControl
         // Check Observer
         if (Observer.HasEnabled && !forObserver && !MeetingStates.FirstMeeting)
         {
-            Observer.ActivateGuardAnimation(killer.PlayerId, target, colorId);
+            Observer.ActivateGuardAnimation(killer.PlayerId, target);
         }
 
         // Host
@@ -255,15 +253,18 @@ static class ExtendedPlayerControl
             writer.Write((int)MurderResultFlags.FailedProtected);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
+
+        if (!fromSetKCD) killer.SetKillTimer(half: true);
     }
     public static void SetKillCooldownV2(this PlayerControl player, float time = -1f)
     {
         if (player == null) return;
         if (!player.CanUseKillButton()) return;
+        player.SetKillTimer(CD: time);
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
         player.SyncSettings();
-        player.RpcGuardAndKill();
+        player.RpcGuardAndKill(fromSetKCD: true);
         player.ResetKillCooldown();
     }
     public static void SetKillCooldown(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
@@ -272,7 +273,8 @@ static class ExtendedPlayerControl
 
         if (!player.HasImpKillButton(considerVanillaShift: true)) return;
         if (player.HasImpKillButton(false) && !player.CanUseKillButton()) return;
-
+        
+        player.SetKillTimer(CD: time);
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
@@ -284,7 +286,7 @@ static class ExtendedPlayerControl
         else if (forceAnime || !player.IsModClient() || !Options.DisableShieldAnimations.GetBool())
         {
             player.SyncSettings();
-            player.RpcGuardAndKill(target, 11);
+            player.RpcGuardAndKill(target, fromSetKCD: true);
         }
         else
         {
@@ -299,7 +301,7 @@ static class ExtendedPlayerControl
             // Check Observer
             if (Observer.HasEnabled)
             {
-                Observer.ActivateGuardAnimation(target.PlayerId, target, 11);
+                Observer.ActivateGuardAnimation(target.PlayerId, target);
             }
         }
         player.ResetKillCooldown();
@@ -383,13 +385,14 @@ static class ExtendedPlayerControl
     {
         if (player == null) return;
         if (!player.CanUseKillButton()) return;
+        player.SetKillTimer(CD: time);
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
         if (forceAnime || !player.IsModClient() || !Options.DisableShieldAnimations.GetBool())
         {
             player.SyncSettings();
-            player.RpcGuardAndKill(target, 11);
+            player.RpcGuardAndKill(target, fromSetKCD: true);
         }
         else
         {
@@ -404,7 +407,7 @@ static class ExtendedPlayerControl
             // Check Observer
             if (Observer.HasEnabled)
             {
-                Observer.ActivateGuardAnimation(target.PlayerId, target, 11);
+                Observer.ActivateGuardAnimation(target.PlayerId, target);
             }
         }
         player.ResetKillCooldown();
@@ -689,6 +692,8 @@ static class ExtendedPlayerControl
         if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
         //if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
 
+        if (Amnesiac.PreviousAmnesiacCanVent(pc)) return true; //this is done because amnesiac has imp basis and if amnesiac remembers a role with different basis then player will not vent as `CanUseImpostorVentButton` is false
+
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseImpostorVentButton(pc)) return true;
 
@@ -855,7 +860,7 @@ static class ExtendedPlayerControl
 
         return CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
     }
-    public static bool CheckForInvalidMurdering(this PlayerControl killer, PlayerControl target) => CheckMurderPatch.CheckForInvalidMurdering(killer, target);
+    public static bool CheckForInvalidMurdering(this PlayerControl killer, PlayerControl target, bool checkCanUseKillButton = false) => CheckMurderPatch.CheckForInvalidMurdering(killer, target, checkCanUseKillButton);
     public static void NoCheckStartMeeting(this PlayerControl reporter, NetworkedPlayerInfo target, bool force = false)
     { 
         //Method that can cause a meeting to occur regardless of whether it is in sabotage.
@@ -1208,7 +1213,7 @@ static class ExtendedPlayerControl
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
-        var vents = UnityEngine.Object.FindObjectsOfType<Vent>();
+        var vents = ShipStatus.Instance.AllVents;
         var vent = vents.RandomElement();
 
         Logger.Info($" {vent.transform.position}", "RpcVentTeleportPosition");

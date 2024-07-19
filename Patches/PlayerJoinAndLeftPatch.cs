@@ -376,7 +376,7 @@ class OnPlayerLeftPatch
                 if (NameNotifyManager.Notifying(data.Character))
                 {
                     NameNotifyManager.Notice.Remove(data.Character.PlayerId);
-                    Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
+                    //Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
                 }
 
                 try
@@ -509,7 +509,12 @@ class OnPlayerLeftPatch
                 if (GameStates.IsMeeting)
                 {
                     Swapper.CheckSwapperTarget(data.Character.PlayerId);
-                    MeetingHud.Instance.CheckForEndVoting();
+
+                    // Prevent double check end voting
+                    if (MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion)
+                    {
+                        MeetingHud.Instance.CheckForEndVoting();
+                    }
                 }
             }
         }

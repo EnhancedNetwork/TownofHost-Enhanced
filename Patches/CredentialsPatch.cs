@@ -42,7 +42,7 @@ class PingTrackerUpdatePatch
             else if (ping < 100) pingcolor = "#7bc690";
             else if (ping < 200) pingcolor = "#f3920e";
             else if (ping < 400) pingcolor = "#ff146e";
-            sb.Append($"\r\n<color={pingcolor}>Ping: {ping} ms</color>");
+            sb.Append($"\r\n<color={pingcolor}>Ping: {ping} ms</color>\r\n<color=#a54aff>Server: <color=#f34c50>{Utils.GetRegionName()}</color>");
 
             if (!GameStates.IsModHost)
             {
@@ -122,7 +122,7 @@ class PingTrackerUpdatePatch
         __instance.text.alignment = TextAlignmentOptions.Right;
         __instance.text.outlineColor = Color.black;
 
-        if (Main.ShowTextOverlay.Value)
+        if (Main.ShowTextOverlay.Value || Main.ShowFPS.Value)
         {
             var language = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
             __instance.text.outlineWidth = language switch
