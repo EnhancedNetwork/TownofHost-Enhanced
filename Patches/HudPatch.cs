@@ -339,6 +339,8 @@ class TaskPanelBehaviourPatch
                         if (Main.PlayerStates.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var ps) && ps.SubRoles.Count >= 1)
                             AllText += $"\r\n{GetString("PressF2ShowAddRoleDes")}";
                         AllText += $"\r\n{GetString("PressF3ShowRoleSettings")}";
+                        if (ps.SubRoles.Count >= 1)
+                            AllText += $"\r\n{GetString("PressF4ShowAddOnsSettings")}";
                         AllText += "</size>";
                     }
                     break;
