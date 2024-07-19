@@ -85,10 +85,9 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableGM { get; private set; }
     public static ConfigEntry<bool> AutoStart { get; private set; }
     public static ConfigEntry<bool> DarkTheme { get; private set; }
+    public static ConfigEntry<bool> DisableLobbyMusic { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
-    public static ConfigEntry<bool> ModeForSmallScreen { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
-    public static ConfigEntry<bool> AutoMuteUs { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
@@ -426,10 +425,9 @@ public class Main : BasePlugin
         EnableGM = Config.Bind("Client Options", "EnableGM", false);
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
         DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
+        DisableLobbyMusic = Config.Bind("Client Options", "DisableLobbyMusic", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
-        ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
-        AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);

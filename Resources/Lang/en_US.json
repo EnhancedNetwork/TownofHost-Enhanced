@@ -4,8 +4,11 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
-  "HideHostText": "Hide 'Host♥' Text",
   "NameColor": "#ffc0cb",
+
+  "HideHostText": "Hide 'Host♥' Text",
+  "HideAllTagsAndText": "Hide All Tags (for «AutoMuteUs»)",
+
   "kofi": "Ko-Fi",
   "update": "Update",
   "GitHub": "GitHub",
@@ -1131,6 +1134,7 @@
   "KPDCamouflageMode": "Camouflage Appearance",
   "RoleOptions": "Role Options",
   "DarkTheme": "Enable Dark Theme",
+  "DisableLobbyMusic": "Disable Lobby Music",
   "AutoStart": "Auto start",
   "EnableCustomButton": "Enable Custom Button Images",
   "EnableCustomSoundEffect": "Enable Custom Sound Effects",

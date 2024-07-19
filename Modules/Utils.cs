@@ -1501,19 +1501,34 @@ public static class Utils
     }
     public static void ApplySuffix(PlayerControl player)
     {
-        if (!AmongUsClient.Instance.AmHost || player == null || Main.AutoMuteUs.Value) return;
+        // Only host
+        if (!AmongUsClient.Instance.AmHost || player == null) return;
         // Check invalid color
         if (player.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= player.Data.DefaultOutfit.ColorId) return;
+
+        // Hide all tags
+        if (Options.HideAllTagsAndText.GetBool())
+        {
+            SetRealName();
+            return;
+        }
 
         if (!(player.AmOwner || player.FriendCode.GetDevUser().HasTag()))
         {
             if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode))
             {
-                string name1 = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n1) ? n1 : "";
-                if (GameStates.IsLobby && name1 != player.name && player.CurrentOutfitType == PlayerOutfitType.Default) player.RpcSetName(name1);
+                SetRealName();
                 return;
             }
         }
+
+        void SetRealName()
+        {
+            string realName = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var namePlayer) ? namePlayer : "";
+            if (GameStates.IsLobby && realName != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
+                player.RpcSetName(realName);
+        }
+
         string name = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n) ? n : "";
         if (Main.HostRealName != "" && player.AmOwner) name = Main.HostRealName;
         if (name == "") return;
