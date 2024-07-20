@@ -5,12 +5,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
-using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 using static TOHE.Translator;
 
 namespace TOHE;
