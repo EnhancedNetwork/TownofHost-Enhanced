@@ -148,7 +148,7 @@ public static class CustomRoleManager
     {
         if (killer == target) return true;
 
-        if (target!= null || target.Is(CustomRoles.Fragile))
+        if (target != null && target.Is(CustomRoles.Fragile))
         {
             if (Fragile.KillFragile(killer, target))
             {
