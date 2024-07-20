@@ -1,9 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
+using UnityEngine;
 using System.Text;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Impostor;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
