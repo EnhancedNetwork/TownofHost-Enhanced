@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using TOHE.Roles.Neutral;
 using Hazel;
 using InnerNet;
 using UnityEngine;
@@ -11,6 +10,7 @@ namespace TOHE.Modules;
 internal static class RoleBasisChanger
 {
     public static bool IsChangeInProgress;
+    public static bool SkipTasksAfterAssignRole;
 
     public static void ChangeRoleBasis(this PlayerControl player, RoleTypes targetVNRole)
     {
@@ -18,7 +18,8 @@ internal static class RoleBasisChanger
 
         if (player.OwnedByHost())
         {
-            player.RpcSetRole(targetVNRole);
+            DestroyableSingleton<RoleManager>.Instance.SetRole(player, targetVNRole);
+            //player.RpcSetRole(targetVNRole);
             player.SyncSettings();
 
             Utils.NotifyRoles(SpecifySeer: player);
@@ -30,6 +31,7 @@ internal static class RoleBasisChanger
         }
 
         IsChangeInProgress = true;
+        SkipTasksAfterAssignRole = true;
 
         Vector2 position = player.GetTruePosition();
         PlayerControl PlayerPrefab = AmongUsClient.Instance.PlayerPrefab;
@@ -41,7 +43,7 @@ internal static class RoleBasisChanger
 
         ClientData pclient = player.GetClient();
 
-        player.RpcTeleport(Pelican.GetBlackRoomPSForPelican());
+        player.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
         AmongUsClient.Instance.Despawn(player);
         AmongUsClient.Instance.Spawn(newplayer, player.OwnerId);
         pclient.Character = newplayer;
@@ -54,15 +56,22 @@ internal static class RoleBasisChanger
         newplayer.MyPhysics.ResetMoveState();
 
         GameData.Instance.RemovePlayer(player.PlayerId);
-        GameData.Instance.AddPlayer(newplayer);
+        GameData.Instance.AddPlayer(newplayer, newplayer.GetClient());
 
-        newplayer.RpcSetRole(targetVNRole);
+        //newplayer.RpcSetRoleDesync(targetVNRole, true, newplayer.GetClientId());
+        newplayer.RpcSetRole(targetVNRole, true);
 
-        GameData.Instance.SetDirty();
+        //Used instead of GameData.Instance.DirtyAllData();
+        foreach (var innerNetObject in GameData.Instance.AllPlayers)
+        {
+            innerNetObject.SetDirtyBit(uint.MaxValue);
+        }
+
         newplayer.ReactorFlash(0.2f);
         newplayer.RpcTeleport(position);
 
         _ = new LateTask(() => { IsChangeInProgress = false; }, 5f, "Desync Role Basis");
+        _ = new LateTask(() => { SkipTasksAfterAssignRole = false; }, 8f, "Wait End Intro", shoudLog: false);
     }
 
     [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Spawn))]

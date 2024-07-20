@@ -1,4 +1,5 @@
 ﻿using AmongUs.Data;
+using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 
@@ -6,7 +7,7 @@ namespace TOHE;
 
 class ExileControllerWrapUpPatch
 {
-    public static GameData.PlayerInfo AntiBlackout_LastExiled;
+    public static NetworkedPlayerInfo AntiBlackout_LastExiled;
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
@@ -15,6 +16,10 @@ class ExileControllerWrapUpPatch
             try
             {
                 WrapUpPostfix(__instance.exiled);
+            }
+            catch (Exception error)
+            {
+                Utils.ThrowException(error);
             }
             finally
             {
@@ -32,13 +37,17 @@ class ExileControllerWrapUpPatch
             {
                 WrapUpPostfix(__instance.exiled);
             }
+            catch (Exception error)
+            {
+                Logger.Error($"Error after exiled: {error}", "WrapUpAndSpawn");
+            }
             finally
             {
                 WrapUpFinalizer(__instance.exiled);
             }
         }
     }
-    static void WrapUpPostfix(GameData.PlayerInfo exiled)
+    static void WrapUpPostfix(NetworkedPlayerInfo exiled)
     {
         if (AntiBlackout.BlackOutIsActive) exiled = AntiBlackout_LastExiled;
 
@@ -70,7 +79,7 @@ class ExileControllerWrapUpPatch
             }
 
             exiled.IsDead = true;
-            Main.PlayerStates[exiled.PlayerId].deathReason = PlayerState.DeathReason.Vote;
+            exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
 
             var exiledPC = Utils.GetPlayerById(exiled.PlayerId);
             var exiledRoleClass = exiledPC.GetRoleClass();
@@ -114,7 +123,7 @@ class ExileControllerWrapUpPatch
         Main.MeetingsPassed++;
 
         FallFromLadder.Reset();
-        Utils.CountAlivePlayers(true);
+        Utils.CountAlivePlayers(true, Options.CurrentGameMode is CustomGameMode.Standard);
         Utils.AfterMeetingTasks();
         Utils.SyncAllSettings();
         Utils.NotifyRoles(NoCache: true);
@@ -138,7 +147,7 @@ class ExileControllerWrapUpPatch
         }
     }
 
-    static void WrapUpFinalizer(GameData.PlayerInfo exiled)
+    static void WrapUpFinalizer(NetworkedPlayerInfo exiled)
     {
         // Even if an exception occurs in WrapUpPostfix, this is the only part that will be executed reliably.
         if (AmongUsClient.Instance.AmHost)
@@ -190,6 +199,13 @@ class ExileControllerWrapUpPatch
         GameStates.AlreadyDied |= !Utils.IsAllAlive;
         RemoveDisableDevicesPatch.UpdateDisableDevices();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
+
+        _ = new LateTask(() =>
+        {
+            if (!AmongUsClient.Instance.IsGameOver)
+                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+        }, 0.8f, "Set Hud Active");
+
         Logger.Info("Start of Task Phase", "Phase");
     }
 

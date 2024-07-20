@@ -53,6 +53,8 @@ internal class Celebrity : RoleBase
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
+        if (isSuicide && target.IsDisconnected()) return;
+
         if (inMeeting)
         {
             //Death Message

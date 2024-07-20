@@ -20,8 +20,9 @@ public static class LastImpostor
     public static void SetKillCooldown()
     {
         if (currentId == byte.MaxValue) return;
-        if (!Main.AllPlayerKillCooldown.TryGetValue(currentId, out _)) return;
-        Main.AllPlayerKillCooldown[currentId] -= Main.AllPlayerKillCooldown[currentId] * (CooldownReduction.GetFloat() / 100);
+        if (!Main.AllPlayerKillCooldown.TryGetValue(currentId, out var currentCD)) return;
+        var removeCooldown = currentCD * (CooldownReduction.GetFloat() / 100);
+        Main.AllPlayerKillCooldown[currentId] -= removeCooldown;
     }
     private static bool CanBeLastImpostor(PlayerControl pc)
         => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor)&& !pc.Is(CustomRoles.Overclocked) && pc.Is(Custom_Team.Impostor);
@@ -40,7 +41,7 @@ public static class LastImpostor
                 Add(pc.PlayerId);
                 SetKillCooldown();
                 pc.SyncSettings();
-                Utils.NotifyRoles(SpecifySeer: pc);
+                Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);
                 break;
             }
         }

@@ -30,7 +30,7 @@ internal class Mastermind : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Mastermind, 1);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mastermind])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mastermind])
             .SetValueFormat(OptionFormat.Seconds);
         TimeLimit = FloatOptionItem.Create(Id + 12, "MastermindTimeLimit", new(1f, 60f, 1f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mastermind])
             .SetValueFormat(OptionFormat.Seconds);
@@ -116,7 +116,8 @@ internal class Mastermind : RoleBase
             {
                 ManipulatedPlayers.Remove(x.Key);
                 TempKCDs.Remove(x.Key);
-                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+
+                player.SetDeathReason(PlayerState.DeathReason.Suicide);
                 player.RpcMurderPlayer(player);
                 player.SetRealKiller(mastermind);
                 RPC.PlaySoundRPC(mastermind.PlayerId, Sounds.KillSound);
@@ -128,14 +129,14 @@ internal class Mastermind : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var x in ManipulatedPlayers)
         {
             var pc = GetPlayerById(x.Key);
             if (pc.IsAlive())
             {
-                Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                 pc.RpcMurderPlayer(pc);
                 pc.SetRealKiller(GetPlayerById(playerIdList.First()));
             }
@@ -153,7 +154,7 @@ internal class Mastermind : RoleBase
         ManipulatedPlayers.Remove(killer.PlayerId);
 
         var mastermind = GetPlayerById(playerIdList.First());
-        mastermind?.Notify(string.Format(GetString("ManipulatedKilled"), target.GetRealName()), 4f);
+        mastermind?.Notify(string.Format(GetString("ManipulatedKilled"), killer.GetRealName()), 4f);
         mastermind?.SetKillCooldown(time: KillCooldown.GetFloat());
         killer.Notify(GetString("SurvivedManipulation"));
 

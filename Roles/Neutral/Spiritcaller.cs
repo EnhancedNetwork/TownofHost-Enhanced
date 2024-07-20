@@ -33,10 +33,10 @@ internal class Spiritcaller : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Spiritcaller, 1);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 60f, 1f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 60f, 1f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller]);
-        ImpostorVision = BooleanOptionItem.Create(Id + 12, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller]);
+        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller]);
+        ImpostorVision = BooleanOptionItem.Create(Id + 12, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller]);
         SpiritMax = IntegerOptionItem.Create(Id + 13, "SpiritcallerSpiritMax", new(1, 15, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
             .SetValueFormat(OptionFormat.Times);
         SpiritAbilityCooldown = FloatOptionItem.Create(Id + 14, "SpiritcallerSpiritAbilityCooldown", new(5f, 90f, 1f), 35f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
@@ -60,12 +60,12 @@ internal class Spiritcaller : RoleBase
         AbilityLimit = SpiritMax.GetInt();
         ProtectTimeStamp = 0;
 
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
+
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
-
-            if (!Main.ResetCamPlayerList.Contains(playerId))
-                Main.ResetCamPlayerList.Add(playerId);
         }
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -87,12 +87,14 @@ internal class Spiritcaller : RoleBase
             var writer = CustomRpcSender.Create("SpiritCallerSendMessage", SendOption.None);
             writer.StartMessage(target.GetClientId());
             writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
+                .Write(target.Data.NetId)
                 .Write(GetString("SpiritcallerNoticeTitle"))
                 .EndRpc();
             writer.StartRpc(target.NetId, (byte)RpcCalls.SendChat)
                 .Write(GetString("SpiritcallerNoticeMessage"))
                 .EndRpc();
             writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
+                .Write(target.Data.NetId)
                 .Write(target.Data.PlayerName)
                 .EndRpc();
             writer.EndMessage();

@@ -12,12 +12,12 @@ public static class DoubleShot
 
     public static void SetupCustomOption()
     {
-        SetupAdtRoleOptions(19200, CustomRoles.DoubleShot, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeDoubleShot = BooleanOptionItem.Create(19203, "ImpCanBeDoubleShot", true, TabGroup.Addons, false)
+        SetupAdtRoleOptions(19200, CustomRoles.DoubleShot, canSetNum: true, tab: TabGroup.ModifierSettings);
+        ImpCanBeDoubleShot = BooleanOptionItem.Create(19203, "ImpCanBeDoubleShot", true, TabGroup.ModifierSettings, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleShot]);
-        CrewCanBeDoubleShot = BooleanOptionItem.Create(19204, "CrewCanBeDoubleShot", true, TabGroup.Addons, false)
+        CrewCanBeDoubleShot = BooleanOptionItem.Create(19204, "CrewCanBeDoubleShot", true, TabGroup.ModifierSettings, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleShot]);
-        NeutralCanBeDoubleShot = BooleanOptionItem.Create(19205, "NeutralCanBeDoubleShot", true, TabGroup.Addons, false)
+        NeutralCanBeDoubleShot = BooleanOptionItem.Create(19205, "NeutralCanBeDoubleShot", true, TabGroup.ModifierSettings, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleShot]);
     }
     public static void Init()

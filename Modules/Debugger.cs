@@ -27,44 +27,55 @@ class Webhook
 }
 class Logger
 {
-    public static bool isEnable;
-    public static List<string> disableList = [];
-    public static List<string> sendToGameList = [];
+    public static bool IsEnable;
+    public static List<string> DisableList = [];
+    public static List<string> SendToGameList = [];
+    private static readonly HashSet<string> NowDetailedErrorLog = [];
+
     public static bool isDetail = false;
     public static bool isAlsoInGame = false;
-    public static void Enable() => isEnable = true;
-    public static void Disable() => isEnable = false;
+    public static void Enable() => IsEnable = true;
+    public static void Disable() => IsEnable = false;
     public static void Enable(string tag, bool toGame = false)
     {
-        disableList.Remove(tag);
-        if (toGame && !sendToGameList.Contains(tag)) sendToGameList.Add(tag);
-        else sendToGameList.Remove(tag);
+        DisableList.Remove(tag);
+        if (toGame && !SendToGameList.Contains(tag)) SendToGameList.Add(tag);
+        else SendToGameList.Remove(tag);
     }
-    public static void Disable(string tag) { if (!disableList.Contains(tag)) disableList.Add(tag); }
+    public static void Disable(string tag) { if (!DisableList.Contains(tag)) DisableList.Add(tag); }
     public static void SendInGame(string text)
     {
-        if (!isEnable) return;
-        if (DestroyableSingleton<HudManager>._instance) DestroyableSingleton<HudManager>.Instance.Notifier.AddItem(text);
+        if (!IsEnable) return;
+        if (DestroyableSingleton<HudManager>._instance) DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(text);
     }
-    private static void SendToFile(string text, LogLevel level = LogLevel.Info, string tag = "", bool escapeCRLF = true, int lineNumber = 0, string fileName = "", bool force = false)
+    private static void SendToFile(string text, LogLevel level = LogLevel.Info, string tag = "", bool escapeCRLF = true, int lineNumber = 0, string fileName = "", bool multiLine = false)
     {
-        if (!force)
-        {
-            if (!isEnable || disableList.Contains(tag)) return;
-        }
+        if (!IsEnable || DisableList.Contains(tag)) return;
         var logger = Main.Logger;
-        string t = DateTime.Now.ToString("HH:mm:ss");
-        if (sendToGameList.Contains(tag) || isAlsoInGame) SendInGame($"[{tag}]{text}");
-        if (escapeCRLF)
-            text = text.Replace("\r", "\\r").Replace("\n", "\\n");
-        string log_text = $"[{t}][{tag}]{text}";
-        if ((isDetail && DebugModeManager.AmDebugger) || force)
+
+        if (SendToGameList.Contains(tag) || isAlsoInGame)
         {
-            StackFrame stack = new(2);
-            string className = stack.GetMethod().ReflectedType.Name;
-            string memberName = stack.GetMethod().Name;
-            log_text = $"[{t}][{className}.{memberName}({Path.GetFileName(fileName)}:{lineNumber})][{tag}]{text}";
+            SendInGame($"[{tag}]{text}");
         }
+
+        string log_text;
+        if (level is LogLevel.Error or LogLevel.Fatal or LogLevel.Warning && !multiLine && !NowDetailedErrorLog.Contains(tag))
+        {
+            string t = DateTime.Now.ToString("HH:mm:ss");
+            StackFrame stack = new(2);
+            string className = stack.GetMethod()?.ReflectedType?.Name;
+            string memberName = stack.GetMethod()?.Name;
+            log_text = $"[{t}][{className}.{memberName}({Path.GetFileName(fileName)}:{lineNumber})][{tag}]{text}";
+            NowDetailedErrorLog.Add(tag);
+            _ = new LateTask(() => NowDetailedErrorLog.Remove(tag), 3f, shoudLog: false);
+        }
+        else
+        {
+            if (escapeCRLF) text = text.Replace("\r", "\\r").Replace("\n", "\\n");
+            string t = DateTime.Now.ToString("HH:mm:ss");
+            log_text = $"[{t}][{tag}]{text}";
+        }
+
         switch (level)
         {
             case LogLevel.Info:
@@ -91,18 +102,18 @@ class Logger
                 break;
         }
     }
-    public static void Test(object content, string tag = "======= Test =======", bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool force = false) =>
-        SendToFile(content.ToString(), LogLevel.Debug, tag, escapeCRLF, lineNumber, fileName, force);
-    public static void Info(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool force = false) =>
-        SendToFile(text, LogLevel.Info, tag, escapeCRLF, lineNumber, fileName, force);
-    public static void Warn(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool force = false) =>
-        SendToFile(text, LogLevel.Warning, tag, escapeCRLF, lineNumber, fileName, force);
-    public static void Error(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool force = false) =>
-        SendToFile(text, LogLevel.Error, tag, escapeCRLF, lineNumber, fileName, force);
-    public static void Fatal(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool force = false) =>
-        SendToFile(text, LogLevel.Fatal, tag, escapeCRLF, lineNumber, fileName, force);
-    public static void Msg(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool force = false) =>
-        SendToFile(text, LogLevel.Message, tag, escapeCRLF, lineNumber, fileName, force);
+    public static void Test(object content, string tag = "======= Test =======", bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool multiLine = false) =>
+        SendToFile(content.ToString(), LogLevel.Debug, tag, escapeCRLF, lineNumber, fileName, multiLine);
+    public static void Info(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool multiLine = false) =>
+        SendToFile(text, LogLevel.Info, tag, escapeCRLF, lineNumber, fileName, multiLine);
+    public static void Warn(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool multiLine = false) =>
+        SendToFile(text, LogLevel.Warning, tag, escapeCRLF, lineNumber, fileName, multiLine);
+    public static void Error(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool multiLine = false) =>
+        SendToFile(text, LogLevel.Error, tag, escapeCRLF, lineNumber, fileName, multiLine);
+    public static void Fatal(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool multiLine = false) =>
+        SendToFile(text, LogLevel.Fatal, tag, escapeCRLF, lineNumber, fileName, multiLine);
+    public static void Msg(string text, string tag, bool escapeCRLF = true, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", bool multiLine = false) =>
+        SendToFile(text, LogLevel.Message, tag, escapeCRLF, lineNumber, fileName, multiLine);
     public static void Exception(Exception ex, string tag, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "") =>
         SendToFile(ex.ToString(), LogLevel.Error, tag, false, lineNumber, fileName);
     public static void CurrentMethod([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "")

@@ -27,7 +27,7 @@ internal class Crewpostor : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Crewpostor);
-        CanKillAllies = BooleanOptionItem.Create(Id + 2, "CanKillAllies", true, TabGroup.ImpostorRoles, false)
+        CanKillAllies = BooleanOptionItem.Create(Id + 2, GeneralOption.CanKillImpostors, true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
         KnowsAllies = BooleanOptionItem.Create(Id + 3, "CrewpostorKnowsAllies", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
@@ -50,7 +50,7 @@ internal class Crewpostor : RoleBase
         TasksDone[playerId] = 0;
         PlayerIds.Add(playerId);
     }
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) 
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) 
     { 
         if (ForRecompute & !player.IsDead)
             return false;
@@ -102,6 +102,8 @@ internal class Crewpostor : RoleBase
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
+        if (!player.IsAlive()) return true;
+
         if (TasksDone.ContainsKey(player.PlayerId))
             TasksDone[player.PlayerId]++;
         else

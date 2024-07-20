@@ -26,10 +26,10 @@ internal class Tracefinder : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Tracefinder);
-        VitalsCooldown = FloatOptionItem.Create(Id + 10, "VitalsCooldown", new(1f, 60f, 1f), 5f, TabGroup.CrewmateRoles, false)
+        VitalsCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.ScientistBase_BatteryCooldown, new(1f, 60f, 1f), 5f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracefinder])
             .SetValueFormat(OptionFormat.Seconds);
-        VitalsDuration = FloatOptionItem.Create(Id + 11, "VitalsDuration", new(1f, 30f, 1f), 25f, TabGroup.CrewmateRoles, false)
+        VitalsDuration = FloatOptionItem.Create(Id + 11, GeneralOption.ScientistBase_BatteryDuration, new(1f, 30f, 1f), 25f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracefinder])
             .SetValueFormat(OptionFormat.Seconds);
         ArrowDelayMin = FloatOptionItem.Create(Id + 12, "ArrowDelayMin", new(0f, 30f, 1f), 2f, TabGroup.CrewmateRoles, false)
@@ -84,7 +84,7 @@ internal class Tracefinder : RoleBase
             LocateArrow.RemoveAllTarget(playerId);
     }
 
-    public override void OnReportDeadBody(PlayerControl GODZILLA_VS, PlayerControl KINGKONG)
+    public override void OnReportDeadBody(PlayerControl GODZILLA_VS, NetworkedPlayerInfo KINGKONG)
     {
         foreach (var apc in playerIdList)
         {
@@ -95,7 +95,7 @@ internal class Tracefinder : RoleBase
 
     public static void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting) return;
+        if (inMeeting || target.IsDisconnected()) return;
 
         var pos = target.GetCustomPosition();
 
@@ -120,10 +120,9 @@ internal class Tracefinder : RoleBase
             }
         }, delay, "Get Arrow Tracefinder");
     }
-    public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetSuffix(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Tracefinder)) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
+        if (isForMeeting || seer.PlayerId != target.PlayerId) return string.Empty;
         return Utils.ColorString(Color.white, LocateArrow.GetArrows(seer));
     }
 }

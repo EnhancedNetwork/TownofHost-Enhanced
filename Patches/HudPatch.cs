@@ -42,17 +42,10 @@ class HudManagerPatch
                 player.Collider.offset = new Vector2(0f, -0.3636f);
             }
         }
-        if (GameStates.IsLobby)
-        {
-            var POM = GameObject.Find("PlayerOptionsMenu(Clone)");
-            __instance.GameSettings.text = POM != null ? "" : OptionShower.GetTextNoFresh(); //OptionShower.GetText();
-            __instance.GameSettings.fontSizeMin =
-            __instance.GameSettings.fontSizeMax = 1.1f;
-        }
-        //ゲーム中でなければ以下は実行されない
+
         if (!AmongUsClient.Instance.IsGameStarted || GameStates.IsHideNSeek) return;
 
-        Utils.CountAlivePlayers();
+        Utils.CountAlivePlayers(false, false);
 
         if (SetHudActivePatch.IsActive)
         {
@@ -147,6 +140,10 @@ class HudManagerPatch
                 bool CanUseVent = player.CanUseImpostorVentButton();
                 __instance.ImpostorVentButton.ToggleVisible(CanUseVent);
                 player.Data.Role.CanVent = CanUseVent;
+
+                // Sometimes sabotage button was visible for non-host modded clients
+                if (!AmongUsClient.Instance.AmHost)
+                    __instance.SabotageButton.ToggleVisible(player.CanUseSabotage());
             }
             else
             {
@@ -234,15 +231,14 @@ class SetHudActivePatch
         // Fix vanilla bug when report button displayed in the lobby
         __instance.ReportButton.ToggleVisible(!GameStates.IsLobby && isActive);
 
-        if (!GameStates.IsModHost) return;
-        if (GameStates.IsHideNSeek) return;
+        if (!GameStates.IsModHost || GameStates.IsHideNSeek) return;
 
         IsActive = isActive;
 
-        if (!isActive) return;
+        if (GameStates.IsLobby || !isActive) return;
         if (player == null) return;
 
-        if (player.Is(CustomRoles.Oblivious))
+        if (player.Is(CustomRoles.Oblivious) || player.Is(CustomRoles.KillingMachine))
             __instance.ReportButton.ToggleVisible(false);
         
         if (player.Is(CustomRoles.Mare) && !Utils.IsActive(SystemTypes.Electrical))
@@ -293,6 +289,7 @@ class TaskPanelBehaviourPatch
     public static void Postfix(TaskPanelBehaviour __instance)
     {
         if (!GameStates.IsModHost) return;
+        if (GameStates.IsLobby) return;
 
         if (GameStates.IsHideNSeek)
         {
@@ -341,6 +338,9 @@ class TaskPanelBehaviourPatch
                         AllText += $"\r\n\r\n</color><size=70%>{GetString("PressF1ShowMainRoleDes")}";
                         if (Main.PlayerStates.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var ps) && ps.SubRoles.Count >= 1)
                             AllText += $"\r\n{GetString("PressF2ShowAddRoleDes")}";
+                        AllText += $"\r\n{GetString("PressF3ShowRoleSettings")}";
+                        if (ps.SubRoles.Count >= 1)
+                            AllText += $"\r\n{GetString("PressF4ShowAddOnsSettings")}";
                         AllText += "</size>";
                     }
                     break;

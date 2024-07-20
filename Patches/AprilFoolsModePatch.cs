@@ -91,7 +91,7 @@ public static class LongBoiPatches
 {
     [HarmonyPatch(nameof(LongBoiPlayerBody.Awake))]
     [HarmonyPrefix]
-    public static bool LongBoyAwake_Patch(LongBoiPlayerBody __instance)
+    public static bool LongBoyAwake_Prefix(LongBoiPlayerBody __instance)
     {
         //Fixes base-game layer issues
         __instance.cosmeticLayer.OnSetBodyAsGhost += (Action)__instance.SetPoolableGhost;
@@ -103,7 +103,7 @@ public static class LongBoiPatches
 
     [HarmonyPatch(nameof(LongBoiPlayerBody.Start))]
     [HarmonyPrefix]
-    public static bool LongBoyStart_Patch(LongBoiPlayerBody __instance)
+    public static bool LongBoyStart_Prefix(LongBoiPlayerBody __instance)
     {
         //Fixes more runtime issues
         __instance.ShouldLongAround = true;
@@ -129,7 +129,7 @@ public static class LongBoiPatches
 
     [HarmonyPatch(nameof(LongBoiPlayerBody.SetHeighFromDistanceHnS))]
     [HarmonyPrefix]
-    public static bool LongBoyNeckSize_Patch(LongBoiPlayerBody __instance, ref float distance)
+    public static bool LongBoyNeckSize_Prefix(LongBoiPlayerBody __instance, ref float distance)
     {
         //Remove the limit of neck size to prevent issues in TOHE HnS
 
@@ -140,7 +140,7 @@ public static class LongBoiPatches
 
     [HarmonyPatch(typeof(HatManager), nameof(HatManager.CheckLongModeValidCosmetic))]
     [HarmonyPrefix]
-    public static bool CheckLongMode_Patch(out bool __result, ref string cosmeticID)
+    public static bool CheckLongMode_Prefix(out bool __result, ref string cosmeticID)
     {
         if (Main.HorseMode.Value)
         {

@@ -50,7 +50,7 @@ internal class Bodyguard : RoleBase
             }
             else if (bodyguard.CheckForInvalidMurdering(killer))
             {
-                Main.PlayerStates[bodyguardId].deathReason = PlayerState.DeathReason.Sacrifice;
+                bodyguard.SetDeathReason(PlayerState.DeathReason.Sacrifice);
                 bodyguard.RpcMurderPlayer(killer);
                 bodyguard.SetRealKiller(killer);
                 bodyguard.RpcMurderPlayer(bodyguard);

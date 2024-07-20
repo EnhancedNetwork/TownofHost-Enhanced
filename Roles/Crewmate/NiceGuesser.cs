@@ -37,6 +37,10 @@ internal class NiceGuesser : RoleBase
     {
         playerIdList.Add(playerId);
     }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+    }
 
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
             => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceGuesser), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
@@ -56,24 +60,21 @@ internal class NiceGuesser : RoleBase
         // Check limit
         if (Main.GuesserGuessed[guesser.PlayerId] >= GGCanGuessTime.GetInt())
         {
-            if (!isUI) Utils.SendMessage(Translator.GetString("GGGuessMax"), guesser.PlayerId);
-            else guesser.ShowPopUp(Translator.GetString("GGGuessMax"));
+            guesser.ShowInfoMessage(isUI, Translator.GetString("GGGuessMax"));
             return true;
         }
 
         // Nice Guesser Can't Guess Addons
         if (role.IsAdditionRole() && !GGCanGuessAdt.GetBool())
         {
-            if (!isUI) Utils.SendMessage(Translator.GetString("GuessAdtRole"), guesser.PlayerId);
-            else guesser.ShowPopUp(Translator.GetString("GuessAdtRole"));
+            guesser.ShowInfoMessage(isUI, Translator.GetString("GuessAdtRole"));
             return true;
         }
 
         // Nice Guesser Can't Guess Impostors
         if (target.Is(Custom_Team.Crewmate) && !GGCanGuessCrew.GetBool() && !guesser.Is(CustomRoles.Madmate))
         {
-            if (!isUI) Utils.SendMessage(Translator.GetString("GuessCrewRole"), guesser.PlayerId);
-            else guesser.ShowPopUp(Translator.GetString("GuessCrewRole"));
+            guesser.ShowInfoMessage(isUI, Translator.GetString("GuessCrewRole"));
             return true;
         }
 

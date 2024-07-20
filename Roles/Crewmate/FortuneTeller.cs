@@ -4,6 +4,7 @@ using System;
 using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -107,6 +108,8 @@ internal class FortuneTeller : RoleBase
         if (didVote.Contains(player.PlayerId)) return;
         didVote.Add(player.PlayerId);
 
+        target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
+
         if (AbilityLimit < 1)
         {
             SendMessage(GetString("FortuneTellerCheckReachLimit"), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
@@ -197,7 +200,7 @@ internal class FortuneTeller : RoleBase
         ProgressText.Append(ColorString(TextColor41, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit)}"));
         return ProgressText.ToString();
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         didVote.Clear();
 

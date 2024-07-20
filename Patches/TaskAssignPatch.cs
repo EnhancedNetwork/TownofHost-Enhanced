@@ -107,14 +107,12 @@ class AddTasksFromListPatch
     }
 }
 
-[HarmonyPatch(typeof(GameData), nameof(GameData.RpcSetTasks))]
+[HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.RpcSetTasks))]
 class RpcSetTasksPatch
 {
     // Patch to overwrite the task just before the process of allocating the task and sending the RPC is performed
     // Does not interfere with the vanilla task allocation process itself
-    public static void Prefix(/*GameData __instance,*/
-    [HarmonyArgument(0)] byte playerId,
-    [HarmonyArgument(1)] ref Il2CppStructArray<byte> taskTypeIds)
+    public static void Prefix(NetworkedPlayerInfo __instance, [HarmonyArgument(0)] ref Il2CppStructArray<byte> taskTypeIds)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (GameStates.IsHideNSeek) return;
@@ -126,7 +124,7 @@ class RpcSetTasksPatch
             return;
         }
 
-        var pc = Utils.GetPlayerById(playerId);
+        var pc = __instance.Object;
         CustomRoles? RoleNullable = pc?.GetCustomRole();
         if (RoleNullable == null) return;
         CustomRoles role = RoleNullable.Value;
@@ -250,26 +248,17 @@ class RpcSetTasksPatch
     }
 }
 
-[HarmonyPatch(typeof(GameData), nameof(GameData.HandleRpc))]
+[HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.HandleRpc))]
 class HandleRpcPatch
 {
-    public static bool Prefix([HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+    public static bool Prefix(NetworkedPlayerInfo __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        MessageReader sr = MessageReader.Get(reader);
+        //MessageReader sr = MessageReader.Get(reader);
         // var rpc = (RpcCalls)callId;
 
         if (AmongUsClient.Instance.AmHost)
         {
-            var dataid = sr.ReadByte();
-            var data = Utils.GetPlayerById(dataid);
-            if (data != null)
-            {
-                Logger.Error($"Received RpcSetTask for {data.GetRealName()}({data.PlayerId}), which is impossible.", "TaskAssignPatch");
-            }
-            else
-            {
-                Logger.Error($"Received RpcSetTask for {dataid} with no playerdata, which is impossible.", "TaskAssignPatch");
-            }
+            Logger.Error($"Received Rpc {(RpcCalls)callId} for {__instance.Object.GetRealName()}({__instance.PlayerId}), which is impossible.", "TaskAssignPatch");
 
             EAC.WarnHost();
             return false;

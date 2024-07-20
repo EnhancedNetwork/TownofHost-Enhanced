@@ -2,7 +2,6 @@ using Hazel;
 using Il2CppSystem;
 using InnerNet;
 using TOHE.Modules;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -56,7 +55,6 @@ internal class Follower : RoleBase
         playerIdList.Add(playerId);
         BetTimes.Add(playerId, MaxBetTimes.GetInt());
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
