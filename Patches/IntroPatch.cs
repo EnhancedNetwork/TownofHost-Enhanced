@@ -5,10 +5,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -59,6 +61,21 @@ class SetUpRoleTextPatch
                 __instance.RoleText.text += Utils.GetSubRolesText(localPlayer.PlayerId, false, true);
             }
         }, 0.0001f, "Override Role Text");
+
+        // Fixed bug where NotifyRoles works on modded clients during loading and it's name set as double
+        // Run this code only for clients
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            _ = new LateTask(() =>
+            {
+                // Return if game is ended or player in lobby
+                if (AmongUsClient.Instance.IsGameOver || GameStates.IsLobby) return;
+
+                var realName = Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId];
+                // Don't use RpcSetName because the modded client needs to set the name locally
+                PlayerControl.LocalPlayer.SetName(realName);
+            }, 1f, "Reset Name For Modded Client");
+        }
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
