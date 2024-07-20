@@ -248,35 +248,20 @@ internal class HexMaster : RoleBase
         }
         return string.Empty;
     }
-    public override string GetSuffix(PlayerControl hexmaster, PlayerControl seen = null, bool isMeeting = false)
-    {
-        if (hexmaster == null || seen == null || isMeeting || hexmaster != seen) return "";
-
-        var str = new StringBuilder();
-        if (!isMeeting)
-        {
-            
-            str.Append($"{GetString("Mode")}:");
-            if (NowSwitchTrigger == SwitchTriggerList.TriggerDouble)
-            {
-                str.Append(GetString("HexMasterModeDouble"));
-            }
-            else
-            {
-                str.Append(IsHexMode(hexmaster.PlayerId) ? GetString("HexMasterModeHex") : GetString("HexMasterModeKill"));
-            }
-
-            return str.ToString();
-        }
-        return "";
-    }
 
     public override string GetLowerText(PlayerControl hexmaster, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (hexmaster == null) return "";
+        if (hexmaster == null || isForMeeting) return string.Empty;
 
         var str = new StringBuilder();
-        str.Append(GetString("WitchCurrentMode"));
+        if (isForHud)
+        {
+            str.Append($"{GetString("WitchCurrentMode")}: ");
+        }
+        else
+        {
+            str.Append($"{GetString("Mode")}: ");
+        }
         if (NowSwitchTrigger == SwitchTriggerList.TriggerDouble)
         {
             str.Append(GetString("HexMasterModeDouble"));
