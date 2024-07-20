@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -251,7 +252,7 @@ internal class HexMaster : RoleBase
 
     public override string GetLowerText(PlayerControl hexmaster, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (hexmaster == null || isForMeeting) return string.Empty;
+        if (!hexmaster.IsAlive() || isForMeeting || hexmaster != seen) return string.Empty;
 
         var str = new StringBuilder();
         if (isForHud)
