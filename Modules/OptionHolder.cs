@@ -459,6 +459,7 @@ public static class Options
     public static OptionItem CrewmatesCanGuess;
     public static OptionItem ImpostorsCanGuess;
     public static OptionItem NeutralKillersCanGuess;
+    public static OptionItem NeutralApocalypseCanGuess;
     public static OptionItem PassiveNeutralsCanGuess;
     public static OptionItem CanGuessAddons;
     public static OptionItem ImpCanGuessImp;

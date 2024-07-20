@@ -224,7 +224,11 @@ internal class Death : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
-        guesser.ShowInfoMessage(isUI, GetString("GuessImmune"));
-        return true;
+        if (TransformedNeutralApocalypseCanBeGuessed.GetBool())
+        {
+            guesser.ShowInfoMessage(isUI, GetString("GuessImmune"));
+            return true;
+        }
+        return false;
     }
 }
