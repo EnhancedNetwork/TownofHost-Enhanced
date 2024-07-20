@@ -53,6 +53,8 @@ public static class Bait
         if (killer.PlayerId == target.PlayerId) return;
 
         if (killer.Is(CustomRoles.KillingMachine)
+            || killer.Is(CustomRoles.Swooper)
+            || killer.Is(CustomRoles.Wraith)
             || (killer.Is(CustomRoles.Oblivious) && Oblivious.ObliviousBaitImmune.GetBool()))
             return;
 

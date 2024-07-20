@@ -59,7 +59,6 @@ internal class Necromancer : RoleBase
     
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (!killer.IsAlive() && killer.Is(CustomRoles.Avanger)) return false;
         if (IsRevenge) return true;
 
         _ = new LateTask(target.RpcRandomVentTeleport, 0.01f, "Random Vent Teleport - Necromancer");
@@ -74,28 +73,6 @@ internal class Necromancer : RoleBase
         Killer = killer;
 
         return false;
-    }
-    private static void Countdown(int seconds, PlayerControl player)
-    {
-        var killer = Killer;
-        if (Success)
-        {
-            Timer = RevengeTime.GetInt();
-            Success = false;
-            Killer = null; 
-            return;
-        }
-        if (seconds <= 0 || GameStates.IsMeeting && player.IsAlive()) 
-        { 
-            player.RpcMurderPlayer(player); 
-            player.SetRealKiller(killer);
-            Killer = null; 
-            return; 
-        }
-        player.Notify(string.Format(GetString("NecromancerRevenge"), seconds, Killer.GetRealName()), 1.1f);
-        Timer = seconds;
-
-        _ = new LateTask(() => { Countdown(seconds - 1, player); }, 1.01f, "Necromancer Countdown");
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -115,5 +92,38 @@ internal class Necromancer : RoleBase
             killer.RpcMurderPlayer(killer);
             return false;
         }
+    }
+    private static void Countdown(int seconds, PlayerControl player)
+    {
+        var killer = Killer;
+        if (Success || !player.IsAlive())
+        {
+            Timer = RevengeTime.GetInt();
+            Success = false;
+            Killer = null; 
+            return;
+        }
+        if (GameStates.IsMeeting && player.IsAlive())
+        {
+            player.SetDeathReason(PlayerState.DeathReason.Kill);
+            player.RpcExileV2();
+            player.Data.IsDead = true;
+            player.Data.MarkDirty();
+            Main.PlayerStates[player.PlayerId].SetDead();
+            player.SetRealKiller(killer);
+            Killer = null;
+            return;
+        }
+        if (seconds <= 0) 
+        { 
+            player.RpcMurderPlayer(player); 
+            player.SetRealKiller(killer);
+            Killer = null; 
+            return; 
+        }
+        player.Notify(string.Format(GetString("NecromancerRevenge"), seconds, Killer.GetRealName()), 1.1f);
+        Timer = seconds;
+
+        _ = new LateTask(() => { Countdown(seconds - 1, player); }, 1.01f, "Necromancer Countdown");
     }
 }

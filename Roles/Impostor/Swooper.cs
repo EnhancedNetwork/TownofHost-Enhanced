@@ -165,7 +165,7 @@ internal class Swooper : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (!IsInvis(killer.PlayerId) || target.Is(CustomRoles.Bait)) return true;
+        if (!IsInvis(killer.PlayerId)) return true;
 
         killer.RpcGuardAndKill(target);
         killer.SetKillCooldown();

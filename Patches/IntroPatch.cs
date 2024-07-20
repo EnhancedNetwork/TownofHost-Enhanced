@@ -59,6 +59,21 @@ class SetUpRoleTextPatch
                 __instance.RoleText.text += Utils.GetSubRolesText(localPlayer.PlayerId, false, true);
             }
         }, 0.0001f, "Override Role Text");
+
+        // Fixed bug where NotifyRoles works on modded clients during loading and it's name set as double
+        // Run this code only for clients
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            _ = new LateTask(() =>
+            {
+                // Return if game is ended or player in lobby or player is null
+                if (AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || PlayerControl.LocalPlayer == null) return;
+
+                var realName = Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId];
+                // Don't use RpcSetName because the modded client needs to set the name locally
+                PlayerControl.LocalPlayer.SetName(realName);
+            }, 1f, "Reset Name For Modded Client");
+        }
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]

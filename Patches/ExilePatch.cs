@@ -186,7 +186,7 @@ class ExileControllerWrapUpPatch
                         player?.ResetPlayerCam(1f);
                     }
 
-                    MurderPlayerPatch.AfterPlayerDeathTasks(player, player, false);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
 
