@@ -197,10 +197,11 @@ internal class Overseer : RoleBase
         var playerId = player.PlayerId;
         if (!player.IsAlive() || Pelican.IsEaten(playerId))
         {
+
+            OverseerTimer[playerId].Item1.RpcSetSpecificScanner(player, false);
             OverseerTimer.Remove(playerId);
             SendTimerRPC(2, playerId);
             NotifyRoles(SpecifySeer: player);
-            OverseerTimer[playerId].Item1.RpcSetSpecificScanner(player, false);
 
         }
         else
