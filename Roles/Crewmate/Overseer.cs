@@ -184,6 +184,8 @@ internal class Overseer : RoleBase
         {
             OverseerTimer.TryAdd(killer.PlayerId, (target, 0f));
             SendTimerRPC(1, killer.PlayerId, target, 0f);
+            target.RpcSetSpecificScanner(killer, true);
+
             NotifyRoles(SpecifySeer: killer);
         }
         return false;
@@ -198,6 +200,8 @@ internal class Overseer : RoleBase
             OverseerTimer.Remove(playerId);
             SendTimerRPC(2, playerId);
             NotifyRoles(SpecifySeer: player);
+            OverseerTimer[playerId].Item1.RpcSetSpecificScanner(player, false);
+
         }
         else
         {
@@ -207,6 +211,8 @@ internal class Overseer : RoleBase
             {
                 OverseerTimer.Remove(playerId);
                 SendTimerRPC(2, playerId);
+                farTarget.RpcSetSpecificScanner(player, false);
+
             }
             else if (farTime >= OverseerRevealTime.GetFloat())
             {
@@ -214,6 +220,7 @@ internal class Overseer : RoleBase
 
                 OverseerTimer.Remove(playerId);
                 SendTimerRPC(2, playerId);
+                farTarget.RpcSetSpecificScanner(player, false);
 
                 IsRevealed[(playerId, farTarget.PlayerId)] = true;
                 SetRevealtPlayerRPC(player, farTarget, true);
@@ -234,6 +241,7 @@ internal class Overseer : RoleBase
                 {
                     OverseerTimer.Remove(playerId);
                     SendTimerRPC(2, playerId);
+                    farTarget.RpcSetSpecificScanner(player, false);
 
                     NotifyRoles(SpecifySeer: player, SpecifyTarget: farTarget, ForceLoop: true);
 
