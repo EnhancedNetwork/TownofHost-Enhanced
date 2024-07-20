@@ -261,13 +261,16 @@ public static class GameOptionsMenuPatch
         // Auto Click "Edit" Button
         _ = new LateTask(() =>
         {
+            if (!GameStates.IsLobby) return;
             var hostButtons = GameObject.Find("Host Buttons");
+            if (hostButtons == null) return;
             hostButtons.transform.FindChild("Edit").GetComponent<PassiveButton>().ReceiveClickDown();
         }, 0.1f, "Click Edit Button");
 
         // Change tab to "System Settings"
         _ = new LateTask(() =>
         {
+            if (!GameStates.IsLobby || GameSettingMenu.Instance == null) return;
             GameSettingMenu.Instance.ChangeTab(IsPresset ? 3 : 4, Controller.currentTouchType == Controller.TouchType.Joystick);
         }, 0.28f, "Change Tab");
     }
