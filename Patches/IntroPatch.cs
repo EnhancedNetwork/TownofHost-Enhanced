@@ -68,8 +68,8 @@ class SetUpRoleTextPatch
         {
             _ = new LateTask(() =>
             {
-                // Return if game is ended or player in lobby
-                if (AmongUsClient.Instance.IsGameOver || GameStates.IsLobby) return;
+                // Return if game is ended or player in lobby or player is null
+                if (AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || PlayerControl.LocalPlayer == null) return;
 
                 var realName = Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId];
                 // Don't use RpcSetName because the modded client needs to set the name locally
