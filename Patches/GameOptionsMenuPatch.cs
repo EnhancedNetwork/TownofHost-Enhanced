@@ -596,21 +596,19 @@ public static class StringOptionPatch
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
-
             item.SetValue(__instance.GetInt());
-            if (item is PresetOptionItem)
-            {
-                GameOptionsMenuPatch.ReOpenSettings(true);
-            }
-            else if (item is StringOptionItem && item.Name == "GameMode")
-            {
-                if (__instance.GetInt() == 2 && !GameStates.IsHideNSeek) //Hide And Seek
-                    item.SetValue(0);
-                else if (__instance.GetInt() != 2 && GameStates.IsHideNSeek)
-                    item.SetValue(2);
 
-                GameOptionsMenuPatch.ReOpenSettings(false);
-               
+            if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
+            {
+                if (Options.GameMode.GetInt() == 2 && !GameStates.IsHideNSeek) //Hide And Seek
+                {
+                    Options.GameMode.SetValue(0);
+                }
+                else if (Options.GameMode.GetInt() != 2 && GameStates.IsHideNSeek)
+                {
+                    Options.GameMode.SetValue(2);
+                }
+                GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode");
             }
             return false;
         }
