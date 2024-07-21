@@ -31,7 +31,7 @@ class CoShowIntroPatch
             {
                 Utils.ThrowException(ex);
             }
-        }, 0.2f, "Do Notify Roles In Show Intro");
+        }, 0.35f, "Do Notify Roles In Show Intro");
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
