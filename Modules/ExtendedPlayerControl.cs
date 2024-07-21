@@ -441,6 +441,17 @@ static class ExtendedPlayerControl
             }
         }
     }
+    public static void RpcSetSpecificScanner(this PlayerControl target, PlayerControl seer, bool IsActive)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        byte cnt = ++PlayerControl.LocalPlayer.scannerCount;
+
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, seer.GetClientId());
+        messageWriter.Write(IsActive);
+        messageWriter.Write(cnt);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
 
     public static void RpcSpecificVanish(this PlayerControl player, PlayerControl seer)
     {
