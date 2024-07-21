@@ -609,8 +609,7 @@ public static class Options
 
         // Game Mode
         GameMode = StringOptionItem.Create(60000, "GameMode", gameModes, 0, TabGroup.ModSettings, false)
-            .SetHeader(true)
-            .HideInHnS();
+            .SetHeader(true);
 
 
         #region Roles/Add-ons Settings
