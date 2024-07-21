@@ -604,9 +604,9 @@ public static class StringOptionPatch
             }
             else if (item is StringOptionItem && item.Name == "GameMode")
             {
-                if (__instance.GetInt() == 2 && GameOptionsManager.Instance.CurrentGameOptions.GameMode != GameModes.HideNSeek) //Hide And Seek
+                if (__instance.GetInt() == 2 && !GameStates.IsHideNSeek) //Hide And Seek
                     item.SetValue(0);
-                else if (__instance.GetInt() != 2 && GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek)
+                else if (__instance.GetInt() != 2 && GameStates.IsHideNSeek)
                     item.SetValue(2);
 
                 GameOptionsMenuPatch.ReOpenSettings(false);
