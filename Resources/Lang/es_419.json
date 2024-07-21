@@ -2214,7 +2214,7 @@
   "ERR-000-910-1": "Error de prueba nivel 1",
   "ERR-000-920-2": "Error de prueba nivel 2",
   "ERR-000-930-3": "Error de prueba nivel 3",
-  "ERR-000-804-1": "TownOfHostEnhanced no es compatible con el Escondite original, restaurando al juego vanilla.",
+  "ERR-000-804-1": "Sorry, TOHE temporarily not support the Vanilla HnS, so mod unloaded",
   "ERR-001-000-3": "El diccionario principal tiene entradas en doble.",
   "ERR-002-000-1": "Versión de Among Us sin soporte, por favor, actualice el juego",
   "DefaultSystemMessageTitle": "MENSAJE DEL SISTEMA",
