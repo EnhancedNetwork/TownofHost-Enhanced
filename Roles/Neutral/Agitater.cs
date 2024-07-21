@@ -167,7 +167,7 @@ internal class Agitater : RoleBase
     private void PassBomb(PlayerControl player, PlayerControl target)
     {
         if (!AgitaterHasBombed) return;
-        if (target.Data.IsDead) return;
+        if (!target.IsAlive()) return;
 
         var now = Utils.GetTimeStamp();
         if (now - CurrentBombedPlayerTime < PassCooldown.GetFloat()) return;
