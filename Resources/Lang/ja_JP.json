@@ -2214,7 +2214,7 @@
   "ERR-000-910-1": "テストエラーレベル 1",
   "ERR-000-920-2": "テストエラーレベル 2",
   "ERR-000-930-3": "テストエラーレベル 3",
-  "ERR-000-804-1": "TownofHost-EnhancedはVanilla HnSをサポートしていないため、アンロードされました。",
+  "ERR-000-804-1": "Sorry, TOHE temporarily not support the Vanilla HnS, so mod unloaded",
   "ERR-001-000-3": "メイン辞書に重複したキーがあります。",
   "ERR-002-000-1": "サポートされていないAmong Usのバージョンです。Among Usをアップデートしてください",
   "DefaultSystemMessageTitle": "システムメッセージ",
