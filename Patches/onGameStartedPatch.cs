@@ -318,23 +318,9 @@ internal class SelectRolesPatch
             catch (Exception ex)
             {
                 Utils.ErrorEnd("Set Roles After Select In LateTask");
-                Logger.Fatal(ex.ToString(), "SetRolesAfterSelectInLateTask");
+                Utils.ThrowException(ex);
             }
         }, 1f, "Set Role Types After Select");
-
-        _ = new LateTask(() => {
-
-            try
-            {
-                // Update name players
-                Utils.DoNotifyRoles(NoCache: true);
-            }
-            catch (Exception ex)
-            {
-                Utils.ErrorEnd("Notify Roles In LateTask");
-                Logger.Fatal(ex.ToString(), "NotifyRolesInLateTask");
-            }
-        }, 1.15f, "Do Notify Roles After Assign", shoudLog: false);
     }
     private static void SetRolesAfterSelect()
     {

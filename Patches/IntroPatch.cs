@@ -13,6 +13,27 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.CoShowIntro))]
+class CoShowIntroPatch
+{
+    public static void Prefix()
+    {
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return;
+
+        _ = new LateTask(() =>
+        {
+            try
+            {
+                // Update name players
+                Utils.DoNotifyRoles(NoCache: true);
+            }
+            catch (Exception ex)
+            {
+                Utils.ThrowException(ex);
+            }
+        }, 0.2f, "Do Notify Roles In Show Intro");
+    }
+}
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
 class SetUpRoleTextPatch
 {
