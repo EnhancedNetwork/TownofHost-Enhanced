@@ -57,6 +57,11 @@ internal class Terrorist : RoleBase
         var taskState = Utils.GetPlayerById(terrorist.PlayerId).GetPlayerTaskState();
         if (taskState.IsTaskFinished && (!Main.PlayerStates[terrorist.PlayerId].IsSuicide || CanTerroristSuicideWin.GetBool()))
         {
+            if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
+                CustomWinnerHolder.WinnerIds.Add(terrorist.PlayerId);
+            }
             foreach (var pc in Main.AllPlayerControls)
             {
                 if (pc.Is(CustomRoles.Terrorist))
@@ -77,11 +82,6 @@ internal class Terrorist : RoleBase
                     pc.RpcMurderPlayer(pc);
                     pc.SetRealKiller(terrorist.Object);
                 }
-            }
-            if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
-                CustomWinnerHolder.WinnerIds.Add(terrorist.PlayerId);
             }
         }
     }
