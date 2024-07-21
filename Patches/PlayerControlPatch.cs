@@ -190,7 +190,7 @@ class CheckMurderPatch
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
             FFAManager.OnPlayerAttack(killer, target);
-            return true;
+            return false;
         }
 
         // if player hacked by Glitch
