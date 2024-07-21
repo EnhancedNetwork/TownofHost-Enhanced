@@ -2214,7 +2214,7 @@
   "ERR-000-910-1": "Erreur de test Nv.1",
   "ERR-000-920-2": "Erreur de test Nv.2",
   "ERR-000-930-3": "Erreur de test Nv.3",
-  "ERR-000-804-1": "TownofHost-Enhanced ne supporte pas le Cache-Cache Classique, S'il te plaît retire-le.",
+  "ERR-000-804-1": "Sorry, TOHE temporarily not support the Vanilla HnS, so mod unloaded",
   "ERR-001-000-3": "Le dictionnaire principal a des clés dupliquées.",
   "ERR-002-000-1": "Version d'Among Us non supportée. S'il te plaît met à jour Among Us",
   "DefaultSystemMessageTitle": "MESSAGE DU SYSTEME",
