@@ -236,7 +236,7 @@ internal class Overseer : RoleBase
                 if (dis <= range)
                 {
                     OverseerTimer[playerId] = (farTarget, farTime + Time.fixedDeltaTime);
-                    SendTimerRPC(1, playerId, farTarget, farTime + Time.fixedDeltaTime);
+                    //SendTimerRPC(1, playerId, farTarget, farTime + Time.fixedDeltaTime);
                 }
                 else
                 {
