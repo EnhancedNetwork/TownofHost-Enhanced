@@ -241,11 +241,6 @@ public class GameSettingMenuPatch
     }
 }
 
-
-
-
-
-
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSyncSettings))]
 public class RpcSyncSettingsPatch
 {
