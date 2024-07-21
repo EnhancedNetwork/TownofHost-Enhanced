@@ -547,10 +547,14 @@ internal class SelectRolesPatch
                 }
             }
 
-            EndOfSelectRolePatch:
+        EndOfSelectRolePatch:
 
-            if (!AmongUsClient.Instance.IsGameOver)
-                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            try
+            {
+                if (!AmongUsClient.Instance.IsGameOver)
+                    DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            }
+            catch { }
             //HudManager.Instance.Chat.SetVisible(true);
 
             foreach (var pc in Main.AllPlayerControls)
