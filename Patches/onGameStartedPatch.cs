@@ -327,14 +327,14 @@ internal class SelectRolesPatch
             try
             {
                 // Update name players
-                Utils.NotifyRoles(NoCache: true);
+                Utils.DoNotifyRoles(NoCache: true);
             }
             catch (Exception ex)
             {
                 Utils.ErrorEnd("Notify Roles In LateTask");
                 Logger.Fatal(ex.ToString(), "NotifyRolesInLateTask");
             }
-        }, 1.3f, "Do Notify Roles After Assign", shoudLog: false);
+        }, 1.15f, "Do Notify Roles After Assign", shoudLog: false);
     }
     private static void SetRolesAfterSelect()
     {
