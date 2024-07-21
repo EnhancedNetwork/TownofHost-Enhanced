@@ -2214,7 +2214,7 @@
   "ERR-000-910-1": "Errore Test Lv.1",
   "ERR-000-920-2": "Errore Test Lv.2",
   "ERR-000-930-3": "Errore Test Lv.3",
-  "ERR-000-804-1": "TownofHost-Enhanced non supporta il Nascondino Classico, quindi staccato.",
+  "ERR-000-804-1": "Sorry, TOHE temporarily not support the Vanilla HnS, so mod unloaded",
   "ERR-001-000-3": "Il dizionario principale ha chiavi duplicate.",
   "ERR-002-000-1": "Versione di Among Us non Supportato. Per favore aggiornare Among Us",
   "DefaultSystemMessageTitle": "MESSAGGIO DI SISTEMA",
