@@ -24,7 +24,7 @@ class ChanceChangePatch
             __instance.OnValueChanged.Invoke(__instance);
         }
     }
-    [HarmonyPatch(typeof(GameOptionsManager), nameof(GameOptionsManager.SwitchGameMode))]
+    /*[HarmonyPatch(typeof(GameOptionsManager), nameof(GameOptionsManager.SwitchGameMode))]
     class SwitchGameModePatch
     {
         public static void Postfix(GameModes gameMode)
@@ -37,5 +37,5 @@ class ChanceChangePatch
                 Main.Instance.Unload();
             }
         }
-    }
+    }*/
 }

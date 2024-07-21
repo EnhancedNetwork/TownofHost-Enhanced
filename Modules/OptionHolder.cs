@@ -58,7 +58,7 @@ public static class Options
         "FFA",
 
 
-        "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
+        /*"Hide&SeekTOHE",*/ //  Don't work ??            HidenSeekTOHE must be after other game modes
     ];
 
     // 役職数・確率
