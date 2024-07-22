@@ -45,6 +45,16 @@ internal class EAC
             switch (rpc)
             {
                 // Check name is now done in PlayerControl.CheckName
+                case RpcCalls.CheckName:
+                    if (!GameStates.IsLobby)
+                    {
+                        WarnHost();
+                        Report(pc, "CheckName out of Lobby");
+                        HandleCheat(pc, "CheckName out of Lobby");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】CheckName out of lobby，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
                 case RpcCalls.SetName:
                     //Only sent by host
                     WarnHost();
@@ -110,6 +120,16 @@ internal class EAC
                             Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】刷报告尸体满14次，已驳回", "EAC");
                             return true;
                         }
+                    }
+                    break;
+                case RpcCalls.CheckColor:
+                    if (!GameStates.IsLobby)
+                    {
+                        WarnHost();
+                        Report(pc, "CheckColor out of Lobby");
+                        HandleCheat(pc, "CheckColor out of Lobby");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】check color out of lobby，已驳回", "EAC");
+                        return true;
                     }
                     break;
                 // Some mods may add custom colors. Skip check color check
