@@ -1612,7 +1612,7 @@ class PlayerControlCheckNamePatch
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
 
-        BanManager.CheckDenyNamePlayer(__instance, playerName);
+        if (BanManager.CheckDenyNamePlayer(__instance, playerName)) return;
 
         if (!Main.AllClientRealNames.ContainsKey(__instance.OwnerId))
         {
