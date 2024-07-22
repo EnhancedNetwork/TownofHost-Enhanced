@@ -1608,9 +1608,11 @@ class PlayerControlCompleteTaskPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckName))]
 class PlayerControlCheckNamePatch
 {
-    public static void Postfix(PlayerControl __instance, string playerName)
+    public static void Postfix(PlayerControl __instance, ref string playerName)
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
+
+        BanManager.CheckDenyNamePlayer(__instance, playerName);
 
         if (!Main.AllClientRealNames.ContainsKey(__instance.OwnerId))
         {
