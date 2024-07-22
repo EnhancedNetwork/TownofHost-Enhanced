@@ -34,7 +34,13 @@ public static class MessageReaderUpdateSystemPatch
 {
     public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        if (systemType is SystemTypes.Ventilation or SystemTypes.Security) return true;
+        if (systemType is 
+            SystemTypes.Ventilation
+            or SystemTypes.Security
+            or SystemTypes.Decontamination
+            or SystemTypes.Decontamination2
+            or SystemTypes.Decontamination3) return true;
+
         if (GameStates.IsHideNSeek) return true;
 
         var amount = MessageReader.Get(reader).ReadByte();
@@ -48,7 +54,13 @@ public static class MessageReaderUpdateSystemPatch
     }
     public static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        if (systemType is SystemTypes.Ventilation or SystemTypes.Security) return;
+        if (systemType is
+            SystemTypes.Ventilation
+            or SystemTypes.Security
+            or SystemTypes.Decontamination
+            or SystemTypes.Decontamination2
+            or SystemTypes.Decontamination3) return;
+
         if (GameStates.IsHideNSeek) return;
 
         UpdateSystemPatch.Postfix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
@@ -62,11 +74,11 @@ class UpdateSystemPatch
         [HarmonyArgument(1)] PlayerControl player,
         [HarmonyArgument(2)] byte amount)
     {
-        Logger.Msg("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole().RemoveHtmlTags() + ", amount: " + amount, "RepairSystem");
+        Logger.Msg($"SystemType: {systemType}, PlayerName: {player.GetNameWithRole().RemoveHtmlTags()}, amount: {amount}", "ShipStatus.UpdateSystem");
 
         if (RepairSender.enabled && AmongUsClient.Instance.NetworkMode != NetworkModes.OnlineGame)
         {
-            Logger.SendInGame("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole().RemoveHtmlTags() + ", amount: " + amount);
+            Logger.SendInGame($"SystemType: {systemType}, PlayerName: {player.GetNameWithRole().RemoveHtmlTags()}, amount: {amount}");
         }
 
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -136,13 +148,20 @@ class UpdateSystemPatch
     }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CloseDoorsOfType))]
-class CloseDoorsPatch
+class ShipStatusCloseDoorsPatch
 {
-    public static bool Prefix(/*ShipStatus __instance*/)
+    public static bool Prefix(/*ShipStatus __instance,*/ SystemTypes room)
     {
+        Logger.Info($"Trying to close the door in the room: {room}", "CloseDoorsOfType");
+
         bool allow;
         if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()) allow = false;
         else allow = true;
+
+        if (allow)
+        {
+            Logger.Info($"The door is closed in room: {room}", "CloseDoorsOfType");
+        }
         return allow;
     }
 }
@@ -154,7 +173,7 @@ class StartPatch
         Logger.CurrentMethod();
         Logger.Info("-----------Start of game-----------", "Phase");
 
-        Utils.CountAlivePlayers(true);
+        Utils.CountAlivePlayers(sendLog: true, checkGameEnd: false);
 
         if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
         {
@@ -191,7 +210,7 @@ class StartPatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartMeeting))]
 class StartMeetingPatch
 {
-    public static void Prefix(ShipStatus __instance, PlayerControl reporter, GameData.PlayerInfo target)
+    public static void Prefix(ShipStatus __instance, PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (GameStates.IsHideNSeek) return;
 

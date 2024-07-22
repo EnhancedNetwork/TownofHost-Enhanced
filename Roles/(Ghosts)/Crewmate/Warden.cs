@@ -23,7 +23,7 @@ internal class Warden : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Warden);
-        AbilityCooldown = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(0f, 120f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
+        AbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(0f, 120f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
             .SetValueFormat(OptionFormat.Seconds);
         IncreaseSpeed = FloatOptionItem.Create(Id + 11, "WardenIncreaseSpeed", new(1f, 3f, 0.5f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
             .SetValueFormat(OptionFormat.Times);

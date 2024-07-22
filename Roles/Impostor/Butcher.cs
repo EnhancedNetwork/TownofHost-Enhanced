@@ -1,4 +1,5 @@
-﻿using TOHE.Roles.Core;
+﻿using TOHE.Modules;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 
@@ -43,23 +44,25 @@ internal class Butcher : RoleBase
         if (target == null) return;
 
         target.SetRealKiller(killer);
-        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Dismembered;
-        target.Data.IsDead = true;
+        target.SetDeathReason(PlayerState.DeathReason.Dismembered);
+        Main.PlayerStates[target.PlayerId].SetDead();
 
-        if (!Main.OverDeadPlayerList.Contains(target.PlayerId)) Main.OverDeadPlayerList.Add(target.PlayerId);
+        Main.OverDeadPlayerList.Add(target.PlayerId);
         //var ops = target.GetCustomPosition();
         var rd = IRandom.Instance;
 
         if (target.Is(CustomRoles.Avanger))
         {
+            CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
             var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId); //No need to do extra check cause nobody is winning
             pcList.Do(x =>
             {
-                Main.PlayerStates[x.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+                x.SetDeathReason(PlayerState.DeathReason.Revenge);
                 target.RpcSpecificMurderPlayer(x, x);
-                x.Data.IsDead = true;
                 x.SetRealKiller(target);
+                Main.PlayerStates[x.PlayerId].SetDead();
             });
+
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
             return;
         }
@@ -70,7 +73,9 @@ internal class Butcher : RoleBase
             {
                 if (GameStates.IsMeeting) break;
                 if (!target.AmOwner)
+                {
                     target.MurderPlayer(target, ExtendedPlayerControl.ResultFlags);
+                }
                 Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !x.AmOwner)
                 .Do(x => target.RpcSpecificMurderPlayer(target, x));
             }
@@ -84,7 +89,7 @@ internal class Butcher : RoleBase
     }
 
     public override void AfterMeetingTasks() => MurderTargetLateTask = [];
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target) => MurderTargetLateTask.Clear();
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => MurderTargetLateTask.Clear();
 
     public static void OnFixedUpdateOthers(PlayerControl target)
     {

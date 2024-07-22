@@ -74,7 +74,6 @@ internal class Revolutionist : RoleBase
         foreach (var ar in Main.AllPlayerControls)
             IsDraw.Add((playerId, ar.PlayerId), false);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -87,14 +86,14 @@ internal class Revolutionist : RoleBase
     }
     public override bool CanUseKillButton(PlayerControl pc) => !IsDrawDone(pc);
     public override bool CanUseImpostorVentButton(PlayerControl pc) => IsDrawDone(pc);
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         foreach (var x in RevolutionistStart.Keys.ToArray())
         {
             var tar = GetPlayerById(x);
             if (tar == null) continue;
             tar.Data.IsDead = true;
-            Main.PlayerStates[tar.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
+            tar.SetDeathReason(PlayerState.DeathReason.Sacrifice);
             tar.RpcExileV2();
             Main.PlayerStates[tar.PlayerId].SetDead();
             Logger.Info($"{tar.GetRealName()} 因会议革命失败", "Revolutionist");
@@ -188,7 +187,7 @@ internal class Revolutionist : RoleBase
     }
 
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
-        => ColorString(GetRoleColor(CustomRoles.Revolutionist), string.Format(GetString("EnterVentWinCountDown"), RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10));
+        => !isForMeeting ? ColorString(GetRoleColor(CustomRoles.Revolutionist), string.Format(GetString("EnterVentWinCountDown"), RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10)) : string.Empty;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -231,7 +230,7 @@ internal class Revolutionist : RoleBase
                     ResetCurrentDrawTarget(playerId);
                     if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt())
                     {
-                        Main.PlayerStates[rvTargetId].deathReason = PlayerState.DeathReason.Sacrifice;
+                        rvTargetId.SetDeathReason(PlayerState.DeathReason.Sacrifice);
                         player.RpcMurderPlayer(rv_target);
                         rv_target.SetRealKiller(player);
                         Main.PlayerStates[rvTargetId].SetDead();
@@ -240,7 +239,7 @@ internal class Revolutionist : RoleBase
                 }
                 else
                 {
-                    float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                    float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
                     float dis = Vector2.Distance(player.GetCustomPosition(), rv_target.GetCustomPosition());
                     if (dis <= range)
                     {
@@ -280,13 +279,13 @@ internal class Revolutionist : RoleBase
                         foreach (var pc in list.Where(x => x != null && x.IsAlive()).ToArray())
                         {
                             pc.Data.IsDead = true;
-                            Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
+                            pc.SetDeathReason(PlayerState.DeathReason.Sacrifice);
                             pc.RpcMurderPlayer(pc);
                             Main.PlayerStates[pc.PlayerId].SetDead();
                             NotifyRoles(SpecifySeer: pc);
                         }
                         player.Data.IsDead = true;
-                        Main.PlayerStates[playerId].deathReason = PlayerState.DeathReason.Sacrifice;
+                        playerId.SetDeathReason(PlayerState.DeathReason.Sacrifice);
                         player.RpcMurderPlayer(player);
                         Main.PlayerStates[playerId].SetDead();
                     }

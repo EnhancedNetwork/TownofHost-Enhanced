@@ -13,9 +13,9 @@ public static class Rebound
 
     public static void SetupCustomOptions()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Rebound, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeRebound = BooleanOptionItem.Create(Id + 10, "ImpCanBeRebound", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
-        CrewCanBeRebound = BooleanOptionItem.Create(Id + 11, "CrewCanBeRebound", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
-        NeutralCanBeRebound = BooleanOptionItem.Create(Id + 12, "NeutralCanBeRebound", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
+        SetupAdtRoleOptions(Id, CustomRoles.Rebound, canSetNum: true, tab: TabGroup.ModifierSettings);
+        ImpCanBeRebound = BooleanOptionItem.Create(Id + 10, "ImpCanBeRebound", true, TabGroup.ModifierSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
+        CrewCanBeRebound = BooleanOptionItem.Create(Id + 11, "CrewCanBeRebound", true, TabGroup.ModifierSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
+        NeutralCanBeRebound = BooleanOptionItem.Create(Id + 12, "NeutralCanBeRebound", true, TabGroup.ModifierSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
     }
 }

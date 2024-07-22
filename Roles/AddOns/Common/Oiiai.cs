@@ -1,4 +1,5 @@
-﻿using TOHE.Roles.Core;
+﻿using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using static TOHE.Translator;
@@ -112,6 +113,7 @@ public static class Oiiai
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         killer.Notify(GetString("LostRoleByOiiai"));
+        killer.RPCPlayCustomSound("Oiiai");
         Logger.Info($"{killer.GetRealName()} was OIIAIed", "Oiiai");
     }
 

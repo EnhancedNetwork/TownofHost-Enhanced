@@ -16,7 +16,7 @@ internal class Workaholic : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public static OptionItem WorkaholicCannotWinAtDeath;
     public static OptionItem WorkaholicVentCooldown;
@@ -31,14 +31,14 @@ internal class Workaholic : RoleBase
         SetupRoleOptions(15700, TabGroup.NeutralRoles, CustomRoles.Workaholic); //TOH_Y
         WorkaholicCannotWinAtDeath = BooleanOptionItem.Create(15702, "WorkaholicCannotWinAtDeath", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic]);
-        WorkaholicVentCooldown = FloatOptionItem.Create(15703, "VentCooldown", new(0f, 180f, 2.5f), 0f, TabGroup.NeutralRoles, false)
+        WorkaholicVentCooldown = FloatOptionItem.Create(15703, GeneralOption.EngineerBase_VentCooldown, new(0f, 180f, 2.5f), 0f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic])
             .SetValueFormat(OptionFormat.Seconds);
         WorkaholicVisibleToEveryone = BooleanOptionItem.Create(15704, "WorkaholicVisibleToEveryone", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic]);
         WorkaholicGiveAdviceAlive = BooleanOptionItem.Create(15705, "WorkaholicGiveAdviceAlive", true, TabGroup.NeutralRoles, false)
             .SetParent(WorkaholicVisibleToEveryone);
-        WorkaholicCanGuess = BooleanOptionItem.Create(15706, "CanGuess", true, TabGroup.NeutralRoles, false)
+        WorkaholicCanGuess = BooleanOptionItem.Create(15706, GeneralOption.CanGuess, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Workaholic]);
         OverrideTasksData.Create(15707, TabGroup.NeutralRoles, CustomRoles.Workaholic);
     }
@@ -67,6 +67,12 @@ internal class Workaholic : RoleBase
 
         Logger.Info("The Workaholic task is done", "Workaholic");
 
+        if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+        {
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic win
+            CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+        }
+
         RPC.PlaySoundRPC(player.PlayerId, Sounds.KillSound);
         foreach (var pc in Main.AllAlivePlayerControls)
         {
@@ -78,12 +84,6 @@ internal class Workaholic : RoleBase
                 pc.RpcMurderPlayer(pc);
                 pc.SetRealKiller(player);
             }
-        }
-
-        if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
-        {
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic win
-            CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
         }
 
         return true;
@@ -107,7 +107,7 @@ internal class Workaholic : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if(WorkaholicVisibleToEveryone.GetBool())
+        if (WorkaholicVisibleToEveryone.GetBool())
         {
             if (!isUI) Utils.SendMessage(GetString("GuessWorkaholic"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessWorkaholic"));
@@ -119,8 +119,8 @@ internal class Workaholic : RoleBase
     {
         if (!WorkaholicCanGuess.GetBool())
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessDisabled"));
+            Logger.Info($"Guess Disabled for this player {guesser.PlayerId}", "GuessManager");
+            guesser.ShowInfoMessage(isUI, GetString("GuessDisabled"));
             return true;
         }
         return false;

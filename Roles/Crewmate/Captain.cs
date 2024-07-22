@@ -195,7 +195,7 @@ internal class Captain : RoleBase
         var addon = AllSubRoles.RandomElement();
         return addon;
     }
-    public override void OnPlayerExiled(PlayerControl captain, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl captain, NetworkedPlayerInfo exiled)
     {
         if (exiled == null || (exiled.GetCustomRole() is not CustomRoles.Captain)) return;
 
@@ -215,7 +215,7 @@ internal class Captain : RoleBase
         CaptainVoteTargets.Clear();
         SendRPCVoteRemove();
     }
-    public override void OnReportDeadBody(PlayerControl y, GameData.PlayerInfo x)
+    public override void OnReportDeadBody(PlayerControl y, NetworkedPlayerInfo x)
     {
         foreach (byte target in OriginalSpeed.Keys.ToArray())
         {

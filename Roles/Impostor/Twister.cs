@@ -27,7 +27,7 @@ internal class Twister : RoleBase
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Twister);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 10, "TwisterCooldown", new(1f, 180f, 1f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Twister])
             .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftDuration = FloatOptionItem.Create(Id + 11, "ShapeshiftDuration", new(1f, 999f, 1f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Twister])
+        ShapeshiftDuration = FloatOptionItem.Create(Id + 11, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 999f, 1f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Twister])
                 .SetValueFormat(OptionFormat.Seconds);
         HideTwistedPlayerNames = BooleanOptionItem.Create(Id + 12, "TwisterHideTwistedPlayerNames", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Twister]);
     }

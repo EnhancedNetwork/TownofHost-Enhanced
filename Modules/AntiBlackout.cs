@@ -109,25 +109,26 @@ public static class AntiBlackout
     public static void SendGameData([CallerMemberName] string callerMethodName = "")
     {
         logger.Info($"SendGameData is called from {callerMethodName}");
-        MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
-        // The writing {} is for readability.
-        writer.StartMessage(5); //0x05 GameData
+        foreach (var playerinfo in GameData.Instance.AllPlayers)
         {
-            writer.Write(AmongUsClient.Instance.GameId);
-            writer.StartMessage(1); //0x01 Data
+            MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+            writer.StartMessage(5); //0x05 GameData
             {
-                writer.WritePacked(GameData.Instance.NetId);
-                GameData.Instance.Serialize(writer, true);
-
+                writer.Write(AmongUsClient.Instance.GameId);
+                writer.StartMessage(1); //0x01 Data
+                {
+                    writer.WritePacked(playerinfo.NetId);
+                    playerinfo.Serialize(writer, true);
+                }
+                writer.EndMessage();
             }
             writer.EndMessage();
-        }
-        writer.EndMessage();
 
-        AmongUsClient.Instance.SendOrDisconnect(writer);
-        writer.Recycle();
+            AmongUsClient.Instance.SendOrDisconnect(writer);
+            writer.Recycle();
+        }
     }
-    public static void OnDisconnect(GameData.PlayerInfo player)
+    public static void OnDisconnect(NetworkedPlayerInfo player)
     {
         // Execution conditions: Client is the host, IsDead is overridden, player is already disconnected
         if (!AmongUsClient.Instance.AmHost || !IsCached || !player.Disconnected) return;
@@ -161,7 +162,7 @@ public static class AntiBlackout
             logger.Info("==/Temp Restore==");
         }
     }
-    public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, GameData.PlayerInfo exiled, bool tie)
+    public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, NetworkedPlayerInfo exiled, bool tie)
     {
         if (AmongUsClient.Instance.AmClient)
         {

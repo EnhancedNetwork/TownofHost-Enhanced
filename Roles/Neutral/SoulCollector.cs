@@ -99,7 +99,7 @@ internal class SoulCollector : RoleBase
         SendRPC(voter.PlayerId);
     }
 
-    public override void OnReportDeadBody(PlayerControl ryuak, GameData.PlayerInfo iscute)
+    public override void OnReportDeadBody(PlayerControl ryuk, NetworkedPlayerInfo iscute)
     {
         foreach (var playerId in SoulCollectorTarget.Keys) 
         { 

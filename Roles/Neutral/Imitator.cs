@@ -9,6 +9,7 @@ internal class Imitator : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Imitator);
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -36,12 +37,11 @@ internal class Imitator : RoleBase
     {
         AbilityLimit = 1;
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? RememberCooldown.GetFloat() : 300f;
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (AbilityLimit > 0);
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberCooldown.GetFloat();
+    public override bool CanUseKillButton(PlayerControl player) => AbilityLimit > 0;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (AbilityLimit < 1) return false;

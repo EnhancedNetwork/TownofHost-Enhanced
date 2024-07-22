@@ -1,4 +1,5 @@
-﻿using Hazel;
+﻿/*
+using Hazel;
 using System;
 using UnityEngine;
 using System.Text;
@@ -108,7 +109,7 @@ internal class Tracker : RoleBase
         SendRPC(0,player.PlayerId, target.PlayerId);
     }
 
-    public override void OnReportDeadBody(PlayerControl reported, GameData.PlayerInfo repoted)
+    public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo repoted)
     {
         foreach (var trackerId in _playerIdList) 
         {
@@ -201,3 +202,4 @@ internal class Tracker : RoleBase
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Track");
 }
+*/

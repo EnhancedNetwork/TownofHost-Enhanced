@@ -170,20 +170,23 @@ public class SabotageSystemPatch
             {
                 Logger.Info($" IsEnd", "MushroomMixupSabotageSystem.Deteriorate.Postfix");
 
-                _ = new LateTask(() =>
+                if (AmongUsClient.Instance.AmHost)
                 {
-                    // After MushroomMixup sabotage, shapeshift cooldown sets to 0
-                    foreach (var pc in Main.AllAlivePlayerControls)
+                    _ = new LateTask(() =>
                     {
-                        // Reset Ability Cooldown To Default For Alive Players
-                        pc.RpcResetAbilityCooldown();
-                    }
-                }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
+                        // After MushroomMixup sabotage, shapeshift cooldown sets to 0
+                        foreach (var pc in Main.AllAlivePlayerControls)
+                        {
+                            // Reset Ability Cooldown To Default For Alive Players
+                            pc.RpcResetAbilityCooldown();
+                        }
+                    }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
 
-                foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
-                {
-                    // Need for display player names if player is desync Impostor
-                    Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
+                    foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
+                    {
+                        // Need for display player names if player is desync Impostor
+                        Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
+                    }
                 }
             }
         }
@@ -299,7 +302,7 @@ public class SabotageSystemPatch
                 return false;
             }
 
-            Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + nextSabotage.ToString(), "RepairSystem");
+            Logger.Info($"PlayerName: {player.GetNameWithRole()}, SabotageType: {nextSabotage}, amount {amount}", "SabotageSystemType.UpdateSystem");
 
             return CanSabotage(player, nextSabotage);
         }
@@ -359,6 +362,21 @@ public class SabotageSystemPatch
                 }
                 return true;
             }
+        }
+    }
+    [HarmonyPatch(typeof(DoorsSystemType), nameof(DoorsSystemType.UpdateSystem))]
+    public static class DoorsSystemTypePatch
+    {
+        public static void Prefix(/*DoorsSystemType __instance,*/ PlayerControl player, MessageReader msgReader)
+        {
+            byte amount;
+            {
+                var newReader = MessageReader.Get(msgReader);
+                amount = newReader.ReadByte();
+                newReader.Recycle();
+            }
+
+            Logger.Info($"Door is opened by {player?.Data?.PlayerName}, amount: {amount}", "DoorsSystemType.UpdateSystem");
         }
     }
 }

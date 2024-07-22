@@ -42,7 +42,7 @@ internal class Agitater : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         AgitaterCanGetBombed = BooleanOptionItem.Create(Id + 13, "AgitaterCanGetBombed", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Agitater]);
         AgitaterAutoReportBait = BooleanOptionItem.Create(Id + 14, "AgitaterAutoReportBait", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Agitater]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 15, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Agitater]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 15, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Agitater]);
     }
     public override void Init()
     {
@@ -58,7 +58,6 @@ internal class Agitater : RoleBase
         playerIdList.Add(playerId);
         CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -103,7 +102,7 @@ internal class Agitater : RoleBase
                 var pc = Utils.GetPlayerById(CurrentBombedPlayer);
                 if (pc != null && pc.IsAlive() && killer != null)
                 {
-                    Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
+                    CurrentBombedPlayer.SetDeathReason(PlayerState.DeathReason.Bombed);
                     pc.RpcMurderPlayer(pc);
                     pc.SetRealKiller(killer);
                     Logger.Info($"{killer.GetNameWithRole()} bombed {pc.GetNameWithRole()} - bomb cd complete", "Agitater");
@@ -115,14 +114,14 @@ internal class Agitater : RoleBase
         return false;
     }
 
-    public override void OnReportDeadBody(PlayerControl reported, GameData.PlayerInfo agitatergoatedrole)
+    public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo agitatergoatedrole)
     {
         if (CurrentBombedPlayer == byte.MaxValue) return;
         var target = Utils.GetPlayerById(CurrentBombedPlayer);
         var killer = Utils.GetPlayerById(playerIdList.First());
         if (target == null || killer == null) return;
-        
-        Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
+
+        CurrentBombedPlayer.SetDeathReason(PlayerState.DeathReason.Bombed);
         Main.PlayerStates[CurrentBombedPlayer].SetDead();
         target.RpcExileV2();
         target.SetRealKiller(killer);
@@ -168,7 +167,7 @@ internal class Agitater : RoleBase
     private void PassBomb(PlayerControl player, PlayerControl target)
     {
         if (!AgitaterHasBombed) return;
-        if (target.Data.IsDead) return;
+        if (!target.IsAlive()) return;
 
         var now = Utils.GetTimeStamp();
         if (now - CurrentBombedPlayerTime < PassCooldown.GetFloat()) return;

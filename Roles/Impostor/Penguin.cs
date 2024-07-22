@@ -134,7 +134,7 @@ internal class Penguin : RoleBase
         hud.AbilityButton?.OverrideText(GetString("PenguinTimerText"));
         hud.AbilityButton?.ToggleVisible(AbductVictim != null);
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         stopCount = true;
         // If you meet a meeting with time running out, kill it even if you're on a ladder.
@@ -209,7 +209,8 @@ internal class Penguin : RoleBase
             {
                 // Set IsDead to true first (prevents ladder chase)
                 AbductVictim.Data.IsDead = true;
-                GameData.Instance.SetDirty();
+                AbductVictim.Data.MarkDirty();
+
                 // If the penguin himself is on a ladder, kill him after getting off the ladder.
                 if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                 {
