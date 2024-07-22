@@ -55,6 +55,7 @@ internal class EAC
                         return true;
                     }
                     break;
+                /*
                 case RpcCalls.SetName:
                     //Only sent by host
                     WarnHost();
@@ -69,6 +70,8 @@ internal class EAC
                     HandleCheat(pc, "Directly SetRole");
                     Logger.Fatal($"Directly SetRole for【{pc.GetClientId()}:{pc.GetRealName()}】已驳回", "EAC");
                     break;
+                */
+                // Disabled due to host sending these rpcs to itself using custom sender
                 case RpcCalls.SendChat:
                     var text = sr.ReadString();
                     if ((
