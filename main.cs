@@ -528,10 +528,6 @@ public class Main : BasePlugin
 }
 public enum CustomRoles
 {
-    /*******************************************************
-     * Please add all the new roles in alphabetical order *
-     ******************************************************/
-
     // Crewmate(Vanilla)
     Crewmate = 0,
     Engineer,
