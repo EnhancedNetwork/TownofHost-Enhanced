@@ -88,7 +88,7 @@
     {
       "Number": "100006",
       "Title": "Town of Host: Enhanced v2.0.0",
-      "Subtitle": "Our Biggest Update Yet!",
+      "Subtitle": "Nossa Maior Atualização Até Agora!",
       "Short": "TOH: Enhanced v2.0.0",
       "Body": [
         "<b>【Baseado】</b>",
@@ -196,7 +196,7 @@
         "\n     - Corrigida lista EAC não funcionando quando a lista de banimento está desativada (Por: ryuk)",
         "\n     - Corrigido Kamikaze causando jogadores meio-mortos (Por: ryuk)",
         "\n     - Corrigidas mensagens não enviadas para jogadores vanilla (Por: Drakos)",
-        "\n     - Fixed Zombie Issues (By Drakos)",
+        "\n     - Corrigidos problemas com a Pestilência (Por: Drakos)",
         "\n     - Corrigido Masoquista sendo julgado (Por: Drakos)",
         "\n     - Corrigido bug quando o tempo de recarga para matar não avançava ao pressionar F1/F2/F3/F4 (Por: NikoCat)",
         "\n     - Corrigidas configurações de início automático imediato (Por: NikoCat)",
