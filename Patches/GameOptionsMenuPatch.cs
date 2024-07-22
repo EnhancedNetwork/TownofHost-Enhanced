@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;
@@ -77,8 +78,8 @@ public static class GameOptionsMenuPatch
                     CategoryHeaderMasked categoryHeaderMasked = Object.Instantiate(__instance.categoryHeaderOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
                     categoryHeaderMasked.SetHeader(StringNames.RolesCategory, 20);
                     categoryHeaderMasked.Title.text = option.GetName();
-                    categoryHeaderMasked.transform.localScale = Vector3.one * 0.63f;
-                    categoryHeaderMasked.transform.localPosition = new(-0.903f, num, posZ);
+                    categoryHeaderMasked.transform.localScale = Vector3.one * 0.68f;
+                    categoryHeaderMasked.transform.localPosition = new(-0.913f, num, posZ);
                     var chmText = categoryHeaderMasked.transform.FindChild("HeaderText").GetComponent<TextMeshPro>();
                     chmText.fontStyle = FontStyles.Bold;
                     chmText.outlineWidth = 0.17f;
@@ -253,25 +254,26 @@ public static class GameOptionsMenuPatch
                 break;
         }
     }
-    public static void UpdateSettings()
+    public static void ReOpenSettings(bool IsPresset)
     {
-        foreach (var optionBehaviour in ModGameOptionsMenu.OptionList.Keys)
-        {
-            try
-            {
-                optionBehaviour.Initialize();
+        //Close setting menu
+        GameSettingMenu.Instance.Close();
 
-                //optionBehaviour.SetClickMask(Instance.ButtonClickMask);
-                //var baseGameSetting = GetSetting(OptionItem.AllOptions[index]);
-                //if (baseGameSetting != null)
-                //{
-                //    optionBehaviour.SetUpFromData(baseGameSetting, 20);
-                //}
-                //_ = optionBehaviour.OnValueChanged;
-                Instance?.ValueChanged(optionBehaviour);
-            }
-            catch { }
-        }
+        // Auto Click "Edit" Button
+        _ = new LateTask(() =>
+        {
+            if (!GameStates.IsLobby) return;
+            var hostButtons = GameObject.Find("Host Buttons");
+            if (hostButtons == null) return;
+            hostButtons.transform.FindChild("Edit").GetComponent<PassiveButton>().ReceiveClickDown();
+        }, 0.1f, "Click Edit Button");
+
+        // Change tab to "System Settings"
+        _ = new LateTask(() =>
+        {
+            if (!GameStates.IsLobby || GameSettingMenu.Instance == null) return;
+            GameSettingMenu.Instance.ChangeTab(IsPresset ? 3 : 4, Controller.currentTouchType == Controller.TouchType.Joystick);
+        }, 0.28f, "Change Tab");
     }
     [HarmonyPatch(nameof(GameOptionsMenu.ValueChanged)), HarmonyPrefix]
     private static bool ValueChangedPrefix(GameOptionsMenu __instance, OptionBehaviour option)
@@ -595,9 +597,18 @@ public static class StringOptionPatch
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
             item.SetValue(__instance.GetInt());
-            if (item is PresetOptionItem)
+
+            if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {
-                GameOptionsMenuPatch.UpdateSettings();
+                if (Options.GameMode.GetInt() == 2 && !GameStates.IsHideNSeek) //Hide And Seek
+                {
+                    Options.GameMode.SetValue(0);
+                }
+                else if (Options.GameMode.GetInt() != 2 && GameStates.IsHideNSeek)
+                {
+                    Options.GameMode.SetValue(2);
+                }
+                GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode");
             }
             return false;
         }

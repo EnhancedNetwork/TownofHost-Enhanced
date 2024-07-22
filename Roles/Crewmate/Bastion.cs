@@ -93,7 +93,7 @@ internal class Bastion : RoleBase
                 bastion.Notify(GetString("BastionNotify"));
                 pc.Notify(GetString("EnteredBombedVent"));
 
-                Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                pc.SetDeathReason(PlayerState.DeathReason.Bombed);
                 pc.RpcMurderPlayer(pc);
                 pc.SetRealKiller(bastion);
                 BombedVents.Remove(ventId);

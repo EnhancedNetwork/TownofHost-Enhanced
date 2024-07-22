@@ -207,9 +207,26 @@ class CheckForEndVotingPatch
                 });
 
                 // Swapper swap votes
-                 if(voter.GetRoleClass() is Swapper sw) sw.SwapVotes(__instance);
+                if (voter.GetRoleClass() is Swapper sw) sw.SwapVotes(__instance);
 
                 playerRoleClass?.AddVisualVotes(ps, ref statesList);
+
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
+                {
+                    Stealer.AddVisualVotes(ps, ref statesList);
+                }
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.Paranoia) && Paranoia.DualVotes.GetBool())
+                {
+                    Paranoia.AddVisualVotes(ps, ref statesList);
+                }
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.Knighted) && !Monarch.HideAdditionalVotesForKnighted.GetBool())
+                {
+                    statesList.Add(new MeetingHud.VoterState()
+                    {
+                        VoterId = ps.TargetPlayerId,
+                        VotedForId = ps.VotedFor
+                    });
+                }
             }
 
             var VotingData = __instance.CustomCalculateVotes(); //Influenced vote mun isnt counted here
@@ -731,7 +748,7 @@ static class ExtendedMeetingHud
                 // Additional votes
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
                 {
-                    VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Stealer.TicketsPerKill.GetFloat());
+                    VoteNum += Stealer.AddRealVotesNum(ps);
                 }
 
                 // Madmate assign by vote
@@ -1136,7 +1153,7 @@ class MeetingHudUpdatePatch
                 var player = Utils.GetPlayerById(x.TargetPlayerId);
                 if (player != null && !player.Data.IsDead)
                 {
-                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Execution;
+                    player.SetDeathReason(PlayerState.DeathReason.Execution);
                     player.SetRealKiller(PlayerControl.LocalPlayer);
                     player.RpcExileV2();
                     Main.PlayerStates[player.PlayerId].SetDead();

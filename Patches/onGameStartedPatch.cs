@@ -224,7 +224,7 @@ internal class ChangeRoleSettings
         catch (Exception ex)
         {
             Utils.ErrorEnd("Change Role Setting Postfix");
-            Logger.Fatal(ex.ToString(), "Change Role Setting Postfix");
+            Utils.ThrowException(ex);
         }
     }
 }
@@ -294,10 +294,10 @@ internal class SelectRolesPatch
                 RoleOpt.SetRoleRate(roleType.Key, roleNum, roleType.Value > 0 ? 100 : RoleOpt.GetChancePerGame(roleType.Key));
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
             Utils.ErrorEnd("Select Role Prefix");
-            Logger.Fatal(e.Message, "Select Role Prefix");
+            Utils.ThrowException(ex);
         }
     }
     public static void Postfix()
@@ -318,23 +318,9 @@ internal class SelectRolesPatch
             catch (Exception ex)
             {
                 Utils.ErrorEnd("Set Roles After Select In LateTask");
-                Logger.Fatal(ex.ToString(), "SetRolesAfterSelectInLateTask");
+                Utils.ThrowException(ex);
             }
         }, 1f, "Set Role Types After Select");
-
-        _ = new LateTask(() => {
-
-            try
-            {
-                // Update name players
-                Utils.NotifyRoles(NoCache: true);
-            }
-            catch (Exception ex)
-            {
-                Utils.ErrorEnd("Notify Roles In LateTask");
-                Logger.Fatal(ex.ToString(), "NotifyRolesInLateTask");
-            }
-        }, 1.3f, "Do Notify Roles After Assign", shoudLog: false);
     }
     private static void SetRolesAfterSelect()
     {
@@ -547,10 +533,14 @@ internal class SelectRolesPatch
                 }
             }
 
-            EndOfSelectRolePatch:
+        EndOfSelectRolePatch:
 
-            if (!AmongUsClient.Instance.IsGameOver)
-                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            try
+            {
+                if (!AmongUsClient.Instance.IsGameOver)
+                    DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            }
+            catch { }
             //HudManager.Instance.Chat.SetVisible(true);
 
             foreach (var pc in Main.AllPlayerControls)
@@ -597,7 +587,7 @@ internal class SelectRolesPatch
         catch (Exception ex)
         {
             Utils.ErrorEnd("Set Roles After Select");
-            Logger.Fatal(ex.ToString(), "SetRolesAfterSelect");
+            Utils.ThrowException(ex);
         }
     }
     private static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), RoleTypes> rolesMap, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)

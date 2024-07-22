@@ -57,31 +57,31 @@ internal class Terrorist : RoleBase
         var taskState = Utils.GetPlayerById(terrorist.PlayerId).GetPlayerTaskState();
         if (taskState.IsTaskFinished && (!Main.PlayerStates[terrorist.PlayerId].IsSuicide || CanTerroristSuicideWin.GetBool()))
         {
+            if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
+                CustomWinnerHolder.WinnerIds.Add(terrorist.PlayerId);
+            }
             foreach (var pc in Main.AllPlayerControls)
             {
                 if (pc.Is(CustomRoles.Terrorist))
                 {
                     if (Main.PlayerStates[pc.PlayerId].deathReason == PlayerState.DeathReason.Vote)
                     {
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.etc;
+                        pc.SetDeathReason(PlayerState.DeathReason.etc);
                     }
                     else
                     {
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                        pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                     }
                 }
                 else if (!pc.Data.IsDead)
                 {
-                    Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                    pc.SetDeathReason(PlayerState.DeathReason.Bombed);
                     Main.PlayerStates[pc.PlayerId].SetDead();
                     pc.RpcMurderPlayer(pc);
                     pc.SetRealKiller(terrorist.Object);
                 }
-            }
-            if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
-                CustomWinnerHolder.WinnerIds.Add(terrorist.PlayerId);
             }
         }
     }

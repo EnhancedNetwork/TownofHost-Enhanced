@@ -21,7 +21,7 @@ class HudManagerPatch
     public static GameObject TempLowerInfoText;
     public static void Postfix(HudManager __instance)
     {
-        if (!GameStates.IsModHost) return;
+        if (!GameStates.IsModHost || __instance == null) return;
 
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
@@ -338,6 +338,9 @@ class TaskPanelBehaviourPatch
                         AllText += $"\r\n\r\n</color><size=70%>{GetString("PressF1ShowMainRoleDes")}";
                         if (Main.PlayerStates.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var ps) && ps.SubRoles.Count >= 1)
                             AllText += $"\r\n{GetString("PressF2ShowAddRoleDes")}";
+                        AllText += $"\r\n{GetString("PressF3ShowRoleSettings")}";
+                        if (ps.SubRoles.Count >= 1)
+                            AllText += $"\r\n{GetString("PressF4ShowAddOnsSettings")}";
                         AllText += "</size>";
                     }
                     break;

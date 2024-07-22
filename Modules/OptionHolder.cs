@@ -61,6 +61,8 @@ public static class Options
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
     ];
 
+
+
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
     public static Dictionary<CustomRoles, float> roleSpawnChances;
@@ -199,6 +201,7 @@ public static class Options
 
     public static OptionItem SuffixMode;
     public static OptionItem HideHostText;
+    public static OptionItem HideAllTagsAndText;
     public static OptionItem HideGameSettings;
 
     public static OptionItem PlayerCanSetColor;
@@ -893,8 +896,6 @@ public static class Options
 
         Cyber.SetupCustomOptions();
 
-        DoubleShot.SetupCustomOption();
-
         Flash.SetupCustomOption();
 
         Lazy.SetupCustomOptions();
@@ -982,8 +983,6 @@ public static class Options
 
         Oiiai.SetupCustomOptions();
 
-        Rebound.SetupCustomOptions();
-
         Paranoia.SetupCustomOptions();
 
         Stubborn.SetupCustomOptions();
@@ -1026,8 +1025,6 @@ public static class Options
 
         Stealer.SetupCustomOption();
 
-        Swift.SetupCustomOption();
-
         /*
          * Tricky
          */
@@ -1043,7 +1040,7 @@ public static class Options
         Egoist.SetupCustomOption();
 
         SetupLoversRoleOptionsToggle(23600);
-
+        
         Reach.SetupCustomOptions();
 
         Rainbow.SetupCustomOptions();
@@ -1056,6 +1053,7 @@ public static class Options
 
         Glow.SetupCustomOptions();
 
+        Swift.SetupCustomOption();
 
         #endregion
 
@@ -1178,6 +1176,7 @@ public static class Options
         SuffixMode = StringOptionItem.Create(60300, "SuffixMode", suffixModes, 0, TabGroup.SystemSettings, true)
             .SetHeader(true);
         HideHostText = BooleanOptionItem.Create(60311, "HideHostText", false, TabGroup.SystemSettings, false);
+        HideAllTagsAndText = BooleanOptionItem.Create(60312, "HideAllTagsAndText", false, TabGroup.SystemSettings, false);
         HideGameSettings = BooleanOptionItem.Create(60310, "HideGameSettings", false, TabGroup.SystemSettings, false);
         //DIYGameSettings = BooleanOptionItem.Create(60320, "DIYGameSettings", false, TabGroup.SystemSettings, false);
         PlayerCanSetColor = BooleanOptionItem.Create(60330, "PlayerCanSetColor", false, TabGroup.SystemSettings, false);
@@ -1773,8 +1772,11 @@ public static class Options
             .SetColor(Color.yellow)
             .SetHeader(true);
 
+        DoubleShot.SetupCustomOption();
+
         Onbound.SetupCustomOptions();
 
+        Rebound.SetupCustomOptions();
 
 
         // Meeting Settings

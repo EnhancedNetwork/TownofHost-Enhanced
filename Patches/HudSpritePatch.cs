@@ -18,6 +18,7 @@ public static class HudSpritePatch
     private static Sprite Report;
     public static void Postfix(HudManager __instance)
     {
+        if (__instance == null) return;
         var player = PlayerControl.LocalPlayer;
         if (player == null || !Main.EnableCustomButton.Value || AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameStates.IsHideNSeek || !GameStates.IsModHost) return;
         if (!SetHudActivePatch.IsActive || !player.IsAlive()) return;

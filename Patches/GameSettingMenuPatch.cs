@@ -25,8 +25,17 @@ public class GameSettingMenuPatch
     [HarmonyPriority(Priority.First)]
     public static void StartPostfix(GameSettingMenu __instance)
     {
+        TabGroup[] ExludeList = Options.CurrentGameMode switch
+        {
+            CustomGameMode.HidenSeekTOHE => Enum.GetValues<TabGroup>().Skip(3).ToArray(),
+            CustomGameMode.FFA => Enum.GetValues<TabGroup>().Skip(2).ToArray(),
+            _ => []
+        };
+
+        // https://gyazo.com/a8f6ec93e44eca8e6febb7d2e91c3750 So much empy space, I think this definetevly calls for HnS roles 😼
+
         ModSettingsButtons = [];
-        foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
+        foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Except(ExludeList))
         {
             var button = Object.Instantiate(TemplateGameSettingsButton, __instance.GameSettingsButton.transform.parent);
             button.gameObject.SetActive(true);
@@ -46,13 +55,13 @@ public class GameSettingMenuPatch
             };
             label.fontStyle = FontStyles.UpperCase;
             label.text = $"<color={htmlcolor}>{GetString("TabGroup." + tab)}</color>";
-            
+
             _ = ColorUtility.TryParseHtmlString(htmlcolor, out Color tabColor);
             button.inactiveSprites.GetComponent<SpriteRenderer>().color = tabColor;
             button.activeSprites.GetComponent<SpriteRenderer>().color = tabColor;
             button.selectedSprites.GetComponent<SpriteRenderer>().color = tabColor;
 
-            Vector3 offset = new (0.0f, 0.5f * (((int)tab + 1) / 2), 0.0f);
+            Vector3 offset = new(0.0f, 0.5f * (((int)tab + 1) / 2), 0.0f);
             button.transform.localPosition = ((((int)tab + 1) % 2 == 0) ? ButtonPositionLeft : ButtonPositionRight) - offset;
             button.transform.localScale = ButtonSize;
 

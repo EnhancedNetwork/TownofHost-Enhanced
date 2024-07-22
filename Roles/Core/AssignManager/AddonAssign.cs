@@ -16,6 +16,8 @@ public static class AddonAssign
             case CustomRoles.LastImpostor:
                 return true;
             case CustomRoles.Madmate when Madmate.MadmateSpawnMode.GetInt() != 0:
+            case CustomRoles.Glow when GameStates.FungleIsActive:
+            //case CustomRoles.Torch when GameStates.FungleIsActive:
             case CustomRoles.Mare when GameStates.FungleIsActive:
                 return true;
         }
@@ -78,6 +80,9 @@ public static class AddonAssign
             }
         }
 
+        if (addonsList.Count > 2)
+            addonsList = addonsList.Shuffle(rd).ToList();
+
         Logger.Info($"Number enabled of add-ons (after priority): {addonsIsEnableList.Count}", "Check Add-ons Count");
 
         // Add addons randomly
@@ -96,9 +101,6 @@ public static class AddonAssign
         }
 
         Logger.Info($" Is Started", "Assign Add-ons");
-
-        if (addonsList.Count > 2)
-            addonsList = addonsList.Shuffle(rd).ToList();
 
         // Assign add-ons
         foreach (var addOn in addonsList.ToArray())

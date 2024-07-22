@@ -92,22 +92,4 @@ public static class CollectionExtensions
     /// </summary>
     public static byte First(this HashSet<byte> source)
         => source.ToArray().First();
-
-    /// <summary>
-    /// Get the line number where the exception occurred
-    /// </summary>
-    public static int GetLineNumber(this Exception ex)
-    {
-        var lineNumber = 0;
-        const string lineSearch = ":line ";
-        var index = ex.StackTrace.LastIndexOf(lineSearch);
-        if (index != -1)
-        {
-            var lineNumberText = ex.StackTrace[(index + lineSearch.Length)..];
-            if (int.TryParse(lineNumberText, out lineNumber))
-            {
-            }
-        }
-        return lineNumber;
-    }
 }

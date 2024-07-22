@@ -126,7 +126,7 @@ internal class Vampire : RoleBase
 
         if (target.IsAlive())
         {
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bite;
+            target.SetDeathReason(PlayerState.DeathReason.Bite);
             target.RpcMurderPlayer(target);
             target.SetRealKiller(vampire);
 

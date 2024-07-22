@@ -49,6 +49,7 @@ enum CustomRPC : byte // 194/255 USED
     SetFriendCode,
     SyncLobbyTimer,
     SyncPlayerSetting,
+    ShowChat,
 
     //Roles 
     SetBountyTarget,
@@ -380,7 +381,14 @@ internal class RPCHandlerPatch
             case CustomRPC.SetKillOrHex:
                 HexMaster.ReceiveRPC(reader, false);
                 break;
-
+            case CustomRPC.ShowChat:
+                var clientId = reader.ReadPackedUInt32();
+                var show = reader.ReadBoolean();
+                if (AmongUsClient.Instance.ClientId == clientId)
+                {
+                    HudManager.Instance.Chat.SetVisible(show);
+                }
+                break;
             case CustomRPC.SetCaptainTargetSpeed:
                 Captain.ReceiveRPCSetSpeed(reader);
                 break;

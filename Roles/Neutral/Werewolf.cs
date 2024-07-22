@@ -63,9 +63,9 @@ internal class Werewolf : RoleBase
                 if (player.Is(CustomRoles.Pestilence)) continue;
                 else if ((player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini)) && Mini.Age < 18) continue;
 
-                if (Vector2.Distance(killer.transform.position, player.transform.position) <= Werewolf.MaulRadius.GetFloat())
+                if (Vector2.Distance(killer.transform.position, player.transform.position) <= MaulRadius.GetFloat())
                 {
-                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Mauled;
+                    player.SetDeathReason(PlayerState.DeathReason.Mauled);
                     player.RpcMurderPlayer(player);
                     player.SetRealKiller(killer);
                 }

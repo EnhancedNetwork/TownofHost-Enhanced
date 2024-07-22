@@ -116,7 +116,8 @@ internal class Mastermind : RoleBase
             {
                 ManipulatedPlayers.Remove(x.Key);
                 TempKCDs.Remove(x.Key);
-                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+
+                player.SetDeathReason(PlayerState.DeathReason.Suicide);
                 player.RpcMurderPlayer(player);
                 player.SetRealKiller(mastermind);
                 RPC.PlaySoundRPC(mastermind.PlayerId, Sounds.KillSound);
@@ -135,7 +136,7 @@ internal class Mastermind : RoleBase
             var pc = GetPlayerById(x.Key);
             if (pc.IsAlive())
             {
-                Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                 pc.RpcMurderPlayer(pc);
                 pc.SetRealKiller(GetPlayerById(playerIdList.First()));
             }

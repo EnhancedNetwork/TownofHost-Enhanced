@@ -3,7 +3,6 @@ using AmongUs.GameOptions;
 using InnerNet;
 using System;
 using TMPro;
-using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
@@ -22,6 +21,7 @@ public class GameStartManagerPatch
 {
     public static float timer = 600f;
     private static Vector3 GameStartTextlocalPosition;
+    private static TextMeshPro warningText;
     private static TextMeshPro timerText;
     private static PassiveButton cancelButton;
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Start))]
@@ -38,6 +38,11 @@ public class GameStartManagerPatch
             HideName.text = ColorUtility.TryParseHtmlString(Main.HideColor.Value, out _)
                     ? $"<color={Main.HideColor.Value}>{Main.HideName.Value}</color>"
                     : $"<color={Main.ModColor}>{Main.HideName.Value}</color>";
+
+            warningText = Object.Instantiate(__instance.GameStartText, __instance.transform.parent);
+            warningText.name = "WarningText";
+            warningText.transform.localPosition = new(0f, __instance.transform.localPosition.y + 3f, -1f);
+            warningText.gameObject.SetActive(false);
 
             if (AmongUsClient.Instance.AmHost)
             {
@@ -209,21 +214,23 @@ public class GameStartManagerPatch
                         warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.AutoExitAtMismatchedVersion"), $"<color={Main.ModColor}>{Main.ModName}</color>", Math.Round(5 - exitTimer).ToString()));
                 }
             }
-            if (warningMessage != "")
+            if (warningMessage == "")
             {
-                __instance.GameStartText.text = warningMessage;
-                __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition + Vector3.up * 2;
+                warningText.gameObject.SetActive(false);
             }
             else
             {
-                if (AmongUsClient.Instance.AmHost)
-                {
-                    __instance.GameStartText.transform.localPosition = new Vector3(__instance.GameStartText.transform.localPosition.x, 2f, __instance.GameStartText.transform.localPosition.z);
-                }
-                else
-                {
-                    __instance.GameStartText.transform.localPosition = GameStartTextlocalPosition;
-                }
+                warningText.text = warningMessage;
+                warningText.gameObject.SetActive(true);
+            }
+
+            if (AmongUsClient.Instance.AmHost)
+            {
+                __instance.GameStartText.transform.localPosition = new Vector3(__instance.GameStartText.transform.localPosition.x, 2f, __instance.GameStartText.transform.localPosition.z);
+            }
+            else
+            {
+                __instance.GameStartText.transform.localPosition = GameStartTextlocalPosition;
             }
 
             __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");

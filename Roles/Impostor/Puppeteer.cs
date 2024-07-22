@@ -145,8 +145,7 @@ internal class Puppeteer : RoleBase
 
                         if (!puppet.Is(CustomRoles.Pestilence) && PuppeteerDoubleKills.GetBool())
                         {
-                            
-                            Main.PlayerStates[puppet.PlayerId].deathReason = PlayerState.DeathReason.Drained;
+                            puppet.SetDeathReason(PlayerState.DeathReason.Drained);
                             puppet.RpcMurderPlayer(puppet);
                             puppet.SetRealKiller(Utils.GetPlayerById(puppeteerId));
                         }

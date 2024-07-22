@@ -441,6 +441,17 @@ static class ExtendedPlayerControl
             }
         }
     }
+    public static void RpcSetSpecificScanner(this PlayerControl target, PlayerControl seer, bool IsActive)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        byte cnt = ++PlayerControl.LocalPlayer.scannerCount;
+
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, seer.GetClientId());
+        messageWriter.Write(IsActive);
+        messageWriter.Write(cnt);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
 
     public static void RpcSpecificVanish(this PlayerControl player, PlayerControl seer)
     {
@@ -1278,7 +1289,15 @@ static class ExtendedPlayerControl
         return null;
     }
 
-    //汎用
+    /// <summary>
+    /// Make sure to call PlayerState.Deathreason and not Vanilla Deathreason
+    /// </summary>
+    public static void SetDeathReason(this PlayerControl target, PlayerState.DeathReason reason) => target.PlayerId.SetDeathReason(reason);
+    public static void SetDeathReason(this byte targetId, PlayerState.DeathReason reason)
+    {
+        Main.PlayerStates[targetId].deathReason = reason;
+    }
+
     public static bool Is(this PlayerControl target, CustomRoles role) =>
         role > CustomRoles.NotAssigned ? target.GetCustomSubRoles().Contains(role) : target.GetCustomRole() == role;
     public static bool Is(this PlayerControl target, Custom_Team type) { return target.GetCustomRole().GetCustomRoleTeam() == type; }

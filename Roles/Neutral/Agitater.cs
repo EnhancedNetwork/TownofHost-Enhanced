@@ -102,7 +102,7 @@ internal class Agitater : RoleBase
                 var pc = Utils.GetPlayerById(CurrentBombedPlayer);
                 if (pc != null && pc.IsAlive() && killer != null)
                 {
-                    Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
+                    CurrentBombedPlayer.SetDeathReason(PlayerState.DeathReason.Bombed);
                     pc.RpcMurderPlayer(pc);
                     pc.SetRealKiller(killer);
                     Logger.Info($"{killer.GetNameWithRole()} bombed {pc.GetNameWithRole()} - bomb cd complete", "Agitater");
@@ -120,8 +120,8 @@ internal class Agitater : RoleBase
         var target = Utils.GetPlayerById(CurrentBombedPlayer);
         var killer = Utils.GetPlayerById(playerIdList.First());
         if (target == null || killer == null) return;
-        
-        Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
+
+        CurrentBombedPlayer.SetDeathReason(PlayerState.DeathReason.Bombed);
         Main.PlayerStates[CurrentBombedPlayer].SetDead();
         target.RpcExileV2();
         target.SetRealKiller(killer);
@@ -167,7 +167,7 @@ internal class Agitater : RoleBase
     private void PassBomb(PlayerControl player, PlayerControl target)
     {
         if (!AgitaterHasBombed) return;
-        if (target.Data.IsDead) return;
+        if (!target.IsAlive()) return;
 
         var now = Utils.GetTimeStamp();
         if (now - CurrentBombedPlayerTime < PassCooldown.GetFloat()) return;
