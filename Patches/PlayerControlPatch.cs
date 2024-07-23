@@ -1241,18 +1241,6 @@ class FixedUpdateInNormalGamePatch
 
                 string RealName = target.GetRealName();
 
-                if (seer != target && seer.IsAlive())
-                    target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
-
-                // if Victim to Doppelganger or is Doppelganger
-                if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
-                {
-                    if (target.Is(CustomRoles.Doppelganger) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                        RealName = $"\n{RealName}\r\n<size=75%>{Utils.ColorString(Color.gray, $"({Doppelganger.TrueNames[target.PlayerId]})")}</size>";
-                    else if (Doppelganger.CheckDoppelVictim(target.PlayerId) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                        RealName = Doppelganger.TrueNames[target.PlayerId];
-                }
-
                 Mark.Clear();
                 Suffix.Clear();
 
@@ -1334,16 +1322,6 @@ class FixedUpdateInNormalGamePatch
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
                     ? $" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : string.Empty;
-
-                // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
-                if (seer.Data.IsDead && seer != target && !target.Data.IsDead && !target.Is(CustomRoles.Doppelganger) && !Doppelganger.CurrentVictimCanSeeRolesAsDead.GetBool() && Doppelganger.CurrentIdToSwap == seer.PlayerId)
-                {
-                    RealName = target.GetRealName();
-                    DeathReason = string.Empty;
-                    RoleText.text = string.Empty;
-                    Suffix.Clear();
-                    Mark.Clear();
-                }
 
                 // code from EHR (Endless Host Roles by: Gurge44)
                 var currentText = target.cosmetics.nameText.text;

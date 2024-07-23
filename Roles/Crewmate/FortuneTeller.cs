@@ -108,8 +108,6 @@ internal class FortuneTeller : RoleBase
         if (didVote.Contains(player.PlayerId)) return;
         didVote.Add(player.PlayerId);
 
-        target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
-
         if (AbilityLimit < 1)
         {
             SendMessage(GetString("FortuneTellerCheckReachLimit"), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));

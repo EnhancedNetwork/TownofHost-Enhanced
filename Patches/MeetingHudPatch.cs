@@ -958,13 +958,6 @@ class MeetingHudStartPatch
             // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
             var player = PlayerControl.LocalPlayer;
             var target = Utils.GetPlayerById(pva.TargetPlayerId);
-            if (target != null && player != null)
-            {
-                if (player.Data.IsDead && player != target && !target.Data.IsDead && !target.Is(CustomRoles.Doppelganger) && !Doppelganger.CurrentVictimCanSeeRolesAsDead.GetBool() && Doppelganger.CurrentIdToSwap == player.PlayerId)
-                {
-                    roleTextMeeting.text = string.Empty;
-                }
-            }
             
             if (suffixBuilder.Length > 0)
             {
@@ -1042,15 +1035,6 @@ class MeetingHudStartPatch
             var sb = new StringBuilder();
 
             pva.NameText.text = pva.NameText.text.ApplyNameColorData(seer, target, true);
-            
-            // if Victim to Doppelganger or is Doppelganger
-            if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
-            {
-                if (target.Is(CustomRoles.Doppelganger) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                    pva.NameText.text = $"{Utils.ColorString(Color.gray, $"<size=75%>({Doppelganger.TrueNames[target.PlayerId]})</size>")}\r\n{pva.NameText.text.ApplyNameColorData(seer, target, true)}\n\n";
-                else if (Doppelganger.CheckDoppelVictim(target.PlayerId) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                    pva.NameText.text = Doppelganger.TrueNames[target.PlayerId].ApplyNameColorData(seer, target, true);
-            }
 
             // Guesser Mode //
             if (Options.GuesserMode.GetBool())
@@ -1117,13 +1101,6 @@ class MeetingHudStartPatch
                 }
             }
             //add checks for both seer and target's subrole, maybe one day we can use them...
-
-            // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
-            if (seer.Data.IsDead && seer != target && !target.Data.IsDead && !target.Is(CustomRoles.Doppelganger) && !Doppelganger.CurrentVictimCanSeeRolesAsDead.GetBool() && Doppelganger.CurrentIdToSwap == seer.PlayerId)
-            {
-                pva.NameText.text = target.GetRealName();
-                sb.Clear();
-            }
 
             pva.NameText.text += sb.ToString();
             pva.ColorBlindName.transform.localPosition -= new Vector3(1.35f, 0f, 0f);
