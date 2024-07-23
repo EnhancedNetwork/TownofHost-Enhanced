@@ -371,12 +371,15 @@ public abstract class RoleBase
     public virtual int AddRealVotesNum(PlayerVoteArea PVA) => 0;
 
     /// <summary>
-    /// Set text for Kill/Shapeshift/Report/Vent/Protect button
+    /// Set text for Kill/Shapeshift/Vanish/Report/Vent/Protect/Track button
     /// </summary>
     public virtual void SetAbilityButtonText(HudManager hud, byte playerId)
     { }
 
     public virtual Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => null;
+    /// <summary>
+    /// Set custom sprite for Shapeshift/Vanish/Vent(Engineer)/Protect/Track button
+    /// </summary>
     public virtual Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => null;
     public virtual Sprite ImpostorVentButtonSprite(PlayerControl player) => null;
     public virtual Sprite ReportButtonSprite { get; }

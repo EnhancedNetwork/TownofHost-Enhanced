@@ -162,5 +162,5 @@ internal class Vampire : RoleBase
     {
         hud.KillButton?.OverrideText(GetString("VampireBiteButtonText"));
     }
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Bite");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Bite");
 }

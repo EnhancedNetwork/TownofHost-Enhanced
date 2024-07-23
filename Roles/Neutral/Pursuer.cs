@@ -107,5 +107,5 @@ internal class Pursuer : RoleBase
     {
         hud.KillButton.OverrideText(GetString("PursuerButtonText"));
     }
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Pursuer");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Pursuer");
 }
