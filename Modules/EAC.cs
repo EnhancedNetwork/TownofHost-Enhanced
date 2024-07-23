@@ -33,7 +33,7 @@ internal class EAC
     }
     public static bool PlayerControlReceiveRpc(PlayerControl pc, byte callId, MessageReader reader)
     {
-        /* Disable eac until NikoCat233 rework it */
+        // nvm, it works so im not doing more changes
 
         if (!AmongUsClient.Instance.AmHost) return false;
         if (RoleBasisChanger.IsChangeInProgress) return false;
@@ -44,50 +44,34 @@ internal class EAC
             var rpc = (RpcCalls)callId;
             switch (rpc)
             {
-                //case RpcCalls.CheckName:
-                //    string name = sr.ReadString();
-                //    if (sr.BytesRemaining > 0 && sr.ReadBoolean()) return false;
-                //    if (
-                //        ((name.Contains("<size") || name.Contains("size>")) && name.Contains('?') && !name.Contains("color")) ||
-                //        name.Length > 160 ||
-                //        name.Count(f => f.Equals("\"\\n\"")) > 3 ||
-                //        name.Count(f => f.Equals("\n")) > 3 ||
-                //        name.Count(f => f.Equals("\r")) > 3 ||
-                //        name.Contains("░") ||
-                //        name.Contains("▄") ||
-                //        name.Contains("█") ||
-                //        name.Contains("▌") ||
-                //        name.Contains("▒") ||
-                //        name.Contains("习近平")
-                //        )
-                //    {
-                //        WarnHost();
-                //        Report(pc, "非法检查游戏名称");
-                //        Logger.Fatal($"玩家非法检查名称【{pc.GetClientId()}:{pc.GetRealName()}】，已驳回", "EAC");
-                //        return true;
-                //    }
-                //    break;
-                //case RpcCalls.SetName:
-                //    if (!GameStates.IsLobby)
-                //    {
-                //        WarnHost();
-                //        Report(pc, "Bad SetName rpc");
-                //        HandleCheat(pc, "Bad SetName rpc");
-                //        Logger.Fatal($"非法设置玩家【{pc.GetClientId()}:{pc.GetRealName()}】的游戏名称，已驳回", "EAC");
-                //        return true;
-                //    }
-                //    break;
-                case RpcCalls.SetRole:
-                    var role = (RoleTypes)sr.ReadUInt16();
-                    var canOverrideRole = sr.ReadBoolean();
-                    if (GameStates.IsLobby && (role is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost))
+                // Check name is now done in PlayerControl.CheckName
+                case RpcCalls.CheckName:
+                    if (!GameStates.IsLobby)
                     {
                         WarnHost();
-                        Report(pc, "非法设置状态为幽灵");
-                        Logger.Fatal($"非法设置玩家【{pc.GetClientId()}:{pc.GetRealName()}】的状态为幽灵，已驳回", "EAC");
+                        Report(pc, "CheckName out of Lobby");
+                        HandleCheat(pc, "CheckName out of Lobby");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】CheckName out of lobby，已驳回", "EAC");
                         return true;
                     }
                     break;
+                /*
+                case RpcCalls.SetName:
+                    //Only sent by host
+                    WarnHost();
+                    Report(pc, "Directly SetName");
+                    HandleCheat(pc, "Directly SetName");
+                    Logger.Fatal($"Directly SetName【{pc.GetClientId()}:{pc.GetRealName()}】已驳回", "EAC");
+                    return true;
+                case RpcCalls.SetRole:
+                    //Only sent by host
+                    WarnHost();
+                    Report(pc, "Directly SetRole");
+                    HandleCheat(pc, "Directly SetRole");
+                    Logger.Fatal($"Directly SetRole for【{pc.GetClientId()}:{pc.GetRealName()}】已驳回", "EAC");
+                    break;
+                */
+                // Disabled due to host sending these rpcs to itself using custom sender
                 case RpcCalls.SendChat:
                     var text = sr.ReadString();
                     if ((
@@ -141,35 +125,23 @@ internal class EAC
                         }
                     }
                     break;
-                //case RpcCalls.SetColor:
-                //case RpcCalls.CheckColor:
-                //    var color = sr.ReadByte();
-                //    if (!GameStates.IsLobby)
-                //    {
-                //        WarnHost();
-                //        Report(pc, "Set color in game");
-                //        HandleCheat(pc, "Set color in game");
-                //        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内设置颜色，已驳回", "EAC");
-                //        return true;
-                //    }
-                //    if (pc.Data.DefaultOutfit.ColorId != -1 &&
-                //        (Main.AllPlayerControls.Count(x => x.Data.DefaultOutfit.ColorId == color) >= 5
-                //        || color < 0 || color > 18))
-                //    {
-                //        WarnHost();
-                //        Report(pc, "非法设置颜色");
-                //        AmongUsClient.Instance.KickPlayer(pc.GetClientId(), false);
-                //        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置颜色，已驳回", "EAC");
-                //        return true;
-                //    }
-                //    if (pc.AmOwner)
-                //    {
-                //        WarnHost();
-                //        Report(pc, "非法设置房主颜色");
-                //        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置房主颜色，已驳回", "EAC");
-                //        return true;
-                //    }
-                //    break;
+                case RpcCalls.CheckColor:
+                    if (!GameStates.IsLobby)
+                    {
+                        WarnHost();
+                        Report(pc, "CheckColor out of Lobby");
+                        HandleCheat(pc, "CheckColor out of Lobby");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】check color out of lobby，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
+                // Some mods may add custom colors. Skip check color check
+                case RpcCalls.SetColor:
+                    // Only sent by Host
+                    Report(pc, "Directly SetColor");
+                    HandleCheat(pc, "Directly SetColor");
+                    Logger.Fatal($"Directly SetColor【{pc.GetClientId()}:{pc.GetRealName()}】已驳回", "EAC");
+                    return true;
                 case RpcCalls.CheckMurder:
                     if (GameStates.IsLobby)
                     {
@@ -208,15 +180,37 @@ internal class EAC
                     }
                     break;
                 case RpcCalls.Shapeshift:
-                    Report(pc, "Directly Shapeshift");
-                    var swriter = AmongUsClient.Instance.StartRpcImmediately(pc.NetId, (byte)RpcCalls.Shapeshift, SendOption.Reliable, -1);
-                    swriter.WriteNetObject(pc);
-                    swriter.Write(false);
-                    AmongUsClient.Instance.FinishRpcImmediately(swriter);
-                    HandleCheat(pc, "Directly Shapeshift");
-                    Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接变形，已驳回", "EAC");
+                    {
+                        // Only be sent by host
+                        Report(pc, "Directly Shapeshift");
+                        MessageWriter swriter = AmongUsClient.Instance.StartRpcImmediately(pc.NetId, (byte)RpcCalls.Shapeshift, SendOption.Reliable, -1);
+                        swriter.WriteNetObject(pc);
+                        swriter.Write(false);
+                        AmongUsClient.Instance.FinishRpcImmediately(swriter);
+                        HandleCheat(pc, "Directly Shapeshift");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接变形，已驳回", "EAC");
+                        return true;
+                    }
+                // Skip Check Phantom Rpcs bcz I dont know what the mod will do with phantom
+                case RpcCalls.StartVanish:
+                case RpcCalls.StartAppear:
+                    {
+                        var sreason = "Directly Phantom Rpcs " + rpc.ToString();
+                        // Only be sent by host
+                        Report(pc, sreason);
+                        var swriter = AmongUsClient.Instance.StartRpcImmediately(pc.NetId, (byte)RpcCalls.StartAppear, SendOption.Reliable, -1);
+                        swriter.Write(false);
+                        AmongUsClient.Instance.FinishRpcImmediately(swriter);
+                        HandleCheat(pc, sreason);
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()} {sreason}，已驳回", "EAC");
+                        return true;
+                    }
+                case RpcCalls.SendChatNote:
+                    // Only sent by Host
+                    Report(pc, "Directly Send ChatNote");
+                    HandleCheat(pc, "Directly Send ChatNote");
+                    Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接Send ChatNote，已驳回", "EAC");
                     return true;
-
             }
             switch (callId)
             {
@@ -331,13 +325,6 @@ internal class EAC
                         WarnHost();
                         Report(pc, "Change skin in game");
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内改皮肤，已驳回", "EAC");
-                        return true;
-                    }
-                    if (pc.AmOwner)
-                    {
-                        WarnHost();
-                        Report(pc, "Change Host skin");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】改房主皮肤，已驳回", "EAC");
                         return true;
                     }
                     break;
