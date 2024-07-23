@@ -121,7 +121,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Virus:
-                        if (pc.Is(CustomRoles.Contagious) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Contagious) || pc.Is(CustomRoles.Virus)) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
