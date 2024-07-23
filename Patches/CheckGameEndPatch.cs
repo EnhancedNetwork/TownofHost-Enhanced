@@ -490,7 +490,7 @@ class GameEndCheckerForNormal
         // Start End Game
         GameManager.Instance.RpcEndGame(reason, false);
     }
-    private const float EndGameDelay = 0.2f;
+    private const float EndGameDelay = 0.3f;
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
     public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
@@ -579,7 +579,6 @@ class GameEndCheckerForNormal
                 else if (crewCount > impCount) return false; // crewmate is more than imp (the game must continue)
                 return true;
             }
-
             else
             {
                 if (impCount >= 1) return false; // Both Imp and NK are alive, the game must continue
@@ -590,7 +589,7 @@ class GameEndCheckerForNormal
                     var winnnerLength = winners.Length;
                     if (winnnerLength == 1)
                     {
-                        var winnerRole = winners[0].Key.GetNeutralCustomRoleFromCountType();
+                        var winnerRole = winners.First().Key.GetNeutralCustomRoleFromCountType();
                         reason = GameOverReason.ImpostorByKill;
                         ResetAndSetWinner(winnerRole.GetNeutralCustomWinnerFromRole());
                         WinnerRoles.Add(winnerRole);
