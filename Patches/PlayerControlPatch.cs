@@ -1111,10 +1111,9 @@ class FixedUpdateInNormalGamePatch
             KillTimerManager.FixedUpdate(player);
 
             //Mini's count down needs to be done outside if intask if we are counting meeting time
-            if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
+            if (GameStates.IsInGame && player.GetRoleClass() is Mini min && !player.Data.IsDead)
             {
-                if (!player.Data.IsDead)
-                    min.OnFixedUpdates(player);
+                min.OnFixedUpdates(player);
             }
 
             if (GameStates.IsInTask)

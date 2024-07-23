@@ -59,44 +59,53 @@ internal class Bloodmoon : RoleBase
             return true;
         }
 
-        if (AbilityLimit > 0 
-            && killer.RpcCheckAndMurder(target, true)
-            && !PlayerDie.ContainsKey(target.PlayerId))
+        bool canMurder = AbilityLimit > 0 && killer.RpcCheckAndMurder(target, true);
+        bool targetNotRecorded = !PlayerDie.ContainsKey(target.PlayerId);
+
+        if (canMurder && targetNotRecorded)
         {
-            PlayerDie.Add(target.PlayerId, TimeTilDeath.GetInt());
-            LastTime.Add(target.PlayerId, GetTimeStamp());
+            PlayerDie[target.PlayerId] = TimeTilDeath.GetInt();
+            LastTime[target.PlayerId] = GetTimeStamp();
             killer.RpcResetAbilityCooldown();
             AbilityLimit--;
             SendSkillRPC();
+            return false;
         }
+
         return false;
     }
-    public override string GetProgressText(byte playerId, bool cooms) => ColorString(AbilityLimit > 0  ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    public override string GetProgressText(byte playerId, bool cooms) => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     private void OnFixedUpdateOther(PlayerControl player)
     {
-        var IsMeeting = GameStates.IsMeeting;
-        var playerid = player.PlayerId;
-        if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= GetTimeStamp() && !IsMeeting)
+        var playerId = player.PlayerId;
+
+        if (!GameStates.IsMeeting && LastTime.TryGetValue(playerId, out var lastTime))
         {
-            LastTime[playerid] = GetTimeStamp();
-            PlayerDie[playerid]--;
-            if (PlayerDie[playerid] <= 0)
+            var currentTime = GetTimeStamp();
+
+            if (lastTime + 1 <= currentTime)
             {
-                PlayerDie.Remove(playerid);
-                LastTime.Remove(playerid);
-                player.SetDeathReason(PlayerState.DeathReason.BloodLet);
-                player.RpcMurderPlayer(player);
-                player.SetRealKiller(_Player);
+                LastTime[playerId] = currentTime;
+                if (--PlayerDie[playerId] <= 0)
+                {
+                    PlayerDie.Remove(playerId);
+                    LastTime.Remove(playerId);
+                    player.SetDeathReason(PlayerState.DeathReason.BloodLet);
+                    player.RpcMurderPlayer(player);
+                    player.SetRealKiller(_Player);
+                }
             }
         }
     }
     public override void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
     {
-        if (LastTime.ContainsKey(DeadPlayer.PlayerId))
-            LastTime.Remove(DeadPlayer.PlayerId);
+        var DeadPlayerId = DeadPlayer.PlayerId;
 
-        if (PlayerDie.ContainsKey(DeadPlayer.PlayerId))
-            PlayerDie.Remove(DeadPlayer.PlayerId);
+        if (LastTime.ContainsKey(DeadPlayerId))
+            LastTime.Remove(DeadPlayerId);
+
+        if (PlayerDie.ContainsKey(DeadPlayerId))
+            PlayerDie.Remove(DeadPlayerId);
     }
 
     public override string GetLowerTextOthers(PlayerControl seer, PlayerControl player = null, bool isForMeeting = false, bool isForHud = false)

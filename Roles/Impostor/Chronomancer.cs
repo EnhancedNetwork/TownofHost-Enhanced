@@ -137,28 +137,34 @@ internal class Chronomancer : RoleBase
     {
         if (GameStates.IsMeeting) return;
 
-        if (LastCD != GetCharge())
+        var currentTimeStamp = Utils.GetTimeStamp();
+        var currentCharge = GetCharge();
+
+        if (LastCD != currentCharge)
         {
-            LastCD = GetCharge();
+            LastCD = currentCharge;
             Utils.NotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
         }
 
-        if (ChargedTime != FullCharge
-            && now + 1 <= Utils.GetTimeStamp() && !IsInMassacre)
+        bool isTimeToUpdate = currentTimeStamp + 1 <= now;
+        if (ChargedTime != FullCharge && isTimeToUpdate && !IsInMassacre)
         {
-            now = Utils.GetTimeStamp();
+            now = currentTimeStamp;
             ChargedTime++;
         }
-        else if (IsInMassacre && ChargedTime > 0 && countnowF >= LastNowF)
+        else if (IsInMassacre)
         {
-            LastNowF = countnowF + Dtime.GetFloat();
-            ChargedTime--;
-        }
+            if (ChargedTime > 0 && countnowF >= LastNowF)
+            {
+                LastNowF = countnowF + Dtime.GetFloat();
+                ChargedTime--;
+            }
 
-        if (IsInMassacre && ChargedTime < 1)
-        {
-            IsInMassacre = false;
-            pc.MarkDirtySettings();
+            if (ChargedTime < 1)
+            {
+                IsInMassacre = false;
+                pc.MarkDirtySettings();
+            }
         }
 
         countnowF += Time.deltaTime;

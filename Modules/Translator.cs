@@ -193,25 +193,26 @@ public static class Translator
     {
         if (vanilla)
         {
-            string nameToFind = s;
-            if (Enum.TryParse(nameToFind, out StringNames text))
+            if (Enum.TryParse(s, out StringNames text))
             {
                 return DestroyableSingleton<TranslationController>.Instance.GetString(text);
             }
-            else
-            {
-                return showInvalid ? $"<INVALID:{nameToFind}> (vanillaStr)" : nameToFind;
-            }
+            return showInvalid ? $"<INVALID:{s}> (vanillaStr)" : s;
         }
+
         var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (console) langId = SupportedLangs.English;
         if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
         string str = GetString(s, langId, showInvalid);
+
         if (replacementDic != null)
+        {
             foreach (var rd in replacementDic)
             {
                 str = str.Replace(rd.Key, rd.Value);
             }
+        }
+
         return str;
     }
     public static bool TryGetStrings(string strItem, out string[] s) 
@@ -259,27 +260,34 @@ public static class Translator
 
     public static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
     {
-        var res = showInvalid ? $"<INVALID:{str}>" : str;
         try
         {
-            if (translateMaps.TryGetValue(str, out var dic) && (!dic.TryGetValue((int)langId, out res) || res == "" || (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese)))) //strに該当する&無効なlangIdかresが空
+            if (!translateMaps.TryGetValue(str, out var dic) ||
+                !dic.TryGetValue((int)langId, out var res) ||
+                string.IsNullOrEmpty(res) ||
+                (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese)))
             {
-                if (langId == SupportedLangs.English) res = $"*{str}";
-                else res = GetString(str, SupportedLangs.English);
+                if (langId != SupportedLangs.English)
+                {
+                    return GetString(str, SupportedLangs.English, showInvalid);
+                }
+                return showInvalid ? $"<INVALID:{str}>" : $"*{str}";
             }
-            if (!translateMaps.ContainsKey(str)) //translateMapsにない場合、StringNamesにあれば取得する
+
+            if (!translateMaps.ContainsKey(str))
             {
-                var stringNames = EnumHelper.GetAllValues<StringNames>().Where(x => x.ToString() == str).ToArray();
-                if (stringNames != null && stringNames.Any())
-                    res = GetString(stringNames.FirstOrDefault());
+                var stringNames = EnumHelper.GetAllValues<StringNames>().FirstOrDefault(x => x.ToString() == str);
+                return GetString(stringNames.ToString());
             }
+
+            return res;
         }
         catch (Exception Ex)
         {
             Logger.Fatal($"Error oucured at [{str}] in String.csv", "Translator");
             Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
         }
-        return res;
+        return showInvalid ? $"<INVALID:{str}>" : $"*{str}";
     }
     public static string GetString(StringNames stringName)
         => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));

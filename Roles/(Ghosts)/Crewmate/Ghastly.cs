@@ -66,88 +66,92 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 return false;
             }
 
-            var killer = killertarget.Item1;
-            var Target = killertarget.Item2;
+            var (killer, targetPlayer) = killertarget;
 
-            if (!KillerIsChosen && !CheckConflicts(target))
+            if (!KillerIsChosen)
             {
-                angel.Notify(GetString("GhastlyCannotPossessTarget"));
-                return false;
+                if (CheckConflicts(target))
+                {
+                    angel.Notify(GetString("GhastlyCannotPossessTarget"));
+                    return false;
+                }
+
+                if (target.PlayerId != killer)
+                {
+                    TargetArrow.Remove(killer, targetPlayer);
+                    LastTime.Remove(killer);
+                    killer = target.PlayerId;
+                    targetPlayer = byte.MaxValue;
+                    KillerIsChosen = true;
+
+                    angel.Notify($"\n{GetString("GhastlyChooseTarget")}\n");
+                }
+                else
+                {
+                    angel.Notify(GetString("GhastlyCannotPossessTarget"));
+                    return false;
+                }
             }
-
-            if (!KillerIsChosen && target.PlayerId != killer)
+            else if (targetPlayer == byte.MaxValue && target.PlayerId != killer)
             {
-                TargetArrow.Remove(killer, Target);
-                LastTime.Remove(killer);
-                killer = target.PlayerId;
-                Target = byte.MaxValue;
-                KillerIsChosen = true;
-
-                angel.Notify($"\n{GetString("GhastlyChooseTarget")}\n");
-            }
-            else if (KillerIsChosen && Target == byte.MaxValue && target.PlayerId != killer)
-            {
-                Target = target.PlayerId;
+                targetPlayer = target.PlayerId;
                 AbilityLimit--;
                 SendSkillRPC();
-                LastTime.Add(killer, GetTimeStamp());
+                LastTime[killer] = GetTimeStamp();
 
                 KillerIsChosen = false;
                 GetPlayerById(killer)?.Notify(GetString("GhastlyYouvePosses"));
                 angel.Notify($"\n<size=65%>〘{string.Format(GetString("GhastlyPossessedUser"), "</size>" + GetPlayerById(killer).GetRealName())}<size=65%> 〙</size>\n");
 
-                TargetArrow.Add(killer, Target);
+                TargetArrow.Add(killer, targetPlayer);
                 angel.RpcGuardAndKill(target);
                 angel.RpcResetAbilityCooldown();
 
-                Logger.Info($" chosen {target.GetRealName()} for : {GetPlayerById(killer).GetRealName()}", "GhastlyTarget");
-            }
-            else if (target.PlayerId == killer)
-            {
-                angel.Notify(GetString("GhastlyCannotPossessTarget"));
+                Logger.Info($"chosen {target.GetRealName()} for: {GetPlayerById(killer).GetRealName()}", "GhastlyTarget");
             }
 
-            killertarget = (killer, Target);
+            killertarget = (killer, targetPlayer);
 
             return false;
         }
-        private bool CheckConflicts(PlayerControl target)
-        {
-            return target != null && (!GhastlyKillAllies.GetBool() || target.GetCountTypes() != _Player.GetCountTypes());
-        }
+
+        private bool CheckConflicts(PlayerControl target) => target == null || (GhastlyKillAllies.GetBool() && target.GetCountTypes() == _Player.GetCountTypes());
+
         public override void OnFixedUpdate(PlayerControl pc)
         {
             var speed = Main.AllPlayerSpeed[pc.PlayerId];
-            if (speed != GhastlySpeed.GetFloat())
+            var ghastlySpeed = GhastlySpeed.GetFloat();
+            if (speed != ghastlySpeed)
             {
-                Main.AllPlayerSpeed[pc.PlayerId] = GhastlySpeed.GetFloat();
+                Main.AllPlayerSpeed[pc.PlayerId] = ghastlySpeed;
                 pc.MarkDirtySettings();
             }
         }
+
         public void OnFixUpdateOthers(PlayerControl player)
         {
-            if (killertarget.Item1 == player.PlayerId 
+            if (killertarget.Item1 == player.PlayerId
                 && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= GetTimeStamp())
             {
-                _Player?.Notify(string.Format($"\n{ GetString("GhastlyExpired")}\n", player.GetRealName()));
+                _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", player.GetRealName()));
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(player.PlayerId);
                 KillerIsChosen = false;
                 killertarget = (byte.MaxValue, byte.MaxValue);
             }
-
         }
+
         public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
         {
-            var tuple = killertarget;
-            if (tuple.Item1 == killer.PlayerId && tuple.Item2 != byte.MaxValue)
+            var (killerId, targetId) = killertarget;
+            if (killerId == killer.PlayerId && targetId != byte.MaxValue)
             {
-                if (tuple.Item2 != target.PlayerId)
+                if (targetId != target.PlayerId)
                 {
                     killer.Notify(GetString("GhastlyNotUrTarget"));
                     return true;
                 }
-                else 
+                else
                 {
                     _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", killer.GetRealName()));
                     TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
@@ -161,11 +165,10 @@ namespace TOHE.Roles._Ghosts_.Crewmate
 
         public override string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
         {
-            var IsMeeting = GameStates.IsMeeting || isForMeeting;
-            if (IsMeeting || (seer != seen && seer.IsAlive())) return "";
+            var isMeeting = GameStates.IsMeeting || isForMeeting;
+            if (isMeeting || (seer != seen && seer.IsAlive())) return "";
 
-            var killer = killertarget.Item1;
-            var target = killertarget.Item2;
+            var (killer, target) = killertarget;
 
             if (killer == seen.PlayerId && target != byte.MaxValue)
             {
@@ -173,27 +176,25 @@ namespace TOHE.Roles._Ghosts_.Crewmate
                 var tar = GetPlayerById(target).GetRealName();
                 if (tar == null) return "";
 
-                var colorstring = ColorString(GetRoleColor(CustomRoles.Ghastly), "<alpha=#88>" + tar + arrows);
-                return colorstring;
+                return ColorString(GetRoleColor(CustomRoles.Ghastly), $"<alpha=#88>{tar}{arrows}");
             }
-
 
             return "";
         }
-        public override void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+
+        public override void OnOtherTargetsReducedToAtoms(PlayerControl deadPlayer)
         {
-            var tuple = killertarget;
-            if (DeadPlayer.PlayerId == tuple.Item1 || DeadPlayer.PlayerId == tuple.Item2)
+            var (killerId, targetId) = killertarget;
+            if (deadPlayer.PlayerId == killerId || deadPlayer.PlayerId == targetId)
             {
                 _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", Utils.GetPlayerById(killertarget.Item1)));
-                TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
-                LastTime.Remove(DeadPlayer.PlayerId);
+                TargetArrow.Remove(killerId, targetId);
+                LastTime.Remove(deadPlayer.PlayerId);
                 KillerIsChosen = false;
                 killertarget = (byte.MaxValue, byte.MaxValue);
             }
         }
 
         public override string GetProgressText(byte playerId, bool cooms) => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-        
     }
 }

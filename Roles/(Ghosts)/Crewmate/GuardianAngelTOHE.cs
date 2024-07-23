@@ -47,24 +47,19 @@ internal class GuardianAngelTOHE : RoleBase
     }
     public override bool OnCheckProtect(PlayerControl angel, PlayerControl target)
     {
-        if (!PlayerShield.ContainsKey(target.PlayerId))
-        {
-            PlayerShield.Add(target.PlayerId, Utils.GetTimeStamp());
-        }
-        else
-        {
-            PlayerShield[target.PlayerId] = Utils.GetTimeStamp();
-        }
+        long currentTime = Utils.GetTimeStamp();
+        PlayerShield[target.PlayerId] = currentTime;
         return true;
     }
+
     public override void OnOtherTargetsReducedToAtoms(PlayerControl target)
     {
-        if (PlayerShield.ContainsKey(target.PlayerId))
-            PlayerShield.Remove(target.PlayerId);
+        PlayerShield.Remove(target.PlayerId);
     }
+
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (PlayerShield.ContainsKey(target.PlayerId))
+        if (PlayerShield.TryGetValue(target.PlayerId, out _))
         {
             if (ImpVis.GetBool())
             {
@@ -78,7 +73,7 @@ internal class GuardianAngelTOHE : RoleBase
 
     private void OnOthersFixUpdate(PlayerControl player)
     {
-        if (PlayerShield.ContainsKey(player.PlayerId) && PlayerShield[player.PlayerId] + ProtectDur.GetInt() <= Utils.GetTimeStamp())
+        if (PlayerShield.TryGetValue(player.PlayerId, out long shieldTime) && shieldTime + ProtectDur.GetInt() <= Utils.GetTimeStamp())
         {
             PlayerShield.Remove(player.PlayerId);
         }

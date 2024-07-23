@@ -91,7 +91,7 @@ public static class CustomRoleManager
 
         if (DollMaster.HasEnabled && DollMaster.IsDoll(player.PlayerId))
         {
-            DollMaster.ApplySettingsToDoll(opt, player);
+            DollMaster.ApplySettingsToDoll(opt);
             return;
         }
 
