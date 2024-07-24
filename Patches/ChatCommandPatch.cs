@@ -448,9 +448,9 @@ internal class ChatCommands
                             Sub.Clear().Append(ACleared);
                         }
 
-                        Utils.SendMessage(Des, lp.PlayerId, title);
-                        Utils.SendMessage("", lp.PlayerId, Conf.ToString());
-                        if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), lp.PlayerId, SubTitle);
+                        Utils.SendMessage(Des, lp.PlayerId, title, noReplay: true);
+                        Utils.SendMessage("", lp.PlayerId, Conf.ToString(), noReplay: true);
+                        if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), lp.PlayerId, SubTitle, noReplay: true);
                     }
                     else
                         Utils.SendMessage((PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + GetString("Message.CanNotUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
@@ -1008,7 +1008,7 @@ internal class ChatCommands
 
                         string msg = "";
 
-                        Color32 clr = new Color32(47, 234, 45, 255); //Main.PlayerColors.First(x => x.Key == PlayerControl.LocalPlayer.PlayerId).Value;
+                        Color32 clr = new(47, 234, 45, 255); //Main.PlayerColors.First(x => x.Key == PlayerControl.LocalPlayer.PlayerId).Value;
                         var tytul = Utils.ColorString(clr, GetString("PollResultTitle"));
 
                         if (winners.Count() == 1)
@@ -1791,10 +1791,10 @@ internal class ChatCommands
 
                 }
                 // Show role info
-                Utils.SendMessage(Des, playerId, title);
+                Utils.SendMessage(Des, playerId, title, noReplay: true);
 
                 // Show role settings
-                Utils.SendMessage("", playerId, Conf.ToString());
+                Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
                 return;
             }
         }
@@ -1888,9 +1888,9 @@ internal class ChatCommands
                         Sub.Clear().Append(ACleared);
                     }
 
-                    Utils.SendMessage(Des, player.PlayerId, title);
-                    Utils.SendMessage("", player.PlayerId, Conf.ToString());
-                    if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), player.PlayerId, SubTitle);
+                    Utils.SendMessage(Des, player.PlayerId, title, noReplay: true);
+                    Utils.SendMessage("", player.PlayerId, Conf.ToString(), noReplay: true);
+                    if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), player.PlayerId, SubTitle, noReplay: true);
 
                     Logger.Info($"Command '/m' should be send message", "OnReceiveChat");
                 }

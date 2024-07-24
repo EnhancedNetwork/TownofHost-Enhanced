@@ -970,10 +970,7 @@ public static class Utils
 
     public static string GetRegionName(IRegionInfo region = null)
     {
-        if (region == null)
-        {
-            region = ServerManager.Instance.CurrentRegion;
-        }
+        region ??= ServerManager.Instance.CurrentRegion;
 
         string name = region.Name;
 
@@ -1393,7 +1390,7 @@ public static class Utils
 
 
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool ShouldSplit = false)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool noReplay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         try
@@ -1413,8 +1410,8 @@ public static class Utils
             Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage.SplitMessage");
         }
 
-        // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
-        if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
+        // set noReplay to false when you want to send previous sys msg or do not want to add a sys msg in the history
+        if (!noReplay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
 
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
 
@@ -1876,10 +1873,6 @@ public static class Utils
 
                 string SeerRealName = seer.GetRealName(isForMeeting);
 
-                // Set self name to true name if Victim to Doppelganger
-                if (seer.Data.IsDead && Doppelganger.TrueNames.ContainsKey(seer.PlayerId) && Doppelganger.CheckDoppelVictim(seer.PlayerId))
-                    SeerRealName = Doppelganger.TrueNames[seer.PlayerId];
-
                 // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for seer ======
                 string SelfTaskText = GetProgressText(seer);
 
@@ -1972,10 +1965,7 @@ public static class Utils
                     var target = realTarget;
 
                     if (seer != target && seer != DollMaster.DollMasterTarget)
-                        target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
-
-                    if (seer != target && seer.IsAlive())
-                        target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
+                        target = DollMaster.SwapPlayerInfo(realTarget); // If a player is possessed by the Dollmaster swap each other's controllers.
 
                     //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
@@ -2024,18 +2014,6 @@ public static class Utils
                         // ====== Target player name ======
 
                         string TargetPlayerName = target.GetRealName(isForMeeting);
-
-                        if (seer != target && seer.IsAlive())
-                            target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
-
-                        // if Victim to Doppelganger or is Doppelganger
-                        if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
-                        {
-                            if (target.Is(CustomRoles.Doppelganger) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                                TargetPlayerName = $"{TargetPlayerName}\r\n<size=75%>{ColorString(Color.gray, $"({Doppelganger.TrueNames[target.PlayerId]})")}</size>";
-                            else if (Doppelganger.CheckDoppelVictim(target.PlayerId) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                                TargetPlayerName = Doppelganger.TrueNames[target.PlayerId];
-                        }
 
                         var tempNameText = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName, isForMeeting);
                         if (tempNameText != string.Empty)
@@ -2123,10 +2101,6 @@ public static class Utils
                         // Target Name
                         string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}{TargetSuffix}";
                         //TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
-
-                        // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
-                        if (seer.Data.IsDead && seer != target && !target.Data.IsDead && !target.Is(CustomRoles.Doppelganger) && !Doppelganger.CurrentVictimCanSeeRolesAsDead.GetBool() && Doppelganger.CurrentIdToSwap == seer.PlayerId)
-                            TargetName = target.GetRealName();
 
                         realTarget.RpcSetNamePrivate(TargetName, seer, force: NoCache);
                     }

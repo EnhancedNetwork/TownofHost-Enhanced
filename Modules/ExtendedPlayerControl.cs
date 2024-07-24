@@ -701,8 +701,6 @@ static class ExtendedPlayerControl
         if (DollMaster.IsDoll(pc.PlayerId) || Circumvent.CantUseVent(pc)) return false;
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
         if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
-        //if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
-
         if (Amnesiac.PreviousAmnesiacCanVent(pc)) return true; //this is done because amnesiac has imp basis and if amnesiac remembers a role with different basis then player will not vent as `CanUseImpostorVentButton` is false
 
         var playerRoleClass = pc.GetRoleClass();

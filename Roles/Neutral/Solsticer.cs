@@ -6,6 +6,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
 using InnerNet;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace TOHE.Roles.Neutral;
 
@@ -244,7 +245,7 @@ internal class Solsticer : RoleBase
     {
         SetShortTasksToAdd();
         var taskState = pc.GetPlayerTaskState();
-        pc.Data.RpcSetTasks(System.Array.Empty<byte>()); //Let taskassign patch decide the tasks
+        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
         taskState.CompletedTasksCount = 0;
         pc.RpcGuardAndKill();
         pc.Notify(GetString("SolsticerTasksReset"));

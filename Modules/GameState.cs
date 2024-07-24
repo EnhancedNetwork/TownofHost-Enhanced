@@ -1,3 +1,4 @@
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using AmongUs.GameOptions;
 using System;
 using UnityEngine;
@@ -47,7 +48,7 @@ public class PlayerState(byte playerId)
                     var taskstate = pc.GetPlayerTaskState();
                     if (taskstate != null)
                     {
-                        pc.Data.RpcSetTasks(Array.Empty<byte>());
+                        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
                         taskstate.CompletedTasksCount = 0;
                         taskstate.AllTasksCount = pc.Data.Tasks.Count;
                         taskstate.hasTasks = true;

@@ -17,6 +17,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using System.Runtime.Intrinsics.Arm;
 
 namespace TOHE;
 
@@ -1143,14 +1144,13 @@ class FixedUpdateInNormalGamePatch
                     if (Options.LadderDeath.GetBool() && player.IsAlive())
                         FallFromLadder.FixedUpdate(player);
 
-                    if (GameStates.IsInGame && CustomRoles.Lovers.IsEnable())
-                        LoversSuicide();
-
-
                     //Local Player only
                     if (player.AmOwner)
                     {
                         DisableDevice.FixedUpdate();
+
+                        if (CustomRoles.Lovers.IsEnable())
+                            LoversSuicide();
 
                         if (Rainbow.isEnabled)
                             Rainbow.OnFixedUpdate();
@@ -1240,18 +1240,6 @@ class FixedUpdateInNormalGamePatch
 
                 string RealName = target.GetRealName();
 
-                if (seer != target && seer.IsAlive())
-                    target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
-
-                // if Victim to Doppelganger or is Doppelganger
-                if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
-                {
-                    if (target.Is(CustomRoles.Doppelganger) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                        RealName = $"\n{RealName}\r\n<size=75%>{Utils.ColorString(Color.gray, $"({Doppelganger.TrueNames[target.PlayerId]})")}</size>";
-                    else if (Doppelganger.CheckDoppelVictim(target.PlayerId) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                        RealName = Doppelganger.TrueNames[target.PlayerId];
-                }
-
                 Mark.Clear();
                 Suffix.Clear();
 
@@ -1334,16 +1322,6 @@ class FixedUpdateInNormalGamePatch
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
                     ? $" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : string.Empty;
 
-                // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
-                if (seer.Data.IsDead && seer != target && !target.Data.IsDead && !target.Is(CustomRoles.Doppelganger) && !Doppelganger.CurrentVictimCanSeeRolesAsDead.GetBool() && Doppelganger.CurrentIdToSwap == seer.PlayerId)
-                {
-                    RealName = target.GetRealName();
-                    DeathReason = string.Empty;
-                    RoleText.text = string.Empty;
-                    Suffix.Clear();
-                    Mark.Clear();
-                }
-
                 // code from EHR (Endless Host Roles by: Gurge44)
                 var currentText = target.cosmetics.nameText.text;
                 var changeTo = $"{RealName}{DeathReason}{Mark}\r\n{Suffix}";
@@ -1382,27 +1360,35 @@ class FixedUpdateInNormalGamePatch
         {
             foreach (var loversPlayer in Main.LoversPlayers.ToArray())
             {
-                //生きていて死ぬ予定でなければスキップ
-                if (!loversPlayer.Data.IsDead && loversPlayer.PlayerId != deathId) continue;
+                if (loversPlayer.IsAlive() && loversPlayer.PlayerId != deathId) continue;
 
                 Main.isLoversDead = true;
                 foreach (var partnerPlayer in Main.LoversPlayers.ToArray())
                 {
-                    //本人ならスキップ
                     if (loversPlayer.PlayerId == partnerPlayer.PlayerId) continue;
 
-                    //残った恋人を全て殺す(2人以上可)
-                    //生きていて死ぬ予定もない場合は心中
-                    if (partnerPlayer.PlayerId != deathId && !partnerPlayer.Data.IsDead)
+                    if (partnerPlayer.PlayerId != deathId && partnerPlayer.IsAlive())
                     {
                         if (partnerPlayer.Is(CustomRoles.Lovers))
                         {
                             partnerPlayer.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
 
                             if (isExiled)
-                                CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
+                            {
+                                if (Main.PlayerStates.TryGetValue(deathId, out var loverStates) && loverStates.deathReason is PlayerState.DeathReason.Gambled or PlayerState.DeathReason.Trialed or PlayerState.DeathReason.Revenge)
+                                {
+                                    GuessManager.RpcGuesserMurderPlayer(partnerPlayer);
+                                    MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
+                                }
+                                else
+                                {
+                                    CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
+                                }
+                            }
                             else
+                            {
                                 partnerPlayer.RpcMurderPlayer(partnerPlayer);
+                            }
                         }
                     }
                 }

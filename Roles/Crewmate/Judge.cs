@@ -315,6 +315,7 @@ internal class Judge : RoleBase
         {
             var pc = GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !pc.IsAlive()) continue;
+
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
             GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
             targetBox.name = "ShootButton";
