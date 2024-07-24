@@ -169,6 +169,26 @@ internal class EAC
                     HandleCheat(pc, "Directly Murder Player");
                     Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接击杀，已驳回", "EAC");
                     return true;
+                //Asia when AUM comes in, sends RPC34 to the player in the lobby using vent
+                case RpcCalls.BootFromVent:
+                    if (GameStates.IsLobby)
+                    {
+                        Report(pc, "非法在大厅炸管");
+                        HandleCheat(pc, "非法在大厅炸管");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法在大厅炸管，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
+                //Asia when AUM comes in, the hall timer goes to -200+ million seconds
+                case RpcCalls.ExtendLobbyTimer:
+                    if (GameStates.IsLobby)
+                    {
+                        Report(pc, "非法延长大厅计时器时间");
+                        HandleCheat(pc, "非法延长大厅计时器时间");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法延长大厅计时器时间，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
                 case RpcCalls.CheckShapeshift:
                     if (GameStates.IsLobby)
                     {
@@ -282,12 +302,23 @@ internal class EAC
                         return true;
                     }
                     break;
+                //RPC12 is also an illegal kill and should be detected as well
+                case 12:
                 case 47:
                     if (GameStates.IsLobby)
                     {
                         WarnHost();
                         Report(pc, "非法击杀");
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法击杀，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
+                case 34:
+                    if (GameStates.IsLobby)
+                    {
+                        WarnHost();
+                        Report(pc, "非法在大厅炸管");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法在大厅炸管，已驳回", "EAC");
                         return true;
                     }
                     break;
@@ -324,6 +355,15 @@ internal class EAC
                         WarnHost();
                         Report(pc, "Change skin in game");
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内改皮肤，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
+                case 61:
+                    if (GameStates.IsLobby)
+                    {
+                        WarnHost();
+                        Report(pc, "非法延长大厅计时器时间");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法延长大厅计时器时间，已驳回", "EAC");
                         return true;
                     }
                     break;
