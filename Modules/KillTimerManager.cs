@@ -39,7 +39,7 @@ public static class KillTimerManager
 
     public static void FixedUpdate(PlayerControl player)
     {
-        if (player.inVent || player.MyPhysics.Animations.IsPlayingEnterVentAnimation()) return;
+        if (GameStates.IsMeeting || player.inVent || player.MyPhysics.Animations.IsPlayingEnterVentAnimation()) return;
 
         var playerId = player.PlayerId;
         if (!AllKillTimers.TryAdd(playerId, 10f) && player.GetKillTimer() > 0)
