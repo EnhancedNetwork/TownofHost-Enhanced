@@ -1148,13 +1148,10 @@ class FixedUpdateInNormalGamePatch
                     //Local Player only
                     if (player.AmOwner)
                     {
-                        if (GameStates.IsInGame)
-                        {
-                            DisableDevice.FixedUpdate();
+                        DisableDevice.FixedUpdate();
 
-                            if (CustomRoles.Lovers.IsEnable())
-                                LoversSuicide();
-                        }
+                        if (CustomRoles.Lovers.IsEnable())
+                            LoversSuicide();
 
                         if (Rainbow.isEnabled)
                             Rainbow.OnFixedUpdate();
