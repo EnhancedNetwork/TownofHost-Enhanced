@@ -966,10 +966,7 @@ public static class Utils
 
     public static string GetRegionName(IRegionInfo region = null)
     {
-        if (region == null)
-        {
-            region = ServerManager.Instance.CurrentRegion;
-        }
+        region ??= ServerManager.Instance.CurrentRegion;
 
         string name = region.Name;
 
@@ -1389,7 +1386,7 @@ public static class Utils
 
 
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool ShouldSplit = false)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool noReplay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         try
@@ -1409,8 +1406,8 @@ public static class Utils
             Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage.SplitMessage");
         }
 
-        // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
-        if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
+        // set noReplay to false when you want to send previous sys msg or do not want to add a sys msg in the history
+        if (!noReplay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
 
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
 
