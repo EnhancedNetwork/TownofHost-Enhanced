@@ -250,11 +250,11 @@ public class GameSettingMenuPatch
         passiveButton.OnClick = new();
         passiveButton.OnClick.AddListener(
                 (Action)(() => {
-                    SearchForOptions(__instance, TextField);
+                    SearchForOptions(TextField);
                 }));
 
 
-        static void SearchForOptions(GameSettingMenu __instance, FreeChatInputField textarea)
+        static void SearchForOptions(FreeChatInputField textarea)
         {
             if (ModGameOptionsMenu.TabIndex < 3) return;
 
