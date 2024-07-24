@@ -1145,14 +1145,16 @@ class FixedUpdateInNormalGamePatch
                     if (Options.LadderDeath.GetBool() && player.IsAlive())
                         FallFromLadder.FixedUpdate(player);
 
-                    if (GameStates.IsInGame && CustomRoles.Lovers.IsEnable())
-                        LoversSuicide();
-
-
                     //Local Player only
                     if (player.AmOwner)
                     {
-                        DisableDevice.FixedUpdate();
+                        if (GameStates.IsInGame)
+                        {
+                            DisableDevice.FixedUpdate();
+
+                            if (CustomRoles.Lovers.IsEnable())
+                                LoversSuicide();
+                        }
 
                         if (Rainbow.isEnabled)
                             Rainbow.OnFixedUpdate();
