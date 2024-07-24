@@ -52,8 +52,6 @@ public static class GameOptionsMenuPatch
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings)), HarmonyPrefix]
     private static bool CreateSettingsPrefix(GameOptionsMenu __instance)
     {
-
-        Logger.Info("GameOptionsMenu Create Setgginsssds <ds RAH!", "I RAN!!!!");
         Instance ??= __instance;
         // When is vanilla tab, run vanilla code
         if (ModGameOptionsMenu.TabIndex < 3)
@@ -128,10 +126,6 @@ public static class GameOptionsMenuPatch
                             if (option.Name == "Preset" && !ModGameOptionsMenu.OptionList.ContainsValue(index))
                             {
                                 GameSettingMenuPatch.PresetBehaviour = optionBehaviour as StringOption;
-                            }
-                            if (option.Name == "GameMode" && !ModGameOptionsMenu.OptionList.ContainsValue(index))
-                            {
-                                GameSettingMenuPatch.GameModeBehaviour = optionBehaviour as StringOption;
                             }
 
                             optionBehaviour.SetClickMask(__instance.ButtonClickMask);

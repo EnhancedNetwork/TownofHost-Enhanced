@@ -134,7 +134,6 @@ public class GameSettingMenuPatch
         __instance.ControllerSelectable.Add(gameSettingButton);
     }
     public static StringOption PresetBehaviour;
-    public static StringOption GameModeBehaviour;
     public static FreeChatInputField InputField;
     public static List<OptionItem> HiddenBySearch = [];
     public static bool ShouldReveal = false;
