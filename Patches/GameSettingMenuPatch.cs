@@ -137,7 +137,8 @@ public class GameSettingMenuPatch
     public static StringOption PresetBehaviour;
     public static FreeChatInputField InputField;
     public static List<OptionItem> HiddenBySearch = [];
-    public static Dictionary<TabGroup, List<OptionItem>> SearchWinners = [];
+    public static List<OptionItem> SearchWinners = [];
+
     public static bool ShouldReveal = false;
 
     private static void SetupAdittionalButtons(GameSettingMenu __instance)
@@ -266,8 +267,9 @@ public class GameSettingMenuPatch
             && !GetString($"{x.Name}").ToLower().Contains(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
             HiddenBySearch = Result;
             Result.Do(x => x.SetHidden(true));
-            SearchWinners[(TabGroup)(ModGameOptionsMenu.TabIndex)] = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3) && !Result.Contains(x)).ToList();
-            SearchWinners[(TabGroup)(ModGameOptionsMenu.TabIndex)].Do(x => Logger.Info($"Searching for {x.Name}", "Searching For test"));
+            SearchWinners = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3) && !Result.Contains(x)).ToList();
+            SearchWinners.Do(x => Logger.Info($"Searching for {x.Name}", "Searching For test"));
+
 
             ShouldReveal = false;
             GameOptionsMenuPatch.ReOpenSettings(false, ModGameOptionsMenu.TabIndex);
