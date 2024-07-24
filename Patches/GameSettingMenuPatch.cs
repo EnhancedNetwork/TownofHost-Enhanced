@@ -260,7 +260,7 @@ public class GameSettingMenuPatch
             if (text == "loonie") text = "dictator";
             Logger.Info($"Current text: {text}", "SearchBar Text ");
             var Result = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) 
-            && !GetString($"{x.Name}").ToLower().StartsWith(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
+            && !GetString($"{x.Name}").ToLower().Contains(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
             HiddenBySearch = Result;
             Result.Do(x => x.SetHidden(true));
 
