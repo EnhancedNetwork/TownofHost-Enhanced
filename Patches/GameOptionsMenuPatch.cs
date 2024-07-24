@@ -75,7 +75,7 @@ public static class GameOptionsMenuPatch
                 var option = OptionItem.AllOptions[index];
                 if (option.Tab != modTab) continue;
 
-                var enabled = (!GameSettingMenuPatch.SearchWinners[modTab].Any() || GameSettingMenuPatch.SearchWinners[modTab].Contains(option)) 
+                var enabled = (!GameSettingMenuPatch.SearchWinners.TryGetValue(modTab, out var dinners) && !dinners.Any() || dinners.Contains(option)) 
                     && !option.IsHiddenOn(Options.CurrentGameMode) 
                     && (option.Parent == null || (!option.Parent.IsHiddenOn(Options.CurrentGameMode) && option.Parent.GetBool()));
 
