@@ -17,6 +17,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using System.Runtime.Intrinsics.Arm;
 
 namespace TOHE;
 
@@ -1361,27 +1362,35 @@ class FixedUpdateInNormalGamePatch
         {
             foreach (var loversPlayer in Main.LoversPlayers.ToArray())
             {
-                //生きていて死ぬ予定でなければスキップ
-                if (!loversPlayer.Data.IsDead && loversPlayer.PlayerId != deathId) continue;
+                if (loversPlayer.IsAlive() && loversPlayer.PlayerId != deathId) continue;
 
                 Main.isLoversDead = true;
                 foreach (var partnerPlayer in Main.LoversPlayers.ToArray())
                 {
-                    //本人ならスキップ
                     if (loversPlayer.PlayerId == partnerPlayer.PlayerId) continue;
 
-                    //残った恋人を全て殺す(2人以上可)
-                    //生きていて死ぬ予定もない場合は心中
-                    if (partnerPlayer.PlayerId != deathId && !partnerPlayer.Data.IsDead)
+                    if (partnerPlayer.PlayerId != deathId && partnerPlayer.IsAlive())
                     {
                         if (partnerPlayer.Is(CustomRoles.Lovers))
                         {
                             partnerPlayer.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
 
                             if (isExiled)
-                                CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
+                            {
+                                if (Main.PlayerStates.TryGetValue(deathId, out var loverStates) && loverStates.deathReason == PlayerState.DeathReason.Gambled)
+                                {
+                                    GuessManager.RpcGuesserMurderPlayer(partnerPlayer);
+                                    MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
+                                }
+                                else
+                                {
+                                    CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
+                                }
+                            }
                             else
+                            {
                                 partnerPlayer.RpcMurderPlayer(partnerPlayer);
+                            }
                         }
                     }
                 }
