@@ -251,12 +251,12 @@ public class GameSettingMenuPatch
                 }));
 
 
-        static void SearchForOptions(FreeChatInputField textarea)
+        static void SearchForOptions(FreeChatInputField textField)
         {
             if (ModGameOptionsMenu.TabIndex < 3) return;
 
             HiddenBySearch.Do(x => x.SetHidden(false));
-            string text = textarea.textArea.text.Trim().ToLower();
+            string text = textField.textArea.text.Trim().ToLower();
             if (text == "loonie") text = "dictator";
             Logger.Info($"Current text: {text}", "SearchBar Text ");
             var Result = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) 
