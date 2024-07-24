@@ -305,6 +305,11 @@ public class GameSettingMenuPatch
             }
         }
 
+        if (ShouldReveal) // Un-hiding options here would do nothing
+        {
+            SearchWinners.Clear();
+        }
+
         if (tabNum < 3) return true;
 
         var tabGroupId = (TabGroup)(tabNum - 3);
