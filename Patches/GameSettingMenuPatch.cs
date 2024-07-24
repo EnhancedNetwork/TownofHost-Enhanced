@@ -273,7 +273,7 @@ public class GameSettingMenuPatch
 
             ShouldReveal = false;
             GameOptionsMenuPatch.ReOpenSettings(false, ModGameOptionsMenu.TabIndex);
-            _ = new LateTask(() => ShouldReveal = true, 0.28f);
+            _ = new LateTask(() => ShouldReveal = true, 0.38f);
         }
     }
 
