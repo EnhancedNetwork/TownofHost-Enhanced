@@ -52,9 +52,14 @@ public static class GameOptionsMenuPatch
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings)), HarmonyPrefix]
     private static bool CreateSettingsPrefix(GameOptionsMenu __instance)
     {
+
+        Logger.Info("GameOptionsMenu Create Setgginsssds <ds RAH!", "I RAN!!!!");
         Instance ??= __instance;
         // When is vanilla tab, run vanilla code
-        if (ModGameOptionsMenu.TabIndex < 3) return true;
+        if (ModGameOptionsMenu.TabIndex < 3)
+        {
+            return true;
+        }
         __instance.scrollBar.SetYBoundsMax(CalculateScrollBarYBoundsMax());
         __instance.StartCoroutine(CoRoutine().WrapToIl2Cpp());
         return false;
@@ -62,6 +67,7 @@ public static class GameOptionsMenuPatch
         System.Collections.IEnumerator CoRoutine()
         {
             var modTab = (TabGroup)(ModGameOptionsMenu.TabIndex - 3);
+
 
             float num = 2.0f;
             const float posX = 0.952f;
@@ -118,6 +124,15 @@ public static class GameOptionsMenuPatch
                             optionBehaviour.transform.localPosition = new(posX, num, posZ);
 
                             OptionBehaviourSetSizeAndPosition(optionBehaviour, option, baseGameSetting.Type);
+
+                            if (option.Name == "Preset" && !ModGameOptionsMenu.OptionList.ContainsValue(index))
+                            {
+                                GameSettingMenuPatch.PresetBehaviour = optionBehaviour as StringOption;
+                            }
+                            if (option.Name == "GameMode" && !ModGameOptionsMenu.OptionList.ContainsValue(index))
+                            {
+                                GameSettingMenuPatch.GameModeBehaviour = optionBehaviour as StringOption;
+                            }
 
                             optionBehaviour.SetClickMask(__instance.ButtonClickMask);
                             optionBehaviour.SetUpFromData(baseGameSetting, 20);
@@ -254,7 +269,7 @@ public static class GameOptionsMenuPatch
                 break;
         }
     }
-    public static void ReOpenSettings(bool IsPresset)
+    public static void ReOpenSettings(bool IsPresset, int index = 4)
     {
         //Close setting menu
         GameSettingMenu.Instance.Close();
@@ -268,12 +283,15 @@ public static class GameOptionsMenuPatch
             hostButtons.transform.FindChild("Edit").GetComponent<PassiveButton>().ReceiveClickDown();
         }, 0.1f, "Click Edit Button");
 
-        // Change tab to "System Settings"
-        _ = new LateTask(() =>
+        // Change tab to "Mod Settings"
+        if (!IsPresset)
         {
-            if (!GameStates.IsLobby || GameSettingMenu.Instance == null) return;
-            GameSettingMenu.Instance.ChangeTab(IsPresset ? 3 : 4, Controller.currentTouchType == Controller.TouchType.Joystick);
-        }, 0.28f, "Change Tab");
+            _ = new LateTask(() =>
+            {
+                if (!GameStates.IsLobby || GameSettingMenu.Instance == null) return;
+                GameSettingMenu.Instance.ChangeTab(index, Controller.currentTouchType == Controller.TouchType.Joystick);
+            }, 0.28f, "Change Tab");
+        }
     }
     [HarmonyPatch(nameof(GameOptionsMenu.ValueChanged)), HarmonyPrefix]
     private static bool ValueChangedPrefix(GameOptionsMenu __instance, OptionBehaviour option)

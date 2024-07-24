@@ -1,7 +1,9 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static TOHE.Translator;
+using static UnityEngine.RemoteConfigSettingsHelper;
 using Object = UnityEngine.Object;
 
 namespace TOHE;
@@ -94,6 +96,14 @@ public class GameSettingMenuPatch
                 __instance.ControllerSelectable.Add(button);
             }
         }
+
+        if (ShouldReveal)
+        {
+            HiddenBySearch.Do(x => x.SetHidden(false));
+            HiddenBySearch.Clear();
+        }
+
+        SetupAdittionalButtons(__instance);
     }
     private static void SetDefaultButton(GameSettingMenu __instance)
     {
@@ -122,6 +132,146 @@ public class GameSettingMenuPatch
         __instance.DefaultButtonSelected = gameSettingButton;
         __instance.ControllerSelectable = new();
         __instance.ControllerSelectable.Add(gameSettingButton);
+    }
+    public static StringOption PresetBehaviour;
+    public static StringOption GameModeBehaviour;
+    public static FreeChatInputField InputField;
+    public static List<OptionItem> HiddenBySearch = [];
+    public static bool ShouldReveal = false;
+
+    private static void SetupAdittionalButtons(GameSettingMenu __instance)
+    {
+        var ParentLeftPanel = __instance.GamePresetsButton.transform.parent;
+
+        var labeltag = GameObject.Find("Privacy (Not Interactive)");
+        var preset = Object.Instantiate(labeltag, ParentLeftPanel);
+        preset.transform.localPosition = new Vector3(-4.6f, -3.75f, -2.0f);
+        preset.transform.localScale = new Vector3(0.65f, 0.63f, 1f);
+        var SpriteRenderer = preset.GetComponentInChildren<SpriteRenderer>();
+        SpriteRenderer.color = Color.white;
+        //SpriteRenderer.material = null;
+        SpriteRenderer.sprite = Utils.LoadSprite("TOHE.Resources.Images.PresetBox.png", 55f);
+
+        Color clr = new(-1, -1, -1);
+        var PLabel = preset.GetComponentInChildren<TextMeshPro>();
+        PLabel.DestroyTranslator();
+        PLabel.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
+        //PLabel.font = PLuLabel.font; 
+        PLabel.fontSizeMax = 2.45f; PLabel.fontSizeMin = 2.45f;
+
+        var TempMinus = GameObject.Find("MinusButton").gameObject;
+        var GMinus = GameObject.Instantiate(__instance.GamePresetsButton.gameObject, preset.transform);
+        GMinus.gameObject.SetActive(true);
+        GMinus.transform.localScale = new Vector3(0.08f, 0.4f, 1f);
+
+
+        var MLabel = GMinus.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+        MLabel.alignment = TextAlignmentOptions.Center;
+        MLabel.DestroyTranslator();
+        MLabel.text = "-";
+        MLabel.transform.localPosition = new Vector3(MLabel.transform.localPosition.x, MLabel.transform.localPosition.y + 0.26f, MLabel.transform.localPosition.z);
+        MLabel.color = new Color(255f, 255f, 255f);
+        MLabel.SetFaceColor(new Color(255f, 255f, 255f));
+        MLabel.transform.localScale = new Vector3(12f, 4f, 1f);
+
+
+        var Minus = GMinus.GetComponent<PassiveButton>();
+        Minus.OnClick.RemoveAllListeners();
+        Minus.OnClick.AddListener(
+                (Action)(() => {
+                    if (PresetBehaviour == null) __instance.ChangeTab(3, false);
+                    StringOption PresetBeh = PresetBehaviour;
+                    PresetBeh.Decrease();
+                }));
+        Minus.activeTextColor = new Color(255f, 255f, 255f);
+        Minus.inactiveTextColor = new Color(255f, 255f, 255f);
+        Minus.disabledTextColor = new Color(255f, 255f, 255f);
+        Minus.selectedTextColor = new Color(255f, 255f, 255f);
+
+        Minus.transform.localPosition = new Vector3(0.01f, 1.87f, 1f);
+        Minus.inactiveSprites.GetComponent<SpriteRenderer>().sprite = TempMinus.GetComponentInChildren<SpriteRenderer>().sprite;
+        Minus.activeSprites.GetComponent<SpriteRenderer>().sprite = TempMinus.GetComponentInChildren<SpriteRenderer>().sprite;
+        Minus.selectedSprites.GetComponent<SpriteRenderer>().sprite = TempMinus.GetComponentInChildren<SpriteRenderer>().sprite;
+
+        Minus.inactiveSprites.GetComponent<SpriteRenderer>().color = new Color32(55, 59, 60, 255);
+        Minus.activeSprites.GetComponent<SpriteRenderer>().color = new Color32(61, 62, 63, 255);
+        Minus.selectedSprites.GetComponent<SpriteRenderer>().color = new Color32(55, 59, 60, 255);
+
+
+
+        var PlusFab = GameObject.Instantiate(GMinus, preset.transform);
+        var PLuLabel = PlusFab.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
+        PLuLabel.alignment = TextAlignmentOptions.Center;
+        PLuLabel.DestroyTranslator();
+        PLuLabel.text = "+";
+        PLuLabel.color = new Color(255f, 255f, 255f);
+        PLuLabel.transform.localPosition = new Vector3(PLuLabel.transform.localPosition.x, PLuLabel.transform.localPosition.y + 0.26f, PLuLabel.transform.localPosition.z);
+        PLuLabel.transform.localScale = new Vector3(12f, 4f, 1f);
+
+        var plus = PlusFab.GetComponent<PassiveButton>();
+        plus.OnClick.RemoveAllListeners();
+        plus.OnClick.AddListener(
+                (Action)(() => {
+                    if (PresetBehaviour == null) __instance.ChangeTab(3, false);
+                    StringOption PresetBeh = PresetBehaviour;
+
+                    PresetBeh.Increase();
+                }));
+        plus.activeTextColor = new Color(255f, 255f, 255f);
+        plus.inactiveTextColor = new Color(255f, 255f, 255f);
+        plus.disabledTextColor = new Color(255f, 255f, 255f);
+        plus.selectedTextColor = new Color(255f, 255f, 255f);
+
+
+        plus.transform.localPosition = new Vector3(1.62f, 1.87f, 1f);
+
+        var GameSettingsLabel = __instance.GameSettingsButton.transform.parent.parent.FindChild("GameSettingsLabel").GetComponent<TextMeshPro>();
+        GameSettingsLabel.DestroyTranslator();
+        GameSettingsLabel.text = GetString($"{Options.CurrentGameMode}");
+
+        var FreeChatField = DestroyableSingleton<ChatController>.Instance.freeChatField;
+        var TextField = GameObject.Instantiate(FreeChatField, ParentLeftPanel.parent);
+        TextField.transform.localScale = new Vector3(0.3f, 0.59f, 1);
+        TextField.transform.localPosition = new Vector3(-2.07f, -2.57f, -5f); 
+        InputField = TextField;
+        TextField.textArea.outputText.transform.localScale = new Vector3(3f, 2f, 1f);
+        var button = TextField.transform.FindChild("ChatSendButton");
+
+        Object.Destroy(button.FindChild("Normal").FindChild("Icon").GetComponent<SpriteRenderer>());
+        Object.Destroy(button.FindChild("Hover").FindChild("Icon").GetComponent<SpriteRenderer>());
+        Object.Destroy(button.FindChild("Disabled").FindChild("Icon").GetComponent<SpriteRenderer>());
+        Object.Destroy(button.transform.FindChild("Text").GetComponent<TextMeshPro>());
+
+        button.FindChild("Normal").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIconActive.png", 100f);
+        button.FindChild("Hover").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIconHover.png", 100f);
+        button.FindChild("Disabled").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIcon.png", 100f);
+
+        PassiveButton passiveButton = button.GetComponent<PassiveButton>();
+
+        passiveButton.OnClick = new();
+        passiveButton.OnClick.AddListener(
+                (Action)(() => {
+                    SearchForOptions(__instance, TextField);
+                }));
+
+
+        static void SearchForOptions(GameSettingMenu __instance, FreeChatInputField textarea)
+        {
+            if (ModGameOptionsMenu.TabIndex < 3) return;
+
+            HiddenBySearch.Do(x => x.SetHidden(false));
+            string text = textarea.textArea.text.Trim().ToLower();
+            if (text == "loonie") text = "dictator";
+            Logger.Info($"Current text: {text}", "SearchBar Text ");
+            var Result = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) 
+            && !GetString($"{x.Name}").ToLower().StartsWith(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
+            HiddenBySearch = Result;
+            Result.Do(x => x.SetHidden(true));
+
+            ShouldReveal = false;
+            GameOptionsMenuPatch.ReOpenSettings(false, ModGameOptionsMenu.TabIndex);
+            _ = new LateTask(() => ShouldReveal = true, 0.28f);
+        }
     }
 
     [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPrefix]
@@ -206,6 +356,7 @@ public class GameSettingMenuPatch
     [HarmonyPatch(nameof(GameSettingMenu.OnEnable)), HarmonyPrefix]
     private static bool OnEnablePrefix(GameSettingMenu __instance)
     {
+
         if (TemplateGameOptionsMenu == null)
         {
             TemplateGameOptionsMenu = Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);
@@ -238,6 +389,29 @@ public class GameSettingMenuPatch
             Object.Destroy(tab);
         ModSettingsButtons = [];
         ModSettingsTabs = [];
+    }
+}
+[HarmonyPatch(typeof(FreeChatInputField), nameof(FreeChatInputField.UpdateCharCount))]
+public static class FixInputChatField
+{
+    public static bool Prefix(FreeChatInputField __instance)
+    {
+        if (GameSettingMenuPatch.InputField != null && __instance == GameSettingMenuPatch.InputField)
+        {
+            Vector2 size = __instance.Background.size;
+            size.y = Math.Max(0.62f, __instance.textArea.TextHeight + 0.2f);
+            __instance.Background.size = size;
+            int length = __instance.textArea.text.Length;
+            ((TMP_Text)__instance.charCountText).text = string.Format("{0}/100", (object)length);
+            if (length < 75)
+                ((Graphic)__instance.charCountText).color = Color.black;
+            else if (length < 100)
+                ((Graphic)__instance.charCountText).color = new Color(1f, 1f, 0.0f, 1f);
+            else
+                ((Graphic)__instance.charCountText).color = Color.red;
+            return false;
+        }
+        return true;
     }
 }
 
