@@ -13,7 +13,7 @@ public static class KillTimerManager
         AllKillTimers.Clear();
     }
 
-    public static float GetKillTimer(this PlayerControl pc) => AllKillTimers[pc.PlayerId];
+    public static float GetKillTimer(this PlayerControl pc) => pc.AmOwner ? pc.killTimer : AllKillTimers[pc.PlayerId];
     public static float GetKillTimer(this byte playerId) => AllKillTimers[playerId];
 
     public static void SetKillTimer(this PlayerControl pc, bool half = false, float CD = -1f)
