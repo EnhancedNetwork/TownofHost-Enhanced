@@ -109,7 +109,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Infectious:
-                        if (pc.Is(CustomRoles.Infected) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Infected) || pc.Is(CustomRoles.Infectious)) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -127,7 +127,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Jackal:
-                        if ((pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit)) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit) || pc.Is(CustomRoles.Jackal)) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
