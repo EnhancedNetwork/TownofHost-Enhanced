@@ -987,7 +987,8 @@ public static class CustomRolesHelper
 
             case CustomRoles.Fool:
                 if (pc.Is(CustomRoles.Mechanic)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Alchemist))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Fool.CrewCanBeFool.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Fool.NeutralCanBeFool.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Fool.ImpCanBeFool.GetBool()))
                     return false;
