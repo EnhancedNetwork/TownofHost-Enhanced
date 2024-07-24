@@ -179,8 +179,7 @@ public class GameSettingMenuPatch
         Minus.OnClick.AddListener(
                 (Action)(() => {
                     if (PresetBehaviour == null) __instance.ChangeTab(3, false);
-                    StringOption PresetBeh = PresetBehaviour;
-                    PresetBeh.Decrease();
+                    PresetBehaviour.Decrease();
                 }));
         Minus.activeTextColor = new Color(255f, 255f, 255f);
         Minus.inactiveTextColor = new Color(255f, 255f, 255f);
@@ -212,9 +211,7 @@ public class GameSettingMenuPatch
         plus.OnClick.AddListener(
                 (Action)(() => {
                     if (PresetBehaviour == null) __instance.ChangeTab(3, false);
-                    StringOption PresetBeh = PresetBehaviour;
-
-                    PresetBeh.Increase();
+                    PresetBehaviour.Increase();
                 }));
         plus.activeTextColor = new Color(255f, 255f, 255f);
         plus.inactiveTextColor = new Color(255f, 255f, 255f);
