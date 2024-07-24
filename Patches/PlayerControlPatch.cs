@@ -1377,7 +1377,7 @@ class FixedUpdateInNormalGamePatch
 
                             if (isExiled)
                             {
-                                if (Main.PlayerStates.TryGetValue(deathId, out var loverStates) && loverStates.deathReason == PlayerState.DeathReason.Gambled)
+                                if (Main.PlayerStates.TryGetValue(deathId, out var loverStates) && loverStates.deathReason is PlayerState.DeathReason.Gambled or PlayerState.DeathReason.Trialed or PlayerState.DeathReason.Revenge)
                                 {
                                     GuessManager.RpcGuesserMurderPlayer(partnerPlayer);
                                     MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
