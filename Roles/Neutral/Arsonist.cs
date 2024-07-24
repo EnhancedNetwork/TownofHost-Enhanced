@@ -221,22 +221,23 @@ internal class Arsonist : RoleBase
             if (IsDouseDone(__instance.myPlayer))
             {
                 CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
-                foreach (var pc in Main.AllAlivePlayerControls)
-                {
-                    if (pc != __instance.myPlayer)
-                    {
-                        pc.SetDeathReason(PlayerState.DeathReason.Torched);
-                        pc.RpcMurderPlayer(pc);
-                        pc.SetRealKiller(__instance.myPlayer);
-                    }
-                }
-                foreach (var pc in Main.AllPlayerControls) 
-                    pc.KillFlash();
 
                 if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
                 {
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Arsonist);
                     CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
+                }
+
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    pc.KillFlash();
+
+                    if (pc.IsAlive() && pc != __instance.myPlayer)
+                    {
+                        pc.SetDeathReason(PlayerState.DeathReason.Torched);
+                        pc.RpcMurderPlayer(pc);
+                        pc.SetRealKiller(__instance.myPlayer);
+                    }
                 }
                 return;
             }

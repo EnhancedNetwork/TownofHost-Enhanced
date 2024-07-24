@@ -16,9 +16,7 @@ public static class AddonAssign
             case CustomRoles.LastImpostor:
                 return true;
             case CustomRoles.Madmate when Madmate.MadmateSpawnMode.GetInt() != 0:
-            case CustomRoles.Glow when GameStates.FungleIsActive:
-            //case CustomRoles.Torch when GameStates.FungleIsActive:
-            case CustomRoles.Mare when GameStates.FungleIsActive:
+            case CustomRoles.Glow or CustomRoles.Mare when GameStates.FungleIsActive:
                 return true;
         }
 

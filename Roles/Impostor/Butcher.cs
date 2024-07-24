@@ -54,6 +54,8 @@ internal class Butcher : RoleBase
         if (target.Is(CustomRoles.Avanger))
         {
             CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
+
             var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId); //No need to do extra check cause nobody is winning
             pcList.Do(x =>
             {
@@ -62,8 +64,6 @@ internal class Butcher : RoleBase
                 x.SetRealKiller(target);
                 Main.PlayerStates[x.PlayerId].SetDead();
             });
-
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
             return;
         }
 

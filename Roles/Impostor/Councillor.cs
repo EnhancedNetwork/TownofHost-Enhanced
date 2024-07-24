@@ -25,7 +25,7 @@ internal class Councillor : RoleBase
     private static OptionItem TryHideMsg;
     private static OptionItem CanMurderMadmate;
     private static OptionItem CanMurderImpostor;
-    private static OptionItem SuidiceOnJudgeImpTeam;
+    private static OptionItem SuicideOnJudgeImpTeam;
     private static OptionItem CanMurderTaskDoneSnitch;
     private static OptionItem KillCooldown;
     
@@ -45,7 +45,7 @@ internal class Councillor : RoleBase
         CanMurderMadmate = BooleanOptionItem.Create(Id + 13, "CouncillorCanMurderMadmate", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
         CanMurderImpostor = BooleanOptionItem.Create(Id + 14, "CouncillorCanMurderImpostor", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
         CanMurderTaskDoneSnitch = BooleanOptionItem.Create(Id + 16, "CouncillorCanMurderTaskDoneSnitch", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
-        SuidiceOnJudgeImpTeam = BooleanOptionItem.Create(Id + 17, "CouncillorSuidiceOnJudgeImpTeam", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
+        SuicideOnJudgeImpTeam = BooleanOptionItem.Create(Id + 17, "CouncillorSuicideOnJudgeImpTeam", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
         TryHideMsg = BooleanOptionItem.Create(Id + 15, "CouncillorTryHideMsg", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
             .SetColor(Color.green);
     }
@@ -188,14 +188,14 @@ internal class Councillor : RoleBase
                     {
                         CouncillorSuicide = false;
                     }
-                    else if (!SuidiceOnJudgeImpTeam.GetBool())
+                    else if (!SuicideOnJudgeImpTeam.GetBool())
                     {
                         pc.ShowInfoMessage(isUI, GetString("Councillor_CannotMurderImpTeam"));
                         return true;
                     }
                     else
                     {
-                        pc.ShowInfoMessage(isUI, GetString("Councillor_SuidiceForMurderImps"));
+                        pc.ShowInfoMessage(isUI, GetString("Councillor_SuicideForMurderImps"));
                         CouncillorSuicide = true;
                     }
                 }
@@ -209,14 +209,14 @@ internal class Councillor : RoleBase
                     {
                         CouncillorSuicide = false;
                     }
-                    else if (!SuidiceOnJudgeImpTeam.GetBool())
+                    else if (!SuicideOnJudgeImpTeam.GetBool())
                     {
                         pc.ShowInfoMessage(isUI, GetString("Councillor_CannotMurderImpTeam"));
                         return true;
                     }
                     else
                     {
-                        pc.ShowInfoMessage(isUI, GetString("Councillor_SuidiceForMurderImps"));
+                        pc.ShowInfoMessage(isUI, GetString("Councillor_SuicideForMurderImps"));
                         CouncillorSuicide = true;
                     }
                 }
