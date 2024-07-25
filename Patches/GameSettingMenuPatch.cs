@@ -232,7 +232,6 @@ public class GameSettingMenuPatch
         TextField.transform.localPosition = new Vector3(-2.07f, -2.57f, -5f); 
         TextField.textArea.outputText.transform.localScale = new Vector3(3.5f, 2f, 1f);
         TextField.textArea.outputText.font = PLuLabel.font;
-        TextField.textArea.outputText.color = Color.white;
 
         InputField = TextField;
 
