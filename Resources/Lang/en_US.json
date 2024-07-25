@@ -2248,7 +2248,8 @@
 
   "Poll.VotingInfo": "Use /pv {answer} to vote, answer can be a character or a number.",
   "Poll.YouVoted": "You have voted for {0}, which has now {1} votes.",
-  "PollUsage": "To create a poll type \n<b>/poll {Question}? <size=55%>{Answer A} {Answer B} \n{Answer C (Optional)} {Answer D (Optional)} {Answer E (Optional)}</size></b>\n\n<size=50%>It is important you end the question with a ? </size>",
+  "PollUsage": "To create a poll type \n<b>/poll {Question}? <size=55%>{Answer A} {Answer B} \n{Answer C (Optional)} {Answer D (Optional)} {Answer E (Optional)}</size></b>\n<size=50%>It is important you end the question with a ? </size>\n\n<size=75%>Use <b>/poll Replay</b> to replay the latest poll</size>",
+  "Replay":  "Replay",
 
   "EnableGadientTags": "Enable Gradient Tags <color=#ff0000>(can cause disconnect issues)</color>",
   "Warning.GradientTags": "<color=#ff0000><size=150%>Warning:</size></color>\n\nHost has enabled gradient tags. This feature is not recommended to use because it can cause <b>disconnect issues</b>",
