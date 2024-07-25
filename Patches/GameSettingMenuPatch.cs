@@ -230,10 +230,12 @@ public class GameSettingMenuPatch
         var TextField = GameObject.Instantiate(FreeChatField, ParentLeftPanel.parent);
         TextField.transform.localScale = new Vector3(0.3f, 0.59f, 1);
         TextField.transform.localPosition = new Vector3(-2.07f, -2.57f, -5f); 
-        InputField = TextField;
         TextField.textArea.outputText.transform.localScale = new Vector3(3.5f, 2f, 1f);
         TextField.textArea.outputText.font = PLuLabel.font;
-        TextField.charCountText.gameObject.SetActive(false);
+        TextField.textArea.outputText.color = Color.white;
+
+        InputField = TextField;
+
 
         var button = TextField.transform.FindChild("ChatSendButton");
 
