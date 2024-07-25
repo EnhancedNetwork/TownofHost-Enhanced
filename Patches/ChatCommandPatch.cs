@@ -957,7 +957,7 @@ internal class ChatCommands
                     canceled = true;
 
 
-                    if (args.Length == 2 && args[2] == GetString("Replay") && Pollvotes.Any() && PollMSG != string.Empty)
+                    if (args.Length == 2 && args[1] == GetString("Replay") && Pollvotes.Any() && PollMSG != string.Empty)
                     {
                         Utils.SendMessage(PollMSG);
                         break;
