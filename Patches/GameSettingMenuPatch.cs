@@ -144,9 +144,12 @@ public class GameSettingMenuPatch
     {
         var ParentLeftPanel = __instance.GamePresetsButton.transform.parent;
 
-        var labeltag = GameObject.Find("Privacy (Not Interactive)");
+        var cocztam = DestroyableSingleton<LobbyInfoPane>.Instance;
+
+        var labeltag = GameObject.Find("ModeValue");
         var preset = Object.Instantiate(labeltag, ParentLeftPanel);
-        preset.transform.localPosition = new Vector3(-4.6f, -3.75f, -2.0f);
+
+        preset.transform.localPosition = new Vector3(-3.33f, -0.45f, -2f);
         preset.transform.localScale = new Vector3(0.65f, 0.63f, 1f);
         var SpriteRenderer = preset.GetComponentInChildren<SpriteRenderer>();
         SpriteRenderer.color = Color.white;
@@ -188,7 +191,7 @@ public class GameSettingMenuPatch
         Minus.disabledTextColor = new Color(255f, 255f, 255f);
         Minus.selectedTextColor = new Color(255f, 255f, 255f);
 
-        Minus.transform.localPosition = new Vector3(0.01f, 1.87f, 1f);
+        Minus.transform.localPosition = new Vector3(-2f, -3.37f, -4f);
         Minus.inactiveSprites.GetComponent<SpriteRenderer>().sprite = TempMinus.GetComponentInChildren<SpriteRenderer>().sprite;
         Minus.activeSprites.GetComponent<SpriteRenderer>().sprite = TempMinus.GetComponentInChildren<SpriteRenderer>().sprite;
         Minus.selectedSprites.GetComponent<SpriteRenderer>().sprite = TempMinus.GetComponentInChildren<SpriteRenderer>().sprite;
@@ -220,7 +223,7 @@ public class GameSettingMenuPatch
         plus.disabledTextColor = new Color(255f, 255f, 255f);
         plus.selectedTextColor = new Color(255f, 255f, 255f);
 
-        plus.transform.localPosition = new Vector3(1.62f, 1.87f, 1f);
+        plus.transform.localPosition = new Vector3(-0.4f, -3.37f, -4f);
 
         var GameSettingsLabel = __instance.GameSettingsButton.transform.parent.parent.FindChild("GameSettingsLabel").GetComponent<TextMeshPro>();
         GameSettingsLabel.DestroyTranslator();
