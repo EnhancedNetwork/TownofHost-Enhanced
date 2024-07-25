@@ -280,7 +280,7 @@ public class GameSettingMenuPatch
             Result.Do(x => x.SetHidden(true));
             
             ShouldReveal = false;
-            GameOptionsMenuPatch.ReOpenSettings(false, ModGameOptionsMenu.TabIndex);
+            GameOptionsMenuPatch.ReOpenSettings(ModGameOptionsMenu.TabIndex);
             _ = new LateTask(() => ShouldReveal = true, 0.38f);
         }
     }

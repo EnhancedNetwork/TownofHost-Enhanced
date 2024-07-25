@@ -54,10 +54,8 @@ public static class GameOptionsMenuPatch
     {
         Instance ??= __instance;
         // When is vanilla tab, run vanilla code
-        if (ModGameOptionsMenu.TabIndex < 3)
-        {
-            return true;
-        }
+        if (ModGameOptionsMenu.TabIndex < 3) return true;
+        
         __instance.scrollBar.SetYBoundsMax(CalculateScrollBarYBoundsMax());
         __instance.StartCoroutine(CoRoutine().WrapToIl2Cpp());
         return false;
@@ -265,7 +263,7 @@ public static class GameOptionsMenuPatch
                 break;
         }
     }
-    public static void ReOpenSettings(bool IsPresset, int index = 4)
+    public static void ReOpenSettings(int index = 4)
     {
         //Close setting menu
         GameSettingMenu.Instance.Close();
@@ -279,15 +277,17 @@ public static class GameOptionsMenuPatch
             hostButtons.transform.FindChild("Edit").GetComponent<PassiveButton>().ReceiveClickDown();
         }, 0.1f, "Click Edit Button");
 
+       
+        if (index > 3)
+            return;
+
         // Change tab to Original Tab
-        if (!IsPresset)
+        _ = new LateTask(() =>
         {
-            _ = new LateTask(() =>
-            {
-                if (!GameStates.IsLobby || GameSettingMenu.Instance == null) return;
-                GameSettingMenu.Instance.ChangeTab(index, Controller.currentTouchType == Controller.TouchType.Joystick);
-            }, 0.28f, "Change Tab");
-        }
+            if (!GameStates.IsLobby || GameSettingMenu.Instance == null) return;
+            GameSettingMenu.Instance.ChangeTab(index, Controller.currentTouchType == Controller.TouchType.Joystick);
+        }, 0.28f, "Change Tab");
+
     }
     [HarmonyPatch(nameof(GameOptionsMenu.ValueChanged)), HarmonyPrefix]
     private static bool ValueChangedPrefix(GameOptionsMenu __instance, OptionBehaviour option)
@@ -631,7 +631,7 @@ public static class StringOptionPatch
             item.SetValue(__instance.GetInt());
             if (item is PresetOptionItem)
             {
-                GameOptionsMenuPatch.ReOpenSettings(true);
+                GameOptionsMenuPatch.ReOpenSettings(1);
             }
             else if (item is StringOptionItem && item.Name == "GameMode")
             {
@@ -640,7 +640,7 @@ public static class StringOptionPatch
                 else if (__instance.GetInt() != 2 && GameStates.IsHideNSeek)
                     item.SetValue(2);
 
-                GameOptionsMenuPatch.ReOpenSettings(false);
+                GameOptionsMenuPatch.ReOpenSettings();
                
             }
             return false;
