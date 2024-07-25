@@ -194,6 +194,7 @@ public static class GameOptionsMenuPatch
             return -num - 1.65f;
         }
     }
+
     private static void OptionBehaviourSetSizeAndPosition(OptionBehaviour optionBehaviour, OptionItem option, OptionTypes type)
     {
         Vector3 positionOffset = new(0f, 0f, 0f);
@@ -583,10 +584,11 @@ public static class StringOptionPatch
         {
             var item = OptionItem.AllOptions[index];
             var name = item.GetName();
+            var name1 = name;
             var language = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
             //Logger.Info($" Language: {language}", "StringOption.Initialize");
 
-            if (EnumHelper.GetAllValues<CustomRoles>().Any(x => GetString($"{x}") == name.RemoveHtmlTags()))
+            if (EnumHelper.GetAllValues<CustomRoles>().Find(x => GetString($"{x}") == name1.RemoveHtmlTags(), out var role))
             {
                 name = $"<size=3.5>{name}</size>";
                 __instance.TitleText.fontWeight = FontWeight.Black;
@@ -595,12 +597,28 @@ public static class StringOptionPatch
                     SupportedLangs.Russian or SupportedLangs.Japanese or SupportedLangs.SChinese or SupportedLangs.TChinese => 0.15f,
                     _ => 0.35f,
                 };
+
+                SetupHelpIcon(role, __instance);
             }
             __instance.TitleText.text = name;
             return false;
         }
         return true;
     }
+    private static void SetupHelpIcon(CustomRoles role, StringOption option)
+    {
+        var template = option.transform.FindChild("MinusButton (1)");
+        var icon = Object.Instantiate(template, template.parent, true);
+        icon.name = $"{role}HelpIcon";
+        var text = icon.FindChild("Plus_TMP").GetComponent<TextMeshPro>();
+        text.text = "?";
+        text.color = Color.white;
+        icon.FindChild("InactiveSprite").GetComponent<SpriteRenderer>().color = Color.black;
+        icon.FindChild("ActiveSprite").GetComponent<SpriteRenderer>().color = Color.gray;
+        icon.localPosition += new Vector3(-0.8f, 0f, 0f);
+        icon.SetAsLastSibling();
+    }
+
     [HarmonyPatch(nameof(StringOption.UpdateValue)), HarmonyPrefix]
     private static bool UpdateValuePrefix(StringOption __instance)
     {
@@ -671,6 +689,24 @@ public static class StringOptionPatch
     [HarmonyPatch(nameof(StringOption.Decrease)), HarmonyPrefix]
     public static bool DecreasePrefix(StringOption __instance)
     {
+        //Credit For SetupHelpIcon to EHR https://github.com/Gurge44/EndlessHostRoles/blob/main/Patches/GameOptionsMenuPatch.cs
+
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index) && !__instance.transform.FindChild("MinusButton (1)").GetComponent<PassiveButton>().activeSprites.activeSelf)
+        {
+            var item = OptionItem.AllOptions[index];
+            var name = item.GetName();
+            if (Enum.GetValues<CustomRoles>().Find(x => GetString($"{x}") == name.RemoveHtmlTags(), out var role))
+            {
+                var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
+                var str = Translator.GetString($"{roleName}InfoLong");
+                int Lenght = str.Length > 360 ? 360 : str.Length;
+                var infoLong = str[(str.IndexOf('\n') + 1)..Lenght];
+                var ColorRole = Utils.ColorString(Utils.GetRoleColor(role), role.ToString());
+                var info = $"<size=70%>{ColorRole}: {infoLong}</size>";
+                GameSettingMenu.Instance.MenuDescriptionText.text = info;
+                return false;
+            }
+        }
         if (__instance.Value == 0)
         {
             __instance.Value = __instance.Values.Length - 1;
