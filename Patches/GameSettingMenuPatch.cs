@@ -233,6 +233,8 @@ public class GameSettingMenuPatch
         InputField = TextField;
         TextField.textArea.outputText.transform.localScale = new Vector3(3.5f, 2f, 1f);
         TextField.textArea.outputText.font = PLuLabel.font;
+        TextField.charCountText.gameObject.SetActive(false);
+
         var button = TextField.transform.FindChild("ChatSendButton");
 
         Object.Destroy(button.FindChild("Normal").FindChild("Icon").GetComponent<SpriteRenderer>());
@@ -413,14 +415,6 @@ public static class FixInputChatField
             Vector2 size = __instance.Background.size;
             size.y = Math.Max(0.62f, __instance.textArea.TextHeight + 0.2f);
             __instance.Background.size = size;
-            int length = __instance.textArea.text.Length;
-            ((TMP_Text)__instance.charCountText).text = string.Format("{0}/100", (object)length);
-            if (length < 75)
-                ((Graphic)__instance.charCountText).color = Color.black;
-            else if (length < 100)
-                ((Graphic)__instance.charCountText).color = new Color(1f, 1f, 0.0f, 1f);
-            else
-                ((Graphic)__instance.charCountText).color = Color.red;
             return false;
         }
         return true;
