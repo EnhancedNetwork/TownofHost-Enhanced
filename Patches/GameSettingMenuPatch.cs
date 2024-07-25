@@ -262,16 +262,19 @@ public class GameSettingMenuPatch
             HiddenBySearch.Do(x => x.SetHidden(false));
             SearchWinners.Clear();
             string text = textField.textArea.text.Trim().ToLower();
-            if (text == "loonie") text = "dictator";
-            Logger.Info($"Current text: {text}", "SearchBar Text ");
             var Result = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) 
             && !GetString($"{x.Name}").ToLower().Contains(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
             HiddenBySearch = Result;
-            Result.Do(x => x.SetHidden(true));
             SearchWinners = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3) && !Result.Contains(x)).ToList();
-            SearchWinners.Do(x => Logger.Info($"Searching for {x.Name}", "Searching For test"));
+            if (!SearchWinners.Any())
+            {
+                HiddenBySearch.Clear();
+                Logger.SendInGame(GetString("SearchNoResult")); // okay so showpopup nor this will overlay the menu, but I use this just for the sound lol
+                return;
+            }
 
-
+            Result.Do(x => x.SetHidden(true));
+            
             ShouldReveal = false;
             GameOptionsMenuPatch.ReOpenSettings(false, ModGameOptionsMenu.TabIndex);
             _ = new LateTask(() => ShouldReveal = true, 0.38f);
