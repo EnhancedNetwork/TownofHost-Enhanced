@@ -417,77 +417,70 @@ public static class Utils
     }
     public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool notShowAddOns = false)
     {
-        string RoleText = "Invalid Role";
-        Color RoleColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
-
-        var targetMainRole = Main.PlayerStates[targetId].MainRole;
-        var targetSubRoles = Main.PlayerStates[targetId].SubRoles;
-        
-        // If a player is possessed by the Dollmaster swap each other's role and add-ons for display for every other client other than Dollmaster and target.
-        if (DollMaster.IsControllingPlayer)
-        {
-            if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
-            {
-                if (seerId != DollMaster.DollMasterTarget.PlayerId && targetId == DollMaster.DollMasterTarget.PlayerId)
-                    targetSubRoles = Main.PlayerStates[DollMaster.controllingTarget.PlayerId].SubRoles;
-                else if (seerId != DollMaster.controllingTarget.PlayerId && targetId == DollMaster.controllingTarget.PlayerId)
-                    targetSubRoles = Main.PlayerStates[DollMaster.DollMasterTarget.PlayerId].SubRoles;
-            }
-        }
-
-        RoleText = GetRoleName(targetMainRole);
-        RoleColor = GetRoleColor(targetMainRole);
+        string roleText = "Invalid Role";
+        Color roleColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
         try
         {
+            var targetPlayerState = Main.PlayerStates[targetId];
+            var targetMainRole = targetPlayerState.MainRole;
+            var targetSubRoles = targetPlayerState.SubRoles;
+
+            if (DollMaster.IsControllingPlayer)
+            {
+                var dollMasterTarget = DollMaster.DollMasterTarget;
+                var controllingTarget = DollMaster.controllingTarget;
+
+                if (dollMasterTarget != null && controllingTarget != null)
+                {
+                    if (seerId != dollMasterTarget.PlayerId && targetId == dollMasterTarget.PlayerId)
+                        targetSubRoles = Main.PlayerStates[controllingTarget.PlayerId].SubRoles;
+                    else if (seerId != controllingTarget.PlayerId && targetId == controllingTarget.PlayerId)
+                        targetSubRoles = Main.PlayerStates[dollMasterTarget.PlayerId].SubRoles;
+                }
+            }
+
+            roleText = GetRoleName(targetMainRole);
+            roleColor = GetRoleColor(targetMainRole);
+
             if (targetSubRoles.Any())
             {
                 var seer = GetPlayerById(seerId);
                 var target = GetPlayerById(targetId);
 
-                if (seer == null || target == null) return (RoleText, RoleColor);
+                if (seer == null || target == null) return (roleText, roleColor);
 
-                // if player last imp
                 if (LastImpostor.currentId == targetId)
-                    RoleText = GetRoleString("Last-") + RoleText;
+                    roleText = GetRoleString("Last-") + roleText;
 
                 if (Options.NameDisplayAddons.GetBool() && !notShowAddOns)
                 {
                     var seerPlatform = seer.GetClient()?.PlatformData.Platform;
                     var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
+                    var isConsolePlatform = seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch;
 
-                    static bool Checkif(string str) {
-
-                        string[] strings = ["*Prefix", "INVALID"];
-                        return strings.Any(str.Contains); 
-                    }
-                    static string Getname(string str) => !Checkif(GetString($"Prefix.{str}")) ? GetString($"Prefix.{str}") : GetString($"{str}");
-
-                    // if the player is playing on a console platform
-                    if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
+                    foreach (var subRole in targetSubRoles)
                     {
-                        // By default, censorship is enabled on consoles
-                        // Need to set add-ons colors without endings "</color>"
+                        if (subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole))
+                        {
+                            var subRoleName = GetString($"Prefix.{subRole}");
+                            if (subRoleName.Contains("*Prefix") || subRoleName.Contains("INVALID"))
+                            {
+                                subRoleName = GetString($"{subRole}");
+                            }
 
-
-                        // colored role
-                        RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
-
-                        // colored add-ons
-                        foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname($"{subRole}")}) " : $"{Getname($"{subRole}")} ") + RoleText;
-                    }
-                    // default
-                    else
-                    {
-                        foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname($"{subRole}")}) " : $"{Getname($"{subRole}")} ") + RoleText;
+                            var formattedSubRole = addBracketsToAddons ? $"({subRoleName}) " : $"{subRoleName} ";
+                            roleText = isConsolePlatform
+                                ? ColorStringWithoutEnding(GetRoleColor(subRole), formattedSubRole) + roleText
+                                : ColorString(GetRoleColor(subRole), formattedSubRole) + roleText;
+                        }
                     }
                 }
 
-                foreach (var subRole in targetSubRoles.ToArray())
+                foreach (var subRole in targetSubRoles)
                 {
                     if (seer.ShowSubRoleTarget(target, subRole))
+                    {
                         switch (subRole)
                         {
                             case CustomRoles.Madmate:
@@ -497,19 +490,19 @@ public static class Utils
                             case CustomRoles.Infected:
                             case CustomRoles.Contagious:
                             case CustomRoles.Admired:
-                                RoleColor = GetRoleColor(subRole);
-                                RoleText = GetRoleString($"{subRole}-") + RoleText;
+                                roleColor = GetRoleColor(subRole);
+                                roleText = GetRoleString($"{subRole}-") + roleText;
                                 break;
-
                         }
+                    }
                 }
             }
 
-            return (RoleText, RoleColor);
+            return (roleText, roleColor);
         }
         catch
         {
-            return (RoleText, RoleColor);
+            return (roleText, roleColor);
         }
     }
     public static string GetKillCountText(byte playerId, bool ffa = false)

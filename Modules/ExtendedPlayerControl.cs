@@ -1063,12 +1063,15 @@ static class ExtendedPlayerControl
         if (seer == null) return false;
         if (target == null) target = seer;
 
-        if (seer.PlayerId == target.PlayerId) return true;
-        else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
-        else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
-        else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !subRole.IsBetrayalAddon()) return true;
+        var seerId = seer.PlayerId;
+        var targetId = target.PlayerId;
 
-        else if ((subRole is CustomRoles.Madmate
+        if (seerId == targetId) return true;
+        if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
+        if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
+        if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !subRole.IsBetrayalAddon()) return true;
+
+        if ((subRole is CustomRoles.Madmate
                 or CustomRoles.Sidekick
                 or CustomRoles.Recruit
                 or CustomRoles.Admired
