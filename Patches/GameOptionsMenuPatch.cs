@@ -278,7 +278,7 @@ public static class GameOptionsMenuPatch
             hostButtons.transform.FindChild("Edit").GetComponent<PassiveButton>().ReceiveClickDown();
         }, 0.1f, "Click Edit Button");
 
-        // Change tab to "Mod Settings"
+        // Change tab to Original Tab
         if (!IsPresset)
         {
             _ = new LateTask(() =>
