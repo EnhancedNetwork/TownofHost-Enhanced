@@ -374,10 +374,5 @@ internal class Councillor : RoleBase
         }
     }
 
-    public override string GetProgressText(byte playerId, bool coooms)
-    {
-        var player = Utils.GetPlayerById(playerId);
-        if (player == null) return "Invalid";
-        return Utils.ColorString(AbilityLimit <= 0 ? Color.gray : Utils.GetRoleColor(CustomRoles.Councillor), $"({AbilityLimit})");
-    }
+    public override string GetProgressText(byte playerId, bool coooms) => Utils.ColorString(AbilityLimit <= 0 ? Color.gray : Utils.GetRoleColor(CustomRoles.Councillor), $"({AbilityLimit})") ?? "Invalid";
 }
