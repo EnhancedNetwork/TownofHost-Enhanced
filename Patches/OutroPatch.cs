@@ -130,6 +130,8 @@ class EndGamePatch
         foreach (var pc in winner.ToArray())
         {
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw && pc.Is(CustomRoles.GM)) continue;
+            // Check "Contains" to avoid adding players twice
+            if (Main.winnerList.Contains(pc.PlayerId)) continue;
 
             EndGameResult.CachedWinners.Add(new CachedPlayerData(pc.Data));
             Main.winnerList.Add(pc.PlayerId);

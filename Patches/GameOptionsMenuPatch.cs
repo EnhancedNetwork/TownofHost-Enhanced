@@ -1,4 +1,3 @@
-using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;
@@ -627,21 +626,18 @@ public static class StringOptionPatch
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
-
             item.SetValue(__instance.GetInt());
-            if (item is PresetOptionItem)
+            if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {
-                GameOptionsMenuPatch.ReOpenSettings(1);
-            }
-            else if (item is StringOptionItem && item.Name == "GameMode")
-            {
-                if (__instance.GetInt() == 2 && !GameStates.IsHideNSeek) //Hide And Seek
-                    item.SetValue(0);
-                else if (__instance.GetInt() != 2 && GameStates.IsHideNSeek)
-                    item.SetValue(2);
-
-                GameOptionsMenuPatch.ReOpenSettings();
-               
+                if (Options.GameMode.GetInt() == 2 && !GameStates.IsHideNSeek) //Hide And Seek
+                {
+                    Options.GameMode.SetValue(0);
+                }
+                else if (Options.GameMode.GetInt() != 2 && GameStates.IsHideNSeek)
+                {
+                    Options.GameMode.SetValue(2);
+                }
+                GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode" ? 1 : 4);
             }
             return false;
         }

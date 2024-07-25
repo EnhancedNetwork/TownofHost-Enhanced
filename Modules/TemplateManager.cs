@@ -173,7 +173,7 @@ public static class TemplateManager
         {
             if (playerId == 0xff)
                 HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
-            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, replay: true);
+            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, noReplay: true);
         }
         else foreach (string x in sendList.ToArray())
             {
@@ -186,7 +186,7 @@ public static class TemplateManager
                     rmv = rmv.Replace("</title>", "");
                 }
 
-                Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, replay: true);
+                Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, noReplay: true);
             }
     }
 

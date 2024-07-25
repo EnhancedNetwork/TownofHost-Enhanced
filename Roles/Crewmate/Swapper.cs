@@ -156,14 +156,14 @@ internal class Swapper : RoleBase
 
                         pc.ShowInfoMessage(isUI, GetString("CancelSwapDueToTarget"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                     }
-                    else Utils.SendMessage(string.Format(GetString("SwapperPreResult"), target1.GetRealName(), target2.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                    else pc.ShowInfoMessage(isUI, string.Format(GetString("SwapperPreResult"), target1.GetRealName(), target2.GetRealName()), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
 
                     return true;
                 }
                 else if (Vote[pc.PlayerId] == 253 && VoteTwo[pc.PlayerId] == 253)
                 {
                     Vote[pc.PlayerId] = dp.PlayerId;
-                    Utils.SendMessage(GetString("Swap1"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                    pc.ShowInfoMessage(isUI, GetString("Swap1"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
 
                     return true;
                 }
@@ -172,7 +172,7 @@ internal class Swapper : RoleBase
                     if (dp.PlayerId != Vote[pc.PlayerId])
                     {
                         VoteTwo[pc.PlayerId] = dp.PlayerId;
-                        Utils.SendMessage(GetString("Swap2"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                        pc.ShowInfoMessage(isUI, GetString("Swap2"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
 
                         var target1 = Utils.GetPlayerById(Vote[pc.PlayerId]);
                         var target2 = Utils.GetPlayerById(VoteTwo[pc.PlayerId]);
@@ -186,9 +186,9 @@ internal class Swapper : RoleBase
 
                             pc.ShowInfoMessage(isUI, GetString("CancelSwapDueToTarget"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                         }
-                        else Utils.SendMessage(string.Format(GetString("SwapperPreResult"), target1.GetRealName(), target2.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                        else pc.ShowInfoMessage(isUI, string.Format(GetString("SwapperPreResult"), target1.GetRealName(), target2.GetRealName()), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                     }
-                    else Utils.SendMessage(GetString("Swap1=Swap2"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                    else pc.ShowInfoMessage(isUI, GetString("Swap1=Swap2"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
 
                     return true;
                 }

@@ -282,16 +282,17 @@ internal class PlagueDoctor : RoleBase
         {
             InfectActive = false;
 
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
+            foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())
+            {
+                CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
+            }
+
             foreach (PlayerControl player in Main.AllAlivePlayerControls)
             {
                 if (player.Is(CustomRoles.PlagueDoctor)) continue;
                 player.SetDeathReason(PlayerState.DeathReason.Infected);
                 player.RpcMurderPlayer(player);
-            }
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
-            foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())
-            {
-                CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
             }
         }
     }

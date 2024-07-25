@@ -1,4 +1,4 @@
-using System;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using static TOHE.Options;
 
@@ -75,7 +75,7 @@ public static class Workhorse
         if (AmongUsClient.Instance.AmHost)
         {
             Add(pc.PlayerId);
-            pc.Data.RpcSetTasks(Array.Empty<byte>()); // Redistribute tasks
+            pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); // Redistribute tasks
             pc.SyncSettings();
             Utils.NotifyRoles(SpecifySeer: pc);
         }

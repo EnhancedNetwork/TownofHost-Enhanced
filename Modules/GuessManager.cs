@@ -89,6 +89,7 @@ public static class GuessManager
         else Utils.SendMessage(message, player.PlayerId, title);
     }
 
+    public static readonly Dictionary<byte, int> GuesserGuessed = [];
     public static bool GuesserMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;
@@ -185,7 +186,7 @@ public static class GuessManager
                 GuessMaster.OnGuess(role);
                 bool guesserSuicide = false;
 
-                if (!Main.GuesserGuessed.ContainsKey(pc.PlayerId)) Main.GuesserGuessed.Add(pc.PlayerId, 0);
+                if (!GuesserGuessed.ContainsKey(pc.PlayerId)) GuesserGuessed.Add(pc.PlayerId, 0);
 
                 if (pc.GetRoleClass().GuessCheck(isUI, pc, target, role, ref guesserSuicide)) return true;
 
@@ -336,7 +337,7 @@ public static class GuessManager
 
                 Logger.Info($" Player：{target.GetNameWithRole().RemoveHtmlTags()} was guessed", "Guesser");
 
-                Main.GuesserGuessed[pc.PlayerId]++;
+                GuesserGuessed[pc.PlayerId]++;
 
                 if (pc.GetRoleClass().CheckMisGuessed(isUI, pc, target, role, ref guesserSuicide)) return true;
 
@@ -352,7 +353,8 @@ public static class GuessManager
                         RpcGuesserMurderPlayer(dp);
 
                         if (dp == pc) GuessMaster.OnGuess(role, isMisguess: true, dp: dp);
-                        
+
+                        Main.PlayersDiedInMeeting.Add(dp.PlayerId);
                         MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
                         Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);

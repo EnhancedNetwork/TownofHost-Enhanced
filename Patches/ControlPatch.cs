@@ -260,11 +260,11 @@ internal class ControllerManagerUpdatePatch
                 Logger.SendInGame(GetString("CancelStartCountDown"));
             }
             // Displays a description of the currently valid settings
-            if (GetKeysDown(KeyCode.N, KeyCode.LeftShift, KeyCode.LeftControl))
-            {
-                Main.isChatCommand = true;
-                Utils.ShowActiveSettingsHelp();
-            }
+            //if (GetKeysDown(KeyCode.N, KeyCode.LeftShift, KeyCode.LeftControl))
+            //{
+            //    Main.isChatCommand = true;
+            //    Utils.ShowActiveSettingsHelp();
+            //}
             // Displays the currently valid settings
             if (GetKeysDown(KeyCode.N, KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftShift))
             {

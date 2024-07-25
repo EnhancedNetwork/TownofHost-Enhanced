@@ -1,5 +1,3 @@
-using AmongUs.GameOptions;
-
 namespace TOHE;
 
 [HarmonyPatch(typeof(RoleOptionSetting), nameof(RoleOptionSetting.UpdateValuesAndText))]

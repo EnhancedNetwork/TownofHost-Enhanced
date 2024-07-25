@@ -46,7 +46,7 @@ internal class Bodyguard : RoleBase
 
             if (bodyguard.Is(CustomRoles.Madmate) && killer.GetCustomRole().IsImpostorTeam())
             {
-                Logger.Info($"{bodyguard.GetRealName()} He was a traitor, so he chose to ignore the murder scene", "Bodyguard");
+                Logger.Info($"{bodyguard.GetRealName()} He was a impostor, so he chose to ignore the murder scene", "Bodyguard");
             }
             else if (bodyguard.CheckForInvalidMurdering(killer))
             {
