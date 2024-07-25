@@ -1375,7 +1375,7 @@ class FixedUpdateInNormalGamePatch
 
                             if (isExiled)
                             {
-                                if (Main.PlayersDiedInMeeting.TryGetValue(deathId, out _))
+                                if (Main.PlayersDiedInMeeting.Contains(deathId))
                                 {
                                     partnerPlayer.Data.IsDead = true;
                                     partnerPlayer.RpcExileV2();
