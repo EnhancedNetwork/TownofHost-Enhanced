@@ -167,6 +167,7 @@ internal class Retributionist : RoleBase
             target.SetDeathReason(PlayerState.DeathReason.Revenge);
             if (GameStates.IsMeeting)
             {
+                Main.PlayersDiedInMeeting.Add(target.PlayerId);
                 GuessManager.RpcGuesserMurderPlayer(target);
                 MurderPlayerPatch.AfterPlayerDeathTasks(pc, target, true);
             }
