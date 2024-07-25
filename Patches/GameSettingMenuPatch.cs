@@ -1,6 +1,7 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.TextCore;
 using UnityEngine.UI;
 using static TOHE.Translator;
 using static UnityEngine.RemoteConfigSettingsHelper;
@@ -55,7 +56,7 @@ public class GameSettingMenuPatch
                 TabGroup.Addons => "#ff9ace",
                 _ => "#ffffff",
             };
-            label.fontStyle = FontStyles.UpperCase;
+            label.fontStyle = TMPro.FontStyles.UpperCase;
             label.text = $"<color={htmlcolor}>{GetString("TabGroup." + tab)}</color>";
 
             _ = ColorUtility.TryParseHtmlString(htmlcolor, out Color tabColor);
@@ -115,7 +116,7 @@ public class GameSettingMenuPatch
         
         var textLabel = gameSettingButton.GetComponentInChildren<TextMeshPro>();
         textLabel.DestroyTranslator();
-        textLabel.fontStyle = FontStyles.UpperCase;
+        textLabel.fontStyle = TMPro.FontStyles.UpperCase;
         textLabel.text = GetString("TabVanilla.GameSettings");
         //gameSettingButton.activeTextColor = gameSettingButton.inactiveTextColor = Color.black;
         //gameSettingButton.selectedTextColor = Color.blue;
@@ -221,7 +222,6 @@ public class GameSettingMenuPatch
         plus.disabledTextColor = new Color(255f, 255f, 255f);
         plus.selectedTextColor = new Color(255f, 255f, 255f);
 
-
         plus.transform.localPosition = new Vector3(1.62f, 1.87f, 1f);
 
         var GameSettingsLabel = __instance.GameSettingsButton.transform.parent.parent.FindChild("GameSettingsLabel").GetComponent<TextMeshPro>();
@@ -233,7 +233,8 @@ public class GameSettingMenuPatch
         TextField.transform.localScale = new Vector3(0.3f, 0.59f, 1);
         TextField.transform.localPosition = new Vector3(-2.07f, -2.57f, -5f); 
         InputField = TextField;
-        TextField.textArea.outputText.transform.localScale = new Vector3(3f, 2f, 1f);
+        TextField.textArea.outputText.transform.localScale = new Vector3(3.5f, 2f, 1f);
+        TextField.textArea.outputText.font = PLuLabel.font;
         var button = TextField.transform.FindChild("ChatSendButton");
 
         Object.Destroy(button.FindChild("Normal").FindChild("Icon").GetComponent<SpriteRenderer>());
@@ -305,8 +306,10 @@ public class GameSettingMenuPatch
             }
         }
 
-        if (ShouldReveal) // Un-hiding options here would do nothing
+        if (ShouldReveal) 
         {
+            HiddenBySearch.Do(x => x.SetHidden(false));
+            HiddenBySearch.Clear();
             SearchWinners.Clear();
         }
 
