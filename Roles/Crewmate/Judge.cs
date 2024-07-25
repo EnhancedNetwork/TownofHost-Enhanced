@@ -205,6 +205,7 @@ internal class Judge : RoleBase
                     dp.SetRealKiller(pc);
                     GuessManager.RpcGuesserMurderPlayer(dp);
 
+                    Main.PlayersDiedInMeeting.Add(dp.PlayerId);
                     MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
                     NotifyRoles(isForMeeting: false, NoCache: true);

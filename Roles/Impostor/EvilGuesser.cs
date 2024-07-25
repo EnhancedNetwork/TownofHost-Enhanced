@@ -61,7 +61,7 @@ internal class EvilGuesser : RoleBase
     public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
         // Check limit
-        if (Main.GuesserGuessed[guesser.PlayerId] >= EGCanGuessTime.GetInt())
+        if (GuessManager.GuesserGuessed[guesser.PlayerId] >= EGCanGuessTime.GetInt())
         {
             guesser.ShowInfoMessage(isUI, Translator.GetString("EGGuessMax"));
             return true;
