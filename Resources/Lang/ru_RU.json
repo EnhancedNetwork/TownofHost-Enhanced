@@ -2944,6 +2944,7 @@
   "StoreQF": "<color=#3333ff>Исправление</color>",
   "StoreBL": "<color=#691a2e>Вред</color>",
   "StoreNS": "<color=#663399>Ночное видение</color>",
+  "StoreINV": "<color=#663399>Potion of Invisibility</color>",
   "StoreNull": "<color=#888888>Ничего</color>",
   "PotionStore": "<color=#00ffa5>Зелье в магазине: </color>",
   "WaitQFPotion": "\n<color=#3333ff>Зелье исправления</color> ждет использования",
