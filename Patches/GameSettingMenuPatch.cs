@@ -154,7 +154,12 @@ public class GameSettingMenuPatch
         PLabel.DestroyTranslator();
         PLabel.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
         //PLabel.font = PLuLabel.font; 
-        PLabel.fontSizeMax = 2.45f; PLabel.fontSizeMin = 2.45f;
+        float size = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID switch
+        {
+            SupportedLangs.Russian => 1.45f,
+            _ => 2.45f,
+        };
+        (PLabel.fontSizeMax, PLabel.fontSizeMin) = (size, size);
 
         var TempMinus = GameObject.Find("MinusButton").gameObject;
         var GMinus = GameObject.Instantiate(__instance.GamePresetsButton.gameObject, preset.transform);
@@ -224,7 +229,13 @@ public class GameSettingMenuPatch
 
         var FreeChatField = DestroyableSingleton<ChatController>.Instance.freeChatField;
         var TextField = GameObject.Instantiate(FreeChatField, ParentLeftPanel.parent);
-        TextField.transform.localScale = new Vector3(0.3f, 0.59f, 1);
+        float Ysize = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID switch
+                {
+                    SupportedLangs.Russian => 0.69f, //nice
+                    _ => 0.59f,
+                };
+
+        TextField.transform.localScale = new Vector3(0.3f, Ysize, 1);
         TextField.transform.localPosition = new Vector3(-2.07f, -2.57f, -5f); 
         TextField.textArea.outputText.transform.localScale = new Vector3(3.5f, 2f, 1f);
         TextField.textArea.outputText.font = PLuLabel.font;
@@ -282,11 +293,13 @@ public class GameSettingMenuPatch
         if (HiddenBySearch.Any())
         {
             HiddenBySearch.Do(x => x.SetHidden(false));
+            
             GameOptionsMenuPatch.ReCreateSettings(GameOptionsMenuPatch.Instance);
+            
             HiddenBySearch.Clear();
         }
 
-        ModGameOptionsMenu.TabIndex = tabNum;
+       if (!previewOnly || tabNum != 1) ModGameOptionsMenu.TabIndex = tabNum;
 
         GameOptionsMenu settingsTab;
         PassiveButton button;
