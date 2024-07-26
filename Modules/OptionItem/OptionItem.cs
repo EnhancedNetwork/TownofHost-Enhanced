@@ -181,15 +181,12 @@ public abstract class OptionItem
     // Deprecated IsHidden function
     public virtual bool IsHiddenOn(CustomGameMode mode)
     {
-        return IsHidden || CheckSearchHidden() ||  (HideOptionInFFA != CustomGameMode.All && HideOptionInFFA == mode) || (HideOptionInHnS != CustomGameMode.All && HideOptionInHnS == mode) || (GameMode != CustomGameMode.All && GameMode != mode);
+        return CheckHidden() || (HideOptionInFFA != CustomGameMode.All && HideOptionInFFA == mode) || (HideOptionInHnS != CustomGameMode.All && HideOptionInHnS == mode) || (GameMode != CustomGameMode.All && GameMode != mode);
     }
-
-    public bool CheckSearchHidden()
+    private bool CheckHidden()
     {
-        if (!GameSettingMenuPatch.SearchWinners.Any())
-            return false;
-
         var LastParent = this.Id;
+
 
         for (var i = 0; i < 5; i++)
         {
@@ -197,11 +194,7 @@ public abstract class OptionItem
             LastParent = AllOptions.First(x => x.Id == LastParent).Parent.Id;
         }
 
-        if (!GameSettingMenuPatch.SearchWinners.Contains(AllOptions.First(x => x.Id == LastParent)))
-            return true;
-
-
-        return false;
+        return this.IsHidden || this.Parent?.IsHidden == true || AllOptions.First(x => x.Id == LastParent).IsHidden;
     }
     public string ApplyFormat(string value)
     {

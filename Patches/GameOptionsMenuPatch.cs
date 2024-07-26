@@ -277,7 +277,7 @@ public static class GameOptionsMenuPatch
         }, 0.1f, "Click Edit Button");
 
        
-        if (index > 3)
+        if (index < 3)
             return;
 
         // Change tab to Original Tab

@@ -99,7 +99,6 @@ public class GameSettingMenuPatch
         if (ShouldReveal)
         {
             HiddenBySearch.Do(x => x.SetHidden(false));
-            SearchWinners.Clear();
             HiddenBySearch.Clear();
         }
 
@@ -136,7 +135,7 @@ public class GameSettingMenuPatch
     public static StringOption PresetBehaviour;
     public static FreeChatInputField InputField;
     public static List<OptionItem> HiddenBySearch = [];
-    public static List<OptionItem> SearchWinners = [];
+   // public static List<OptionItem> SearchWinners = [];
 
     public static bool ShouldReveal = false;
 
@@ -264,12 +263,11 @@ public class GameSettingMenuPatch
             if (ModGameOptionsMenu.TabIndex < 3) return;
 
             HiddenBySearch.Do(x => x.SetHidden(false));
-            SearchWinners.Clear();
             string text = textField.textArea.text.Trim().ToLower();
             var Result = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) 
             && !GetString($"{x.Name}").ToLower().Contains(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
             HiddenBySearch = Result;
-            SearchWinners = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3) && !Result.Contains(x)).ToList();
+            var SearchWinners = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3) && !Result.Contains(x)).ToList();
             if (!SearchWinners.Any())
             {
                 HiddenBySearch.Clear();
@@ -278,10 +276,10 @@ public class GameSettingMenuPatch
             }
 
             Result.Do(x => x.SetHidden(true));
-            
+
             ShouldReveal = false;
             GameOptionsMenuPatch.ReOpenSettings(ModGameOptionsMenu.TabIndex);
-            _ = new LateTask(() => ShouldReveal = true, 0.38f);
+            _ = new LateTask(() => ShouldReveal = true, 0.38f, "ShouldReveal: TRUE");
         }
     }
 
@@ -317,7 +315,6 @@ public class GameSettingMenuPatch
         {
             HiddenBySearch.Do(x => x.SetHidden(false));
             HiddenBySearch.Clear();
-            SearchWinners.Clear();
         }
 
         if (tabNum < 3) return true;
