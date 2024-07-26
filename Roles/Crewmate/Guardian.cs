@@ -40,10 +40,9 @@ internal class Guardian : RoleBase
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
-        if (target.Is(CustomRoles.Guardian) && target.GetPlayerTaskState().IsTaskFinished)
+        if (role == CustomRoles.Guardian && target.GetPlayerTaskState().IsTaskFinished)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessGuardianTask"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessGuardianTask"));
+            guesser.ShowInfoMessage(isUI, GetString("GuessGuardianTask"));
             return true;
         }
         return false;

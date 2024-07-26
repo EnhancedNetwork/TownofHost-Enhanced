@@ -66,4 +66,39 @@ public static class AURoleOptions
         get => Opt.GetBool(BoolOptionNames.ShapeshifterLeaveSkin);
         set => Opt.SetBool(BoolOptionNames.ShapeshifterLeaveSkin, value);
     }
+    public static bool NoisemakerImpostorAlert
+    {
+        get => Opt.GetBool(BoolOptionNames.NoisemakerImpostorAlert);
+        set => Opt.SetBool(BoolOptionNames.NoisemakerImpostorAlert, value);
+    }
+    public static float NoisemakerAlertDuration
+    {
+        get => Opt.GetFloat(FloatOptionNames.NoisemakerAlertDuration);
+        set => Opt.SetFloat(FloatOptionNames.NoisemakerAlertDuration, value);
+    }
+    public static float PhantomCooldown
+    {
+        get => Opt.GetFloat(FloatOptionNames.PhantomCooldown);
+        set => Opt.SetFloat(FloatOptionNames.PhantomCooldown, value);
+    }
+    public static float PhantomDuration
+    {
+        get => Opt.GetFloat(FloatOptionNames.PhantomDuration);
+        set => Opt.SetFloat(FloatOptionNames.PhantomDuration, value);
+    }
+    public static float TrackerCooldown
+    {
+        get => Opt.GetFloat(FloatOptionNames.TrackerCooldown);
+        set => Opt.SetFloat(FloatOptionNames.TrackerCooldown, value);
+    }
+    public static float TrackerDuration
+    {
+        get => Opt.GetFloat(FloatOptionNames.TrackerDuration);
+        set => Opt.SetFloat(FloatOptionNames.TrackerDuration, value);
+    }
+    public static float TrackerDelay
+    {
+        get => Opt.GetFloat(FloatOptionNames.TrackerDelay);
+        set => Opt.SetFloat(FloatOptionNames.TrackerDelay, value);
+    }
 }

@@ -35,7 +35,7 @@ internal class Transporter : RoleBase
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        if ((completedTaskCount + 1) <= TransporterTeleportMax.GetInt())
+        if (player.IsAlive() && (completedTaskCount + 1) <= TransporterTeleportMax.GetInt())
         {
             Logger.Info($"Transporter: {player.GetNameWithRole().RemoveHtmlTags()} completed the task", "Transporter");
 
@@ -44,12 +44,12 @@ internal class Transporter : RoleBase
 
             if (AllAlivePlayer.Count >= 2)
             {
-                var target1 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
+                var target1 = AllAlivePlayer.RandomElement();
                 var positionTarget1 = target1.GetCustomPosition();
 
                 AllAlivePlayer.Remove(target1);
 
-                var target2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
+                var target2 = AllAlivePlayer.RandomElement();
                 var positionTarget2 = target2.GetCustomPosition();
 
                 target1.RpcTeleport(positionTarget2);

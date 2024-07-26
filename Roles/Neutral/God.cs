@@ -20,7 +20,7 @@ internal class God : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.God);
         NotifyGodAlive = BooleanOptionItem.Create(Id + 3, "NotifyGodAlive", true, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.God]);
-        CanGuess = BooleanOptionItem.Create(Id + 4, "CanGuess", false, TabGroup.NeutralRoles, false)
+        CanGuess = BooleanOptionItem.Create(Id + 4, GeneralOption.CanGuess, false, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.God]);
     }
 
@@ -35,13 +35,12 @@ internal class God : RoleBase
 
     public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if (guesser.Is(CustomRoles.God) && !CanGuess.GetBool())
+        if (!CanGuess.GetBool())
         {
-            if (!isUI) Utils.SendMessage(Translator.GetString("GuessDisabled"), guesser.PlayerId);
-            else guesser.ShowPopUp(Translator.GetString("GuessDisabled"));
+            Logger.Info($"Guess Disabled for this player {guesser.PlayerId}", "GuessManager");
+            guesser.ShowInfoMessage(isUI, Translator.GetString("GuessDisabled"));
             return true;
         }
-
         return false;
     }
 

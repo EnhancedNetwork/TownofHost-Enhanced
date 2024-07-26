@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Utils;
 
@@ -23,7 +22,7 @@ internal class Minion : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Minion);
-        AbilityCooldown = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(2.5f, 120f, 2.5f), 40f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
+        AbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(2.5f, 120f, 2.5f), 40f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
         AbilityTime = FloatOptionItem.Create(Id + 11, "MinionAbilityTime", new(1f, 10f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
@@ -36,6 +35,8 @@ internal class Minion : RoleBase
     {
         Playerids.Add(playerId);
     }
+    // EAC bans players when GA uses sabotage
+    public override bool CanUseSabotage(PlayerControl pc) => false;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.GuardianAngelCooldown = AbilityCooldown.GetFloat();

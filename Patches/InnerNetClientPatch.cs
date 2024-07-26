@@ -3,7 +3,7 @@ using InnerNet;
 
 namespace TOHE.Patches;
 
-enum GameDataTag : byte
+public enum GameDataTag : byte
 {
     DataFlag = 1,
     RpcFlag = 2,
@@ -38,30 +38,30 @@ internal class GameDataHandlerPatch
                             EAC.WarnHost();
                             return false;
                         }
-                    }
-                    else
-                    {
-                        if (AmongUsClient.Instance.AmHost)
+                        else
                         {
-                            if (obj == GameData.Instance)
+                            if (AmongUsClient.Instance.AmHost)
                             {
-                                Logger.Warn(string.Format("Received DataFlag for GameData {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
-                                EAC.WarnHost();
-                                return false;
-                            }
+                                if (obj == MeetingHud.Instance)
+                                {
+                                    Logger.Warn(string.Format("Received DataFlag for MeetingHud {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                    EAC.WarnHost();
+                                    return false;
+                                }
 
-                            if (obj == MeetingHud.Instance)
-                            {
-                                Logger.Warn(string.Format("Received DataFlag for MeetingHud {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
-                                EAC.WarnHost();
-                                return false;
-                            }
+                                if (obj == VoteBanSystem.Instance)
+                                {
+                                    Logger.Warn(string.Format("Received DataFlag for VoteBanSystem {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                    EAC.WarnHost();
+                                    return false;
+                                }
 
-                            if (obj == VoteBanSystem.Instance)
-                            {
-                                Logger.Warn(string.Format("Received DataFlag for VoteBanSystem {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
-                                EAC.WarnHost();
-                                return false;
+                                if (obj is NetworkedPlayerInfo)
+                                {
+                                    Logger.Warn(string.Format("Received DataFlag for NetworkedPlayerInfo {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                    EAC.WarnHost();
+                                    return false;
+                                }
                             }
                         }
                     }
@@ -108,6 +108,12 @@ internal class GameDataHandlerPatch
                         {
                             Utils.ErrorEnd("SceneChange Tutorial Hack");
                         }
+                        return false;
+                    }
+
+                    if (GameStates.IsInGame)
+                    {
+                        Logger.Warn(string.Format("Client {0} ({1}) tried to send SceneChangeFlag during mid of game.", client.PlayerName, client.Id), "GameDataHandlerPatch");
                         return false;
                     }
 
@@ -160,5 +166,41 @@ internal class StartGameHostPatch
     {
         if (ShipStatus.Instance != null)
             isStartingAsHost = false;
+    }
+}
+
+[HarmonyPatch]
+internal class AuthTimeoutPatch
+{
+    [HarmonyPatch(typeof(AuthManager._CoConnect_d__4), nameof(AuthManager._CoConnect_d__4.MoveNext))]
+    [HarmonyPatch(typeof(AuthManager._CoWaitForNonce_d__6), nameof(AuthManager._CoWaitForNonce_d__6.MoveNext))]
+    [HarmonyPrefix]
+    // From Reactor.gg
+    // https://github.com/NuclearPowered/Reactor/blob/master/Reactor/Patches/Miscellaneous/CustomServersPatch.cs
+    public static bool CoWaitforNoncePrefix(ref bool __result)
+    {
+        if (GameStates.IsVanillaServer)
+        {
+            return true;
+        }
+        __result = false;
+        return false;
+    }
+
+    // If you dont patch this, u still need to wait for 5s
+    // I have no idea why this is happening
+    [HarmonyPatch(typeof(AmongUsClient._CoJoinOnlinePublicGame_d__1), nameof(AmongUsClient._CoJoinOnlinePublicGame_d__1.MoveNext))]
+    [HarmonyPrefix]
+    public static void EnableUdpMatchmakingPrefix(AmongUsClient._CoJoinOnlinePublicGame_d__1 __instance)
+    {
+        // Skip to state 1 which just calls CoJoinOnlineGameDirect
+        if (__instance.__1__state == 0 && !ServerManager.Instance.IsHttp)
+        {
+            __instance.__1__state = 1;
+            __instance.__8__1 = new AmongUsClient.__c__DisplayClass1_0
+            {
+                matchmakerToken = string.Empty,
+            };
+        }
     }
 }

@@ -26,7 +26,7 @@ internal class Blackmailer : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Blackmailer);
         SkillCooldown = FloatOptionItem.Create(Id + 2, "BlackmailerSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Blackmailer])
            .SetValueFormat(OptionFormat.Seconds);
-        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 3, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Blackmailer]);
+        ShowShapeshiftAnimationsOpt = BooleanOptionItem.Create(Id + 3, GeneralOption.ShowShapeshiftAnimations, true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Blackmailer]);
     }
     public override void Init()
     {
@@ -86,7 +86,7 @@ internal class Blackmailer : RoleBase
         if (CheckBlackmaile(pc))
         {
             var playername = pc.GetRealName();
-            if( Doppelganger.DoppelVictim.TryGetValue(pc.PlayerId, out var doppelPlayerName)) playername = doppelPlayerName; 
+            if (Doppelganger.DoppelVictim.TryGetValue(pc.PlayerId, out var doppelPlayerName)) playername = doppelPlayerName; 
             AddMsg(string.Format(GetString("BlackmailerDead"), playername, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
         }
     }

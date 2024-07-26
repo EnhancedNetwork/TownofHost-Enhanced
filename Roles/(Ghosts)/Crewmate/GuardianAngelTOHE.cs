@@ -23,11 +23,11 @@ internal class GuardianAngelTOHE : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.GuardianAngelTOHE);
-        AbilityCooldown = FloatOptionItem.Create(Id + 10, "ProtectCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])
+        AbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.GuardianAngelBase_ProtectCooldown, new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])
             .SetValueFormat(OptionFormat.Seconds);
-        ProtectDur = IntegerOptionItem.Create(Id + 11, "ProtectDur", new(1, 120, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])
+        ProtectDur = IntegerOptionItem.Create(Id + 11, GeneralOption.GuardianAngelBase_ProtectionDuration, new(1, 120, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])
             .SetValueFormat(OptionFormat.Seconds);
-        ImpVis = BooleanOptionItem.Create(Id + 12, "ProtectVisToImp", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE]);
+        ImpVis = BooleanOptionItem.Create(Id + 12, GeneralOption.GuardianAngelBase_ImpostorsCanSeeProtect, true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE]);
     }
     public override void Init()
     {

@@ -1,7 +1,6 @@
 using Hazel;
 using System.Text;
 using TOHE.Modules;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -23,18 +22,18 @@ internal class Witch : RoleBase
     private static readonly Dictionary<byte, bool> SpellMode = [];
     private static readonly Dictionary<byte, HashSet<byte>> SpelledPlayer = [];
 
-    private enum SwitchTrigger
+    private enum SwitchTriggerList
     {
         TriggerKill,
         TriggerVent,
         TriggerDouble,
     };
-    private static SwitchTrigger NowSwitchTrigger;
+    private static SwitchTriggerList NowSwitchTrigger;
 
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Witch);
-        ModeSwitchActionOpt = StringOptionItem.Create(Id + 10, "WitchModeSwitchAction", EnumHelper.GetAllNames<SwitchTrigger>(), 2, TabGroup.ImpostorRoles, false)
+        ModeSwitchActionOpt = StringOptionItem.Create(Id + 10, GeneralOption.ModeSwitchAction, EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Witch]);
     }
     public override void Init()
@@ -48,7 +47,7 @@ internal class Witch : RoleBase
         playerIdList.Add(playerId);
         SpellMode.Add(playerId, false);
         SpelledPlayer.Add(playerId, []);
-        NowSwitchTrigger = (SwitchTrigger)ModeSwitchActionOpt.GetValue();
+        NowSwitchTrigger = (SwitchTriggerList)ModeSwitchActionOpt.GetValue();
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
@@ -100,10 +99,10 @@ internal class Witch : RoleBase
         bool needSwitch = false;
         switch (NowSwitchTrigger)
         {
-            case SwitchTrigger.TriggerKill:
+            case SwitchTriggerList.TriggerKill:
                 needSwitch = kill;
                 break;
-            case SwitchTrigger.TriggerVent:
+            case SwitchTriggerList.TriggerVent:
                 needSwitch = !kill;
                 break;
         }
@@ -141,7 +140,7 @@ internal class Witch : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (NowSwitchTrigger == SwitchTrigger.TriggerDouble)
+        if (NowSwitchTrigger == SwitchTriggerList.TriggerDouble)
         {
             return killer.CheckDoubleTrigger(target, () => { SetSpelled(killer, target); });
         }
@@ -189,13 +188,13 @@ internal class Witch : RoleBase
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Spell, [.. spelledIdList]);
         RemoveSpelledPlayer();
     }
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
         RemoveSpelledPlayer();
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (NowSwitchTrigger is SwitchTrigger.TriggerVent)
+        if (NowSwitchTrigger is SwitchTriggerList.TriggerVent)
         {
             SwitchSpellMode(pc.PlayerId, false);
         }
@@ -211,9 +210,9 @@ internal class Witch : RoleBase
         }
         return string.Empty;
     }
-    public override string GetLowerText(PlayerControl witch, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    public override string GetLowerText(PlayerControl witch, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
-        if (witch == null || isForMeeting || seen == null || witch != seen) return string.Empty;
+        if (!witch.IsAlive() || isForMeeting || witch != seen) return string.Empty;
 
         var str = new StringBuilder();
         if (isForHud)
@@ -224,7 +223,7 @@ internal class Witch : RoleBase
         {
             str.Append($"{GetString("Mode")}: ");
         }
-        if (NowSwitchTrigger == SwitchTrigger.TriggerDouble)
+        if (NowSwitchTrigger == SwitchTriggerList.TriggerDouble)
         {
             str.Append(GetString("WitchModeDouble"));
         }
@@ -236,7 +235,7 @@ internal class Witch : RoleBase
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        if (IsSpellMode(playerId) && NowSwitchTrigger != SwitchTrigger.TriggerDouble)
+        if (IsSpellMode(playerId) && NowSwitchTrigger != SwitchTriggerList.TriggerDouble)
         {
             hud.KillButton.OverrideText(GetString("WitchSpellButtonText"));
         }

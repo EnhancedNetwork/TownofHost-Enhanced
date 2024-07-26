@@ -17,11 +17,12 @@ internal class ChangeRoleSettings
 {
     public static void Postfix(AmongUsClient __instance)
     {
-        SetUpRoleTextPatch.IsInIntro = true;
+        if (AmongUsClient.Instance.AmHost)
+            SetUpRoleTextPatch.IsInIntro = true;
 
         Main.OverrideWelcomeMsg = "";
 
-        Logger.Msg("Is Started", "AssignRoles");
+        Logger.Msg("Is Started", "Initialization");
 
         try
         {
@@ -34,6 +35,9 @@ internal class ChangeRoleSettings
                     Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
                     Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
                     Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Noisemaker, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Phantom, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Tracker, 0, 0);
                 }
             }
             else if (GameStates.IsHideNSeek)
@@ -44,6 +48,7 @@ internal class ChangeRoleSettings
 
             Main.PlayerStates = [];
 
+            KillTimerManager.Initializate();
             Main.AllPlayerKillCooldown.Clear();
             Main.AllPlayerSpeed.Clear();
             Main.AllPlayerCustomRoles.Clear();
@@ -53,6 +58,8 @@ internal class ChangeRoleSettings
             Main.LastEnteredVent.Clear();
             Main.LastEnteredVentLocation.Clear();
 
+            Main.PlayersDiedInMeeting.Clear();
+            GuessManager.GuesserGuessed.Clear();
             Main.AfterMeetingDeathPlayers.Clear();
             Main.ResetCamPlayerList.Clear();
             Main.clientIdList.Clear();
@@ -63,6 +70,7 @@ internal class ChangeRoleSettings
             Main.ShapeshiftTarget.Clear();
             Main.AllKillers.Clear();
             Main.OverDeadPlayerList.Clear();
+            Utils.LateExileTask.Clear();
 
             Main.LastNotifyNames.Clear();
             Main.PlayerColors.Clear();
@@ -74,6 +82,9 @@ internal class ChangeRoleSettings
             Main.MeetingsPassed = 0;
             Main.MeetingIsStarted = false;
             Main.introDestroyed = false;
+            GameEndCheckerForNormal.ShouldNotCheck = false;
+            GameEndCheckerForNormal.ForEndGame = false;
+            GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
 
             ChatManager.ResetHistory();
             ReportDeadBodyPatch.CanReport = [];
@@ -95,20 +106,22 @@ internal class ChangeRoleSettings
             // Clear last exiled
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = null;
 
-            //名前の記録
-            //Main.AllPlayerNames = [];
+            IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
+
+            // Sync Player Names
             RPC.SyncAllPlayerNames();
+            //Main.AllPlayerNames = [];
 
             GhostRoleAssign.Init();
 
             Camouflage.Init();
 
-            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
+            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             if (invalidColor.Any())
             {
                 var msg = GetString("Error.InvalidColor");
                 Logger.SendInGame(msg);
-                msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.name}"));
+                msg += " " + string.Join(", ", invalidColor.Select(p => $"{p.Data.PlayerName}"));
                 Utils.SendMessage(msg);
                 Logger.Error(msg, "CoStartGame");
             }
@@ -126,7 +139,10 @@ internal class ChangeRoleSettings
             {
                 var colorId = pc.Data.DefaultOutfit.ColorId;
                 if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
-                Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId);
+                Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
+                {
+                    NormalOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set(pc.GetRealName(clientData: true), pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
+                };
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
@@ -139,7 +155,7 @@ internal class ChangeRoleSettings
                 pc.cosmetics.nameText.text = pc.name;
 
                 var outfit = pc.Data.DefaultOutfit;
-                Camouflage.PlayerSkins[pc.PlayerId] = new GameData.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
+                Camouflage.PlayerSkins[pc.PlayerId] = new NetworkedPlayerInfo.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
                 Main.clientIdList.Add(pc.GetClientId());
             }
 
@@ -184,7 +200,6 @@ internal class ChangeRoleSettings
             Statue.Init();
             Ghoul.Init();
             Rainbow.Init();
-            Unlucky.Init();
 
             //FFA
             FFAManager.Init();
@@ -198,8 +213,6 @@ internal class ChangeRoleSettings
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
-            IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
-
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
@@ -207,17 +220,33 @@ internal class ChangeRoleSettings
 
             SetEverythingUpPatch.LastWinsText = "";
             SetEverythingUpPatch.LastWinsReason = "";
+
+            Logger.Msg("End", "Initialization");
         }
         catch (Exception ex)
         {
             Utils.ErrorEnd("Change Role Setting Postfix");
-            Logger.Fatal(ex.ToString(), "Change Role Setting Postfix");
+            Utils.ThrowException(ex);
         }
     }
 }
 [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
 internal class SelectRolesPatch
 {
+    private static RoleOptionsCollectionV08 RoleOpt => Main.NormalOptions.roleOptions;
+    private static Dictionary<RoleTypes, int> RoleTypeNums = [];
+    public static void UpdateRoleTypeNums()
+    {
+        RoleTypeNums = new()
+        {
+            { RoleTypes.Scientist, RoleAssign.AddScientistNum },
+            { RoleTypes.Engineer, RoleAssign.AddEngineerNum },
+            { RoleTypes.Shapeshifter, RoleAssign.AddShapeshifterNum },
+            { RoleTypes.Noisemaker, RoleAssign.AddNoisemakerNum },
+            { RoleTypes.Phantom, RoleAssign.AddPhantomNum },
+            { RoleTypes.Tracker, RoleAssign.AddTrackerNum }
+        };
+    }
     public static void Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -258,20 +287,19 @@ internal class SelectRolesPatch
             // Set count vanilla roles
             RoleAssign.CalculateVanillaRoleCount();
 
+            UpdateRoleTypeNums();
             // Set Rate For Vanilla Roles
-            var roleOpt = Main.NormalOptions.roleOptions;
-            int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
-            roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum + RoleAssign.addScientistNum, RoleAssign.addScientistNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Scientist));
-            int EngineerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Engineer);
-            roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + RoleAssign.addEngineerNum, RoleAssign.addEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
-            int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
-            roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum + RoleAssign.addShapeshifterNum, RoleAssign.addShapeshifterNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
-
+            foreach (var roleType in RoleTypeNums)
+            {
+                int roleNum = Options.DisableVanillaRoles.GetBool() ? 0 : RoleOpt.GetNumPerGame(roleType.Key);
+                roleNum += roleType.Value;
+                RoleOpt.SetRoleRate(roleType.Key, roleNum, roleType.Value > 0 ? 100 : RoleOpt.GetChancePerGame(roleType.Key));
+            }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
             Utils.ErrorEnd("Select Role Prefix");
-            Logger.Fatal(e.Message, "Select Role Prefix");
+            Utils.ThrowException(ex);
         }
     }
     public static void Postfix()
@@ -280,18 +308,21 @@ internal class SelectRolesPatch
 
         //There is a delay of 0.8 seconds because after the player exits during the assign of desync roles, either a black screen will occur or the Scientist role will be set
         _ = new LateTask(() => {
-            // Set roles
-            SetRolesAfterSelect();
 
-            // Assign tasks again
-            ShipStatus.Instance.Begin();
-        }, 0.5f, "Set Role Types After Select");
+            try
+            {
+                // Set roles
+                SetRolesAfterSelect();
 
-        _ = new LateTask(() => {
-
-            // Update name players
-            Utils.NotifyRoles(NoCache: true);
-        }, 0.8f, "Do Notify Roles After Assign", shoudLog: false);
+                // Assign tasks again
+                ShipStatus.Instance.Begin();
+            }
+            catch (Exception ex)
+            {
+                Utils.ErrorEnd("Set Roles After Select In LateTask");
+                Utils.ThrowException(ex);
+            }
+        }, 1f, "Set Role Types After Select");
     }
     private static void SetRolesAfterSelect()
     {
@@ -315,7 +346,8 @@ internal class SelectRolesPatch
                 return;
             }
 
-            Main.AssignRolesIsStarted = true;
+            Logger.Msg("Is Started", "AssignRoles");
+            //Main.AssignRolesIsStarted = true;
 
             //Initialization of CustomRpcSender and RpcSetRoleReplacer
             Dictionary<byte, CustomRpcSender> senders = [];
@@ -353,8 +385,7 @@ internal class SelectRolesPatch
             RpcSetRoleReplacer.OverriddenSenderList = null;
             RpcSetRoleReplacer.StoragedData = null;
 
-            Main.AssignRolesIsStarted = false;
-
+            //Main.AssignRolesIsStarted = false;
             //Utils.ApplySuffix();
 
             foreach (var pc in Main.AllPlayerControls)
@@ -381,6 +412,15 @@ internal class SelectRolesPatch
                         break;
                     case RoleTypes.Shapeshifter:
                         role = CustomRoles.Shapeshifter;
+                        break;
+                    case RoleTypes.Noisemaker:
+                        role = CustomRoles.Noisemaker;
+                        break;
+                    case RoleTypes.Phantom:
+                        role = CustomRoles.Phantom;
+                        break;
+                    case RoleTypes.Tracker:
+                        role = CustomRoles.Tracker;
                         break;
                     default:
                         Logger.SendInGame(string.Format(GetString("Error.InvalidRoleAssignment"), pc?.Data?.PlayerName));
@@ -409,8 +449,8 @@ internal class SelectRolesPatch
 
             try
             {
-                AddonAssign.StartSortAndAssign();
                 AddonAssign.InitAndStartAssignLovers();
+                AddonAssign.StartSortAndAssign();
             }
             catch (Exception error)
             {
@@ -470,9 +510,6 @@ internal class SelectRolesPatch
                         case CustomRoles.Antidote:
                             Antidote.Add();
                             break;
-                        case CustomRoles.Unlucky:
-                            Unlucky.Add(pc.PlayerId);
-                            break;
                         case CustomRoles.Burst:
                             Burst.Add();
                             break;
@@ -488,8 +525,8 @@ internal class SelectRolesPatch
                         case CustomRoles.Fool:
                             Fool.Add();
                             break;
-                        case CustomRoles.Bloodlust:
-                            Bloodlust.Add();
+                        case CustomRoles.Bloodthirst:
+                            Bloodthirst.Add();
                             break;
 
                         default:
@@ -498,31 +535,26 @@ internal class SelectRolesPatch
                 }
             }
 
-            EndOfSelectRolePatch:
+        EndOfSelectRolePatch:
 
-            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            try
+            {
+                if (!AmongUsClient.Instance.IsGameOver)
+                    DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            }
+            catch { }
             //HudManager.Instance.Chat.SetVisible(true);
-            
+
             foreach (var pc in Main.AllPlayerControls)
                 pc.ResetKillCooldown();
 
-            //Return the number of role type
-            var roleOpt = Main.NormalOptions.roleOptions;
-
-            // Role type: Scientist
-            int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
-            ScientistNum -= RoleAssign.addScientistNum;
-            roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum, roleOpt.GetChancePerGame(RoleTypes.Scientist));
-
-            // Role type: Engineer
-            int EngineerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Engineer);
-            EngineerNum -= RoleAssign.addEngineerNum;
-            roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum, roleOpt.GetChancePerGame(RoleTypes.Engineer));
-
-            // Role type: Shapeshifter
-            int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
-            ShapeshifterNum -= RoleAssign.addShapeshifterNum;
-            roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum, roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
+            // Role types
+            foreach (var roleType in RoleTypeNums)
+            {
+                int roleNum = Options.DisableVanillaRoles.GetBool() ? 0 : RoleOpt.GetNumPerGame(roleType.Key);
+                roleNum -= roleType.Value;
+                RoleOpt.SetRoleRate(roleType.Key, roleNum, RoleOpt.GetChancePerGame(roleType.Key));
+            }
 
             switch (Options.CurrentGameMode)
             {
@@ -549,15 +581,15 @@ internal class SelectRolesPatch
 
             EAC.LogAllRoles();
 
-            Utils.CountAlivePlayers(true);
+            Utils.CountAlivePlayers(sendLog: true, checkGameEnd: false);
             Utils.SyncAllSettings();
 
             Logger.Msg("Ended", "AssignRoles");
         }
         catch (Exception ex)
         {
-            Utils.ErrorEnd("Select Role Postfix");
-            Logger.Fatal(ex.ToString(), "Select Role Prefix");
+            Utils.ErrorEnd("Set Roles After Select");
+            Utils.ThrowException(ex);
         }
     }
     private static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), RoleTypes> rolesMap, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
@@ -582,7 +614,7 @@ internal class SelectRolesPatch
 
         RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
         //Set role for host
-        player.SetRole(othersRole);
+        player.SetRole(othersRole, false);
         player.Data.IsDead = true;
 
         Logger.Info($"Registered Role: {player?.Data?.PlayerName} => {role} : RoleType for self => {selfRole}, for others => {othersRole}", "AssignDesyncRoles");
@@ -591,12 +623,24 @@ internal class SelectRolesPatch
     {
         foreach (var seer in Main.AllPlayerControls)
         {
-            var sender = senders[seer.PlayerId];
             foreach (var target in Main.AllPlayerControls)
             {
                 if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var roleType))
                 {
-                    sender.RpcSetRole(seer, roleType, target.GetClientId());
+                    try
+                    {
+                        // Change Scientist to Noisemaker when role is desync and target have Noisemaker role
+                        if (roleType is RoleTypes.Scientist && RoleAssign.RoleResult.Any(x => x.Key.PlayerId == seer.PlayerId && x.Value is CustomRoles.NoisemakerTOHE or CustomRoles.Noisemaker))
+                        {
+                            Logger.Info($"seer: {seer.PlayerId}, target: {target.PlayerId}, {roleType} => {RoleTypes.Noisemaker}", "OverrideRoleForDesync");
+                            roleType = RoleTypes.Noisemaker;
+                        }
+
+                        var sender = senders[seer.PlayerId];
+                        sender.RpcSetRole(seer, roleType, target.GetClientId());
+                    }
+                    catch
+                    { }
                 }
             }
         }
@@ -632,12 +676,16 @@ internal class SelectRolesPatch
 
                 foreach (var (seer, roleType) in StoragedData)
                 {
-                    var target = Utils.GetPlayerById(sender.Key);
-
-                    seer.SetRole(roleType);
-                    sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, target.GetClientId())
-                        .Write((ushort)roleType)
-                        .EndRpc();
+                    try
+                    {
+                        seer.SetRole(roleType, false);
+                        sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
+                            .Write((ushort)roleType)
+                            .Write(false)
+                            .EndRpc();
+                    }
+                    catch
+                    { }
                 }
                 sender.Value.EndMessage();
             }

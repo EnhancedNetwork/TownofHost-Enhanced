@@ -7,6 +7,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
+using System.Runtime.Intrinsics.Arm;
 
 namespace TOHE.Roles.Impostor;
 
@@ -36,10 +37,10 @@ internal class Nemesis : RoleBase
                 .SetValueFormat(OptionFormat.Players);
         LegacyNemesis = BooleanOptionItem.Create(Id + 11, "LegacyNemesis", false, TabGroup.ImpostorRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis]);
-        NemesisShapeshiftCD = FloatOptionItem.Create(Id + 12, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
+        NemesisShapeshiftCD = FloatOptionItem.Create(Id + 12, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
                 .SetParent(LegacyNemesis)
                 .SetValueFormat(OptionFormat.Seconds);
-        NemesisShapeshiftDur = FloatOptionItem.Create(Id + 13, "ShapeshiftDuration", new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
+        NemesisShapeshiftDur = FloatOptionItem.Create(Id + 13, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
                 .SetParent(LegacyNemesis)
                 .SetValueFormat(OptionFormat.Seconds);
     }
@@ -72,16 +73,16 @@ internal class Nemesis : RoleBase
         if (!pc.Is(CustomRoles.Nemesis)) return false;
         msg = msg.Trim().ToLower();
         if (msg.Length < 3 || msg[..3] != "/rv") return false;
+        
         if (NemesisCanKillNum.GetInt() < 1)
         {
-            if (!isUI) Utils.SendMessage(GetString("NemesisKillDisable"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("NemesisKillDisable"));
+            pc.ShowInfoMessage(isUI, GetString("NemesisKillDisable"));
             return true;
         }
 
         if (pc.IsAlive())
         {
-            Utils.SendMessage(GetString("NemesisAliveKill"), pc.PlayerId);
+            pc.ShowInfoMessage(isUI, GetString("NemesisAliveKill"));
             return true;
         }
 
@@ -94,14 +95,10 @@ internal class Nemesis : RoleBase
             return true;
         }
 
-        if (NemesisRevenged.ContainsKey(pc.PlayerId))
+        if (NemesisRevenged.TryGetValue(pc.PlayerId, out var killNum) && killNum >= NemesisCanKillNum.GetInt())
         {
-            if (NemesisRevenged[pc.PlayerId] >= NemesisCanKillNum.GetInt())
-            {
-                if (!isUI) Utils.SendMessage(GetString("NemesisKillMax"), pc.PlayerId);
-                else pc.ShowPopUp(GetString("NemesisKillMax"));
-                return true;
-            }
+            pc.ShowInfoMessage(isUI, GetString("NemesisKillMax"));
+            return true;
         }
 
         else
@@ -118,43 +115,37 @@ internal class Nemesis : RoleBase
         }
         catch
         {
-            if (!isUI) Utils.SendMessage(GetString("NemesisKillDead"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("NemesisKillDead"));
+            pc.ShowInfoMessage(isUI, GetString("NemesisKillDead"));
             return true;
         }
 
         if (target == null || !target.IsAlive())
         {
-            if (!isUI) Utils.SendMessage(GetString("NemesisKillDead"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("NemesisKillDead"));
+            pc.ShowInfoMessage(isUI, GetString("NemesisKillDead"));
             return true;
         }
         else if (target.Is(CustomRoles.Pestilence))
         {
-            if (!isUI) Utils.SendMessage(GetString("PestilenceImmune"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("PestilenceImmune"));
+            pc.ShowInfoMessage(isUI, GetString("PestilenceImmune"));
             return true;
         }
         else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessMini"));
+            pc.ShowInfoMessage(isUI, GetString("GuessMini"));
             return true;
         }
         else if (target.Is(CustomRoles.Solsticer))
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessSolsticer"));
+            pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
             return true;
         }
-        else if (!pc.RpcCheckAndMurder(target, true))
+        else if (pc.RpcCheckAndMurder(target, true) == false)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessImmune"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessImmune"));
+            pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true;
         }
 
-        Logger.Info($"{pc.GetNameWithRole()} 复仇了 {target.GetNameWithRole()}", "Nemesis");
+        Logger.Info($"{pc.GetNameWithRole()} revenge {target.GetNameWithRole()}", "Nemesis");
 
         string Name = target.GetRealName();
 
@@ -164,9 +155,10 @@ internal class Nemesis : RoleBase
 
         _ = new LateTask(() =>
         {
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+            target.SetDeathReason(PlayerState.DeathReason.Revenge);
             if (GameStates.IsMeeting)
             {
+                Main.PlayersDiedInMeeting.Add(target.PlayerId);
                 GuessManager.RpcGuesserMurderPlayer(target);
                 MurderPlayerPatch.AfterPlayerDeathTasks(pc, target, true);
             }
@@ -245,12 +237,13 @@ internal class Nemesis : RoleBase
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !pc.IsAlive()) continue;
+
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
             GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
             targetBox.name = "ShootButton";
-            targetBox.transform.localPosition = new Vector3(-0.95f, 0.03f, -1.31f);
+            targetBox.transform.localPosition = new Vector3(-0.35f, 0.03f, -1.31f);
             SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
-            renderer.sprite = CustomButton.Get("TargetIcon");
+            renderer.sprite = CustomButton.Get("MeetingKillButton");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
             button.OnClick.AddListener((Action)(() => NemesisOnClick(pva.TargetPlayerId/*, __instance*/)));

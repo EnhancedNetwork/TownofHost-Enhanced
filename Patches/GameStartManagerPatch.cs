@@ -3,7 +3,6 @@ using AmongUs.GameOptions;
 using InnerNet;
 using System;
 using TMPro;
-using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
@@ -18,11 +17,13 @@ public static class GameStartManagerUpdatePatch
         __instance.MinPlayers = 1;
     }
 }
-//タイマーとコード隠し
 public class GameStartManagerPatch
 {
-    private static SpriteRenderer cancelButton;
     public static float timer = 600f;
+    private static Vector3 GameStartTextlocalPosition;
+    private static TextMeshPro warningText;
+    private static TextMeshPro timerText;
+    private static PassiveButton cancelButton;
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Start))]
     public class GameStartManagerStartPatch
     {
@@ -38,34 +39,59 @@ public class GameStartManagerPatch
                     ? $"<color={Main.HideColor.Value}>{Main.HideName.Value}</color>"
                     : $"<color={Main.ModColor}>{Main.HideName.Value}</color>";
 
-            cancelButton = Object.Instantiate(__instance.StartButton, __instance.transform);
-            cancelButton.name = "CancelButton";
-            var cancelLabel = cancelButton.GetComponentInChildren<TextMeshPro>();
-            Object.Destroy(cancelLabel.GetComponent<TextTranslatorTMP>());
-            cancelLabel.text = GetString("Cancel");
-            cancelButton.transform.localScale = new(0.4f, 0.4f, 1f);
-            cancelButton.color = Color.red;
-            if (GameStates.IsLocalGame)
+            warningText = Object.Instantiate(__instance.GameStartText, __instance.transform.parent);
+            warningText.name = "WarningText";
+            warningText.transform.localPosition = new(0f, __instance.transform.localPosition.y + 3f, -1f);
+            warningText.gameObject.SetActive(false);
+
+            if (AmongUsClient.Instance.AmHost)
             {
-                cancelButton.transform.localPosition = new(0f, 0.1f, 0f);
+                timerText = Object.Instantiate(__instance.PlayerCounter, __instance.StartButton.transform.parent);
             }
             else
             {
-                cancelButton.transform.localPosition = new(0f, -0.36f, 0f);
+                timerText = Object.Instantiate(__instance.PlayerCounter, __instance.StartButtonClient.transform.parent);
             }
-            var buttonComponent = cancelButton.GetComponent<PassiveButton>();
-            buttonComponent.OnClick = new();
-            buttonComponent.OnClick.AddListener((Action)(() => __instance.ResetStartState()));
+            timerText.fontSize = 6.2f;
+            timerText.autoSizeTextContainer = true;
+            timerText.name = "Timer";
+            timerText.DestroyChildren();
+            timerText.DestroySubMeshObjects();
+            timerText.alignment = TextAlignmentOptions.Center;
+            timerText.outlineColor = Color.black;
+            timerText.outlineWidth = 0.40f;
+            timerText.hideFlags = HideFlags.None;
+            //timerText.transform.localPosition += new Vector3(-0.5f, -2.6f, 0f);
+            timerText.transform.localPosition += new Vector3(-0.55f, -0.25f, 0f);
+            timerText.transform.localScale = new(0.7f, 0.7f, 1f);
+            timerText.gameObject.SetActive(AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && GameStates.IsVanillaServer);
+
+            cancelButton = Object.Instantiate(__instance.StartButton, __instance.transform);
+            cancelButton.name = "CancelButton";
+            var cancelLabel = cancelButton.buttonText;
+            cancelLabel.DestroyTranslator();
+            cancelLabel.text = GetString("Cancel");
+            //cancelButton.transform.localScale = new(0.5f, 0.5f, 1f);
+            var cancelButtonInactiveRenderer = cancelButton.inactiveSprites.GetComponent<SpriteRenderer>();
+            cancelButtonInactiveRenderer.color = new(0.8f, 0f, 0f, 1f);
+            var cancelButtonActiveRenderer = cancelButton.activeSprites.GetComponent<SpriteRenderer>();
+            cancelButtonActiveRenderer.color = Color.red;
+            var cancelButtonInactiveShine = cancelButton.inactiveSprites.transform.Find("Shine");
+            if (cancelButtonInactiveShine)
+            {
+                cancelButtonInactiveShine.gameObject.SetActive(false);
+            }
+            cancelButton.activeTextColor = cancelButton.inactiveTextColor = Color.white;
+            //cancelButton.transform.localPosition = new(2f, 0.13f, 0f);
+            GameStartTextlocalPosition = __instance.GameStartText.transform.localPosition;
+            cancelButton.OnClick = new();
+            cancelButton.OnClick.AddListener((Action)(() =>
+            {
+                __instance.ResetStartState();
+            }));
             cancelButton.gameObject.SetActive(false);
 
             if (!AmongUsClient.Instance.AmHost) return;
-
-            // Make Public Button
-            if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !Main.AllowPublicRoom || !VersionChecker.IsSupported)
-            {
-                __instance.MakePublicButton.color = Palette.DisabledClear;
-                __instance.privatePublicText.color = Palette.DisabledClear;
-            }
 
             if (GameStates.IsNormalGame)
             {
@@ -124,19 +150,20 @@ public class GameStartManagerPatch
                     Main.updateTime = 0;
                     if (!GameStates.IsCountDown)
                     {
-                        if ((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait)
-                        {
-                            BeginAutoStart(Options.AutoStartTimer.GetInt());
-                            return;
-                        }
-                        else if (Options.ImmediateAutoStart.GetBool())
+                        if (Options.ImmediateAutoStart.GetBool())
                         {
                             if ((GameData.Instance.PlayerCount >= Options.StartWhenPlayersReach.GetInt() && Options.StartWhenPlayersReach.GetInt() > 1) ||
                                 (timer <= Options.StartWhenTimerLowerThan.GetInt() && Options.StartWhenTimerLowerThan.GetInt() > 0))
                             {
-                                BeginAutoStart(Options.AutoStartTimer.GetInt());
+                                BeginAutoStart(Options.ImmediateStartTimer.GetInt());
                                 return;
                             }
+                        }
+
+                        if ((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait)
+                        {
+                            BeginAutoStart(Options.AutoStartTimer.GetInt());
+                            return;
                         }
                     }
                 }
@@ -187,15 +214,26 @@ public class GameStartManagerPatch
                         warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.AutoExitAtMismatchedVersion"), $"<color={Main.ModColor}>{Main.ModName}</color>", Math.Round(5 - exitTimer).ToString()));
                 }
             }
-            if (warningMessage != "")
+            if (warningMessage == "")
             {
-                __instance.GameStartText.text = warningMessage;
-                __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition + Vector3.up * 2;
+                warningText.gameObject.SetActive(false);
             }
             else
             {
-                __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition;
+                warningText.text = warningMessage;
+                warningText.gameObject.SetActive(true);
             }
+
+            if (AmongUsClient.Instance.AmHost)
+            {
+                __instance.GameStartText.transform.localPosition = new Vector3(__instance.GameStartText.transform.localPosition.x, 2f, __instance.GameStartText.transform.localPosition.z);
+            }
+            else
+            {
+                __instance.GameStartText.transform.localPosition = GameStartTextlocalPosition;
+            }
+
+            __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
 
             // Lobby timer
             if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer) return;
@@ -205,12 +243,9 @@ public class GameStartManagerPatch
             timer = Mathf.Max(0f, timer -= Time.deltaTime);
             int minutes = (int)timer / 60;
             int seconds = (int)timer % 60;
-            string suffix = $" ({minutes:00}:{seconds:00})";
-            if (timer <= 60) suffix = Utils.ColorString(Color.red, suffix);
-
-            __instance.PlayerCounter.text = currentText + suffix;
-            __instance.PlayerCounter.fontSize = 3f;
-            __instance.PlayerCounter.autoSizeTextContainer = false;
+            string countDown = $"{minutes:00}:{seconds:00}";
+            if (timer <= 60) countDown = Utils.ColorString(Color.red, countDown);
+            timerText.text = countDown;
         }
 
         private static void BeginAutoStart(float countdown)
@@ -298,10 +333,10 @@ public class GameStartRandomMap
         //    Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
         //}
 
-        IGameOptions opt = GameStates.IsNormalGame 
+        IGameOptions opt = GameStates.IsNormalGame
             ? Main.NormalOptions.Cast<IGameOptions>()
             : Main.HideNSeekOptions.Cast<IGameOptions>();
-        
+
         if (GameStates.IsNormalGame)
         {
             Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
@@ -356,7 +391,7 @@ public class GameStartRandomMap
 
         if (randomMaps.Any())
         {
-            var mapsId = randomMaps[rand.Next(randomMaps.Count)];
+            var mapsId = randomMaps.RandomElement();
 
             Logger.Info($"{mapsId}", "Chance Select MapId");
             return mapsId;
@@ -370,7 +405,7 @@ public class GameStartRandomMap
             if (Options.AirshipChance.GetInt() > 0) randomMaps.Add(4);
             if (Options.FungleChance.GetInt() > 0) randomMaps.Add(5);
 
-            var mapsId = randomMaps[rand.Next(randomMaps.Count)];
+            var mapsId = randomMaps.RandomElement();
 
             Logger.Info($"{mapsId}", "Random Select MapId");
             return mapsId;
@@ -380,13 +415,15 @@ public class GameStartRandomMap
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.ResetStartState))]
 class ResetStartStatePatch
 {
-    public static void Prefix()
+    public static void Prefix(GameStartManager __instance)
     {
         if (GameStates.IsCountDown)
         {
+            SoundManager.Instance.StopSound(__instance.gameStartSound);
+
             if (GameStates.IsNormalGame)
                 Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
-            
+
             PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, AprilFoolsMode.IsAprilFoolsModeToggledOn));
         }
     }

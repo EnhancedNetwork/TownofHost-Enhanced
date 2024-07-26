@@ -72,7 +72,7 @@ internal class Overseer : RoleBase
         CustomRoles.Retributionist,
         CustomRoles.Guardian,
         CustomRoles.Spiritualist,
-        CustomRoles.Tracker,
+        //CustomRoles.Tracker,
     ];
 
     public override void SetupCustomOption()
@@ -103,7 +103,6 @@ internal class Overseer : RoleBase
 
         RandomRole.Add(playerId, GetRandomCrewRoleString());
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -185,6 +184,8 @@ internal class Overseer : RoleBase
         {
             OverseerTimer.TryAdd(killer.PlayerId, (target, 0f));
             SendTimerRPC(1, killer.PlayerId, target, 0f);
+            target.RpcSetSpecificScanner(killer, true);
+
             NotifyRoles(SpecifySeer: killer);
         }
         return false;
@@ -196,9 +197,12 @@ internal class Overseer : RoleBase
         var playerId = player.PlayerId;
         if (!player.IsAlive() || Pelican.IsEaten(playerId))
         {
+
+            OverseerTimer[playerId].Item1.RpcSetSpecificScanner(player, false);
             OverseerTimer.Remove(playerId);
             SendTimerRPC(2, playerId);
             NotifyRoles(SpecifySeer: player);
+
         }
         else
         {
@@ -208,6 +212,8 @@ internal class Overseer : RoleBase
             {
                 OverseerTimer.Remove(playerId);
                 SendTimerRPC(2, playerId);
+                farTarget.RpcSetSpecificScanner(player, false);
+
             }
             else if (farTime >= OverseerRevealTime.GetFloat())
             {
@@ -215,6 +221,7 @@ internal class Overseer : RoleBase
 
                 OverseerTimer.Remove(playerId);
                 SendTimerRPC(2, playerId);
+                farTarget.RpcSetSpecificScanner(player, false);
 
                 IsRevealed[(playerId, farTarget.PlayerId)] = true;
                 SetRevealtPlayerRPC(player, farTarget, true);
@@ -224,17 +231,18 @@ internal class Overseer : RoleBase
             else
             {
 
-                float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
                 float dis = Vector2.Distance(player.GetCustomPosition(), farTarget.GetCustomPosition());
                 if (dis <= range)
                 {
                     OverseerTimer[playerId] = (farTarget, farTime + Time.fixedDeltaTime);
-                    SendTimerRPC(1, playerId, farTarget, farTime + Time.fixedDeltaTime);
+                    //SendTimerRPC(1, playerId, farTarget, farTime + Time.fixedDeltaTime);
                 }
                 else
                 {
                     OverseerTimer.Remove(playerId);
                     SendTimerRPC(2, playerId);
+                    farTarget.RpcSetSpecificScanner(player, false);
 
                     NotifyRoles(SpecifySeer: player, SpecifyTarget: farTarget, ForceLoop: true);
 
@@ -244,7 +252,7 @@ internal class Overseer : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         OverseerTimer.Clear();
         SendTimerRPC(0, byte.MaxValue);
@@ -252,8 +260,7 @@ internal class Overseer : RoleBase
 
     private static string GetRandomCrewRoleString() // Random role for trickster
     {
-        var rd = IRandom.Instance;
-        var randomRole = randomRolesForTrickster[rd.Next(0, randomRolesForTrickster.Count)];
+        var randomRole = randomRolesForTrickster.RandomElement();
 
         //string roleName = GetRoleName(randomRole);
         string RoleText = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));

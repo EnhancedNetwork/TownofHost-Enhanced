@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
 namespace TOHE;
 
@@ -8,6 +6,26 @@ namespace TOHE;
 // Reference: https://github.com/Gurge44/EndlessHostRoles/blob/main/Modules/Extensions/CollectionExtensions.cs
 public static class CollectionExtensions
 {
+    /// <summary>
+    /// Returns the key of a dictionary by its value
+    /// </summary>
+    /// <param name="dictionary">The <see cref="Dictionary{TKey,TValue}"/> to search</param>
+    /// <param name="value">The <typeparamref name="TValue"/> used to search for the corresponding key</param>
+    /// <typeparam name="TKey">The type of the keys in the <paramref name="dictionary"/></typeparam>
+    /// <typeparam name="TValue">The type of the values in the <paramref name="dictionary"/></typeparam>
+    /// <returns>The key of the <paramref name="dictionary"/> that corresponds to the given <paramref name="value"/>, or the default value of <typeparamref name="TKey"/> if the <paramref name="value"/> is not found in the <paramref name="dictionary"/></returns>
+    public static TKey GetKeyByValue<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TValue value)
+    {
+        foreach (KeyValuePair<TKey, TValue> pair in dictionary)
+        {
+            if (pair.Value.Equals(value))
+            {
+                return pair.Key;
+            }
+        }
+
+        return default;
+    }
     /// <summary>
     /// Returns a random element from a collection
     /// </summary>
