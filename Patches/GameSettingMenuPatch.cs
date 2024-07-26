@@ -139,7 +139,7 @@ public class GameSettingMenuPatch
 
         var labeltag = GameObject.Find("ModeValue");
         var preset = Object.Instantiate(labeltag, ParentLeftPanel);
-
+        preset.transform.localPosition = new Vector3(-3.33f, -0.45f, -2f);
 
         preset.transform.localScale = new Vector3(0.65f, 0.63f, 1f);
         var SpriteRenderer = preset.GetComponentInChildren<SpriteRenderer>();
