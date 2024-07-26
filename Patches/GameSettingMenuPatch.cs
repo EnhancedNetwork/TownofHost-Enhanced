@@ -96,11 +96,8 @@ public class GameSettingMenuPatch
             }
         }
 
-        if (ShouldReveal)
-        {
             HiddenBySearch.Do(x => x.SetHidden(false));
             HiddenBySearch.Clear();
-        }
 
         SetupAdittionalButtons(__instance);
     }
@@ -135,9 +132,6 @@ public class GameSettingMenuPatch
     public static StringOption PresetBehaviour;
     public static FreeChatInputField InputField;
     public static List<OptionItem> HiddenBySearch = [];
-   // public static List<OptionItem> SearchWinners = [];
-
-    public static bool ShouldReveal = false;
 
     private static void SetupAdittionalButtons(GameSettingMenu __instance)
     {
@@ -254,11 +248,11 @@ public class GameSettingMenuPatch
         passiveButton.OnClick = new();
         passiveButton.OnClick.AddListener(
                 (Action)(() => {
-                    SearchForOptions(TextField);
+                    SearchForOptions(__instance, TextField);
                 }));
 
 
-        static void SearchForOptions(FreeChatInputField textField)
+        static void SearchForOptions(GameSettingMenu __instance, FreeChatInputField textField)
         {
             if (ModGameOptionsMenu.TabIndex < 3) return;
 
@@ -277,15 +271,21 @@ public class GameSettingMenuPatch
 
             Result.Do(x => x.SetHidden(true));
 
-            ShouldReveal = false;
-            GameOptionsMenuPatch.ReOpenSettings(ModGameOptionsMenu.TabIndex);
-            _ = new LateTask(() => ShouldReveal = true, 0.38f, "ShouldReveal: TRUE");
+            GameOptionsMenuPatch.ReCreateSettings(GameOptionsMenuPatch.Instance);
+            textField.Clear();
         }
     }
 
     [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPrefix]
     public static bool ChangeTabPrefix(GameSettingMenu __instance, ref int tabNum, [HarmonyArgument(1)] bool previewOnly)
     {
+        if (HiddenBySearch.Any())
+        {
+            HiddenBySearch.Do(x => x.SetHidden(false));
+            GameOptionsMenuPatch.ReCreateSettings(GameOptionsMenuPatch.Instance);
+            HiddenBySearch.Clear();
+        }
+
         ModGameOptionsMenu.TabIndex = tabNum;
 
         GameOptionsMenu settingsTab;
@@ -309,12 +309,6 @@ public class GameSettingMenuPatch
                     button.SelectButton(false);
                 }
             }
-        }
-
-        if (ShouldReveal) 
-        {
-            HiddenBySearch.Do(x => x.SetHidden(false));
-            HiddenBySearch.Clear();
         }
 
         if (tabNum < 3) return true;

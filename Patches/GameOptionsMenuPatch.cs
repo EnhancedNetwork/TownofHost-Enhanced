@@ -300,7 +300,7 @@ public static class GameOptionsMenuPatch
         }
         return false;
     }
-    private static void ReCreateSettings(GameOptionsMenu __instance)
+    public static void ReCreateSettings(GameOptionsMenu __instance)
     {
         if (ModGameOptionsMenu.TabIndex < 3) return;
         var modTab = (TabGroup)(ModGameOptionsMenu.TabIndex - 3);
