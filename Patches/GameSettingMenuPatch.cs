@@ -229,13 +229,7 @@ public class GameSettingMenuPatch
 
         var FreeChatField = DestroyableSingleton<ChatController>.Instance.freeChatField;
         var TextField = GameObject.Instantiate(FreeChatField, ParentLeftPanel.parent);
-        float Ysize = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID switch
-                {
-                    SupportedLangs.Russian => 0.69f, //nice
-                    _ => 0.59f,
-                };
-
-        TextField.transform.localScale = new Vector3(0.3f, Ysize, 1);
+        TextField.transform.localScale = new Vector3(0.3f, 0.59f, 1);
         TextField.transform.localPosition = new Vector3(-2.07f, -2.57f, -5f); 
         TextField.textArea.outputText.transform.localScale = new Vector3(3.5f, 2f, 1f);
         TextField.textArea.outputText.font = PLuLabel.font;
@@ -250,9 +244,17 @@ public class GameSettingMenuPatch
         Object.Destroy(button.FindChild("Disabled").FindChild("Icon").GetComponent<SpriteRenderer>());
         Object.Destroy(button.transform.FindChild("Text").GetComponent<TextMeshPro>());
 
-        button.FindChild("Normal").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIconActive.png", 100f);
-        button.FindChild("Hover").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIconHover.png", 100f);
-        button.FindChild("Disabled").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIcon.png", 100f);
+       button.FindChild("Normal").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIconActive.png", 100f);
+       button.FindChild("Hover").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIconHover.png", 100f);
+       button.FindChild("Disabled").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIcon.png", 100f);
+
+      if (DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.Russian)
+        {
+            Vector3 FixedScale = new(0.7f, 1f, 1f);
+            button.FindChild("Normal").FindChild("Background").transform.localScale = FixedScale;
+            button.FindChild("Hover").FindChild("Background").transform.localScale = FixedScale;
+            button.FindChild("Disabled").FindChild("Background").transform.localScale = FixedScale;
+        }
 
         PassiveButton passiveButton = button.GetComponent<PassiveButton>();
 
