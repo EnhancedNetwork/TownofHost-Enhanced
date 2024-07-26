@@ -2944,6 +2944,7 @@
   "StoreQF": "<color=#3333ff>Potion of Fixing</color>",
   "StoreBL": "<color=#691a2e>Potion of Harming</color>",
   "StoreNS": "<color=#663399>Potion of Night Vision</color>",
+  "StoreINV": "<color=#663399>Potion of Invisibility</color>",
   "StoreNull": "<color=#888888>Geen</color>",
   "PotionStore": "<color=#00ffa5>Potion in store: </color>",
   "WaitQFPotion": "\n<color=#3333ff>Potion of Fixing</color> waiting for use",
