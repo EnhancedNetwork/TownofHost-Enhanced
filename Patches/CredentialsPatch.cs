@@ -20,11 +20,6 @@ class PingTrackerUpdatePatch
             Instance ??= __instance;
 
             DelayUpdate--;
-
-            if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
-            {
-                EFC.UpdateUnauthorizedFiles();
-            }
           
             if (DelayUpdate > 0 && sb.Length > 0)
             {
@@ -219,6 +214,7 @@ class ModManagerLateUpdatePatch
 
         LateTask.Update(Time.deltaTime);
         CheckMurderPatch.Update();
+        EFC.UpdateUnauthorizedFiles();
     }
     public static void Postfix(ModManager __instance)
     {
