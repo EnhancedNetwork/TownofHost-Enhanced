@@ -2225,6 +2225,41 @@ public static class Utils
             ventilationSystem.IsDirty = true;
         }
     }
+    // Get vent that is the furthest from alive player position's
+    public static Vent GetFurthestVentFromPlayers()
+    {
+        List<Vector2> playerPositions = new List<Vector2>();
+        foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+        {
+            playerPositions.Add(pc.GetCustomPosition());
+        }
+
+        Vent furthestVent = null;
+        float maxDistance = float.MinValue;
+
+        foreach (var vent in ShipStatus.Instance.AllVents)
+        {
+            Vector2 ventPosition = vent.transform.position;
+            float minDistanceToPlayers = float.MaxValue;
+
+            foreach (var playerPos in playerPositions)
+            {
+                float distance = Vector2.Distance(ventPosition, playerPos);
+                if (distance < minDistanceToPlayers)
+                {
+                    minDistanceToPlayers = distance;
+                }
+            }
+
+            if (minDistanceToPlayers > maxDistance)
+            {
+                maxDistance = minDistanceToPlayers;
+                furthestVent = vent;
+            }
+        }
+
+        return furthestVent;
+    }
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {
         var tmp = ChangeTo * 10;

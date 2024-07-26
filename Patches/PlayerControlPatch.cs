@@ -689,6 +689,76 @@ class CheckVanishPatch
 {
     public static bool Prefix(PlayerControl __instance)
     {
+
+        if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
+        {
+            return false;
+        }
+
+        // No called code if is invalid vanish
+        if (!CheckInvalidVanish(__instance))
+        {
+            return false;
+        }
+
+        // Is always true for Vanish bc InnerSloth as always being inconsistent with roles
+        bool shouldAnimate = true;
+
+        Logger.Info($"Player: {__instance.GetRealName()} => Is Vanishing, Animate:{shouldAnimate}", "CheckVanish");
+
+        var phantom = __instance;
+        var phantomRoleClass = phantom.GetRoleClass();
+        bool resetCooldown = true;
+
+        if (phantomRoleClass?.OnCheckPhantomize(phantom, ref resetCooldown, ref shouldAnimate, true) == false)
+        {
+            if (resetCooldown)
+                phantom.RpcResetAbilityCooldown();
+            return false;
+        }
+
+        phantom.RpcPhantomize(false, shouldAnimate);
+        return false;
+    }
+
+    private static bool CheckInvalidVanish(PlayerControl instance)
+    {
+        if (instance == null)
+        {
+            Logger.Info($"Player is null", "CheckInvalidVanish");
+            return false;
+        }
+
+        if (instance.Data.RoleType != RoleTypes.Phantom)
+        {
+            Logger.Info($"{instance.Data.PlayerName} is unable to Vanish as a none Phantom BaseRole, BaseRole: {Enum.GetName(instance.Data.RoleType)}", "CheckInvalidVanish");
+            return false;
+        }
+
+        if (!instance.IsAlive())
+        {
+            Logger.Info($"{instance.Data.PlayerName} is unable to Vanish while dead", "CheckInvalidVanish");
+            return false;
+        }
+
+        if (GameStates.IsMeeting || GameStates.IsExilling)
+        {
+            Logger.Info($"{instance.Data.PlayerName} is unable to Vanish while in meeting", "CheckInvalidVanish");
+            return false;
+        }
+
+        if (instance.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+        {
+            Logger.Info($"{instance.Data.PlayerName} is unable to Vanish while climbing", "CheckInvalidVanish");
+            return false;
+        }
+
+        if (instance.inMovingPlat)
+        {
+            Logger.Info($"{instance.Data.PlayerName} is unable to Vanish while on platforms", "CheckInvalidVanish");
+            return false;
+        }
+
         return true;
     }
 }
@@ -699,6 +769,72 @@ class CheckAppearPatch
 {
     public static bool Prefix(PlayerControl __instance, bool shouldAnimate)
     {
+        if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
+        {
+            return false;
+        }
+
+        // No called code if is invalid vanish
+        if (!CheckInvalidAppear(__instance, shouldAnimate))
+        {
+            return false;
+        }
+
+        Logger.Info($"Player: {__instance.GetRealName()} => Is Appearing, Animate:{shouldAnimate}", "CheckAppear");
+
+        var phantom = __instance;
+        var phantomRoleClass = phantom.GetRoleClass();
+        bool resetCooldown = true;
+
+        if (phantomRoleClass?.OnCheckPhantomize(phantom, ref resetCooldown, ref shouldAnimate, true) == false)
+        {
+            if (resetCooldown)
+                phantom.RpcResetAbilityCooldown();
+            return false;
+        }
+
+        phantom.RpcPhantomize(true, shouldAnimate);
+        return false;
+    }
+
+    private static bool CheckInvalidAppear(PlayerControl instance, bool animate)
+    {
+        if (instance == null)
+        {
+            Logger.Info($"Player is null", "CheckInvalidAppear");
+            return false;
+        }
+
+        if (instance.Data.RoleType != RoleTypes.Phantom)
+        {
+            Logger.Info($"{instance.Data.PlayerName} is unable to Appear as a none Phantom BaseRole, BaseRole: {Enum.GetName(instance.Data.RoleType)}", "CheckInvalidAppear");
+            return false;
+        }
+
+        if (!instance.IsAlive())
+        {
+            Logger.Info($"{instance.Data.PlayerName} is unable to Appear while dead", "CheckInvalidAppear");
+            return false;
+        }
+
+        if (GameStates.IsMeeting || GameStates.IsExilling)
+        {
+            Logger.Info($"{instance.Data.PlayerName} is unable to Appear while in meeting", "CheckInvalidAppear");
+            return false;
+        }
+
+        if (instance.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+        {
+            Logger.Info($"{instance.Data.PlayerName} is unable to Appear while climbing", "CheckInvalidAppear");
+            return false;
+        }
+
+        if (instance.inMovingPlat)
+        {
+            Logger.Info($"{instance.Data.PlayerName} is unable to Appear while on platforms", "CheckInvalidAppear");
+            return false;
+        }
+
         return true;
     }
 }
@@ -716,7 +852,10 @@ class SetRoleInvisibilityPatch
         if (GameStates.IsMeeting) return;
 
         var phantom = __instance;
-        var randomVent = ShipStatus.Instance.AllVents.RandomElement();
+        var phantomRoleClass = phantom.GetRoleClass();
+        var newVent = Utils.GetFurthestVentFromPlayers();
+
+        phantomRoleClass?.OnPhantomize(phantom, shouldAnimate, isActive);
 
         foreach (var target in Main.AllAlivePlayerControls)
         {
@@ -724,11 +863,8 @@ class SetRoleInvisibilityPatch
 
             if (isActive)
             {
-                var randomVentId = randomVent.Id;
-                var ventPosition = randomVent.transform.position;
-
-                phantom.RpcDesyncTeleport(ventPosition, target);
-                phantom.MyPhysics.RpcEnterVentDesync(randomVentId, target);
+                phantom.RpcDesyncTeleport(newVent.transform.position, target);
+                phantom.MyPhysics.RpcEnterVentDesync(newVent.Id, target);
             }
             else if (!isActive && shouldAnimate)
             {
@@ -738,7 +874,7 @@ class SetRoleInvisibilityPatch
             }
         }
 
-        if (isActive) PhantomIsInvisibility.Add(phantom.PlayerId, randomVent);
+        if (isActive) PhantomIsInvisibility.Add(phantom.PlayerId, newVent);
         else PhantomIsInvisibility.Remove(phantom.PlayerId);
     }
 }
