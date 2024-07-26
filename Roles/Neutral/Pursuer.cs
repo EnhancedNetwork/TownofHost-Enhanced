@@ -18,8 +18,8 @@ internal class Pursuer : RoleBase
     private static OptionItem PursuerSkillCooldown;
     private static OptionItem PursuerSkillLimitTimes;
 
-    private static readonly HashSet<byte> notActiveList = [];
-    private List<byte> clientList = [];
+    private readonly HashSet<byte> notActiveList = [];
+    private readonly HashSet<byte> clientList = [];
 
     public override void SetupCustomOption()
     {

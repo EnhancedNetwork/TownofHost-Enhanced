@@ -29,6 +29,7 @@ internal class ChatCommands
     private static readonly Dictionary<char, string> PollQuestions = [];
     private static readonly List<byte> PollVoted = [];
     private static float Polltimer = 120f;
+    private static string PollMSG = "";
 
     public const string Csize = "85%"; // CustomRole Settings Font-Size
     public const string Asize = "75%"; // All Appended Addons Font-Size
@@ -954,6 +955,15 @@ internal class ChatCommands
 
                 case "/poll":
                     canceled = true;
+
+
+                    if (args.Length == 2 && args[1] == GetString("Replay") && Pollvotes.Any() && PollMSG != string.Empty)
+                    {
+                        Utils.SendMessage(PollMSG);
+                        break;
+                    }
+
+                    PollMSG = string.Empty;
                     Pollvotes.Clear();
                     PollQuestions.Clear();
                     PollVoted.Clear();
@@ -1045,6 +1055,7 @@ internal class ChatCommands
                         PollVoted.Clear();
                     }
 
+
                     if (Main.AllPlayerControls.Length < 3)
                     {
                         Utils.SendMessage(GetString("Poll.MissingPlayers"), PlayerControl.LocalPlayer.PlayerId);
@@ -1085,6 +1096,7 @@ internal class ChatCommands
                     }
                     msg += $"\n{GetString("Poll.Begin")}";
                     msg += $"\n<size=55%><i>{GetString("Poll.TimeInfo")}</i></size>";
+                    PollMSG = !Longtitle ? "<voffset=-0.5em>" + tytul + "</voffset>\n\n" + msg : msg;
 
                     Logger.Info($"Poll message: {msg}", "MEssapoll");
 
