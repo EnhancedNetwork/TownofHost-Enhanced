@@ -807,7 +807,8 @@ public static class CustomRolesHelper
             case CustomRoles.TicketsStealer:
                 if (pc.Is(CustomRoles.Vindicator)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.VoidBallot))
+                    || pc.Is(CustomRoles.VoidBallot)
+                    || pc.Is(CustomRoles.Swift))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -869,7 +870,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Berserker)
                     || pc.Is(CustomRoles.BountyHunter)
                     || pc.Is(CustomRoles.Lightning)
-                    || pc.Is(CustomRoles.Hangman))
+                    || pc.Is(CustomRoles.Hangman)
+                    || pc.Is(CustomRoles.TicketsStealer))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
