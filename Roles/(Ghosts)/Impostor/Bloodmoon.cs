@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -25,7 +26,7 @@ internal class Bloodmoon : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Bloodmoon);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(2.5f, 120f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(2.5f, 120f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
         .SetValueFormat(OptionFormat.Seconds);
         CanKillNum = IntegerOptionItem.Create(Id + 11, "BloodMoonCanKillNum", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
             .SetValueFormat(OptionFormat.Players);
@@ -52,6 +53,12 @@ internal class Bloodmoon : RoleBase
     }
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+        {
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("CantBlood")));
+            return true;
+        }
+
         if (AbilityLimit > 0 
             && killer.RpcCheckAndMurder(target, true)
             && !PlayerDie.ContainsKey(target.PlayerId))

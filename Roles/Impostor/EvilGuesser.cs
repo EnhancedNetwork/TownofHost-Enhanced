@@ -61,26 +61,23 @@ internal class EvilGuesser : RoleBase
     public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
         // Check limit
-        if (Main.GuesserGuessed[guesser.PlayerId] >= EGCanGuessTime.GetInt())
+        if (GuessManager.GuesserGuessed[guesser.PlayerId] >= EGCanGuessTime.GetInt())
         {
-            if (!isUI) Utils.SendMessage(Translator.GetString("EGGuessMax"), guesser.PlayerId);
-            else guesser.ShowPopUp(Translator.GetString("EGGuessMax"));
+            guesser.ShowInfoMessage(isUI, Translator.GetString("EGGuessMax"));
             return true;
         }
 
         // Evil Guesser Can't Guess Addons
         if (role.IsAdditionRole() && !EGCanGuessAdt.GetBool())
         {
-            if (!isUI) Utils.SendMessage(Translator.GetString("GuessAdtRole"), guesser.PlayerId);
-            else guesser.ShowPopUp(Translator.GetString("GuessAdtRole"));
+            guesser.ShowInfoMessage(isUI, Translator.GetString("GuessAdtRole"));
             return true;
         }
 
         // Evil Guesser Can't Guess Impostors
         if (role.IsImpostor() && !EGCanGuessImp.GetBool())
         {
-            if (!isUI) Utils.SendMessage(Translator.GetString("GuessImpRole"), guesser.PlayerId);
-            else guesser.ShowPopUp(Translator.GetString("GuessImpRole"));
+            guesser.ShowInfoMessage(isUI, Translator.GetString("GuessImpRole"));
             return true;
         }
 

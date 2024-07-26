@@ -47,8 +47,24 @@ internal class Randomizer : RoleBase
 
         var Fg = IRandom.Instance;
         int Randomizer = Fg.Next(1, 5);
+
         if (Randomizer == 1)
         {
+            if (isSuicide)
+            {
+                if (target.GetRealKiller() != null)
+                {
+                    if (!target.GetRealKiller().IsAlive()) return;
+                    killer = target.GetRealKiller();
+                }
+            }
+
+            if (killer.PlayerId == target.PlayerId) return;
+
+            if (killer.Is(CustomRoles.KillingMachine)
+                || (killer.Is(CustomRoles.Oblivious) && Oblivious.ObliviousBaitImmune.GetBool()))
+                return;
+
             if (!isSuicide || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith) || !killer.Is(CustomRoles.KillingMachine) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Oblivious.ObliviousBaitImmune.GetBool()))
             {
                 killer.RPCPlayCustomSound("Congrats");
@@ -111,8 +127,8 @@ internal class Randomizer : RoleBase
             {
                 var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && target.RpcCheckAndMurder(x, true)).ToList();
                 var pc = pcList[IRandom.Instance.Next(0, pcList.Count)];
-                
-                Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+
+                pc.SetDeathReason(PlayerState.DeathReason.Revenge);
                 pc.RpcMurderPlayer(pc);
                 pc.SetRealKiller(target);
             }

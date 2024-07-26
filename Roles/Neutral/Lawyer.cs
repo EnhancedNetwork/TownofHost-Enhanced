@@ -95,7 +95,7 @@ internal class Lawyer : RoleBase
                 var lawyer = Utils.GetPlayerById(playerId);
                 if (lawyer.IsAlive())
                 {
-                    lawyer.GetRoleClass()?.Remove(playerId);
+                    lawyer.GetRoleClass()?.OnRemove(playerId);
                     lawyer.RpcSetCustomRole(changedRole);
                     lawyer.GetRoleClass()?.OnAdd(playerId);
                 }
@@ -142,13 +142,13 @@ internal class Lawyer : RoleBase
         {
             byte LawyerId = reader.ReadByte();
             byte TargetId = reader.ReadByte();
-            Target[LawyerId] = TargetId;
+            Target.Add(LawyerId, TargetId);
         }
         else
             Target.Remove(reader.ReadByte());
     }
 
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute)
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
         => ChangeRolesAfterTargetKilled.GetValue() is not 1 && !ForRecompute;
 
     private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool inMeeting)
@@ -172,7 +172,7 @@ internal class Lawyer : RoleBase
         if (lawyer == null) return;
 
         // Change role
-        lawyer.GetRoleClass()?.Remove(lawyerId);
+        lawyer.GetRoleClass()?.OnRemove(lawyerId);
         lawyer.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         lawyer.GetRoleClass()?.OnAdd(lawyerId);
 
@@ -196,14 +196,22 @@ internal class Lawyer : RoleBase
     {
         if (seer == null || target == null) return string.Empty;
 
-        if (!seer.Is(CustomRoles.Lawyer))
+        if (seer.Is(CustomRoles.Lawyer))
         {
-            if (!TargetKnowsLawyer.GetBool()) return string.Empty;
+            return Target.TryGetValue(seer.PlayerId, out var targetId) && targetId == target.PlayerId
+                ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : string.Empty;
+        }
+        else if (seer.IsAlive() && TargetKnowsLawyer.GetBool())
+        {
             return (Target.TryGetValue(target.PlayerId, out var x) && seer.PlayerId == x) ?
                 Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : string.Empty;
         }
-        var GetValue = Target.TryGetValue(seer.PlayerId, out var targetId);
-        return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : string.Empty;
+        else if (!seer.IsAlive() && Target.ContainsValue(target.PlayerId))
+        {
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦");
+        }
+
+        return string.Empty;
     }
     public override void AfterMeetingTasks()
     {
@@ -213,7 +221,7 @@ internal class Lawyer : RoleBase
             {
                 var lawyer = Utils.GetPlayerById(x.Key);
 
-                if (lawyer != null && lawyer.IsAlive())
+                if (lawyer.IsAlive())
                 {
                     ChangeRole(lawyer);
                 }
@@ -228,7 +236,7 @@ internal class Lawyer : RoleBase
             Logger.Info($"Laywer target dead, but change role setting is off", "Lawyer");
             return;
         }
-        lawyer.GetRoleClass()?.Remove(lawyer.PlayerId);
+        lawyer.GetRoleClass()?.OnRemove(lawyer.PlayerId);
         lawyer.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         lawyer.GetRoleClass()?.OnAdd(lawyer.PlayerId);
         var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), GetString(""));

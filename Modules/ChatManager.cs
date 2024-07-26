@@ -180,12 +180,14 @@ namespace TOHE.Modules.ChatManager
                     var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
                     writer.StartMessage(clientId);
                     writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SetName)
+                        .Write(firstAlivePlayer.Data.NetId)
                         .Write(title)
                         .EndRpc();
                     writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SendChat)
                         .Write(spamMsg)
                         .EndRpc();
                     writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SetName)
+                        .Write(firstAlivePlayer.Data.NetId)
                         .Write(name)
                         .EndRpc();
                     writer.EndMessage();
@@ -274,7 +276,7 @@ namespace TOHE.Modules.ChatManager
                 var pc = Utils.GetPlayerById(playerId);
                 if (pc == null && playerId != byte.MaxValue) continue;
                 var title = "<color=#FF0000>" + GetString("LastMessageReplay") + "</color>";
-                Utils.SendMessage(LastSystemChatMsg[playerId], playerId, title: title, replay: true);
+                Utils.SendMessage(LastSystemChatMsg[playerId], playerId, title: title, noReplay: true);
             }
         }
     }

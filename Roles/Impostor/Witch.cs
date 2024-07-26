@@ -33,7 +33,7 @@ internal class Witch : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Witch);
-        ModeSwitchActionOpt = StringOptionItem.Create(Id + 10, "WitchModeSwitchAction", EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.ImpostorRoles, false)
+        ModeSwitchActionOpt = StringOptionItem.Create(Id + 10, GeneralOption.ModeSwitchAction, EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Witch]);
     }
     public override void Init()
@@ -188,7 +188,7 @@ internal class Witch : RoleBase
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Spell, [.. spelledIdList]);
         RemoveSpelledPlayer();
     }
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
         RemoveSpelledPlayer();
     }
@@ -210,9 +210,9 @@ internal class Witch : RoleBase
         }
         return string.Empty;
     }
-    public override string GetLowerText(PlayerControl witch, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    public override string GetLowerText(PlayerControl witch, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
-        if (witch == null || isForMeeting || seen == null || witch != seen) return string.Empty;
+        if (!witch.IsAlive() || isForMeeting || witch != seen) return string.Empty;
 
         var str = new StringBuilder();
         if (isForHud)

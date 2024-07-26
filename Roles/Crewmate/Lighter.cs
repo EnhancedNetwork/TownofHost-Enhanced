@@ -93,7 +93,7 @@ internal class Lighter : RoleBase
             pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target) => Timer.Clear();
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => Timer.Clear();
     public override string GetProgressText(byte playerId, bool comms)
     {
         var ProgressText = new StringBuilder();

@@ -140,7 +140,7 @@ internal class Executioner : RoleBase
         else
             Target.Remove(reader.ReadByte());
     }
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute)
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
         => !(ChangeRolesAfterTargetKilled.GetValue() is 6 or 7) && !ForRecompute;
 
     public static void ChangeRoleByTarget(PlayerControl target)
@@ -210,7 +210,7 @@ internal class Executioner : RoleBase
         return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "♦") : string.Empty;
     }
 
-    public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
         foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId))
         {

@@ -39,12 +39,12 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0618.200.050000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 Canary 5";
-    public static readonly string SupportedVersionAU = "2024.3.5"; // Also 2024.6.4
+    public const string PluginVersion = "2024.0724.200.12000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0 Canary 12";
+    public const string SupportedVersionAU = "2024.6.18";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 5
+    public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 12
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
     public static readonly bool devRelease = false; // INACTIVE - Latest: V2.0.0 Dev 25
 
@@ -62,7 +62,7 @@ public class Main : BasePlugin
     public static readonly string WebsiteInviteUrl = "https://tohre.dev";
     
     public static readonly bool ShowKofiButton = true;
-    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
+    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);
@@ -73,8 +73,8 @@ public class Main : BasePlugin
     public static bool AlreadyShowMsgBox = false;
     public static string credentialsText;
     public Coroutines coroutines;
-    public static NormalGameOptionsV07 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
-    public static HideNSeekGameOptionsV07 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
+    public static NormalGameOptionsV08 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static HideNSeekGameOptionsV08 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -85,10 +85,9 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableGM { get; private set; }
     public static ConfigEntry<bool> AutoStart { get; private set; }
     public static ConfigEntry<bool> DarkTheme { get; private set; }
+    public static ConfigEntry<bool> DisableLobbyMusic { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
-    public static ConfigEntry<bool> ModeForSmallScreen { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
-    public static ConfigEntry<bool> AutoMuteUs { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
@@ -120,6 +119,7 @@ public class Main : BasePlugin
     
     public static Dictionary<byte, PlayerState> PlayerStates = [];
     public static readonly Dictionary<byte, string> AllPlayerNames = [];
+    public static readonly Dictionary<int, string> AllClientRealNames = [];
     public static readonly Dictionary<byte, CustomRoles> AllPlayerCustomRoles = [];
     public static readonly Dictionary<(byte, byte), string> LastNotifyNames = [];
     public static readonly Dictionary<byte, Action> LateOutfits = [];
@@ -130,7 +130,7 @@ public class Main : BasePlugin
     
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
-    public static GameData.PlayerInfo LastVotedPlayerInfo;
+    public static NetworkedPlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
     public static readonly HashSet<byte> ResetCamPlayerList = [];
     public static readonly HashSet<byte> winnerList = [];
@@ -150,7 +150,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<int, int> SayStartTimes = [];
     public static readonly Dictionary<int, int> SayBanwordsTimes = [];
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
-    public static readonly Dictionary<byte, int> GuesserGuessed = [];
+    public static readonly HashSet<byte> PlayersDiedInMeeting = [];
     public static readonly Dictionary<byte, long> AllKillers = [];
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
@@ -164,7 +164,7 @@ public class Main : BasePlugin
     public static int AliveImpostorCount;
     public static bool VisibleTasksCount = false;
     public static bool AssignRolesIsStarted = false;
-    public static string nickName = "";
+    public static string HostRealName = "";
     public static bool introDestroyed = false;
     public static int DiscussionTime;
     public static int VotingTime;
@@ -425,10 +425,9 @@ public class Main : BasePlugin
         EnableGM = Config.Bind("Client Options", "EnableGM", false);
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
         DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
+        DisableLobbyMusic = Config.Bind("Client Options", "DisableLobbyMusic", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
-        ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
-        AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);
@@ -467,7 +466,7 @@ public class Main : BasePlugin
             //TOHE.Logger.Disable("CheckMurder");
             TOHE.Logger.Disable("PlayerControl.RpcSetRole");
             TOHE.Logger.Disable("SyncCustomSettings");
-            TOHE.Logger.Disable("DoNotifyRoles");
+            //TOHE.Logger.Disable("DoNotifyRoles");
         }
         //TOHE.Logger.isDetail = true;
 
@@ -476,8 +475,6 @@ public class Main : BasePlugin
 
         // 認証関連-認証
         DebugModeManager.Auth(DebugKeyAuth, DebugKeyInput.Value);
-
-
 
         Preset1 = Config.Bind("Preset Name Options", "Preset1", "Preset_1");
         Preset2 = Config.Bind("Preset Name Options", "Preset2", "Preset_2");
@@ -535,29 +532,29 @@ public enum CustomRoles
 
     // Crewmate(Vanilla)
     Crewmate = 0,
-    Scientist,
     Engineer,
     GuardianAngel,
-    //Tracker,
-    //Noisemaker,
+    Noisemaker,
+    Scientist,
+    Tracker,
 
     // Impostor(Vanilla)
     Impostor,
+    Phantom,
     Shapeshifter,
-    //Phantom,
 
     // Crewmate Vanilla Remakes
     CrewmateTOHE,
-    ScientistTOHE,
     EngineerTOHE,
     GuardianAngelTOHE,
-    //TrackerTOHE,
-    //NoisemakerTOHE,
+    NoisemakerTOHE,
+    ScientistTOHE,
+    TrackerTOHE,
 
     // Impostor Vanilla Remakes
     ImpostorTOHE,
+    PhantomTOHE,
     ShapeshifterTOHE,
-    //PhantomTOHE,
 
     // Impostor Ghost
     Bloodmoon,
@@ -620,10 +617,9 @@ public enum CustomRoles
     Scavenger,
     ShapeMaster,
     Sniper,
-    Witch,
     SoulCatcher,
-    Swooper,
     Stealth,
+    Swooper,
     TimeThief,
     Trapster,
     Trickster,
@@ -635,6 +631,7 @@ public enum CustomRoles
     Visionary,
     Warlock,
     Wildling,
+    Witch,
     Zombie,
 
     //Crewmate Ghost
@@ -652,20 +649,21 @@ public enum CustomRoles
     Captain,
     Celebrity, 
     Chameleon,
+    ChiefOfPolice, //police commisioner ///// UNUSED
     Cleanser,
     CopyCat,
     Coroner, 
     Crusader,
-    Detective,
     Deceiver, 
     Deputy,
+    Detective,
     Dictator,
     Doctor,
     Enigma,
     FortuneTeller, 
+    Grenadier,
     Guardian,
     GuessMaster,
-    Grenadier,
     Inspector, 
     Investigator,
     Jailer,
@@ -690,12 +688,11 @@ public enum CustomRoles
     Oracle,
     Overseer, 
     Pacifist, 
-    ChiefOfPolice, //police commisioner ///// UNUSED
     President,
     Psychic,
     Randomizer,
-    Reverie,
     Retributionist,
+    Reverie,
     Sheriff,
     Snitch,
     SpeedBooster,
@@ -705,11 +702,10 @@ public enum CustomRoles
     Swapper,
     TaskManager,
     Telecommunication,
-    Tracefinder,
-    Tracker,
-    Transporter,
     TimeManager,
     TimeMaster,
+    Tracefinder,
+    Transporter,
     Veteran,
     Vigilante,
     Witness,
@@ -747,14 +743,13 @@ public enum CustomRoles
     Opportunist,
     Pelican,
     Pestilence,
-    Phantom,
     Pickpocket,
     Pirate,
     Pixie,
     PlagueBearer,
     PlagueDoctor,
-    PotionMaster,
     Poisoner,
+    PotionMaster,
     Provocateur,
     PunchingBag,
     Pursuer,
@@ -771,6 +766,7 @@ public enum CustomRoles
     Sidekick,
     Solsticer,
     SoulCollector,
+    Specter,
     Spiritcaller,
     Stalker,
     Sunnyboy,
@@ -785,7 +781,7 @@ public enum CustomRoles
     Workaholic,
     Wraith,
 
-   //two-way camp
+    //two-way camp
     Mini,
 
     //FFA
@@ -800,7 +796,6 @@ public enum CustomRoles
     // Add-ons
     Admired,
     Antidote,
-    Glow,
     Autopsy,
     Avanger,
     Aware,
@@ -814,7 +809,6 @@ public enum CustomRoles
     Clumsy,
     Contagious,
     Cyber,
-    Unreportable, //disregarded
     Diseased,
     DoubleShot,
     Egoist,
@@ -823,6 +817,7 @@ public enum CustomRoles
     Fool,
     Fragile,
     Ghoul,
+    Glow,
     Gravestone,
     Guesser,
     Hurried,
@@ -836,7 +831,6 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
-    Tricky,
     Mimic,
     Mundane,
     Necroview,
@@ -845,27 +839,29 @@ public enum CustomRoles
     Oiiai,
     Onbound,
     Overclocked,
+    Paranoia,
     Radar,
     Rainbow,
     Rascal,
     Reach,
     Rebound,
     Recruit,
-    Schizophrenic,
     Seer,
     Silent,
-    Statue,
     Sleuth,
     Soulless,
-    TicketsStealer, //stealer
+    Statue,
     Stubborn,
     Susceptible,
     Swift,
     Tiebreaker,
+    TicketsStealer, //stealer
     Torch,
     Trapper,
+    Tricky,
     Tired,
     Unlucky,
+    Unreportable, //disregarded
     VoidBallot,
     Watcher,
     Workhorse,
@@ -916,7 +912,7 @@ public enum CustomWinner
     Juggernaut = CustomRoles.Juggernaut,
     Infectious = CustomRoles.Infectious,
     Virus = CustomRoles.Virus,
-    Phantom = CustomRoles.Phantom,
+    Specter = CustomRoles.Specter,
     Jinx = CustomRoles.Jinx,
     CursedSoul = CustomRoles.CursedSoul,
     PotionMaster = CustomRoles.PotionMaster,
@@ -956,7 +952,7 @@ public enum AdditionalWinners
     Jackal = CustomRoles.Jackal,
     Sidekick = CustomRoles.Sidekick,
     Pursuer = CustomRoles.Pursuer,
-    Phantom = CustomRoles.Phantom,
+    Specter = CustomRoles.Specter,
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
     Taskinator = CustomRoles.Taskinator,

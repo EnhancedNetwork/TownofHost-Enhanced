@@ -16,6 +16,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         foreach (var sender in AllSenders.OfType<PlayerGameOptionsSender>().Where(sender => sender.player.PlayerId == playerId).ToArray())
         {
             sender.SetDirty();
+            break; // Only one sender can have the same player id
         }
     }
     public static void SetDirtyToAll()
@@ -27,7 +28,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
     }
 
     public override IGameOptions BasedGameOptions => GameStates.IsNormalGame ?
-            Main.RealOptionsData.Restore(new NormalGameOptionsV07(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>()) : Main.RealOptionsData.Restore(new HideNSeekGameOptionsV07(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>());
+            Main.RealOptionsData.Restore(new NormalGameOptionsV08(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>()) : Main.RealOptionsData.Restore(new HideNSeekGameOptionsV08(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>());
     public override bool IsDirty { get; protected set; }
 
     public PlayerControl player = player;

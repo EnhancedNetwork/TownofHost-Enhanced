@@ -14,7 +14,7 @@ internal class Terrorist : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public static OptionItem CanTerroristSuicideWin;
     public static OptionItem TerroristCanGuess;
@@ -25,7 +25,7 @@ internal class Terrorist : RoleBase
         SetupRoleOptions(15400, TabGroup.NeutralRoles, CustomRoles.Terrorist);
         CanTerroristSuicideWin = BooleanOptionItem.Create(15402, "CanTerroristSuicideWin", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
-        TerroristCanGuess = BooleanOptionItem.Create(15403, "CanGuess", true, TabGroup.NeutralRoles, false)
+        TerroristCanGuess = BooleanOptionItem.Create(15403, GeneralOption.CanGuess, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
         OverrideTasksData.Create(15404, TabGroup.NeutralRoles, CustomRoles.Terrorist);
     }
@@ -48,40 +48,40 @@ internal class Terrorist : RoleBase
         Logger.Info(target?.Data?.PlayerName + " was Terrorist", "AfterPlayerDeathTasks");
         CheckTerroristWin(target.Data);
     }
-    public override void CheckExile(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public override void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
         CheckTerroristWin(exiled);
     }
-    private static void CheckTerroristWin(GameData.PlayerInfo terrorist)
+    private static void CheckTerroristWin(NetworkedPlayerInfo terrorist)
     {
         var taskState = Utils.GetPlayerById(terrorist.PlayerId).GetPlayerTaskState();
         if (taskState.IsTaskFinished && (!Main.PlayerStates[terrorist.PlayerId].IsSuicide || CanTerroristSuicideWin.GetBool()))
         {
+            if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
+                CustomWinnerHolder.WinnerIds.Add(terrorist.PlayerId);
+            }
             foreach (var pc in Main.AllPlayerControls)
             {
                 if (pc.Is(CustomRoles.Terrorist))
                 {
                     if (Main.PlayerStates[pc.PlayerId].deathReason == PlayerState.DeathReason.Vote)
                     {
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.etc;
+                        pc.SetDeathReason(PlayerState.DeathReason.etc);
                     }
                     else
                     {
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                        pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                     }
                 }
                 else if (!pc.Data.IsDead)
                 {
-                    Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                    pc.SetDeathReason(PlayerState.DeathReason.Bombed);
                     Main.PlayerStates[pc.PlayerId].SetDead();
                     pc.RpcMurderPlayer(pc);
                     pc.SetRealKiller(terrorist.Object);
                 }
-            }
-            if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
-                CustomWinnerHolder.WinnerIds.Add(terrorist.PlayerId);
             }
         }
     }
@@ -89,8 +89,8 @@ internal class Terrorist : RoleBase
     {
         if (!TerroristCanGuess.GetBool())
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessDisabled"));
+            Logger.Info($"Guess Disabled for this player {guesser.PlayerId}", "GuessManager");
+            guesser.ShowInfoMessage(isUI, GetString("GuessDisabled"));
             return true;
         }
         return false;

@@ -6,6 +6,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
 using InnerNet;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace TOHE.Roles.Neutral;
 
@@ -41,9 +42,9 @@ internal class Solsticer : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
         SolsticerKnowKiller = BooleanOptionItem.Create(Id + 11, "SolsticerKnowItsKiller", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-        SolsticerCanVent = BooleanOptionItem.Create(Id + 12, "CanVent", false, TabGroup.NeutralRoles, false)
+        SolsticerCanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-        SolsticerCanGuess = BooleanOptionItem.Create(Id + 13, "CanGuess", false, TabGroup.NeutralRoles, false)
+        SolsticerCanGuess = BooleanOptionItem.Create(Id + 13, GeneralOption.CanGuess, false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
         SolsticerSpeed = FloatOptionItem.Create(Id + 14, "SolsticerSpeed", new(0, 5, 0.1f), 1.5f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
@@ -76,11 +77,15 @@ internal class Solsticer : RoleBase
         AURoleOptions.PlayerSpeedMod = !patched ? SolsticerSpeed.GetFloat() : 0.5f;
     } //Enabled Solsticer can vent
 
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => true;
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player == null) return true;
+        
+        // Sycn for modded clients
+        SendRPC();
+        
         if (patched)
         {
             ResetTasks(player);
@@ -191,7 +196,7 @@ internal class Solsticer : RoleBase
             }
         }
     }
-    public void SendRPC()
+    private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player); //SyncSolsticerNotify
@@ -240,7 +245,7 @@ internal class Solsticer : RoleBase
     {
         SetShortTasksToAdd();
         var taskState = pc.GetPlayerTaskState();
-        GameData.Instance.RpcSetTasks(pc.PlayerId, System.Array.Empty<byte>()); //Let taskassign patch decide the tasks
+        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
         taskState.CompletedTasksCount = 0;
         pc.RpcGuardAndKill();
         pc.Notify(GetString("SolsticerTasksReset"));
@@ -270,23 +275,21 @@ internal class Solsticer : RoleBase
     {
         if (role == CustomRoles.Solsticer)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessSolsticer"));
+            pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
             return true;
         }
         return false;
     }
     public override bool GuessCheck(bool isUI, PlayerControl pc, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if ((!CanGuess || !SolsticerCanGuess.GetBool()))
+        if (!CanGuess || !SolsticerCanGuess.GetBool())
         {
-            if (!isUI) Utils.SendMessage(GetString("SolsticerGuessMax"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("SolsticerGuessMax"));
+            pc.ShowInfoMessage(isUI, GetString("SolsticerGuessMax"));
             return true;
         }
         return false;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         patched = false;
     }
@@ -318,6 +321,6 @@ internal class Solsticer : RoleBase
                 else return Main.roleColors[seer.GetCustomRole()];
             }
         }
-        return "";
+        return string.Empty;
     }
 }

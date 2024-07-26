@@ -7,6 +7,7 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Vanilla;
 
 namespace TOHE.Roles.Core;
 
@@ -86,6 +87,8 @@ public static class CustomRoleManager
 
         player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
 
+        if (NoisemakerTOHE.HasEnabled) NoisemakerTOHE.ApplyGameOptionsForOthers(player);
+
         if (DollMaster.HasEnabled && DollMaster.IsDoll(player.PlayerId))
         {
             DollMaster.ApplySettingsToDoll(opt, player);
@@ -144,6 +147,15 @@ public static class CustomRoleManager
     public static bool OnCheckMurder(ref PlayerControl killer, ref PlayerControl target, ref bool __state)
     {
         if (killer == target) return true;
+
+        if (target != null && target.Is(CustomRoles.Fragile))
+        {
+            if (Fragile.KillFragile(killer, target))
+            {
+                Logger.Info("Fragile killed in OnChecMurder, returning false", "Fragile");
+                return false;
+            }
+        }
         var canceled = false;
         var cancelbutkill = false;
 
@@ -152,9 +164,6 @@ public static class CustomRoleManager
 
         // If Target is possessed by Dollmaster swap controllers.
         target = DollMaster.SwapPlayerInfo(target);   
-
-        if (killer.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.Doppelganger))
-            target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
@@ -245,9 +254,6 @@ public static class CustomRoleManager
         {
             target = DollMaster.SwapPlayerInfo(target);
         }
-
-        if (killer.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.Doppelganger))
-            target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers back
 
         // Check if killer is a true killing role and Target is possessed by Dollmaster
         if (DollMaster.HasEnabled && DollMaster.IsControllingPlayer)
@@ -343,7 +349,7 @@ public static class CustomRoleManager
                 switch (subRole)
                 {
                     case CustomRoles.TicketsStealer when !inMeeting && !isSuicide:
-                        killer.Notify(string.Format(Translator.GetString("TicketsStealerGetTicket"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * Stealer.TicketsPerKill.GetFloat()).ToString("0.0#####")));
+                        Stealer.OnMurderPlayer(killer);
                         break;
 
                     case CustomRoles.Tricky:
@@ -355,8 +361,11 @@ public static class CustomRoleManager
         // Check dead body for others roles
         CheckDeadBody(killer, target, inMeeting);
 
-        // Check Lovers Suicide
-        FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
+        if (!(killer.PlayerId == target.PlayerId && target.IsDisconnected()))
+        {
+            // Check Lovers Suicide
+            FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
+        }
     }
     
     /// <summary>

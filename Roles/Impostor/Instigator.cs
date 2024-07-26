@@ -22,7 +22,7 @@ internal class Instigator : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Instigator);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(20f, 180f, 1f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(20f, 180f, 1f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])
             .SetValueFormat(OptionFormat.Seconds);
         AbilityLimitt = IntegerOptionItem.Create(Id + 11, "InstigatorAbilityLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])
             .SetValueFormat(OptionFormat.Times);
@@ -41,11 +41,11 @@ internal class Instigator : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public override void OnPlayerExiled(PlayerControl instigator, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl instigator, NetworkedPlayerInfo exiled)
     {
         if (exiled == null || !exiled.GetCustomRole().IsCrewmate()) return;
 
-        if (AbilityLimit > 0) return;
+        if (AbilityLimit <= 0) return;
 
         var killer = _Player;
         if (!killer.IsAlive()) return;
@@ -75,10 +75,7 @@ internal class Instigator : RoleBase
 
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Retribution, [.. killPlayers]);
 
-        AbilityLimit += 1;
+        AbilityLimit--;
         SendSkillRPC();
-
-
-
     }
 }
