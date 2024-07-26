@@ -2944,6 +2944,7 @@
   "StoreQF": "<color=#3333ff>修复药水</color>",
   "StoreBL": "<color=#691a2e>隐身药水</color>",
   "StoreNS": "<color=#663399>夜视药水</color>",
+  "StoreINV": "<color=#663399>隐形药水</color>",
   "StoreNull": "<color=#888888>无</color>",
   "PotionStore": "<color=#00ffa5>背包：</color>",
   "WaitQFPotion": "\n<color=#3333ff>修复药水</color>等待使用",
