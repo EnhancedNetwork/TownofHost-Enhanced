@@ -3,7 +3,6 @@ using Hazel;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;

@@ -7,7 +7,6 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
-using System.Runtime.Intrinsics.Arm;
 
 namespace TOHE.Roles.Impostor;
 
