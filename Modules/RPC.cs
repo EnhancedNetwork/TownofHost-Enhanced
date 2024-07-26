@@ -651,13 +651,13 @@ internal class RPCHandlerPatch
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
 internal class PlayerPhysicsRPCHandlerPatch
 {
-    private static bool hasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId);
-    private static bool hasLadder(int ladderId) => ShipStatus.Instance.Ladders.Any(l => l.Id == ladderId);
+    private static bool HasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId);
+    private static bool HasLadder(int ladderId) => ShipStatus.Instance.Ladders.Any(l => l.Id == ladderId);
 
     public static bool Prefix(PlayerPhysics __instance, byte callId, MessageReader reader)
     {
-        var rpcType = (RpcCalls)callId;
-        MessageReader subReader = MessageReader.Get(reader);
+        //var rpcType = (RpcCalls)callId;
+        //MessageReader subReader = MessageReader.Get(reader);
 
         if (EAC.PlayerPhysicsRpcCheck(__instance, callId, reader)) return false;
 

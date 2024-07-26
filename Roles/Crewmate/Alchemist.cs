@@ -29,7 +29,7 @@ internal class Alchemist : RoleBase
     private static OptionItem Speed;
     private static OptionItem InvisDuration;
 
-    private static Dictionary<byte, long> InvisTime = [];
+    private static readonly Dictionary<byte, long> InvisTime = [];
     private static readonly Dictionary<byte, int> ventedId = [];
     public static readonly Dictionary<byte, byte> BloodthirstList = [];
 
