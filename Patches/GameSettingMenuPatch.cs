@@ -137,12 +137,10 @@ public class GameSettingMenuPatch
     {
         var ParentLeftPanel = __instance.GamePresetsButton.transform.parent;
 
-        var cocztam = DestroyableSingleton<LobbyInfoPane>.Instance;
-
         var labeltag = GameObject.Find("ModeValue");
         var preset = Object.Instantiate(labeltag, ParentLeftPanel);
 
-        preset.transform.localPosition = new Vector3(-3.33f, -0.45f, -2f);
+
         preset.transform.localScale = new Vector3(0.65f, 0.63f, 1f);
         var SpriteRenderer = preset.GetComponentInChildren<SpriteRenderer>();
         SpriteRenderer.color = Color.white;
