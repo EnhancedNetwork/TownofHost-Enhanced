@@ -2944,6 +2944,7 @@
   "StoreQF": "<color=#3333ff>修復のポーション</color>",
   "StoreBL": "<color=#691a2e>害のポーション</color>",
   "StoreNS": "<color=#663399>暗視のポーション</color>",
+  "StoreINV": "<color=#663399>Potion of Invisibility</color>",
   "StoreNull": "<color=#888888>なし</color>",
   "PotionStore": "<color=#00ffa5>店にあるポーション: </color>",
   "WaitQFPotion": "\n<color=#3333ff>修復のポーション</color>が使用待ち",
