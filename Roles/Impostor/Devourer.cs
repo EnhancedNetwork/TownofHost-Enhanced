@@ -60,7 +60,7 @@ internal class Devourer : RoleBase
         OnDevourerDied(Utils.GetPlayerById(playerId));
         PlayerSkinsCosumed.Remove(playerId);
         NowCooldown.Remove(playerId);
-        PlayerIds.Add(playerId);
+        PlayerIds.Remove(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
