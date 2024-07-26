@@ -55,6 +55,13 @@ internal class Devourer : RoleBase
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
         PlayerIds.Add(playerId);
     }
+    public override void Remove(byte playerId)
+    {
+        OnDevourerDied(Utils.GetPlayerById(playerId));
+        PlayerSkinsCosumed.Remove(playerId);
+        NowCooldown.Remove(playerId);
+        PlayerIds.Add(playerId);
+    }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -103,7 +110,9 @@ internal class Devourer : RoleBase
     public static bool HideNameOfTheDevoured(byte targetId) => HideNameOfConsumedPlayer.GetBool() && PlayerSkinsCosumed.Any(a => a.Value.Contains(targetId));
     private static void OnDevourerDied(PlayerControl devourer)
     {
+        if (devourer == null) return;
         var devourerId = devourer.PlayerId;
+
         foreach (byte player in PlayerSkinsCosumed[devourerId])
         {
             Camouflage.PlayerSkins[player] = OriginalPlayerSkins[player];

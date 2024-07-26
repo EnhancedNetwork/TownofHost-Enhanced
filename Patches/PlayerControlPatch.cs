@@ -17,7 +17,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
-using System.Runtime.Intrinsics.Arm;
 
 namespace TOHE;
 
@@ -892,8 +891,8 @@ class ReportDeadBodyPatch
         {
             Main.MeetingIsStarted = true;
             Main.LastVotedPlayerInfo = null;
-            Main.GuesserGuessed.Clear();
             Main.AllKillers.Clear();
+            GuessManager.GuesserGuessed.Clear();
 
             Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
             Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
@@ -1376,10 +1375,17 @@ class FixedUpdateInNormalGamePatch
 
                             if (isExiled)
                             {
-                                if (Main.PlayerStates.TryGetValue(deathId, out var loverStates) && loverStates.deathReason is PlayerState.DeathReason.Gambled or PlayerState.DeathReason.Trialed or PlayerState.DeathReason.Revenge)
+                                if (Main.PlayersDiedInMeeting.Contains(deathId))
                                 {
-                                    GuessManager.RpcGuesserMurderPlayer(partnerPlayer);
+                                    partnerPlayer.Data.IsDead = true;
+                                    partnerPlayer.RpcExileV2();
+                                    Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
+                                    if (MeetingHud.Instance?.state == MeetingHud.VoteStates.Discussion)
+                                    {
+                                        MeetingHud.Instance?.CheckForEndVoting();
+                                    }
                                     MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
+                                    _ = new LateTask(() => HudManager.Instance?.SetHudActive(false), 0.3f, "SetHudActive in LoversSuicide", shoudLog: false);
                                 }
                                 else
                                 {

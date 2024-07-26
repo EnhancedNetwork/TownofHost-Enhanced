@@ -15,6 +15,7 @@ public static class AddonAssign
             case CustomRoles.Workhorse:
             case CustomRoles.LastImpostor:
                 return true;
+            case CustomRoles.Autopsy when Options.EveryoneCanSeeDeathReason.GetBool():
             case CustomRoles.Madmate when Madmate.MadmateSpawnMode.GetInt() != 0:
             case CustomRoles.Glow or CustomRoles.Mare when GameStates.FungleIsActive:
                 return true;
