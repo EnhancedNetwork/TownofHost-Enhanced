@@ -1034,6 +1034,7 @@ class MeetingHudStartPatch
 
             var sb = new StringBuilder();
 
+            //pva.NameText.text = target.GetRealName(isMeeting: true);
             pva.NameText.text = pva.NameText.text.ApplyNameColorData(seer, target, true);
 
             // Guesser Mode //

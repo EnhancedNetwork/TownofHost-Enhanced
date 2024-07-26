@@ -121,30 +121,30 @@ internal class Doppelganger : RoleBase
 
         AbilityLimit--;
 
-        //string kname = killer.GetRealName();
-        //string tname = target.GetRealName();
+        string kname = killer.GetRealName(isMeeting: true);
+        string tname = target.GetRealName(isMeeting: true);
 
         var killerSkin = new NetworkedPlayerInfo.PlayerOutfit()
-            .Set(killer.GetRealName(), killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
+            .Set(kname, killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
         var killerLvl = Utils.GetPlayerInfoById(killer.PlayerId).PlayerLevel;
 
         var targetSkin = new NetworkedPlayerInfo.PlayerOutfit()
-            .Set(target.GetRealName(), target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
+            .Set(tname, target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
         var targetLvl = Utils.GetPlayerInfoById(target.PlayerId).PlayerLevel;
 
-        DoppelVictim[target.PlayerId] = target.GetRealName();
+        DoppelVictim[target.PlayerId] = tname;
 
         RpcChangeSkin(target, killerSkin, killerLvl);
         Logger.Info("Changed target skin", "Doppelganger");
         RpcChangeSkin(killer, targetSkin, targetLvl);
         Logger.Info("Changed killer skin", "Doppelganger");
 
-        killer.Data.MarkDirty();
-        target.Data.MarkDirty();
-        
+        //killer.Data.UpdateName(tname, Utils.GetClientById(killer.PlayerId));
+        //target.Data.UpdateName(kname, Utils.GetClientById(target.PlayerId));
+
         SendSkillRPC();
         RPC.SyncAllPlayerNames();
-        Utils.NotifyRoles(ForceLoop: true, NoCache: true);
+        Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
 
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
