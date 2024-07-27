@@ -326,6 +326,14 @@ public class GameStartRandomMap
             else if (GameStates.IsHideNSeek)
                 Main.HideNSeekOptions.MapId = SelectRandomMap();
         }
+        else if (CreateOptionsPickerPatch.SetDleks)
+        {
+            if (GameStates.IsNormalGame)
+                Main.NormalOptions.MapId = 3;
+
+            else if (GameStates.IsHideNSeek)
+                Main.HideNSeekOptions.MapId = 3;
+        }
 
         //if (GameStates.IsNormalGame && Options.IsActiveDleks)
         //{
