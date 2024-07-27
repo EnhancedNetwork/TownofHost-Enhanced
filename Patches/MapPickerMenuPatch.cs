@@ -34,6 +34,14 @@ class CreateOptionsPickerPatch
                     {
                         __instance.selectedButton.Button.SelectButton(false);
                     }
+                    __instance.selectedButton = dlekS_ehT_MapButton;
+                    __instance.selectedButton.Button.SelectButton(true);
+
+                    if (GameStates.IsNormalGame)
+                        Main.NormalOptions.MapId = 0;
+                    else if (GameStates.IsHideNSeek)
+                        Main.HideNSeekOptions.MapId = 0;
+
                     try
                     {
                         __instance.SelectMap(__instance.AllMapIcons[0]);
@@ -42,13 +50,6 @@ class CreateOptionsPickerPatch
                     {
                         //__instance.SelectMap(__instance.AllMapIcons[1]);
                     }
-                    __instance.selectedButton = dlekS_ehT_MapButton;
-                    __instance.selectedButton.Button.SelectButton(true);
-
-                    if (GameStates.IsNormalGame)
-                        Main.NormalOptions.MapId = 0;
-                    else if (GameStates.IsHideNSeek)
-                        Main.HideNSeekOptions.MapId = 0;
 
                     __instance.MapImage.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner.png", 100f);
                     __instance.MapName.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);
