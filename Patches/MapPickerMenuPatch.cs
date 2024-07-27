@@ -30,26 +30,20 @@ class CreateOptionsPickerPatch
                 dlekS_ehT_MapButton.Button.OnClick.RemoveAllListeners();
                 dlekS_ehT_MapButton.Button.OnClick.AddListener((Action)(() =>
                 {
+                    __instance.SelectMap(__instance.AllMapIcons[0]);
+
                     if (__instance.selectedButton)
                     {
                         __instance.selectedButton.Button.SelectButton(false);
                     }
                     __instance.selectedButton = dlekS_ehT_MapButton;
                     __instance.selectedButton.Button.SelectButton(true);
+                    __instance.selectedMapId = 3;
 
                     if (GameStates.IsNormalGame)
                         Main.NormalOptions.MapId = 0;
                     else if (GameStates.IsHideNSeek)
                         Main.HideNSeekOptions.MapId = 0;
-
-                    try
-                    {
-                        __instance.SelectMap(__instance.AllMapIcons[0]);
-                    }
-                    catch
-                    {
-                        //__instance.SelectMap(__instance.AllMapIcons[1]);
-                    }
 
                     __instance.MapImage.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner.png", 100f);
                     __instance.MapName.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);
@@ -64,10 +58,14 @@ class CreateOptionsPickerPatch
                 {
                     if (SetDleks == true)
                     {
-                        __instance.selectedMapId = 3;
-                        __instance.selectedButton.Button.SelectButton(false);
+                        if (__instance.selectedButton)
+                        {
+                            __instance.selectedButton.Button.SelectButton(false);
+                        }
                         DleksButton.Button.SelectButton(true);
                         __instance.selectedButton = DleksButton;
+                        __instance.selectedMapId = 3;
+
                         __instance.MapImage.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner.png", 100f);
                         __instance.MapName.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);
                     }
@@ -80,12 +78,12 @@ class CreateOptionsPickerPatch
         }
 
         [HarmonyPatch(nameof(GameOptionsMapPicker.FixedUpdate))]
-        [HarmonyPostfix]
-        public static void Postfix_FixedUpdate(GameOptionsMapPicker __instance)
+        [HarmonyPrefix]
+        public static bool Prefix_FixedUpdate(GameOptionsMapPicker __instance)
         {
             if (DleksButton != null)
             {
-                if (__instance.selectedButton == DleksButton)
+                if (__instance.selectedMapId == 3)
                 {
                     SetDleks = true;
                 }
@@ -94,6 +92,11 @@ class CreateOptionsPickerPatch
                     SetDleks = false;
                 }
             }
+
+            if (__instance.selectedMapId == 3)
+                return false;
+
+            return true;
         }
     }
 
