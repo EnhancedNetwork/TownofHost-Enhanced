@@ -59,7 +59,9 @@ internal class Bloodmoon : RoleBase
             return true;
         }
 
-        if (AbilityLimit > 0 
+        if (AbilityLimit > 0
+            && !target.Is(CustomRoles.Jinx)
+            && !target.Is(CustomRoles.CursedWolf)
             && killer.RpcCheckAndMurder(target, true)
             && !PlayerDie.ContainsKey(target.PlayerId))
         {
