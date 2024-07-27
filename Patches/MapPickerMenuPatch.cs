@@ -45,6 +45,9 @@ class CreateOptionsPickerPatch
                     else if (GameStates.IsHideNSeek)
                         Main.HideNSeekOptions.MapId = 0;
 
+                    //__instance.MapImage.transform.localScale = new Vector3(-1f, 1f, 1f);
+                    //__instance.MapName.transform.localScale = new Vector3(-1f, 1f, 1f);
+
                     __instance.MapImage.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner.png", 100f);
                     __instance.MapName.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);
                 }));
@@ -65,6 +68,9 @@ class CreateOptionsPickerPatch
                         DleksButton.Button.SelectButton(true);
                         __instance.selectedButton = DleksButton;
                         __instance.selectedMapId = 3;
+
+                        //__instance.MapImage.transform.localScale = new Vector3(-1f, 1f, 1f);
+                        //__instance.MapName.transform.localScale = new Vector3(-1f, 1f, 1f);
 
                         __instance.MapImage.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner.png", 100f);
                         __instance.MapName.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);

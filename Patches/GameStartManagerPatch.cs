@@ -267,11 +267,21 @@ public class GameStartManagerPatch
 
                 if (Options.RandomMapsMode.GetBool())
                 {
-                    if (GameStates.IsNormalGame)
-                        Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
+                    var mapId = GameStartRandomMap.SelectRandomMap();
 
+                    if (GameStates.IsNormalGame)
+                    {
+                        Main.NormalOptions.MapId = mapId;
+                    }
                     else if (GameStates.IsHideNSeek)
-                        Main.HideNSeekOptions.MapId = GameStartRandomMap.SelectRandomMap();
+                    {
+                        Main.HideNSeekOptions.MapId = mapId;
+                    }
+
+                    if (mapId == 3) // Dleks map
+                        CreateOptionsPickerPatch.SetDleks = true;
+                    else
+                        CreateOptionsPickerPatch.SetDleks = false;
                 }
                 else if (CreateOptionsPickerPatch.SetDleks)
                 {
@@ -346,24 +356,21 @@ public class GameStartRandomMap
 
         if (Options.RandomMapsMode.GetBool())
         {
+            var mapId = SelectRandomMap();
+
             if (GameStates.IsNormalGame)
             {
-                Main.NormalOptions.MapId = SelectRandomMap();
-                
-                if (Main.NormalOptions.MapId == 3)
-                    CreateOptionsPickerPatch.SetDleks = true;
-                else
-                    CreateOptionsPickerPatch.SetDleks = false;
+                Main.NormalOptions.MapId = mapId;
             }
             else if (GameStates.IsHideNSeek)
             {
-                Main.HideNSeekOptions.MapId = SelectRandomMap();
-
-                if (Main.NormalOptions.MapId == 3)
-                    CreateOptionsPickerPatch.SetDleks = true;
-                else
-                    CreateOptionsPickerPatch.SetDleks = false;
+                Main.HideNSeekOptions.MapId = mapId;
             }
+
+            if (mapId == 3) // Dleks map
+                CreateOptionsPickerPatch.SetDleks = true;
+            else
+                CreateOptionsPickerPatch.SetDleks = false;
         }
         else if (CreateOptionsPickerPatch.SetDleks)
         {
