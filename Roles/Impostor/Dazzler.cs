@@ -55,6 +55,12 @@ internal class Dazzler : RoleBase
         PlayerIds.Add(playerId);
     }
 
+    public override void Remove(byte playerId)
+    {
+        PlayersDazzled.Remove(playerId);
+        PlayerIds.Remove(playerId);
+    }
+
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
