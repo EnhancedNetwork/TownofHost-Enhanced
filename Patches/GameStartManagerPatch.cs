@@ -347,10 +347,23 @@ public class GameStartRandomMap
         if (Options.RandomMapsMode.GetBool())
         {
             if (GameStates.IsNormalGame)
+            {
                 Main.NormalOptions.MapId = SelectRandomMap();
-
+                
+                if (Main.NormalOptions.MapId == 3)
+                    CreateOptionsPickerPatch.SetDleks = true;
+                else
+                    CreateOptionsPickerPatch.SetDleks = false;
+            }
             else if (GameStates.IsHideNSeek)
+            {
                 Main.HideNSeekOptions.MapId = SelectRandomMap();
+
+                if (Main.NormalOptions.MapId == 3)
+                    CreateOptionsPickerPatch.SetDleks = true;
+                else
+                    CreateOptionsPickerPatch.SetDleks = false;
+            }
         }
         else if (CreateOptionsPickerPatch.SetDleks)
         {
