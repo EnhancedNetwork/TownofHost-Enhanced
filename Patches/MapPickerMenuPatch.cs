@@ -56,7 +56,7 @@ class CreateOptionsPickerPatch
 
                 if (DleksButton != null)
                 {
-                    if (SetDleks == true)
+                    if (SetDleks)
                     {
                         if (__instance.selectedButton)
                         {

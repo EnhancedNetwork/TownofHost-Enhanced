@@ -45,26 +45,21 @@ class AllMapIconsPatch
     {
         if (__instance == null) return;
 
-        if (GameStates.IsNormalGame)
+        if (GameStates.IsNormalGame && Main.NormalOptions.MapId == 3)
         {
-            if (Main.NormalOptions.MapId == 3)
-            {
-                Main.NormalOptions.MapId = 0;
-
-                if (!Options.RandomMapsMode.GetBool())
-                    CreateOptionsPickerPatch.SetDleks = true;
-            }
+            Main.NormalOptions.MapId = 0;
+            __instance.UpdateMapImage(MapNames.Skeld);
         }
-        else if (GameStates.IsHideNSeek)
+        else if (GameStates.IsHideNSeek && Main.HideNSeekOptions.MapId == 3)
         {
-            if (Main.HideNSeekOptions.MapId == 3)
-            {
-                Main.HideNSeekOptions.MapId = 0;
-
-                if (!Options.RandomMapsMode.GetBool())
-                    CreateOptionsPickerPatch.SetDleks = true;
-            }
+            Main.HideNSeekOptions.MapId = 0;
+            __instance.UpdateMapImage(MapNames.Skeld);
         }
+
+        if (Options.RandomMapsMode.GetBool())
+            CreateOptionsPickerPatch.SetDleks = false;
+        else
+            CreateOptionsPickerPatch.SetDleks = true;
 
         MapIconByName DleksIncon = Object.Instantiate(__instance, __instance.gameObject.transform).AllMapIcons[0];
         DleksIncon.Name = MapNames.Dleks;

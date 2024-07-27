@@ -273,6 +273,14 @@ public class GameStartManagerPatch
                     else if (GameStates.IsHideNSeek)
                         Main.HideNSeekOptions.MapId = GameStartRandomMap.SelectRandomMap();
                 }
+                else if (CreateOptionsPickerPatch.SetDleks)
+                {
+                    if (GameStates.IsNormalGame)
+                        Main.NormalOptions.MapId = 3;
+
+                    else if (GameStates.IsHideNSeek)
+                        Main.HideNSeekOptions.MapId = 3;
+                }
 
                 //if (GameStates.IsNormalGame && Options.IsActiveDleks)
                 //{
@@ -280,6 +288,23 @@ public class GameStartManagerPatch
                 //    Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
                 //}
 
+                IGameOptions opt = GameStates.IsNormalGame
+                    ? Main.NormalOptions.Cast<IGameOptions>()
+                    : Main.HideNSeekOptions.Cast<IGameOptions>();
+
+                if (GameStates.IsNormalGame)
+                {
+                    Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
+                    Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
+                    Main.NormalOptions.KillCooldown = 0f;
+
+                    AURoleOptions.SetOpt(opt);
+                    Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
+                    AURoleOptions.ShapeshifterCooldown = 0f;
+                    AURoleOptions.ImpostorsCanSeeProtect = false;
+                }
+
+                PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, AprilFoolsMode.IsAprilFoolsModeToggledOn));
                 RPC.RpcVersionCheck();
 
                 GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
