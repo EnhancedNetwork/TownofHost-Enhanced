@@ -24,11 +24,11 @@ internal class Agitater : RoleBase
     private static OptionItem AgitaterAutoReportBait;
     private static OptionItem HasImpostorVision;
 
-    public byte CurrentBombedPlayer = byte.MaxValue;
-    public byte LastBombedPlayer = byte.MaxValue;
-    public bool AgitaterHasBombed = false;
-    public long? CurrentBombedPlayerTime = new();
-    public long? AgitaterBombedTime = new();
+    public static byte CurrentBombedPlayer = byte.MaxValue;
+    public static byte LastBombedPlayer = byte.MaxValue;
+    public static bool AgitaterHasBombed = false;
+    public static long? CurrentBombedPlayerTime = new();
+    public static long? AgitaterBombedTime = new();
 
 
     public override void SetupCustomOption()
@@ -62,13 +62,20 @@ internal class Agitater : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    public void ResetBomb()
+    public static void ResetBomb()
     {
-        CurrentBombedPlayer = byte.MaxValue;
+        CurrentBombedPlayer = 254;
         CurrentBombedPlayerTime = new();
         LastBombedPlayer = byte.MaxValue;
         AgitaterHasBombed = false;
-        SendRPC(CurrentBombedPlayer, LastBombedPlayer);
+    }
+    public override void OnFixedUpdate(PlayerControl pc)
+    {
+        if (CurrentBombedPlayer == 254)
+        {
+            SendRPC(CurrentBombedPlayer, LastBombedPlayer);
+            CurrentBombedPlayer = byte.MaxValue;
+        }
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AgiTaterBombCooldown.GetFloat();
