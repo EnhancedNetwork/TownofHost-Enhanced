@@ -152,7 +152,7 @@ public static class CustomRoleManager
         {
             if (Fragile.KillFragile(killer, target))
             {
-                Logger.Info("Fragile killed in OnChecMurder, returning false", "Fragile");
+                Logger.Info("Fragile killed in OnCheckMurder, returning false", "Fragile");
                 return false;
             }
         }

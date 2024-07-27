@@ -59,10 +59,10 @@ public class Main : BasePlugin
     public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
 
     public static readonly bool ShowWebsiteButton = true;
-    public static readonly string WebsiteInviteUrl = "https://tohre.dev";
+    public static readonly string WebsiteInviteUrl = "https://weareten.ca/";
     
-    public static readonly bool ShowKofiButton = true;
-    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHE";
+    public static readonly bool ShowDonationButton = true;
+    public static readonly string DonationInviteUrl = "https://weareten.ca/TOHE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);
@@ -526,10 +526,6 @@ public class Main : BasePlugin
 }
 public enum CustomRoles
 {
-    /*******************************************************
-     * Please add all the new roles in alphabetical order *
-     ******************************************************/
-
     // Crewmate(Vanilla)
     Crewmate = 0,
     Engineer,
