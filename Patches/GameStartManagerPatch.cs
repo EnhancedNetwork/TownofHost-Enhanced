@@ -4,6 +4,7 @@ using InnerNet;
 using System;
 using TMPro;
 using UnityEngine;
+using TOHE.Patches;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
