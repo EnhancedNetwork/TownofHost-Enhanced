@@ -21,8 +21,8 @@ enum CustomRPC : byte // 197/255 USED
     // On version 2024.6.18 the last id in RpcCalls: 65
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
-    SyncCustomSettings = 102, // AUM use 101 rpc
-    SetDeathReason,
+    SyncCustomSettings = 100, // AUM use 101 rpc
+    SetDeathReason = 102,
     EndGame,
     PlaySound,
     SetCustomRole,
