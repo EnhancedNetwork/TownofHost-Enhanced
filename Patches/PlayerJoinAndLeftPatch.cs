@@ -272,7 +272,6 @@ public static class OnPlayerJoinedPatch
             Logger.Info($"Ban Player ー {client?.PlayerName}({client.FriendCode}) has been banned.", "BAN");
         }
         BanManager.CheckBanPlayer(client);
-        BanManager.CheckDenyNamePlayer(client);
 
         if (AmongUsClient.Instance.AmHost)
         {

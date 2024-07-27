@@ -377,8 +377,6 @@ public static class CustomRolesHelper
                     return false;
                 break;
             case CustomRoles.Autopsy:
-                if (Options.EveryoneCanSeeDeathReason.GetBool())
-                    return false;
                 if (pc.Is(CustomRoles.Doctor)
                     || pc.Is(CustomRoles.Tracefinder)
                     || pc.Is(CustomRoles.ScientistTOHE)
@@ -807,7 +805,8 @@ public static class CustomRolesHelper
             case CustomRoles.TicketsStealer:
                 if (pc.Is(CustomRoles.Vindicator)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.VoidBallot))
+                    || pc.Is(CustomRoles.VoidBallot)
+                    || pc.Is(CustomRoles.Swift))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -869,7 +868,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Berserker)
                     || pc.Is(CustomRoles.BountyHunter)
                     || pc.Is(CustomRoles.Lightning)
-                    || pc.Is(CustomRoles.Hangman))
+                    || pc.Is(CustomRoles.Hangman)
+                    || pc.Is(CustomRoles.TicketsStealer))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -987,7 +987,8 @@ public static class CustomRolesHelper
 
             case CustomRoles.Fool:
                 if (pc.Is(CustomRoles.Mechanic)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Alchemist))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Fool.CrewCanBeFool.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Fool.NeutralCanBeFool.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Fool.ImpCanBeFool.GetBool()))
                     return false;
@@ -1331,7 +1332,7 @@ public static class CustomRolesHelper
             CountTypes.Spiritcaller => CustomRoles.Spiritcaller,
             CountTypes.Arsonist => CustomRoles.Arsonist,
             CountTypes.RuthlessRomantic => CustomRoles.RuthlessRomantic,
-            _ => throw new System.NotImplementedException()
+            _ => throw new NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
 }

@@ -1,4 +1,3 @@
-using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;

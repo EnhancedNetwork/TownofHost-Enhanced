@@ -13,7 +13,7 @@ public static class KillTimerManager
         AllKillTimers.Clear();
     }
 
-    public static float GetKillTimer(this PlayerControl pc) => AllKillTimers[pc.PlayerId];
+    public static float GetKillTimer(this PlayerControl pc) => pc.AmOwner ? pc.killTimer : AllKillTimers[pc.PlayerId];
     public static float GetKillTimer(this byte playerId) => AllKillTimers[playerId];
 
     public static void SetKillTimer(this PlayerControl pc, bool half = false, float CD = -1f)
@@ -39,7 +39,7 @@ public static class KillTimerManager
 
     public static void FixedUpdate(PlayerControl player)
     {
-        if (player.inVent || player.MyPhysics.Animations.IsPlayingEnterVentAnimation()) return;
+        if (GameStates.IsMeeting || player.inVent || player.MyPhysics.Animations.IsPlayingEnterVentAnimation()) return;
 
         var playerId = player.PlayerId;
         if (!AllKillTimers.TryAdd(playerId, 10f) && player.GetKillTimer() > 0)

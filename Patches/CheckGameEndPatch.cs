@@ -109,7 +109,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Infectious:
-                        if (pc.Is(CustomRoles.Infected) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Infected) || pc.Is(CustomRoles.Infectious)) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -121,13 +121,13 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Virus:
-                        if (pc.Is(CustomRoles.Contagious) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Contagious) || pc.Is(CustomRoles.Virus)) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Jackal:
-                        if ((pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit)) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit) || pc.Is(CustomRoles.Jackal)) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -275,7 +275,7 @@ class GameEndCheckerForNormal
                             break;
                         case CustomRoles.Pursuer when pc.IsAlive() && WinnerTeam is not CustomWinner.Jester and not CustomWinner.Lovers and not CustomWinner.Terrorist and not CustomWinner.Executioner and not CustomWinner.Collector and not CustomWinner.Innocent and not CustomWinner.Youtuber:
                             WinnerIds.Add(pc.PlayerId);
-                            AdditionalWinnerTeams.Add(AdditionalWinners.Taskinator);
+                            AdditionalWinnerTeams.Add(AdditionalWinners.Pursuer);
                             break;
                         case CustomRoles.Sunnyboy when !pc.IsAlive():
                             WinnerIds.Add(pc.PlayerId);
@@ -490,7 +490,7 @@ class GameEndCheckerForNormal
         // Start End Game
         GameManager.Instance.RpcEndGame(reason, false);
     }
-    private const float EndGameDelay = 0.2f;
+    private const float EndGameDelay = 0.3f;
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
     public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
@@ -579,7 +579,6 @@ class GameEndCheckerForNormal
                 else if (crewCount > impCount) return false; // crewmate is more than imp (the game must continue)
                 return true;
             }
-
             else
             {
                 if (impCount >= 1) return false; // Both Imp and NK are alive, the game must continue
@@ -590,7 +589,7 @@ class GameEndCheckerForNormal
                     var winnnerLength = winners.Length;
                     if (winnnerLength == 1)
                     {
-                        var winnerRole = winners[0].Key.GetNeutralCustomRoleFromCountType();
+                        var winnerRole = winners.First().Key.GetNeutralCustomRoleFromCountType();
                         reason = GameOverReason.ImpostorByKill;
                         ResetAndSetWinner(winnerRole.GetNeutralCustomWinnerFromRole());
                         WinnerRoles.Add(winnerRole);

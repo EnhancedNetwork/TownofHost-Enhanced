@@ -101,7 +101,7 @@ internal class Mini : RoleBase
         //Check if nice mini is dead
         if (!player.IsAlive() && player.Is(CustomRoles.NiceMini))
         {
-            if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+            if (CustomWinnerHolder.WinnerTeam == CustomWinner.Default && !CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
                 CustomWinnerHolder.WinnerIds.Add(player.PlayerId);

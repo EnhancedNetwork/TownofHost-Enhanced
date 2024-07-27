@@ -68,10 +68,24 @@ internal class Amnesiac : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        opt.SetVision(false);
+        var player = Utils.GetPlayerById(playerId);
+        if (player == null) return;
+
+        if (player.Is(Custom_Team.Crewmate))
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, opt.GetFloat(FloatOptionNames.CrewLightMod));
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, opt.GetFloat(FloatOptionNames.CrewLightMod));
+        }
+        else
+        {
+            opt.SetVision(true);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, opt.GetFloat(FloatOptionNames.ImpostorLightMod));
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, opt.GetFloat(FloatOptionNames.ImpostorLightMod));
+        }
     }
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
-    public static bool PreviousAmnesiacCanVent(PlayerControl pc) => CanUseVent.ContainsKey(pc.PlayerId) && CanUseVent[pc.PlayerId];
+    public static bool PreviousAmnesiacCanVent(PlayerControl pc) => CanUseVent.TryGetValue(pc.PlayerId, out var canUse) && canUse;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.ReportButton.OverrideText(GetString("RememberButtonText"));
@@ -113,18 +127,15 @@ internal class Amnesiac : RoleBase
         }
     }
 
-    public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetSuffix(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (isForMeeting) return string.Empty;
+        if (isForMeeting || seer.PlayerId != target.PlayerId) return string.Empty;
 
         if (ShowArrows.GetBool())
         {
-            if (!seer.Is(CustomRoles.Amnesiac)) return "";
-            if (target != null && seer.PlayerId != target.PlayerId) return "";
-            if (GameStates.IsMeeting) return "";
             return Utils.ColorString(Color.white, LocateArrow.GetArrows(seer));
         }
-        else return "";
+        else return string.Empty;
     }
 
     public override bool OnCheckReportDeadBody(PlayerControl __instance, NetworkedPlayerInfo deadBody, PlayerControl killer)
@@ -186,6 +197,8 @@ internal class Amnesiac : RoleBase
                 __instance.GetRoleClass().OnAdd(__instance.PlayerId);
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                 tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+
+                __instance.SyncSettings();
 
                 var roleClass = tar.GetRoleClass();
                 CanUseVent[__instance.PlayerId] = (roleClass?.ThisRoleBase) switch

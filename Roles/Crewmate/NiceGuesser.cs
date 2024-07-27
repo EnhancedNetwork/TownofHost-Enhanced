@@ -58,7 +58,7 @@ internal class NiceGuesser : RoleBase
     public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
         // Check limit
-        if (Main.GuesserGuessed[guesser.PlayerId] >= GGCanGuessTime.GetInt())
+        if (GuessManager.GuesserGuessed[guesser.PlayerId] >= GGCanGuessTime.GetInt())
         {
             guesser.ShowInfoMessage(isUI, Translator.GetString("GGGuessMax"));
             return true;
