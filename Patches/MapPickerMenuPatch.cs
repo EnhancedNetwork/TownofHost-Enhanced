@@ -87,6 +87,8 @@ class CreateOptionsPickerPatch
         [HarmonyPrefix]
         public static bool Prefix_FixedUpdate(GameOptionsMapPicker __instance)
         {
+            if (__instance == null) return true;
+
             if (DleksButton != null)
             {
                 if (__instance.selectedMapId == 3)
