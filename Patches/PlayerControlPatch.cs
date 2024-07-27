@@ -914,6 +914,7 @@ class ReportDeadBodyPatch
         catch (Exception error)
         {
             Utils.ThrowException(error);
+            Logger.Error($"Error: {error}", "AfterReportTasks");
             Logger.SendInGame($"Error: {error}");
         }
 
