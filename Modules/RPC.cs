@@ -15,14 +15,13 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 194/255 USED
+enum CustomRPC : byte // 197/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
-    SyncCustomSettings = 100,
-    RestTOHESetting,
+    SyncCustomSettings = 102, // AUM use 101 rpc
     SetDeathReason,
     EndGame,
     PlaySound,
@@ -495,9 +494,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.BenefactorRPC:
                 Benefactor.ReceiveRPC(reader);
-                break;
-            case CustomRPC.RestTOHESetting:
-                OptionItem.AllOptions.ToArray().Where(x => x.Id > 0).Do(x => x.SetValueNoRpc(x.DefaultValue));
                 break;
             case CustomRPC.GuessKill:
                 GuessManager.RpcClientGuess(Utils.GetPlayerById(reader.ReadByte()));
