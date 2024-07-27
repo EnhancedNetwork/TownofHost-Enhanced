@@ -157,7 +157,7 @@ internal class EFC
         // Check for banned words in VersionInfo display. Aka check cheat developers ego
         foreach (var WordInVersionInfo in KeyWordsInVersionInfo)
         {
-            if (UnityEngine.Object.FindFirstObjectByType<VersionShower>().text.text.Contains(WordInVersionInfo))
+            if (UnityEngine.Object.FindFirstObjectByType<VersionShower>().text.text.ToLower().Contains(WordInVersionInfo.ToLower()))
             {
                 if (!HasUnauthorizedFile) Logger.Warn($"{WordInVersionInfo} VersionInfo in  detected, disabling online play!", "EFC");
                 if (!HasUnauthorizedFile) UnauthorizedReason = GetString("EFC.UnauthorizedFileMsg");
@@ -169,7 +169,8 @@ internal class EFC
         // Check for Sicko leftover files
         if (File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-settings.json")) ||
             File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-log.txt")) ||
-            File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-prev-log.txt")))
+            File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-prev-log.txt")) ||
+            File.Exists(Path.Combine(Environment.CurrentDirectory, "sicko-config")))
         {
             if (!HasUnauthorizedFile) Logger.Warn("Sicko files detected, disabling online play!", "EFC");
             if (!HasUnauthorizedFile) UnauthorizedReason = GetString("EFC.UnauthorizedFileMsg");
