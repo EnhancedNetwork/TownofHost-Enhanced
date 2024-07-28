@@ -203,7 +203,7 @@ public class dbConnect
         var discontinuationDate = new DateTime(2024, 8, 21);
         var today = DateTime.UtcNow;
         if (today < discontinuationDate) apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
-        else apiUrl = "https://api.weareten.ca/";
+        else apiUrl = "https://api.weareten.ca";
 
         string endpoint = $"{apiUrl}/eac?token={apiToken}";
 
