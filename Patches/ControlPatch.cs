@@ -214,7 +214,6 @@ internal class ControllerManagerUpdatePatch
 
             if (GetKeysDown(KeyCode.Return) && GameSettingMenuPatch.Instance != null && GameSettingMenuPatch.Instance.isActiveAndEnabled == true)
             {
-                Logger.Info("Serarch for options thingy", "Triggered yay!!");
                 GameSettingMenuPatch._SearchForOptions?.Invoke();
             }
 
