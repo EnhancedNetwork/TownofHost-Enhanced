@@ -21,11 +21,14 @@ public class GameSettingMenuPatch
 
     static Dictionary<TabGroup, PassiveButton> ModSettingsButtons = [];
     static Dictionary<TabGroup, GameOptionsMenu> ModSettingsTabs = [];
+    public static GameSettingMenu Instance;
 
     [HarmonyPatch(nameof(GameSettingMenu.Start)), HarmonyPrefix]
     [HarmonyPriority(Priority.First)]
     public static void StartPostfix(GameSettingMenu __instance)
     {
+        Instance = __instance;
+
         TabGroup[] ExludeList = Options.CurrentGameMode switch
         {
             CustomGameMode.HidenSeekTOHE => Enum.GetValues<TabGroup>().Skip(3).ToArray(),
@@ -132,6 +135,7 @@ public class GameSettingMenuPatch
     public static StringOption PresetBehaviour;
     public static FreeChatInputField InputField;
     public static List<OptionItem> HiddenBySearch = [];
+    public static Action _SearchForOptions;
 
     private static void SetupAdittionalButtons(GameSettingMenu __instance)
     {
@@ -259,11 +263,17 @@ public class GameSettingMenuPatch
         passiveButton.OnClick = new();
         passiveButton.OnClick.AddListener(
                 (Action)(() => {
-                    SearchForOptions(__instance, TextField);
+                    SearchForOptions(TextField);
                 }));
 
+        _SearchForOptions = (() => {
+            if (TextField.textArea.text == string.Empty)
+                return;
 
-        static void SearchForOptions(GameSettingMenu __instance, FreeChatInputField textField)
+            passiveButton.ReceiveClickDown();
+        });
+
+        static void SearchForOptions(FreeChatInputField textField)
         {
             if (ModGameOptionsMenu.TabIndex < 3) return;
 
