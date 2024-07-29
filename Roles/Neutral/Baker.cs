@@ -285,7 +285,7 @@ internal class Baker : RoleBase
             }
         }
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Starved, [.. deathList]);
-        BreadList.Clear();
+        BreadList[baker.PlayerId].Clear();
         StarvedNonBreaded = true;
     }
 }
@@ -324,7 +324,7 @@ internal class Famine : RoleBase
         {
             Baker.FamineList[killer.PlayerId].Add(target.PlayerId);
             Baker.SendRPC(killer, target);
-            Utils.NotifyRoles(SpecifySeer: killer);
+            NotifyRoles(SpecifySeer: killer);
             killer.Notify(GetString("FamineStarved"));
             Logger.Info(target.GetRealName() + $" has been starved", "Famine");
         }
@@ -346,12 +346,12 @@ internal class Famine : RoleBase
         {
             foreach (var tar in pc.Value)
             {
-                var target = Utils.GetPlayerById(tar);
-                var killer = Utils.GetPlayerById(pc.Key);
+                var target = GetPlayerById(tar);
+                var killer = GetPlayerById(pc.Key);
                 if (killer == null || target == null) continue;
                 target.RpcExileV2();
                 target.SetRealKiller(killer);
-                Main.PlayerStates[tar].deathReason = PlayerState.DeathReason.Starved;
+                tar.SetDeathReason(PlayerState.DeathReason.Starved);
                 Main.PlayerStates[tar].SetDead();
                 MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
                 Logger.Info($"{killer.GetRealName()} has starved {target.GetRealName()}", "Famine");
