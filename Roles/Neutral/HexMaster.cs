@@ -233,8 +233,6 @@ internal class HexMaster : RoleBase
     }
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        target ??= seer;
-
         if (isForMeeting && IsHexed(target.PlayerId))
         {
             if (!HexesLookLikeSpells.GetBool())

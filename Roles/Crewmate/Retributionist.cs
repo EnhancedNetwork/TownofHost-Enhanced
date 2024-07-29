@@ -148,6 +148,11 @@ internal class Retributionist : RoleBase
             pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
             return true;
         }
+        else if (target.Is(CustomRoles.Jinx) || target.Is(CustomRoles.CursedWolf))
+        {
+            pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
+            return true;
+        }
         else if (pc.RpcCheckAndMurder(target, true) == false)
         {
             pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
@@ -167,6 +172,7 @@ internal class Retributionist : RoleBase
             target.SetDeathReason(PlayerState.DeathReason.Revenge);
             if (GameStates.IsMeeting)
             {
+                Main.PlayersDiedInMeeting.Add(target.PlayerId);
                 GuessManager.RpcGuesserMurderPlayer(target);
                 MurderPlayerPatch.AfterPlayerDeathTasks(pc, target, true);
             }
@@ -230,9 +236,9 @@ internal class Retributionist : RoleBase
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
             GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
             targetBox.name = "ShootButton";
-            targetBox.transform.localPosition = new Vector3(-0.95f, 0.03f, -1.31f);
+            targetBox.transform.localPosition = new Vector3(-0.35f, 0.03f, -1.31f);
             SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
-            renderer.sprite = CustomButton.Get("TargetIcon");
+            renderer.sprite = CustomButton.Get("MeetingKillButton");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
             button.OnClick.AddListener((Action)(() => RetributionistOnClick(pva.TargetPlayerId/*, __instance*/)));

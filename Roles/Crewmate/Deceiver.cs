@@ -40,9 +40,8 @@ internal class Deceiver : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override bool CanUseKillButton(PlayerControl pc)
-        => !Main.PlayerStates[pc.PlayerId].IsDead
-        && AbilityLimit > 0;
-    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Deceiver).ShadeColor(0.25f) : Color.gray,$"({AbilityLimit})");
+        => pc.IsAlive() && AbilityLimit > 0;
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(!Main.PlayerStates[playerId].IsDead && AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Deceiver).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? DeceiverSkillCooldown.GetFloat() : 300f;
     private bool IsClient(byte playerId)
     {

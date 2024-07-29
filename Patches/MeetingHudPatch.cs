@@ -989,13 +989,6 @@ class MeetingHudStartPatch
             // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
             var player = PlayerControl.LocalPlayer;
             var target = Utils.GetPlayerById(pva.TargetPlayerId);
-            if (target != null && player != null)
-            {
-                if (player.Data.IsDead && player != target && !target.Data.IsDead && !target.Is(CustomRoles.Doppelganger) && !Doppelganger.CurrentVictimCanSeeRolesAsDead.GetBool() && Doppelganger.CurrentIdToSwap == player.PlayerId)
-                {
-                    roleTextMeeting.text = string.Empty;
-                }
-            }
             
             if (suffixBuilder.Length > 0)
             {
@@ -1015,7 +1008,7 @@ class MeetingHudStartPatch
         {
             _ = new LateTask(() =>
             {
-                Utils.SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), replay: true);
+                Utils.SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), noReplay: true);
 
             }, 5f, "Warning BlackOut Is Active");
         }
@@ -1028,7 +1021,7 @@ class MeetingHudStartPatch
                 AntiBlackout.StoreExiledMessage = GetString("Warning.ShowAntiBlackExiledPlayer") + AntiBlackout.StoreExiledMessage;
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(AntiBlackout.StoreExiledMessage, 255, Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")), replay: true);
+                    Utils.SendMessage(AntiBlackout.StoreExiledMessage, 255, Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")), noReplay: true);
                     AntiBlackout.StoreExiledMessage = "";
                 }, 5.5f, "AntiBlackout.StoreExiledMessage");
             }
@@ -1072,16 +1065,8 @@ class MeetingHudStartPatch
 
             var sb = new StringBuilder();
 
+            //pva.NameText.text = target.GetRealName(isMeeting: true);
             pva.NameText.text = pva.NameText.text.ApplyNameColorData(seer, target, true);
-            
-            // if Victim to Doppelganger or is Doppelganger
-            if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
-            {
-                if (target.Is(CustomRoles.Doppelganger) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                    pva.NameText.text = $"{Utils.ColorString(Color.gray, $"<size=75%>({Doppelganger.TrueNames[target.PlayerId]})</size>")}\r\n{pva.NameText.text.ApplyNameColorData(seer, target, true)}\n\n";
-                else if (Doppelganger.CheckDoppelVictim(target.PlayerId) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                    pva.NameText.text = Doppelganger.TrueNames[target.PlayerId].ApplyNameColorData(seer, target, true);
-            }
 
             // Guesser Mode //
             if (Options.GuesserMode.GetBool())
@@ -1151,13 +1136,6 @@ class MeetingHudStartPatch
                 }
             }
             //add checks for both seer and target's subrole, maybe one day we can use them...
-
-            // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
-            if (seer.Data.IsDead && seer != target && !target.Data.IsDead && !target.Is(CustomRoles.Doppelganger) && !Doppelganger.CurrentVictimCanSeeRolesAsDead.GetBool() && Doppelganger.CurrentIdToSwap == seer.PlayerId)
-            {
-                pva.NameText.text = target.GetRealName();
-                sb.Clear();
-            }
 
             pva.NameText.text += sb.ToString();
             pva.ColorBlindName.transform.localPosition -= new Vector3(1.35f, 0f, 0f);

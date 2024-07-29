@@ -15,15 +15,14 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 194/255 USED
+enum CustomRPC : byte // 197/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
-    SyncCustomSettings = 100,
-    RestTOHESetting,
-    SetDeathReason,
+    SyncCustomSettings = 100, // AUM use 101 rpc
+    SetDeathReason = 102,
     EndGame,
     PlaySound,
     SetCustomRole,
@@ -154,7 +153,7 @@ internal class RPCHandlerPatch
     {
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
-        // if (EAC.PlayerControlReceiveRpc(__instance, callId, reader)) return false;
+        if (EAC.PlayerControlReceiveRpc(__instance, callId, reader)) return false;
         Logger.Info($"{__instance?.Data?.PlayerId}({(__instance.OwnedByHost() ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
         switch (rpcType)
         {
@@ -496,9 +495,6 @@ internal class RPCHandlerPatch
             case CustomRPC.BenefactorRPC:
                 Benefactor.ReceiveRPC(reader);
                 break;
-            case CustomRPC.RestTOHESetting:
-                OptionItem.AllOptions.ToArray().Where(x => x.Id > 0).Do(x => x.SetValueNoRpc(x.DefaultValue));
-                break;
             case CustomRPC.GuessKill:
                 GuessManager.RpcClientGuess(Utils.GetPlayerById(reader.ReadByte()));
                 break;
@@ -651,13 +647,13 @@ internal class RPCHandlerPatch
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
 internal class PlayerPhysicsRPCHandlerPatch
 {
-    private static bool hasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId);
-    private static bool hasLadder(int ladderId) => ShipStatus.Instance.Ladders.Any(l => l.Id == ladderId);
+    private static bool HasVent(int ventId) => ShipStatus.Instance.AllVents.Any(v => v.Id == ventId);
+    private static bool HasLadder(int ladderId) => ShipStatus.Instance.Ladders.Any(l => l.Id == ladderId);
 
     public static bool Prefix(PlayerPhysics __instance, byte callId, MessageReader reader)
     {
-        var rpcType = (RpcCalls)callId;
-        MessageReader subReader = MessageReader.Get(reader);
+        //var rpcType = (RpcCalls)callId;
+        //MessageReader subReader = MessageReader.Get(reader);
 
         if (EAC.PlayerPhysicsRpcCheck(__instance, callId, reader)) return false;
 

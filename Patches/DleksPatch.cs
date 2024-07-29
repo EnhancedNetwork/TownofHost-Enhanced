@@ -45,8 +45,27 @@ class AllMapIconsPatch
     {
         if (__instance == null) return;
 
+        if (GameStates.IsNormalGame && Main.NormalOptions.MapId == 3)
+        {
+            Main.NormalOptions.MapId = 0;
+            __instance.UpdateMapImage(MapNames.Skeld);
+
+            if (!Options.RandomMapsMode.GetBool())
+                CreateOptionsPickerPatch.SetDleks = true;
+        }
+        else if (GameStates.IsHideNSeek && Main.HideNSeekOptions.MapId == 3)
+        {
+            Main.HideNSeekOptions.MapId = 0;
+            __instance.UpdateMapImage(MapNames.Skeld);
+
+            if (!Options.RandomMapsMode.GetBool())
+                CreateOptionsPickerPatch.SetDleks = true;
+        }
+
         MapIconByName DleksIncon = Object.Instantiate(__instance, __instance.gameObject.transform).AllMapIcons[0];
         DleksIncon.Name = MapNames.Dleks;
+        DleksIncon.MapImage = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner.png", 100f);
+        DleksIncon.NameImage = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);
 
         __instance.AllMapIcons.Add(DleksIncon);
     }

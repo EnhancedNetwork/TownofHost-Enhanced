@@ -105,9 +105,10 @@ public static class BanManager
         }
     }
     
-    public static void CheckDenyNamePlayer(InnerNet.ClientData player)
+    public static bool CheckDenyNamePlayer(PlayerControl player, string name)
     {
-        if (!AmongUsClient.Instance.AmHost || !Options.ApplyDenyNameList.GetBool()) return;
+        if (!AmongUsClient.Instance.AmHost || !Options.ApplyDenyNameList.GetBool()) return false;
+
         try
         {
             Directory.CreateDirectory("TOHE-DATA");
@@ -119,31 +120,33 @@ public static class BanManager
                 if (line == "") continue;
                 if (line.Contains("Amogus"))
                 {
-                    AmongUsClient.Instance.KickPlayer(player.Id, false);
-                    Logger.SendInGame(string.Format(GetString("Message.KickedByDenyName"), player.PlayerName, line));
-                    Logger.Info($"{player.PlayerName}は名前が「{line}」に一致したためキックされました。", "Kick");
-                    return;
+                    AmongUsClient.Instance.KickPlayer(player.OwnerId, false);
+                    Logger.SendInGame(string.Format(GetString("Message.KickedByDenyName"), name, line));
+                    Logger.Info($"{name}は名前が「{line}」に一致したためキックされました。", "Kick");
+                    return true;
                 }
                 if (line.Contains("Amogus V"))
                 {
-                    AmongUsClient.Instance.KickPlayer(player.Id, false);
-                    Logger.SendInGame(string.Format(GetString("Message.KickedByDenyName"), player.PlayerName, line));
-                    Logger.Info($"{player.PlayerName}は名前が「{line}」に一致したためキックされました。", "Kick");
-                    return;
+                    AmongUsClient.Instance.KickPlayer(player.OwnerId, false);
+                    Logger.SendInGame(string.Format(GetString("Message.KickedByDenyName"), name, line));
+                    Logger.Info($"{name}は名前が「{line}」に一致したためキックされました。", "Kick");
+                    return true;
                 }
 
-                if (Regex.IsMatch(player.PlayerName, line))
+                if (Regex.IsMatch(name, line))
                 {
-                    AmongUsClient.Instance.KickPlayer(player.Id, false);
-                    Logger.SendInGame(string.Format(GetString("Message.KickedByDenyName"), player.PlayerName, line));
-                    Logger.Info($"{player.PlayerName}は名前が「{line}」に一致したためキックされました。", "Kick");
-                    return;
+                    AmongUsClient.Instance.KickPlayer(player.OwnerId, false);
+                    Logger.SendInGame(string.Format(GetString("Message.KickedByDenyName"), name, line));
+                    Logger.Info($"{name}は名前が「{line}」に一致したためキックされました。", "Kick");
+                    return true;
                 }
             }
+            return false;
         }
         catch (Exception ex)
         {
             Logger.Exception(ex, "CheckDenyNamePlayer");
+            return true;
         }
     }
     public static void CheckBanPlayer(InnerNet.ClientData player)

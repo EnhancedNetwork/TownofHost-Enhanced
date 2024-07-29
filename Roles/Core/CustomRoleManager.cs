@@ -152,7 +152,7 @@ public static class CustomRoleManager
         {
             if (Fragile.KillFragile(killer, target))
             {
-                Logger.Info("Fragile killed in OnChecMurder, returning false", "Fragile");
+                Logger.Info("Fragile killed in OnCheckMurder, returning false", "Fragile");
                 return false;
             }
         }
@@ -164,9 +164,6 @@ public static class CustomRoleManager
 
         // If Target is possessed by Dollmaster swap controllers.
         target = DollMaster.SwapPlayerInfo(target);   
-
-        if (killer.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.Doppelganger))
-            target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
@@ -257,9 +254,6 @@ public static class CustomRoleManager
         {
             target = DollMaster.SwapPlayerInfo(target);
         }
-
-        if (killer.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.Doppelganger))
-            target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers back
 
         // Check if killer is a true killing role and Target is possessed by Dollmaster
         if (DollMaster.HasEnabled && DollMaster.IsControllingPlayer)

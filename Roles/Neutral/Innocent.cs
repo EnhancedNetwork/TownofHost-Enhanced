@@ -93,5 +93,5 @@ internal class Innocent : RoleBase
     {
         hud.KillButton.OverrideText(GetString("InnocentButtonText"));
     }
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Suidce");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Suidce");
 }

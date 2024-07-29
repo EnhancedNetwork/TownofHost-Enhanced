@@ -276,7 +276,7 @@ namespace TOHE.Modules.ChatManager
                 var pc = Utils.GetPlayerById(playerId);
                 if (pc == null && playerId != byte.MaxValue) continue;
                 var title = "<color=#FF0000>" + GetString("LastMessageReplay") + "</color>";
-                Utils.SendMessage(LastSystemChatMsg[playerId], playerId, title: title, replay: true);
+                Utils.SendMessage(LastSystemChatMsg[playerId], playerId, title: title, noReplay: true);
             }
         }
     }

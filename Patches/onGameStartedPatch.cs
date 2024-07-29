@@ -58,6 +58,8 @@ internal class ChangeRoleSettings
             Main.LastEnteredVent.Clear();
             Main.LastEnteredVentLocation.Clear();
 
+            Main.PlayersDiedInMeeting.Clear();
+            GuessManager.GuesserGuessed.Clear();
             Main.AfterMeetingDeathPlayers.Clear();
             Main.ResetCamPlayerList.Clear();
             Main.clientIdList.Clear();
@@ -318,23 +320,9 @@ internal class SelectRolesPatch
             catch (Exception ex)
             {
                 Utils.ErrorEnd("Set Roles After Select In LateTask");
-                Logger.Fatal(ex.ToString(), "SetRolesAfterSelectInLateTask");
+                Utils.ThrowException(ex);
             }
         }, 1f, "Set Role Types After Select");
-
-        _ = new LateTask(() => {
-
-            try
-            {
-                // Update name players
-                Utils.NotifyRoles(NoCache: true);
-            }
-            catch (Exception ex)
-            {
-                Utils.ErrorEnd("Notify Roles In LateTask");
-                Logger.Fatal(ex.ToString(), "NotifyRolesInLateTask");
-            }
-        }, 1.3f, "Do Notify Roles After Assign", shoudLog: false);
     }
     private static void SetRolesAfterSelect()
     {
@@ -547,10 +535,14 @@ internal class SelectRolesPatch
                 }
             }
 
-            EndOfSelectRolePatch:
+        EndOfSelectRolePatch:
 
-            if (!AmongUsClient.Instance.IsGameOver)
-                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            try
+            {
+                if (!AmongUsClient.Instance.IsGameOver)
+                    DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            }
+            catch { }
             //HudManager.Instance.Chat.SetVisible(true);
 
             foreach (var pc in Main.AllPlayerControls)

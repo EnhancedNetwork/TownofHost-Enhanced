@@ -137,8 +137,6 @@ internal class Pelican : RoleBase
 
     public override string GetProgressText(byte playerId, bool coooms)
     {
-        var player = Utils.GetPlayerById(playerId);
-        if (player == null) return "Invalid";
         var eatenNum = 0;
         if (eatenList.ContainsKey(playerId))
             eatenNum = eatenList[playerId].Count;

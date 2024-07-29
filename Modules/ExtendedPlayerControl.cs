@@ -441,6 +441,17 @@ static class ExtendedPlayerControl
             }
         }
     }
+    public static void RpcSetSpecificScanner(this PlayerControl target, PlayerControl seer, bool IsActive)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        byte cnt = ++PlayerControl.LocalPlayer.scannerCount;
+
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, seer.GetClientId());
+        messageWriter.Write(IsActive);
+        messageWriter.Write(cnt);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
 
     public static void RpcSpecificVanish(this PlayerControl player, PlayerControl seer)
     {
@@ -690,8 +701,6 @@ static class ExtendedPlayerControl
         if (DollMaster.IsDoll(pc.PlayerId) || Circumvent.CantUseVent(pc)) return false;
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
         if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
-        //if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
-
         if (Amnesiac.PreviousAmnesiacCanVent(pc)) return true; //this is done because amnesiac has imp basis and if amnesiac remembers a role with different basis then player will not vent as `CanUseImpostorVentButton` is false
 
         var playerRoleClass = pc.GetRoleClass();

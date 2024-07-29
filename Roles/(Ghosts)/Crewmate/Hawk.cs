@@ -109,7 +109,9 @@ internal class Hawk : RoleBase
         return target != null && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
             && AbilityLimit > 0
             && rnd.Next(100) >= KillerChanceMiss[target.PlayerId]
-            && !target.IsTransformedNeutralApocalypse()
+            && !target.Is(CustomRoles.Pestilence)
+            && !target.Is(CustomRoles.Jinx)
+            && !target.Is(CustomRoles.CursedWolf)
             && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18);
     }
     public override string GetProgressText(byte playerId, bool coms) 

@@ -1,6 +1,5 @@
 ﻿using static TOHE.Options;
 using static TOHE.Utils;
-using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -32,9 +31,6 @@ internal class Lookout : RoleBase
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (!seer.IsAlive() || !seen.IsAlive()) return string.Empty;
-
-        if (Doppelganger.CheckDoppelVictim(seen.PlayerId))
-            seen = Doppelganger.GetDoppelControl(seen);
 
         return ColorString(GetRoleColor(CustomRoles.Lookout), $" {seen.Data.PlayerId}");
     }

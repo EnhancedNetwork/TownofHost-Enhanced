@@ -29,7 +29,7 @@ internal class Alchemist : RoleBase
     private static OptionItem Speed;
     private static OptionItem InvisDuration;
 
-    private static Dictionary<byte, long> InvisTime = [];
+    private static readonly Dictionary<byte, long> InvisTime = [];
     private static readonly Dictionary<byte, int> ventedId = [];
     public static readonly Dictionary<byte, byte> BloodthirstList = [];
 
@@ -140,6 +140,7 @@ internal class Alchemist : RoleBase
                 break;
         }
 
+        SendRPC(player);
         return true;
     }
 
@@ -147,11 +148,16 @@ internal class Alchemist : RoleBase
     {
         if (pc.AmOwner) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAlchemistTimer, SendOption.Reliable, pc.GetClientId());
+        writer.Write(FixNextSabo);
+        writer.Write(PotionID);
         writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
+        FixNextSabo = reader.ReadBoolean();
+        PotionID = reader.ReadByte();
+
         InvisTime.Clear();
         long invis = long.Parse(reader.ReadString());
         if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
@@ -269,6 +275,8 @@ internal class Alchemist : RoleBase
 
     public override void OnEnterVent(PlayerControl player, Vent vent)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
+
         NameNotifyManager.Notice.Remove(player.PlayerId);
 
         switch (PotionID)
@@ -349,10 +357,12 @@ internal class Alchemist : RoleBase
         }
 
         PotionID = 10;
+        SendRPC(player);
     }
 
     public override void OnCoEnterVent(PlayerPhysics __instance, int ventId)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         if (PotionID != 8) return;
 
         PotionID = 10;
@@ -364,9 +374,7 @@ internal class Alchemist : RoleBase
             ventedId.Remove(pc.PlayerId);
             ventedId.Add(pc.PlayerId, ventId);
 
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, pc.GetClientId());
-            writer.WritePacked(ventId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            __instance.RpcBootFromVentDesync(ventId, pc);
 
             InvisTime.Add(pc.PlayerId, Utils.GetTimeStamp());
             SendRPC(pc);
