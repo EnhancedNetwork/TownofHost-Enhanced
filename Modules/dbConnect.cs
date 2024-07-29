@@ -286,7 +286,7 @@ public class dbConnect
         return true;
     }
 
-    enum FailedConnectReason
+    private enum FailedConnectReason
     {
         Build_Not_Specified,
         API_Token_Is_Empty,
