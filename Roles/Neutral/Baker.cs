@@ -163,19 +163,24 @@ internal class Baker : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (BTOS2Baker.GetBool()) { 
+        if (BTOS2Baker.GetBool()) {
+            var sb = new StringBuilder();
             switch (BreadID) // 0 = Reveal, 1 = Roleblock, 2 = Barrier
             {
                 case 0: // Switch to Roleblock
                     BreadID = 1;
+                    sb.Append(GetString("BakerSwitchBread") + GetString("BakerRoleblockBread"));
                     break;
                 case 1: // Switch to Barrier
                     BreadID = 2;
+                    sb.Append(GetString("BakerSwitchBread") + GetString("BakerBarrierBread"));
                     break;
                 case 2: // Switch to Reveal
                     BreadID = 0;
+                    sb.Append(GetString("BakerSwitchBread") + GetString("BakerRevealBread"));
                     break;
             }
+            pc.Notify(sb.ToString());
         }
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
