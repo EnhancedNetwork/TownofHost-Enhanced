@@ -20,7 +20,7 @@ internal class Vindicator : RoleBase
         VindicatorAdditionalVote = IntegerOptionItem.Create(Id + 2, "MayorAdditionalVote", new(1, 20, 1), 3, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Vindicator])
             .SetValueFormat(OptionFormat.Votes);
-        VindicatorHideVote = BooleanOptionItem.Create(Id + 3, "MayorHideVote", false, TabGroup.ImpostorRoles, false)
+        VindicatorHideVote = BooleanOptionItem.Create(Id + 3, GeneralOption.HideAdditionalVotes, false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Vindicator]);
     }
     public override void Init()

@@ -900,7 +900,16 @@ class ReportDeadBodyPatch
 
             foreach (var playerStates in Main.PlayerStates.Values.ToArray())
             {
-                playerStates.RoleClass?.OnReportDeadBody(player, target);
+                try
+                {
+                    playerStates.RoleClass?.OnReportDeadBody(player, target);
+                }
+                catch (Exception error)
+                {
+                    Utils.ThrowException(error);
+                    Logger.Error($"Role Class Error: {error}", "RoleClass_OnReportDeadBody");
+                    Logger.SendInGame($"Error: {error}");
+                }
             }
 
             // Alchemist & Bloodlust
@@ -914,6 +923,7 @@ class ReportDeadBodyPatch
         catch (Exception error)
         {
             Utils.ThrowException(error);
+            Logger.Error($"Error: {error}", "AfterReportTasks");
             Logger.SendInGame($"Error: {error}");
         }
 
