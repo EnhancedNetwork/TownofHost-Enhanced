@@ -44,9 +44,9 @@ public class Main : BasePlugin
     public const string SupportedVersionAU = "2024.6.18";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = false; // ACTIVE - Latest: V2.0.0 Canary 12
-    public static readonly bool fullRelease = true; // INACTIVE - Latest: V2.0.0
     public static readonly bool devRelease = false; // INACTIVE - Latest: V2.0.0 Dev 25
+    public static readonly bool canaryRelease = false; // ACTIVE - Latest: V2.0.0 Canary 12
+    public static readonly bool fullRelease = true; // INACTIVE - Latest: V2.0.0
 
     public static bool hasAccess = true;
 
