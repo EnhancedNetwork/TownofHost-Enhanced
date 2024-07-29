@@ -720,6 +720,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Vector)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Taskinator)
+                    || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.PunchingBag))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Unlucky.CrewCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Unlucky.NeutralCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Unlucky.ImpCanBeUnlucky.GetBool()))
@@ -1020,7 +1021,11 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Hurried:
-                if (pc.Is(CustomRoles.Youtuber) || pc.Is(CustomRoles.Egoist) || pc.Is(CustomRoles.Solsticer)) return false;
+                if (pc.Is(CustomRoles.Youtuber)
+                    || pc.Is(CustomRoles.Egoist)
+                    || pc.Is(CustomRoles.Cleanser)
+                    || pc.Is(CustomRoles.Solsticer))
+                    return false;
                 if (pc.Is(CustomRoles.Madmate) && !Hurried.CanBeOnMadMate.GetBool()) return false;
                 if (!pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Madmate)) return false;
                 if (pc.GetCustomRole().IsTasklessCrewmate()) return false;
