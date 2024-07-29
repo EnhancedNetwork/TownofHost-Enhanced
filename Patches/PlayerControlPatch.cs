@@ -1508,6 +1508,7 @@ class CoExitVentPatch
         if (!AmongUsClient.Instance.AmHost) return;
 
         player.GetRoleClass()?.OnExitVent(player, id);
+        if (Imitator.HasEnabled) Imitator.OnExitVent(player);
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]

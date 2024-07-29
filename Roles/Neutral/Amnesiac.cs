@@ -28,7 +28,6 @@ internal class Amnesiac : RoleBase
         Role_Pursuer,
         Role_Follower,
         Role_Maverick,
-        Role_Imitator,
     }
     
     public override void SetupCustomOption()
@@ -184,9 +183,6 @@ internal class Amnesiac : RoleBase
                         break;
                     case 3: // Maverick
                         tempRole = CustomRoles.Maverick;
-                        break;
-                    case 4: // Imitator..........................................................................kill me
-                        tempRole = CustomRoles.Imitator;
                         break;
                 }
             }

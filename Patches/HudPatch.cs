@@ -4,6 +4,7 @@ using TMPro;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
@@ -138,7 +139,7 @@ class HudManagerPatch
                 }
 
                 bool CanUseVent = player.CanUseImpostorVentButton();
-                __instance.ImpostorVentButton.ToggleVisible(CanUseVent);
+                __instance.ImpostorVentButton.ToggleVisible(CanUseVent && !Imitator.playerIdList.Contains(player.PlayerId));
                 player.Data.Role.CanVent = CanUseVent;
 
                 // Sometimes sabotage button was visible for non-host modded clients
@@ -246,7 +247,7 @@ class SetHudActivePatch
 
         // Check Toggle visible
         __instance.KillButton.ToggleVisible(player.CanUseKillButton());
-        __instance.ImpostorVentButton.ToggleVisible(player.CanUseImpostorVentButton());
+        __instance.ImpostorVentButton.ToggleVisible(player.CanUseImpostorVentButton() && !Imitator.playerIdList.Contains(player.PlayerId));
         __instance.SabotageButton.ToggleVisible(player.CanUseSabotage());
     }
 }

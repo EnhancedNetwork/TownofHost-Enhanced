@@ -21,14 +21,12 @@ public static class Oiiai
     private enum ChangeRolesSelectList
     {
         Role_NoChange,
-        Role_Amnesiac,
-        Role_Imitator
+        Role_Amnesiac
     }
 
     public static readonly CustomRoles[] NRoleChangeRoles =
     [
-        CustomRoles.Amnesiac,
-        CustomRoles.Imitator,
+        CustomRoles.Amnesiac
     ]; //Just -1 to use this LOL
 
     public static void SetupCustomOptions()
@@ -63,6 +61,7 @@ public static class Oiiai
         if (CanPassOn.GetBool() && !playerIdList.Contains(killer.PlayerId))
         {
             Add(killer.PlayerId);
+            killer.GetRoleClass().Remove(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Oiiai);
             Logger.Info(killer.GetNameWithRole() + " gets Oiiai addon by " + target.GetNameWithRole(), "Oiiai");
         }
@@ -86,6 +85,7 @@ public static class Oiiai
         }
         else if (!killer.GetCustomRole().IsNeutral())
         {
+            killer.GetRoleClass().Remove(killer.PlayerId);
             //Use eraser here LOL
             killer.RpcSetCustomRole(Eraser.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with eraser assign.", "Oiiai");
@@ -98,6 +98,7 @@ public static class Oiiai
 
                 if (changeValue != 0)
                 {
+                    killer.GetRoleClass().Remove(killer.PlayerId);
                     killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
                     killer.GetRoleClass().OnAdd(killer.PlayerId);
 
@@ -106,6 +107,7 @@ public static class Oiiai
             }
             else
             {
+                killer.GetRoleClass().Remove(killer.PlayerId);
                 killer.RpcSetCustomRole(CustomRoles.Opportunist);
                 Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Neutrals without kill button assign.", "Oiiai");
             }

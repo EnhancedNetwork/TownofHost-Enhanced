@@ -671,6 +671,7 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return false;
         if (DollMaster.IsDoll(pc.PlayerId)) return false;
         if (pc.Is(CustomRoles.Killer) || Mastermind.PlayerIsManipulated(pc)) return true;
+        if (Imitator.HasEnabled && Imitator.playerIdList.Contains(pc.PlayerId)) return false;
 
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseKillButton(pc)) return true;
@@ -702,7 +703,8 @@ static class ExtendedPlayerControl
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
         if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
         if (Amnesiac.PreviousAmnesiacCanVent(pc)) return true; //this is done because amnesiac has imp basis and if amnesiac remembers a role with different basis then player will not vent as `CanUseImpostorVentButton` is false
-
+        if (Imitator.playerIdList.Contains(pc.PlayerId)) return true;  //imitator needs to vent to change the role even if it is not currently imitator.
+        
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseImpostorVentButton(pc)) return true;
 
@@ -711,7 +713,8 @@ static class ExtendedPlayerControl
     public static bool CanUseSabotage(this PlayerControl pc)
     {
         if (pc.Is(Custom_Team.Impostor) && !pc.IsAlive() && Options.DeadImpCantSabotage.GetBool()) return false;
-
+        if (Imitator.HasEnabled && Imitator.playerIdList.Contains(pc.PlayerId)) return false;
+        
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseSabotage(pc)) return true;
 
@@ -964,7 +967,7 @@ static class ExtendedPlayerControl
                 logger.Info($"Lover Know Roles");
             return true;
         }
-        else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor))
+        else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !(Imitator.playerIdList.Contains(seer.PlayerId) || Imitator.playerIdList.Contains(target.PlayerId)))
         {
             if (isVanilla)
                 logger.Info($"Imps Can See Each Others Roles");
@@ -982,7 +985,7 @@ static class ExtendedPlayerControl
                 logger.Info($"Imp Know Whos Madmate");
             return true;
         }
-        else if (seer.Is(Custom_Team.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor())
+        else if ((seer.Is(Custom_Team.Impostor) && !Imitator.playerIdList.Contains(seer.PlayerId)) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor())
         {
             if (isVanilla)
                 logger.Info("Impostor see Imp Ghost Role");

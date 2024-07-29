@@ -135,6 +135,8 @@ public static class CustomRoleManager
                 }
             }
 
+        if (Imitator.HasEnabled) Imitator.ApplyGameOptions(player.PlayerId); 
+
         // Add-ons
         if (Glow.IsEnable) Glow.ApplyGameOptions(opt, player); //keep this at last
         if (Bewilder.IsEnable) Bewilder.ApplyGameOptions(opt, player);

@@ -149,14 +149,14 @@ internal class ControllerManagerUpdatePatch
                 ResolutionManager.SetResolution(resolutions[resolutionIndex].Item1, resolutions[resolutionIndex].Item2, false);
                 //SetResolutionManager.Postfix();
             }
-            // Reloaded File Colors
+            // Reloaded Custom Translations
             if (GetKeysDown(KeyCode.F5, KeyCode.T))
             {
                 Logger.Info("Reloaded Custom Translation File Colors", "KeyCommand");
                 LoadLangs();
                 Logger.SendInGame("Reloaded Custom Translation File");
             }
-            // Exported Custom Translation
+            // Exported Custom Translations and role colors
             if (GetKeysDown(KeyCode.F5, KeyCode.X))
             {
                 Logger.Info("Exported Custom Translation and Role File", "KeyCommand");
@@ -199,7 +199,7 @@ internal class ControllerManagerUpdatePatch
             // ############################################################################################################
             if (!AmongUsClient.Instance.AmHost) return;
 
-            // Forse end game
+            // Force end game
             if (GetKeysDown(KeyCode.Return, KeyCode.L, KeyCode.LeftShift) && GameStates.IsInGame)
             {
                 NameNotifyManager.Notice.Clear();
@@ -212,7 +212,7 @@ internal class ControllerManagerUpdatePatch
                 }
             }
 
-            // Forse start/end meeting
+            // Force start/end meeting
             if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame)
             {
                 if (GameStates.IsHideNSeek) return;
@@ -235,7 +235,7 @@ internal class ControllerManagerUpdatePatch
                     PlayerControl.LocalPlayer.NoCheckStartMeeting(null, force: true);
                 }
             }
-            // Forse start game       
+            // Force start game       
             if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !HudManager.Instance.Chat.IsOpenOrOpening)
             {
                 var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
