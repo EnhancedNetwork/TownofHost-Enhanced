@@ -77,10 +77,6 @@ public class GameSettingMenuPatch
             ModSettingsButtons.Add(tab, button);
         }
 
-        ModGameOptionsMenu.OptionList = new();
-        ModGameOptionsMenu.BehaviourList = new();
-        ModGameOptionsMenu.CategoryHeaderList = new();
-
         ModSettingsTabs = [];
         foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {
@@ -399,6 +395,9 @@ public class GameSettingMenuPatch
             TemplateGameSettingsButton = Object.Instantiate(__instance.GameSettingsButton, __instance.GameSettingsButton.transform.parent);
             TemplateGameSettingsButton.gameObject.SetActive(false);
         }
+        ModGameOptionsMenu.OptionList = new();
+        ModGameOptionsMenu.BehaviourList = new();
+        ModGameOptionsMenu.CategoryHeaderList = new();
 
         SetDefaultButton(__instance);
 
