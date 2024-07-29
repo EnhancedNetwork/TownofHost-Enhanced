@@ -79,6 +79,7 @@ internal class Baker : RoleBase
         }
         return (breaded, all);
     }
+    public static byte CurrentBread() => BreadID;
     public static void SendRPC(PlayerControl player, PlayerControl target)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
