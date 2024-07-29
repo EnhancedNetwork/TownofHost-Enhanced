@@ -626,7 +626,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Dictator)
                     || pc.Is(CustomRoles.Influenced)
                     || pc.Is(CustomRoles.Silent)
-                    || pc.Is(CustomRoles.Tiebreaker))
+                    || pc.Is(CustomRoles.Tiebreaker)
+                    || pc.Is(CustomRoles.Paranoia))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !VoidBallot.CrewCanBeVoidBallot.GetBool()) || (pc.GetCustomRole().IsNeutral() && !VoidBallot.NeutralCanBeVoidBallot.GetBool()) || (pc.GetCustomRole().IsImpostor() && !VoidBallot.ImpCanBeVoidBallot.GetBool()))
                     return false;
@@ -816,7 +817,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Vampire)
                     || pc.Is(CustomRoles.Puppeteer)
                     || pc.Is(CustomRoles.Scavenger)
-                    || pc.Is(CustomRoles.Lightning))
+                    || pc.Is(CustomRoles.Lightning)
+                    || pc.Is(CustomRoles.Swift))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -869,7 +871,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.BountyHunter)
                     || pc.Is(CustomRoles.Lightning)
                     || pc.Is(CustomRoles.Hangman)
-                    || pc.Is(CustomRoles.TicketsStealer))
+                    || pc.Is(CustomRoles.TicketsStealer)
+                    || pc.Is(CustomRoles.Tricky))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
