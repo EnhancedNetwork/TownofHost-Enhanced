@@ -2206,7 +2206,7 @@ public static class Utils
             if (playerState.RoleClass == null) continue;
 
             playerState.RoleClass.AfterMeetingTasks();
-            playerState.RoleClass.HasVoted = true;
+            playerState.RoleClass.HasVoted = false;
         }
 
         //Set kill timer
