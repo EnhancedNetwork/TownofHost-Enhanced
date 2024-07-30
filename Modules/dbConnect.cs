@@ -84,7 +84,17 @@ public class dbConnect
         }
         else if (Main.canaryRelease || Main.fullRelease)
         {
-            shouldDisconnect = false; // Maybe need add waring message
+            shouldDisconnect = false;
+
+            // Show waring message
+            if (GameStates.IsLobby || GameStates.InGame)
+            {
+                DestroyableSingleton<HudManager>.Instance.ShowPopUp(GetString("dbConnect.InitFailure"));
+            }
+            else
+            {
+                DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
+            }
         }
         else
         {
