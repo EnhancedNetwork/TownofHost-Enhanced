@@ -133,7 +133,7 @@ internal class Berserker : RoleBase
 
                 if (Vector2.Distance(killer.transform.position, player.transform.position) <= Bomber.BomberRadius.GetFloat())
                 {
-                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                    player.SetDeathReason(PlayerState.DeathReason.Bombed);
                     player.RpcMurderPlayer(player);
                     player.SetRealKiller(killer);
                 }

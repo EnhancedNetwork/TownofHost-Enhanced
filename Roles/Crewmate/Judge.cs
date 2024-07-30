@@ -68,7 +68,7 @@ internal class Judge : RoleBase
         playerIdList.Remove(playerId);
         TrialLimit.Remove(playerId);
     }
-    public override void OnReportDeadBody(PlayerControl party, PlayerControl dinosaur)
+    public override void OnReportDeadBody(PlayerControl party, NetworkedPlayerInfo dinosaur)
     {
         foreach (var pid in TrialLimit.Keys)
         {
@@ -91,7 +91,7 @@ internal class Judge : RoleBase
 
         if (!pc.IsAlive())
         {
-            SendMessage(GetString("JudgeDead"), pc.PlayerId);
+            pc.ShowInfoMessage(isUI, GetString("JudgeDead"));
             return true;
         }
 
@@ -120,62 +120,76 @@ internal class Judge : RoleBase
             var target = GetPlayerById(targetId);
             if (target != null)
             {
-                Logger.Info($"{pc.GetNameWithRole()} 审判了 {target.GetNameWithRole()}", "Judge");
+                Logger.Info($"{pc.GetNameWithRole()} try trial {target.GetNameWithRole()}", "Judge");
                 bool judgeSuicide = true;
                 if (TrialLimit[pc.PlayerId] < 1)
                 {
-                    if (!isUI) SendMessage(GetString("JudgeTrialMax"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("JudgeTrialMax"));
+                    pc.ShowInfoMessage(isUI, GetString("JudgeTrialMax"));
                     return true;
                 }
                 if (Jailer.IsTarget(target.PlayerId))
                 {
-                    if (!isUI) SendMessage(GetString("CanNotTrialJailed"), pc.PlayerId, title: ColorString(GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
-                    else pc.ShowPopUp(ColorString(GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")) + "\n" + GetString("CanNotTrialJailed"));
+                    pc.ShowInfoMessage(isUI, GetString("CanNotTrialJailed"), ColorString(GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
                     return true;
                 }
                 if (pc.PlayerId == target.PlayerId)
                 {
-                    if (!isUI) SendMessage(GetString("Judge_LaughToWhoTrialSelf"), pc.PlayerId, ColorString(Color.cyan, GetString("MessageFromKPD")));
-                    else pc.ShowPopUp(ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("Judge_LaughToWhoTrialSelf"));
-                    judgeSuicide = true;
+                    pc.ShowInfoMessage(isUI, GetString("Judge_LaughToWhoTrialSelf"), ColorString(Color.cyan, GetString("MessageFromKPD")));
+                    goto SkipToPerform;
                 }
                 if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
                 {
-                    if (!isUI) SendMessage(GetString("GuessMini"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessMini"));
+                    pc.ShowInfoMessage(isUI, GetString("GuessMini"));
                     return true;
                 }
-                else if  (target.Is(CustomRoles.Rebound))
+                if (target.Is(CustomRoles.PunchingBag))
+                {
+                    pc.ShowInfoMessage(isUI, GetString("EradicatePunchingBag"));
+                    return true;
+                }
+
+                if (target.Is(CustomRoles.Rebound))
                 {
                     Logger.Info($"{pc.GetNameWithRole()} judged {target.GetNameWithRole()}, judge sucide = true because target rebound", "JudgeTrialMsg");
                     judgeSuicide = true;
                 }
                 else if (target.Is(CustomRoles.Solsticer))
                 {
-                    if (!isUI) SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessSolsticer"));
+                    pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
                     return true;
                 }
-                else if (pc.Is(CustomRoles.Madmate)) judgeSuicide = false;
-                else if (pc.Is(CustomRoles.Charmed)) judgeSuicide = false;
-                else if (pc.Is(CustomRoles.Recruit)) judgeSuicide = false;
-                else if (pc.Is(CustomRoles.Infected)) judgeSuicide = false;
-                else if (pc.Is(CustomRoles.Contagious)) judgeSuicide = false;
-                else if (target.Is(CustomRoles.Rascal)) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Pestilence)) judgeSuicide = true;
                 else if (target.Is(CustomRoles.Trickster)) judgeSuicide = true;
-                else if (target.Is(CustomRoles.Madmate) && CanTrialMadmate.GetBool()) judgeSuicide = false;
+                else if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
+                {
+                    pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
+                    return true;
+                }
+                else if (Guardian.CannotBeKilled(target))
+                {
+                    pc.ShowInfoMessage(isUI, GetString("GuessGuardianTask"));
+                    return true;
+                }
+                else if (pc.IsAnySubRole(x => x.IsConverted())) judgeSuicide = false;
+                else if (target.Is(CustomRoles.Rascal)) judgeSuicide = false;
+                else if ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)) && CanTrialSidekick.GetBool()) judgeSuicide = false;
+                else if ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && CanTrialMadmate.GetBool()) judgeSuicide = false;
+                else if (target.Is(CustomRoles.Infected) && CanTrialInfected.GetBool()) judgeSuicide = false;
+                else if (target.Is(CustomRoles.Contagious) && CanTrialContagious.GetBool()) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Charmed) && CanTrialCharmed.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsCrewKiller() && CanTrialCrewKilling.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNK() && CanTrialNeutralK.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNB() && CanTrialNeutralB.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNE() && CanTrialNeutralE.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNC() && CanTrialNeutralC.GetBool()) judgeSuicide = false;
-                else if (target.GetCustomRole().IsImpostor() && !target.Is(CustomRoles.Trickster)) judgeSuicide = false;
-                else if (target.GetCustomRole().IsMadmate() && CanTrialMadmate.GetBool()) judgeSuicide = false;
-                else judgeSuicide = true;
+                else if (target.GetCustomRole().IsImpostor()) judgeSuicide = false;
+                else
+                {
+                    Logger.Warn("Impossibe to reach here!", "JudgeTrial");
+                    judgeSuicide = true;
+                }
 
+            SkipToPerform:
                 var dp = judgeSuicide ? pc : target;
                 target = dp;
 
@@ -187,11 +201,11 @@ internal class Judge : RoleBase
                 
                 _ = new LateTask(() =>
                 {
-                    Main.PlayerStates[dp.PlayerId].deathReason = PlayerState.DeathReason.Trialed;
+                    dp.SetDeathReason(PlayerState.DeathReason.Trialed);
                     dp.SetRealKiller(pc);
                     GuessManager.RpcGuesserMurderPlayer(dp);
 
-                    //死者检查
+                    Main.PlayersDiedInMeeting.Add(dp.PlayerId);
                     MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
                     NotifyRoles(isForMeeting: false, NoCache: true);
@@ -302,6 +316,7 @@ internal class Judge : RoleBase
         {
             var pc = GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !pc.IsAlive()) continue;
+
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
             GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
             targetBox.name = "ShootButton";

@@ -26,7 +26,7 @@ internal class Executioner : RoleBase
 
     public static readonly Dictionary<byte, byte> Target = [];
     
-    private enum ChangeRolesSelect
+    private enum ChangeRolesSelectList
     {
         Role_Crewmate,
         Role_Celebrity,
@@ -58,7 +58,7 @@ internal class Executioner : RoleBase
         CanTargetNeutralEvil = BooleanOptionItem.Create(Id + 15, "ExecutionerCanTargetNeutralEvil", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         CanTargetNeutralChaos = BooleanOptionItem.Create(Id + 16, "ExecutionerCanTargetNeutralChaos", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelect>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
     }
     public override void Init()
     {
@@ -90,7 +90,7 @@ internal class Executioner : RoleBase
             }
             if (targetList.Any())
             {
-                var SelectedTarget = targetList[rand.Next(targetList.Count)];
+                var SelectedTarget = targetList.RandomElement();
                 Target.Add(playerId, SelectedTarget.PlayerId);
                 SendRPC(playerId, SelectedTarget.PlayerId, "SetTarget");
                 Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()}:{SelectedTarget.GetNameWithRole()}", "Executioner");
@@ -140,7 +140,7 @@ internal class Executioner : RoleBase
         else
             Target.Remove(reader.ReadByte());
     }
-    public override bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute)
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
         => !(ChangeRolesAfterTargetKilled.GetValue() is 6 or 7) && !ForRecompute;
 
     public static void ChangeRoleByTarget(PlayerControl target)
@@ -210,7 +210,7 @@ internal class Executioner : RoleBase
         return GetValue && targetId == target.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "♦") : string.Empty;
     }
 
-    public override void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
         foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId))
         {

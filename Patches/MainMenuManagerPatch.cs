@@ -95,13 +95,13 @@ public static class MainMenuManagerPatch
 {
     private static PassiveButton template;
     private static PassiveButton gitHubButton;
-    private static PassiveButton kofiButton;
+    private static PassiveButton donationButton;
     private static PassiveButton discordButton;
     private static PassiveButton websiteButton;
     //private static PassiveButton patreonButton;
 
     [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
-    public static void StartPostfix(MainMenuManager __instance)
+    public static void Start_Postfix(MainMenuManager __instance)
     {
         if (template == null) template = __instance.quitButton;
 
@@ -223,18 +223,18 @@ public static class MainMenuManagerPatch
         if (template == null) return;
 
 
-        // ko-fi Button
-        if (kofiButton == null)
+        // donation Button
+        if (donationButton == null)
         {
-            kofiButton = CreateButton(
-                "kofiButton",
+            donationButton = CreateButton(
+                "donationButton",
                 new(-1.8f, -1.1f, 1f),
                 new(0, 255, 255, byte.MaxValue),
                 new(75, 255, 255, byte.MaxValue),
-                () => Application.OpenURL(Main.kofiInviteUrl),
-                GetString("kofi")); //"Kofi"
+                () => Application.OpenURL(Main.DonationInviteUrl),
+                GetString("SupportUs")); //"Donation"
         }
-        kofiButton.gameObject.SetActive(Main.ShowKofiButton);
+        donationButton.gameObject.SetActive(Main.ShowDonationButton);
 
         // GitHub Button
         if (gitHubButton == null)
@@ -355,12 +355,12 @@ public static class MainMenuManagerPatch
     [HarmonyPatch(nameof(MainMenuManager.OpenAccountMenu))]
     [HarmonyPatch(nameof(MainMenuManager.OpenCredits))]
     [HarmonyPostfix]
-    public static void OpenMenuPostfix()
+    public static void OpenMenu_Postfix()
     {
         if (MainMenuManagerStartPatch.ToheLogo != null) MainMenuManagerStartPatch.ToheLogo.gameObject.SetActive(false);
     }
     [HarmonyPatch(nameof(MainMenuManager.ResetScreen)), HarmonyPostfix]
-    public static void ResetScreenPostfix()
+    public static void ResetScreen_Postfix()
     {
         if (MainMenuManagerStartPatch.ToheLogo != null) MainMenuManagerStartPatch.ToheLogo.gameObject.SetActive(true);
     }

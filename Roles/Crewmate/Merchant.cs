@@ -156,8 +156,8 @@ internal class Merchant : RoleBase
         }
 
         var rd = IRandom.Instance;
-        CustomRoles addon = addons[rd.Next(0, addons.Count)];
-        
+        CustomRoles addon = addons.RandomElement();
+
         List<PlayerControl> AllAlivePlayer =
             Main.AllAlivePlayerControls.Where(x =>
                 x.PlayerId != player.PlayerId
@@ -204,7 +204,7 @@ internal class Merchant : RoleBase
                 return true;
             }
 
-            PlayerControl target = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
+            PlayerControl target = AllAlivePlayer.RandomElement();
 
             target.RpcSetCustomRole(addon);
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSell")));
@@ -219,10 +219,9 @@ internal class Merchant : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if (target.Is(CustomRoles.Merchant) && IsBribedKiller(pc, target))
+        if (IsBribedKiller(pc, target))
         {
-            if (!isUI) Utils.SendMessage(GetString("BribedByMerchant2"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("BribedByMerchant2"));
+            pc.ShowInfoMessage(isUI, GetString("BribedByMerchant2"));
             return true;
         }
         return false;

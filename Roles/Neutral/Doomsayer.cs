@@ -31,7 +31,7 @@ internal class Doomsayer : RoleBase
     private static OptionItem AdvancedSettings;
     private static OptionItem MaxNumberOfGuessesPerMeeting;
     private static OptionItem KillCorrectlyGuessedPlayers;
-    private static OptionItem DoesNotSuicideWhenMisguessing;
+    public static OptionItem DoesNotSuicideWhenMisguessing;
     private static OptionItem MisguessRolePrevGuessRoleUntilNextMeeting;
     private static OptionItem DoomsayerTryHideMsg;
     private static OptionItem ImpostorVision;
@@ -62,7 +62,7 @@ internal class Doomsayer : RoleBase
         MisguessRolePrevGuessRoleUntilNextMeeting = BooleanOptionItem.Create(Id + 20, "DoomsayerMisguessRolePrevGuessRoleUntilNextMeeting", true, TabGroup.NeutralRoles, true)
             .SetParent(DoesNotSuicideWhenMisguessing);
 
-        ImpostorVision = BooleanOptionItem.Create(Id + 25, "ImpostorVision", true, TabGroup.NeutralRoles, false)
+        ImpostorVision = BooleanOptionItem.Create(Id + 25, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Doomsayer]);
         DoomsayerTryHideMsg = BooleanOptionItem.Create(Id + 21, "DoomsayerTryHideMsg", true, TabGroup.NeutralRoles, true)
             .SetColor(Color.green)
@@ -118,7 +118,7 @@ internal class Doomsayer : RoleBase
         }
     }
     
-    public override void OnReportDeadBody(PlayerControl goku, PlayerControl solos)
+    public override void OnReportDeadBody(PlayerControl goku, NetworkedPlayerInfo solos)
     {
         if (!AdvancedSettings.GetBool()) return;
 
@@ -146,33 +146,28 @@ internal class Doomsayer : RoleBase
     {
         if (CheckCantGuess)
         {
-            if (!isUI) SendMessage(GetString("DoomsayerCantGuess"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("DoomsayerCantGuess"));
+            guesser.ShowInfoMessage(isUI, GetString("DoomsayerCantGuess"));
             return true;
         }
 
         if (role.IsImpostor() && !DCanGuessImpostors.GetBool())
         {
-            if (!isUI) SendMessage(GetString("GuessNotAllowed"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessNotAllowed"));
+            guesser.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
             return true;
         }
         if (role.IsCrewmate() && !DCanGuessCrewmates.GetBool())
         {
-            if (!isUI) SendMessage(GetString("GuessNotAllowed"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessNotAllowed"));
+            guesser.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
             return true;
         }
         if (role.IsNeutral() && !DCanGuessNeutrals.GetBool())
         {
-            if (!isUI) SendMessage(GetString("GuessNotAllowed"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessNotAllowed"));
+            guesser.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
             return true;
         }
         if (role.IsAdditionRole() && !DCanGuessAdt.GetBool())
         {
-            if (!isUI) SendMessage(GetString("GuessAdtRole"), guesser.PlayerId);
-            else guesser.ShowPopUp(GetString("GuessAdtRole"));
+            guesser.ShowInfoMessage(isUI, GetString("GuessAdtRole"));
             return true;
         }
 
@@ -190,8 +185,7 @@ internal class Doomsayer : RoleBase
         {
             if (GuessesCountPerMeeting >= MaxNumberOfGuessesPerMeeting.GetInt() && guesser.PlayerId != target.PlayerId)
             {
-                if (!isUI) SendMessage(GetString("DoomsayerCantGuess"), guesser.PlayerId);
-                else guesser.ShowPopUp(GetString("DoomsayerCantGuess"));
+                guesser.ShowInfoMessage(isUI, GetString("DoomsayerCantGuess"));
                 return true;
             }
             else
@@ -204,8 +198,7 @@ internal class Doomsayer : RoleBase
 
             if (!KillCorrectlyGuessedPlayers.GetBool() && guesser.PlayerId != target.PlayerId)
             {
-                if (!isUI) SendMessage(GetString("DoomsayerCorrectlyGuessRole"), guesser.PlayerId);
-                else guesser.ShowPopUp(GetString("DoomsayerCorrectlyGuessRole"));
+                guesser.ShowInfoMessage(isUI, GetString("DoomsayerCorrectlyGuessRole"));
 
                 if (GuessedRoles.Contains(role))
                 {
@@ -232,8 +225,7 @@ internal class Doomsayer : RoleBase
             }
             else if (DoesNotSuicideWhenMisguessing.GetBool() && guesser.PlayerId == target.PlayerId)
             {
-                if (!isUI) SendMessage(GetString("DoomsayerNotCorrectlyGuessRole"), guesser.PlayerId);
-                else guesser.ShowPopUp(GetString("DoomsayerNotCorrectlyGuessRole"));
+                guesser.ShowInfoMessage(isUI, GetString("DoomsayerNotCorrectlyGuessRole"));
 
                 if (MisguessRolePrevGuessRoleUntilNextMeeting.GetBool())
                 {

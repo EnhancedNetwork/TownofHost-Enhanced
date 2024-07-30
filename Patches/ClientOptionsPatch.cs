@@ -11,14 +11,14 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem EnableGM;
     private static ClientOptionItem AutoStart;
     private static ClientOptionItem DarkTheme;
+    private static ClientOptionItem DisableLobbyMusic;
     private static ClientOptionItem ShowTextOverlay;
-    private static ClientOptionItem ModeForSmallScreen;
     private static ClientOptionItem HorseMode;
-    private static ClientOptionItem AutoMuteUs;
     private static ClientOptionItem ForceOwnLanguage;
     private static ClientOptionItem ForceOwnLanguageRoleName;
     private static ClientOptionItem EnableCustomButton;
     private static ClientOptionItem EnableCustomSoundEffect;
+    private static ClientOptionItem EnableCustomDecorations;
     private static ClientOptionItem SwitchVanilla;
 
 #if DEBUG
@@ -73,13 +73,13 @@ public static class OptionsMenuBehaviourStartPatch
         {
             DarkTheme = ClientOptionItem.Create("DarkTheme", Main.DarkTheme, __instance);
         }
+        if (DisableLobbyMusic == null || DisableLobbyMusic.ToggleButton == null)
+        {
+            DisableLobbyMusic = ClientOptionItem.Create("DisableLobbyMusic", Main.DisableLobbyMusic, __instance);
+        }
         if (ShowTextOverlay == null || ShowTextOverlay.ToggleButton == null)
         {
             ShowTextOverlay = ClientOptionItem.Create("ShowTextOverlay", Main.ShowTextOverlay, __instance);
-        }
-        if (ModeForSmallScreen == null || ModeForSmallScreen.ToggleButton == null)
-        {
-            ModeForSmallScreen = ClientOptionItem.Create("ModeForSmallScreen", Main.ModeForSmallScreen, __instance);
         }
         if (HorseMode == null || HorseMode.ToggleButton == null)
         {
@@ -97,10 +97,6 @@ public static class OptionsMenuBehaviourStartPatch
                 }
             }
         }
-        if (AutoMuteUs == null || AutoMuteUs.ToggleButton == null)
-        {
-            AutoMuteUs = ClientOptionItem.Create("AutoMuteUs", Main.AutoMuteUs, __instance);
-        }
         if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
         {
             ForceOwnLanguage = ClientOptionItem.Create("ForceOwnLanguage", Main.ForceOwnLanguage, __instance);
@@ -116,6 +112,10 @@ public static class OptionsMenuBehaviourStartPatch
         if (EnableCustomSoundEffect == null || EnableCustomSoundEffect.ToggleButton == null)
         {
             EnableCustomSoundEffect = ClientOptionItem.Create("EnableCustomSoundEffect", Main.EnableCustomSoundEffect, __instance);
+        }
+        if (EnableCustomDecorations == null || EnableCustomDecorations.ToggleButton == null)
+        {
+            EnableCustomDecorations = ClientOptionItem.Create("EnableCustomDecorations", Main.EnableCustomDecorations, __instance);
         }
         if (SwitchVanilla == null || SwitchVanilla.ToggleButton == null)
         {
