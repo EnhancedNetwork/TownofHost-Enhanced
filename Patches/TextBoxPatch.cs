@@ -9,6 +9,8 @@ class TextBoxTMPSetTextPatch
 {
     public static bool Prefix(TextBoxTMP __instance, [HarmonyArgument(0)] string input, [HarmonyArgument(1)] string inputCompo = "")
     {
+        if (!GameStates.IsModHost) return true;
+
         bool flag = false;
         char ch = ' ';
         __instance.tempTxt.Clear();
