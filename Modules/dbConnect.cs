@@ -11,8 +11,13 @@ namespace TOHE;
 
 public class dbConnect
 {
-    private static Dictionary<string, string> userType = [];
     private static bool InitOnce = false;
+    private static Dictionary<string, string> userType = [];
+
+    // API Url
+    private const string oldApiUrl = "https://api.tohre.dev";
+    private const string newApiUrl = "https://api.weareten.ca";
+
     public static IEnumerator Init()
     {
         Logger.Info("Begin dbConnect Login flow", "dbConnect.init");
@@ -157,9 +162,9 @@ public class dbConnect
         string apiUrl;
         var discontinuationDate = new DateTime(2024, 8, 21);
         var today = DateTime.UtcNow;
-        if (today < discontinuationDate) apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
-        else apiUrl = "https://api.weareten.ca"; 
-        
+        if (today < discontinuationDate) apiUrl = oldApiUrl; // Replace with your actual API URL
+        else apiUrl = newApiUrl;
+
         string endpoint = $"{apiUrl}/userInfo?token={apiToken}";
 
         UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
@@ -247,8 +252,8 @@ public class dbConnect
         string apiUrl;
         var discontinuationDate = new DateTime(2024, 8, 21);
         var today = DateTime.UtcNow;
-        if (today < discontinuationDate) apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
-        else apiUrl = "https://api.weareten.ca";
+        if (today < discontinuationDate) apiUrl = oldApiUrl; // Replace with your actual API URL
+        else apiUrl = newApiUrl;
 
         string endpoint = $"{apiUrl}/eac?token={apiToken}";
 
