@@ -11,8 +11,13 @@ namespace TOHE;
 
 public class dbConnect
 {
+    private static bool InitOnce = false;
     private static Dictionary<string, string> userType = [];
-    public static bool InitOnce = false;
+
+    // API Url
+    private const string oldApiUrl = "https://api.tohre.dev";
+    private const string newApiUrl = "https://api.weareten.ca";
+
     public static IEnumerator Init()
     {
         Logger.Info("Begin dbConnect Login flow", "dbConnect.init");
@@ -21,22 +26,28 @@ public class dbConnect
         {
             yield return GetRoleTable();
 
+            if (!(Main.devRelease || Main.canaryRelease || Main.fullRelease))
+            {
+                HandleFailure(FailedConnectReason.Build_Not_Specified);
+                yield break;
+            }
+
             if (GetToken() is "" or null)
             {
-                HandleFailure("Api token is empty");
+                HandleFailure(FailedConnectReason.API_Token_Is_Empty);
                 yield break;
             }
 
             if (userType.Count < 1)
             {
-                HandleFailure("Error in fetching roletable");
+                HandleFailure(FailedConnectReason.Error_Getting_User_Role_Table);
                 yield break;
             }
 
             yield return GetEACList();
             if (BanManager.EACDict.Count < 1)
             {
-                HandleFailure("Error in fetching eaclist");
+                HandleFailure(FailedConnectReason.Error_Getting_EAC_List);
                 yield break;
             }
         }
@@ -57,15 +68,54 @@ public class dbConnect
         }
     }
 
-    static void HandleFailure(string errorMessage)
+    private static void HandleFailure(FailedConnectReason errorReason)
     {
-        Logger.Error(errorMessage, "dbConnect.init");
-        if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
-            AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
+        var errorMessage = errorReason switch
+        {
+            FailedConnectReason.Build_Not_Specified => "Build not specified",
+            FailedConnectReason.API_Token_Is_Empty => "API token is empty",
+            FailedConnectReason.Error_Getting_User_Role_Table => "Error in fetching roletable",
+            FailedConnectReason.Error_Getting_EAC_List => "Error in fetching EAC list",
+            _ => "Reason not specified"
+        };
 
-        DataManager.Player.Account.LoginStatus = EOSManager.AccountLoginStatus.Offline;
-        DataManager.Player.Save();
-        DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
+        Logger.Error(errorMessage, "dbConnect.init");
+
+        bool shouldDisconnect;
+        if (Main.devRelease)
+        {
+            // is dev build
+            shouldDisconnect = true;
+        }
+        else if (Main.canaryRelease || Main.fullRelease)
+        {
+            shouldDisconnect = false;
+
+            // Show waring message
+            if (GameStates.IsLobby || GameStates.InGame)
+            {
+                DestroyableSingleton<HudManager>.Instance.ShowPopUp(GetString("dbConnect.InitFailure"));
+            }
+            else
+            {
+                DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
+            }
+        }
+        else
+        {
+            // Build not found
+            shouldDisconnect = true;
+        }
+        
+        if (shouldDisconnect)
+        {
+            if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
+                AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
+
+            DataManager.Player.Account.LoginStatus = EOSManager.AccountLoginStatus.Offline;
+            DataManager.Player.Save();
+            DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
+        }
     }
 
     private static string GetToken()
@@ -112,9 +162,9 @@ public class dbConnect
         string apiUrl;
         var discontinuationDate = new DateTime(2024, 8, 21);
         var today = DateTime.UtcNow;
-        if (today < discontinuationDate) apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
-        else apiUrl = "https://api.weareten.ca"; 
-        
+        if (today < discontinuationDate) apiUrl = oldApiUrl; // Replace with your actual API URL
+        else apiUrl = newApiUrl;
+
         string endpoint = $"{apiUrl}/userInfo?token={apiToken}";
 
         UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
@@ -166,7 +216,7 @@ public class dbConnect
     }
 
 
-    public static string ToAutoTranslate(JsonElement tag)
+    private static string ToAutoTranslate(JsonElement tag)
     {
         //Translates the mostly used tags.
         string text = tag.ToString();
@@ -202,8 +252,8 @@ public class dbConnect
         string apiUrl;
         var discontinuationDate = new DateTime(2024, 8, 21);
         var today = DateTime.UtcNow;
-        if (today < discontinuationDate) apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
-        else apiUrl = "https://api.weareten.ca";
+        if (today < discontinuationDate) apiUrl = oldApiUrl; // Replace with your actual API URL
+        else apiUrl = newApiUrl;
 
         string endpoint = $"{apiUrl}/eac?token={apiToken}";
 
@@ -222,7 +272,7 @@ public class dbConnect
         try
         {
             var tempEACDict = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(webRequest.downloadHandler.text);
-            BanManager.EACDict = BanManager.EACDict.Concat(tempEACDict).ToList(); // Merge the temporary list with BanManager.EACDict
+            BanManager.EACDict = [.. BanManager.EACDict, .. tempEACDict]; // Merge the temporary list with BanManager.EACDict
         }
         catch (JsonException jsonEx)
         {
@@ -235,7 +285,7 @@ public class dbConnect
         }
     }
 
-    public static bool CanAccessDev(string friendCode)
+    private static bool CanAccessDev(string friendCode)
     {
         if (!userType.ContainsKey(friendCode))
         {
@@ -249,5 +299,13 @@ public class dbConnect
             return false;
         }
         return true;
+    }
+
+    private enum FailedConnectReason
+    {
+        Build_Not_Specified,
+        API_Token_Is_Empty,
+        Error_Getting_User_Role_Table,
+        Error_Getting_EAC_List,
     }
 }
