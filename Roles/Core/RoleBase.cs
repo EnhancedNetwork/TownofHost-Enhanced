@@ -16,6 +16,7 @@ public abstract class RoleBase
 
     public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
+    public bool HasVoted = false;
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;

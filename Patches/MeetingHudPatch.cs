@@ -8,6 +8,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static TOHE.Utils;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -638,6 +639,16 @@ class CastVotePatch
             return false;
         } //Vote a disconnect player
 
+        // Return vote to player if uses checkvote and wants to vote normal without using his abilities.
+        if (suspectPlayerId == 253 && voter.GetRoleClass()?.IsMethodOverridden("CheckVote") == true)
+        {
+            if (!voter.GetRoleClass().HasVoted)
+            {
+                voter.GetRoleClass().HasVoted = true;
+                return false;
+            }
+        }
+
         if (target != null && suspectPlayerId < 253)
         {
             if (!target.IsAlive() || target.Data.Disconnected)
@@ -649,7 +660,7 @@ class CastVotePatch
             }
 
 
-            if (!voter.GetRoleClass().CheckVote(voter, target))
+            if (!voter.GetRoleClass().HasVoted && !voter.GetRoleClass().CheckVote(voter, target))
             {
                 Logger.Info($"Canceling {voter.GetRealName()}'s vote because of {voter.GetCustomRole()}", "CastVotePatch..RoleBase.CheckVote");
                 __instance.RpcClearVote(voter.GetClientId());

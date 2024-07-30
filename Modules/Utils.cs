@@ -1695,6 +1695,17 @@ public static class Utils
         return null;
     }
 
+    public static bool IsMethodOverridden(this RoleBase roleInstance, string methodName)
+    {
+        Type baseType = typeof(RoleBase);
+        Type derivedType = roleInstance.GetType();
+
+        MethodInfo baseMethod = baseType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+        MethodInfo derivedMethod = derivedType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+
+        return baseMethod.DeclaringType != derivedMethod.DeclaringType;
+    }
+
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
@@ -2192,7 +2203,10 @@ public static class Utils
 
         foreach (var playerState in Main.PlayerStates.Values.ToArray())
         {
-            playerState.RoleClass?.AfterMeetingTasks();
+            if (playerState.RoleClass == null) continue;
+
+            playerState.RoleClass.AfterMeetingTasks();
+            playerState.RoleClass.HasVoted = true;
         }
 
         //Set kill timer
