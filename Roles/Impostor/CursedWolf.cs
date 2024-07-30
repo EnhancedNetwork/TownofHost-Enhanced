@@ -1,5 +1,4 @@
-﻿using Hazel;
-using TOHE.Roles.Core;
+﻿using TOHE.Roles.Core;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
@@ -23,7 +22,7 @@ internal class CursedWolf : RoleBase
         GuardSpellTimes = IntegerOptionItem.Create(Id + 2, "CursedWolfGuardSpellTimes", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.CursedWolf])
             .SetValueFormat(OptionFormat.Times);
-        KillAttacker = BooleanOptionItem.Create(Id + 3, "Jinx/CursedWolf___KillAttacker", true, TabGroup.ImpostorRoles, false)
+        KillAttacker = BooleanOptionItem.Create(Id + 3, GeneralOption.KillAttackerWhenAbilityRemaining, true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.CursedWolf]);
     }
     public override void Add(byte playerId)
@@ -44,7 +43,7 @@ internal class CursedWolf : RoleBase
         if (KillAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
         {
             Logger.Info($"{target.GetNameWithRole()} Spell Count: {AbilityLimit}", "Cursed Wolf");
-            Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Curse;
+            killer.SetDeathReason(PlayerState.DeathReason.Curse);
             killer.RpcMurderPlayer(killer);
             killer.SetRealKiller(target);
         }

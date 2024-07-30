@@ -1,8 +1,8 @@
 ﻿using Hazel;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+
 
 namespace TOHE.Roles.Crewmate;
 
@@ -59,8 +59,6 @@ internal class Captain : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-
-        CustomRoleManager.MarkOthers.Add(GetMarkForOthers);
     }
     private static void SendRPCSetSpeed(byte targetId)
     {
@@ -155,7 +153,7 @@ internal class Captain : RoleBase
         Logger.Info($"Total Number of Potential Target {allTargets.Count}", "Total Captain Target");
         if (allTargets.Count == 0) return true;
         var rand = IRandom.Instance;
-        var targetPC = allTargets[rand.Next(allTargets.Count)];
+        var targetPC = allTargets.RandomElement();
         var target = targetPC.PlayerId;
         OriginalSpeed[target] = Main.AllPlayerSpeed[target];
         SendRPCSetSpeed(target);
@@ -194,11 +192,10 @@ internal class Captain : RoleBase
             Logger.Info("No removable addons found on the target.", "Captain");
             return null;
         }
-        var rand = IRandom.Instance;
-        var addon = AllSubRoles[rand.Next(0, AllSubRoles.Count)];
+        var addon = AllSubRoles.RandomElement();
         return addon;
     }
-    public override void OnPlayerExiled(PlayerControl captain, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl captain, NetworkedPlayerInfo exiled)
     {
         if (exiled == null || (exiled.GetCustomRole() is not CustomRoles.Captain)) return;
 
@@ -218,7 +215,7 @@ internal class Captain : RoleBase
         CaptainVoteTargets.Clear();
         SendRPCVoteRemove();
     }
-    public override void OnReportDeadBody(PlayerControl y, PlayerControl x)
+    public override void OnReportDeadBody(PlayerControl y, NetworkedPlayerInfo x)
     {
         foreach (byte target in OriginalSpeed.Keys.ToArray())
         {
@@ -231,7 +228,8 @@ internal class Captain : RoleBase
         OriginalSpeed.Clear();
         SendRPCRevertAllSpeed();
     }
-    private string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool isForMeeting)
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (target.Is(CustomRoles.Captain) && OptionCrewCanFindCaptain.GetBool() &&
                 (target.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) &&

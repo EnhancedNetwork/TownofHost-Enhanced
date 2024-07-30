@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -32,7 +31,6 @@ internal class Deputy : RoleBase
     {
         AbilityLimit = HandcuffMax.GetInt();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

@@ -2,7 +2,6 @@
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 
 namespace TOHE;
@@ -33,8 +32,16 @@ public abstract class RoleBase
 
 
         Add(playerid);
+        if (CustomRoleManager.OtherCollectionsSet) // If a role is applied mid-game, filter them again jsut in-case
+        {
+            CustomRoleManager.Add();
+        }
     }
-
+    public void OnRemove(byte playerId)
+    {
+        Remove(playerId);
+        IsEnable = false;
+    }
 
     /// <summary>
     /// Variable resets when the game starts.
@@ -62,6 +69,11 @@ public abstract class RoleBase
     /// Defines the role type
     /// </summary>
     public abstract Custom_RoleType ThisRoleType { get; }
+
+    /// <summary>
+    /// Defines the custom role
+    /// </summary>
+    public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
 
     /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.
@@ -124,7 +136,7 @@ public abstract class RoleBase
     /// <summary>
     /// The role's tasks are needed for a task win
     /// </summary>
-    public virtual bool HasTasks(GameData.PlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (!ForRecompute || !player.Object.IsAnySubRole(x => x.IsConverted()));
+    public virtual bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => role.IsCrewmate() && !role.IsTasklessCrewmate() && (!ForRecompute || !player.Object.IsAnySubRole(x => x.IsConverted()));
 
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
@@ -197,9 +209,16 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// A method to always check the state when target has died (murder, exiled, execute etc..)
+    /// A method to always check the state when targets have died (murder, exiled, execute etc..)
     /// </summary>
     public virtual void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+    { }
+
+
+    /// <summary>
+    /// A method to always check the state player has died (murder, exiled, execute etc..). If there is a meeting it will only happen after it.
+    /// </summary>
+    public virtual void OnSelfReducedToAtoms(bool IsAfterMeeting)
     { }
 
     /// <summary>
@@ -239,11 +258,16 @@ public abstract class RoleBase
     /// <summary>
     /// Check start meeting by dead body
     /// </summary>
-    public virtual bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
+    public virtual bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
+
     /// <summary>
     /// When the meeting was start by report dead body or press meeting button
+    /// target is null when meeting was start by pressing meeting button
+    /// target is not null when meeting was start by report dead body
+    /// When target left the game, it's data in NetworkedPlayerInfo is not null, it still has data that can be used
+    /// But if you use target.Object, then it can be null
     /// </summary>
-    public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public virtual void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     { }
 
     /// <summary>
@@ -263,19 +287,19 @@ public abstract class RoleBase
     /// <summary>
     /// Check exile role
     /// </summary>
-    public virtual void CheckExile(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public virtual void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     { }
 
     /// <summary>
     /// Check exile target
     /// </summary>
-    public virtual void CheckExileTarget(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public virtual void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     { }
 
     /// <summary>
     /// When player was exiled
     /// </summary>
-    public virtual void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public virtual void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     { }
 
     /// <summary>
@@ -347,12 +371,15 @@ public abstract class RoleBase
     public virtual int AddRealVotesNum(PlayerVoteArea PVA) => 0;
 
     /// <summary>
-    /// Set text for Kill/Shapeshift/Report/Vent/Protect button
+    /// Set text for Kill/Shapeshift/Vanish/Report/Vent/Protect/Track button
     /// </summary>
     public virtual void SetAbilityButtonText(HudManager hud, byte playerId)
     { }
 
     public virtual Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => null;
+    /// <summary>
+    /// Set custom sprite for Shapeshift/Vanish/Vent(Engineer)/Protect/Track button
+    /// </summary>
     public virtual Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => null;
     public virtual Sprite ImpostorVentButtonSprite(PlayerControl player) => null;
     public virtual Sprite ReportButtonSprite { get; }
@@ -370,16 +397,27 @@ public abstract class RoleBase
     // otherwise make some list or byte or smt of sorts to only get the target.
     // not needed if both should have it.
     public virtual string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
+    public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
+    public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
+    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
 
     public virtual float SetModdedLowerText(out Color32? FaceColor)
     {
         FaceColor = null;
         return 2.8f;
     }
+
+
+    // 
+    // IMPORTANT note about otherIcons: 
+    // These are only called once in the method, so object attributes are banned (as 99.99% of roles only want the method to run once).
+    // You may use static attributes, tho you can simply just use utils.GetRoleBasesByType<> if need be.
+    //
+    public virtual string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
+    public virtual string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
+    public virtual string GetSuffixOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     
-    public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
-    public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
-    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
+
 
     // Player know role target, color role target
     public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;
@@ -402,5 +440,54 @@ public abstract class RoleBase
     public virtual void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
         OnReceiveRPC(reader); // Default implementation
+    }
+
+    public enum GeneralOption
+    {
+        // Ability
+        Cooldown,
+        AbilityCooldown,
+
+        // Impostor-based settings
+        CanKill,
+        KillCooldown,
+        CanVent,
+        ImpostorVision,
+        CanUseSabotage,
+
+        // General settings
+        CanKillImpostors,
+        CanGuess,
+        HideVote,
+        HideAdditionalVotes,
+        CanUseMeetingButton,
+        ModeSwitchAction,
+        ShowShapeshiftAnimations,
+
+        // Others custom roles settings
+        DefaultKillCooldown,
+        ReduceKillCooldown,
+        MinKillCooldown,
+        KillAttackerWhenAbilityRemaining,
+        SnatchesWin,
+
+        // Based on others roles settings
+        ShapeshifterBase_ShapeshiftCooldown,
+        ShapeshifterBase_ShapeshiftDuration,
+        ShapeshifterBase_LeaveShapeshiftingEvidence,
+        PhantomBase_InvisCooldown,
+        PhantomBase_InvisDuration,
+        GuardianAngelBase_ProtectCooldown,
+        GuardianAngelBase_ProtectionDuration,
+        GuardianAngelBase_ImpostorsCanSeeProtect,
+        ScientistBase_BatteryCooldown,
+        ScientistBase_BatteryDuration,
+        EngineerBase_VentCooldown,
+        EngineerBase_InVentMaxTime,
+        NoisemakerBase_ImpostorAlert,
+        NoisemakerBase_AlertDuration,
+        TrackerBase_TrackingCooldown,
+        TrackerBase_TrackingDuration,
+        TrackerBase_TrackingDelay,
     }
 }

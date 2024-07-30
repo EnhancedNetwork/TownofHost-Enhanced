@@ -4,18 +4,51 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using TOHE.Modules;
+using TOHE.Roles.Core;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
 
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.CoShowIntro))]
+class CoShowIntroPatch
+{
+    public static void Prefix()
+    {
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return;
+
+        _ = new LateTask(() =>
+        {
+            try
+            {
+                // Update name players
+                Utils.DoNotifyRoles(NoCache: true);
+            }
+            catch (Exception ex)
+            {
+                Utils.ThrowException(ex);
+            }
+        }, 0.35f, "Do Notify Roles In Show Intro");
+    }
+}
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
 class SetUpRoleTextPatch
 {
+    public static bool IsInIntro = false;
+
     public static void Postfix(IntroCutscene __instance)
     {
         if (!GameStates.IsModHost) return;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            // After showing team for non-modded clients update player names.
+            IsInIntro = false;
+            Utils.DoNotifyRoles(NoCache: true);
+        }
 
         _ = new LateTask(() =>
         {
@@ -47,6 +80,21 @@ class SetUpRoleTextPatch
                 __instance.RoleText.text += Utils.GetSubRolesText(localPlayer.PlayerId, false, true);
             }
         }, 0.0001f, "Override Role Text");
+
+        // Fixed bug where NotifyRoles works on modded clients during loading and it's name set as double
+        // Run this code only for clients
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            _ = new LateTask(() =>
+            {
+                // Return if game is ended or player in lobby or player is null
+                if (AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || PlayerControl.LocalPlayer == null) return;
+
+                var realName = Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId];
+                // Don't use RpcSetName because the modded client needs to set the name locally
+                PlayerControl.LocalPlayer.SetName(realName);
+            }, 1f, "Reset Name For Modded Client");
+        }
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
@@ -54,11 +102,11 @@ class CoBeginPatch
 {
     public static void Prefix()
     {
+        if (RoleBasisChanger.IsChangeInProgress) return;
+
         var logger = Logger.Handler("Info");
 
         var allPlayerControlsArray = Main.AllPlayerControls;
-
-        Main.AssignRolesIsStarted = false;
 
         logger.Info("------------Player Names------------");
         foreach ( var pc in allPlayerControlsArray)
@@ -163,7 +211,7 @@ class CoBeginPatch
         // Do not move this code, it should be executed at the very end to prevent a visual bug
         Utils.DoNotifyRoles(ForceLoop: true);
 
-        if (GameStates.IsHideNSeek && RandomSpawn.IsRandomSpawn())
+        if (AmongUsClient.Instance.AmHost && GameStates.IsHideNSeek && RandomSpawn.IsRandomSpawn())
         {
             RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
             {
@@ -198,21 +246,9 @@ class BeginCrewmatePatch
 {
     public static bool Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToDisplay)
     {
-        if (PlayerControl.LocalPlayer.Is(Custom_Team.Neutral) && !PlayerControl.LocalPlayer.Is(CustomRoles.Parasite))
-        {
-            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-            teamToDisplay.Add(PlayerControl.LocalPlayer);
-            //__instance.BeginImpostor(teamToDisplay);
-            //__instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
-        }
-        if (PlayerControl.LocalPlayer.Is(Custom_Team.Neutral) && !PlayerControl.LocalPlayer.Is(CustomRoles.Crewpostor))
-        {
-            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-            teamToDisplay.Add(PlayerControl.LocalPlayer);
-            //__instance.BeginImpostor(teamToDisplay);
-            //__instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
-        }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+        var role = PlayerControl.LocalPlayer.GetCustomRole();
+
+        if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
@@ -220,29 +256,10 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Crewpostor))
+        else if (PlayerControl.LocalPlayer.Is(Custom_Team.Neutral) && !role.IsMadmate())
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
-            //__instance.BeginImpostor(teamToDisplay);
-            //__instance.overlayHandle.color = Palette.ImpostorRed;
-            return false;
-        }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Parasite))
-        {
-            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-            teamToDisplay.Add(PlayerControl.LocalPlayer);
-            //__instance.BeginImpostor(teamToDisplay);
-            //__instance.overlayHandle.color = Palette.ImpostorRed;
-            return false;
-        }
-        else if (PlayerControl.LocalPlayer.GetCustomRole().IsMadmate())
-        {
-            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-            teamToDisplay.Add(PlayerControl.LocalPlayer);
-            //__instance.BeginImpostor(teamToDisplay);
-            //__instance.overlayHandle.color = Palette.ImpostorRed;
-            return false;
         }
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Executioner))
         {
@@ -266,26 +283,15 @@ class BeginCrewmatePatch
             }
             teamToDisplay = lawyerTeam;
         }
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.SerialKiller))
-        {
-            var serialkillerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-            serialkillerTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var ar in PlayerControl.AllPlayerControls)
-            {
-                if (ar.Is(CustomRoles.SerialKiller) && ar != PlayerControl.LocalPlayer)
-                    serialkillerTeam.Add(ar);
-            }
-            teamToDisplay = serialkillerTeam;
-        }
        
         return true;
     }
     public static void Postfix(IntroCutscene __instance)
     {
-        //チーム表示変更
         CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
 
         __instance.ImpostorText.gameObject.SetActive(false);
+
         switch (role.GetCustomRoleTeam())
         {
             case Custom_Team.Impostor:
@@ -312,7 +318,30 @@ class BeginCrewmatePatch
         }
         switch (role)
         {
+            case CustomRoles.ShapeMaster:
+            case CustomRoles.ShapeshifterTOHE:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+                break;
+            case CustomRoles.PhantomTOHE:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
+                break;
+            case CustomRoles.TrackerTOHE:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Tracker);
+                break;
+            case CustomRoles.NoisemakerTOHE:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Noisemaker);
+                break;
+            case CustomRoles.EngineerTOHE:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Engineer);
+                break;
+            case CustomRoles.Doctor:
+            case CustomRoles.Medic:
+            case CustomRoles.ScientistTOHE:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Scientist);
+                break;
+
             case CustomRoles.Terrorist:
+            case CustomRoles.Bomber:
                 var sound = ShipStatus.Instance.CommonTasks.FirstOrDefault(task => task.TaskType == TaskTypes.FixWiring)
                 .MinigamePrefab.OpenSound;
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = sound;
@@ -330,19 +359,9 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
                 break;
 
-            case CustomRoles.EngineerTOHE:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Engineer);
-                break;
-
             case CustomRoles.Mechanic:
             case CustomRoles.Provocateur:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.SabotageSound;
-                break;
-
-            case CustomRoles.Doctor:
-            case CustomRoles.Medic:
-            case CustomRoles.ScientistTOHE:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Scientist);
                 break;
 
             case CustomRoles.GM:
@@ -352,6 +371,7 @@ class BeginCrewmatePatch
                 __instance.ImpostorText.gameObject.SetActive(false);
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
                 break;
+
             case CustomRoles.Sheriff:
             case CustomRoles.Veteran:
             case CustomRoles.Knight:
@@ -366,40 +386,17 @@ class BeginCrewmatePatch
             case CustomRoles.Chameleon:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.MyPhysics.ImpostorDiscoveredSound;
                 break;
-        /*    case CustomRoles.Inspector:
-            case CustomRoles.Mediumshiper:
-            case CustomRoles.Mayor:
-            case CustomRoles.Dictator:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = HudManager.Instance.Chat.messageSound;
-                break; */
         }
 
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) || role.IsMadmate())
         {
             __instance.TeamTitle.text = GetString("TeamMadmate");
             __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
-                __instance.ImpostorText.gameObject.SetActive(true);
-                __instance.ImpostorText.text = GetString("SubText.Madmate");
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = GetString("SubText.Madmate");
         }
 
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.Parasite))
-        {
-            __instance.TeamTitle.text = GetString("TeamMadmate");
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
-            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
-                __instance.ImpostorText.gameObject.SetActive(true);
-                __instance.ImpostorText.text = GetString("SubText.Madmate");
-        }
-
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.Crewpostor))
-        {
-            __instance.TeamTitle.text = GetString("TeamMadmate");
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
-            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
-                __instance.ImpostorText.gameObject.SetActive(true);
-                __instance.ImpostorText.text = GetString("SubText.Madmate");
-        }
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
             __instance.TeamTitle.text = "FREE FOR ALL";
@@ -455,61 +452,39 @@ class BeginImpostorPatch
     public static bool Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
     {
         var role = PlayerControl.LocalPlayer.GetCustomRole();
-        if (role is CustomRoles.Crewpostor)
+        
+        if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
-            yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+
+        if (role.IsCrewmate() && role.GetDYRole() == RoleTypes.Impostor)
         {
-            yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
-            __instance.overlayHandle.color = Palette.ImpostorRed;
-            return true;
-        }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Parasite))
-        {
-            yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-            yourTeam.Add(PlayerControl.LocalPlayer);
-            __instance.overlayHandle.color = Palette.ImpostorRed;
-            return true;
-        }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Crewpostor))
-        {
-            yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-            yourTeam.Add(PlayerControl.LocalPlayer);
-            __instance.overlayHandle.color = Palette.ImpostorRed;
-            return true;
-        }
-        else if (role is CustomRoles.Vigilante or CustomRoles.Sheriff or CustomRoles.Jailer or CustomRoles.Investigator or CustomRoles.Knight or CustomRoles.Medic or CustomRoles.Deceiver or CustomRoles.Witness or CustomRoles.Monarch or CustomRoles.Overseer or CustomRoles.Reverie or CustomRoles.Admirer or CustomRoles.Deputy or CustomRoles.Crusader or CustomRoles.CopyCat)
-        {
-            yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-            yourTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner).ToArray())
-            {
-                yourTeam.Add(pc);
-            }
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
             __instance.overlayHandle.color = Palette.CrewmateBlue;
             return false;
         }
-        else if (role is CustomRoles.Romantic or CustomRoles.Doppelganger or CustomRoles.Pyromaniac or CustomRoles.Huntsman or CustomRoles.RuthlessRomantic or CustomRoles.VengefulRomantic or CustomRoles.SerialKiller or CustomRoles.Jackal or CustomRoles.Seeker or CustomRoles.Pixie or CustomRoles.Agitater or CustomRoles.CursedSoul or CustomRoles.Pirate or CustomRoles.Amnesiac or CustomRoles.Arsonist or CustomRoles.Sidekick or CustomRoles.Innocent or CustomRoles.Pelican or CustomRoles.Pursuer or CustomRoles.Revolutionist or CustomRoles.Hater or CustomRoles.Demon or CustomRoles.Glitch or CustomRoles.Juggernaut or CustomRoles.Stalker or CustomRoles.Provocateur or CustomRoles.BloodKnight or CustomRoles.SerialKiller or CustomRoles.Werewolf or CustomRoles.Maverick or CustomRoles.Shroud or CustomRoles.Follower or CustomRoles.Cultist or CustomRoles.Pelican or CustomRoles.Infectious or CustomRoles.Virus or CustomRoles.Pickpocket or CustomRoles.Traitor or CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Spiritcaller or CustomRoles.Necromancer or CustomRoles.Medusa or CustomRoles.HexMaster or CustomRoles.Wraith or CustomRoles.Jinx or CustomRoles.Poisoner or CustomRoles.PotionMaster) //or CustomRoles.Occultist 
+
+        if (role.IsNeutral())
         {
-            yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner).ToArray())
-            {
-                yourTeam.Add(pc);
-            }
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
             __instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
             return false;
         }
+
         BeginCrewmatePatch.Prefix(__instance, ref yourTeam);
         return true;
     }
+
     public static void Postfix(IntroCutscene __instance)
     {
         BeginCrewmatePatch.Postfix(__instance);
@@ -520,7 +495,7 @@ class IntroCutsceneDestroyPatch
 {
     public static void Postfix()
     {
-        if (!GameStates.IsInGame) return;
+        if (!GameStates.IsInGame || RoleBasisChanger.SkipTasksAfterAssignRole) return;
 
         Main.introDestroyed = true;
 
@@ -531,6 +506,8 @@ class IntroCutsceneDestroyPatch
                 state.HasSpawned = true;
             }
         }
+
+        CustomRoleManager.Add();
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -549,15 +526,27 @@ class IntroCutsceneDestroyPatch
                     }
                 }
 
-                _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "Set Impostor For Server");
+                _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, false, -3)), 2f, "Set Impostor For Server");
             }
-            var ghostUP = PlayerControl.LocalPlayer.GetCustomRole();
-            var checkGhostRole = CustomRolesHelper.IsGhostRole(ghostUP);
 
-            if (PlayerControl.LocalPlayer.Is(CustomRoles.GM) || checkGhostRole) // Incase user has /up access
+            if (PlayerControl.LocalPlayer.Is(CustomRoles.GM)) // Incase user has /up access
             {
                 PlayerControl.LocalPlayer.RpcExile();
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+            }
+            else if (GhostRoleAssign.forceRole.Any())
+            {
+                // Needs to be delayed for the game to load it properly
+                _ = new LateTask(() =>
+                {
+                    GhostRoleAssign.forceRole.Do(x =>
+                    {
+                        var plr = Utils.GetPlayerById(x.Key);
+                        plr.RpcExile();
+                        Main.PlayerStates[x.Key].SetDead();
+
+                    });
+                }, 3f, "Set Dev Ghost-Roles");
             }
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
@@ -581,9 +570,6 @@ class IntroCutsceneDestroyPatch
             }
         }
         Logger.Info("OnDestroy", "IntroCutscene");
-
-        // Update hud buttons
-        HudManager.Instance.SetHudActive(true);
     }
 }
  

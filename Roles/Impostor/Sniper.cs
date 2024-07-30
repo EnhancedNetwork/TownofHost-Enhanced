@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Modules;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -49,7 +48,7 @@ internal class Sniper : RoleBase
         SniperAimAssist = BooleanOptionItem.Create(Id + 12, "SniperAimAssist", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sniper]);
         SniperAimAssistOnshot = BooleanOptionItem.Create(Id + 13, "SniperAimAssistOneshot", false, TabGroup.ImpostorRoles, false).SetParent(SniperAimAssist);
         CanKillWithBullets = BooleanOptionItem.Create(Id + 14, "SniperCanKill", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sniper]);
-        //AlwaysShowShapeshiftAnimations = BooleanOptionItem.Create(Id + 15, "ShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sniper]);
+        //AlwaysShowShapeshiftAnimations = BooleanOptionItem.Create(Id + 15, GeneralOption.ShowShapeshiftAnimations, true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sniper]);
     }
     public override void Init()
     {
@@ -84,7 +83,6 @@ internal class Sniper : RoleBase
         IsAim[playerId] = false;
         AimTime[playerId] = 0f;
 
-        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
 
     private static bool IsThisRole(byte playerId) => PlayerIdList.Contains(playerId);
@@ -305,7 +303,7 @@ internal class Sniper : RoleBase
             Utils.NotifyRoles(SpecifySeer: sniper);
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         meetingReset = true;
     }
@@ -347,7 +345,7 @@ internal class Sniper : RoleBase
         }
         return string.Empty;
     }
-    public string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (isForMeeting) return string.Empty;
 

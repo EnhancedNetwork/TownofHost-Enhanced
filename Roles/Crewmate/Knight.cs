@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -20,15 +19,14 @@ internal class Knight : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Knight);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 60f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Knight])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 60f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Knight])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Knight]);
+        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Knight]);
     }
     public override void Add(byte playerId)
     {
         AbilityLimit = 1;
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -44,13 +42,14 @@ internal class Knight : RoleBase
     public override string GetProgressText(byte id, bool comms)
         => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     
-    private bool IsKilled(byte playerId) => AbilityLimit > 0;
+    private bool IsKilled(byte playerId) => AbilityLimit <= 0;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl banana)
     {
         AbilityLimit--;
         SendSkillRPC(); 
         Logger.Info($"{killer.GetNameWithRole()} : " + "Kill chance used", "Knight");
         killer.ResetKillCooldown();
+        killer.SetKillCooldown();
         return true;
     }
 }

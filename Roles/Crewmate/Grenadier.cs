@@ -6,7 +6,6 @@ using TOHE.Modules;
 using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
-using Hazel;
 using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
@@ -86,7 +85,7 @@ internal class Grenadier : RoleBase
 
         return true;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         GrenadierBlinding.Clear();
         MadGrenadierBlinding.Clear();

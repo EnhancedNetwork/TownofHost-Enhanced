@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -26,9 +27,9 @@ internal class Bandit : RoleBase
     private static OptionItem CanVent;
 
     private float killCooldown;
-    private Dictionary<byte, CustomRoles> Targets = [];
+    private readonly Dictionary<byte, CustomRoles> Targets = [];
 
-    private enum BanditStealModeOpt
+    private enum BanditStealModeOptList
     {
         BanditStealMode_OnMeeting,
         BanditStealMode_Instantly
@@ -38,15 +39,15 @@ internal class Bandit : RoleBase
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Bandit);
         MaxSteals = IntegerOptionItem.Create(Id + 10, "BanditMaxSteals", new(1, 20, 1), 6, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
-        KillCooldownOpt = FloatOptionItem.Create(Id + 11, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
+        KillCooldownOpt = FloatOptionItem.Create(Id + 11, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
             .SetValueFormat(OptionFormat.Seconds);
         StealCooldown = FloatOptionItem.Create(Id + 17, "BanditStealCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
             .SetValueFormat(OptionFormat.Seconds);
-        StealMode = StringOptionItem.Create(Id + 12, "BanditStealMode", EnumHelper.GetAllNames<BanditStealModeOpt>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
+        StealMode = StringOptionItem.Create(Id + 12, "BanditStealMode", EnumHelper.GetAllNames<BanditStealModeOptList>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanStealBetrayalAddon = BooleanOptionItem.Create(Id + 13, "BanditCanStealBetrayalAddon", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanStealImpOnlyAddon = BooleanOptionItem.Create(Id + 14, "BanditCanStealImpOnlyAddon", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
-        CanUsesSabotage = BooleanOptionItem.Create(Id + 15, "CanUseSabotage", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
-        CanVent = BooleanOptionItem.Create(Id + 16, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
+        CanUsesSabotage = BooleanOptionItem.Create(Id + 15, GeneralOption.CanUseSabotage, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
+        CanVent = BooleanOptionItem.Create(Id + 16, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
     }
     public override void Add(byte playerId)
     {
@@ -56,7 +57,6 @@ internal class Bandit : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc?.AddDoubleTrigger();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -93,17 +93,42 @@ internal class Bandit : RoleBase
             Logger.Info("No stealable addons found on the target.", "Bandit");
             return null;
         }
-        var rand = IRandom.Instance;
-        var addon = AllSubRoles[rand.Next(0, AllSubRoles.Count)];
+        var addon = AllSubRoles.RandomElement();
         return addon;
     }
-
-    public void StealAddon(PlayerControl killer, PlayerControl target, CustomRoles? SelectedAddOn)
+    public void SendRPC(byte targetId, CustomRoles SelectedAddOn, bool removeNow)
     {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(AbilityLimit);
+        writer.Write(removeNow);
+        if (removeNow)
+        {
+            writer.Write(targetId);
+            writer.WritePacked((int)SelectedAddOn);
+        }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        float Limit = reader.ReadSingle();
+        AbilityLimit = Limit;
+
+        bool removeNow = reader.ReadBoolean();
+        if (removeNow)
+        {
+            byte targetId = reader.ReadByte();
+            var SelectedAddOn = (CustomRoles)reader.ReadPackedInt32();
+
+            Main.PlayerStates[targetId].RemoveSubRole(SelectedAddOn);
+        }
+    }
+    private void StealAddon(PlayerControl killer, PlayerControl target, CustomRoles? SelectedAddOn)
+    {
+        ExtendedPlayerControl.AddInSwitchAddons(target, killer, IsAddon: SelectedAddOn);
+        
         if (StealMode.GetValue() == 1)
         {
-            ExtendedPlayerControl.AddInSwitchAddons(target, killer, CustomRoles.NotAssigned, SelectedAddOn);
-          
             Main.PlayerStates[target.PlayerId].RemoveSubRole((CustomRoles)SelectedAddOn);
             if (SelectedAddOn == CustomRoles.Aware) Aware.AwareInteracted.Remove(target.PlayerId);
             Logger.Info($"Successfully removed {SelectedAddOn} addon from {target.GetNameWithRole()}", "Bandit");
@@ -114,14 +139,11 @@ internal class Bandit : RoleBase
         }
         else
         {
-          
-            ExtendedPlayerControl.AddInSwitchAddons(target, killer, CustomRoles.NotAssigned, SelectedAddOn);
-          
             Targets[target.PlayerId] = (CustomRoles)SelectedAddOn;
             Logger.Info($"{killer.GetNameWithRole()} will steal {SelectedAddOn} addon from {target.GetNameWithRole()} after meeting starts", "Bandit");
         }
-        AbilityLimit++;
-        SendSkillRPC();
+        AbilityLimit--;
+        SendRPC(target.PlayerId, (CustomRoles)SelectedAddOn, StealMode.GetValue() == 1);
 
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
         Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
@@ -174,22 +196,23 @@ internal class Bandit : RoleBase
         }
     }
 
-    public override void OnReportDeadBody(PlayerControl reportash, PlayerControl panagustava)
+    public override void OnReportDeadBody(PlayerControl reportash, NetworkedPlayerInfo panagustava)
     {
-        if (StealMode.GetValue() == 1) return;
+        if (StealMode.GetValue() == 1 || _Player == null) return;
         foreach (var kvp2 in Targets)
         {
             byte targetId = kvp2.Key;
-            var target = _Player;
+            var target = Utils.GetPlayerById(targetId);
             if (target == null) continue;
             CustomRoles role = kvp2.Value;
             Main.PlayerStates[targetId].RemoveSubRole(role);
-            if (role == CustomRoles.Aware) Aware.AwareInteracted.Remove(target.PlayerId);
+            if (role == CustomRoles.Aware) Aware.AwareInteracted.Remove(targetId);
             Logger.Info($"Successfully removed {role} addon from {target.GetNameWithRole()}", "Bandit");
+            SendRPC(targetId, role, true);
 
-            if (role == CustomRoles.Aware && !Aware.AwareInteracted.ContainsKey(target.PlayerId)) Aware.AwareInteracted[target.PlayerId] = [];
+            if (role == CustomRoles.Aware && !Aware.AwareInteracted.ContainsKey(targetId)) Aware.AwareInteracted[targetId] = [];
             _Player.RpcSetCustomRole(role);
-            Logger.Info($"Successfully Added {role} addon to {_Player.GetNameWithRole()}", "Bandit");
+            Logger.Info($"Successfully Added {role} addon to {_Player?.GetNameWithRole()}", "Bandit");
         }
     }
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Bandit).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");

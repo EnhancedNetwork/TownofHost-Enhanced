@@ -53,7 +53,6 @@ internal class PlagueBearer : RoleBase
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -149,7 +148,7 @@ internal class PlagueBearer : RoleBase
 
                 // Set Pestilence
                 plagueBearer.RpcSetCustomRole(CustomRoles.Pestilence);
-                plagueBearer.GetRoleClass()?.Add(PlagueId);
+                plagueBearer.GetRoleClass()?.OnAdd(PlagueId);
 
                 plagueBearer.Notify(GetString("PlagueBearerToPestilence"), time: 2f);
                 plagueBearer.RpcGuardAndKill(plagueBearer);
@@ -178,9 +177,9 @@ internal class PlagueBearer : RoleBase
 
         return false;
     }
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        if (HasEnabled && deadBody.Object != null)
+        if (HasEnabled && deadBody != null && deadBody.Object != null)
         {
             CheckAndInfect(reporter, deadBody.Object);
         }
@@ -218,8 +217,6 @@ internal class Pestilence : RoleBase
 
     public override void Add(byte playerId)
     {
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -238,8 +235,8 @@ internal class Pestilence : RoleBase
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if (!isUI) SendMessage(GetString("GuessPestilence"), pc.PlayerId);
-        else pc.ShowPopUp(GetString("GuessPestilence"));
+        pc.ShowInfoMessage(isUI, GetString("GuessPestilence"));
+
         guesserSuicide = true;
         Logger.Msg($"Is Active: {guesserSuicide}", "guesserSuicide - Pestilence");
         return false;

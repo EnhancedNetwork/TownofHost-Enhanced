@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
 using UnityEngine;
 using TOHE.Modules;
 using static TOHE.Translator;
@@ -19,8 +18,8 @@ internal class Pursuer : RoleBase
     private static OptionItem PursuerSkillCooldown;
     private static OptionItem PursuerSkillLimitTimes;
 
-    private static readonly HashSet<byte> notActiveList = [];
-    private List<byte> clientList = [];
+    private readonly HashSet<byte> notActiveList = [];
+    private readonly HashSet<byte> clientList = [];
 
     public override void SetupCustomOption()
     {
@@ -38,7 +37,6 @@ internal class Pursuer : RoleBase
     {
         AbilityLimit = PursuerSkillLimitTimes.GetInt();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -97,8 +95,8 @@ internal class Pursuer : RoleBase
         var killer = Utils.GetPlayerById(cfId);
         var target = pc;
         if (killer == null) return false;
-        
-        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
+
+        target.SetDeathReason(PlayerState.DeathReason.Misfire);
         target.RpcMurderPlayer(target);
         target.SetRealKiller(killer);
 
@@ -109,5 +107,5 @@ internal class Pursuer : RoleBase
     {
         hud.KillButton.OverrideText(GetString("PursuerButtonText"));
     }
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Pursuer");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Pursuer");
 }

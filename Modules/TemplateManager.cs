@@ -33,8 +33,21 @@ public static class TemplateManager
         ["NumShortTasks"] = () => Main.NormalOptions.NumShortTasks.ToString(),
         ["Date"] = () => DateTime.Now.ToShortDateString(),
         ["Time"] = () => DateTime.Now.ToShortTimeString(),
-        ["PlayerName"] = () => ""
-        
+        ["PlayerName"] = () => "",
+        ["LobbyTimer"] = () =>
+        {
+            if (GameStates.IsLobby)
+            {
+                int timer = (int)GameStartManagerPatch.timer;
+                int minutes = timer / 60;
+                int seconds = timer % 60;
+                return $"{minutes:D2}:{seconds:D2}";
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
     };
 
     private static readonly Dictionary<string, Func<string>> _replaceDictionaryHideNSeekOptions = new()
@@ -48,9 +61,22 @@ public static class TemplateManager
         ["PlayerSpeedMod"] = () => Main.HideNSeekOptions.PlayerSpeedMod.ToString(),
         ["Date"] = () => DateTime.Now.ToShortDateString(),
         ["Time"] = () => DateTime.Now.ToShortTimeString(),
-        ["PlayerName"] = () => ""
-
-    };
+        ["PlayerName"] = () => "",
+        ["LobbyTimer"] = () =>
+        {
+            if (GameStates.IsLobby)
+            {
+                int timer = (int)GameStartManagerPatch.timer;
+                int minutes = timer / 60;
+                int seconds = timer % 60;
+                return $"{minutes:D2}:{seconds:D2}";
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+};
 
     public static void Init()
     {
@@ -147,7 +173,7 @@ public static class TemplateManager
         {
             if (playerId == 0xff)
                 HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
-            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, replay: true);
+            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, noReplay: true);
         }
         else foreach (string x in sendList.ToArray())
             {
@@ -160,7 +186,7 @@ public static class TemplateManager
                     rmv = rmv.Replace("</title>", "");
                 }
 
-                Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, replay: true);
+                Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, noReplay: true);
             }
     }
 

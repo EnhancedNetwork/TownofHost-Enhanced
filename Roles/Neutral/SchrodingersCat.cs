@@ -2,6 +2,7 @@
 using InnerNet;
 using TOHE.Roles.Core;
 
+
 namespace TOHE.Roles.Neutral;
 
 internal class SchrodingersCat : RoleBase
@@ -28,8 +29,6 @@ internal class SchrodingersCat : RoleBase
     public override void Add(byte playerId)
     {
         teammate[playerId] = byte.MaxValue;
-
-        CustomRoleManager.MarkOthers.Add(GetMarkForOthers);
     }
 
     private void SendRPC(byte catID)
@@ -67,7 +66,8 @@ internal class SchrodingersCat : RoleBase
         return false;
     }
 
-    private string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool IsForMeeting = false)
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (seer != target && seer.IsAlive() && teammate.ContainsKey(seer.PlayerId) && teammate.ContainsValue(target.PlayerId))
         {

@@ -17,9 +17,7 @@ internal class Glitch : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
-    private readonly Dictionary<byte, long> hackedIdList = [];
-
-    public static List<Glitch> Glitchs => Utils.GetPlayerListByRole(CustomRoles.Glitch)?.Select(x => x.GetRoleClass()).OfType<Glitch>().ToList(); 
+    private static readonly Dictionary<byte, long> hackedIdList = [];
 
     public static OptionItem KillCooldown;
     private static OptionItem HackCooldown;
@@ -45,7 +43,7 @@ internal class Glitch : RoleBase
     {
         //Glitchは1人固定
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Glitch, 1, zeroOne: false);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 1f), 20, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 1f), 20, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
             .SetValueFormat(OptionFormat.Seconds);
         HackCooldown = IntegerOptionItem.Create(Id + 11, "Glitch_HackCooldown", new(0, 180, 1), 20, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
             .SetValueFormat(OptionFormat.Seconds);
@@ -55,8 +53,8 @@ internal class Glitch : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         MimicDuration = FloatOptionItem.Create(Id + 16, "Glitch_MimicDuration", new(0f, 60f, 1f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 12, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]);
+        CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]);
     }
     public override void Add(byte playerId)
     {
@@ -75,16 +73,12 @@ internal class Glitch : RoleBase
         LastMimic = ts;
         lastRpcSend = ts;
 
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            if (!Main.ResetCamPlayerList.Contains(playerId))
-                Main.ResetCamPlayerList.Add(playerId);
-
-            // Double Trigger
-            var pc = Utils.GetPlayerById(playerId);
-            pc.AddDoubleTrigger();
-        }
+        // Double Trigger
+        var pc = Utils.GetPlayerById(playerId);
+        pc.AddDoubleTrigger();
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 1f;
@@ -161,7 +155,7 @@ internal class Glitch : RoleBase
         if (player == null) return;
         if (!player.Is(CustomRoles.Glitch)) return;
 
-        if (change) { Utils.NotifyRoles(SpecifySeer: player); }
+        if (change) { Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false); }
 
         if (!player.IsAlive())
         {
@@ -211,14 +205,14 @@ internal class Glitch : RoleBase
         catch { KCDTimer = 0; }
         if (KCDTimer > 180 || KCDTimer < 0) KCDTimer = 0;
 
-        try { MimicCDTimer = (int)(MimicCooldown.GetInt() + MimicDuration.GetInt() - (Utils.GetTimeStamp() - LastMimic)); }
+        try { MimicCDTimer = (int)(MimicCooldown.GetInt() - (Utils.GetTimeStamp() - LastMimic)); }
         catch { MimicCDTimer = 0; }
         if (MimicCDTimer > 180 || MimicCDTimer < 0) MimicCDTimer = 0;
 
         if (!player.IsModClient())
         {
             var Pname = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Glitch), player.GetRealName(isMeeting: true));
-            if ((!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != Pname)) player.Notify(Pname, 1.1f);
+            if (!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != Pname) player.Notify(Pname, 1.1f);
         }
         if (!player.AmOwner) // For mooded non host players, sync kcd per second
         {
@@ -269,7 +263,7 @@ internal class Glitch : RoleBase
         }
         return false;
     }
-    public bool OnCheckFixedUpdateReport(PlayerControl __instance, byte id) 
+    public static bool OnCheckFixedUpdateReport(PlayerControl __instance, byte id) 
     {
         if (hackedIdList.ContainsKey(id))
         {
@@ -280,7 +274,7 @@ internal class Glitch : RoleBase
         }
         return true;
     }
-    public bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
     {
         if (killer == target || killer == null) return true; 
         if (hackedIdList.ContainsKey(killer.PlayerId))
@@ -298,7 +292,7 @@ internal class Glitch : RoleBase
 
     private void SendRPC()
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, Hazel.SendOption.None, -1);
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.None, -1);
         writer.WriteNetObject(_Player);
         writer.Write(HackCDTimer);
         writer.Write(KCDTimer);

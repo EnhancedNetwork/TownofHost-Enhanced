@@ -44,7 +44,7 @@ internal class Fireworker : RoleBase
             .SetValueFormat(OptionFormat.Pieces);
         FireworkerRadius = FloatOptionItem.Create(Id + 11, "FireworkerRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
             .SetValueFormat(OptionFormat.Multiplier);
-        CanKill = BooleanOptionItem.Create(Id + 12, "CanKill", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker]);
+        CanKill = BooleanOptionItem.Create(Id + 12, GeneralOption.CanKill, false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker]);
     }
 
     public override void Init()
@@ -145,7 +145,7 @@ internal class Fireworker : RoleBase
                         }
                         else
                         {
-                            Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                            player.SetDeathReason(PlayerState.DeathReason.Bombed);
                             player.RpcMurderPlayer(player);
                             player.SetRealKiller(shapeshifter);
                         }
@@ -156,7 +156,7 @@ internal class Fireworker : RoleBase
                     var totalAlive = Main.AllAlivePlayerControls.Length;
                     if (totalAlive != 1)
                     {
-                        Main.PlayerStates[shapeshifterId].deathReason = PlayerState.DeathReason.Misfire;
+                        shapeshifterId.SetDeathReason(PlayerState.DeathReason.Misfire);
                         shapeshifter.RpcMurderPlayer(shapeshifter);
                     }
                     shapeshifter.MarkDirtySettings();

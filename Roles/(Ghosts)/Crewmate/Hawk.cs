@@ -1,5 +1,5 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
+using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -29,7 +29,7 @@ internal class Hawk : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Hawk);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 120f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 120f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Seconds);
         HawkCanKillNum = IntegerOptionItem.Create(Id + 11, "HawkCanKillNum", new(1, 15, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Players);
@@ -52,7 +52,7 @@ internal class Hawk : RoleBase
             }
         }
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         int ThisCount = 0;
         foreach (var pc in Main.AllPlayerControls)
@@ -81,9 +81,9 @@ internal class Hawk : RoleBase
 
         if (CheckRetriConflicts(target) && killer.RpcCheckAndMurder(target, true))
         {
+            target.SetDeathReason(PlayerState.DeathReason.Slice);
             killer.RpcMurderPlayer(target);
             killer.RpcResetAbilityCooldown();
-            target.SetDeathReason(PlayerState.DeathReason.Slice);
             AbilityLimit--;
             SendSkillRPC();
         }
@@ -98,7 +98,7 @@ internal class Hawk : RoleBase
         }
 
         Logger.Info($" {target.GetRealName()}'s DieChance is :{100f - KillerChanceMiss[target.PlayerId]}%", "Hawk");
-        KillerChanceMiss[target.PlayerId] -= KillerChanceMiss[target.PlayerId] <= 35 ? 0 : 35f;
+        KillerChanceMiss[target.PlayerId] -= Math.Clamp(35, 0, KillerChanceMiss[target.PlayerId] - 10);
         return false;
     }
 
@@ -110,6 +110,8 @@ internal class Hawk : RoleBase
             && AbilityLimit > 0
             && rnd.Next(100) >= KillerChanceMiss[target.PlayerId]
             && !target.Is(CustomRoles.Pestilence)
+            && !target.Is(CustomRoles.Jinx)
+            && !target.Is(CustomRoles.CursedWolf)
             && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18);
     }
     public override string GetProgressText(byte playerId, bool coms) 

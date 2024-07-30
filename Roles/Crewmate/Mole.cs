@@ -43,9 +43,9 @@ internal class Mole : RoleBase
 
         _ = new LateTask(() =>
         {
-            var vents = Object.FindObjectsOfType<Vent>().Where(x => x.Id != ventId).ToArray();
+            var vents = ShipStatus.Instance.AllVents.Where(x => x.Id != ventId).ToArray();
             var rand = IRandom.Instance;
-            var vent = vents[rand.Next(0, vents.Length)];
+            var vent = vents.RandomElement();
 
             Logger.Info($" {vent.transform.position}", "Mole vent teleport");
             pc.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));

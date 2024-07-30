@@ -1,4 +1,3 @@
-using Hazel;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -10,6 +9,7 @@ internal class Imitator : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Imitator);
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -17,7 +17,7 @@ internal class Imitator : RoleBase
     private static OptionItem RememberCooldown;
     private static OptionItem IncompatibleNeutralMode;
 
-    private enum ImitatorIncompatibleNeutralModeSelect
+    private enum ImitatorIncompatibleNeutralModeSelectList
     {
         Role_Imitator,
         Role_Pursuer,
@@ -31,21 +31,20 @@ internal class Imitator : RoleBase
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Imitator);
         RememberCooldown = FloatOptionItem.Create(Id + 10, "RememberCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator])
                 .SetValueFormat(OptionFormat.Seconds);
-        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", EnumHelper.GetAllNames<ImitatorIncompatibleNeutralModeSelect>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
+        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", EnumHelper.GetAllNames<ImitatorIncompatibleNeutralModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
     }
     public override void Add(byte playerId)
     {
         AbilityLimit = 1;
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? RememberCooldown.GetFloat() : 300f;
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (AbilityLimit > 0);
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberCooldown.GetFloat();
+    public override bool CanUseKillButton(PlayerControl player) => AbilityLimit > 0;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit < 1) return true;
+        if (AbilityLimit < 1) return false;
 
         var role = target.GetCustomRole();
 
@@ -137,7 +136,7 @@ internal class Imitator : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
         }
 
-        return true;
+        return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

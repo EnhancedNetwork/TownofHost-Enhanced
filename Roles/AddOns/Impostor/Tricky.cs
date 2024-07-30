@@ -24,7 +24,7 @@ public static class Tricky
         int randomIndex = random.Next(deathReasons.Length);
         return deathReasons[randomIndex];
     }
-    private static bool IsReasonEnabled( this PlayerState.DeathReason reason)
+    private static bool IsReasonEnabled(this PlayerState.DeathReason reason)
     {
         if (reason is PlayerState.DeathReason.etc) return false;
         if (!EnabledDeathReasons.GetBool()) return true;
@@ -38,10 +38,12 @@ public static class Tricky
             var killer = target.GetRealKiller();
             if (killer == null || !killer.Is(CustomRoles.Tricky)) return;
             
-            Main.PlayerStates[target.PlayerId].deathReason = ChangeRandomDeath();
+            var randomDeathReason = ChangeRandomDeath();
+            Main.PlayerStates[target.PlayerId].deathReason = randomDeathReason;
             Main.PlayerStates[target.PlayerId].SetDead();
-            Utils.NotifyRoles(SpecifySeer: target);
 
+            Utils.NotifyRoles(SpecifySeer: target);
+            Logger.Info($"Set death reason: {randomDeathReason}", "Tricky");
         }, 0.3f, "Tricky random death reason");
     }
 }

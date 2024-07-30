@@ -1,5 +1,6 @@
 ﻿using static TOHE.Translator;
 using static TOHE.Options;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -7,17 +8,15 @@ internal class Shaman : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 13600;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Shaman);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
     private static OptionItem VoodooCooldown;
 
-    public static byte ShamanTarget = byte.MaxValue;
-    private static bool ShamanTargetChoosen = false;
+    private byte ShamanTarget = byte.MaxValue;
+    private bool ShamanTargetChoosen = false;
 
     public override void SetupCustomOption()
     {
@@ -30,13 +29,9 @@ internal class Shaman : RoleBase
     {
         ShamanTarget = byte.MaxValue;
         ShamanTargetChoosen = false;
-        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -51,19 +46,36 @@ internal class Shaman : RoleBase
     {
         hud.KillButton.OverrideText(GetString("ShamanButtonText"));
     }
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (ShamanTarget == byte.MaxValue) return true;
+
+        PlayerControl ChoosenTarget = ChangeTarget(_Player);
+
+        if (killer.CheckForInvalidMurdering(ChoosenTarget) && killer.RpcCheckAndMurder(ChoosenTarget, check: true))
+        {
+            killer.RpcMurderPlayer(ChoosenTarget);
+            ChoosenTarget.SetRealKiller(_Player);
+        }
+        else
+        {
+            _Player.Notify(GetString("Shaman_KillerCannotMurderChosenTarget"), time: 10f);
+        }
+        ShamanTarget = byte.MaxValue;
+        return false;
+    }
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (ShamanTargetChoosen == false)
         {
             ShamanTarget = target.PlayerId;
-            killer.RpcGuardAndKill(killer);
+            _Player.RpcGuardAndKill(target);
             ShamanTargetChoosen = true;
         }
-        else killer.Notify(GetString("ShamanTargetAlreadySelected"));
+        else _Player.Notify(GetString("ShamanTargetAlreadySelected"));
         return false;
-
     }
-    public static PlayerControl ChangeTarget(PlayerControl target)
+    private PlayerControl ChangeTarget(PlayerControl target)
         => target.IsAlive() && ShamanTargetChoosen ? Utils.GetPlayerById(ShamanTarget) : target;
     
 }

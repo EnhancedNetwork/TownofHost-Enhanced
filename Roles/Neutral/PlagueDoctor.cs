@@ -84,17 +84,13 @@ internal class PlagueDoctor : RoleBase
         if (Main.NormalOptions.MapId == 4)
             InfectInactiveTime += 5f;
 
-
-        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-        CustomRoleManager.LowerOthers.Add(GetLowerTextOthers);
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateOthers.Add(OnCheckPlayerPosition);
             CustomRoleManager.CheckDeadBodyOthers.Add(OnAnyMurder);
-
-            if (!Main.ResetCamPlayerList.Contains(playerId))
-                Main.ResetCamPlayerList.Add(playerId);
         }
     }
 
@@ -156,7 +152,7 @@ internal class PlagueDoctor : RoleBase
     {
         LateCheckWin = true;
     }
-    public override void OnReportDeadBody(PlayerControl W, PlayerControl L)
+    public override void OnReportDeadBody(PlayerControl W, NetworkedPlayerInfo L)
     {
         InfectActive = false;
     }
@@ -227,14 +223,14 @@ internal class PlagueDoctor : RoleBase
         InfectInactiveTime, "ResetInfectInactiveTime");
     }
 
-    private string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool Isformeetingguwno = false)
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool Isformeetingguwno = false)
     {
         seen ??= seer;
         if (!CanInfect(seen)) return string.Empty;
         if (!seer.Is(CustomRoles.PlagueDoctor) && seer.IsAlive()) return string.Empty;
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.PlagueDoctor), GetInfectRateCharactor(seen));
     }
-    private string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isformeetingguwno = false, bool znowupierdol = false)
+    public override string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isformeetingguwno = false, bool znowupierdol = false)
     {
         seen ??= seer;
         if (!seen.Is(CustomRoles.PlagueDoctor)) return string.Empty;
@@ -286,16 +282,17 @@ internal class PlagueDoctor : RoleBase
         {
             InfectActive = false;
 
-            foreach (PlayerControl player in Main.AllAlivePlayerControls)
-            {
-                if (player.Is(CustomRoles.PlagueDoctor)) continue;
-                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Infected;
-                player.RpcMurderPlayer(player);
-            }
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
             foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())
             {
                 CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
+            }
+
+            foreach (PlayerControl player in Main.AllAlivePlayerControls)
+            {
+                if (player.Is(CustomRoles.PlagueDoctor)) continue;
+                player.SetDeathReason(PlayerState.DeathReason.Infected);
+                player.RpcMurderPlayer(player);
             }
         }
     }

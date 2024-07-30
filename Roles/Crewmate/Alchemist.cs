@@ -29,9 +29,9 @@ internal class Alchemist : RoleBase
     private static OptionItem Speed;
     private static OptionItem InvisDuration;
 
-    private static Dictionary<byte, long> InvisTime = [];
+    private static readonly Dictionary<byte, long> InvisTime = [];
     private static readonly Dictionary<byte, int> ventedId = [];
-    public static readonly Dictionary<byte, byte> BloodlustList = [];
+    public static readonly Dictionary<byte, byte> BloodthirstList = [];
 
     private static byte PotionID = 10;
     private static string PlayerName = string.Empty;
@@ -42,7 +42,7 @@ internal class Alchemist : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Alchemist, 1);
-        VentCooldown = FloatOptionItem.Create(Id + 11, "VentCooldown", new(0f, 70f, 1f), 15f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Alchemist])
+        VentCooldown = FloatOptionItem.Create(Id + 11, GeneralOption.EngineerBase_VentCooldown, new(0f, 70f, 1f), 15f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Alchemist])
             .SetValueFormat(OptionFormat.Seconds);
         ShieldDuration = FloatOptionItem.Create(Id + 12, "AlchemistShieldDur", new(5f, 70f, 1f), 20f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Alchemist])
             .SetValueFormat(OptionFormat.Seconds);
@@ -62,7 +62,7 @@ internal class Alchemist : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        BloodlustList.Clear();
+        BloodthirstList.Clear();
         PotionID = 10;
         PlayerName = string.Empty;
         ventedId.Clear();
@@ -77,8 +77,14 @@ internal class Alchemist : RoleBase
 
         if (AmongUsClient.Instance.AmHost)
         {
+            AddBloodlus();
+        }
+    }
+    public static void AddBloodlus()
+    {
+        if (AmongUsClient.Instance.AmHost)
+        {
             CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdatesBloodlus);
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateInvis);
         }
     }
 
@@ -121,8 +127,8 @@ internal class Alchemist : RoleBase
                 PotionID = 10;
                 player.Notify(GetString("AlchemistGotQFPotion"), 15f);
                 break;
-            case 6: // Bloodlust
-                player.Notify(GetString("AlchemistGotBloodlustPotion"), 15f);
+            case 6: // Bloodthirst
+                player.Notify(GetString("AlchemistGotBloodthirstPotion"), 15f);
                 break;
             case 7: // Increased vision
                 player.Notify(GetString("AlchemistGotSightPotion"), 15f);
@@ -134,6 +140,7 @@ internal class Alchemist : RoleBase
                 break;
         }
 
+        SendRPC(player);
         return true;
     }
 
@@ -141,17 +148,22 @@ internal class Alchemist : RoleBase
     {
         if (pc.AmOwner) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAlchemistTimer, SendOption.Reliable, pc.GetClientId());
+        writer.Write(FixNextSabo);
+        writer.Write(PotionID);
         writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
+        FixNextSabo = reader.ReadBoolean();
+        PotionID = reader.ReadByte();
+
         InvisTime.Clear();
         long invis = long.Parse(reader.ReadString());
         if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
     }
     private static bool IsInvis(byte playerId) => InvisTime.ContainsKey(playerId);
-    private static bool IsBloodlust(byte playerId) => BloodlustList.ContainsKey(playerId);
+    private static bool IsBloodthirst(byte playerId) => BloodthirstList.ContainsKey(playerId);
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
@@ -161,24 +173,24 @@ internal class Alchemist : RoleBase
         return false;
     }
 
-    private void OnFixedUpdatesBloodlus(PlayerControl player)
+    private static void OnFixedUpdatesBloodlus(PlayerControl player)
     {
-        if (!IsBloodlust(player.PlayerId)) return;
+        if (!IsBloodthirst(player.PlayerId)) return;
 
         if (!player.IsAlive() || Pelican.IsEaten(player.PlayerId))
         {
-            BloodlustList.Remove(player.PlayerId);
+            BloodthirstList.Remove(player.PlayerId);
         }
         else
         {
-            Vector2 bloodlustPos = player.transform.position;
+            Vector2 bloodthirstPos = player.transform.position;
             Dictionary<byte, float> targetDistance = [];
             float dis;
             foreach (var target in Main.AllAlivePlayerControls)
             {
                 if (target.PlayerId != player.PlayerId && !target.Is(CustomRoles.Pestilence))
                 {
-                    dis = Vector2.Distance(bloodlustPos, target.transform.position);
+                    dis = Vector2.Distance(bloodthirstPos, target.transform.position);
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }
@@ -186,85 +198,85 @@ internal class Alchemist : RoleBase
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 PlayerControl target = Utils.GetPlayerById(min.Key);
-                var KillRange = NormalGameOptionsV07.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
+                var KillRange = NormalGameOptionsV08.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
                 if (min.Value <= KillRange && player.CanMove && target.CanMove)
                 {
                     if (player.RpcCheckAndMurder(target, true))
                     {
-                        var bloodlustId = BloodlustList[player.PlayerId];
-                        RPC.PlaySoundRPC(bloodlustId, Sounds.KillSound);
+                        var bloodthirstId = BloodthirstList[player.PlayerId];
+                        RPC.PlaySoundRPC(bloodthirstId, Sounds.KillSound);
                         player.RpcMurderPlayer(target);
-                        target.SetRealKiller(Utils.GetPlayerById(bloodlustId));
+                        target.SetRealKiller(Utils.GetPlayerById(bloodthirstId));
                         player.MarkDirtySettings();
                         target.MarkDirtySettings();
-                        BloodlustList.Remove(player.PlayerId);
-                        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(bloodlustId), SpecifyTarget: player, ForceLoop: true);
+                        BloodthirstList.Remove(player.PlayerId);
+                        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(bloodthirstId), SpecifyTarget: player, ForceLoop: true);
                     }
                 }
             }
         }
     }
-    private static long lastFixedTime;
-    private void OnFixedUpdateInvis(PlayerControl player)
+    public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
         if (!IsInvis(player.PlayerId)) return;
 
-        var now = Utils.GetTimeStamp();
+        var nowTime = Utils.GetTimeStamp();
+        var needSync = false;
 
-        if (lastFixedTime != now)
+        foreach (var AlchemistInfo in InvisTime)
         {
-            lastFixedTime = now;
-            Dictionary<byte, long> newList = [];
-            List<byte> refreshList = [];
-            foreach (var it in InvisTime)
+            var alchemistId = AlchemistInfo.Key;
+            var alchemist = Utils.GetPlayerById(alchemistId);
+            if (alchemist == null) continue;
+
+            var remainTime = AlchemistInfo.Value + (long)InvisDuration.GetFloat() - nowTime;
+
+            if (remainTime < 0 || !alchemist.IsAlive())
             {
-                var pc = Utils.GetPlayerById(it.Key);
-                if (pc == null) continue;
-                var remainTime = it.Value + (long)InvisDuration.GetFloat() - now;
-                if (remainTime < 0)
-                {
-                    pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
-                    ventedId.Remove(pc.PlayerId);
-                    pc.Notify(GetString("ChameleonInvisStateOut"));
-                    pc.RpcResetAbilityCooldown();
-                    SendRPC(pc);
-                    continue;
-                }
-                else if (remainTime <= 10)
-                {
-                    if (!pc.IsModClient()) pc.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime + 1));
-                }
-                newList.Add(it.Key, it.Value);
+                alchemist?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(alchemistId, out var id) ? id : Main.LastEnteredVent[alchemistId].Id);
+
+                ventedId.Remove(alchemistId);
+
+                alchemist.Notify(GetString("SwooperInvisStateOut"));
+
+                needSync = true;
+                InvisTime.Remove(alchemistId);
             }
-            InvisTime.Where(x => !newList.ContainsKey(x.Key)).Do(x => refreshList.Add(x.Key));
-            InvisTime = newList;
-            refreshList.Do(x => SendRPC(Utils.GetPlayerById(x)));
+            else if (remainTime <= 10)
+            {
+                if (!alchemist.IsModClient())
+                    alchemist.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), sendInLog: false);
+            }
+        }
+
+        if (needSync)
+        {
+            SendRPC(player);
         }
     }
     public static void OnReportDeadBodyGlobal()
     {
-        lastFixedTime = new();
-        BloodlustList.Clear();
-
-        if (InvisTime.Any())
+        foreach (var alchemistId in playerIdList)
         {
-            foreach (var alchemistId in playerIdList.ToArray())
-            {
-                if (!ventedId.ContainsKey(alchemistId)) continue;
-                var alchemist = Utils.GetPlayerById(alchemistId);
-                if (alchemist == null) return;
+            if (!IsInvis(alchemistId)) continue;
+            var alchemist = Utils.GetPlayerById(alchemistId);
+            if (alchemist == null) continue;
 
-                alchemist?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(alchemistId, out var id) ? id : Main.LastEnteredVent[alchemistId].Id);
-                SendRPC(alchemist);
-            }
+            alchemist?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(alchemistId, out var id) ? id : Main.LastEnteredVent[alchemistId].Id);
+            InvisTime.Remove(alchemistId);
+            ventedId.Remove(alchemistId);
+            SendRPC(alchemist);
         }
 
+        BloodthirstList.Clear();
         InvisTime.Clear();
         ventedId.Clear();
     }
 
     public override void OnEnterVent(PlayerControl player, Vent vent)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
+
         NameNotifyManager.Notice.Remove(player.PlayerId);
 
         switch (PotionID)
@@ -284,7 +296,7 @@ internal class Alchemist : RoleBase
                 player.MyPhysics.RpcBootFromVent(vent.Id);
                 _ = new LateTask(() =>
                 {
-                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Poison;
+                    player.SetDeathReason(PlayerState.DeathReason.Poison);
                     player.SetRealKiller(player);
                     player.RpcMurderPlayer(player);
 
@@ -293,9 +305,8 @@ internal class Alchemist : RoleBase
             case 3: // TP to random player
                 _ = new LateTask(() =>
                 {
-                    var rd = IRandom.Instance;
                     List<PlayerControl> AllAlivePlayer = [.. Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported() && x.PlayerId != player.PlayerId).ToArray()];
-                    var target = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
+                    var target = AllAlivePlayer.RandomElement();
                     player.RpcTeleport(target.GetCustomPosition());
                     player.RPCPlayCustomSound("Teleport");
                 }, 2f, "Alchemist teleported to random player");
@@ -316,11 +327,11 @@ internal class Alchemist : RoleBase
             case 5: // Quick fix next sabo
                 // Done when making the potion
                 break;
-            case 6: // Bloodlust
-                player.Notify(GetString("AlchemistPotionBloodlust"));
-                if (!IsBloodlust(player.PlayerId))
+            case 6: // Bloodthirst
+                player.Notify(GetString("AlchemistPotionBloodthirst"));
+                if (!IsBloodthirst(player.PlayerId))
                 {
-                    BloodlustList.TryAdd(player.PlayerId, player.PlayerId);
+                    BloodthirstList.TryAdd(player.PlayerId, player.PlayerId);
                 }
                 break;
             case 7: // Increased vision
@@ -346,10 +357,12 @@ internal class Alchemist : RoleBase
         }
 
         PotionID = 10;
+        SendRPC(player);
     }
 
     public override void OnCoEnterVent(PlayerPhysics __instance, int ventId)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         if (PotionID != 8) return;
 
         PotionID = 10;
@@ -361,20 +374,18 @@ internal class Alchemist : RoleBase
             ventedId.Remove(pc.PlayerId);
             ventedId.Add(pc.PlayerId, ventId);
 
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, pc.GetClientId());
-            writer.WritePacked(ventId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            __instance.RpcBootFromVentDesync(ventId, pc);
 
             InvisTime.Add(pc.PlayerId, Utils.GetTimeStamp());
             SendRPC(pc);
             pc.Notify(GetString("ChameleonInvisState"), InvisDuration.GetFloat());
 
-        }, 0.5f, "Alchemist Invis");
+        }, 0.8f, "Alchemist Invis");
     }
 
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (seer == null || isForMeeting || !isForHud || !seer.IsAlive()) return string.Empty;
+        if (seer == null || !seer.IsAlive() || isForMeeting || !isForHud) return string.Empty;
         
         var str = new StringBuilder();
         if (IsInvis(seer.PlayerId))
@@ -401,7 +412,7 @@ internal class Alchemist : RoleBase
                 case 5: // Quick fix next sabo
                     str.Append(GetString("PotionStore") + GetString("StoreQF"));
                     break;
-                case 6: // Bloodlust
+                case 6: // Bloodthirst
                     str.Append(GetString("PotionStore") + GetString("StoreBL"));
                     break;
                 case 7: // Increased vision
@@ -443,7 +454,7 @@ internal class Alchemist : RoleBase
             case 5: // Quick fix next sabo
                 str.Append("<color=#3333ff>★</color>");
                 break;
-            case 6: // Bloodlust
+            case 6: // Bloodthirst
                 str.Append("<color=#691a2e>乂</color>");
                 break;
             case 7: // Increased vision

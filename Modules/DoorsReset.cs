@@ -3,7 +3,7 @@ namespace TOHE.Modules;
 public static class DoorsReset
 {
     private static bool isEnabled = false;
-    private static ResetMode mode;
+    private static ResetModeList mode;
     private static DoorsSystemType DoorsSystem => ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Doors, out var system) ? system.TryCast<DoorsSystemType>() : null;
     private static readonly LogHandler logger = Logger.Handler(nameof(DoorsReset));
 
@@ -21,7 +21,7 @@ public static class DoorsReset
             return;
         }
         isEnabled = Options.ResetDoorsEveryTurns.GetBool();
-        mode = (ResetMode)Options.DoorsResetMode.GetValue();
+        mode = (ResetModeList)Options.DoorsResetMode.GetValue();
         Logger.Info($"initialization: [ {isEnabled}, {mode} ]", "Reset Doors");
     }
 
@@ -36,9 +36,9 @@ public static class DoorsReset
 
         switch (mode)
         {
-            case ResetMode.AllOpen: OpenAllDoors(); break;
-            case ResetMode.AllClosed: CloseAllDoors(); break;
-            case ResetMode.RandomByDoor: OpenOrCloseAllDoorsRandomly(); break;
+            case ResetModeList.AllOpen: OpenAllDoors(); break;
+            case ResetModeList.AllClosed: CloseAllDoors(); break;
+            case ResetModeList.RandomByDoor: OpenOrCloseAllDoorsRandomly(); break;
             default: Logger.Warn($"Invalid Reset Doors Mode: {mode}", "Reset Doors"); break;
         }
     }
@@ -89,5 +89,5 @@ public static class DoorsReset
         return door.Room is not (SystemTypes.Lounge or SystemTypes.Decontamination);
     }
 
-    public enum ResetMode { AllOpen, AllClosed, RandomByDoor, }
+    public enum ResetModeList { AllOpen, AllClosed, RandomByDoor, }
 }

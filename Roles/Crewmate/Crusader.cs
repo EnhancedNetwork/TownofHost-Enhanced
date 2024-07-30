@@ -33,7 +33,6 @@ internal class Crusader : RoleBase
         AbilityLimit = SkillLimitOpt.GetInt();
         CurrentKillCooldown = SkillCooldown.GetFloat();
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -45,8 +44,8 @@ internal class Crusader : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Crusader).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-    
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (ForCrusade.Contains(target.PlayerId) || AbilityLimit <= 0) return false;
 
@@ -55,7 +54,6 @@ internal class Crusader : RoleBase
         AbilityLimit--;
         SendSkillRPC();
 
-        killer.ResetKillCooldown();
         killer.SetKillCooldown();
         
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
@@ -67,27 +65,32 @@ internal class Crusader : RoleBase
     {
         if (!ForCrusade.Contains(target.PlayerId)) return false;
 
-        foreach (var crusader in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Crusader)).ToArray())
+        var crusader = _Player; //this method is added by localplayer's ROLEBASE instance, so the player will always be the current crusader running the code.
+        if (!crusader.IsAlive() || crusader.PlayerId == target.PlayerId) return false;
+
+        // Not should kill
+        if (killer.Is(CustomRoles.Taskinator)
+            || killer.Is(CustomRoles.Bodyguard)
+            || killer.Is(CustomRoles.Veteran)) return false;
+
+        if (crusader.CheckForInvalidMurdering(killer) && crusader.RpcCheckAndMurder(killer, true))
         {
-            if (!killer.Is(CustomRoles.Pestilence) && !killer.Is(CustomRoles.KillingMachine)
-                && killer.CheckForInvalidMurdering(target) && crusader.RpcCheckAndMurder(killer, true))
-            {
-                crusader.RpcMurderPlayer(killer);
-                ForCrusade.Remove(target.PlayerId);
-                killer.RpcGuardAndKill(target);
-                return true;
-            }
-
-            if (killer.Is(CustomRoles.Pestilence))
-            {
-                Main.PlayerStates[crusader.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
-                killer.RpcMurderPlayer(crusader);
-                ForCrusade.Remove(target.PlayerId);
-                target.RpcGuardAndKill(killer);
-
-                return true;
-            }
+            killer.RpcGuardAndKill(target);
+            crusader.RpcMurderPlayer(killer);
+            ForCrusade.Remove(target.PlayerId);
+            return true;
         }
+
+        if (killer.Is(CustomRoles.Pestilence))
+        {
+            crusader.SetDeathReason(PlayerState.DeathReason.PissedOff);
+            killer.RpcMurderPlayer(crusader);
+            ForCrusade.Remove(target.PlayerId);
+            target.RpcGuardAndKill(killer);
+
+            return true;
+        }
+
 
         return false;
     }

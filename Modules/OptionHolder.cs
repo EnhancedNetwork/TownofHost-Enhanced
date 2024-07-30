@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
@@ -22,19 +21,18 @@ public enum CustomGameMode
 [HarmonyPatch]
 public static class Options
 {
-    static Task taskOptionsLoad;
     [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.Initialize)), HarmonyPostfix]
     public static void OptionsLoadStart_Postfix()
     {
         Logger.Msg("Mod option loading start", "Load Options");
-        taskOptionsLoad = Task.Run(Load);
-        //taskOptionsLoad.ContinueWith(t => { Logger.Msg("Mod option loading end", "Load Options"); });
-    }
-    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
-    public static void WaitOptionsLoad_Postfix()
-    {
-        taskOptionsLoad.Wait();
-        Logger.Msg("Mod option loading eng", "Load Options");
+        try
+        {
+            Main.Instance.StartCoroutine(CoLoadOptions());
+        }
+        catch (Exception error)
+        {
+            Logger.Error($"Fatal error after loading mod options: {error}", "Load Options");
+        }
     }
 
     // Presets
@@ -62,6 +60,8 @@ public static class Options
 
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
     ];
+
+
 
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
@@ -121,7 +121,8 @@ public static class Options
         "CamouflageMode.Pyro",
         "CamouflageMode.ryuk",
         "CamouflageMode.Gurge44",
-        "CamouflageMode.TommyXL"
+        "CamouflageMode.TommyXL",
+        "CamouflageMode.Sarha"
     ];
 
 
@@ -133,6 +134,7 @@ public static class Options
     // ------------ System Settings Tab ------------
     public static OptionItem GradientTagsOpt;
     public static OptionItem EnableKillerLeftCommand;
+    public static OptionItem ShowMadmatesInLeftCommand;
     public static OptionItem SeeEjectedRolesInMeeting;
 
     public static OptionItem KickLowLevelPlayer;
@@ -199,6 +201,7 @@ public static class Options
 
     public static OptionItem SuffixMode;
     public static OptionItem HideHostText;
+    public static OptionItem HideAllTagsAndText;
     public static OptionItem HideGameSettings;
 
     public static OptionItem PlayerCanSetColor;
@@ -219,7 +222,6 @@ public static class Options
     public static OptionItem RoleAssigningAlgorithm;
     public static OptionItem KPDCamouflageMode;
     public static OptionItem EnableUpMode;
-    public static OptionItem DisableVoteBan;
 
     // ------------ Game Settings Tab ------------
 
@@ -296,6 +298,8 @@ public static class Options
     public static OptionItem DisableKillAnimationOnGuess;
     public static OptionItem DisableVanillaRoles;
     public static OptionItem DisableTaskWin;
+    public static OptionItem DisableTaskWinIfAllCrewsAreDead;
+    public static OptionItem DisableTaskWinIfAllCrewsAreConverted;
     public static OptionItem DisableMeeting;
     public static OptionItem DisableSabotage;
     public static OptionItem DisableCloseDoor;
@@ -352,6 +356,7 @@ public static class Options
     public static OptionItem FixFirstKillCooldown;
     public static OptionItem FixKillCooldownValue;
     public static OptionItem ShieldPersonDiedFirst;
+    public static OptionItem EveryoneCanSeeDeathReason;
 
     public static OptionItem KillFlashDuration;
 
@@ -585,7 +590,7 @@ public static class Options
     {
         return CustomRoleSpawnChances.TryGetValue(role, out var option) ? option.GetValue()/* / 10f */ : roleSpawnChances[role];
     }
-    public static void Load()
+    private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
         // 28400 last id for roles/add-ons (Next use 28500)
@@ -593,10 +598,11 @@ public static class Options
         //#######################################
 
 
-
         // Start Load Settings
-        if (IsLoaded) return;
+        if (IsLoaded) yield break;
         OptionSaver.Initialize();
+
+        yield return null;
 
         // Preset Option
         _ = PresetOptionItem.Create(0, TabGroup.SystemSettings)
@@ -604,7 +610,7 @@ public static class Options
                 .SetHeader(true);
 
         // Game Mode
-        GameMode = StringOptionItem.Create(60000, "GameMode", gameModes, 0, TabGroup.GameSettings, false)
+        GameMode = StringOptionItem.Create(60000, "GameMode", gameModes, 0, TabGroup.ModSettings, false)
             .SetHeader(true);
 
 
@@ -615,7 +621,7 @@ public static class Options
         CustomAdtRoleSpawnRate = [];
 
         // GM
-        //EnableGM = BooleanOptionItem.Create(60001, "GM", false, TabGroup.GameSettings, false)
+        //EnableGM = BooleanOptionItem.Create(60001, "GM", false, TabGroup.ModSettings, false)
         //    .SetColor(Utils.GetRoleColor(CustomRoles.GM))
         //    .SetHidden(true)
         //    .SetHeader(true);
@@ -670,6 +676,8 @@ public static class Options
         NoLimitAddonsNumMax = IntegerOptionItem.Create(60020, "NoLimitAddonsNumMax", new(1, 15, 1), 1, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard);
         #endregion
+
+        yield return null;
 
         #region Impostors Settings
         // Impostor
@@ -744,6 +752,8 @@ public static class Options
         CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorGhosts).ForEach(r => r.SetupCustomOption());
 
         #endregion
+
+        yield return null;
 
         #region Crewmates Settings
         /*
@@ -820,6 +830,8 @@ public static class Options
 
         #endregion
 
+        yield return null;
+
         #region Neutrals Settings
 
 
@@ -860,6 +872,8 @@ public static class Options
 
         #endregion
 
+        yield return null;
+
         #region Add-Ons Settings
         // Add-Ons 
         TextOptionItem.Create(10000015, "RoleType.Helpful", TabGroup.Addons) // HELPFUL
@@ -881,8 +895,6 @@ public static class Options
         Burst.SetupCustomOptions();
 
         Cyber.SetupCustomOptions();
-
-        DoubleShot.SetupCustomOption();
 
         Flash.SetupCustomOption();
 
@@ -950,7 +962,7 @@ public static class Options
 
         Aware.SetupCustomOptions();
 
-        Bloodlust.SetupCustomOptions();
+        Bloodthirst.SetupCustomOptions();
 
         Diseased.SetupCustomOptions();
 
@@ -971,9 +983,7 @@ public static class Options
 
         Oiiai.SetupCustomOptions();
 
-        Rebound.SetupCustomOptions();
-
-        Schizophrenic.SetupCustomOptions();
+        Paranoia.SetupCustomOptions();
 
         Stubborn.SetupCustomOptions();
 
@@ -1015,8 +1025,6 @@ public static class Options
 
         Stealer.SetupCustomOption();
 
-        Swift.SetupCustomOption();
-
         /*
          * Tricky
          */
@@ -1032,7 +1040,7 @@ public static class Options
         Egoist.SetupCustomOption();
 
         SetupLoversRoleOptionsToggle(23600);
-
+        
         Reach.SetupCustomOptions();
 
         Rainbow.SetupCustomOptions();
@@ -1045,8 +1053,11 @@ public static class Options
 
         Glow.SetupCustomOptions();
 
+        Swift.SetupCustomOption();
 
         #endregion
+
+        yield return null;
 
         #region Experimental Roles/Add-ons Settings
 
@@ -1054,14 +1065,16 @@ public static class Options
 
         #endregion
 
+        yield return null;
+
         #region System Settings
         GradientTagsOpt = BooleanOptionItem.Create(60031, "EnableGadientTags", false, TabGroup.SystemSettings, false)
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
-            .SetColor(Color.green)
             .HideInHnS();
+        ShowMadmatesInLeftCommand = BooleanOptionItem.Create(60042, "ShowMadmatesInLeftCommand", true, TabGroup.SystemSettings, false)
+            .SetParent(EnableKillerLeftCommand);
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
-            .SetColor(Color.green)
             .HideInHnS();
         
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
@@ -1149,7 +1162,6 @@ public static class Options
 
         CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
             .SetHeader(true);
-        DisableVoteBan = BooleanOptionItem.Create(60260, "DisableVoteBan", false, TabGroup.SystemSettings, true);
 
         AutoDisplayKillLog = BooleanOptionItem.Create(60270, "AutoDisplayKillLog", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
@@ -1164,6 +1176,7 @@ public static class Options
         SuffixMode = StringOptionItem.Create(60300, "SuffixMode", suffixModes, 0, TabGroup.SystemSettings, true)
             .SetHeader(true);
         HideHostText = BooleanOptionItem.Create(60311, "HideHostText", false, TabGroup.SystemSettings, false);
+        HideAllTagsAndText = BooleanOptionItem.Create(60312, "HideAllTagsAndText", false, TabGroup.SystemSettings, false);
         HideGameSettings = BooleanOptionItem.Create(60310, "HideGameSettings", false, TabGroup.SystemSettings, false);
         //DIYGameSettings = BooleanOptionItem.Create(60320, "DIYGameSettings", false, TabGroup.SystemSettings, false);
         PlayerCanSetColor = BooleanOptionItem.Create(60330, "PlayerCanSetColor", false, TabGroup.SystemSettings, false);
@@ -1201,17 +1214,19 @@ public static class Options
             .SetHeader(true);
         #endregion 
 
+        yield return null;
+
         #region Game Settings
         //FFA
         FFAManager.SetupCustomOption();
 
         // Hide & Seek
-        TextOptionItem.Create(10000055, "MenuTitle.Hide&Seek", TabGroup.GameSettings)
+        TextOptionItem.Create(10000055, "MenuTitle.Hide&Seek", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.HidenSeekTOHE)
             .SetColor(Color.red);
 
         // Num impostors in Hide & Seek
-        NumImpostorsHnS = IntegerOptionItem.Create(60891, "NumImpostorsHnS", new(1, 3, 1), 1, TabGroup.GameSettings, false)
+        NumImpostorsHnS = IntegerOptionItem.Create(60891, "NumImpostorsHnS", new(1, 3, 1), 1, TabGroup.ModSettings, false)
             .SetHeader(true)
             .SetColor(Color.red)
             .SetGameMode(CustomGameMode.HidenSeekTOHE)
@@ -1220,61 +1235,61 @@ public static class Options
 
 
         // Confirm Ejections Mode
-        TextOptionItem.Create(10000024, "MenuTitle.Ejections", TabGroup.GameSettings)
+        TextOptionItem.Create(10000024, "MenuTitle.Ejections", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
-        CEMode = StringOptionItem.Create(60440, "ConfirmEjectionsMode", ConfirmEjectionsMode, 2, TabGroup.GameSettings, false)
+        CEMode = StringOptionItem.Create(60440, "ConfirmEjectionsMode", ConfirmEjectionsMode, 2, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
-        ShowImpRemainOnEject = BooleanOptionItem.Create(60441, "ShowImpRemainOnEject", true, TabGroup.GameSettings, false)
+        ShowImpRemainOnEject = BooleanOptionItem.Create(60441, "ShowImpRemainOnEject", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
-        ShowNKRemainOnEject = BooleanOptionItem.Create(60442, "ShowNKRemainOnEject", true, TabGroup.GameSettings, false)
+        ShowNKRemainOnEject = BooleanOptionItem.Create(60442, "ShowNKRemainOnEject", true, TabGroup.ModSettings, false)
             .SetParent(ShowImpRemainOnEject)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
-        ShowTeamNextToRoleNameOnEject = BooleanOptionItem.Create(60443, "ShowTeamNextToRoleNameOnEject", false, TabGroup.GameSettings, false)
+        ShowTeamNextToRoleNameOnEject = BooleanOptionItem.Create(60443, "ShowTeamNextToRoleNameOnEject", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
-        ConfirmEgoistOnEject = BooleanOptionItem.Create(60444, "ConfirmEgoistOnEject", true, TabGroup.GameSettings, false)
+        ConfirmEgoistOnEject = BooleanOptionItem.Create(60444, "ConfirmEgoistOnEject", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue))
             .SetHeader(true);
-        ConfirmLoversOnEject = BooleanOptionItem.Create(60445, "ConfirmLoversOnEject", true, TabGroup.GameSettings, false)
+        ConfirmLoversOnEject = BooleanOptionItem.Create(60445, "ConfirmLoversOnEject", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
 
         //Maps Settings
-        TextOptionItem.Create(10000025, "MenuTitle.MapsSettings", TabGroup.GameSettings)
+        TextOptionItem.Create(10000025, "MenuTitle.MapsSettings", TabGroup.ModSettings)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Random Maps Mode
-        RandomMapsMode = BooleanOptionItem.Create(60450, "RandomMapsMode", false, TabGroup.GameSettings, false)
+        RandomMapsMode = BooleanOptionItem.Create(60450, "RandomMapsMode", false, TabGroup.ModSettings, false)
             .SetHeader(true)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
-        SkeldChance = IntegerOptionItem.Create(60451, "SkeldChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
+        SkeldChance = IntegerOptionItem.Create(60451, "SkeldChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
-        MiraChance = IntegerOptionItem.Create(60452, "MiraChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
+        MiraChance = IntegerOptionItem.Create(60452, "MiraChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
-        PolusChance = IntegerOptionItem.Create(60453, "PolusChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
+        PolusChance = IntegerOptionItem.Create(60453, "PolusChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
-        DleksChance = IntegerOptionItem.Create(60457, "DleksChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
+        DleksChance = IntegerOptionItem.Create(60457, "DleksChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
-        AirshipChance = IntegerOptionItem.Create(60454, "AirshipChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
+        AirshipChance = IntegerOptionItem.Create(60454, "AirshipChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
-        FungleChance = IntegerOptionItem.Create(60455, "FungleChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
+        FungleChance = IntegerOptionItem.Create(60455, "FungleChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
-        UseMoreRandomMapSelection = BooleanOptionItem.Create(60456, "UseMoreRandomMapSelection", false, TabGroup.GameSettings, false)
+        UseMoreRandomMapSelection = BooleanOptionItem.Create(60456, "UseMoreRandomMapSelection", false, TabGroup.ModSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
 
-        NewHideMsg = BooleanOptionItem.Create(60460, "NewHideMsg", true, TabGroup.GameSettings, false)
+        NewHideMsg = BooleanOptionItem.Create(60460, "NewHideMsg", true, TabGroup.ModSettings, false)
             .SetHidden(true)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
@@ -1282,600 +1297,614 @@ public static class Options
         // Random Spawn
         RandomSpawn.SetupCustomOption();
         
-        MapModification = BooleanOptionItem.Create(60480, "MapModification", false, TabGroup.GameSettings, false)
+        MapModification = BooleanOptionItem.Create(60480, "MapModification", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Airship Variable Electrical
-        AirshipVariableElectrical = BooleanOptionItem.Create(60481, "AirshipVariableElectrical", false, TabGroup.GameSettings, false)
+        AirshipVariableElectrical = BooleanOptionItem.Create(60481, "AirshipVariableElectrical", false, TabGroup.ModSettings, false)
             //.SetGameMode(CustomGameMode.Standard)
             .SetParent(MapModification)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Disable Airship Moving Platform
-        DisableAirshipMovingPlatform = BooleanOptionItem.Create(60482, "DisableAirshipMovingPlatform", false, TabGroup.GameSettings, false)
+        DisableAirshipMovingPlatform = BooleanOptionItem.Create(60482, "DisableAirshipMovingPlatform", false, TabGroup.ModSettings, false)
             //.SetGameMode(CustomGameMode.Standard)
             .SetParent(MapModification)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Disable Spore Trigger On Fungle
-        DisableSporeTriggerOnFungle = BooleanOptionItem.Create(60483, "DisableSporeTriggerOnFungle", false, TabGroup.GameSettings, false)
+        DisableSporeTriggerOnFungle = BooleanOptionItem.Create(60483, "DisableSporeTriggerOnFungle", false, TabGroup.ModSettings, false)
             //.SetGameMode(CustomGameMode.Standard)
             .SetParent(MapModification)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Disable Zipline On Fungle
-        DisableZiplineOnFungle = BooleanOptionItem.Create(60490, "DisableZiplineOnFungle", false, TabGroup.GameSettings, false)
+        DisableZiplineOnFungle = BooleanOptionItem.Create(60490, "DisableZiplineOnFungle", false, TabGroup.ModSettings, false)
             //.SetGameMode(CustomGameMode.Standard)
             .SetParent(MapModification)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Disable Zipline From Top
-        DisableZiplineFromTop = BooleanOptionItem.Create(60491, "DisableZiplineFromTop", false, TabGroup.GameSettings, false)
+        DisableZiplineFromTop = BooleanOptionItem.Create(60491, "DisableZiplineFromTop", false, TabGroup.ModSettings, false)
             //.SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableZiplineOnFungle)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Disable Zipline From Under
-        DisableZiplineFromUnder = BooleanOptionItem.Create(60492, "DisableZiplineFromUnder", false, TabGroup.GameSettings, false)
+        DisableZiplineFromUnder = BooleanOptionItem.Create(60492, "DisableZiplineFromUnder", false, TabGroup.ModSettings, false)
             //.SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableZiplineOnFungle)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Reset Doors After Meeting
-        ResetDoorsEveryTurns = BooleanOptionItem.Create(60500, "ResetDoorsEveryTurns", false, TabGroup.GameSettings, false)
+        ResetDoorsEveryTurns = BooleanOptionItem.Create(60500, "ResetDoorsEveryTurns", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Reset Doors Mode
-        DoorsResetMode = StringOptionItem.Create(60501, "DoorsResetMode", EnumHelper.GetAllNames<DoorsReset.ResetMode>(), 2, TabGroup.GameSettings, false)
+        DoorsResetMode = StringOptionItem.Create(60501, "DoorsResetMode", EnumHelper.GetAllNames<DoorsReset.ResetModeList>(), 2, TabGroup.ModSettings, false)
             .SetParent(ResetDoorsEveryTurns)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Change decontamination time on MiraHQ/Polus
-        ChangeDecontaminationTime = BooleanOptionItem.Create(60503, "ChangeDecontaminationTime", false, TabGroup.GameSettings, false)
+        ChangeDecontaminationTime = BooleanOptionItem.Create(60503, "ChangeDecontaminationTime", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Decontamination time on MiraHQ
-        DecontaminationTimeOnMiraHQ = FloatOptionItem.Create(60504, "DecontaminationTimeOnMiraHQ", new(0.5f, 10f, 0.25f), 3f, TabGroup.GameSettings, false)
+        DecontaminationTimeOnMiraHQ = FloatOptionItem.Create(60504, "DecontaminationTimeOnMiraHQ", new(0.5f, 10f, 0.25f), 3f, TabGroup.ModSettings, false)
             .SetParent(ChangeDecontaminationTime)
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Decontamination time on Polus
-        DecontaminationTimeOnPolus = FloatOptionItem.Create(60505, "DecontaminationTimeOnPolus", new(0.5f, 10f, 0.25f), 3f, TabGroup.GameSettings, false)
+        DecontaminationTimeOnPolus = FloatOptionItem.Create(60505, "DecontaminationTimeOnPolus", new(0.5f, 10f, 0.25f), 3f, TabGroup.ModSettings, false)
             .SetParent(ChangeDecontaminationTime)
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Sabotage
-        TextOptionItem.Create(10000026, "MenuTitle.Sabotage", TabGroup.GameSettings)
+        TextOptionItem.Create(10000026, "MenuTitle.Sabotage", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(243, 96, 96, byte.MaxValue))
             .SetHeader(true);
         // CommsCamouflage
-        CommsCamouflage = BooleanOptionItem.Create(60510, "CommsCamouflage", true, TabGroup.GameSettings, false)
+        CommsCamouflage = BooleanOptionItem.Create(60510, "CommsCamouflage", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetColor(new Color32(243, 96, 96, byte.MaxValue));
-        DisableOnSomeMaps = BooleanOptionItem.Create(60511, "DisableOnSomeMaps", false, TabGroup.GameSettings, false)
+        DisableOnSomeMaps = BooleanOptionItem.Create(60511, "DisableOnSomeMaps", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(CommsCamouflage);
-        DisableOnSkeld = BooleanOptionItem.Create(60512, "DisableOnSkeld", false, TabGroup.GameSettings, false)
+        DisableOnSkeld = BooleanOptionItem.Create(60512, "DisableOnSkeld", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
-        DisableOnMira = BooleanOptionItem.Create(60513, "DisableOnMira", false, TabGroup.GameSettings, false)
+        DisableOnMira = BooleanOptionItem.Create(60513, "DisableOnMira", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
-        DisableOnPolus = BooleanOptionItem.Create(60514, "DisableOnPolus", false, TabGroup.GameSettings, false)
+        DisableOnPolus = BooleanOptionItem.Create(60514, "DisableOnPolus", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
-        DisableOnDleks = BooleanOptionItem.Create(60517, "DisableOnDleks", false, TabGroup.GameSettings, false)
+        DisableOnDleks = BooleanOptionItem.Create(60517, "DisableOnDleks", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
-        DisableOnAirship = BooleanOptionItem.Create(60515, "DisableOnAirship", false, TabGroup.GameSettings, false)
+        DisableOnAirship = BooleanOptionItem.Create(60515, "DisableOnAirship", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
-        DisableOnFungle = BooleanOptionItem.Create(60516, "DisableOnFungle", false, TabGroup.GameSettings, false)
+        DisableOnFungle = BooleanOptionItem.Create(60516, "DisableOnFungle", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
-        DisableReportWhenCC = BooleanOptionItem.Create(60520, "DisableReportWhenCC", false, TabGroup.GameSettings, false)
+        DisableReportWhenCC = BooleanOptionItem.Create(60520, "DisableReportWhenCC", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(CommsCamouflage);
         // Sabotage Cooldown Control
-        SabotageCooldownControl = BooleanOptionItem.Create(60530, "SabotageCooldownControl", false, TabGroup.GameSettings, false)
+        SabotageCooldownControl = BooleanOptionItem.Create(60530, "SabotageCooldownControl", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(243, 96, 96, byte.MaxValue));
-        SabotageCooldown = FloatOptionItem.Create(60535, "SabotageCooldown", new(1f, 60f, 1f), 30f, TabGroup.GameSettings, false)
+        SabotageCooldown = FloatOptionItem.Create(60535, "SabotageCooldown", new(1f, 60f, 1f), 30f, TabGroup.ModSettings, false)
             .SetParent(SabotageCooldownControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         // Sabotage Duration Control
-        SabotageTimeControl = BooleanOptionItem.Create(60540, "SabotageTimeControl", false, TabGroup.GameSettings, false)
+        SabotageTimeControl = BooleanOptionItem.Create(60540, "SabotageTimeControl", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(243, 96, 96, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);
         // The Skeld
-        SkeldReactorTimeLimit = FloatOptionItem.Create(60541, "SkeldReactorTimeLimit", new(5f, 90f, 1f), 30f, TabGroup.GameSettings, false)
+        SkeldReactorTimeLimit = FloatOptionItem.Create(60541, "SkeldReactorTimeLimit", new(5f, 90f, 1f), 30f, TabGroup.ModSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
-        SkeldO2TimeLimit = FloatOptionItem.Create(60542, "SkeldO2TimeLimit", new(5f, 90f, 1f), 30f, TabGroup.GameSettings, false)
+        SkeldO2TimeLimit = FloatOptionItem.Create(60542, "SkeldO2TimeLimit", new(5f, 90f, 1f), 30f, TabGroup.ModSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         // Mira HQ
-        MiraReactorTimeLimit = FloatOptionItem.Create(60543, "MiraReactorTimeLimit", new(5f, 90f, 1f), 45f, TabGroup.GameSettings, false)
+        MiraReactorTimeLimit = FloatOptionItem.Create(60543, "MiraReactorTimeLimit", new(5f, 90f, 1f), 45f, TabGroup.ModSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
-        MiraO2TimeLimit = FloatOptionItem.Create(60544, "MiraO2TimeLimit", new(5f, 90f, 1f), 45f, TabGroup.GameSettings, false)
+        MiraO2TimeLimit = FloatOptionItem.Create(60544, "MiraO2TimeLimit", new(5f, 90f, 1f), 45f, TabGroup.ModSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         // Polus
-        PolusReactorTimeLimit = FloatOptionItem.Create(60545, "PolusReactorTimeLimit", new(5f, 90f, 1f), 60f, TabGroup.GameSettings, false)
+        PolusReactorTimeLimit = FloatOptionItem.Create(60545, "PolusReactorTimeLimit", new(5f, 90f, 1f), 60f, TabGroup.ModSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         // The Airship
-        AirshipReactorTimeLimit = FloatOptionItem.Create(60546, "AirshipReactorTimeLimit", new(5f, 90f, 1f), 90f, TabGroup.GameSettings, false)
+        AirshipReactorTimeLimit = FloatOptionItem.Create(60546, "AirshipReactorTimeLimit", new(5f, 90f, 1f), 90f, TabGroup.ModSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         // The Fungle
-        FungleReactorTimeLimit = FloatOptionItem.Create(60547, "FungleReactorTimeLimit", new(5f, 90f, 1f), 60f, TabGroup.GameSettings, false)
+        FungleReactorTimeLimit = FloatOptionItem.Create(60547, "FungleReactorTimeLimit", new(5f, 90f, 1f), 60f, TabGroup.ModSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
-        FungleMushroomMixupDuration = FloatOptionItem.Create(60548, "FungleMushroomMixupDuration", new(5f, 90f, 1f), 10f, TabGroup.GameSettings, false)
+        FungleMushroomMixupDuration = FloatOptionItem.Create(60548, "FungleMushroomMixupDuration", new(5f, 90f, 1f), 10f, TabGroup.ModSettings, false)
             .SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         // LightsOutSpecialSettings
-        LightsOutSpecialSettings = BooleanOptionItem.Create(60550, "LightsOutSpecialSettings", false, TabGroup.GameSettings, false)
+        LightsOutSpecialSettings = BooleanOptionItem.Create(60550, "LightsOutSpecialSettings", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(243, 96, 96, byte.MaxValue));
-        BlockDisturbancesToSwitches = BooleanOptionItem.Create(60551, "BlockDisturbancesToSwitches", false, TabGroup.GameSettings, false)
+        BlockDisturbancesToSwitches = BooleanOptionItem.Create(60551, "BlockDisturbancesToSwitches", false, TabGroup.ModSettings, false)
             .SetParent(LightsOutSpecialSettings)
             .SetGameMode(CustomGameMode.Standard);
-        DisableAirshipViewingDeckLightsPanel = BooleanOptionItem.Create(60552, "DisableAirshipViewingDeckLightsPanel", false, TabGroup.GameSettings, false)
+        DisableAirshipViewingDeckLightsPanel = BooleanOptionItem.Create(60552, "DisableAirshipViewingDeckLightsPanel", false, TabGroup.ModSettings, false)
             .SetParent(LightsOutSpecialSettings)
             .SetGameMode(CustomGameMode.Standard);
-        DisableAirshipGapRoomLightsPanel = BooleanOptionItem.Create(60553, "DisableAirshipGapRoomLightsPanel", false, TabGroup.GameSettings, false)
+        DisableAirshipGapRoomLightsPanel = BooleanOptionItem.Create(60553, "DisableAirshipGapRoomLightsPanel", false, TabGroup.ModSettings, false)
             .SetParent(LightsOutSpecialSettings)
             .SetGameMode(CustomGameMode.Standard);
-        DisableAirshipCargoLightsPanel = BooleanOptionItem.Create(60554, "DisableAirshipCargoLightsPanel", false, TabGroup.GameSettings, false)
+        DisableAirshipCargoLightsPanel = BooleanOptionItem.Create(60554, "DisableAirshipCargoLightsPanel", false, TabGroup.ModSettings, false)
             .SetParent(LightsOutSpecialSettings)
             .SetGameMode(CustomGameMode.Standard);
 
 
         // Disable
-        TextOptionItem.Create(10000027, "MenuTitle.Disable", TabGroup.GameSettings)
+        TextOptionItem.Create(10000027, "MenuTitle.Disable", TabGroup.ModSettings)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue))
             .HideInHnS();
 
-        DisableShieldAnimations = BooleanOptionItem.Create(60560, "DisableShieldAnimations", false, TabGroup.GameSettings, false)
+        DisableShieldAnimations = BooleanOptionItem.Create(60560, "DisableShieldAnimations", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
-        DisableKillAnimationOnGuess = BooleanOptionItem.Create(60561, "DisableKillAnimationOnGuess", false, TabGroup.GameSettings, false)
+        DisableKillAnimationOnGuess = BooleanOptionItem.Create(60561, "DisableKillAnimationOnGuess", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
-        DisableVanillaRoles = BooleanOptionItem.Create(60562, "DisableVanillaRoles", true, TabGroup.GameSettings, false)
+        DisableVanillaRoles = BooleanOptionItem.Create(60562, "DisableVanillaRoles", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
-        DisableTaskWin = BooleanOptionItem.Create(60563, "DisableTaskWin", false, TabGroup.GameSettings, false)
+        DisableTaskWin = BooleanOptionItem.Create(60563, "DisableTaskWin", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
-        DisableMeeting = BooleanOptionItem.Create(60564, "DisableMeeting", false, TabGroup.GameSettings, false)
+        DisableTaskWinIfAllCrewsAreDead = BooleanOptionItem.Create(60900, "DisableTaskWinIfAllCrewsAreDead", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
+        DisableTaskWinIfAllCrewsAreConverted = BooleanOptionItem.Create(60901, "DisableTaskWinIfAllCrewsAreConverted", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
+        DisableMeeting = BooleanOptionItem.Create(60564, "DisableMeeting", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         // Disable Sabotage / CloseDoor
-        DisableSabotage = BooleanOptionItem.Create(60565, "DisableSabotage", false, TabGroup.GameSettings, false)
+        DisableSabotage = BooleanOptionItem.Create(60565, "DisableSabotage", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
-        DisableCloseDoor = BooleanOptionItem.Create(60566, "DisableCloseDoor", false, TabGroup.GameSettings, false)
+        DisableCloseDoor = BooleanOptionItem.Create(60566, "DisableCloseDoor", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         // Disable Devices
-        DisableDevices = BooleanOptionItem.Create(60570, "DisableDevices", false, TabGroup.GameSettings, false)
+        DisableDevices = BooleanOptionItem.Create(60570, "DisableDevices", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue))
             .HideInHnS();
         //.SetGameMode(CustomGameMode.Standard);
-        DisableSkeldDevices = BooleanOptionItem.Create(60571, "DisableSkeldDevices", false, TabGroup.GameSettings, false)
+        DisableSkeldDevices = BooleanOptionItem.Create(60571, "DisableSkeldDevices", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableSkeldAdmin = BooleanOptionItem.Create(60572, "DisableSkeldAdmin", false, TabGroup.GameSettings, false)
+        DisableSkeldAdmin = BooleanOptionItem.Create(60572, "DisableSkeldAdmin", false, TabGroup.ModSettings, false)
             .SetParent(DisableSkeldDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableSkeldCamera = BooleanOptionItem.Create(60573, "DisableSkeldCamera", false, TabGroup.GameSettings, false)
+        DisableSkeldCamera = BooleanOptionItem.Create(60573, "DisableSkeldCamera", false, TabGroup.ModSettings, false)
             .SetParent(DisableSkeldDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableMiraHQDevices = BooleanOptionItem.Create(60574, "DisableMiraHQDevices", false, TabGroup.GameSettings, false)
+        DisableMiraHQDevices = BooleanOptionItem.Create(60574, "DisableMiraHQDevices", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableMiraHQAdmin = BooleanOptionItem.Create(60575, "DisableMiraHQAdmin", false, TabGroup.GameSettings, false)
+        DisableMiraHQAdmin = BooleanOptionItem.Create(60575, "DisableMiraHQAdmin", false, TabGroup.ModSettings, false)
             .SetParent(DisableMiraHQDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableMiraHQDoorLog = BooleanOptionItem.Create(60576, "DisableMiraHQDoorLog", false, TabGroup.GameSettings, false)
+        DisableMiraHQDoorLog = BooleanOptionItem.Create(60576, "DisableMiraHQDoorLog", false, TabGroup.ModSettings, false)
             .SetParent(DisableMiraHQDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisablePolusDevices = BooleanOptionItem.Create(60577, "DisablePolusDevices", false, TabGroup.GameSettings, false)
+        DisablePolusDevices = BooleanOptionItem.Create(60577, "DisablePolusDevices", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisablePolusAdmin = BooleanOptionItem.Create(60578, "DisablePolusAdmin", false, TabGroup.GameSettings, false)
+        DisablePolusAdmin = BooleanOptionItem.Create(60578, "DisablePolusAdmin", false, TabGroup.ModSettings, false)
             .SetParent(DisablePolusDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisablePolusCamera = BooleanOptionItem.Create(60579, "DisablePolusCamera", false, TabGroup.GameSettings, false)
+        DisablePolusCamera = BooleanOptionItem.Create(60579, "DisablePolusCamera", false, TabGroup.ModSettings, false)
             .SetParent(DisablePolusDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisablePolusVital = BooleanOptionItem.Create(60580, "DisablePolusVital", false, TabGroup.GameSettings, false)
+        DisablePolusVital = BooleanOptionItem.Create(60580, "DisablePolusVital", false, TabGroup.ModSettings, false)
             .SetParent(DisablePolusDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableAirshipDevices = BooleanOptionItem.Create(60581, "DisableAirshipDevices", false, TabGroup.GameSettings, false)
+        DisableAirshipDevices = BooleanOptionItem.Create(60581, "DisableAirshipDevices", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableAirshipCockpitAdmin = BooleanOptionItem.Create(60582, "DisableAirshipCockpitAdmin", false, TabGroup.GameSettings, false)
+        DisableAirshipCockpitAdmin = BooleanOptionItem.Create(60582, "DisableAirshipCockpitAdmin", false, TabGroup.ModSettings, false)
             .SetParent(DisableAirshipDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableAirshipRecordsAdmin = BooleanOptionItem.Create(60583, "DisableAirshipRecordsAdmin", false, TabGroup.GameSettings, false)
+        DisableAirshipRecordsAdmin = BooleanOptionItem.Create(60583, "DisableAirshipRecordsAdmin", false, TabGroup.ModSettings, false)
             .SetParent(DisableAirshipDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableAirshipCamera = BooleanOptionItem.Create(60584, "DisableAirshipCamera", false, TabGroup.GameSettings, false)
+        DisableAirshipCamera = BooleanOptionItem.Create(60584, "DisableAirshipCamera", false, TabGroup.ModSettings, false)
             .SetParent(DisableAirshipDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableAirshipVital = BooleanOptionItem.Create(60585, "DisableAirshipVital", false, TabGroup.GameSettings, false)
+        DisableAirshipVital = BooleanOptionItem.Create(60585, "DisableAirshipVital", false, TabGroup.ModSettings, false)
             .SetParent(DisableAirshipDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableFungleDevices = BooleanOptionItem.Create(60586, "DisableFungleDevices", false, TabGroup.GameSettings, false)
+        DisableFungleDevices = BooleanOptionItem.Create(60586, "DisableFungleDevices", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableFungleBinoculars = BooleanOptionItem.Create(60587, "DisableFungleBinoculars", false, TabGroup.GameSettings, false)
+        DisableFungleBinoculars = BooleanOptionItem.Create(60587, "DisableFungleBinoculars", false, TabGroup.ModSettings, false)
             .SetParent(DisableFungleDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableFungleVital = BooleanOptionItem.Create(60588, "DisableFungleVital", false, TabGroup.GameSettings, false)
+        DisableFungleVital = BooleanOptionItem.Create(60588, "DisableFungleVital", false, TabGroup.ModSettings, false)
             .SetParent(DisableFungleDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreConditions = BooleanOptionItem.Create(60589, "IgnoreConditions", false, TabGroup.GameSettings, false)
+        DisableDevicesIgnoreConditions = BooleanOptionItem.Create(60589, "IgnoreConditions", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreImpostors = BooleanOptionItem.Create(60590, "IgnoreImpostors", false, TabGroup.GameSettings, false)
+        DisableDevicesIgnoreImpostors = BooleanOptionItem.Create(60590, "IgnoreImpostors", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevicesIgnoreConditions);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreNeutrals = BooleanOptionItem.Create(60591, "IgnoreNeutrals", false, TabGroup.GameSettings, false)
+        DisableDevicesIgnoreNeutrals = BooleanOptionItem.Create(60591, "IgnoreNeutrals", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevicesIgnoreConditions);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreCrewmates = BooleanOptionItem.Create(60592, "IgnoreCrewmates", false, TabGroup.GameSettings, false)
+        DisableDevicesIgnoreCrewmates = BooleanOptionItem.Create(60592, "IgnoreCrewmates", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevicesIgnoreConditions);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreAfterAnyoneDied = BooleanOptionItem.Create(60593, "IgnoreAfterAnyoneDied", false, TabGroup.GameSettings, false)
+        DisableDevicesIgnoreAfterAnyoneDied = BooleanOptionItem.Create(60593, "IgnoreAfterAnyoneDied", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevicesIgnoreConditions);
         //.SetGameMode(CustomGameMode.Standard);
 
         //Disable Short Tasks
-        DisableShortTasks = BooleanOptionItem.Create(60594, "DisableShortTasks", false, TabGroup.TaskSettings, false)
+        DisableShortTasks = BooleanOptionItem.Create(60594, "DisableShortTasks", false, TabGroup.ModifierSettings, false)
             .HideInFFA()
             .SetHeader(true)
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
-        DisableCleanVent = BooleanOptionItem.Create(60595, "DisableCleanVent", false, TabGroup.TaskSettings, false)
+        DisableCleanVent = BooleanOptionItem.Create(60595, "DisableCleanVent", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableCalibrateDistributor = BooleanOptionItem.Create(60596, "DisableCalibrateDistributor", false, TabGroup.TaskSettings, false)
+        DisableCalibrateDistributor = BooleanOptionItem.Create(60596, "DisableCalibrateDistributor", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableChartCourse = BooleanOptionItem.Create(60597, "DisableChartCourse", false, TabGroup.TaskSettings, false)
+        DisableChartCourse = BooleanOptionItem.Create(60597, "DisableChartCourse", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableStabilizeSteering = BooleanOptionItem.Create(60598, "DisableStabilizeSteering", false, TabGroup.TaskSettings, false)
+        DisableStabilizeSteering = BooleanOptionItem.Create(60598, "DisableStabilizeSteering", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableCleanO2Filter = BooleanOptionItem.Create(60599, "DisableCleanO2Filter", false, TabGroup.TaskSettings, false)
+        DisableCleanO2Filter = BooleanOptionItem.Create(60599, "DisableCleanO2Filter", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableUnlockManifolds = BooleanOptionItem.Create(60600, "DisableUnlockManifolds", false, TabGroup.TaskSettings, false)
+        DisableUnlockManifolds = BooleanOptionItem.Create(60600, "DisableUnlockManifolds", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisablePrimeShields = BooleanOptionItem.Create(60601, "DisablePrimeShields", false, TabGroup.TaskSettings, false)
+        DisablePrimeShields = BooleanOptionItem.Create(60601, "DisablePrimeShields", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableMeasureWeather = BooleanOptionItem.Create(60602, "DisableMeasureWeather", false, TabGroup.TaskSettings, false)
+        DisableMeasureWeather = BooleanOptionItem.Create(60602, "DisableMeasureWeather", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableBuyBeverage = BooleanOptionItem.Create(60603, "DisableBuyBeverage", false, TabGroup.TaskSettings, false)
+        DisableBuyBeverage = BooleanOptionItem.Create(60603, "DisableBuyBeverage", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableAssembleArtifact = BooleanOptionItem.Create(60604, "DisableAssembleArtifact", false, TabGroup.TaskSettings, false)
+        DisableAssembleArtifact = BooleanOptionItem.Create(60604, "DisableAssembleArtifact", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableSortSamples = BooleanOptionItem.Create(60605, "DisableSortSamples", false, TabGroup.TaskSettings, false)
+        DisableSortSamples = BooleanOptionItem.Create(60605, "DisableSortSamples", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableProcessData = BooleanOptionItem.Create(60606, "DisableProcessData", false, TabGroup.TaskSettings, false)
+        DisableProcessData = BooleanOptionItem.Create(60606, "DisableProcessData", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableRunDiagnostics = BooleanOptionItem.Create(60607, "DisableRunDiagnostics", false, TabGroup.TaskSettings, false)
+        DisableRunDiagnostics = BooleanOptionItem.Create(60607, "DisableRunDiagnostics", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableRepairDrill = BooleanOptionItem.Create(60608, "DisableRepairDrill", false, TabGroup.TaskSettings, false)
+        DisableRepairDrill = BooleanOptionItem.Create(60608, "DisableRepairDrill", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableAlignTelescope = BooleanOptionItem.Create(60609, "DisableAlignTelescope", false, TabGroup.TaskSettings, false)
+        DisableAlignTelescope = BooleanOptionItem.Create(60609, "DisableAlignTelescope", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableRecordTemperature = BooleanOptionItem.Create(60610, "DisableRecordTemperature", false, TabGroup.TaskSettings, false)
+        DisableRecordTemperature = BooleanOptionItem.Create(60610, "DisableRecordTemperature", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableFillCanisters = BooleanOptionItem.Create(60611, "DisableFillCanisters", false, TabGroup.TaskSettings, false)
+        DisableFillCanisters = BooleanOptionItem.Create(60611, "DisableFillCanisters", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableMonitorTree = BooleanOptionItem.Create(60612, "DisableMonitorTree", false, TabGroup.TaskSettings, false)
+        DisableMonitorTree = BooleanOptionItem.Create(60612, "DisableMonitorTree", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableStoreArtifacts = BooleanOptionItem.Create(60613, "DisableStoreArtifacts", false, TabGroup.TaskSettings, false)
+        DisableStoreArtifacts = BooleanOptionItem.Create(60613, "DisableStoreArtifacts", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisablePutAwayPistols = BooleanOptionItem.Create(60614, "DisablePutAwayPistols", false, TabGroup.TaskSettings, false)
+        DisablePutAwayPistols = BooleanOptionItem.Create(60614, "DisablePutAwayPistols", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisablePutAwayRifles = BooleanOptionItem.Create(60615, "DisablePutAwayRifles", false, TabGroup.TaskSettings, false)
+        DisablePutAwayRifles = BooleanOptionItem.Create(60615, "DisablePutAwayRifles", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableMakeBurger = BooleanOptionItem.Create(60616, "DisableMakeBurger", false, TabGroup.TaskSettings, false)
+        DisableMakeBurger = BooleanOptionItem.Create(60616, "DisableMakeBurger", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableCleanToilet = BooleanOptionItem.Create(60617, "DisableCleanToilet", false, TabGroup.TaskSettings, false)
+        DisableCleanToilet = BooleanOptionItem.Create(60617, "DisableCleanToilet", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableDecontaminate = BooleanOptionItem.Create(60618, "DisableDecontaminate", false, TabGroup.TaskSettings, false)
+        DisableDecontaminate = BooleanOptionItem.Create(60618, "DisableDecontaminate", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableSortRecords = BooleanOptionItem.Create(60619, "DisableSortRecords", false, TabGroup.TaskSettings, false)
+        DisableSortRecords = BooleanOptionItem.Create(60619, "DisableSortRecords", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableFixShower = BooleanOptionItem.Create(60620, "DisableFixShower", false, TabGroup.TaskSettings, false)
+        DisableFixShower = BooleanOptionItem.Create(60620, "DisableFixShower", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisablePickUpTowels = BooleanOptionItem.Create(60621, "DisablePickUpTowels", false, TabGroup.TaskSettings, false)
+        DisablePickUpTowels = BooleanOptionItem.Create(60621, "DisablePickUpTowels", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisablePolishRuby = BooleanOptionItem.Create(60622, "DisablePolishRuby", false, TabGroup.TaskSettings, false)
+        DisablePolishRuby = BooleanOptionItem.Create(60622, "DisablePolishRuby", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableDressMannequin = BooleanOptionItem.Create(60623, "DisableDressMannequin", false, TabGroup.TaskSettings, false)
+        DisableDressMannequin = BooleanOptionItem.Create(60623, "DisableDressMannequin", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableFixAntenna = BooleanOptionItem.Create(60656, "DisableFixAntenna", false, TabGroup.TaskSettings, false)
+        DisableFixAntenna = BooleanOptionItem.Create(60656, "DisableFixAntenna", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableBuildSandcastle = BooleanOptionItem.Create(60657, "DisableBuildSandcastle", false, TabGroup.TaskSettings, false)
+        DisableBuildSandcastle = BooleanOptionItem.Create(60657, "DisableBuildSandcastle", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableCrankGenerator = BooleanOptionItem.Create(60658, "DisableCrankGenerator", false, TabGroup.TaskSettings, false)
+        DisableCrankGenerator = BooleanOptionItem.Create(60658, "DisableCrankGenerator", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableMonitorMushroom = BooleanOptionItem.Create(60659, "DisableMonitorMushroom", false, TabGroup.TaskSettings, false)
+        DisableMonitorMushroom = BooleanOptionItem.Create(60659, "DisableMonitorMushroom", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisablePlayVideoGame = BooleanOptionItem.Create(60660, "DisablePlayVideoGame", false, TabGroup.TaskSettings, false)
+        DisablePlayVideoGame = BooleanOptionItem.Create(60660, "DisablePlayVideoGame", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableFindSignal = BooleanOptionItem.Create(60661, "DisableFindSignal", false, TabGroup.TaskSettings, false)
+        DisableFindSignal = BooleanOptionItem.Create(60661, "DisableFindSignal", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableThrowFisbee = BooleanOptionItem.Create(60662, "DisableThrowFisbee", false, TabGroup.TaskSettings, false)
+        DisableThrowFisbee = BooleanOptionItem.Create(60662, "DisableThrowFisbee", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableLiftWeights = BooleanOptionItem.Create(60663, "DisableLiftWeights", false, TabGroup.TaskSettings, false)
+        DisableLiftWeights = BooleanOptionItem.Create(60663, "DisableLiftWeights", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
-        DisableCollectShells = BooleanOptionItem.Create(60664, "DisableCollectShells", false, TabGroup.TaskSettings, false)
+        DisableCollectShells = BooleanOptionItem.Create(60664, "DisableCollectShells", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableShortTasks);
 
 
         //Disable Common Tasks
-        DisableCommonTasks = BooleanOptionItem.Create(60627, "DisableCommonTasks", false, TabGroup.TaskSettings, false)
+        DisableCommonTasks = BooleanOptionItem.Create(60627, "DisableCommonTasks", false, TabGroup.ModifierSettings, false)
             .HideInFFA()
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
-        DisableSwipeCard = BooleanOptionItem.Create(60628, "DisableSwipeCardTask", false, TabGroup.TaskSettings, false)
+        DisableSwipeCard = BooleanOptionItem.Create(60628, "DisableSwipeCardTask", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableCommonTasks);
-        DisableFixWiring = BooleanOptionItem.Create(60629, "DisableFixWiring", false, TabGroup.TaskSettings, false)
+        DisableFixWiring = BooleanOptionItem.Create(60629, "DisableFixWiring", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableCommonTasks);
-        DisableEnterIdCode = BooleanOptionItem.Create(60630, "DisableEnterIdCode", false, TabGroup.TaskSettings, false)
+        DisableEnterIdCode = BooleanOptionItem.Create(60630, "DisableEnterIdCode", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableCommonTasks);
-        DisableInsertKeys = BooleanOptionItem.Create(60631, "DisableInsertKeys", false, TabGroup.TaskSettings, false)
+        DisableInsertKeys = BooleanOptionItem.Create(60631, "DisableInsertKeys", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableCommonTasks);
-        DisableScanBoardingPass = BooleanOptionItem.Create(60632, "DisableScanBoardingPass", false, TabGroup.TaskSettings, false)
+        DisableScanBoardingPass = BooleanOptionItem.Create(60632, "DisableScanBoardingPass", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableCommonTasks);
-        DisableRoastMarshmallow = BooleanOptionItem.Create(60624, "DisableRoastMarshmallow", false, TabGroup.TaskSettings, false)
+        DisableRoastMarshmallow = BooleanOptionItem.Create(60624, "DisableRoastMarshmallow", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableCommonTasks);
-        DisableCollectSamples = BooleanOptionItem.Create(60625, "DisableCollectSamples", false, TabGroup.TaskSettings, false)
+        DisableCollectSamples = BooleanOptionItem.Create(60625, "DisableCollectSamples", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableCommonTasks);
-        DisableReplaceParts = BooleanOptionItem.Create(60626, "DisableReplaceParts", false, TabGroup.TaskSettings, false)
+        DisableReplaceParts = BooleanOptionItem.Create(60626, "DisableReplaceParts", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableCommonTasks);
 
 
         //Disable Long Tasks
-        DisableLongTasks = BooleanOptionItem.Create(60640, "DisableLongTasks", false, TabGroup.TaskSettings, false)
+        DisableLongTasks = BooleanOptionItem.Create(60640, "DisableLongTasks", false, TabGroup.ModifierSettings, false)
             .HideInFFA()
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
-        DisableSubmitScan = BooleanOptionItem.Create(60641, "DisableSubmitScanTask", false, TabGroup.TaskSettings, false)
+        DisableSubmitScan = BooleanOptionItem.Create(60641, "DisableSubmitScanTask", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableUnlockSafe = BooleanOptionItem.Create(60642, "DisableUnlockSafeTask", false, TabGroup.TaskSettings, false)
+        DisableUnlockSafe = BooleanOptionItem.Create(60642, "DisableUnlockSafeTask", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableStartReactor = BooleanOptionItem.Create(60643, "DisableStartReactorTask", false, TabGroup.TaskSettings, false)
+        DisableStartReactor = BooleanOptionItem.Create(60643, "DisableStartReactorTask", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableResetBreaker = BooleanOptionItem.Create(60644, "DisableResetBreakerTask", false, TabGroup.TaskSettings, false)
+        DisableResetBreaker = BooleanOptionItem.Create(60644, "DisableResetBreakerTask", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableAlignEngineOutput = BooleanOptionItem.Create(60645, "DisableAlignEngineOutput", false, TabGroup.TaskSettings, false)
+        DisableAlignEngineOutput = BooleanOptionItem.Create(60645, "DisableAlignEngineOutput", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableInspectSample = BooleanOptionItem.Create(60646, "DisableInspectSample", false, TabGroup.TaskSettings, false)
+        DisableInspectSample = BooleanOptionItem.Create(60646, "DisableInspectSample", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableEmptyChute = BooleanOptionItem.Create(60647, "DisableEmptyChute", false, TabGroup.TaskSettings, false)
+        DisableEmptyChute = BooleanOptionItem.Create(60647, "DisableEmptyChute", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableClearAsteroids = BooleanOptionItem.Create(60648, "DisableClearAsteroids", false, TabGroup.TaskSettings, false)
+        DisableClearAsteroids = BooleanOptionItem.Create(60648, "DisableClearAsteroids", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableWaterPlants = BooleanOptionItem.Create(60649, "DisableWaterPlants", false, TabGroup.TaskSettings, false)
+        DisableWaterPlants = BooleanOptionItem.Create(60649, "DisableWaterPlants", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableOpenWaterways = BooleanOptionItem.Create(60650, "DisableOpenWaterways", false, TabGroup.TaskSettings, false)
+        DisableOpenWaterways = BooleanOptionItem.Create(60650, "DisableOpenWaterways", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableReplaceWaterJug = BooleanOptionItem.Create(60651, "DisableReplaceWaterJug", false, TabGroup.TaskSettings, false)
+        DisableReplaceWaterJug = BooleanOptionItem.Create(60651, "DisableReplaceWaterJug", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableRebootWifi = BooleanOptionItem.Create(60652, "DisableRebootWifi", false, TabGroup.TaskSettings, false)
+        DisableRebootWifi = BooleanOptionItem.Create(60652, "DisableRebootWifi", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableDevelopPhotos = BooleanOptionItem.Create(60653, "DisableDevelopPhotos", false, TabGroup.TaskSettings, false)
+        DisableDevelopPhotos = BooleanOptionItem.Create(60653, "DisableDevelopPhotos", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableRewindTapes = BooleanOptionItem.Create(60654, "DisableRewindTapes", false, TabGroup.TaskSettings, false)
+        DisableRewindTapes = BooleanOptionItem.Create(60654, "DisableRewindTapes", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableStartFans = BooleanOptionItem.Create(60655, "DisableStartFans", false, TabGroup.TaskSettings, false)
+        DisableStartFans = BooleanOptionItem.Create(60655, "DisableStartFans", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableCollectVegetables = BooleanOptionItem.Create(60633, "DisableCollectVegetables", false, TabGroup.TaskSettings, false)
+        DisableCollectVegetables = BooleanOptionItem.Create(60633, "DisableCollectVegetables", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableMineOres = BooleanOptionItem.Create(60634, "DisableMineOres", false, TabGroup.TaskSettings, false)
+        DisableMineOres = BooleanOptionItem.Create(60634, "DisableMineOres", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableExtractFuel = BooleanOptionItem.Create(60635, "DisableExtractFuel", false, TabGroup.TaskSettings, false)
+        DisableExtractFuel = BooleanOptionItem.Create(60635, "DisableExtractFuel", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableCatchFish = BooleanOptionItem.Create(60636, "DisableCatchFish", false, TabGroup.TaskSettings, false)
+        DisableCatchFish = BooleanOptionItem.Create(60636, "DisableCatchFish", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisablePolishGem = BooleanOptionItem.Create(60637, "DisablePolishGem", false, TabGroup.TaskSettings, false)
+        DisablePolishGem = BooleanOptionItem.Create(60637, "DisablePolishGem", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableHelpCritter = BooleanOptionItem.Create(60638, "DisableHelpCritter", false, TabGroup.TaskSettings, false)
+        DisableHelpCritter = BooleanOptionItem.Create(60638, "DisableHelpCritter", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
-        DisableHoistSupplies = BooleanOptionItem.Create(60639, "DisableHoistSupplies", false, TabGroup.TaskSettings, false)
+        DisableHoistSupplies = BooleanOptionItem.Create(60639, "DisableHoistSupplies", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableLongTasks);
         
 
 
         //Disable Divert Power, Weather Nodes and etc. situational Tasks
-        DisableOtherTasks = BooleanOptionItem.Create(60665, "DisableOtherTasks", false, TabGroup.TaskSettings, false)
+        DisableOtherTasks = BooleanOptionItem.Create(60665, "DisableOtherTasks", false, TabGroup.ModifierSettings, false)
             .HideInFFA()
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
-        DisableUploadData = BooleanOptionItem.Create(60666, "DisableUploadDataTask", false, TabGroup.TaskSettings, false)
+        DisableUploadData = BooleanOptionItem.Create(60666, "DisableUploadDataTask", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableOtherTasks);
-        DisableEmptyGarbage = BooleanOptionItem.Create(60667, "DisableEmptyGarbage", false, TabGroup.TaskSettings, false)
+        DisableEmptyGarbage = BooleanOptionItem.Create(60667, "DisableEmptyGarbage", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableOtherTasks);
-        DisableFuelEngines = BooleanOptionItem.Create(60668, "DisableFuelEngines", false, TabGroup.TaskSettings, false)
+        DisableFuelEngines = BooleanOptionItem.Create(60668, "DisableFuelEngines", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableOtherTasks);
-        DisableDivertPower = BooleanOptionItem.Create(60669, "DisableDivertPower", false, TabGroup.TaskSettings, false)
+        DisableDivertPower = BooleanOptionItem.Create(60669, "DisableDivertPower", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableOtherTasks);
-        DisableActivateWeatherNodes = BooleanOptionItem.Create(60670, "DisableActivateWeatherNodes", false, TabGroup.TaskSettings, false)
+        DisableActivateWeatherNodes = BooleanOptionItem.Create(60670, "DisableActivateWeatherNodes", false, TabGroup.ModifierSettings, false)
             .SetParent(DisableOtherTasks);
 
 
 
-        TextOptionItem.Create(10000028, "MenuTitle.Guessers", TabGroup.TaskSettings)
+        TextOptionItem.Create(10000028, "MenuTitle.Guessers", TabGroup.ModifierSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.yellow)
             .SetHeader(true);
-        GuesserMode = BooleanOptionItem.Create(60680, "GuesserMode", false, TabGroup.TaskSettings, false)
+        GuesserMode = BooleanOptionItem.Create(60680, "GuesserMode", false, TabGroup.ModifierSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.yellow)
             .SetHeader(true);
-        CrewmatesCanGuess = BooleanOptionItem.Create(60681, "CrewmatesCanGuess", false, TabGroup.TaskSettings, false)
+        CrewmatesCanGuess = BooleanOptionItem.Create(60681, "CrewmatesCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
-        ImpostorsCanGuess = BooleanOptionItem.Create(60682, "ImpostorsCanGuess", false, TabGroup.TaskSettings, false)
+        ImpostorsCanGuess = BooleanOptionItem.Create(60682, "ImpostorsCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
-        NeutralKillersCanGuess = BooleanOptionItem.Create(60683, "NeutralKillersCanGuess", false, TabGroup.TaskSettings, false)
+        NeutralKillersCanGuess = BooleanOptionItem.Create(60683, "NeutralKillersCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
-        PassiveNeutralsCanGuess = BooleanOptionItem.Create(60684, "PassiveNeutralsCanGuess", false, TabGroup.TaskSettings, false)
+        PassiveNeutralsCanGuess = BooleanOptionItem.Create(60684, "PassiveNeutralsCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
-        CanGuessAddons = BooleanOptionItem.Create(60685, "CanGuessAddons", true, TabGroup.TaskSettings, false)
+        CanGuessAddons = BooleanOptionItem.Create(60685, "CanGuessAddons", true, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
-        CrewCanGuessCrew = BooleanOptionItem.Create(60686, "CrewCanGuessCrew", true, TabGroup.TaskSettings, false)
+        CrewCanGuessCrew = BooleanOptionItem.Create(60686, "CrewCanGuessCrew", true, TabGroup.ModifierSettings, false)
             .SetHidden(true)
             .SetParent(GuesserMode);
-        ImpCanGuessImp = BooleanOptionItem.Create(60687, "ImpCanGuessImp", true, TabGroup.TaskSettings, false)
+        ImpCanGuessImp = BooleanOptionItem.Create(60687, "ImpCanGuessImp", true, TabGroup.ModifierSettings, false)
             .SetHidden(true)
             .SetParent(GuesserMode);
-        HideGuesserCommands = BooleanOptionItem.Create(60688, "GuesserTryHideMsg", true, TabGroup.TaskSettings, false)
+        HideGuesserCommands = BooleanOptionItem.Create(60688, "GuesserTryHideMsg", true, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode)
             .SetColor(Color.green);
 
-        ShowOnlyEnabledRolesInGuesserUI = BooleanOptionItem.Create(60689, "ShowOnlyEnabledRolesInGuesserUI", true, TabGroup.TaskSettings, false)
+        ShowOnlyEnabledRolesInGuesserUI = BooleanOptionItem.Create(60689, "ShowOnlyEnabledRolesInGuesserUI", true, TabGroup.ModifierSettings, false)
             .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
 
 
-        TextOptionItem.Create(10000029, "MenuTitle.GuesserModeRoles", TabGroup.TaskSettings)
+        TextOptionItem.Create(10000029, "MenuTitle.GuesserModeRoles", TabGroup.ModifierSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.yellow)
             .SetHeader(true);
 
+        DoubleShot.SetupCustomOption();
+
         Onbound.SetupCustomOptions();
 
+        Rebound.SetupCustomOptions();
 
 
         // Meeting Settings
-        TextOptionItem.Create(10000030, "MenuTitle.Meeting", TabGroup.GameSettings)
+        TextOptionItem.Create(10000030, "MenuTitle.Meeting", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue));
         // Sync Button
-        SyncButtonMode = BooleanOptionItem.Create(60700, "SyncButtonMode", false, TabGroup.GameSettings, false)
+        SyncButtonMode = BooleanOptionItem.Create(60700, "SyncButtonMode", false, TabGroup.ModSettings, false)
             .SetHeader(true)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);
-        SyncedButtonCount = IntegerOptionItem.Create(60701, "SyncedButtonCount", new(0, 100, 1), 10, TabGroup.GameSettings, false)
+        SyncedButtonCount = IntegerOptionItem.Create(60701, "SyncedButtonCount", new(0, 100, 1), 10, TabGroup.ModSettings, false)
             .SetParent(SyncButtonMode)
             .SetValueFormat(OptionFormat.Times)
             .SetGameMode(CustomGameMode.Standard);
         // 全员存活时的会议时间
-        AllAliveMeeting = BooleanOptionItem.Create(60710, "AllAliveMeeting", false, TabGroup.GameSettings, false)
+        AllAliveMeeting = BooleanOptionItem.Create(60710, "AllAliveMeeting", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue));
-        AllAliveMeetingTime = FloatOptionItem.Create(60711, "AllAliveMeetingTime", new(1f, 300f, 1f), 10f, TabGroup.GameSettings, false)
+        AllAliveMeetingTime = FloatOptionItem.Create(60711, "AllAliveMeetingTime", new(1f, 300f, 1f), 10f, TabGroup.ModSettings, false)
             .SetParent(AllAliveMeeting)
             .SetValueFormat(OptionFormat.Seconds);
         // 附加紧急会议
-        AdditionalEmergencyCooldown = BooleanOptionItem.Create(60720, "AdditionalEmergencyCooldown", false, TabGroup.GameSettings, false)
+        AdditionalEmergencyCooldown = BooleanOptionItem.Create(60720, "AdditionalEmergencyCooldown", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue));
-        AdditionalEmergencyCooldownThreshold = IntegerOptionItem.Create(60721, "AdditionalEmergencyCooldownThreshold", new(1, 15, 1), 1, TabGroup.GameSettings, false)
+        AdditionalEmergencyCooldownThreshold = IntegerOptionItem.Create(60721, "AdditionalEmergencyCooldownThreshold", new(1, 15, 1), 1, TabGroup.ModSettings, false)
             .SetParent(AdditionalEmergencyCooldown)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Players);
-        AdditionalEmergencyCooldownTime = FloatOptionItem.Create(60722, "AdditionalEmergencyCooldownTime", new(1f, 60f, 1f), 1f, TabGroup.GameSettings, false)
+        AdditionalEmergencyCooldownTime = FloatOptionItem.Create(60722, "AdditionalEmergencyCooldownTime", new(1f, 60f, 1f), 1f, TabGroup.ModSettings, false)
                 .SetParent(AdditionalEmergencyCooldown)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Seconds);
         // 投票相关设定
-        VoteMode = BooleanOptionItem.Create(60730, "VoteMode", false, TabGroup.GameSettings, false)
+        VoteMode = BooleanOptionItem.Create(60730, "VoteMode", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);
-        WhenSkipVote = StringOptionItem.Create(60731, "WhenSkipVote", voteModes[0..3], 0, TabGroup.GameSettings, false)
+        WhenSkipVote = StringOptionItem.Create(60731, "WhenSkipVote", voteModes[0..3], 0, TabGroup.ModSettings, false)
             .SetParent(VoteMode)
             .SetGameMode(CustomGameMode.Standard);
-        WhenSkipVoteIgnoreFirstMeeting = BooleanOptionItem.Create(60732, "WhenSkipVoteIgnoreFirstMeeting", false, TabGroup.GameSettings, false)
+        WhenSkipVoteIgnoreFirstMeeting = BooleanOptionItem.Create(60732, "WhenSkipVoteIgnoreFirstMeeting", false, TabGroup.ModSettings, false)
             .SetParent(WhenSkipVote)
             .SetGameMode(CustomGameMode.Standard);
-        WhenSkipVoteIgnoreNoDeadBody = BooleanOptionItem.Create(60733, "WhenSkipVoteIgnoreNoDeadBody", false, TabGroup.GameSettings, false)
+        WhenSkipVoteIgnoreNoDeadBody = BooleanOptionItem.Create(60733, "WhenSkipVoteIgnoreNoDeadBody", false, TabGroup.ModSettings, false)
             .SetParent(WhenSkipVote)
             .SetGameMode(CustomGameMode.Standard);
-        WhenSkipVoteIgnoreEmergency = BooleanOptionItem.Create(60734, "WhenSkipVoteIgnoreEmergency", false, TabGroup.GameSettings, false)
+        WhenSkipVoteIgnoreEmergency = BooleanOptionItem.Create(60734, "WhenSkipVoteIgnoreEmergency", false, TabGroup.ModSettings, false)
             .SetParent(WhenSkipVote)
             .SetGameMode(CustomGameMode.Standard);
-        WhenNonVote = StringOptionItem.Create(60735, "WhenNonVote", voteModes, 0, TabGroup.GameSettings, false)
+        WhenNonVote = StringOptionItem.Create(60735, "WhenNonVote", voteModes, 0, TabGroup.ModSettings, false)
             .SetParent(VoteMode)
             .SetGameMode(CustomGameMode.Standard);
-        WhenTie = StringOptionItem.Create(60745, "WhenTie", tieModes, 0, TabGroup.GameSettings, false)
+        WhenTie = StringOptionItem.Create(60745, "WhenTie", tieModes, 0, TabGroup.ModSettings, false)
             .SetParent(VoteMode)
             .SetGameMode(CustomGameMode.Standard);
         // 其它设定
-        TextOptionItem.Create(10000031, "MenuTitle.Other", TabGroup.GameSettings)
+        TextOptionItem.Create(10000031, "MenuTitle.Other", TabGroup.ModSettings)
             .HideInFFA()
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 梯子摔死
-        LadderDeath = BooleanOptionItem.Create(60760, "LadderDeath", false, TabGroup.GameSettings, false)
+        LadderDeath = BooleanOptionItem.Create(60760, "LadderDeath", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .HideInFFA();
-        LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", EnumHelper.GetAllNames<SpawnChance>()[1..], 0, TabGroup.GameSettings, false)
+        LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", EnumHelper.GetAllNames<SpawnChance>()[1..], 0, TabGroup.ModSettings, false)
             .SetParent(LadderDeath);
 
         // 修正首刀时间
-        FixFirstKillCooldown = BooleanOptionItem.Create(60770, "FixFirstKillCooldown", true, TabGroup.GameSettings, false)
+        FixFirstKillCooldown = BooleanOptionItem.Create(60770, "FixFirstKillCooldown", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
-        FixKillCooldownValue = FloatOptionItem.Create(60771, "FixKillCooldownValue", new(0f, 180f, 2.5f), 15f, TabGroup.GameSettings, false)
+        FixKillCooldownValue = FloatOptionItem.Create(60771, "FixKillCooldownValue", new(0f, 180f, 2.5f), 15f, TabGroup.ModSettings, false)
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(FixFirstKillCooldown);
         // 首刀保护
-        ShieldPersonDiedFirst = BooleanOptionItem.Create(60780, "ShieldPersonDiedFirst", false, TabGroup.GameSettings, false)
+        ShieldPersonDiedFirst = BooleanOptionItem.Create(60780, "ShieldPersonDiedFirst", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+        EveryoneCanSeeDeathReason = BooleanOptionItem.Create(60781, "EveryoneCanSeeDeathReason", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
         // 杀戮闪烁持续
-        KillFlashDuration = FloatOptionItem.Create(60790, "KillFlashDuration", new(0.1f, 0.45f, 0.05f), 0.3f, TabGroup.GameSettings, false)
+        KillFlashDuration = FloatOptionItem.Create(60790, "KillFlashDuration", new(0.1f, 0.45f, 0.05f), 0.3f, TabGroup.ModSettings, false)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         // 幽灵相关设定
-        TextOptionItem.Create(10000032, "MenuTitle.Ghost", TabGroup.GameSettings)
+        TextOptionItem.Create(10000032, "MenuTitle.Ghost", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
         // 幽灵设置
-        GhostIgnoreTasks = BooleanOptionItem.Create(60800, "GhostIgnoreTasks", false, TabGroup.GameSettings, false)
+        GhostIgnoreTasks = BooleanOptionItem.Create(60800, "GhostIgnoreTasks", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        GhostCanSeeOtherRoles = BooleanOptionItem.Create(60810, "GhostCanSeeOtherRoles", true, TabGroup.GameSettings, false)
+        GhostCanSeeOtherRoles = BooleanOptionItem.Create(60810, "GhostCanSeeOtherRoles", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        GhostCanSeeOtherVotes = BooleanOptionItem.Create(60820, "GhostCanSeeOtherVotes", true, TabGroup.GameSettings, false)
+        GhostCanSeeOtherVotes = BooleanOptionItem.Create(60820, "GhostCanSeeOtherVotes", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        GhostCanSeeDeathReason = BooleanOptionItem.Create(60830, "GhostCanSeeDeathReason", true, TabGroup.GameSettings, false)
+        GhostCanSeeDeathReason = BooleanOptionItem.Create(60830, "GhostCanSeeDeathReason", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        ConvertedCanBecomeGhost = BooleanOptionItem.Create(60840, "ConvertedCanBeGhostRole", false, TabGroup.GameSettings, false)
+        ConvertedCanBecomeGhost = BooleanOptionItem.Create(60840, "ConvertedCanBeGhostRole", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        MaxImpGhost = IntegerOptionItem.Create(60850, "MaxImpGhostRole", new(0, 15, 1), 15, TabGroup.GameSettings, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetValueFormat(OptionFormat.Times)
-            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        MaxCrewGhost = IntegerOptionItem.Create(60860, "MaxCrewGhostRole", new(0, 15, 1), 15, TabGroup.GameSettings, false)
+        MaxImpGhost = IntegerOptionItem.Create(60850, "MaxImpGhostRole", new(0, 15, 1), 15, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Times)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        DefaultAngelCooldown = FloatOptionItem.Create(60870, "DefaultAngelCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.GameSettings, false)
+        MaxCrewGhost = IntegerOptionItem.Create(60860, "MaxCrewGhostRole", new(0, 15, 1), 15, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Times)
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+        DefaultAngelCooldown = FloatOptionItem.Create(60870, "DefaultAngelCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
         #endregion
 
+        yield return null;
 
         // End Load Settings
         OptionSaver.Load();
         IsLoaded = true;
+        Logger.Msg("Mod option loading eng", "Load Options");
     }
 
     public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
@@ -1885,7 +1914,7 @@ public static class Options
             .SetGameMode(customGameMode) as StringOptionItem;
         
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 15, 1), 1, tab, false)
-        .SetParent(spawnOption)
+            .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
             .SetGameMode(customGameMode);
 
@@ -1946,7 +1975,7 @@ public static class Options
             .SetGameMode(customGameMode) as StringOptionItem;
 
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, canSetNum ? 10 : 1, 1), 1, tab, false)
-        .SetParent(spawnOption)
+            .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
             .SetHidden(!canSetNum)
             .SetGameMode(customGameMode);

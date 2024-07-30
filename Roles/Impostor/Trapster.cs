@@ -22,7 +22,7 @@ internal class Trapster : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Trapster);
-        TrapsterKillCooldown = FloatOptionItem.Create(Id + 2, "KillCooldown", new(2.5f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
+        TrapsterKillCooldown = FloatOptionItem.Create(Id + 2, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Trapster])
             .SetValueFormat(OptionFormat.Seconds);
         TrapConsecutiveBodies = BooleanOptionItem.Create(Id + 3, "TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)
@@ -52,18 +52,17 @@ internal class Trapster : RoleBase
         return true;
     }
 
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        var target  = deadBody?.Object;
 
         // if trapster dead
-        if (target.Is(CustomRoles.Trapster) && TrapTrapsterBody.GetBool() && !reporter.Is(CustomRoles.Pestilence))
+        if (deadBody.Object.Is(CustomRoles.Trapster) && TrapTrapsterBody.GetBool() && !reporter.Is(CustomRoles.Pestilence))
         {
-            var killerId = target.PlayerId;
+            var killerId = deadBody.PlayerId;
 
-            Main.PlayerStates[reporter.PlayerId].deathReason = PlayerState.DeathReason.Trap;
+            reporter.SetDeathReason(PlayerState.DeathReason.Trap);
             reporter.RpcMurderPlayer(reporter);
-            reporter.SetRealKiller(target);
+            reporter.SetRealKiller(deadBody.Object);
 
             RPC.PlaySoundRPC(killerId, Sounds.KillSound);
             
@@ -76,12 +75,12 @@ internal class Trapster : RoleBase
         }
 
         // if reporter try reported trap body
-        if (BoobyTrapBody.Contains(target.PlayerId) && reporter.IsAlive()
-            && !reporter.Is(CustomRoles.Pestilence) && _Player.RpcCheckAndMurder(target, true))
+        if (BoobyTrapBody.Contains(deadBody.PlayerId) && reporter.IsAlive()
+            && !reporter.Is(CustomRoles.Pestilence) && _Player.RpcCheckAndMurder(reporter, true))
         {
-            var killerId = target.PlayerId;
-            
-            Main.PlayerStates[reporter.PlayerId].deathReason = PlayerState.DeathReason.Trap;
+            var killerId = deadBody.PlayerId;
+
+            reporter.SetDeathReason(PlayerState.DeathReason.Trap);
             reporter.RpcMurderPlayer(reporter);
             reporter.SetRealKiller(_Player);
 

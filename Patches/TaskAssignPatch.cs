@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -12,7 +13,7 @@ class AddTasksFromListPatch
     public static void Prefix(ShipStatus __instance,
         [HarmonyArgument(4)] Il2CppSystem.Collections.Generic.List<NormalPlayerTask> unusedTasks)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || __instance == null) return;
 
         if (!Options.DisableShortTasks.GetBool() && !Options.DisableCommonTasks.GetBool() && !Options.DisableLongTasks.GetBool() && !Options.DisableOtherTasks.GetBool()) return;
         
@@ -106,15 +107,14 @@ class AddTasksFromListPatch
     }
 }
 
-[HarmonyPatch(typeof(GameData), nameof(GameData.RpcSetTasks))]
+[HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.RpcSetTasks))]
 class RpcSetTasksPatch
 {
     // Patch to overwrite the task just before the process of allocating the task and sending the RPC is performed
     // Does not interfere with the vanilla task allocation process itself
-    public static void Prefix(/*GameData __instance,*/
-    [HarmonyArgument(0)] byte playerId,
-    [HarmonyArgument(1)] ref Il2CppStructArray<byte> taskTypeIds)
+    public static void Prefix(NetworkedPlayerInfo __instance, [HarmonyArgument(0)] ref Il2CppStructArray<byte> taskTypeIds)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         if (GameStates.IsHideNSeek) return;
 
         // null measure
@@ -124,7 +124,7 @@ class RpcSetTasksPatch
             return;
         }
 
-        var pc = Utils.GetPlayerById(playerId);
+        var pc = __instance.Object;
         CustomRoles? RoleNullable = pc?.GetCustomRole();
         if (RoleNullable == null) return;
         CustomRoles role = RoleNullable.Value;
@@ -245,5 +245,25 @@ class RpcSetTasksPatch
             list[i] = list[rand];
             list[rand] = obj;
         }
+    }
+}
+
+[HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.HandleRpc))]
+class HandleRpcPatch
+{
+    public static bool Prefix(NetworkedPlayerInfo __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+    {
+        //MessageReader sr = MessageReader.Get(reader);
+        // var rpc = (RpcCalls)callId;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            Logger.Error($"Received Rpc {(RpcCalls)callId} for {__instance.Object.GetRealName()}({__instance.PlayerId}), which is impossible.", "TaskAssignPatch");
+
+            EAC.WarnHost();
+            return false;
+        }
+
+        return true;
     }
 }

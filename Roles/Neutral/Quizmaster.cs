@@ -7,6 +7,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
 
+
 namespace TOHE.Roles.Neutral;
 
 internal class Quizmaster : RoleBase
@@ -92,12 +93,12 @@ internal class Quizmaster : RoleBase
     }
     public override void Add(byte playerId)
     {
+        Player = _Player;
         MarkedPlayer = byte.MaxValue;
 
-        CustomRoleManager.MarkOthers.Add(GetMarkForOthers);
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
-    private void SendRPC(byte targetId)
+    public void SendRPC(byte targetId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -115,6 +116,10 @@ internal class Quizmaster : RoleBase
             MarkedPlayer = targetId;
 
             allowedKilling = CanKillAfterMark;
+        }
+        else
+        {
+            MarkedPlayer = targetId;
         }
     }
 
@@ -196,7 +201,7 @@ internal class Quizmaster : RoleBase
         return chosenRole;
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (reporter == null) return;
 
@@ -208,7 +213,7 @@ internal class Quizmaster : RoleBase
         }
         else
         {
-            var targetInfo = target.Data;
+            var targetInfo = target;
             lastReportedColor = thisReportedColor;
             thisReportedColor = targetInfo.GetPlayerColorString();
         }
@@ -270,7 +275,7 @@ internal class Quizmaster : RoleBase
             AddMsg(GetString("QuizmasterChat.MarkedPublic").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer)?.GetRealName(isMeeting: true)), pc.PlayerId, GetString("QuizmasterChat.Title"));
         }
     }
-    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
         if (exiled == null) return;
 
@@ -300,12 +305,12 @@ internal class Quizmaster : RoleBase
             AlreadyMarked = false;
 
         MarkedPlayer = byte.MaxValue;
+        if (Player?.GetRoleClass() is Quizmaster Quiz)
+            Quiz.SendRPC(byte.MaxValue);
     }
 
     private void OnPlayerDead(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting) return;
-
         diedThisRound++;
         if (target.PlayerId == MarkedPlayer) ResetMarkedPlayer(false);
     }
@@ -316,8 +321,10 @@ internal class Quizmaster : RoleBase
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
         => (!isForMeeting && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
 
-    private string GetMarkForOthers(PlayerControl seer, PlayerControl target, bool isForMeeting)
-        => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
+            => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+        
 
     public static void OnSabotageCall(SystemTypes systemType)
     {
@@ -359,10 +366,11 @@ internal class Quizmaster : RoleBase
 
     private static void KillPlayer(PlayerControl plrToKill)
     {
-        Main.PlayerStates[plrToKill.PlayerId].deathReason = PlayerState.DeathReason.WrongAnswer;
+        plrToKill.SetDeathReason(PlayerState.DeathReason.WrongAnswer);
         Main.PlayerStates[plrToKill.PlayerId].SetDead();
         plrToKill.Data.IsDead = true;
         plrToKill.RpcExileV2();
+        plrToKill.SetRealKiller(Player);
         ResetMarkedPlayer(true);
     }
 
@@ -489,17 +497,13 @@ class PlrColorQuestion : QuizQuestionBase
             if (numOfQuestionsDone == positionForRightAnswer)
             {
                 AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
-                if (Answer == "None") prefix = "Quizmaster.";
-                if (prefix != "")
-                    Answer = GetString(prefix + Answer);
+                Answer = GetString(prefix + Answer);
                 Answers.Add(prefix + Answer);
             }
             else
             {
                 string thatAnswer = PossibleAnswers[rnd.Next(PossibleAnswers.Count)];
-                if (thatAnswer == "None") prefix = "Quizmaster.";
-                if (prefix != "")
-                    thatAnswer = GetString(prefix + thatAnswer);
+                thatAnswer = GetString(prefix + thatAnswer);
                 Answers.Add(prefix + thatAnswer);
                 PossibleAnswers.Remove(thatAnswer);
             }

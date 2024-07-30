@@ -30,7 +30,7 @@ internal class Vector : RoleBase
         VectorVentNumWin = IntegerOptionItem.Create(15502, "VectorVentNumWin", new(5, 500, 5), 40, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Vector])
             .SetValueFormat(OptionFormat.Times);
-        VectorVentCD = FloatOptionItem.Create(15503, "VentCooldown", new(0f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
+        VectorVentCD = FloatOptionItem.Create(15503, GeneralOption.EngineerBase_VentCooldown, new(0f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Vector])
             .SetValueFormat(OptionFormat.Seconds);
     }
@@ -65,11 +65,6 @@ internal class Vector : RoleBase
         AURoleOptions.EngineerCooldown = VectorVentCD.GetFloat();
         AURoleOptions.EngineerInVentMaxTime = 1;
     }
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
-    {
-        hud.AbilityButton.buttonLabelText.text = GetString("VectorVentButtonText");
-        hud.AbilityButton.SetUsesRemaining(VectorVentNumWin.GetInt() - (VectorVentCount.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var mx) ? mx : 0));
-    }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
         VectorVentCount.TryAdd(pc.PlayerId, 0);
@@ -98,4 +93,9 @@ internal class Vector : RoleBase
         }
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Happy");
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(GetString("VectorVentButtonText"));
+        hud.AbilityButton.SetUsesRemaining(VectorVentNumWin.GetInt() - (VectorVentCount.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var mx) ? mx : 0));
+    }
 }
