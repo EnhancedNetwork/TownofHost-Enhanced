@@ -645,6 +645,7 @@ class CastVotePatch
             if (!voter.GetRoleClass().HasVoted)
             {
                 voter.GetRoleClass().HasVoted = true;
+                Utils.SendMessage("VoteNotUseAbility", voter.PlayerId);
                 return false;
             }
         }
