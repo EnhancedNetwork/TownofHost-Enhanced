@@ -67,9 +67,10 @@ class CheckForEndVotingPatch
                     });
                     states = [.. statesList];
 
+                    ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
+
                     if (AntiBlackout.BlackOutIsActive)
                     {
-                        ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
                         //__instance.RpcVotingComplete(states, null, true);
 
                         // Need check BlackOutIsActive again
@@ -79,7 +80,14 @@ class CheckForEndVotingPatch
                         AntiBlackout.ShowExiledInfo = true;
                         ConfirmEjections(voteTarget.Data, true);
                     }
-                    else __instance.RpcVotingComplete(states, voteTarget.Data, false);
+                    else
+                    {
+                        __instance.RpcVotingComplete(states, voteTarget.Data, false);
+
+                        Main.LastVotedPlayerInfo = voteTarget.Data;
+                        if (Main.LastVotedPlayerInfo != null)
+                            ConfirmEjections(Main.LastVotedPlayerInfo);
+                    }
 
                     Logger.Info($"{voteTarget.GetNameWithRole()} expelled by Dictator", "Dictator");
                     
@@ -88,10 +96,6 @@ class CheckForEndVotingPatch
                     Logger.Info("Dictatorial vote, forced closure of the meeting", "Special Phase");
                     
                     voteTarget.SetRealKiller(pc);
-                    
-                    Main.LastVotedPlayerInfo = voteTarget.Data;
-                    if (Main.LastVotedPlayerInfo != null)
-                        ConfirmEjections(Main.LastVotedPlayerInfo);
 
                     return true;
                 }
@@ -134,7 +138,7 @@ class CheckForEndVotingPatch
                 }
             }
 
-            GameData.PlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
+            NetworkedPlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
             bool tie = false;
 
             foreach (var ps in __instance.playerStates)
@@ -203,9 +207,26 @@ class CheckForEndVotingPatch
                 });
 
                 // Swapper swap votes
-                 if(voter.GetRoleClass() is Swapper sw) sw.SwapVotes(__instance);
+                if (voter.GetRoleClass() is Swapper sw) sw.SwapVotes(__instance);
 
                 playerRoleClass?.AddVisualVotes(ps, ref statesList);
+
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
+                {
+                    Stealer.AddVisualVotes(ps, ref statesList);
+                }
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.Paranoia) && Paranoia.DualVotes.GetBool())
+                {
+                    Paranoia.AddVisualVotes(ps, ref statesList);
+                }
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.Knighted) && !Monarch.HideAdditionalVotesForKnighted.GetBool())
+                {
+                    statesList.Add(new MeetingHud.VoterState()
+                    {
+                        VoterId = ps.TargetPlayerId,
+                        VotedForId = ps.VotedFor
+                    });
+                }
             }
 
             var VotingData = __instance.CustomCalculateVotes(); //Influenced vote mun isnt counted here
@@ -322,10 +343,11 @@ class CheckForEndVotingPatch
 
             exiledPlayer?.Object.SetRealKiller(null);
 
+            ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
+
             //RPC
             if (AntiBlackout.BlackOutIsActive)
             {
-                ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
                 //__instance.RpcVotingComplete(states, null, true);
 
                 // Need check BlackOutIsActive again
@@ -338,15 +360,18 @@ class CheckForEndVotingPatch
                     ConfirmEjections(exiledPlayer, true);
                 }
             }
-            else __instance.RpcVotingComplete(states, exiledPlayer, tie); // Normal processing
+            else
+            {
+                __instance.RpcVotingComplete(states, exiledPlayer, tie); // Normal processing
+                
+                Main.LastVotedPlayerInfo = exiledPlayer;
+                if (Main.LastVotedPlayerInfo != null)
+                {
+                    ConfirmEjections(Main.LastVotedPlayerInfo);
+                }
+            }
 
             CheckForDeathOnExile(PlayerState.DeathReason.Vote, exileId);
-
-            Main.LastVotedPlayerInfo = exiledPlayer;
-            if (Main.LastVotedPlayerInfo != null)
-            {
-                ConfirmEjections(Main.LastVotedPlayerInfo);
-            }
 
             return false;
         }
@@ -357,8 +382,8 @@ class CheckForEndVotingPatch
         }
     }
 
-    // 参考：https://github.com/music-discussion/TownOfHost-TheOtherRoles
-    private static void ConfirmEjections(GameData.PlayerInfo exiledPlayer, bool AntiBlackoutStore = false)
+    // Credit：https://github.com/music-discussion/TownOfHost-TheOtherRoles
+    private static void ConfirmEjections(NetworkedPlayerInfo exiledPlayer, bool AntiBlackoutStore = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (exiledPlayer == null) return;
@@ -469,7 +494,7 @@ class CheckForEndVotingPatch
                 Main.DoBlockNameChange = true;
                 if (GameStates.IsInGame)
                 {
-                    GameData.Instance.UpdateName(exiledPlayer.PlayerId, name, false);
+                    exiledPlayer.UpdateName(name, Utils.GetClientById(exiledPlayer.ClientId));
                     player?.RpcSetName(name);
                 }
             }
@@ -477,7 +502,7 @@ class CheckForEndVotingPatch
             {
                 Logger.Error($"Error after change exiled player name: {error}", "ConfirmEjections");
             }
-        }, 3.0f, "Change Exiled Player Name");
+        }, 4f, "Change Exiled Player Name");
 
         _ = new LateTask(() =>
         {
@@ -492,7 +517,7 @@ class CheckForEndVotingPatch
                 if (GameStates.IsInGame && player.Data.Disconnected)
                 {
                     player.Data.PlayerName = realName;
-                    GameData.Instance.UpdateName(exiledPlayer.PlayerId, realName, false);
+                    exiledPlayer.UpdateName(realName, Utils.GetClientById(exiledPlayer.ClientId));
                     //Await Next Send Data or Next Meeting
                 }
             }
@@ -500,7 +525,7 @@ class CheckForEndVotingPatch
             {
                 Logger.Error($"Error after change exiled player name back: {error}", "ConfirmEjections");
             }
-        }, 11.5f, "Change Exiled Player Name Back");
+        }, 7f, "Change Exiled Player Name Back");
 
         if (AntiBlackoutStore)
         {
@@ -591,7 +616,7 @@ class CheckForEndVotingPatch
         }
         if (TargetList == null || TargetList.Count == 0) return null;
         var rand = IRandom.Instance;
-        var target = TargetList[rand.Next(TargetList.Count)];
+        var target = TargetList.RandomElement();
         return target;
     }
 }
@@ -662,8 +687,12 @@ class CastVotePatch
 
     public static void Postfix(MeetingHud __instance)
     {
-        __instance.CheckForEndVoting();
-        //For stuffs in check for end voting to work
+        // Prevent double check end voting
+        if (GameStates.IsMeeting && MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion)
+        {
+            __instance.CheckForEndVoting();
+            //For stuffs in check for end voting to work
+        }
     }
 }
 static class ExtendedMeetingHud
@@ -717,9 +746,9 @@ static class ExtendedMeetingHud
                     && ps.TargetPlayerId != ps.VotedFor
                     ) VoteNum += 1;
 
-                if (Schizophrenic.DualVotes.GetBool())
+                if (Paranoia.DualVotes.GetBool())
                 {
-                    if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Schizophrenic)
+                    if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Paranoia)
                         && ps.TargetPlayerId != ps.VotedFor
                         ) VoteNum += VoteNum;
                 }
@@ -727,7 +756,7 @@ static class ExtendedMeetingHud
                 // Additional votes
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
                 {
-                    VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Stealer.TicketsPerKill.GetFloat());
+                    VoteNum += Stealer.AddRealVotesNum(ps);
                 }
 
                 // Madmate assign by vote
@@ -909,7 +938,7 @@ class MeetingHudStartPatch
             var roleTextMeeting = UnityEngine.Object.Instantiate(pva.NameText);
             roleTextMeeting.transform.SetParent(pva.NameText.transform);
             roleTextMeeting.transform.localPosition = new Vector3(0f, -0.18f, 0f);
-            roleTextMeeting.fontSize = 1.5f;
+            roleTextMeeting.fontSize = 1.6f;
             roleTextMeeting.text = RoleTextData.Item1;
             if (Main.VisibleTasksCount) roleTextMeeting.text += Utils.GetProgressText(pc);
             roleTextMeeting.color = RoleTextData.Item2;
@@ -933,6 +962,10 @@ class MeetingHudStartPatch
                 suffixBuilder.Append(myRole.GetSuffix(PlayerControl.LocalPlayer, pc, isForMeeting: true));
             }
             suffixBuilder.Append(CustomRoleManager.GetSuffixOthers(PlayerControl.LocalPlayer, pc, isForMeeting: true));
+
+            // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
+            var player = PlayerControl.LocalPlayer;
+            var target = Utils.GetPlayerById(pva.TargetPlayerId);
             
             if (suffixBuilder.Length > 0)
             {
@@ -952,7 +985,7 @@ class MeetingHudStartPatch
         {
             _ = new LateTask(() =>
             {
-                Utils.SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), replay: true);
+                Utils.SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), noReplay: true);
 
             }, 5f, "Warning BlackOut Is Active");
         }
@@ -965,7 +998,7 @@ class MeetingHudStartPatch
                 AntiBlackout.StoreExiledMessage = GetString("Warning.ShowAntiBlackExiledPlayer") + AntiBlackout.StoreExiledMessage;
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(AntiBlackout.StoreExiledMessage, 255, Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")), replay: true);
+                    Utils.SendMessage(AntiBlackout.StoreExiledMessage, 255, Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")), noReplay: true);
                     AntiBlackout.StoreExiledMessage = "";
                 }, 5.5f, "AntiBlackout.StoreExiledMessage");
             }
@@ -1009,16 +1042,8 @@ class MeetingHudStartPatch
 
             var sb = new StringBuilder();
 
+            //pva.NameText.text = target.GetRealName(isMeeting: true);
             pva.NameText.text = pva.NameText.text.ApplyNameColorData(seer, target, true);
-            
-            // if Victim to Doppelganger or is Doppelganger
-            if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
-            {
-                if (target.Is(CustomRoles.Doppelganger) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                    pva.NameText.text = $"{Utils.ColorString(Color.gray, $"<size=75%>({Doppelganger.TrueNames[target.PlayerId]})</size>")}\r\n{pva.NameText.text.ApplyNameColorData(seer, target, true)}\n\n";
-                else if (Doppelganger.CheckDoppelVictim(target.PlayerId) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                    pva.NameText.text = Doppelganger.TrueNames[target.PlayerId].ApplyNameColorData(seer, target, true);
-            }
 
             // Guesser Mode //
             if (Options.GuesserMode.GetBool())
@@ -1026,7 +1051,7 @@ class MeetingHudStartPatch
                 if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Inspector))
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                if (Options.ImpostorsCanGuess.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Councillor))
+                if (Options.ImpostorsCanGuess.GetBool() && (seer.GetCustomRole().IsImpostor() || seer.GetCustomRole().IsMadmate()) && !seer.Is(CustomRoles.Councillor))
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
                 if (Options.NeutralKillersCanGuess.GetBool() && seer.GetCustomRole().IsNK())
@@ -1114,7 +1139,7 @@ class MeetingHudUpdatePatch
                 var player = Utils.GetPlayerById(x.TargetPlayerId);
                 if (player != null && !player.Data.IsDead)
                 {
-                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Execution;
+                    player.SetDeathReason(PlayerState.DeathReason.Execution);
                     player.SetRealKiller(PlayerControl.LocalPlayer);
                     player.RpcExileV2();
                     Main.PlayerStates[player.PlayerId].SetDead();

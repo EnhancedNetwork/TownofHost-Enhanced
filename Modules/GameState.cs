@@ -1,3 +1,4 @@
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using AmongUs.GameOptions;
 using System;
 using UnityEngine;
@@ -28,24 +29,8 @@ public class PlayerState(byte playerId)
     public PlainShipRoom LastRoom = null;
     public bool HasSpawned { get; set; } = false;
     public Dictionary<byte, string> TargetColorData = [];
-    public GameData.PlayerOutfit NormalOutfit;
+    public NetworkedPlayerInfo.PlayerOutfit NormalOutfit;
 
-    public CustomRoles GetCustomRoleFromRoleType()
-    {
-        var RoleInfo = GetPlayerInfoById(PlayerId);
-        return RoleInfo.Role == null
-            ? MainRole
-            : RoleInfo.Role.Role switch
-            {
-                RoleTypes.Crewmate => CustomRoles.Crewmate,
-                RoleTypes.Engineer => CustomRoles.Engineer,
-                RoleTypes.Scientist => CustomRoles.Scientist,
-                RoleTypes.GuardianAngel => CustomRoles.GuardianAngel,
-                RoleTypes.Impostor => CustomRoles.Impostor,
-                RoleTypes.Shapeshifter => CustomRoles.Shapeshifter,
-                _ => CustomRoles.Crewmate,
-            };
-    }
     public void SetMainRole(CustomRoles role)
     {
         MainRole = role;
@@ -63,7 +48,7 @@ public class PlayerState(byte playerId)
                     var taskstate = pc.GetPlayerTaskState();
                     if (taskstate != null)
                     {
-                        GameData.Instance.RpcSetTasks(pc.PlayerId, Array.Empty<byte>());
+                        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
                         taskstate.CompletedTasksCount = 0;
                         taskstate.AllTasksCount = pc.Data.Tasks.Count;
                         taskstate.hasTasks = true;
@@ -245,7 +230,7 @@ public class PlayerState(byte playerId)
         if (AmongUsClient.Instance.AmHost)
         {
             RPC.SendDeathReason(PlayerId, deathReason);
-            if (GameStates.IsMeeting)
+            if (GameStates.IsMeeting && MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion)
             {
                 MeetingHud.Instance.CheckForEndVoting();
             }
@@ -342,8 +327,7 @@ public class TaskState
             return "\r\n";
         }
 
-        var rd = IRandom.Instance;
-        var randomPlayer = playersWithTasks[rd.Next(0, playersWithTasks.Length)];
+        var randomPlayer = playersWithTasks.RandomElement();
         var taskState = randomPlayer.Value.TaskState;
 
         Color TextColor;
@@ -462,7 +446,7 @@ public static class GameStates
 public static class MeetingStates
 {
     public static DeadBody[] DeadBodies = null;
-    public static GameData.PlayerInfo ReportTarget = null;
+    public static NetworkedPlayerInfo ReportTarget = null;
     public static bool IsEmergencyMeeting => ReportTarget == null;
     public static bool IsExistDeadBody => DeadBodies.Any();
     public static bool MeetingCalled = false;

@@ -39,6 +39,8 @@ public class Cyber
 
     public static void AfterCyberDeadTask(PlayerControl target, bool inMeeting)
     {
+        if (target.IsDisconnected()) return;
+
         foreach (var pc in Main.AllPlayerControls)
         {
             if (!ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;

@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
@@ -63,6 +64,7 @@ internal class Eraser : RoleBase
         var targetRole = target.GetCustomRole();
         if (targetRole.IsTasklessCrewmate() || targetRole.IsNeutral() || Main.TasklessCrewmate.Contains(target.PlayerId) || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
         {
+            Logger.Info($"Cannot erase role because is Impostor Based or Neutral or ect", "Eraser");
             Utils.SendMessage(string.Format(GetString("EraserEraseBaseImpostorOrNeutralRoleNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
             return true;
         }
@@ -78,11 +80,18 @@ internal class Eraser : RoleBase
         Utils.NotifyRoles(SpecifySeer: player);
         return false;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (PlayerToErase.Contains(target.PlayerId) && !role.IsAdditionRole())
+        {
+            guesser.ShowInfoMessage(isUI, GetString("EraserTryingGuessErasedPlayer"));
+            return true;
+        }
+        return false;
+    }
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         TempEraseLimit = (int)AbilityLimit;
-
-        PlayerToErase.Clear();
         didVote.Clear();
     }
     public override void NotifyAfterMeeting()
@@ -92,6 +101,7 @@ internal class Eraser : RoleBase
             var player = Utils.GetPlayerById(pc);
             if (player == null) continue;
 
+            player.RPCPlayCustomSound("Oiiai");
             player.Notify(GetString("LostRoleByEraser"));
         }
     }

@@ -28,16 +28,19 @@ public static class AntiBlackout
             // if player is ejected, do not count him as alive
             if (lastExiled != null && pc.PlayerId == lastExiled.PlayerId) continue;
 
-            if (pc.GetCustomRole().IsImpostor()) Impostors.Add(pc.PlayerId); // Impostors
-            else if (Main.PlayerStates[pc.PlayerId].countTypes == CountTypes.Impostor) Impostors.Add(pc.PlayerId); // Madmates
+            // Impostors
+            if (pc.Is(Custom_Team.Impostor))
+                Impostors.Add(pc.PlayerId);
 
-            else if (pc.GetCustomRole().IsNK()) NeutralKillers.Add(pc.PlayerId); // Neutral Killers
-            else if (pc.Is(CustomRoles.Cultist)) NeutralKillers.Add(pc.PlayerId);
+            // Only Neutral killers
+            else if (pc.IsNeutralKiller()) 
+                NeutralKillers.Add(pc.PlayerId);
 
+            // Crewmate
             else Crewmates.Add(pc.PlayerId);
         }
 
-        var numAliveImpostors = Impostors.Count;
+         var numAliveImpostors = Impostors.Count;
         var numAliveCrewmates = Crewmates.Count;
         var numAliveNeutralKillers = NeutralKillers.Count;
 
@@ -47,21 +50,17 @@ public static class AntiBlackout
 
         var BlackOutIsActive = false;
 
-        // Don't check if Neutral killers are not present in the game
-        if (numAliveNeutralKillers >= 1)
-        {
-            // if all Crewmates is dead
-            if (!BlackOutIsActive)
-                BlackOutIsActive = numAliveCrewmates <= 0;
+        // All real imposotrs is dead
+        if (!BlackOutIsActive)
+            BlackOutIsActive = numAliveImpostors <= 0;
 
-            // if all Impostors is dead and neutral killers > or = num alive crewmates
-            if (!BlackOutIsActive)
-                BlackOutIsActive = numAliveImpostors <= 0 && (numAliveNeutralKillers >= numAliveCrewmates);
+        // Alive Impostors > or = others team count
+        if (!BlackOutIsActive)
+            BlackOutIsActive = (numAliveNeutralKillers + numAliveCrewmates) <= numAliveImpostors;
 
-            // if num alive Impostors > or = num alive Crewmates/Neutral killers
-            if (!BlackOutIsActive)
-                BlackOutIsActive = numAliveImpostors >= (numAliveNeutralKillers + numAliveCrewmates);
-        }
+        // One Impostor and one Neutral Killer is alive, and living Crewmates very few
+        if (!BlackOutIsActive)
+            BlackOutIsActive = numAliveNeutralKillers == 1 && numAliveImpostors == 1 && numAliveCrewmates <= 2;
 
         Logger.Info($" {BlackOutIsActive}", "BlackOut Is Active");
         return BlackOutIsActive;
@@ -110,25 +109,26 @@ public static class AntiBlackout
     public static void SendGameData([CallerMemberName] string callerMethodName = "")
     {
         logger.Info($"SendGameData is called from {callerMethodName}");
-        MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
-        // The writing {} is for readability.
-        writer.StartMessage(5); //0x05 GameData
+        foreach (var playerinfo in GameData.Instance.AllPlayers)
         {
-            writer.Write(AmongUsClient.Instance.GameId);
-            writer.StartMessage(1); //0x01 Data
+            MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+            writer.StartMessage(5); //0x05 GameData
             {
-                writer.WritePacked(GameData.Instance.NetId);
-                GameData.Instance.Serialize(writer, true);
-
+                writer.Write(AmongUsClient.Instance.GameId);
+                writer.StartMessage(1); //0x01 Data
+                {
+                    writer.WritePacked(playerinfo.NetId);
+                    playerinfo.Serialize(writer, true);
+                }
+                writer.EndMessage();
             }
             writer.EndMessage();
-        }
-        writer.EndMessage();
 
-        AmongUsClient.Instance.SendOrDisconnect(writer);
-        writer.Recycle();
+            AmongUsClient.Instance.SendOrDisconnect(writer);
+            writer.Recycle();
+        }
     }
-    public static void OnDisconnect(GameData.PlayerInfo player)
+    public static void OnDisconnect(NetworkedPlayerInfo player)
     {
         // Execution conditions: Client is the host, IsDead is overridden, player is already disconnected
         if (!AmongUsClient.Instance.AmHost || !IsCached || !player.Disconnected) return;
@@ -162,7 +162,7 @@ public static class AntiBlackout
             logger.Info("==/Temp Restore==");
         }
     }
-    public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, GameData.PlayerInfo exiled, bool tie)
+    public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, NetworkedPlayerInfo exiled, bool tie)
     {
         if (AmongUsClient.Instance.AmClient)
         {

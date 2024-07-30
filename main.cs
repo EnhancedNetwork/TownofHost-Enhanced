@@ -39,14 +39,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0609.200.011000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 Canary 1.1";
-    public static readonly string SupportedVersionAU = "2024.3.5"; // Also 2024.6.4
+    public const string PluginVersion = "2024.0728.200.9999"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.0.0";
+    public const string SupportedVersionAU = "2024.6.18";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 1.1
-    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
     public static readonly bool devRelease = false; // INACTIVE - Latest: V2.0.0 Dev 25
+    public static readonly bool canaryRelease = false; // ACTIVE - Latest: V2.0.0 Canary 12
+    public static readonly bool fullRelease = true; // INACTIVE - Latest: V2.0.0
 
     public static bool hasAccess = true;
 
@@ -59,10 +59,10 @@ public class Main : BasePlugin
     public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
 
     public static readonly bool ShowWebsiteButton = true;
-    public static readonly string WebsiteInviteUrl = "https://tohre.dev";
+    public static readonly string WebsiteInviteUrl = "https://weareten.ca/";
     
-    public static readonly bool ShowKofiButton = true;
-    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
+    public static readonly bool ShowDonationButton = true;
+    public static readonly string DonationInviteUrl = "https://weareten.ca/TOHE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);
@@ -73,8 +73,8 @@ public class Main : BasePlugin
     public static bool AlreadyShowMsgBox = false;
     public static string credentialsText;
     public Coroutines coroutines;
-    public static NormalGameOptionsV07 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
-    public static HideNSeekGameOptionsV07 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
+    public static NormalGameOptionsV08 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static HideNSeekGameOptionsV08 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -85,14 +85,14 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableGM { get; private set; }
     public static ConfigEntry<bool> AutoStart { get; private set; }
     public static ConfigEntry<bool> DarkTheme { get; private set; }
+    public static ConfigEntry<bool> DisableLobbyMusic { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
-    public static ConfigEntry<bool> ModeForSmallScreen { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
-    public static ConfigEntry<bool> AutoMuteUs { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
     public static ConfigEntry<bool> EnableCustomSoundEffect { get; private set; }
+    public static ConfigEntry<bool> EnableCustomDecorations { get; private set; }
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
 
     // Debug
@@ -119,6 +119,7 @@ public class Main : BasePlugin
     
     public static Dictionary<byte, PlayerState> PlayerStates = [];
     public static readonly Dictionary<byte, string> AllPlayerNames = [];
+    public static readonly Dictionary<int, string> AllClientRealNames = [];
     public static readonly Dictionary<byte, CustomRoles> AllPlayerCustomRoles = [];
     public static readonly Dictionary<(byte, byte), string> LastNotifyNames = [];
     public static readonly Dictionary<byte, Action> LateOutfits = [];
@@ -129,7 +130,7 @@ public class Main : BasePlugin
     
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
-    public static GameData.PlayerInfo LastVotedPlayerInfo;
+    public static NetworkedPlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
     public static readonly HashSet<byte> ResetCamPlayerList = [];
     public static readonly HashSet<byte> winnerList = [];
@@ -149,7 +150,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<int, int> SayStartTimes = [];
     public static readonly Dictionary<int, int> SayBanwordsTimes = [];
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
-    public static readonly Dictionary<byte, int> GuesserGuessed = [];
+    public static readonly HashSet<byte> PlayersDiedInMeeting = [];
     public static readonly Dictionary<byte, long> AllKillers = [];
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
@@ -163,7 +164,7 @@ public class Main : BasePlugin
     public static int AliveImpostorCount;
     public static bool VisibleTasksCount = false;
     public static bool AssignRolesIsStarted = false;
-    public static string nickName = "";
+    public static string HostRealName = "";
     public static bool introDestroyed = false;
     public static int DiscussionTime;
     public static int VotingTime;
@@ -189,9 +190,9 @@ public class Main : BasePlugin
 
     public static List<string> TName_Snacks_CN = ["冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖"];
     public static List<string> TName_Snacks_EN = ["Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee"];
-    public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese ?
-        TName_Snacks_CN[IRandom.Instance.Next(0, TName_Snacks_CN.Count)] :
-        TName_Snacks_EN[IRandom.Instance.Next(0, TName_Snacks_EN.Count)];
+    public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese 
+        ? TName_Snacks_CN.RandomElement()
+        : TName_Snacks_EN.RandomElement();
 
     private static void CreateTemplateRoleColorFile()
     {
@@ -424,14 +425,14 @@ public class Main : BasePlugin
         EnableGM = Config.Bind("Client Options", "EnableGM", false);
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
         DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
+        DisableLobbyMusic = Config.Bind("Client Options", "DisableLobbyMusic", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
-        ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
-        AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);
         EnableCustomSoundEffect = Config.Bind("Client Options", "EnableCustomSoundEffect", true);
+        EnableCustomDecorations = Config.Bind("Client Options", "EnableCustomDecorations", true);
         SwitchVanilla = Config.Bind("Client Options", "SwitchVanilla", false);
 
         // Debug
@@ -465,7 +466,7 @@ public class Main : BasePlugin
             //TOHE.Logger.Disable("CheckMurder");
             TOHE.Logger.Disable("PlayerControl.RpcSetRole");
             TOHE.Logger.Disable("SyncCustomSettings");
-            TOHE.Logger.Disable("DoNotifyRoles");
+            //TOHE.Logger.Disable("DoNotifyRoles");
         }
         //TOHE.Logger.isDetail = true;
 
@@ -474,8 +475,6 @@ public class Main : BasePlugin
 
         // 認証関連-認証
         DebugModeManager.Auth(DebugKeyAuth, DebugKeyInput.Value);
-
-
 
         Preset1 = Config.Bind("Preset Name Options", "Preset1", "Preset_1");
         Preset2 = Config.Bind("Preset Name Options", "Preset2", "Preset_2");
@@ -527,17 +526,30 @@ public class Main : BasePlugin
 }
 public enum CustomRoles
 {
-    /*******************************************************
-     * Please add all the new roles in alphabetical order *
-     ******************************************************/
-
-    //Default
+    // Crewmate(Vanilla)
     Crewmate = 0,
-    //Impostor(Vanilla)
+    Engineer,
+    GuardianAngel,
+    Noisemaker,
+    Scientist,
+    Tracker,
+
+    // Impostor(Vanilla)
     Impostor,
+    Phantom,
     Shapeshifter,
-    // Vanilla Remakes
+
+    // Crewmate Vanilla Remakes
+    CrewmateTOHE,
+    EngineerTOHE,
+    GuardianAngelTOHE,
+    NoisemakerTOHE,
+    ScientistTOHE,
+    TrackerTOHE,
+
+    // Impostor Vanilla Remakes
     ImpostorTOHE,
+    PhantomTOHE,
     ShapeshifterTOHE,
 
     // Impostor Ghost
@@ -601,10 +613,9 @@ public enum CustomRoles
     Scavenger,
     ShapeMaster,
     Sniper,
-    Witch,
     SoulCatcher,
-    Swooper,
     Stealth,
+    Swooper,
     TimeThief,
     Trapster,
     Trickster,
@@ -616,17 +627,8 @@ public enum CustomRoles
     Visionary,
     Warlock,
     Wildling,
+    Witch,
     Zombie,
-
-    //Crewmate(Vanilla)
-    Engineer,
-    GuardianAngel,
-    Scientist,
-    // Vanilla Remakes
-    CrewmateTOHE,
-    EngineerTOHE,
-    ScientistTOHE,
-    GuardianAngelTOHE,
 
     //Crewmate Ghost
     Ghastly,
@@ -643,20 +645,21 @@ public enum CustomRoles
     Captain,
     Celebrity, 
     Chameleon,
+    ChiefOfPolice, //police commisioner ///// UNUSED
     Cleanser,
     CopyCat,
     Coroner, 
     Crusader,
-    Detective,
     Deceiver, 
     Deputy,
+    Detective,
     Dictator,
     Doctor,
     Enigma,
     FortuneTeller, 
+    Grenadier,
     Guardian,
     GuessMaster,
-    Grenadier,
     Inspector, 
     Investigator,
     Jailer,
@@ -681,12 +684,11 @@ public enum CustomRoles
     Oracle,
     Overseer, 
     Pacifist, 
-    ChiefOfPolice, //police commisioner ///// UNUSED
     President,
     Psychic,
     Randomizer,
-    Reverie,
     Retributionist,
+    Reverie,
     Sheriff,
     Snitch,
     SpeedBooster,
@@ -696,11 +698,10 @@ public enum CustomRoles
     Swapper,
     TaskManager,
     Telecommunication,
-    Tracefinder,
-    Tracker,
-    Transporter,
     TimeManager,
     TimeMaster,
+    Tracefinder,
+    Transporter,
     Veteran,
     Vigilante,
     Witness,
@@ -732,22 +733,21 @@ public enum CustomRoles
     Jinx,
     Juggernaut,
     Lawyer,
-    Masochist,
     Maverick,
     Medusa,
     Necromancer,
     Opportunist,
     Pelican,
     Pestilence,
-    Phantom,
     Pickpocket,
     Pirate,
     Pixie,
     PlagueBearer,
     PlagueDoctor,
-    PotionMaster,
     Poisoner,
+    PotionMaster,
     Provocateur,
+    PunchingBag,
     Pursuer,
     Pyromaniac,
     Quizmaster,
@@ -762,6 +762,7 @@ public enum CustomRoles
     Sidekick,
     Solsticer,
     SoulCollector,
+    Specter,
     Spiritcaller,
     Stalker,
     Sunnyboy,
@@ -776,7 +777,7 @@ public enum CustomRoles
     Workaholic,
     Wraith,
 
-   //two-way camp
+    //two-way camp
     Mini,
 
     //FFA
@@ -791,13 +792,12 @@ public enum CustomRoles
     // Add-ons
     Admired,
     Antidote,
-    Glow,
     Autopsy,
     Avanger,
     Aware,
     Bait,
     Bewilder,
-    Bloodlust,
+    Bloodthirst,
     Burst,
     Charmed,
     Circumvent,
@@ -805,7 +805,6 @@ public enum CustomRoles
     Clumsy,
     Contagious,
     Cyber,
-    Unreportable, //disregarded
     Diseased,
     DoubleShot,
     Egoist,
@@ -814,6 +813,7 @@ public enum CustomRoles
     Fool,
     Fragile,
     Ghoul,
+    Glow,
     Gravestone,
     Guesser,
     Hurried,
@@ -827,7 +827,6 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
-    Tricky,
     Mimic,
     Mundane,
     Necroview,
@@ -836,27 +835,29 @@ public enum CustomRoles
     Oiiai,
     Onbound,
     Overclocked,
+    Paranoia,
     Radar,
     Rainbow,
     Rascal,
     Reach,
     Rebound,
     Recruit,
-    Schizophrenic,
     Seer,
     Silent,
-    Statue,
     Sleuth,
     Soulless,
-    TicketsStealer, //stealer
+    Statue,
     Stubborn,
     Susceptible,
     Swift,
     Tiebreaker,
+    TicketsStealer, //stealer
     Torch,
     Trapper,
+    Tricky,
     Tired,
     Unlucky,
+    Unreportable, //disregarded
     VoidBallot,
     Watcher,
     Workhorse,
@@ -907,7 +908,7 @@ public enum CustomWinner
     Juggernaut = CustomRoles.Juggernaut,
     Infectious = CustomRoles.Infectious,
     Virus = CustomRoles.Virus,
-    Phantom = CustomRoles.Phantom,
+    Specter = CustomRoles.Specter,
     Jinx = CustomRoles.Jinx,
     CursedSoul = CustomRoles.CursedSoul,
     PotionMaster = CustomRoles.PotionMaster,
@@ -920,7 +921,7 @@ public enum CustomWinner
     Glitch = CustomRoles.Glitch,
     Plaguebearer = CustomRoles.PlagueBearer,
     PlagueDoctor = CustomRoles.PlagueDoctor,
-    Masochist = CustomRoles.Masochist,
+    PunchingBag = CustomRoles.PunchingBag,
     Doomsayer = CustomRoles.Doomsayer,
     Shroud = CustomRoles.Shroud,
     Seeker = CustomRoles.Seeker,
@@ -947,7 +948,7 @@ public enum AdditionalWinners
     Jackal = CustomRoles.Jackal,
     Sidekick = CustomRoles.Sidekick,
     Pursuer = CustomRoles.Pursuer,
-    Phantom = CustomRoles.Phantom,
+    Specter = CustomRoles.Specter,
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
     Taskinator = CustomRoles.Taskinator,

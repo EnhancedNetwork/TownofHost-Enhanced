@@ -15,8 +15,9 @@ public static class AddonAssign
             case CustomRoles.Workhorse:
             case CustomRoles.LastImpostor:
                 return true;
+            case CustomRoles.Autopsy when Options.EveryoneCanSeeDeathReason.GetBool():
             case CustomRoles.Madmate when Madmate.MadmateSpawnMode.GetInt() != 0:
-            case CustomRoles.Mare when GameStates.FungleIsActive:
+            case CustomRoles.Glow or CustomRoles.Mare when GameStates.FungleIsActive:
                 return true;
         }
 
@@ -78,13 +79,15 @@ public static class AddonAssign
             }
         }
 
+        if (addonsList.Count > 2)
+            addonsList = addonsList.Shuffle(rd).ToList();
+
         Logger.Info($"Number enabled of add-ons (after priority): {addonsIsEnableList.Count}", "Check Add-ons Count");
 
         // Add addons randomly
         while (addonsIsEnableList.Any())
         {
-            int randomItem = rd.Next(addonsIsEnableList.Count);
-            var randomAddOn = addonsIsEnableList[randomItem];
+            var randomAddOn = addonsIsEnableList.RandomElement();
 
             if (!addonsList.Contains(randomAddOn) && AddonRolesList.Contains(randomAddOn))
             {
@@ -99,11 +102,11 @@ public static class AddonAssign
         Logger.Info($" Is Started", "Assign Add-ons");
 
         // Assign add-ons
-        foreach (var role in addonsList.ToArray())
+        foreach (var addOn in addonsList.ToArray())
         {
-            if (rd.Next(1, 101) <= (Options.CustomAdtRoleSpawnRate.TryGetValue(role, out var sc) ? sc.GetFloat() : 0))
+            if (rd.Next(1, 101) <= (Options.CustomAdtRoleSpawnRate.TryGetValue(addOn, out var sc) ? sc.GetFloat() : 0))
             {
-                AssignSubRoles(role);
+                AssignSubRoles(addOn);
             }
         }
     }
@@ -159,6 +162,9 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.VengefulRomantic)
                 || pc.Is(CustomRoles.Workaholic)
                 || pc.Is(CustomRoles.Solsticer)
+                || pc.Is(CustomRoles.Mini)
+                || pc.Is(CustomRoles.NiceMini)
+                || pc.Is(CustomRoles.EvilMini)
                 || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool()))

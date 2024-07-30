@@ -35,8 +35,8 @@ internal class Pelican : RoleBase
         Options.SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pelican, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, "PelicanKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pelican])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pelican]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 12, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pelican]);
+        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pelican]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 12, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pelican]);
     }
     public override void Init()
     {
@@ -48,10 +48,12 @@ internal class Pelican : RoleBase
     }
     public override void Add(byte playerId)
     {
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
+    }
+    public override void Remove(byte playerId)
+    {
+        ReturnEatenPlayerBack(Utils.GetPlayerById(playerId));
     }
     private void SyncEatenList()
     {
@@ -135,8 +137,6 @@ internal class Pelican : RoleBase
 
     public override string GetProgressText(byte playerId, bool coooms)
     {
-        var player = Utils.GetPlayerById(playerId);
-        if (player == null) return "Invalid";
         var eatenNum = 0;
         if (eatenList.ContainsKey(playerId))
             eatenNum = eatenList[playerId].Count;
@@ -170,7 +170,7 @@ internal class Pelican : RoleBase
         Logger.Info($"{pc.GetRealName()} eat player => {target.GetRealName()}", "Pelican");
     }
 
-    public override void OnReportDeadBody(PlayerControl Nah_Id, PlayerControl win)
+    public override void OnReportDeadBody(PlayerControl Nah_Id, NetworkedPlayerInfo win)
     {
         foreach (var pc in eatenList)
         {
@@ -183,7 +183,7 @@ internal class Pelican : RoleBase
                 ReportDeadBodyPatch.CanReport[tar] = true;
                 target.RpcExileV2();
                 target.SetRealKiller(killer);
-                Main.PlayerStates[tar].deathReason = PlayerState.DeathReason.Eaten;
+                tar.SetDeathReason(PlayerState.DeathReason.Eaten);
                 Main.PlayerStates[tar].SetDead();
                 MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
                 Logger.Info($"{killer.GetRealName()} 消化了 {target.GetRealName()}", "Pelican");
@@ -217,33 +217,37 @@ internal class Pelican : RoleBase
         }
         return true;
     }
-    public override void OnMurderPlayerAsTarget(PlayerControl SLAT, PlayerControl victim, bool inMeeting, bool isSuicide)
+    public override void OnMurderPlayerAsTarget(PlayerControl SLAT, PlayerControl pelican, bool inMeeting, bool isSuicide)
     {
         if (inMeeting) return;
 
-        var pc = victim.PlayerId;
+        ReturnEatenPlayerBack(pelican);
+    }
+    private void ReturnEatenPlayerBack(PlayerControl pelican)
+    {
+        var pc = pelican.PlayerId;
         if (!eatenList.ContainsKey(pc)) return;
         Vector2 teleportPosition;
-        if ((victim.GetCustomPosition() == GetBlackRoomPSForPelican() || victim.GetCustomPosition() == ExtendedPlayerControl.GetBlackRoomPosition())
+        if ((pelican.GetCustomPosition() == GetBlackRoomPSForPelican() || pelican.GetCustomPosition() == ExtendedPlayerControl.GetBlackRoomPosition())
             && PelicanLastPosition.ContainsKey(pc))
             teleportPosition = PelicanLastPosition[pc];
-        else teleportPosition = victim.GetCustomPosition();
+        else teleportPosition = pelican.GetCustomPosition();
 
         foreach (var tar in eatenList[pc])
         {
             var target = Utils.GetPlayerById(tar);
             var player = Utils.GetPlayerById(pc);
             if (player == null || target == null) continue;
-            
+
             target.RpcTeleport(teleportPosition);
 
             Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
             ReportDeadBodyPatch.CanReport[tar] = true;
-            
+
             target.SyncSettings();
-            
+
             RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
-            
+
             Logger.Info($"{Utils.GetPlayerById(pc).GetRealName()} dead, player return back: {target.GetRealName()}", "Pelican");
         }
         eatenList.Remove(pc);

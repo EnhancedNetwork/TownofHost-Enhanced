@@ -20,9 +20,9 @@ internal class Hangman : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Hangman);
-        ShapeshiftCooldown = FloatOptionItem.Create(Id + 2, "ShapeshiftCooldown", new(1f, 180f, 1f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hangman])
+        ShapeshiftCooldown = FloatOptionItem.Create(Id + 2, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hangman])
             .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftDuration = FloatOptionItem.Create(Id + 4, "ShapeshiftDuration", new(1f, 60f, 1f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hangman])
+        ShapeshiftDuration = FloatOptionItem.Create(Id + 4, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 60f, 1f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hangman])
             .SetValueFormat(OptionFormat.Seconds);
     }
 
@@ -41,7 +41,7 @@ internal class Hangman : RoleBase
 
         if (Main.CheckShapeshift.TryGetValue(killer.PlayerId, out var isShapeshift) && isShapeshift)
         {
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.LossOfHead;
+            target.SetDeathReason(PlayerState.DeathReason.LossOfHead);
             target.RpcExileV2();
             Main.PlayerStates[target.PlayerId].SetDead();
             target.Data.IsDead = true;

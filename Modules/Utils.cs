@@ -1,13 +1,13 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
 using Hazel;
-using Il2CppInterop.Runtime.InteropTypes;
 using InnerNet;
 using System;
 using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Diagnostics;
@@ -22,6 +22,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using TOHE.Patches;
 
 
 namespace TOHE;
@@ -29,26 +30,28 @@ namespace TOHE;
 public static class Utils
 {
     private static readonly DateTime timeStampStartTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    public static long TimeStamp => (long)(DateTime.Now.ToUniversalTime() - timeStampStartTime).TotalSeconds;
     public static long GetTimeStamp(DateTime? dateTime = null) => (long)((dateTime ?? DateTime.Now).ToUniversalTime() - timeStampStartTime).TotalSeconds;
+    
     public static void ErrorEnd(string text)
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            Logger.Fatal($"{text} error, triggering anti-blackout measures", "Anti-black");
+            Logger.Fatal($"Error: {text} - triggering critical error", "Anti-black");
             ChatUpdatePatch.DoBlockChat = true;
             Main.OverrideWelcomeMsg = GetString("AntiBlackOutNotifyInLobby");
             
             _ = new LateTask(() =>
             {
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
-            }, 3f, "Anti-Black Msg SendInGame 3");
+            }, 3f, "Anti-Black Msg SendInGame Error During Loading");
             
             _ = new LateTask(() =>
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 RPC.ForceEndGame(CustomWinner.Error);
-            }, 5.5f, "Anti-Black End Game 3");
+            }, 5.5f, "Anti-Black End Game As Critical Error");
         }
         else
         {
@@ -60,20 +63,20 @@ public static class Utils
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"));
-                }, 3f, "Anti-Black Msg SendInGame 4");
+                }, 3f, "Anti-Black Msg SendInGame Non-Host Modded Has Error During Loading");
             }
             else
             {
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"));
-                }, 3f, "Anti-Black Msg SendInGame 5");
+                }, 3f, "Anti-Black Msg SendInGame Host Reject Force End");
                 
                 _ = new LateTask(() =>
                 {
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
-                    Logger.Fatal($"{text} 错误，已断开游戏", "Anti-black");
-                }, 8f, "Anti-Black Exit Game 4");
+                    Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
+                }, 8f, "Anti-Black Exit Game Due Critical Error");
             }
         }
     }
@@ -229,13 +232,6 @@ public static class Utils
         return;
     }
 
-    /// <summary>
-    /// Make sure to call PlayerState.Deathreason and not Vanilla Deathreason
-    /// </summary>
-    public static void SetDeathReason(this PlayerControl target, PlayerState.DeathReason reason)
-    {
-        Main.PlayerStates[target.PlayerId].deathReason = reason;
-    }
     public static void RPCCastVote(this PlayerControl voter, PlayerControl voteTarget) => ExtendedPlayerControl.RPCCastVote(voter.PlayerId, voteTarget.PlayerId);
     
     public static void TargetDies(PlayerControl killer, PlayerControl target)
@@ -535,7 +531,7 @@ public static class Utils
     }
 
 
-    public static bool HasTasks(GameData.PlayerInfo playerData, bool ForRecompute = true)
+    public static bool HasTasks(NetworkedPlayerInfo playerData, bool ForRecompute = true)
     {
         if (GameStates.IsLobby) return false;
 
@@ -545,7 +541,10 @@ public static class Utils
         if (playerData.Role == null) return false;
 
         var hasTasks = true;
-        var States = Main.PlayerStates[playerData.PlayerId];
+        if (!Main.PlayerStates.TryGetValue(playerData.PlayerId, out var States))
+        {
+            return false;
+        }
 
         if (playerData.Disconnected) return false;
         if (playerData.Role.IsImpostor)
@@ -616,7 +615,8 @@ public static class Utils
         }
         catch (Exception error)
         {
-            Logger.Error(error.ToString(), $"GetProgressText(PlayerControl pc) - PlayerId: {pc.PlayerId}, Role: {Main.PlayerStates[pc.PlayerId].MainRole}");
+            ThrowException(error);
+            Logger.Error($"PlayerId: {pc.PlayerId}, Role: {Main.PlayerStates[pc.PlayerId].MainRole}", "GetProgressText(PlayerControl pc)");
             return "Error1";
         }
     }
@@ -667,7 +667,8 @@ public static class Utils
         }
         catch (Exception error)
         {
-            Logger.Error(error.ToString(), $"GetProgressText(byte playerId, bool comms = false) - PlayerId: {playerId}, Role: {Main.PlayerStates[playerId].MainRole}");
+            ThrowException(error);
+            Logger.Error($"PlayerId: {playerId}, Role: {Main.PlayerStates[playerId].MainRole}", "GetProgressText(byte playerId, bool comms = false)");
             return "Error2";
         }
     }
@@ -705,8 +706,8 @@ public static class Utils
             var text = sb.ToString();
             sb.Clear().Append(text.RemoveHtmlTags());
         }
-        sb.Append("\n\n ★ " + GetString("TabGroup.GameSettings"));
-        foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Tab is TabGroup.GameSettings && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
+        sb.Append("\n\n ★ " + GetString("TabGroup.ModSettings"));
+        foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Tab is TabGroup.ModSettings && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
         {
             sb.Append($"\n{opt.GetName(true)}: {opt.GetString()}");
             //ShowChildrenSettings(opt, ref sb);
@@ -825,6 +826,8 @@ public static class Utils
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
+        if (Options.HideGameSettings.GetBool()) return;
+
         foreach (var opt in option.Children.Select((v, i) => new { Value = v, Index = i + 1 }).ToArray())
         {
             if (command)
@@ -963,6 +966,86 @@ public static class Utils
         return sb.ToString();
     }
 
+    public static string GetRegionName(IRegionInfo region = null)
+    {
+        region ??= ServerManager.Instance.CurrentRegion;
+
+        string name = region.Name;
+
+        if (AmongUsClient.Instance.NetworkMode != NetworkModes.OnlineGame)
+        {
+            name = "Local Games";
+            return name;
+        }
+
+        if (region.PingServer.EndsWith("among.us", StringComparison.Ordinal))
+        {
+            // Official server
+            if (name == "North America") name = "NA";
+            else if (name == "Europe") name = "EU";
+            else if (name == "Asia") name = "AS";
+
+            return name;
+        }
+
+        var Ip = region.Servers.FirstOrDefault()?.Ip ?? string.Empty;
+
+        if (Ip.Contains("aumods.us", StringComparison.Ordinal)
+            || Ip.Contains("duikbo.at", StringComparison.Ordinal))
+        {
+            // Official Modded Server
+            if (Ip.Contains("au-eu")) name = "MEU";
+            else if (Ip.Contains("au-as")) name = "MAS";
+            else if (Ip.Contains("www.")) name = "MNA";
+
+            return name;
+        }
+
+        if (name.Contains("nikocat233", StringComparison.OrdinalIgnoreCase))
+        {
+            name = name.Replace("nikocat233", "Niko233", StringComparison.OrdinalIgnoreCase);
+        }
+
+        return name;
+    }
+    // From EHR by Gurge44
+    public static void ThrowException(Exception ex, [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string callerMemberName = "")
+    {
+        try
+        {
+            StackTrace st = new(1, true);
+            StackFrame[] stFrames = st.GetFrames();
+
+            StackFrame firstFrame = stFrames.FirstOrDefault();
+
+            var sb = new StringBuilder();
+            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName} at line {lineNumber} in {callerMemberName}\n------ Stack Trace ------");
+
+            bool skip = true;
+            foreach (StackFrame sf in stFrames)
+            {
+                if (skip)
+                {
+                    skip = false;
+                    continue;
+                }
+
+                var callerMethod = sf.GetMethod();
+
+                string callerMethodName = callerMethod?.Name;
+                string callerClassName = callerMethod?.DeclaringType?.FullName;
+
+                sb.Append($"\n      at {callerClassName}.{callerMethodName}");
+            }
+
+            sb.Append("\n------ End of Stack Trace ------");
+
+            Logger.Error(sb.ToString(), firstFrame?.GetMethod()?.ToString(), multiLine: true);
+        }
+        catch
+        {
+        }
+    }
     public static byte MsgToColor(string text, bool isHost = false)
     {
         text = text.ToLowerInvariant();
@@ -1219,7 +1302,7 @@ public static class Utils
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /qt {GetString("Command.quit")}"
             + $"\n ○ /death {GetString("Command.death")}"
-     //       + $"\n ○ /icons {GetString("Command.iconinfo")}"
+            + $"\n ○ /icons {GetString("Command.iconinfo")}"
             , ID);
     }
     public static void ShowHelp(byte ID)
@@ -1235,11 +1318,12 @@ public static class Utils
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"
             + $"\n  ○ /qt {GetString("Command.quit")}"
-       //     + $"\n  ○ /icons {GetString("Command.iconinfo")}"
+            + $"\n  ○ /icons {GetString("Command.iconinfo")}"
             + $"\n  ○ /death {GetString("Command.death")}"
             + "\n\n" + GetString("CommandHostList")
             + $"\n  ○ /s {GetString("Command.say")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"
+            + $"\n  ○ /poll {GetString("Command.Poll")}"
             + $"\n  ○ /xf {GetString("Command.solvecover")}"
             + $"\n  ○ /mw {GetString("Command.mw")}"
             + $"\n  ○ /kill {GetString("Command.kill")}"
@@ -1304,7 +1388,7 @@ public static class Utils
 
 
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool ShouldSplit = false)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool noReplay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         try
@@ -1321,11 +1405,11 @@ public static class Utils
         }
         catch (Exception exx)
         {
-            Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage..SplitMessage");
+            Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage.SplitMessage");
         }
 
-        // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
-        if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
+        // set noReplay to false when you want to send previous sys msg or do not want to add a sys msg in the history
+        if (!noReplay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
 
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
 
@@ -1409,25 +1493,40 @@ public static class Utils
     }
     public static void ApplySuffix(PlayerControl player)
     {
-        if (!AmongUsClient.Instance.AmHost || player == null || Main.AutoMuteUs.Value) return;
+        // Only host
+        if (!AmongUsClient.Instance.AmHost || player == null) return;
         // Check invalid color
         if (player.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= player.Data.DefaultOutfit.ColorId) return;
+
+        // Hide all tags
+        if (Options.HideAllTagsAndText.GetBool())
+        {
+            SetRealName();
+            return;
+        }
 
         if (!(player.AmOwner || player.FriendCode.GetDevUser().HasTag()))
         {
             if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode))
             {
-                string name1 = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n1) ? n1 : "";
-                if (GameStates.IsLobby && name1 != player.name && player.CurrentOutfitType == PlayerOutfitType.Default) player.RpcSetName(name1);
+                SetRealName();
                 return;
             }
         }
+
+        void SetRealName()
+        {
+            string realName = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var namePlayer) ? namePlayer : "";
+            if (GameStates.IsLobby && realName != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
+                player.RpcSetName(realName);
+        }
+
         string name = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n) ? n : "";
-        if (Main.nickName != "" && player.AmOwner) name = Main.nickName;
+        if (Main.HostRealName != "" && player.AmOwner) name = Main.HostRealName;
         if (name == "") return;
         if (AmongUsClient.Instance.IsGameStarted)
         {
-            if (Options.FormatNameMode.GetInt() == 1 && Main.nickName == "") name = Palette.GetColorName(player.Data.DefaultOutfit.ColorId);
+            if (Options.FormatNameMode.GetInt() == 1 && Main.HostRealName == "") name = Palette.GetColorName(player.Data.DefaultOutfit.ColorId);
         }
         else
         {
@@ -1596,7 +1695,7 @@ public static class Utils
         return null;
     }
 
-    public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
+    public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
     private static readonly StringBuilder SelfMark = new(20);
@@ -1712,13 +1811,13 @@ public static class Utils
                 SelfName = $"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}";
 
                 // Privately sent name.
-                seer.RpcSetNamePrivate(SelfName, true, seer);
+                seer.RpcSetNamePrivate(SelfName, seer);
                 continue;
             }
             
             // Size of player roles
-            string fontSize = "1.5";
-            if (isForMeeting && (seer.GetClient().PlatformData.Platform == Platforms.Playstation || seer.GetClient().PlatformData.Platform == Platforms.Switch)) fontSize = "70%";
+            string fontSize = isForMeeting ? "1.6" : "1.8";
+            if (isForMeeting && (seer.GetClient().PlatformData.Platform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)) fontSize = "70%";
 
             //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
 
@@ -1728,7 +1827,7 @@ public static class Utils
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
             if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
             {
-                seer.RpcSetNamePrivate("<size=0%>", true, force: NoCache);
+                seer.RpcSetNamePrivate("<size=0%>", force: NoCache);
             }
             else
             {
@@ -1772,15 +1871,11 @@ public static class Utils
 
                 string SeerRealName = seer.GetRealName(isForMeeting);
 
-                // Set self name to true name if Victim to Doppelganger
-                if (seer.Data.IsDead && Doppelganger.TrueNames.ContainsKey(seer.PlayerId) && Doppelganger.CheckDoppelVictim(seer.PlayerId))
-                    SeerRealName = Doppelganger.TrueNames[seer.PlayerId];
-
                 // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for seer ======
                 string SelfTaskText = GetProgressText(seer);
 
                 string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, false)}{SelfTaskText}</size>";
-                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : string.Empty;
+                string SelfDeathReason = seer.KnowDeathReason(seer) ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : string.Empty;
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
                 bool IsDisplayInfo = false;
@@ -1802,7 +1897,6 @@ public static class Utils
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                 {
                     SelfName = name;
-                    IsDisplayInfo = false;
                 }
 
                 if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
@@ -1819,10 +1913,19 @@ public static class Utils
                         SelfName = GetString("DevouredName");
                 }
 
+                // Dollmaster, Prevent seeing self in mushroom cloud
+                if (CustomRoles.DollMaster.HasEnabled() && seerRole != CustomRoles.DollMaster)
+                {
+                    if (DollMaster.IsDoll(seer.PlayerId))
+                        SelfName = "<size=10000%><color=#000000>■</color></size>";
+                }
+
                 // Camouflage
                 if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                     SelfName = $"<size=0%>{SelfName}</size>";
 
+                if (!Regex.IsMatch(SelfName, seer.GetRealName()))
+                    IsDisplayInfo = false;
 
                 switch (Options.CurrentGameMode)
                 {
@@ -1841,7 +1944,7 @@ public static class Utils
 
                 if (!isForMeeting) SelfName += "\r\n";
 
-                seer.RpcSetNamePrivate(SelfName, true, force: NoCache);
+                seer.RpcSetNamePrivate(SelfName, force: NoCache);
             }
 
             // Start run loop for target only when condition is "true"
@@ -1860,17 +1963,14 @@ public static class Utils
                     var target = realTarget;
 
                     if (seer != target && seer != DollMaster.DollMasterTarget)
-                        target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
-
-                    if (seer != target && seer.IsAlive())
-                        target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
+                        target = DollMaster.SwapPlayerInfo(realTarget); // If a player is possessed by the Dollmaster swap each other's controllers.
 
                     //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
                     if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
                     {
-                        realTarget.RpcSetNamePrivate("<size=0%>", true, force: NoCache);
+                        realTarget.RpcSetNamePrivate("<size=0%>", seer, force: NoCache);
                     }
                     else
                     {
@@ -1898,7 +1998,9 @@ public static class Utils
 
                         // ====== Seer know target role ======
 
-                        string TargetRoleText = ExtendedPlayerControl.KnowRoleTarget(seer, target)
+                        bool KnowRoleTarget = ExtendedPlayerControl.KnowRoleTarget(seer, target, true);
+                        
+                        string TargetRoleText = KnowRoleTarget
                                 ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
 
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
@@ -1910,18 +2012,6 @@ public static class Utils
                         // ====== Target player name ======
 
                         string TargetPlayerName = target.GetRealName(isForMeeting);
-
-                        if (seer != target && seer.IsAlive())
-                            target = Doppelganger.SwapPlayerInfoFromRom(target); // If player is victim to Doppelganger swap each other's controllers
-
-                        // if Victim to Doppelganger or is Doppelganger
-                        if (seer.Data.IsDead && Doppelganger.HasEnabled && Doppelganger.DoppelVictim.Count > 1)
-                        {
-                            if (target.Is(CustomRoles.Doppelganger) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                                TargetPlayerName = $"{TargetPlayerName}\r\n<size=75%>{ColorString(Color.gray, $"({Doppelganger.TrueNames[target.PlayerId]})")}</size>";
-                            else if (Doppelganger.CheckDoppelVictim(target.PlayerId) && Doppelganger.TrueNames.ContainsKey(target.PlayerId))
-                                TargetPlayerName = Doppelganger.TrueNames[target.PlayerId];
-                        }
 
                         var tempNameText = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName, isForMeeting);
                         if (tempNameText != string.Empty)
@@ -1948,7 +2038,7 @@ public static class Utils
 
 
                                     //Impostors
-                                    if (Options.ImpostorsCanGuess.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Councillor) && !seer.Is(CustomRoles.Nemesis))
+                                    if (Options.ImpostorsCanGuess.GetBool() && (seer.GetCustomRole().IsImpostor() || seer.GetCustomRole().IsMadmate()) && !seer.Is(CustomRoles.Councillor) && !seer.Is(CustomRoles.Nemesis))
                                         TargetPlayerName = GetTragetId;
 
                                     else if (seer.Is(CustomRoles.EvilGuesser) && !Options.ImpostorsCanGuess.GetBool())
@@ -2010,7 +2100,7 @@ public static class Utils
                         string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}{TargetSuffix}";
                         //TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
 
-                        realTarget.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
+                        realTarget.RpcSetNamePrivate(TargetName, seer, force: NoCache);
                     }
                 }
             }
@@ -2090,6 +2180,7 @@ public static class Utils
             _ => true,
         };
     }
+    public static HashSet<Action<bool>> LateExileTask = [];
     public static void AfterMeetingTasks()
     {
         ChatManager.ClearLastSysMsg();
@@ -2102,6 +2193,18 @@ public static class Utils
         foreach (var playerState in Main.PlayerStates.Values.ToArray())
         {
             playerState.RoleClass?.AfterMeetingTasks();
+        }
+
+        //Set kill timer
+        foreach (var player in Main.AllAlivePlayerControls)
+        {
+            player.SetKillTimer();
+        }
+
+        if (LateExileTask.Any())
+        {
+            LateExileTask.Do(t => t.Invoke(true));
+            LateExileTask.Clear();
         }
 
 
@@ -2130,7 +2233,7 @@ public static class Utils
         tmp += input;
         ChangeTo = Math.Clamp(tmp, 0, max);
     }
-    public static void CountAlivePlayers(bool sendLog = false)
+    public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = true)
     {
         int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor));
         if (Main.AliveImpostorCount != AliveImpostorCount)
@@ -2154,6 +2257,9 @@ public static class Utils
             }
             sb.Append($"All:{AllAlivePlayersCount}/{AllPlayersCount}");
             Logger.Info(sb.ToString(), "CountAlivePlayers");
+
+            if (AmongUsClient.Instance.AmHost && checkGameEnd)
+                GameEndCheckerForNormal.Prefix();
         }
     }
     public static string GetVoteName(byte num)
@@ -2308,7 +2414,7 @@ public static class Utils
         return new Color(R, G, B, color.a);
     }
 
-    public static void SetChatVisible()
+    public static void SetChatVisibleForEveryone()
     {
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
         
@@ -2318,12 +2424,58 @@ public static class Utils
         MeetingHud.Instance.RpcClose();
     }
 
-    public static bool TryCast<T>(this Il2CppObjectBase obj, out T casted)
-    where T : Il2CppObjectBase
+    public static void SetChatVisibleSpecific(this PlayerControl player)
     {
-        casted = obj.TryCast<T>();
-        return casted != null;
+        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost || GameStates.IsMeeting) return;
+
+        if (player.AmOwner)
+        {
+            HudManager.Instance.Chat.SetVisible(true);
+            return;
+        }
+
+        if (player.IsModClient())
+        {
+            var modsend = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShowChat, SendOption.Reliable, player.OwnerId);
+            modsend.WritePacked(player.OwnerId);
+            modsend.Write(true);
+            AmongUsClient.Instance.FinishRpcImmediately(modsend);
+            return;
+        }
+
+        var customNetId = AmongUsClient.Instance.NetIdCnt++;
+        var vanillasend = MessageWriter.Get(SendOption.Reliable);
+        vanillasend.StartMessage(6);
+        vanillasend.Write(AmongUsClient.Instance.GameId);
+        vanillasend.Write(player.OwnerId);
+
+        vanillasend.StartMessage((byte)GameDataTag.SpawnFlag);
+        vanillasend.WritePacked(1); // 1 Meeting Hud Spawn id
+        vanillasend.WritePacked(-2); // Owned by host
+        vanillasend.Write((byte)SpawnFlags.None);
+        vanillasend.WritePacked(1);
+        vanillasend.WritePacked(customNetId);
+
+        vanillasend.StartMessage(1);
+        vanillasend.WritePacked(0);
+        vanillasend.EndMessage();
+
+        vanillasend.EndMessage();
+        vanillasend.EndMessage();
+
+        vanillasend.StartMessage(6);
+        vanillasend.Write(AmongUsClient.Instance.GameId);
+        vanillasend.Write(player.OwnerId);
+        vanillasend.StartMessage((byte)GameDataTag.RpcFlag);
+        vanillasend.WritePacked(customNetId);
+        vanillasend.Write((byte)RpcCalls.CloseMeeting);
+        vanillasend.EndMessage();
+        vanillasend.EndMessage();
+
+        AmongUsClient.Instance.SendOrDisconnect(vanillasend);
+        vanillasend.Recycle();
     }
+
     public static int AllPlayersCount => Main.PlayerStates.Values.Count(state => state.countTypes != CountTypes.OutOfGame);
     public static int AllAlivePlayersCount => Main.AllAlivePlayerControls.Count(pc => !pc.Is(CountTypes.OutOfGame));
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);

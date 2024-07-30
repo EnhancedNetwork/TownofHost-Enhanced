@@ -36,11 +36,11 @@ internal class Witness : RoleBase
     {
         playerIdList.Add(playerId);
 
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
+
         if (AmongUsClient.Instance.AmHost)
         {
-            if (!Main.ResetCamPlayerList.Contains(playerId))
-                Main.ResetCamPlayerList.Add(playerId);
-
             CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
         }
     }

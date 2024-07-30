@@ -18,7 +18,7 @@ internal class ShapeMaster : RoleBase // Should be deleted tbh, because it's lit
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.ShapeMaster);
-        ShapeMasterShapeshiftDuration = FloatOptionItem.Create(Id + 2, "ShapeshiftDuration", new(1, 60, 1), 10, TabGroup.ImpostorRoles, false)
+        ShapeMasterShapeshiftDuration = FloatOptionItem.Create(Id + 2, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1, 60, 1), 10, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.ShapeMaster])
             .SetValueFormat(OptionFormat.Seconds);
     }

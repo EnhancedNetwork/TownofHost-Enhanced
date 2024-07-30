@@ -72,7 +72,7 @@ internal class Cleanser : RoleBase
         SendSkillRPC();
         return false;
     }
-    public override void OnReportDeadBody(PlayerControl baba, PlayerControl lilelam)
+    public override void OnReportDeadBody(PlayerControl baba, NetworkedPlayerInfo lilelam)
     {
         DidVote = false;
         foreach (var pid in CleanserTarget.Keys)
