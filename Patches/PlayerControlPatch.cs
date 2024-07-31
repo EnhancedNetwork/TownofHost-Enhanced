@@ -446,13 +446,15 @@ class MurderPlayerPatch
 
         Main.PlayerStates[target.PlayerId].SetDead();
         target.SetRealKiller(killer, true);
-        Utils.CountAlivePlayers(true);
+        Utils.CountAlivePlayers(sendLog: true, checkGameEnd: false);
 
         // When target death, activate ability for others roles
         AfterPlayerDeathTasks(killer, target, false);
         
         // Check Kill Flash
         Utils.TargetDies(__instance, target);
+
+        Utils.CountAlivePlayers(checkGameEnd: true);
 
         if (Options.LowLoadMode.GetBool())
         {
