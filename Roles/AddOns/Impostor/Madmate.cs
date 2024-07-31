@@ -83,7 +83,7 @@ public static class Madmate
 
     public static bool CanBeMadmate(this PlayerControl pc, bool forAdmirer = false, bool forGangster = false)
     {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || (pc.GetCustomRole().IsNeutral() && forAdmirer)) && !pc.Is(CustomRoles.Madmate)
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || (forAdmirer && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Madmate)
         && !(pc.CheckCanBeMadmate(forGangster) ||
             pc.Is(CustomRoles.LazyGuy) ||
             pc.Is(CustomRoles.Lazy) ||
