@@ -734,7 +734,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Rascal)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
-                if (!pc.CanBeMadmate(inGame: false) || pc.IsAnySubRole(sub => sub.IsConverted()))
+                if (!pc.CanBeMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()))
                     return false;
                 break;
 
