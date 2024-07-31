@@ -75,15 +75,17 @@ class CheckForEndVotingPatch
                     if (AntiBlackout.BlackOutIsActive)
                     {
                         // Need check BlackOutIsActive again
-                        if (AntiBlackout.BlackOutIsActive)
+                        var isBlackOut = AntiBlackout.BlackOutIsActive;
+
+                        if (isBlackOut)
                             __instance.AntiBlackRpcVotingComplete(states, exiled, false);
                         else
                             __instance.RpcVotingComplete(states, exiled, false);
 
                         if (exiled != null)
                         {
-                            AntiBlackout.ShowExiledInfo = true;
-                            ConfirmEjections(exiled, true);
+                            AntiBlackout.ShowExiledInfo = isBlackOut;
+                            ConfirmEjections(exiled, isBlackOut);
                         }
                     }
                     else
@@ -357,15 +359,17 @@ class CheckForEndVotingPatch
             if (AntiBlackout.BlackOutIsActive)
             {
                 // Need check BlackOutIsActive again
-                if (AntiBlackout.BlackOutIsActive)
+                var isBlackOut = AntiBlackout.BlackOutIsActive;
+
+                if (isBlackOut)
                     __instance.AntiBlackRpcVotingComplete(states, exiledPlayer, tie);
                 else
                     __instance.RpcVotingComplete(states, exiledPlayer, tie);
 
                 if (exiledPlayer != null)
                 {
-                    AntiBlackout.ShowExiledInfo = true;
-                    ConfirmEjections(exiledPlayer, true);
+                    AntiBlackout.ShowExiledInfo = isBlackOut;
+                    ConfirmEjections(exiledPlayer, isBlackOut);
                 }
             }
             else
