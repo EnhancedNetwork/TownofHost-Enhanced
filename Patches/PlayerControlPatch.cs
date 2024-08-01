@@ -245,7 +245,7 @@ class CheckMurderPatch
         }
 
         // Madmate Spawn Mode Is First Kill
-        if (Madmate.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && target.CanBeMadmate(inGame:true))
+        if (Madmate.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && target.CanBeMadmate())
         {
             Main.MadmateNum++;
             target.RpcSetCustomRole(CustomRoles.Madmate);
@@ -255,7 +255,7 @@ class CheckMurderPatch
             killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
-            Logger.Info($"Madmate Spawn: {target?.Data?.PlayerName} = {target.GetCustomRole()} + {CustomRoles.Madmate}", "Assign Madmate");
+            Logger.Info($"Assign by first try kill: {target?.Data?.PlayerName} = {target.GetCustomRole()} + {CustomRoles.Madmate}", "Madmate");
             return false;
         }
 
@@ -446,13 +446,15 @@ class MurderPlayerPatch
 
         Main.PlayerStates[target.PlayerId].SetDead();
         target.SetRealKiller(killer, true);
-        Utils.CountAlivePlayers(true);
+        Utils.CountAlivePlayers(sendLog: true, checkGameEnd: false);
 
         // When target death, activate ability for others roles
         AfterPlayerDeathTasks(killer, target, false);
         
         // Check Kill Flash
         Utils.TargetDies(__instance, target);
+
+        Utils.CountAlivePlayers(checkGameEnd: true);
 
         if (Options.LowLoadMode.GetBool())
         {
@@ -1040,6 +1042,12 @@ class FixedUpdateInNormalGamePatch
         if (!lowLoad)
         {
             Zoom.OnFixedUpdate();
+
+            // ChatUpdatePatch doesn't work when host chat is hidden
+            if (AmongUsClient.Instance.AmHost && player.AmOwner && !DestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
+            {
+                ChatUpdatePatch.Postfix(ChatUpdatePatch.Instance);
+            }
         }
 
         // Only during the game
@@ -1755,7 +1763,7 @@ public static class PlayerControlDiePatch
                 var playerclass = __instance.GetRoleClass();
 
                 Action<bool> SelfExile = Utils.LateExileTask.FirstOrDefault(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId) ?? playerclass.OnSelfReducedToAtoms;
-                if (GameStates.IsInTask)
+                if (GameStates.IsInTask && !GameStates.IsExilling)
                 {
                     SelfExile(false);
                     Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
@@ -1916,7 +1924,7 @@ class PlayerControlSetRolePatch
 
                     }
 
-                }, 0.1f, "SetGuardianAngel");
+                }, 0.1f, $"SetGuardianAngel for playerId: {__instance.PlayerId}");
             }
 
             if (__runOriginal)

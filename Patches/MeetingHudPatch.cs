@@ -45,13 +45,13 @@ class CheckForEndVotingPatch
 
                 if (pva.DidVote && pc.PlayerId == pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
-                    if (Madmate.MadmateSpawnMode.GetInt() == 2 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && pc.CanBeMadmate(inGame: true))
+                    if (Madmate.MadmateSpawnMode.GetInt() == 2 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && pc.CanBeMadmate())
                     {
                         Main.MadmateNum++;
                         pc.RpcSetCustomRole(CustomRoles.Madmate);
                         ExtendedPlayerControl.RpcSetCustomRole(pc.PlayerId, CustomRoles.Madmate);
                         Utils.NotifyRoles(isForMeeting: true, SpecifySeer: pc, NoCache: true);
-                        Logger.Info("Setting up a career:" + pc?.Data?.PlayerName + " = " + pc.GetCustomRole().ToString() + " + " + CustomRoles.Madmate.ToString(), "Assign " + CustomRoles.Madmate.ToString());
+                        Logger.Info($"Assign in meeting by self vote: {pc?.Data?.PlayerName} = {pc.GetCustomRole()} + {CustomRoles.Madmate}", "Madmate");
                     }
                 }
 
@@ -67,26 +67,35 @@ class CheckForEndVotingPatch
                     });
                     states = [.. statesList];
 
-                    ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
+                    var exiled = voteTarget.Data;
+
+                    ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiled;
+                    Main.LastVotedPlayerInfo = exiled;
 
                     if (AntiBlackout.BlackOutIsActive)
                     {
-                        //__instance.RpcVotingComplete(states, null, true);
-
                         // Need check BlackOutIsActive again
-                        if (AntiBlackout.BlackOutIsActive)
-                            __instance.AntiBlackRpcVotingComplete(states, voteTarget.Data, false);
+                        var isBlackOut = AntiBlackout.BlackOutIsActive;
 
-                        AntiBlackout.ShowExiledInfo = true;
-                        ConfirmEjections(voteTarget.Data, true);
+                        if (isBlackOut)
+                            __instance.AntiBlackRpcVotingComplete(states, exiled, false);
+                        else
+                            __instance.RpcVotingComplete(states, exiled, false);
+
+                        if (exiled != null)
+                        {
+                            AntiBlackout.ShowExiledInfo = isBlackOut;
+                            ConfirmEjections(exiled, isBlackOut);
+                        }
                     }
                     else
                     {
-                        __instance.RpcVotingComplete(states, voteTarget.Data, false);
+                        __instance.RpcVotingComplete(states, exiled, false);
 
-                        Main.LastVotedPlayerInfo = voteTarget.Data;
-                        if (Main.LastVotedPlayerInfo != null)
-                            ConfirmEjections(Main.LastVotedPlayerInfo);
+                        if (exiled != null)
+                        {
+                            ConfirmEjections(exiled);
+                        }
                     }
 
                     Logger.Info($"{voteTarget.GetNameWithRole()} expelled by Dictator", "Dictator");
@@ -344,30 +353,32 @@ class CheckForEndVotingPatch
             exiledPlayer?.Object.SetRealKiller(null);
 
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
+            Main.LastVotedPlayerInfo = exiledPlayer;
 
             //RPC
             if (AntiBlackout.BlackOutIsActive)
             {
-                //__instance.RpcVotingComplete(states, null, true);
-
                 // Need check BlackOutIsActive again
-                if (AntiBlackout.BlackOutIsActive)
+                var isBlackOut = AntiBlackout.BlackOutIsActive;
+
+                if (isBlackOut)
                     __instance.AntiBlackRpcVotingComplete(states, exiledPlayer, tie);
+                else
+                    __instance.RpcVotingComplete(states, exiledPlayer, tie);
 
                 if (exiledPlayer != null)
                 {
-                    AntiBlackout.ShowExiledInfo = true;
-                    ConfirmEjections(exiledPlayer, true);
+                    AntiBlackout.ShowExiledInfo = isBlackOut;
+                    ConfirmEjections(exiledPlayer, isBlackOut);
                 }
             }
             else
             {
                 __instance.RpcVotingComplete(states, exiledPlayer, tie); // Normal processing
-                
-                Main.LastVotedPlayerInfo = exiledPlayer;
-                if (Main.LastVotedPlayerInfo != null)
+
+                if (exiledPlayer != null)
                 {
-                    ConfirmEjections(Main.LastVotedPlayerInfo);
+                    ConfirmEjections(exiledPlayer);
                 }
             }
 

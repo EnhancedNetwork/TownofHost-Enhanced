@@ -227,32 +227,44 @@ internal class Pelican : RoleBase
     {
         var pc = pelican.PlayerId;
         if (!eatenList.ContainsKey(pc)) return;
-        Vector2 teleportPosition;
-        if ((pelican.GetCustomPosition() == GetBlackRoomPSForPelican() || pelican.GetCustomPosition() == ExtendedPlayerControl.GetBlackRoomPosition())
-            && PelicanLastPosition.ContainsKey(pc))
-            teleportPosition = PelicanLastPosition[pc];
-        else teleportPosition = pelican.GetCustomPosition();
 
-        foreach (var tar in eatenList[pc])
+        GameEndCheckerForNormal.ShouldNotCheck = true;
+
+        try
         {
-            var target = Utils.GetPlayerById(tar);
-            var player = Utils.GetPlayerById(pc);
-            if (player == null || target == null) continue;
+            Vector2 teleportPosition;
+            if ((pelican.GetCustomPosition() == GetBlackRoomPSForPelican() || pelican.GetCustomPosition() == ExtendedPlayerControl.GetBlackRoomPosition())
+                && PelicanLastPosition.ContainsKey(pc))
+                teleportPosition = PelicanLastPosition[pc];
+            else teleportPosition = pelican.GetCustomPosition();
 
-            target.RpcTeleport(teleportPosition);
+            foreach (var tar in eatenList[pc])
+            {
+                var target = Utils.GetPlayerById(tar);
+                var player = Utils.GetPlayerById(pc);
+                if (player == null || target == null) continue;
 
-            Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
-            ReportDeadBodyPatch.CanReport[tar] = true;
+                target.RpcTeleport(teleportPosition);
 
-            target.SyncSettings();
+                Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
+                ReportDeadBodyPatch.CanReport[tar] = true;
 
-            RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
+                target.SyncSettings();
 
-            Logger.Info($"{Utils.GetPlayerById(pc).GetRealName()} dead, player return back: {target.GetRealName()}", "Pelican");
+                RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
+
+                Logger.Info($"{Utils.GetPlayerById(pc).GetRealName()} dead, player return back: {target.GetRealName()}", "Pelican");
+            }
+            eatenList.Remove(pc);
+            SyncEatenList();
+            Utils.NotifyRoles();
         }
-        eatenList.Remove(pc);
-        SyncEatenList();
-        Utils.NotifyRoles();
+        catch (System.Exception error)
+        {
+            Utils.ThrowException(error);
+        }
+
+        GameEndCheckerForNormal.ShouldNotCheck = false;
     }
 
     public override void OnFixedUpdateLowLoad(PlayerControl pelican)

@@ -626,7 +626,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Dictator)
                     || pc.Is(CustomRoles.Influenced)
                     || pc.Is(CustomRoles.Silent)
-                    || pc.Is(CustomRoles.Tiebreaker))
+                    || pc.Is(CustomRoles.Tiebreaker)
+                    || pc.Is(CustomRoles.Paranoia))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !VoidBallot.CrewCanBeVoidBallot.GetBool()) || (pc.GetCustomRole().IsNeutral() && !VoidBallot.NeutralCanBeVoidBallot.GetBool()) || (pc.GetCustomRole().IsImpostor() && !VoidBallot.ImpCanBeVoidBallot.GetBool()))
                     return false;
@@ -719,6 +720,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Vector)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Taskinator)
+                    || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.PunchingBag))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Unlucky.CrewCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Unlucky.NeutralCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Unlucky.ImpCanBeUnlucky.GetBool()))
@@ -732,7 +734,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Rascal)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
-                if (!pc.CanBeMadmate(inGame: false) || pc.IsAnySubRole(sub => sub.IsConverted()))
+                if (!pc.CanBeMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()))
                     return false;
                 break;
 
@@ -816,7 +818,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Vampire)
                     || pc.Is(CustomRoles.Puppeteer)
                     || pc.Is(CustomRoles.Scavenger)
-                    || pc.Is(CustomRoles.Lightning))
+                    || pc.Is(CustomRoles.Lightning)
+                    || pc.Is(CustomRoles.Swift))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -870,6 +873,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Lightning)
                     || pc.Is(CustomRoles.Hangman)
                     || pc.Is(CustomRoles.TicketsStealer)
+                    || pc.Is(CustomRoles.Tricky)
                     || pc.Is(CustomRoles.DoubleAgent))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
@@ -1018,7 +1022,11 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Hurried:
-                if (pc.Is(CustomRoles.Youtuber) || pc.Is(CustomRoles.Egoist) || pc.Is(CustomRoles.Solsticer)) return false;
+                if (pc.Is(CustomRoles.Youtuber)
+                    || pc.Is(CustomRoles.Egoist)
+                    || pc.Is(CustomRoles.Cleanser)
+                    || pc.Is(CustomRoles.Solsticer))
+                    return false;
                 if (pc.Is(CustomRoles.Madmate) && !Hurried.CanBeOnMadMate.GetBool()) return false;
                 if (!pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Madmate)) return false;
                 if (pc.GetCustomRole().IsTasklessCrewmate()) return false;
