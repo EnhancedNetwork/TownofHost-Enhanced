@@ -1757,7 +1757,7 @@ public static class PlayerControlDiePatch
                 var playerclass = __instance.GetRoleClass();
 
                 Action<bool> SelfExile = Utils.LateExileTask.FirstOrDefault(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId) ?? playerclass.OnSelfReducedToAtoms;
-                if (GameStates.IsInTask)
+                if (GameStates.IsInTask && !GameStates.IsExilling)
                 {
                     SelfExile(false);
                     Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
