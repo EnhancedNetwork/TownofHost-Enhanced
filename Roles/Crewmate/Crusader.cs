@@ -66,8 +66,15 @@ internal class Crusader : RoleBase
         if (!ForCrusade.Contains(target.PlayerId)) return false;
 
         var crusader = _Player; //this method is added by localplayer's ROLEBASE instance, so the player will always be the current crusader running the code.
-        if (crusader == null) return false;
+        if (!crusader.IsAlive() || crusader.PlayerId == target.PlayerId) return false;
 
+        var killerRole = killer.GetCustomRole();
+        // Not should kill
+        if (killerRole is CustomRoles.Taskinator
+            or CustomRoles.Bodyguard
+            or CustomRoles.Veteran
+            or CustomRoles.Deputy)
+            return false;
 
         if (crusader.CheckForInvalidMurdering(killer) && crusader.RpcCheckAndMurder(killer, true))
         {
