@@ -45,7 +45,7 @@ public class Main : BasePlugin
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool devRelease = false; // Latest: V2.0.0 Dev 25
-    public static readonly bool canaryRelease = false; // ALatest: V2.0.0 Canary 12
+    public static readonly bool canaryRelease = false; // Latest: V2.0.0 Canary 12
     public static readonly bool fullRelease = true; // Latest: V2.0.1
 
     public static bool hasAccess = true;
