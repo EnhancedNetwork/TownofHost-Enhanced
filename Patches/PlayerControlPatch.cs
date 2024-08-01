@@ -1042,6 +1042,12 @@ class FixedUpdateInNormalGamePatch
         if (!lowLoad)
         {
             Zoom.OnFixedUpdate();
+
+            // ChatUpdatePatch doesn't work when host chat is hidden
+            if (player.AmOwner && !DestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
+            {
+                ChatUpdatePatch.Postfix(ChatUpdatePatch.Instance);
+            }
         }
 
         // Only during the game
