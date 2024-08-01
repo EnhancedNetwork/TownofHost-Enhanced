@@ -1918,7 +1918,7 @@ class PlayerControlSetRolePatch
 
                     }
 
-                }, 0.1f, "SetGuardianAngel");
+                }, 0.1f, $"SetGuardianAngel for playerId: {__instance.PlayerId}");
             }
 
             if (__runOriginal)
