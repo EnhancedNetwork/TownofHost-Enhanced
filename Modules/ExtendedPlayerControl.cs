@@ -876,6 +876,7 @@ static class ExtendedPlayerControl
         //If target is null, it becomes a button.
         if (Options.DisableMeeting.GetBool() && !force) return;
 
+        SetUpRoleTextPatch.IsInIntro = false;
         ReportDeadBodyPatch.AfterReportTasks(reporter, target);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
