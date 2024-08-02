@@ -1623,7 +1623,7 @@ class PlayerControlCheckNamePatch
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
 
         // Set name after check vanilla code
-        // The original "playerName" sometimes passes a randomized nickname
+        // The original "playerName" sometimes have randomized nickname
         // So CheckName sets the original nickname but only saved it on "Data.PlayerName"
         playerName = __instance.Data.PlayerName ?? playerName;
 
