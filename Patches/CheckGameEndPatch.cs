@@ -86,6 +86,11 @@ class GameEndCheckerForNormal
                         if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
                             pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId))
                         {
+                            // When admired neutral win, set end game reason "HumansByVote"
+                            if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
+                            {
+                                reason = GameOverReason.HumansByVote;
+                            }
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
