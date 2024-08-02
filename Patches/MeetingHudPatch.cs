@@ -109,7 +109,7 @@ class CheckForEndVotingPatch
                     return true;
                 }
                 
-                if (pva.DidVote && pva.VotedFor < 253 && !pc.Data.IsDead)
+                if (pva.DidVote && pva.VotedFor < 253 && pc.IsAlive())
                 {
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);
                     
@@ -691,7 +691,7 @@ class CastVotePatch
     public static void Postfix(MeetingHud __instance)
     {
         // Prevent double check end voting
-        if (GameStates.IsMeeting && MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion)
+        if (GameStates.IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
         {
             __instance.CheckForEndVoting();
             //For stuffs in check for end voting to work
