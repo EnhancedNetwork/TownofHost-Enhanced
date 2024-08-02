@@ -289,7 +289,7 @@ class CheckForEndVotingPatch
                     exileId = byte.MaxValue;
                     tie = true;
                 }
-                voteLog.Info($"Exiled ID: {exileId}, max: {max} votes");
+                voteLog.Info($"Exiled ID: {exileId} ({Utils.GetVoteName(exileId)}), max: {max} votes");
             }
 
             voteLog.Info($"Decision to exiled a player: {exileId} ({Utils.GetVoteName(exileId)})");
