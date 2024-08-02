@@ -1224,7 +1224,7 @@
   "RoleAssigningAlgorithm.NetRandom": ".NET系統",
   "RoleAssigningAlgorithm.HashRandom": "Hash",
   "RoleAssigningAlgorithm.Xorshift": "Xorshift",
-  "RoleAssigningAlgorithm.MersenneTwister": "Twister",
+  "RoleAssigningAlgorithm.MersenneTwister": "MersenneTwister",
   "MapModification": "地圖設定",
   "DisableAirshipMovingPlatform": "禁用移動平台(<color=#ed0007>Airship</color>)",
   "AirshipVariableElectrical": "電氣室門隨機關閉(<color=#ed0007>Airship</color>)",
