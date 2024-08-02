@@ -1622,6 +1622,11 @@ class PlayerControlCheckNamePatch
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
 
+        // Set name after check vanilla code
+        // The original "playerName" sometimes passes a randomized nickname
+        // So CheckName sets the original nickname but only saved it on "Data.PlayerName"
+        playerName = __instance.Data.PlayerName ?? playerName;
+
         if (BanManager.CheckDenyNamePlayer(__instance, playerName)) return;
 
         if (!Main.AllClientRealNames.ContainsKey(__instance.OwnerId))
@@ -1642,6 +1647,7 @@ class PlayerControlCheckNamePatch
         }
         Main.AllPlayerNames.Remove(__instance.PlayerId);
         Main.AllPlayerNames.TryAdd(__instance.PlayerId, name);
+
         Logger.Info($"PlayerId: {__instance.PlayerId} - playerName: {playerName} => {name}", "Name player");
 
         RPC.SyncAllPlayerNames();
