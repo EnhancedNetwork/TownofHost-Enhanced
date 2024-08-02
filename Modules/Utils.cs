@@ -2262,12 +2262,19 @@ public static class Utils
     }
     public static string GetVoteName(byte num)
     {
+        //  HasNotVoted = 255;
+        //  MissedVote = 254;
+        //  SkippedVote = 253;
+        //  DeadVote = 252;
+
         string name = "invalid";
         var player = GetPlayerById(num);
-        if (num < 15 && player != null) name = player?.GetNameWithRole();
+        var playerCount = Main.AllPlayerControls.Length;
+        if (num < playerCount && player != null) name = player?.GetNameWithRole();
+        if (num == 252) name = "Dead";
         if (num == 253) name = "Skip";
-        if (num == 254) name = "None";
-        if (num == 255) name = "Dead";
+        if (num == 254) name = "MissedVote";
+        if (num == 255) name = "HasNotVoted";
         return name;
     }
     public static string PadRightV2(this object text, int num)

@@ -159,40 +159,40 @@ class CheckForEndVotingPatch
                 if (Options.VoteMode.GetBool())
                 {
                     if (ps.VotedFor == 253 && !voter.Data.IsDead && //スキップ
-                        !(Options.WhenSkipVoteIgnoreFirstMeeting.GetBool() && MeetingStates.FirstMeeting) && //初手会議を除く
-                        !(Options.WhenSkipVoteIgnoreNoDeadBody.GetBool() && !MeetingStates.IsExistDeadBody) && //死体がない時を除く
-                        !(Options.WhenSkipVoteIgnoreEmergency.GetBool() && MeetingStates.IsEmergencyMeeting) //緊急ボタンを除く
+                        !(Options.WhenSkipVoteIgnoreFirstMeeting.GetBool() && MeetingStates.FirstMeeting) && // Ignore First Meeting
+                        !(Options.WhenSkipVoteIgnoreNoDeadBody.GetBool() && !MeetingStates.IsExistDeadBody) && // No Dead Body
+                        !(Options.WhenSkipVoteIgnoreEmergency.GetBool() && MeetingStates.IsEmergencyMeeting) // Ignore Emergency Meeting
                         )
                     {
                         switch (Options.GetWhenSkipVote())
                         {
                             case VoteMode.Suicide:
                                 TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, ps.TargetPlayerId);
-                                voteLog.Info($"{voter.GetNameWithRole()}因跳过投票自杀");
+                                voteLog.Info($"{voter.GetNameWithRole()} voted to skip, so the player will suicide");
                                 break;
                             case VoteMode.SelfVote:
                                 ps.VotedFor = ps.TargetPlayerId;
-                                voteLog.Info($"{voter.GetNameWithRole()}因跳过投票自票");
+                                voteLog.Info($"{voter.GetNameWithRole()} voted to skip, so the player voted self");
                                 break;
                             default:
                                 break;
                         }
                     }
-                    if (ps.VotedFor == 254 && !voter.Data.IsDead)//無投票
+                    if (ps.VotedFor == 254 && !voter.Data.IsDead)
                     {
                         switch (Options.GetWhenNonVote())
                         {
                             case VoteMode.Suicide:
                                 TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, ps.TargetPlayerId);
-                                voteLog.Info($"{voter.GetNameWithRole()}因未投票自杀");
+                                voteLog.Info($"{voter.GetNameWithRole()} did not vote, so the player will suicide");
                                 break;
                             case VoteMode.SelfVote:
                                 ps.VotedFor = ps.TargetPlayerId;
-                                voteLog.Info($"{voter.GetNameWithRole()}因未投票自票");
+                                voteLog.Info($"{voter.GetNameWithRole()} did not vote, so the player voted self");
                                 break;
                             case VoteMode.Skip:
                                 ps.VotedFor = 253;
-                                voteLog.Info($"{voter.GetNameWithRole()}因未投票跳过");
+                                voteLog.Info($"{voter.GetNameWithRole()} did not vote, so the player voted skip");
                                 break;
                             default:
                                 break;
@@ -275,21 +275,21 @@ class CheckForEndVotingPatch
             voteLog.Info("=========Vote Result=========");
             foreach (var data in VotingData)
             {
-                voteLog.Info($"{data.Key}({Utils.GetVoteName(data.Key)}): {data.Value} votes");
+                voteLog.Info($"{Utils.GetVoteName(data.Key)}({data.Key}): {data.Value} votes");
                 if (data.Value > max)
                 {
-                    voteLog.Info($"{data.Key} have a higher number of votes ({data.Value})");
+                    voteLog.Info($"{Utils.GetVoteName(data.Key)}({data.Key}) have a higher number of votes ({data.Value})");
                     exileId = data.Key;
                     max = data.Value;
                     tie = false;
                 }
                 else if (data.Value == max)
                 {
-                    voteLog.Info($"{data.Key} has the same number of votes as {exileId} ({data.Value})");
+                    voteLog.Info($"{Utils.GetVoteName(data.Key)}({data.Key}) has the same number of votes as {Utils.GetVoteName(exileId)}({exileId}) - Count: {data.Value}");
                     exileId = byte.MaxValue;
                     tie = true;
                 }
-                voteLog.Info($"Expulsion ID: {exileId}, max: {max} votes");
+                voteLog.Info($"Exiled ID: {exileId}, max: {max} votes");
             }
 
             voteLog.Info($"Decision to exiled a player: {exileId} ({Utils.GetVoteName(exileId)})");
