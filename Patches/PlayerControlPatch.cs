@@ -1003,7 +1003,7 @@ class FixedUpdateInNormalGamePatch
         catch (Exception ex)
         {
             Utils.ThrowException(ex);
-            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}", "FixedUpdateInNormalGamePatch");
+            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}: Error: {ex}", "FixedUpdateInNormalGamePatch");
         }
     }
 
@@ -1043,11 +1043,18 @@ class FixedUpdateInNormalGamePatch
         {
             Zoom.OnFixedUpdate();
 
-            // ChatUpdatePatch doesn't work when host chat is hidden
-            if (AmongUsClient.Instance.AmHost && player.AmOwner && !DestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
-            {
-                ChatUpdatePatch.Postfix(ChatUpdatePatch.Instance);
-            }
+            //try
+            //{
+            //    // ChatUpdatePatch doesn't work when host chat is hidden
+            //    if (AmongUsClient.Instance.AmHost && player.AmOwner && !DestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
+            //    {
+            //        ChatUpdatePatch.Postfix(ChatUpdatePatch.Instance);
+            //    }
+            //}
+            //catch (Exception er)
+            //{
+            //    Logger.Error($"Error: {er}", "ChatUpdatePatch");
+            //}
         }
 
         // Only during the game
@@ -1398,7 +1405,7 @@ class FixedUpdateInNormalGamePatch
                                     partnerPlayer.Data.IsDead = true;
                                     partnerPlayer.RpcExileV2();
                                     Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
-                                    if (MeetingHud.Instance?.state == MeetingHud.VoteStates.Discussion)
+                                    if (MeetingHud.Instance?.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
                                     {
                                         MeetingHud.Instance?.CheckForEndVoting();
                                     }
@@ -1622,6 +1629,11 @@ class PlayerControlCheckNamePatch
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
 
+        // Set name after check vanilla code
+        // The original "playerName" sometimes have randomized nickname
+        // So CheckName sets the original nickname but only saved it on "Data.PlayerName"
+        playerName = __instance.Data.PlayerName ?? playerName;
+
         if (BanManager.CheckDenyNamePlayer(__instance, playerName)) return;
 
         if (!Main.AllClientRealNames.ContainsKey(__instance.OwnerId))
@@ -1642,6 +1654,7 @@ class PlayerControlCheckNamePatch
         }
         Main.AllPlayerNames.Remove(__instance.PlayerId);
         Main.AllPlayerNames.TryAdd(__instance.PlayerId, name);
+
         Logger.Info($"PlayerId: {__instance.PlayerId} - playerName: {playerName} => {name}", "Name player");
 
         RPC.SyncAllPlayerNames();

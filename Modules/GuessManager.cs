@@ -407,7 +407,7 @@ public static class GuessManager
             voteArea.Overlay.color = Color.white;
             voteArea.XMark.gameObject.SetActive(true);
             voteArea.XMark.transform.localScale = Vector3.one;
-            foreach (var playerVoteArea in meetingHud.playerStates.ToArray())
+            foreach (var playerVoteArea in meetingHud.playerStates)
             {
                 if (playerVoteArea.VotedFor != pc.PlayerId) continue;
                 playerVoteArea.UnsetVote();
@@ -418,7 +418,7 @@ public static class GuessManager
             Swapper.CheckSwapperTarget(pc.PlayerId);
 
             // Prevent double check end voting
-            if (meetingHud.state == MeetingHud.VoteStates.Discussion)
+            if (meetingHud.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
             {
                 meetingHud.CheckForEndVoting();
             }

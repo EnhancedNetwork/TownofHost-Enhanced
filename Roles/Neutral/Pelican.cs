@@ -225,23 +225,23 @@ internal class Pelican : RoleBase
     }
     private void ReturnEatenPlayerBack(PlayerControl pelican)
     {
-        var pc = pelican.PlayerId;
-        if (!eatenList.ContainsKey(pc)) return;
+        var pelicanId = pelican.PlayerId;
+        if (!eatenList.ContainsKey(pelicanId)) return;
 
         GameEndCheckerForNormal.ShouldNotCheck = true;
 
         try
         {
             Vector2 teleportPosition;
-            if ((pelican.GetCustomPosition() == GetBlackRoomPSForPelican() || pelican.GetCustomPosition() == ExtendedPlayerControl.GetBlackRoomPosition())
-                && PelicanLastPosition.ContainsKey(pc))
-                teleportPosition = PelicanLastPosition[pc];
-            else teleportPosition = pelican.GetCustomPosition();
+            if (Scavenger.KilledPlayersId.Contains(pelicanId) && PelicanLastPosition.TryGetValue(pelicanId, out var lastPosition))
+                teleportPosition = lastPosition;
+            else 
+                teleportPosition = pelican.GetCustomPosition();
 
-            foreach (var tar in eatenList[pc])
+            foreach (var tar in eatenList[pelicanId])
             {
                 var target = Utils.GetPlayerById(tar);
-                var player = Utils.GetPlayerById(pc);
+                var player = Utils.GetPlayerById(pelicanId);
                 if (player == null || target == null) continue;
 
                 target.RpcTeleport(teleportPosition);
@@ -253,9 +253,9 @@ internal class Pelican : RoleBase
 
                 RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
 
-                Logger.Info($"{Utils.GetPlayerById(pc).GetRealName()} dead, player return back: {target.GetRealName()}", "Pelican");
+                Logger.Info($"{pelican?.Data?.PlayerName} dead, player return back: {target?.Data?.PlayerName} in {teleportPosition}", "Pelican");
             }
-            eatenList.Remove(pc);
+            eatenList.Remove(pelicanId);
             SyncEatenList();
             Utils.NotifyRoles();
         }
