@@ -122,10 +122,7 @@ internal class DoubleAgent : RoleBase
 
     public override bool CanUseKillButton(PlayerControl pc) => false;
 
-    // Use vote for Non-Modded!
-    // Plant bomb on first vote that isn't another imposter or self.
-    // Dev Note: Add this to CastVotePatch in MeetingHudPatch.cs like it is for keeper.
-    public static bool OnVotes(PlayerControl voter, PlayerControl target)
+    public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
         if (voter.IsModClient()) return true;
         if (!CanBombInMeeting) return true;
@@ -243,7 +240,7 @@ internal class DoubleAgent : RoleBase
     // Players go bye bye ¯\_(ツ)_/¯
     private void BoomBoom(PlayerControl player)
     {
-        if (player.inVent) player.MyPhysics.RpcBootFromVent(GetPlayerVentId(player));
+        if (player.inVent) player.MyPhysics.RpcBootFromVent(player.GetPlayerVentId());
 
         foreach (PlayerControl target in Main.AllAlivePlayerControls) // Get players in radius of bomb that are not in a vent.
         {
@@ -270,16 +267,6 @@ internal class DoubleAgent : RoleBase
         {
             player.RPCPlayCustomSound(Sound);
         }
-    }
-
-    // Get vent Id that the player is in.
-    private static int GetPlayerVentId(PlayerControl pc)
-    {
-        if (!(ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) &&
-              systemType.TryCast<VentilationSystem>() is VentilationSystem ventilationSystem))
-            return 0;
-
-        return ventilationSystem.PlayersInsideVents.TryGetValue(pc.PlayerId, out var playerIdVentId) ? playerIdVentId : 0;
     }
 
     // Set bomb mark on player.

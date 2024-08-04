@@ -649,6 +649,17 @@ class CastVotePatch
             return false;
         } //Vote a disconnect player
 
+        // Return vote to player if uses checkvote and wants to vote normal without using his abilities.
+        if (suspectPlayerId == 253 && voter.GetRoleClass()?.IsMethodOverridden("CheckVote") == true)
+        {
+            if (!voter.GetRoleClass().HasVoted)
+            {
+                voter.GetRoleClass().HasVoted = true;
+                Utils.SendMessage("VoteNotUseAbility", voter.PlayerId);
+                return false;
+            }
+        }
+
         if (target != null && suspectPlayerId < 253)
         {
             if (!target.IsAlive() || target.Data.Disconnected)
@@ -656,6 +667,21 @@ class CastVotePatch
                 Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
                 __instance.RpcClearVote(voter.GetClientId());
                 Swapper.CheckSwapperTarget(suspectPlayerId);
+                return false;
+            }
+
+
+            if (!voter.GetRoleClass().HasVoted && !voter.GetRoleClass().CheckVote(voter, target))
+            {
+                Logger.Info($"Canceling {voter.GetRealName()}'s vote because of {voter.GetCustomRole()}", "CastVotePatch..RoleBase.CheckVote");
+                __instance.RpcClearVote(voter.GetClientId());
+                    if (target != null)
+                    {
+                    // Attempts to set thumbsdown color to the same as playerrole to signify player ability used on (only for modded client)
+                        PlayerVoteArea pva = MeetingHud.Instance.playerStates.FirstOrDefault(pva => pva.TargetPlayerId == target.PlayerId);
+                        Color color = Utils.GetRoleColor(voter.GetCustomRole()).ShadeColor(0.5f);
+                        pva.ThumbsDown.set_color_Injected(ref color);
+                    }
                 return false;
             }
 
@@ -675,20 +701,6 @@ class CastVotePatch
                         return false;
                     } //patch here so checkend is not triggered
                     break;
-                case CustomRoles.Keeper:
-                    if (!Keeper.OnVotes(voter, target))
-                    {
-                        __instance.RpcClearVote(voter.GetClientId());
-                        return false;
-                    }
-                    break;
-                case CustomRoles.DoubleAgent:
-                    if (!DoubleAgent.OnVotes(voter, target))
-                    {
-                        __instance.RpcClearVote(voter.GetClientId());
-                        return false;
-                    }
-                    break;
             }
         }
 
@@ -698,7 +710,7 @@ class CastVotePatch
     public static void Postfix(MeetingHud __instance)
     {
         // Prevent double check end voting
-        if (GameStates.IsMeeting && MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion)
+        if (GameStates.IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
         {
             __instance.CheckForEndVoting();
             //For stuffs in check for end voting to work
