@@ -344,10 +344,13 @@ class GameEndCheckerForNormal
                             break;
                     }
                 }
-                foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse() && Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse())))
+                if (Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse()))
                 {
-                    if (!WinnerIds.Contains(pc.PlayerId))
-                        WinnerIds.Add(pc.PlayerId);
+                    foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse()))
+                    {
+                        if (!WinnerIds.Contains(pc.PlayerId))
+                            WinnerIds.Add(pc.PlayerId);
+                    }
                 }
                 if (WinnerTeam is CustomWinner.Youtuber)
                 {

@@ -864,34 +864,28 @@ class MeetingHudStartPatch
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
             AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
         }
-        // Apocalypse Notify
-        if (CustomRoles.Pestilence.RoleExist())
+        // Apocalypse Notify, thanks tommy
+        var transformRoles = new CustomRoles[] { CustomRoles.Pestilence, CustomRoles.War, CustomRoles.Famine, CustomRoles.Death };
+        foreach (var role in transformRoles)
         {
-            _ = new LateTask(() =>
+            if (role.RoleExist())
             {
-                AddMsg(string.Format(GetString("PestilenceTransform")), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pestilence), GetString("ApocalypseIsNigh")));
-            }, 3f, "Pestilence Apocalypse Notify");
-        }
-        if (CustomRoles.War.RoleExist())
-        {
-            _ = new LateTask(() =>
-            {
-                AddMsg(string.Format(GetString("BerserkerTransform")), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.War), GetString("ApocalypseIsNigh")));
-            }, 3f, "War Apocalypse Notify");
-        }
-        if (CustomRoles.Famine.RoleExist())
-        {
-            _ = new LateTask(() =>
-            {
-                AddMsg(string.Format(GetString("BakerTransform")), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Famine), GetString("ApocalypseIsNigh")));
-            }, 3f, "Famine Apocalypse Notify");
-        }
-        if (CustomRoles.Death.RoleExist())
-        {
-            _ = new LateTask(() =>
-            {
-                AddMsg(string.Format(GetString("SoulCollectorTransform")), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Death), GetString("ApocalypseIsNigh")));
-            }, 3f, "Death Apocalypse Notify");
+                _ = new LateTask(() =>
+                {
+                    var roleMessage = role switch
+                    {
+                        CustomRoles.Pestilence => GetString("PestilenceTransform"),
+                        CustomRoles.War => GetString("BerserkerTransform"),
+                        CustomRoles.Famine => GetString("BakerTransform"),
+                        CustomRoles.Death => GetString("SoulCollectorTransform"),
+                        _ => "",
+                    };
+
+                    if (roleMessage != "")
+                        AddMsg(roleMessage, 255, Utils.ColorString(Utils.GetRoleColor(role), GetString("ApocalypseIsNigh")));
+
+                }, 3f, $"{role} Apocalypse Notify");
+            }
         }
 
         string MimicMsg = "";
