@@ -85,6 +85,7 @@ internal class ChangeRoleSettings
             GameEndCheckerForNormal.ShouldNotCheck = false;
             GameEndCheckerForNormal.ForEndGame = false;
             GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
+            GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
 
             ChatManager.ResetHistory();
             ReportDeadBodyPatch.CanReport = [];
