@@ -77,7 +77,7 @@ internal class ChangeRoleSettings
             Main.LastNotifyNames.Clear();
             Main.PlayerColors.Clear();
 
-            Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
+            Main.FirstDiedPrevious = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
