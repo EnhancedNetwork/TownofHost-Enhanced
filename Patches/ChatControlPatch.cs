@@ -9,21 +9,6 @@ class ChatControllerUpdatePatch
 {
     public static int CurrentHistorySelection = -1;
 
-    static readonly Dictionary<string, string> replaceDic = new()
-            {
-                { "（", " (" },
-                { "）", ") " },
-                { "，", ", " },
-                { "：", ": " },
-                { "[", "【" },
-                { "]", "】" },
-                { "‘", " '" },
-                { "’", "' " },
-                { "“", " ''" },
-                { "”", "'' " },
-                { "！", "! " },
-                { Environment.NewLine, " " }
-            };
     public static void Prefix()
     {
         if (AmongUsClient.Instance.AmHost && DataManager.Settings.Multiplayer.ChatMode == InnerNet.QuickChatModes.QuickChatOnly)
@@ -33,13 +18,15 @@ class ChatControllerUpdatePatch
     {
         if (Main.DarkTheme.Value)
         {
+            var backgroundColor = new Color32(40, 40, 40, byte.MaxValue);
+
             // free chat
-            __instance.freeChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
+            __instance.freeChatField.background.color = backgroundColor;
             __instance.freeChatField.textArea.compoText.Color(Color.white);
             __instance.freeChatField.textArea.outputText.color = Color.white;
 
             // quick chat
-            __instance.quickChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
+            __instance.quickChatField.background.color = backgroundColor;
             __instance.quickChatField.text.color = Color.white;
         }
         else
@@ -50,35 +37,13 @@ class ChatControllerUpdatePatch
         if (!__instance.freeChatField.textArea.hasFocus) return;
         if (!GameStates.IsModHost) return;
 
-        __instance.freeChatField.textArea.characterLimit = AmongUsClient.Instance.AmHost ? 999 : 300;
+        __instance.freeChatField.textArea.characterLimit = AmongUsClient.Instance.AmHost ? 2000 : 300;
 
         if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.C))
             ClipboardHelper.PutClipboardString(__instance.freeChatField.textArea.text);
 
         if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.V))
-        {
-            if (!string.IsNullOrEmpty(GUIUtility.systemCopyBuffer))
-            {
-                string replacedText = GUIUtility.systemCopyBuffer;
-                foreach (var pair in replaceDic)
-                {
-                    replacedText = replacedText.Replace(pair.Key, pair.Value);
-                }
-
-                if ((__instance.freeChatField.textArea.text + replacedText).Length < __instance.freeChatField.textArea.characterLimit)
-                    __instance.freeChatField.textArea.SetText(__instance.freeChatField.textArea.text + replacedText);
-                else
-                {
-                    int remainingLength = __instance.freeChatField.textArea.characterLimit - __instance.freeChatField.textArea.text.Length;
-                    if (remainingLength > 0)
-                    {
-                        string text = replacedText[..remainingLength];
-                        __instance.freeChatField.textArea.SetText(__instance.freeChatField.textArea.text + text);
-                    }
-                }
-            }
-        }
-
+            __instance.freeChatField.textArea.SetText(__instance.freeChatField.textArea.text + GUIUtility.systemCopyBuffer);
 
         if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.X))
         {

@@ -235,12 +235,14 @@ class CheckMurderPatch
         var targetRoleClass = target.GetRoleClass();
         var targetSubRoles = target.GetCustomSubRoles();
 
-        // Shield Player
-        if (Main.ShieldPlayer != "" && Main.ShieldPlayer == target.GetClient().GetHashedPuid() && Utils.IsAllAlive)
+        Logger.Info($"Start", "FirstDied.CheckMurder");
+
+        if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
         {
-            Main.ShieldPlayer = "";
+            killer.SetKillCooldown(5f);
             killer.RpcGuardAndKill(target);
-            killer.SetKillCooldown(forceAnime: true);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(killer.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
+            Logger.Info($"Canceled from ShieldPersonDiedFirst", "FirstDied");
             return false;
         }
 
@@ -434,7 +436,24 @@ class MurderPlayerPatch
         }
 
         if (Main.FirstDied == "")
+        {
             Main.FirstDied = target.GetClient().GetHashedPuid();
+
+            if (Options.RemoveShieldOnFirstDead.GetBool() && Main.FirstDiedPrevious != "")
+            {
+                Main.FirstDiedPrevious = "";
+                RPC.SyncAllPlayerNames();
+            }
+
+            // Sync protected player from being killed first info for modded clients
+            if (PlayerControl.LocalPlayer.OwnedByHost())
+            {
+                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncShieldPersonDiedFirst, SendOption.None, -1);
+                writer.Write(Main.FirstDied);
+                writer.Write(Main.FirstDiedPrevious);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
+        }
 
         if (Main.AllKillers.ContainsKey(killer.PlayerId))
             Main.AllKillers.Remove(killer.PlayerId);
@@ -577,9 +596,24 @@ public static class CheckShapeshiftPatch
             logger.Info("Cancel shapeshifting in meeting");
             return false;
         }
+        if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+        {
+            instance.RpcGuardAndKill(instance);
+            instance.Notify(Utils.ColorString(Utils.GetRoleColor(instance.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
+            logger.Info($"Cancel shapeshifting because {target.GetRealName()} is protected by the game");
+            return false;
+        }     
         if (Pelican.IsEaten(instance.PlayerId))
         {
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is eaten by Pelican");
+            return false;
+        }
+
+        if (instance == target && Main.UnShapeShifter.Contains(instance.PlayerId))
+        {
+            if(!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) instance.GetRoleClass().UnShapeShiftButton(instance);
+            instance.RpcResetAbilityCooldown(); // Just incase
+            logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
             return false;
         }
         return true;
@@ -1003,7 +1037,7 @@ class FixedUpdateInNormalGamePatch
         catch (Exception ex)
         {
             Utils.ThrowException(ex);
-            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}", "FixedUpdateInNormalGamePatch");
+            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}: Error: {ex}", "FixedUpdateInNormalGamePatch");
         }
     }
 
@@ -1043,17 +1077,25 @@ class FixedUpdateInNormalGamePatch
         {
             Zoom.OnFixedUpdate();
 
-            // ChatUpdatePatch doesn't work when host chat is hidden
-            if (AmongUsClient.Instance.AmHost && player.AmOwner && !DestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
-            {
-                ChatUpdatePatch.Postfix(ChatUpdatePatch.Instance);
-            }
+            //try
+            //{
+            //    // ChatUpdatePatch doesn't work when host chat is hidden
+            //    if (AmongUsClient.Instance.AmHost && player.AmOwner && !DestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
+            //    {
+            //        ChatUpdatePatch.Postfix(ChatUpdatePatch.Instance);
+            //    }
+            //}
+            //catch (Exception er)
+            //{
+            //    Logger.Error($"Error: {er}", "ChatUpdatePatch");
+            //}
         }
 
         // Only during the game
         if (GameStates.IsInGame)
         {
             Sniper.OnFixedUpdateGlobal(player);
+
 
             if (!lowLoad)
             {
@@ -1137,6 +1179,23 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask)
             {
+                if (!lowLoad && Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted) 
+                    && !player.IsMushroomMixupActive() && Main.GameIsLoaded)
+                { // using lowload because it is a pretty long domino of tasks 💀
+                    Main.UnShapeShifter.Where(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
+                        .Do(x =>
+                        {
+                            var PC = Utils.GetPlayerById(x);
+                            var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
+                            PC.RpcShapeshift(randomplayer, false);
+                            PC.RpcRejectShapeshift();
+                            PC.ResetPlayerOutfit();
+                            
+                            Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
+                        });
+                }
+
+
                 CustomRoleManager.OnFixedUpdate(player);
 
                 if (Main.LateOutfits.TryGetValue(player.PlayerId, out var Method) && !player.CheckCamoflague())
@@ -1279,7 +1338,21 @@ class FixedUpdateInNormalGamePatch
 
                 RealName = RealName.ApplyNameColorData(seer, target, false);
                 var seerRole = seer.GetCustomRole();
-
+                
+                // Add protected player icon from ShieldPersonDiedFirst
+                if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+                {
+                    if (Options.ShowShieldedPlayerToAll.GetBool())
+                    {
+                        RealName = "<color=#4fa1ff><u></color>" + RealName + "</u>";
+                        Mark.Append("<color=#4fa1ff>✚</color>");
+                    }
+                    else if (seer == target)
+                    {
+                        RealName = "<color=#4fa1ff><u></color>" + RealName + "</u>";
+                        Mark.Append("<color=#4fa1ff>✚</color>");
+                    }
+                }
 
                 Mark.Append(seerRoleClass?.GetMark(seer, target, false));
                 Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
@@ -1398,7 +1471,7 @@ class FixedUpdateInNormalGamePatch
                                     partnerPlayer.Data.IsDead = true;
                                     partnerPlayer.RpcExileV2();
                                     Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
-                                    if (MeetingHud.Instance?.state == MeetingHud.VoteStates.Discussion)
+                                    if (MeetingHud.Instance?.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
                                     {
                                         MeetingHud.Instance?.CheckForEndVoting();
                                     }
@@ -1622,6 +1695,11 @@ class PlayerControlCheckNamePatch
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
 
+        // Set name after check vanilla code
+        // The original "playerName" sometimes have randomized nickname
+        // So CheckName sets the original nickname but only saved it on "Data.PlayerName"
+        playerName = __instance.Data.PlayerName ?? playerName;
+
         if (BanManager.CheckDenyNamePlayer(__instance, playerName)) return;
 
         if (!Main.AllClientRealNames.ContainsKey(__instance.OwnerId))
@@ -1642,6 +1720,7 @@ class PlayerControlCheckNamePatch
         }
         Main.AllPlayerNames.Remove(__instance.PlayerId);
         Main.AllPlayerNames.TryAdd(__instance.PlayerId, name);
+
         Logger.Info($"PlayerId: {__instance.PlayerId} - playerName: {playerName} => {name}", "Name player");
 
         RPC.SyncAllPlayerNames();

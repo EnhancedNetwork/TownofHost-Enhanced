@@ -69,6 +69,30 @@ static class ExtendedPlayerControl
             return null;
         }
     }
+    public static void RpcCastVote(this PlayerControl player, byte suspectIdx)
+    {
+        if (!GameStates.IsMeeting)
+        {
+            Logger.Info($"Cancelled RpcCastVote for {player?.Data.PlayerName} because there is no meeting", "ExtendedPlayerControls..RPCCastVote");
+            return;
+        }
+        if (player == null) return;
+        var playerId = player.PlayerId;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            MeetingHud.Instance.CmdCastVote(playerId, suspectIdx);
+        }
+        else
+        {
+            var writer = CustomRpcSender.Create("Cast Vote", SendOption.Reliable);
+            writer.AutoStartRpc(MeetingHud.Instance.NetId, (byte)RpcCalls.CastVote)
+                .Write(playerId)
+                .Write(suspectIdx)
+            .EndRpc();
+            writer.SendMessage();
+        }
+    }
     public static int GetClientId(this PlayerControl player)
     {
         if (player == null) return -1;
@@ -668,8 +692,8 @@ static class ExtendedPlayerControl
     public static bool CanUseKillButton(this PlayerControl pc)
     {
         if (GameStates.IsLobby) return false;
-        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return false;
-        if (DollMaster.IsDoll(pc.PlayerId)) return false;
+        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId) || DollMaster.IsDoll(pc.PlayerId)) return false;
+        if (pc.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && !Options.ShieldedCanUseKillButton.GetBool() && MeetingStates.FirstMeeting) return false;
         if (pc.Is(CustomRoles.Killer) || Mastermind.PlayerIsManipulated(pc)) return true;
 
         var playerRoleClass = pc.GetRoleClass();
@@ -876,6 +900,7 @@ static class ExtendedPlayerControl
         //If target is null, it becomes a button.
         if (Options.DisableMeeting.GetBool() && !force) return;
 
+        SetUpRoleTextPatch.IsInIntro = false;
         ReportDeadBodyPatch.AfterReportTasks(reporter, target);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
@@ -909,6 +934,8 @@ static class ExtendedPlayerControl
     public static bool IsNeutralBenign(this PlayerControl player) => player.GetCustomRole().IsNB();
     public static bool IsNeutralEvil(this PlayerControl player) => player.GetCustomRole().IsNE();
     public static bool IsNeutralChaos(this PlayerControl player) => player.GetCustomRole().IsNC();
+    public static bool IsNeutralApocalypse(this PlayerControl player) => player.GetCustomRole().IsNA();
+    public static bool IsTransformedNeutralApocalypse(this PlayerControl player) => player.GetCustomRole().IsTNA();
     public static bool IsNonNeutralKiller(this PlayerControl player) => player.GetCustomRole().IsNonNK();
     
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl target)

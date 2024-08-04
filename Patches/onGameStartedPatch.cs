@@ -70,12 +70,14 @@ internal class ChangeRoleSettings
             Main.ShapeshiftTarget.Clear();
             Main.AllKillers.Clear();
             Main.OverDeadPlayerList.Clear();
+            Main.UnShapeShifter.Clear();
+            Main.GameIsLoaded = false;
             Utils.LateExileTask.Clear();
 
             Main.LastNotifyNames.Clear();
             Main.PlayerColors.Clear();
 
-            Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
+            Main.FirstDiedPrevious = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
@@ -85,6 +87,7 @@ internal class ChangeRoleSettings
             GameEndCheckerForNormal.ShouldNotCheck = false;
             GameEndCheckerForNormal.ForEndGame = false;
             GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
+            GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
 
             ChatManager.ResetHistory();
             ReportDeadBodyPatch.CanReport = [];
@@ -139,6 +142,7 @@ internal class ChangeRoleSettings
             {
                 var colorId = pc.Data.DefaultOutfit.ColorId;
                 if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
+
                 Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
                 {
                     NormalOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set(pc.CurrentOutfit.PlayerName, pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
@@ -468,10 +472,18 @@ internal class SelectRolesPatch
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
 
+
+
             GhostRoleAssign.Add();
 
             foreach (var pc in Main.AllPlayerControls)
             {
+                if (Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
+                {
+                    Main.UnShapeShifter.Add(pc.PlayerId);
+                    Logger.Info($"Added {pc.GetRealName()} because of {pc.GetCustomRole()}", "UnShapeShift..OnGameStartedPatch");
+                }
+
                 if (pc.GetRoleClass()?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
 
                 pc.GetRoleClass()?.OnAdd(pc.PlayerId);

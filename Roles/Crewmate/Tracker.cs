@@ -29,6 +29,7 @@ internal class Tracker : RoleBase
 
     private static readonly Dictionary<byte, List<byte>> TrackerTarget = [];
     private static readonly Dictionary<byte, float> TempTrackLimit = [];
+    private bool Didvote = false;
 
     public override void SetupCustomOption()
     {
@@ -39,8 +40,7 @@ internal class Tracker : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracker]);
         OptionCanSeeLastRoomInMeeting = BooleanOptionItem.Create(Id + 7, "EvilTrackerCanSeeLastRoomInMeeting", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracker]);
-        HidesVote = BooleanOptionItem.Create(Id + 8, "TrackerHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tracker]);
-        TrackerAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 9, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
+       TrackerAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 9, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracker])
             .SetValueFormat(OptionFormat.Times);
     }
@@ -59,7 +59,6 @@ internal class Tracker : RoleBase
     {
         TrackerTarget.Remove(playerId);
     }
-    public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && TempTrackLimit[pva.TargetPlayerId] > 0;
     public void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -93,20 +92,23 @@ internal class Tracker : RoleBase
         }
     }
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false) => !(seer == null || target == null) && TrackerTarget.ContainsKey(seer.PlayerId) && TrackerTarget[seer.PlayerId].Contains(target.PlayerId) ? Utils.ColorString(seer.GetRoleColor(), "◀") : "";
-
-    public override void OnVote(PlayerControl player, PlayerControl target)
+    public override void AfterMeetingTasks() => Didvote = false;
+    public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
-        if (player == null || target == null) return;
-        if (AbilityLimit < 1) return;
-        if (player.PlayerId == target.PlayerId) return;
-        if (TrackerTarget[player.PlayerId].Contains(target.PlayerId)) return;
+        if (player == null || target == null) return true;
+        if (AbilityLimit < 1 || Didvote) return true;
+        if (player.PlayerId == target.PlayerId) return true;
+        if (TrackerTarget[player.PlayerId].Contains(target.PlayerId)) return true;
 
+        Didvote = true;
         AbilityLimit--;
 
         TrackerTarget[player.PlayerId].Add(target.PlayerId);
         TargetArrow.Add(player.PlayerId, target.PlayerId);
 
-        SendRPC(0,player.PlayerId, target.PlayerId);
+        SendRPC(0, player.PlayerId, target.PlayerId);
+        SendMessage(GetString("VoteHasReturned"), player.PlayerId, title: ColorString(GetRoleColor(CustomRoles.Tracker), string.Format(GetString("VoteAbilityUsed"), GetString("Tracker"))));
+        return false;
     }
 
     public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo repoted)

@@ -52,7 +52,7 @@ internal class Deceiver : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return true;
-        if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.SerialKiller)) return true;
+        if (target.IsTransformedNeutralApocalypse() || target.Is(CustomRoles.SerialKiller)) return true;
 
         if (!(CanBeClient(target) && CanSeel)) return false;
 

@@ -231,7 +231,7 @@ public static class Utils
         }
         return;
     }
-
+    
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
         if (!target.Data.IsDead || GameStates.IsMeeting) return;
@@ -1693,6 +1693,17 @@ public static class Utils
         return null;
     }
 
+    public static bool IsMethodOverridden(this RoleBase roleInstance, string methodName)
+    {
+        Type baseType = typeof(RoleBase);
+        Type derivedType = roleInstance.GetType();
+
+        MethodInfo baseMethod = baseType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+        MethodInfo derivedMethod = derivedType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+
+        return baseMethod.DeclaringType != derivedMethod.DeclaringType;
+    }
+
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
@@ -1876,6 +1887,12 @@ public static class Utils
                 string SelfDeathReason = seer.KnowDeathReason(seer) ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : string.Empty;
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
+                // Add protected player icon from ShieldPersonDiedFirst
+                if (seer.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting && !isForMeeting)
+                {
+                    SelfName = $"{ColorString(seer.GetRoleColor(), $"<color=#4fa1ff><u></color>{SeerRealName}</u>")}{SelfDeathReason}<color=#4fa1ff>✚</color>{SelfMark}";
+                }
+
                 bool IsDisplayInfo = false;
                 if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode != CustomGameMode.FFA)
                 {
@@ -2048,6 +2065,9 @@ public static class Utils
                                     if (Options.NeutralKillersCanGuess.GetBool() && seer.GetCustomRole().IsNK())
                                         TargetPlayerName = GetTragetId;
 
+                                    if (Options.NeutralApocalypseCanGuess.GetBool() && seer.GetCustomRole().IsNA())
+                                        TargetPlayerName = GetTragetId;
+
                                     if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))
                                         TargetPlayerName = GetTragetId;
                                 }
@@ -2098,6 +2118,12 @@ public static class Utils
                         string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}{TargetSuffix}";
                         //TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
 
+                        // Add protected player icon from ShieldPersonDiedFirst
+                        if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting && !isForMeeting && Options.ShowShieldedPlayerToAll.GetBool())
+                        {
+                            TargetName = $"{TargetRoleText}<color=#4fa1ff><u></color>{TargetPlayerName}</u>{TargetDeathReason}<color=#4fa1ff>✚</color>{TargetMark}{TargetSuffix}";
+                        }
+
                         realTarget.RpcSetNamePrivate(TargetName, seer, force: NoCache);
                     }
                 }
@@ -2123,7 +2149,8 @@ public static class Utils
             return rso is PlayerState.DeathReason.Overtired 
                 or PlayerState.DeathReason.etc
                 or PlayerState.DeathReason.Vote 
-                or PlayerState.DeathReason.Gambled;
+                or PlayerState.DeathReason.Gambled
+                or PlayerState.DeathReason.Armageddon;
         }
 
         return checkbanned ? !BannedReason(reason) : reason switch
@@ -2174,6 +2201,7 @@ public static class Utils
             var Breason when BannedReason(Breason) => false,
             PlayerState.DeathReason.Slice => CustomRoles.Hawk.IsEnable(),
             PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
+            PlayerState.DeathReason.Starved => CustomRoles.Baker.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };
@@ -2190,7 +2218,10 @@ public static class Utils
 
         foreach (var playerState in Main.PlayerStates.Values.ToArray())
         {
-            playerState.RoleClass?.AfterMeetingTasks();
+            if (playerState.RoleClass == null) continue;
+
+            playerState.RoleClass.AfterMeetingTasks();
+            playerState.RoleClass.HasVoted = false;
         }
 
         //Set kill timer
@@ -2262,12 +2293,19 @@ public static class Utils
     }
     public static string GetVoteName(byte num)
     {
+        //  HasNotVoted = 255;
+        //  MissedVote = 254;
+        //  SkippedVote = 253;
+        //  DeadVote = 252;
+
         string name = "invalid";
         var player = GetPlayerById(num);
-        if (num < 15 && player != null) name = player?.GetNameWithRole();
+        var playerCount = Main.AllPlayerControls.Length;
+        if (num < playerCount && player != null) name = player?.GetNameWithRole();
+        if (num == 252) name = "Dead";
         if (num == 253) name = "Skip";
-        if (num == 254) name = "None";
-        if (num == 255) name = "Dead";
+        if (num == 254) name = "MissedVote";
+        if (num == 255) name = "HasNotVoted";
         return name;
     }
     public static string PadRightV2(this object text, int num)
