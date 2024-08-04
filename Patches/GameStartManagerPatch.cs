@@ -31,6 +31,7 @@ public class GameStartManagerPatch
         public static TextMeshPro HideName;
         public static void Postfix(GameStartManager __instance)
         {
+            GameStartManagerUpdatePatch.AlredyBegin = false;
             __instance.GameRoomNameCode.text = GameCode.IntToGameName(AmongUsClient.Instance.GameId);
             // Reset lobby countdown timer
             timer = 600f;
