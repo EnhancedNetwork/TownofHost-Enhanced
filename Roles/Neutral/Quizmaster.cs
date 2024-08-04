@@ -497,17 +497,13 @@ class PlrColorQuestion : QuizQuestionBase
             if (numOfQuestionsDone == positionForRightAnswer)
             {
                 AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
-                if (Answer == "None") prefix = "Quizmaster.";
-                if (prefix != "")
-                    Answer = GetString(prefix + Answer);
+                Answer = GetString(prefix + Answer);
                 Answers.Add(prefix + Answer);
             }
             else
             {
                 string thatAnswer = PossibleAnswers[rnd.Next(PossibleAnswers.Count)];
-                if (thatAnswer == "None") prefix = "Quizmaster.";
-                if (prefix != "")
-                    thatAnswer = GetString(prefix + thatAnswer);
+                thatAnswer = GetString(prefix + thatAnswer);
                 Answers.Add(prefix + thatAnswer);
                 PossibleAnswers.Remove(thatAnswer);
             }

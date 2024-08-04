@@ -152,7 +152,7 @@ public static class CustomRoleManager
         {
             if (Fragile.KillFragile(killer, target))
             {
-                Logger.Info("Fragile killed in OnChecMurder, returning false", "Fragile");
+                Logger.Info("Fragile killed in OnCheckMurder, returning false", "Fragile");
                 return false;
             }
         }
@@ -167,7 +167,7 @@ public static class CustomRoleManager
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
-        if (PlagueBearer.HasEnabled)
+        if (PlagueBearer.HasEnabled && !killer.Is(CustomRoles.PlagueBearer))
         {
             PlagueBearer.CheckAndInfect(killer, target);
         }
@@ -452,6 +452,7 @@ public static class CustomRoleManager
         {
             sb.Append(lower(seer, seen, isForMeeting, isForHud));
         }
+
         return sb.ToString();
     }
 

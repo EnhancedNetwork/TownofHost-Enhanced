@@ -353,12 +353,16 @@ internal class ChatCommands
                     int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
                     int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
                     int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
+                    int apocnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNA());
 
                     var sub = new StringBuilder();
                     sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
 
                     if (Options.ShowMadmatesInLeftCommand.GetBool())
                         sub.Append(string.Format("\n\r" + GetString("Remaining.MadmateCount"), madnum));
+
+                    if (Options.ShowApocalypseInLeftCommand.GetBool())
+                        sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
 
                     sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
 
@@ -2087,6 +2091,7 @@ internal class ChatCommands
                 var allAlivePlayers = Main.AllAlivePlayerControls;
                 int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
                 int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                int apocnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNA());
                 int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
 
                 var sub = new StringBuilder();
@@ -2094,6 +2099,9 @@ internal class ChatCommands
 
                 if (Options.ShowMadmatesInLeftCommand.GetBool())
                     sub.Append(string.Format("\n\r" + GetString("Remaining.MadmateCount"), madnum));
+
+                if (Options.ShowApocalypseInLeftCommand.GetBool())
+                    sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
 
                 sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
 
@@ -2944,10 +2952,13 @@ internal class ChatCommands
 class ChatUpdatePatch
 {
     public static bool DoBlockChat = false;
+    public static ChatController Instance;
     public static void Postfix(ChatController __instance)
     {
         if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
         if (DoBlockChat) return;
+
+        Instance ??= __instance;
 
         if (Main.DarkTheme.Value)
         {
@@ -3021,21 +3032,6 @@ class ChatUpdatePatch
         __instance.timeSinceLastMessage = 0f;
     }
 }
-
-[HarmonyPatch(typeof(ChatController), nameof(ChatController.AddChat))]
-internal class AddChatPatch
-{
-    public static void Postfix(string chatText)
-    {
-        switch (chatText)
-        {
-            default:
-                break;
-        }
-        if (!AmongUsClient.Instance.AmHost) return;
-    }
-}
-
 [HarmonyPatch(typeof(FreeChatInputField), nameof(FreeChatInputField.UpdateCharCount))]
 internal class UpdateCharCountPatch
 {

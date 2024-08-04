@@ -55,7 +55,7 @@ internal class Detective : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl player, NetworkedPlayerInfo deadBody)
     {
-        if (deadBody == null || deadBody.Object.IsAlive()) return;
+        if (deadBody == null) return;
 
         if (player != null && player.Is(CustomRoles.Detective) && player.PlayerId != deadBody.PlayerId)
         {
@@ -73,6 +73,7 @@ internal class Detective : RoleBase
                     msg.Append($"；\n{string.Format(GetString("DetectiveNoticeKiller"), RoleKillerInfo)}");
                 }
             }
+            DetectiveNotify.Remove(player.PlayerId);
             DetectiveNotify.Add(player.PlayerId, msg.ToString());
         }
         InfoAboutDeadPlayerAndKiller.Clear();

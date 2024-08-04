@@ -876,6 +876,7 @@ static class ExtendedPlayerControl
         //If target is null, it becomes a button.
         if (Options.DisableMeeting.GetBool() && !force) return;
 
+        SetUpRoleTextPatch.IsInIntro = false;
         ReportDeadBodyPatch.AfterReportTasks(reporter, target);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
@@ -909,6 +910,8 @@ static class ExtendedPlayerControl
     public static bool IsNeutralBenign(this PlayerControl player) => player.GetCustomRole().IsNB();
     public static bool IsNeutralEvil(this PlayerControl player) => player.GetCustomRole().IsNE();
     public static bool IsNeutralChaos(this PlayerControl player) => player.GetCustomRole().IsNC();
+    public static bool IsNeutralApocalypse(this PlayerControl player) => player.GetCustomRole().IsNA();
+    public static bool IsTransformedNeutralApocalypse(this PlayerControl player) => player.GetCustomRole().IsTNA();
     public static bool IsNonNeutralKiller(this PlayerControl player) => player.GetCustomRole().IsNonNK();
     
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl target)

@@ -39,14 +39,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0724.200.12000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 Canary 12";
+    public const string PluginVersion = "2024.0804.210.00010"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.1.0 Dev 1";
     public const string SupportedVersionAU = "2024.6.18";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 12
-    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
-    public static readonly bool devRelease = false; // INACTIVE - Latest: V2.0.0 Dev 25
+    public static readonly bool devRelease = true; // Latest: V2.1.0 Dev 1
+    public static readonly bool canaryRelease = false; // Latest: V2.0.0 Canary 12
+    public static readonly bool fullRelease = false; // Latest: V2.0.2
 
     public static bool hasAccess = true;
 
@@ -59,10 +59,10 @@ public class Main : BasePlugin
     public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
 
     public static readonly bool ShowWebsiteButton = true;
-    public static readonly string WebsiteInviteUrl = "https://tohre.dev";
+    public static readonly string WebsiteInviteUrl = "https://weareten.ca/";
     
-    public static readonly bool ShowKofiButton = true;
-    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHE";
+    public static readonly bool ShowDonationButton = true;
+    public static readonly string DonationInviteUrl = "https://weareten.ca/TOHE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);
@@ -155,6 +155,9 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
 
+    public static readonly HashSet<byte> UnShapeShifter = [];
+    public static bool GameIsLoaded { get; set; } = false;
+
     public static bool isLoversDead = true;
     public static readonly HashSet<PlayerControl> LoversPlayers = [];
 
@@ -190,9 +193,9 @@ public class Main : BasePlugin
 
     public static List<string> TName_Snacks_CN = ["冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖"];
     public static List<string> TName_Snacks_EN = ["Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee"];
-    public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese ?
-        TName_Snacks_CN[IRandom.Instance.Next(0, TName_Snacks_CN.Count)] :
-        TName_Snacks_EN[IRandom.Instance.Next(0, TName_Snacks_EN.Count)];
+    public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese 
+        ? TName_Snacks_CN.RandomElement()
+        : TName_Snacks_EN.RandomElement();
 
     private static void CreateTemplateRoleColorFile()
     {
@@ -526,10 +529,6 @@ public class Main : BasePlugin
 }
 public enum CustomRoles
 {
-    /*******************************************************
-     * Please add all the new roles in alphabetical order *
-     ******************************************************/
-
     // Crewmate(Vanilla)
     Crewmate = 0,
     Engineer,
@@ -565,7 +564,6 @@ public enum CustomRoles
     AntiAdminer,
     Arrogance,
     Bard,
-    Berserker,
     Blackmailer,
     Bomber,
     BountyHunter,
@@ -713,16 +711,21 @@ public enum CustomRoles
     //Neutral
     Agitater,
     Amnesiac,
+    Apocalypse,
     Arsonist,
+    Baker,
     Bandit,
+    Berserker,
     BloodKnight,
     Collector,
     Cultist, 
     CursedSoul,
+    Death,
     Demon, 
     Doomsayer,
     Doppelganger,
     Executioner,
+    Famine,
     Follower,
     Glitch,
     God,
@@ -777,6 +780,7 @@ public enum CustomRoles
     VengefulRomantic,
     Virus,
     Vulture,
+    War,
     Werewolf,
     Workaholic,
     Wraith,
@@ -919,11 +923,9 @@ public enum CustomWinner
     Pickpocket = CustomRoles.Pickpocket,
     Traitor = CustomRoles.Traitor,
     Vulture = CustomRoles.Vulture,
-    Pestilence = CustomRoles.Pestilence,
     Medusa = CustomRoles.Medusa,
     Spiritcaller = CustomRoles.Spiritcaller,
     Glitch = CustomRoles.Glitch,
-    Plaguebearer = CustomRoles.PlagueBearer,
     PlagueDoctor = CustomRoles.PlagueDoctor,
     PunchingBag = CustomRoles.PunchingBag,
     Doomsayer = CustomRoles.Doomsayer,
@@ -934,6 +936,7 @@ public enum CustomWinner
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
     Solsticer = CustomRoles.Solsticer,
+    Apocalypse = CustomRoles.Apocalypse,
 }
 public enum AdditionalWinners
 {

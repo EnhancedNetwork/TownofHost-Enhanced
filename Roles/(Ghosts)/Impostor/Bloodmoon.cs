@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -59,7 +60,10 @@ internal class Bloodmoon : RoleBase
             return true;
         }
 
-        if (AbilityLimit > 0 
+        if (AbilityLimit > 0
+            && !target.Is(CustomRoles.Jinx)
+            && !target.Is(CustomRoles.CursedWolf)
+            && !target.IsNeutralApocalypse()
             && killer.RpcCheckAndMurder(target, true)
             && !PlayerDie.ContainsKey(target.PlayerId))
         {

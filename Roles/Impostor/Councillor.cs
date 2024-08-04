@@ -157,6 +157,11 @@ internal class Councillor : RoleBase
                 }
                 else if (target.Is(CustomRoles.Pestilence)) CouncillorSuicide = true;
                 else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
+                else if (target.IsTransformedNeutralApocalypse() && !target.Is(CustomRoles.Pestilence))
+                {
+                    pc.ShowInfoMessage(isUI, GetString("ApocalypseImmune"));
+                    return true;
+                }
                 else if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessShielded"));

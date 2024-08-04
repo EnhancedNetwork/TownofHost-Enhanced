@@ -47,7 +47,7 @@ class SetUpRoleTextPatch
         {
             // After showing team for non-modded clients update player names.
             IsInIntro = false;
-            Utils.NotifyRoles(NoCache: true);
+            Utils.DoNotifyRoles(NoCache: true);
         }
 
         _ = new LateTask(() =>
@@ -282,6 +282,17 @@ class BeginCrewmatePatch
                 lawyerTeam.Add(helping);
             }
             teamToDisplay = lawyerTeam;
+        }
+        if (PlayerControl.LocalPlayer.IsNeutralApocalypse())
+        {
+            var apocTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            apocTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.IsNeutralApocalypse() && pc != PlayerControl.LocalPlayer)
+                    apocTeam.Add(pc);
+            }
+            teamToDisplay = apocTeam;
         }
        
         return true;
@@ -547,6 +558,23 @@ class IntroCutsceneDestroyPatch
 
                     });
                 }, 3f, "Set Dev Ghost-Roles");
+            }
+
+            if (Main.UnShapeShifter.Any())
+            {
+                _ = new LateTask(() =>
+                {
+                 Main.UnShapeShifter.Do(x =>
+                    {
+                     var PC = Utils.GetPlayerById(x);
+                     var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
+                     PC.RpcShapeshift(randomplayer, false);
+                     PC.RpcRejectShapeshift(); 
+                     PC.ResetPlayerOutfit(force: true);
+                     Main.GameIsLoaded = true;
+
+                    });
+                }, 3f, "Set UnShapeShift Button");
             }
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))

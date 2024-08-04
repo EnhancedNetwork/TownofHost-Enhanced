@@ -125,7 +125,7 @@ internal class Crewpostor : RoleBase
             list = [.. list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position))];
             var target = list[0];
 
-            if (!target.Is(CustomRoles.Pestilence))
+            if (!target.IsTransformedNeutralApocalypse())
             {
                 if (!LungeKill.GetBool())
                 {
@@ -143,12 +143,17 @@ internal class Crewpostor : RoleBase
                 }
                 Logger.Info($"Crewpostor completed task to kill：{player.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "Crewpostor");
             }
-            else
+            else if (target.Is(CustomRoles.Pestilence))
             {
                 target.RpcMurderPlayer(player);
                 target.SetRealKiller(player);
                 player.RpcGuardAndKill();
                 Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Pestilence Reflect");
+            }
+            else 
+            {
+                player.RpcGuardAndKill();
+                Logger.Info($"Crewpostor tried to kill Apocalypse Member：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Apocalypse Immune");
             }
         }
 

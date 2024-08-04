@@ -1693,6 +1693,16 @@ public static class Utils
         return null;
     }
 
+    public static bool IsMethodOverridden(RoleBase roleInstance, string methodName)
+    {
+        Type baseType = typeof(RoleBase);
+        Type derivedType = roleInstance.GetType();
+
+        MethodInfo baseMethod = baseType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+        MethodInfo derivedMethod = derivedType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+
+        return baseMethod.DeclaringType != derivedMethod.DeclaringType;
+    }
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
@@ -2048,6 +2058,9 @@ public static class Utils
                                     if (Options.NeutralKillersCanGuess.GetBool() && seer.GetCustomRole().IsNK())
                                         TargetPlayerName = GetTragetId;
 
+                                    if (Options.NeutralApocalypseCanGuess.GetBool() && seer.GetCustomRole().IsNA())
+                                        TargetPlayerName = GetTragetId;
+
                                     if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))
                                         TargetPlayerName = GetTragetId;
                                 }
@@ -2123,7 +2136,8 @@ public static class Utils
             return rso is PlayerState.DeathReason.Overtired 
                 or PlayerState.DeathReason.etc
                 or PlayerState.DeathReason.Vote 
-                or PlayerState.DeathReason.Gambled;
+                or PlayerState.DeathReason.Gambled
+                or PlayerState.DeathReason.Armageddon;
         }
 
         return checkbanned ? !BannedReason(reason) : reason switch
@@ -2174,6 +2188,7 @@ public static class Utils
             var Breason when BannedReason(Breason) => false,
             PlayerState.DeathReason.Slice => CustomRoles.Hawk.IsEnable(),
             PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
+            PlayerState.DeathReason.Starved => CustomRoles.Baker.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };
@@ -2231,7 +2246,7 @@ public static class Utils
         tmp += input;
         ChangeTo = Math.Clamp(tmp, 0, max);
     }
-    public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = true)
+    public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = false)
     {
         int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor));
         if (Main.AliveImpostorCount != AliveImpostorCount)
@@ -2255,19 +2270,26 @@ public static class Utils
             }
             sb.Append($"All:{AllAlivePlayersCount}/{AllPlayersCount}");
             Logger.Info(sb.ToString(), "CountAlivePlayers");
-
-            if (AmongUsClient.Instance.AmHost && checkGameEnd)
-                GameEndCheckerForNormal.Prefix();
         }
+
+        if (AmongUsClient.Instance.AmHost && checkGameEnd)
+            GameEndCheckerForNormal.Prefix();
     }
     public static string GetVoteName(byte num)
     {
+        //  HasNotVoted = 255;
+        //  MissedVote = 254;
+        //  SkippedVote = 253;
+        //  DeadVote = 252;
+
         string name = "invalid";
         var player = GetPlayerById(num);
-        if (num < 15 && player != null) name = player?.GetNameWithRole();
+        var playerCount = Main.AllPlayerControls.Length;
+        if (num < playerCount && player != null) name = player?.GetNameWithRole();
+        if (num == 252) name = "Dead";
         if (num == 253) name = "Skip";
-        if (num == 254) name = "None";
-        if (num == 255) name = "Dead";
+        if (num == 254) name = "MissedVote";
+        if (num == 255) name = "HasNotVoted";
         return name;
     }
     public static string PadRightV2(this object text, int num)

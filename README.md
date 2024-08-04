@@ -16,7 +16,7 @@
 <p align="center">
 
 <center>
-<a href="https://tohre.dev/" target="_blank"><img src="https://img.shields.io/badge/Website%20-%231DA1F2.svg?&style=for-the-badge&logo=vuedotjs&logoColor=white&color=3aa675"/></a>
+<a href="https://weareten.ca/" target="_blank"><img src="https://img.shields.io/badge/Website%20-%231DA1F2.svg?&style=for-the-badge&logo=vuedotjs&logoColor=white&color=3aa675"/></a>
 <a href="https://discord.gg/tohe" target="_blank"><img src="https://img.shields.io/badge/Discord%20-%231DA1F2.svg?&style=for-the-badge&logo=discord&logoColor=white&color=5662f6"/></a>
 <a href="https://github.com/0xDrMoe/TownofHost-Enhanced/releases/latest" target="_blank"><img src="https://img.shields.io/badge/Latest Version%20-%231DA1F2.svg?&style=for-the-badge&logo=github&logoColor=white&color=181717"/></a>
 </center>
@@ -86,6 +86,7 @@
 > - Improved Role Summary
 > - Dark Theme
 > - Improved Role Spawns
+> - Improve text box (TextBoxPatch.cs)
 > - Some ideas to improve performance
 ### :star: [TONEX (Formerly TOHEX)](https://github.com/XtremeWave/TownOfNewEpic_Xtreme)
 >
@@ -103,6 +104,9 @@
 ### :star: [MoreGamemodes](https://github.com/Rabek009/MoreGamemodes)
 >
 > - Changer Role Basis (RoleBasisChanger.cs)
+### :star: [Reactor](https://github.com/NuclearPowered/Reactor)
+>
+> - Reference: Disable the 5s timeout on custom servers
 ---
 
 # Legal License Notice
