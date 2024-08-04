@@ -388,7 +388,6 @@ internal class ChatCommands
                     if (Options.ShouldVoteCmdsSpamChat.GetBool())
                     {
                         canceled = true;
-                        ChatManager.SendPreviousMessagesToAll();
                     }
 
                     if (arg != 253) // skip
