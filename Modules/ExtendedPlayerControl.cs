@@ -69,14 +69,15 @@ static class ExtendedPlayerControl
             return null;
         }
     }
-    public static void RPCCastVote(this byte playerId, byte suspectIdx)
+    public static void RpcCastVote(this PlayerControl player, byte suspectIdx)
     {
-        if(!GameStates.IsMeeting)
+        if (!GameStates.IsMeeting)
         {
-            var player = Utils.GetPlayerById(playerId);
-            Logger.Info($"Cancelled RPCCastVote for {player?.GetRealName()} because there is no meeting", "ExtendedPlayerControls..RPCCastVote");
+            Logger.Info($"Cancelled RpcCastVote for {player?.Data.PlayerName} because there is no meeting", "ExtendedPlayerControls..RPCCastVote");
             return;
         }
+        if (player == null) return;
+        var playerId = player.PlayerId;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -86,9 +87,9 @@ static class ExtendedPlayerControl
         {
             var writer = CustomRpcSender.Create("Cast Vote", SendOption.Reliable);
             writer.AutoStartRpc(MeetingHud.Instance.NetId, (byte)RpcCalls.CastVote)
-                        .Write(playerId)
-                        .Write(suspectIdx)
-                        .EndRpc();
+                .Write(playerId)
+                .Write(suspectIdx)
+            .EndRpc();
             writer.SendMessage();
         }
     }

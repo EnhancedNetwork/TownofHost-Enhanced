@@ -17,7 +17,6 @@ internal class Eraser : RoleBase
     //==================================================================\\
 
     private static OptionItem EraseLimitOpt;
-    public static OptionItem HideVoteOpt;
 
     private static readonly HashSet<byte> didVote = [];
     private static readonly HashSet<byte> PlayerToErase = [];

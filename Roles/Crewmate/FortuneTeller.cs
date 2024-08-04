@@ -21,7 +21,6 @@ internal class FortuneTeller : RoleBase
 
     private static OptionItem CheckLimitOpt;
     private static OptionItem AccurateCheckMode;
-    private static OptionItem HidesVote;
     private static OptionItem ShowSpecificRole;
     private static OptionItem AbilityUseGainWithEachTaskCompleted;
     private static OptionItem RandomActiveRoles;

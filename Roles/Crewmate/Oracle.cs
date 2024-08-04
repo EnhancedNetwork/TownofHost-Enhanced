@@ -20,7 +20,6 @@ internal class Oracle : RoleBase
     //==================================================================\\
 
     private static OptionItem CheckLimitOpt;
-    private static OptionItem HidesVote;
     private static OptionItem FailChance;
     private static OptionItem OracleAbilityUseGainWithEachTaskCompleted;
     private static OptionItem ChangeRecruitTeam;

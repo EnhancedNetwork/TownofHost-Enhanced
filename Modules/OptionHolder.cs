@@ -1866,10 +1866,10 @@ public static class Options
         WhenTie = StringOptionItem.Create(60745, "WhenTie", tieModes, 0, TabGroup.ModSettings, false)
             .SetParent(VoteMode)
             .SetGameMode(CustomGameMode.Standard);
-        EnableVoteCommand  = BooleanOptionItem.Create(60746, "EnableVote", true, TabGroup.GameSettings, false)
+        EnableVoteCommand  = BooleanOptionItem.Create(60746, "EnableVote", true, TabGroup.ModSettings, false)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);
-        ShouldVoteCmdsSpamChat = BooleanOptionItem.Create(60747, "ShouldVoteSpam", false, TabGroup.GameSettings, false)
+        ShouldVoteCmdsSpamChat = BooleanOptionItem.Create(60747, "ShouldVoteSpam", false, TabGroup.ModSettings, false)
             .SetParent(EnableVoteCommand)
             .SetGameMode(CustomGameMode.Standard);
         // 其它设定

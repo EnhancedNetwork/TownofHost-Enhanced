@@ -401,7 +401,7 @@ internal class ChatCommands
                     }
                     if (GameStates.IsMeeting)
                     {
-                        ExtendedPlayerControl.RPCCastVote(PlayerControl.LocalPlayer.PlayerId, (byte)arg);
+                        PlayerControl.LocalPlayer.RpcCastVote((byte)arg);
                     }
                     break;
 
@@ -2714,7 +2714,7 @@ internal class ChatCommands
                 }
                 if (GameStates.IsMeeting)
                 {
-                    ExtendedPlayerControl.RPCCastVote(player.PlayerId, (byte)arg);
+                    player.RpcCastVote((byte)arg);
                 }
                 break;
 

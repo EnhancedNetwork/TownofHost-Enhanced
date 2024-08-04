@@ -16,7 +16,6 @@ internal class Cleanser : RoleBase
 
     private static OptionItem CleanserUsesOpt;
     private static OptionItem CleansedCanGetAddon;
-    private static OptionItem HidesVote;
     //private static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     private readonly HashSet<byte> CleansedPlayers = [];

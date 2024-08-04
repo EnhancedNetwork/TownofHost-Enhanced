@@ -20,7 +20,6 @@ internal class Keeper : RoleBase
     //==================================================================\\
 
     private static OptionItem KeeperUsesOpt;
-    private static OptionItem HidesVote;
 
     private static readonly HashSet<byte> keeperTarget = [];
     private static readonly Dictionary<byte, int> keeperUses = [];
