@@ -369,7 +369,6 @@ internal class ChatCommands
                     Utils.SendMessage(sub.ToString(), PlayerControl.LocalPlayer.PlayerId);
                     break;
                 case "/vote":
-                    canceled = true;
                     subArgs = args.Length != 2 ? "" : args[1];
                     if (subArgs == "" || !int.TryParse(subArgs, out int arg))
                         break;
@@ -386,6 +385,12 @@ internal class ChatCommands
                         Utils.SendMessage(GetString("VoteDisabled"), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
+                    if (Options.ShouldVoteCmdsSpamChat.GetBool())
+                    {
+                        canceled = true;
+                        ChatManager.SendPreviousMessagesToAll();
+                    }
+
                     if (arg != 253) // skip
                     {
                         if (plr == null || !plr.IsAlive())
@@ -2679,7 +2684,6 @@ internal class ChatCommands
                 break;
 
             case "/vote":
-                canceled = true;
                 subArgs = args.Length != 2 ? "" : args[1];
                 if (subArgs == "" || !int.TryParse(subArgs, out int arg))
                     break;
@@ -2697,7 +2701,11 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("VoteDisabled"), player.PlayerId);
                     break;
                 }
-                if (Options.ShouldVoteCmdsSpamChat.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                if (Options.ShouldVoteCmdsSpamChat.GetBool())
+                {
+                    canceled = true;
+                    ChatManager.SendPreviousMessagesToAll();
+                }
 
                 if (arg != 253) // skip
                 {
@@ -2707,7 +2715,7 @@ internal class ChatCommands
                         break;
                     }
                 }
-                if(!player.IsAlive())
+                if (!player.IsAlive())
                 {
                     Utils.SendMessage(GetString("CannotVoteWhenDead"), player.PlayerId);
                     break;
