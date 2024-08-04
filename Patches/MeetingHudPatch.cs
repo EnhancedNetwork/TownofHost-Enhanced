@@ -644,10 +644,10 @@ class CastVotePatch
         var voter = Utils.GetPlayerById(srcPlayerId);
         if (voter == null || !voter.IsAlive()) return false;
 
-        var target = Utils.GetPlayerById(suspectPlayerId);
+        var target = GetPlayerById(suspectPlayerId);
         if (target == null && suspectPlayerId < 253)
         {
-            Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
+            SendMessage(GetString("VoteDead"), srcPlayerId);
             __instance.RpcClearVote(voter.GetClientId());
             return false;
         } //Vote a disconnect player
@@ -658,7 +658,8 @@ class CastVotePatch
             if (!voter.GetRoleClass().HasVoted)
             {
                 voter.GetRoleClass().HasVoted = true;
-                Utils.SendMessage("VoteNotUseAbility", voter.PlayerId);
+                SendMessage(GetString("VoteNotUseAbility"), voter.PlayerId);
+                __instance.RpcClearVote(voter.GetClientId());
                 return false;
             }
         }
@@ -667,7 +668,7 @@ class CastVotePatch
         {
             if (!target.IsAlive() || target.Data.Disconnected)
             {
-                Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
+                SendMessage(GetString("VoteDead"), srcPlayerId);
                 __instance.RpcClearVote(voter.GetClientId());
                 Swapper.CheckSwapperTarget(suspectPlayerId);
                 return false;
@@ -682,7 +683,7 @@ class CastVotePatch
                     {
                     // Attempts to set thumbsdown color to the same as playerrole to signify player ability used on (only for modded client)
                         PlayerVoteArea pva = MeetingHud.Instance.playerStates.FirstOrDefault(pva => pva.TargetPlayerId == target.PlayerId);
-                        Color color = Utils.GetRoleColor(voter.GetCustomRole()).ShadeColor(0.5f);
+                        Color color = GetRoleColor(voter.GetCustomRole()).ShadeColor(0.5f);
                         pva.ThumbsDown.set_color_Injected(ref color);
                     }
                 return false;
@@ -693,13 +694,13 @@ class CastVotePatch
                 case CustomRoles.Dictator:
                     if (target.Is(CustomRoles.Solsticer))
                     {
-                        Utils.SendMessage(GetString("VoteSolsticer"), srcPlayerId);
+                        SendMessage(GetString("VoteSolsticer"), srcPlayerId);
                         __instance.RpcClearVote(voter.GetClientId());
                         return false;
                     }
                     if (!target.IsAlive())
                     {
-                        Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
+                        SendMessage(GetString("VoteDead"), srcPlayerId);
                         __instance.RpcClearVote(voter.GetClientId());
                         return false;
                     } //patch here so checkend is not triggered
