@@ -39,14 +39,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0728.200.9999"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0";
+    public const string PluginVersion = "2024.0804.210.00010"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.1.0 Dev 1";
     public const string SupportedVersionAU = "2024.6.18";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // INACTIVE - Latest: V2.0.0 Dev 25
-    public static readonly bool canaryRelease = false; // ACTIVE - Latest: V2.0.0 Canary 12
-    public static readonly bool fullRelease = true; // INACTIVE - Latest: V2.0.0
+    public static readonly bool devRelease = true; // Latest: V2.1.0 Dev 1
+    public static readonly bool canaryRelease = false; // Latest: V2.0.0 Canary 12
+    public static readonly bool fullRelease = false; // Latest: V2.0.2
 
     public static bool hasAccess = true;
 
@@ -154,6 +154,9 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, long> AllKillers = [];
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
+
+    public static readonly HashSet<byte> UnShapeShifter = [];
+    public static bool GameIsLoaded { get; set; } = false;
 
     public static bool isLoversDead = true;
     public static readonly HashSet<PlayerControl> LoversPlayers = [];
@@ -561,7 +564,6 @@ public enum CustomRoles
     AntiAdminer,
     Arrogance,
     Bard,
-    Berserker,
     Blackmailer,
     Bomber,
     BountyHunter,
@@ -709,16 +711,21 @@ public enum CustomRoles
     //Neutral
     Agitater,
     Amnesiac,
+    Apocalypse,
     Arsonist,
+    Baker,
     Bandit,
+    Berserker,
     BloodKnight,
     Collector,
     Cultist, 
     CursedSoul,
+    Death,
     Demon, 
     Doomsayer,
     Doppelganger,
     Executioner,
+    Famine,
     Follower,
     Glitch,
     God,
@@ -773,6 +780,7 @@ public enum CustomRoles
     VengefulRomantic,
     Virus,
     Vulture,
+    War,
     Werewolf,
     Workaholic,
     Wraith,
@@ -915,11 +923,9 @@ public enum CustomWinner
     Pickpocket = CustomRoles.Pickpocket,
     Traitor = CustomRoles.Traitor,
     Vulture = CustomRoles.Vulture,
-    Pestilence = CustomRoles.Pestilence,
     Medusa = CustomRoles.Medusa,
     Spiritcaller = CustomRoles.Spiritcaller,
     Glitch = CustomRoles.Glitch,
-    Plaguebearer = CustomRoles.PlagueBearer,
     PlagueDoctor = CustomRoles.PlagueDoctor,
     PunchingBag = CustomRoles.PunchingBag,
     Doomsayer = CustomRoles.Doomsayer,
@@ -930,6 +936,7 @@ public enum CustomWinner
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
     Solsticer = CustomRoles.Solsticer,
+    Apocalypse = CustomRoles.Apocalypse,
 }
 public enum AdditionalWinners
 {

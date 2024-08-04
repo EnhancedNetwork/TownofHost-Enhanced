@@ -245,7 +245,7 @@ class CheckMurderPatch
         }
 
         // Madmate Spawn Mode Is First Kill
-        if (Madmate.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && target.CanBeMadmate(inGame:true))
+        if (Madmate.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && target.CanBeMadmate())
         {
             Main.MadmateNum++;
             target.RpcSetCustomRole(CustomRoles.Madmate);
@@ -255,7 +255,7 @@ class CheckMurderPatch
             killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
-            Logger.Info($"Madmate Spawn: {target?.Data?.PlayerName} = {target.GetCustomRole()} + {CustomRoles.Madmate}", "Assign Madmate");
+            Logger.Info($"Assign by first try kill: {target?.Data?.PlayerName} = {target.GetCustomRole()} + {CustomRoles.Madmate}", "Madmate");
             return false;
         }
 
@@ -446,13 +446,15 @@ class MurderPlayerPatch
 
         Main.PlayerStates[target.PlayerId].SetDead();
         target.SetRealKiller(killer, true);
-        Utils.CountAlivePlayers(true);
+        Utils.CountAlivePlayers(sendLog: true, checkGameEnd: false);
 
         // When target death, activate ability for others roles
         AfterPlayerDeathTasks(killer, target, false);
         
         // Check Kill Flash
         Utils.TargetDies(__instance, target);
+
+        Utils.CountAlivePlayers(checkGameEnd: true);
 
         if (Options.LowLoadMode.GetBool())
         {
@@ -578,6 +580,14 @@ public static class CheckShapeshiftPatch
         if (Pelican.IsEaten(instance.PlayerId))
         {
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is eaten by Pelican");
+            return false;
+        }
+
+        if (instance == target && Main.UnShapeShifter.Contains(instance.PlayerId))
+        {
+            if(!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) instance.GetRoleClass().UnShapeShiftButton(instance);
+            instance.RpcResetAbilityCooldown(); // Just incase
+            logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
             return false;
         }
         return true;
@@ -1001,7 +1011,7 @@ class FixedUpdateInNormalGamePatch
         catch (Exception ex)
         {
             Utils.ThrowException(ex);
-            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}", "FixedUpdateInNormalGamePatch");
+            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}: Error: {ex}", "FixedUpdateInNormalGamePatch");
         }
     }
 
@@ -1040,12 +1050,26 @@ class FixedUpdateInNormalGamePatch
         if (!lowLoad)
         {
             Zoom.OnFixedUpdate();
+
+            //try
+            //{
+            //    // ChatUpdatePatch doesn't work when host chat is hidden
+            //    if (AmongUsClient.Instance.AmHost && player.AmOwner && !DestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
+            //    {
+            //        ChatUpdatePatch.Postfix(ChatUpdatePatch.Instance);
+            //    }
+            //}
+            //catch (Exception er)
+            //{
+            //    Logger.Error($"Error: {er}", "ChatUpdatePatch");
+            //}
         }
 
         // Only during the game
         if (GameStates.IsInGame)
         {
             Sniper.OnFixedUpdateGlobal(player);
+
 
             if (!lowLoad)
             {
@@ -1129,6 +1153,23 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask)
             {
+                if (!lowLoad && Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted) 
+                    && !player.IsMushroomMixupActive() && Main.GameIsLoaded)
+                { // using lowload because it is a pretty long domino of tasks 💀
+                    Main.UnShapeShifter.Where(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
+                        .Do(x =>
+                        {
+                            var PC = Utils.GetPlayerById(x);
+                            var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
+                            PC.RpcShapeshift(randomplayer, false);
+                            PC.RpcRejectShapeshift();
+                            PC.ResetPlayerOutfit();
+                            
+                            Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
+                        });
+                }
+
+
                 CustomRoleManager.OnFixedUpdate(player);
 
                 if (Main.LateOutfits.TryGetValue(player.PlayerId, out var Method) && !player.CheckCamoflague())
@@ -1390,7 +1431,7 @@ class FixedUpdateInNormalGamePatch
                                     partnerPlayer.Data.IsDead = true;
                                     partnerPlayer.RpcExileV2();
                                     Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
-                                    if (MeetingHud.Instance?.state == MeetingHud.VoteStates.Discussion)
+                                    if (MeetingHud.Instance?.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
                                     {
                                         MeetingHud.Instance?.CheckForEndVoting();
                                     }
@@ -1614,6 +1655,11 @@ class PlayerControlCheckNamePatch
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
 
+        // Set name after check vanilla code
+        // The original "playerName" sometimes have randomized nickname
+        // So CheckName sets the original nickname but only saved it on "Data.PlayerName"
+        playerName = __instance.Data.PlayerName ?? playerName;
+
         if (BanManager.CheckDenyNamePlayer(__instance, playerName)) return;
 
         if (!Main.AllClientRealNames.ContainsKey(__instance.OwnerId))
@@ -1634,6 +1680,7 @@ class PlayerControlCheckNamePatch
         }
         Main.AllPlayerNames.Remove(__instance.PlayerId);
         Main.AllPlayerNames.TryAdd(__instance.PlayerId, name);
+
         Logger.Info($"PlayerId: {__instance.PlayerId} - playerName: {playerName} => {name}", "Name player");
 
         RPC.SyncAllPlayerNames();
@@ -1755,7 +1802,7 @@ public static class PlayerControlDiePatch
                 var playerclass = __instance.GetRoleClass();
 
                 Action<bool> SelfExile = Utils.LateExileTask.FirstOrDefault(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId) ?? playerclass.OnSelfReducedToAtoms;
-                if (GameStates.IsInTask)
+                if (GameStates.IsInTask && !GameStates.IsExilling)
                 {
                     SelfExile(false);
                     Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
@@ -1916,7 +1963,7 @@ class PlayerControlSetRolePatch
 
                     }
 
-                }, 0.1f, "SetGuardianAngel");
+                }, 0.1f, $"SetGuardianAngel for playerId: {__instance.PlayerId}");
             }
 
             if (__runOriginal)

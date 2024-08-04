@@ -4,6 +4,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -80,12 +81,13 @@ internal class Pitfall : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
-        AURoleOptions.ShapeshifterDuration = 1f;
     }
 
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
+        //if (!CheckUnshapeshift) return;
+        Logger.Info($"Triggered Pitfall Ability!!!", "Pitfall");
+
 
         // Remove inactive traps so there is room for new traps
         Traps = Traps.Where(a => a.IsActive).ToHashSet();
@@ -111,8 +113,6 @@ internal class Pitfall : RoleBase
         }
 
         shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-
-        return false;
     }
 
     private void OnFixedUpdateOthers(PlayerControl player)

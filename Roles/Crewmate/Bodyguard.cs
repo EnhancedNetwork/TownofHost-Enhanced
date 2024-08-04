@@ -26,7 +26,15 @@ internal class Bodyguard : RoleBase
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         var bodyguard = _Player;
-        if (!bodyguard.IsAlive() || killer?.PlayerId == target.PlayerId || bodyguard.PlayerId == target.PlayerId || killer.Is(CustomRoles.Taskinator)) return false;
+        if (!bodyguard.IsAlive() || killer?.PlayerId == target.PlayerId || bodyguard.PlayerId == target.PlayerId) return false;
+
+        var killerRole = killer.GetCustomRole();
+        // Not should kill
+        if (killerRole is CustomRoles.Taskinator
+            or CustomRoles.Crusader
+            or CustomRoles.Veteran
+            or CustomRoles.Deputy)
+            return false;
 
         var pos = target.transform.position;
         var dis = Vector2.Distance(pos, bodyguard.transform.position);

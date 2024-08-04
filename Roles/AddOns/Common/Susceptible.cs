@@ -36,7 +36,6 @@ public class Susceptible
         {
             Logger.Info($"{victim.GetNameWithRole().RemoveHtmlTags()} had the death reason {randomReason}", "Susceptible");
             Main.PlayerStates[victim.PlayerId].deathReason = randomReason.DeathReasonIsEnable() ? randomReason : Main.PlayerStates[victim.PlayerId].deathReason;
-            
         }
         else
         {
