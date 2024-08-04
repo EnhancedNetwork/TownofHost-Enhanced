@@ -101,6 +101,13 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
+                    case CustomWinner.Apocalypse:
+                        if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
+                            && !WinnerIds.Contains(pc.PlayerId))
+                        {
+                            WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
                     case CustomWinner.Cultist:
                         if ((pc.Is(CustomRoles.Charmed) || pc.Is(CustomRoles.Cultist)) && !WinnerIds.Contains(pc.PlayerId))
                         {
@@ -337,7 +344,14 @@ class GameEndCheckerForNormal
                             break;
                     }
                 }
-
+                if (Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse()))
+                {
+                    foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse()))
+                    {
+                        if (!WinnerIds.Contains(pc.PlayerId))
+                            WinnerIds.Add(pc.PlayerId);
+                    }
+                }
                 if (WinnerTeam is CustomWinner.Youtuber)
                 {
                     var youTuber = Main.AllPlayerControls.FirstOrDefault(x => x.Is(CustomRoles.Youtuber) && WinnerIds.Contains(x.PlayerId));

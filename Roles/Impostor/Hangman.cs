@@ -33,7 +33,7 @@ internal class Hangman : RoleBase
     }
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Pestilence))
+        if (target.IsTransformedNeutralApocalypse())
             return true;
 
         if (target.Is(CustomRoles.Madmate) && !Madmate.ImpCanKillMadmate.GetBool())

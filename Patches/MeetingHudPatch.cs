@@ -595,6 +595,8 @@ class CheckForEndVotingPatch
         Witch.OnCheckForEndVoting(deathReason, playerIds);
         HexMaster.OnCheckForEndVoting(deathReason, playerIds);
         Virus.OnCheckForEndVoting(deathReason, playerIds);
+        Famine.OnCheckForEndVoting(deathReason, playerIds);
+        Death.OnCheckForEndVoting(deathReason, playerIds);
 
         foreach (var playerId in playerIds)
         {
@@ -862,7 +864,30 @@ class MeetingHudStartPatch
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
             AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
         }
-        
+        // Apocalypse Notify, thanks tommy
+        var transformRoles = new CustomRoles[] { CustomRoles.Pestilence, CustomRoles.War, CustomRoles.Famine, CustomRoles.Death };
+        foreach (var role in transformRoles)
+        {
+            if (role.RoleExist())
+            {
+                _ = new LateTask(() =>
+                {
+                    var roleMessage = role switch
+                    {
+                        CustomRoles.Pestilence => GetString("PestilenceTransform"),
+                        CustomRoles.War => GetString("BerserkerTransform"),
+                        CustomRoles.Famine => GetString("BakerTransform"),
+                        CustomRoles.Death => GetString("SoulCollectorTransform"),
+                        _ => "",
+                    };
+
+                    if (roleMessage != "")
+                        AddMsg(roleMessage, 255, Utils.ColorString(Utils.GetRoleColor(role), GetString("ApocalypseIsNigh")));
+
+                }, 3f, $"{role} Apocalypse Notify");
+            }
+        }
+
         string MimicMsg = "";
         foreach (var pc in Main.AllPlayerControls)
         {
@@ -1055,6 +1080,9 @@ class MeetingHudStartPatch
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
                 if (Options.NeutralKillersCanGuess.GetBool() && seer.GetCustomRole().IsNK())
+                    if (!seer.Data.IsDead && !target.Data.IsDead)
+                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
+                if (Options.NeutralApocalypseCanGuess.GetBool() && seer.GetCustomRole().IsNA())
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
                 if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))

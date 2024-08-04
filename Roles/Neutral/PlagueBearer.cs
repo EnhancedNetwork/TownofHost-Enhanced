@@ -16,7 +16,7 @@ internal class PlagueBearer : RoleBase
     public static bool HasEnabled => playerIdList.Any();
     
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
 
     private static OptionItem PlagueBearerCooldownOpt;
@@ -62,6 +62,9 @@ internal class PlagueBearer : RoleBase
         PlaguedList.Remove(playerId);
         CustomRoleManager.CheckDeadBodyOthers.Remove(OnPlayerDead);
     }
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
+        => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PlagueBearerCooldownOpt.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
@@ -195,8 +198,15 @@ internal class PlagueBearer : RoleBase
         }
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
-        => IsPlagued(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Pestilence), "⦿") : string.Empty;
-
+        => IsPlagued(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.PlagueBearer), "⦿") : string.Empty;
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
+    {
+        if (IsPlagued(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First())
+        {
+            return ColorString(GetRoleColor(CustomRoles.PlagueBearer), "⦿");
+        }
+        return string.Empty;
+    }
     public override string GetProgressText(byte playerId, bool comms)
     {
         var (plagued, all) = PlaguedPlayerCount(playerId);
@@ -214,7 +224,7 @@ internal class Pestilence : RoleBase
     //===========================SETUP================================\\
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.PlagueBearer);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
 
     public override void Add(byte playerId)
@@ -222,7 +232,9 @@ internal class Pestilence : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
+        => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PlagueBearer.PestilenceCooldownOpt.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(PlagueBearer.PestilenceHasImpostorVision.GetBool());
     public override bool CanUseKillButton(PlayerControl pc) => true;
@@ -233,6 +245,11 @@ internal class Pestilence : RoleBase
         killer.SetRealKiller(target);
         target.RpcMurderPlayer(killer);
         return false;
+    }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        if (target.IsNeutralApocalypse()) return false;
+        return true;
     }
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)

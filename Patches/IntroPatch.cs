@@ -283,6 +283,17 @@ class BeginCrewmatePatch
             }
             teamToDisplay = lawyerTeam;
         }
+        if (PlayerControl.LocalPlayer.IsNeutralApocalypse())
+        {
+            var apocTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            apocTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.IsNeutralApocalypse() && pc != PlayerControl.LocalPlayer)
+                    apocTeam.Add(pc);
+            }
+            teamToDisplay = apocTeam;
+        }
        
         return true;
     }
