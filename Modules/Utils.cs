@@ -232,6 +232,8 @@ public static class Utils
         return;
     }
 
+    public static void RPCCastVote(this PlayerControl voter, PlayerControl voteTarget) => ExtendedPlayerControl.RPCCastVote(voter.PlayerId, voteTarget.PlayerId);
+    
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
         if (!target.Data.IsDead || GameStates.IsMeeting) return;
@@ -1693,7 +1695,7 @@ public static class Utils
         return null;
     }
 
-    public static bool IsMethodOverridden(RoleBase roleInstance, string methodName)
+    public static bool IsMethodOverridden(this RoleBase roleInstance, string methodName)
     {
         Type baseType = typeof(RoleBase);
         Type derivedType = roleInstance.GetType();
@@ -1703,6 +1705,7 @@ public static class Utils
 
         return baseMethod.DeclaringType != derivedMethod.DeclaringType;
     }
+
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
@@ -2217,7 +2220,10 @@ public static class Utils
 
         foreach (var playerState in Main.PlayerStates.Values.ToArray())
         {
-            playerState.RoleClass?.AfterMeetingTasks();
+            if (playerState.RoleClass == null) continue;
+
+            playerState.RoleClass.AfterMeetingTasks();
+            playerState.RoleClass.HasVoted = false;
         }
 
         //Set kill timer

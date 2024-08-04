@@ -186,6 +186,9 @@ public static class Options
     public static OptionItem AutoPlayAgain;
     public static OptionItem AutoPlayAgainCountdown;
 
+    public static OptionItem EnableVoteCommand;
+    public static OptionItem ShouldVoteCmdsSpamChat;
+
     //public static OptionItem ShowLobbyCode;
     public static OptionItem LowLoadMode;
     public static OptionItem EndWhenPlayerBug;
@@ -1862,6 +1865,12 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
         WhenTie = StringOptionItem.Create(60745, "WhenTie", tieModes, 0, TabGroup.ModSettings, false)
             .SetParent(VoteMode)
+            .SetGameMode(CustomGameMode.Standard);
+        EnableVoteCommand  = BooleanOptionItem.Create(60746, "EnableVote", true, TabGroup.GameSettings, false)
+            .SetColor(new Color32(147, 241, 240, byte.MaxValue))
+            .SetGameMode(CustomGameMode.Standard);
+        ShouldVoteCmdsSpamChat = BooleanOptionItem.Create(60747, "ShouldVoteSpam", false, TabGroup.GameSettings, false)
+            .SetParent(EnableVoteCommand)
             .SetGameMode(CustomGameMode.Standard);
         // 其它设定
         TextOptionItem.Create(10000031, "MenuTitle.Other", TabGroup.ModSettings)

@@ -16,6 +16,7 @@ public abstract class RoleBase
 
     public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
+    public bool HasVoted = false;
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;
@@ -355,20 +356,27 @@ public abstract class RoleBase
     public virtual void OnCoEndGame()
     { }
 
+
     /// <summary>
-    /// When player vote for target
+    /// If role wants to return the vote to the player during meeting. Can also work to check any abilities during meeting.
+    /// </summary>
+    public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter != null && target != null;
+
+    /// <summary>
+    /// A check for any role abilites of the player which voted, when the vote hasn't been canceled by any other means.
     /// </summary>
     public virtual void OnVote(PlayerControl votePlayer, PlayerControl voteTarget)
     { }
     /// <summary>
-    /// When the player was voted
+    /// A check for any role abilites of the player that was voted, when the vote hasn't been canceled by any other means.
     /// </summary>
     public virtual void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)
     { }
     /// <summary>
-    /// When need hide vote
+    /// Hides the playervote
     /// </summary>
-    public virtual bool HideVote(PlayerVoteArea votedPlayer) => false;
+    public virtual bool HideVote(PlayerVoteArea PVA) => false;
+
 
     /// <summary>
     /// When need add visual votes

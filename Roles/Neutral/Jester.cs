@@ -30,8 +30,6 @@ internal class Jester : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
         JesterHasImpostorVision = BooleanOptionItem.Create(Id + 4, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        HideJesterVote = BooleanOptionItem.Create(Id + 5, GeneralOption.HideVote, true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
         MeetingsNeededForJesterWin = IntegerOptionItem.Create(Id + 6, "MeetingsNeededForWin", new(0, 10, 1), 0, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester])
             .SetValueFormat(OptionFormat.Times);
@@ -54,7 +52,6 @@ internal class Jester : RoleBase
 
         opt.SetVision(JesterHasImpostorVision.GetBool());
     }
-    public override bool HideVote(PlayerVoteArea votedPlayer) => HideJesterVote.GetBool();
     public override bool OnCheckStartMeeting(PlayerControl reporter) => JesterCanUseButton.GetBool();
 
     public override void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)

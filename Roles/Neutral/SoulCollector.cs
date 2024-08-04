@@ -4,6 +4,7 @@ using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 internal class SoulCollector : RoleBase

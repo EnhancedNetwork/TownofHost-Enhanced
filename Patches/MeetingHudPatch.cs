@@ -8,6 +8,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static TOHE.Utils;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -203,9 +204,9 @@ class CheckForEndVotingPatch
                 var player = Utils.GetPlayerById(ps.TargetPlayerId);
                 var playerRoleClass = player.GetRoleClass();
 
-                // Hide roles vote
+                //Hides vote
                 if (playerRoleClass.HideVote(ps)) continue;
-                
+
                 // Assing Madmate Slef Vote
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) continue;
 
@@ -651,6 +652,17 @@ class CastVotePatch
             return false;
         } //Vote a disconnect player
 
+        // Return vote to player if uses checkvote and wants to vote normal without using his abilities.
+        if (suspectPlayerId == 253 && voter.GetRoleClass()?.IsMethodOverridden("CheckVote") == true)
+        {
+            if (!voter.GetRoleClass().HasVoted)
+            {
+                voter.GetRoleClass().HasVoted = true;
+                Utils.SendMessage("VoteNotUseAbility", voter.PlayerId);
+                return false;
+            }
+        }
+
         if (target != null && suspectPlayerId < 253)
         {
             if (!target.IsAlive() || target.Data.Disconnected)
@@ -658,6 +670,21 @@ class CastVotePatch
                 Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
                 __instance.RpcClearVote(voter.GetClientId());
                 Swapper.CheckSwapperTarget(suspectPlayerId);
+                return false;
+            }
+
+
+            if (!voter.GetRoleClass().HasVoted && !voter.GetRoleClass().CheckVote(voter, target))
+            {
+                Logger.Info($"Canceling {voter.GetRealName()}'s vote because of {voter.GetCustomRole()}", "CastVotePatch..RoleBase.CheckVote");
+                __instance.RpcClearVote(voter.GetClientId());
+                    if (target != null)
+                    {
+                    // Attempts to set thumbsdown color to the same as playerrole to signify player ability used on (only for modded client)
+                        PlayerVoteArea pva = MeetingHud.Instance.playerStates.FirstOrDefault(pva => pva.TargetPlayerId == target.PlayerId);
+                        Color color = Utils.GetRoleColor(voter.GetCustomRole()).ShadeColor(0.5f);
+                        pva.ThumbsDown.set_color_Injected(ref color);
+                    }
                 return false;
             }
 
@@ -676,13 +703,6 @@ class CastVotePatch
                         __instance.RpcClearVote(voter.GetClientId());
                         return false;
                     } //patch here so checkend is not triggered
-                    break;
-                case CustomRoles.Keeper:
-                    if (!Keeper.OnVotes(voter, target))
-                    {
-                        __instance.RpcClearVote(voter.GetClientId());
-                        return false;
-                    }
                     break;
             }
         }
