@@ -452,6 +452,7 @@ public static class CustomRoleManager
         {
             sb.Append(lower(seer, seen, isForMeeting, isForHud));
         }
+
         return sb.ToString();
     }
 

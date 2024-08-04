@@ -560,6 +560,23 @@ class IntroCutsceneDestroyPatch
                 }, 3f, "Set Dev Ghost-Roles");
             }
 
+            if (Main.UnShapeShifter.Any())
+            {
+                _ = new LateTask(() =>
+                {
+                 Main.UnShapeShifter.Do(x =>
+                    {
+                     var PC = Utils.GetPlayerById(x);
+                     var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
+                     PC.RpcShapeshift(randomplayer, false);
+                     PC.RpcRejectShapeshift(); 
+                     PC.ResetPlayerOutfit(force: true);
+                     Main.GameIsLoaded = true;
+
+                    });
+                }, 3f, "Set UnShapeShift Button");
+            }
+
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
             {
                 RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch

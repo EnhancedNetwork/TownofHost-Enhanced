@@ -582,6 +582,14 @@ public static class CheckShapeshiftPatch
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is eaten by Pelican");
             return false;
         }
+
+        if (instance == target && Main.UnShapeShifter.Contains(instance.PlayerId))
+        {
+            if(!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) instance.GetRoleClass().UnShapeShiftButton(instance);
+            instance.RpcResetAbilityCooldown(); // Just incase
+            logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
+            return false;
+        }
         return true;
     }
     public static void RejectShapeshiftAndReset(this PlayerControl player, bool reset = true)
@@ -1062,6 +1070,7 @@ class FixedUpdateInNormalGamePatch
         {
             Sniper.OnFixedUpdateGlobal(player);
 
+
             if (!lowLoad)
             {
                 NameNotifyManager.OnFixedUpdate(player);
@@ -1144,6 +1153,23 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask)
             {
+                if (!lowLoad && Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted) 
+                    && !player.IsMushroomMixupActive() && Main.GameIsLoaded)
+                { // using lowload because it is a pretty long domino of tasks 💀
+                    Main.UnShapeShifter.Where(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
+                        .Do(x =>
+                        {
+                            var PC = Utils.GetPlayerById(x);
+                            var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
+                            PC.RpcShapeshift(randomplayer, false);
+                            PC.RpcRejectShapeshift();
+                            PC.ResetPlayerOutfit();
+                            
+                            Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
+                        });
+                }
+
+
                 CustomRoleManager.OnFixedUpdate(player);
 
                 if (Main.LateOutfits.TryGetValue(player.PlayerId, out var Method) && !player.CheckCamoflague())

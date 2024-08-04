@@ -251,6 +251,16 @@ public abstract class RoleBase
     public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     { }
 
+
+    // NOTE: when using UnShapeshift button, it will not be possible to revert to normal state because of complications.
+    // So OnCheckShapeShift and OnShapeshift are pointless when using it.
+    // Last thing, while the button may say "shift" after resetability, the game still thinks you're shapeshifted and will work instantly as intended.
+    
+    /// <summary>
+    /// A method which when implemented automatically makes the players always shapeshifted (as themselves). Inside you can put functions to happen when "Un-Shapeshift" button is pressed.
+    /// </summary>
+    public virtual void UnShapeShiftButton(PlayerControl shapeshifter) { }
+
     /// <summary>
     /// Check start meeting by press meeting button
     /// </summary>
