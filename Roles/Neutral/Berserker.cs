@@ -105,12 +105,12 @@ internal class Berserker : RoleBase
         if (BerserkerKillMax[killer.PlayerId] < BerserkerMax.GetInt())
         {
             BerserkerKillMax[killer.PlayerId]++;
-            killer.Notify(string.Format(Translator.GetString("BerserkerLevelChanged"), BerserkerKillMax[killer.PlayerId]));
+            killer.Notify(string.Format(GetString("BerserkerLevelChanged"), BerserkerKillMax[killer.PlayerId]));
             Logger.Info($"Increased the lvl to {BerserkerKillMax[killer.PlayerId]}", "CULTIVATOR");
         }
         else
         {
-            killer.Notify(Translator.GetString("BerserkerMaxReached"));
+            killer.Notify(GetString("BerserkerMaxReached"));
             Logger.Info($"Max level reached lvl =  {BerserkerKillMax[killer.PlayerId]}", "CULTIVATOR");
 
         }
@@ -131,7 +131,7 @@ internal class Berserker : RoleBase
             target.SetRealKiller(killer);
 
             killer.SetKillCooldownV2();
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), Translator.GetString("KilledByBerserker")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), GetString("KilledByBerserker")));
             noScav = false;
         }
 
