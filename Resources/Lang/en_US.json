@@ -1313,7 +1313,7 @@
   "MenuTitle.TaskSettings": "★ Task Management ★",
   "MenuTitle.Guessers": "★ Guesser Mode ★",
   "MenuTitle.GuesserModeRoles": "★ Add-ons for Guesser Mode ★",
-  
+
   "ShieldPersonDiedFirst": "Shield player who dead first in the last game",
   "ShowShieldedPlayerToAll": "Reveal shielded player to all",
   "RemoveShieldOnFirstDead": "Remove shield on first death",
@@ -3647,6 +3647,7 @@
   "Contributor": "Contributor",
 
   "dbConnect.InitFailure": "Error while connecting to TOHE API, please check your network connection and retry login!",
+  "dbConnect.InitFailurePublic": "Error while connecting to TOHE API, this could be caused by your internet connection. And so Sponsor+ perks are not available, you may continue to play as usual without these.",
   "dbConnect.nullFriendCode": "This build of TOHE is not available to users with no friendcode!",
 
   "ImpCanBeSusceptible": "<color=#ff1919>Impostors</color> can become Susceptible",
