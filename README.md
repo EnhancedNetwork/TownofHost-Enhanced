@@ -77,7 +77,7 @@
 >
 ### :star: [Project: Lotus](https://github.com/Lotus-AU/LotusContinued)
 >
-> - Ideas for the following roles - Alchemist, Crusader, Chameleon.. more
+> - Ideas for some roles (Alchemist, Crusader, Chameleon.. more)
 > 
 ### :star: [EHR (Formerly TOHE+)](https://github.com/Gurge44/EndlessHostRoles)
 >
