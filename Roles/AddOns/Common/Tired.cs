@@ -4,31 +4,26 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public class Tired
+public class Tired : IAddon
 {
     private const int Id = 27300;
+    public AddonTypes Type => AddonTypes.Harmful;
     private static Dictionary<byte, bool> playerIdList; // Target Action player for Vision
 
-    public static OptionItem CanBeOnCrew;
-    public static OptionItem CanBeOnImp;
-    public static OptionItem CanBeOnNeutral;
     private static OptionItem SetVision;
     private static OptionItem SetSpeed;
     private static OptionItem TiredDuration;
 
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Tired, canSetNum: true, tab: TabGroup.Addons);
+        SetupAdtRoleOptions(Id, CustomRoles.Tired, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
         SetVision = FloatOptionItem.Create(Id + 10, "TiredVision", new(0f, 2f, 0.25f), 0.25f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tired])
              .SetValueFormat(OptionFormat.Multiplier);
         SetSpeed = FloatOptionItem.Create(Id + 11, "TiredSpeed", new(0.25f, 3f, 0.25f), 0.75f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tired])
            .SetValueFormat(OptionFormat.Multiplier);
         TiredDuration = FloatOptionItem.Create(Id + 12, "TiredDur", new(2f, 15f, 0.5f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tired])
                 .SetValueFormat(OptionFormat.Seconds);
-        CanBeOnImp = BooleanOptionItem.Create(Id + 13, "ImpCanBeTired", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tired]);
-        CanBeOnCrew = BooleanOptionItem.Create(Id + 14, "CrewCanBeTired", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tired]);
-        CanBeOnNeutral = BooleanOptionItem.Create(Id + 15, "NeutralCanBeTired", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tired]);
     }
 
     public static void Init()

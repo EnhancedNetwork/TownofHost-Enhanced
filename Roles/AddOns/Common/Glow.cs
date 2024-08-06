@@ -4,14 +4,12 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Glow
+public class Glow : IAddon
 {
     private const int Id = 22000;
     public static bool IsEnable = false;
+    public AddonTypes Type => AddonTypes.Experimental;
 
-    public static OptionItem ImpCanBeGlow;
-    public static OptionItem CrewCanBeGlow;
-    public static OptionItem NeutralCanBeGlow;
     private static OptionItem GlowRadius;
     private static OptionItem GlowVisionOthers;
     private static OptionItem GlowVisionSelf;
@@ -19,15 +17,9 @@ public static class Glow
     private static readonly Dictionary<byte, HashSet<byte>> InRadius = [];
     private static readonly Dictionary<byte, bool> MarkedOnce = [];
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Glow, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeGlow = BooleanOptionItem.Create(Id + 10, "ImpCanBeGlow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        CrewCanBeGlow = BooleanOptionItem.Create(Id + 11, "CrewCanBeGlow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        NeutralCanBeGlow = BooleanOptionItem.Create(Id + 12, "NeutralCanBeGlow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
+        SetupAdtRoleOptions(Id, CustomRoles.Glow, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
         GlowRadius = FloatOptionItem.Create(Id + 13, "GlowRadius", new(0.1f, 5f, 0.05f), 0.5f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow])
             .SetValueFormat(OptionFormat.Multiplier);

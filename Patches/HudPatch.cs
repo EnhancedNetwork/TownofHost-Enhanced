@@ -4,6 +4,7 @@ using TMPro;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -97,7 +98,8 @@ class HudManagerPatch
                     case CustomGameMode.Standard:
                         var roleClass = player.GetRoleClass();
                         LowerInfoText.text = roleClass?.GetLowerText(player, player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empty;
-                        
+
+                        LowerInfoText.text += "\n" + Spurt.GetSuffix(player, true);
 
                         if (roleClass != null)
                         {

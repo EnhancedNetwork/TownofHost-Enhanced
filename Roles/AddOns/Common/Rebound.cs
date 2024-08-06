@@ -3,19 +3,13 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Rebound
+public class Rebound : IAddon
 {
     private const int Id = 22300;
+    public AddonTypes Type => AddonTypes.Guesser;
 
-    public static OptionItem ImpCanBeRebound;
-    public static OptionItem CrewCanBeRebound;
-    public static OptionItem NeutralCanBeRebound;
-
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Rebound, canSetNum: true, tab: TabGroup.ModifierSettings);
-        ImpCanBeRebound = BooleanOptionItem.Create(Id + 10, "ImpCanBeRebound", true, TabGroup.ModifierSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
-        CrewCanBeRebound = BooleanOptionItem.Create(Id + 11, "CrewCanBeRebound", true, TabGroup.ModifierSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
-        NeutralCanBeRebound = BooleanOptionItem.Create(Id + 12, "NeutralCanBeRebound", true, TabGroup.ModifierSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
+        SetupAdtRoleOptions(Id, CustomRoles.Rebound, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
 }

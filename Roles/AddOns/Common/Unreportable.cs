@@ -2,19 +2,13 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Unreportable
+public class Unreportable : IAddon
 {
     private const int Id = 20500;
+    public AddonTypes Type => AddonTypes.Harmful;
 
-    public static OptionItem ImpCanBeUnreportable;
-    public static OptionItem CrewCanBeUnreportable;
-    public static OptionItem NeutralCanBeUnreportable;
-
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Unreportable, canSetNum: true);
-        ImpCanBeUnreportable = BooleanOptionItem.Create(Id + 10, "ImpCanBeUnreportable", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unreportable]);
-        CrewCanBeUnreportable = BooleanOptionItem.Create(Id + 11, "CrewCanBeUnreportable", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unreportable]);
-        NeutralCanBeUnreportable = BooleanOptionItem.Create(Id + 12, "NeutralCanBeUnreportable", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unreportable]);
+        SetupAdtRoleOptions(Id, CustomRoles.Unreportable, canSetNum: true, teamSpawnOptions: true);
     }
 }

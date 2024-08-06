@@ -336,6 +336,10 @@ public static class CustomRoleManager
                         target.RpcSetRole(RoleTypes.GuardianAngel);
                         break;
 
+                    case CustomRoles.Spurt:
+                        Spurt.DeathTask(target);
+                        break;
+
                 }
             }
 

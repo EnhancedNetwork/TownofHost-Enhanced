@@ -547,6 +547,8 @@ internal class SelectRolesPatch
                 }
             }
 
+            Spurt.Add();
+
         EndOfSelectRolePatch:
 
             try

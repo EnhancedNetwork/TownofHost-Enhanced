@@ -3,15 +3,16 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Flash
+public class Flash : IAddon
 {
     private const int Id = 26100;
+    public AddonTypes Type => AddonTypes.Helpful;
 
     private static OptionItem OptionSpeed;
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Flash, canSetNum: true, tab: TabGroup.Addons);
+        SetupAdtRoleOptions(Id, CustomRoles.Flash, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
         OptionSpeed = FloatOptionItem.Create(Id + 10, "FlashSpeed", new(0.25f, 5f, 0.25f), 2.5f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Flash])
             .SetValueFormat(OptionFormat.Multiplier);

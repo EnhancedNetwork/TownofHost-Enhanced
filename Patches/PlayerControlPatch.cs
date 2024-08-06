@@ -1208,6 +1208,9 @@ class FixedUpdateInNormalGamePatch
                 if (player.Is(CustomRoles.Statue) && player.IsAlive())
                     Statue.OnFixedUpdate(player);
 
+                if (player.Is(CustomRoles.Spurt) && player.IsAlive())
+                    Spurt.OnFixedUpdate(player);
+
                 if (!lowLoad)
                 {
                     CustomRoleManager.OnFixedUpdateLowLoad(player);

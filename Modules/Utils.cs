@@ -1865,6 +1865,8 @@ public static class Utils
                 SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
+                SelfSuffix.Append(Spurt.GetSuffix(seer));
+
 
                 switch (Options.CurrentGameMode)
                 {
@@ -2254,6 +2256,7 @@ public static class Utils
             ventilationSystem.IsDirty = true;
         }
     }
+    public static string ToColoredString(this CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString($"{role}"));
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {
         var tmp = ChangeTo * 10;

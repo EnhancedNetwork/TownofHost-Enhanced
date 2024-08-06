@@ -1,10 +1,13 @@
 using System;
+using System.Reflection;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using UnityEngine;
 using TOHE.Roles.Core;
+using static Il2CppMono.Security.X509.X520;
+using TOHE.Roles.AddOns;
 
 namespace TOHE;
 
@@ -70,6 +73,8 @@ public static class Options
     public static Dictionary<CustomRoles, OptionItem> CustomGhostRoleCounts;
     public static Dictionary<CustomRoles, StringOptionItem> CustomRoleSpawnChances;
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
+
+    public static readonly Dictionary<CustomRoles, (OptionItem Imp, OptionItem Neutral, OptionItem Crew)> AddonCanBeSettings = [];
     public enum SpawnChance
     {
         Chance0,
@@ -903,186 +908,52 @@ public static class Options
         yield return null;
 
         #region Add-Ons Settings
-        // Add-Ons 
-        TextOptionItem.Create(10000015, "RoleType.Helpful", TabGroup.Addons) // HELPFUL
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 154, 206, byte.MaxValue));
 
+        int titleId = 100100;
+
+        var IAddonType = typeof(IAddon);
+        Dictionary<AddonTypes, IAddon[]> addonTypes = Assembly
+            .GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => IAddonType.IsAssignableFrom(t) && !t.IsInterface)
+            .OrderBy(t => Translator.GetString(t.Name))
+            .Select(type => (IAddon)Activator.CreateInstance(type))
+            .Where(x => x != null)
+            .GroupBy(x => x.Type)
+            .ToDictionary(x => x.Key, x => x.ToArray());
+
+        foreach (var addonType in addonTypes)
+        {
+            int index = 0;
+
+            TextOptionItem.Create(titleId, $"RoleType.{addonType.Key}", TabGroup.Addons)
+                .SetGameMode(CustomGameMode.Standard)
+                .SetColor(GetAddonTypeColor(addonType.Key))
+                .SetHeader(true);
+            titleId += 10;
+
+            foreach (var addon in addonType.Value)
+            {
+                index++;
+
+                addon.SetupCustomOption();
+            }
+
+            yield return null;
+        }
+        static Color32 GetAddonTypeColor(AddonTypes type) => type switch
+        {
+            AddonTypes.Impostor => new Color32(255, 25, 25, byte.MaxValue),
+            AddonTypes.Helpful => new Color32(255, 154, 206, byte.MaxValue),
+            AddonTypes.Harmful => new Color32(255, 154, 206, byte.MaxValue),
+            AddonTypes.Misc => new Color32(127, 140, 141, byte.MaxValue),
+            AddonTypes.Mixed => new Color32(255, 154, 206, byte.MaxValue),
+            AddonTypes.Guesser => new Color32(214, 177, 73, byte.MaxValue),
+            AddonTypes.Experimental => new Color32(141, 140, 141, byte.MaxValue),
+            _ => Palette.CrewmateBlue
+        };
 
-        Autopsy.SetupCustomOptions();
 
-        Bait.SetupCustomOptions();
-
-        /*
-         * Beartrap
-         */
-        Trapper.SetupCustomOptions();
-
-        Bewilder.SetupCustomOptions();
-
-        Burst.SetupCustomOptions();
-
-        Cyber.SetupCustomOptions();
-
-        Flash.SetupCustomOption();
-
-        Lazy.SetupCustomOptions();
-
-        Loyal.SetupCustomOptions();
-
-        Lucky.SetupCustomOptions();
-
-        Necroview.SetupCustomOptions();
-
-        Nimble.SetupCustomOptions();
-
-        Overclocked.SetupCustomOptions();
-
-        Radar.SetupCustomOptions();
-
-        Seer.SetupCustomOptions();
-
-        Silent.SetupCustomOptions();
-
-        Sleuth.SetupCustomOptions();
-
-        Tiebreaker.SetupCustomOptions();
-
-        Torch.SetupCustomOptions();
-
-        Watcher.SetupCustomOptions();
-
-        TextOptionItem.Create(10000016, "RoleType.Harmful", TabGroup.Addons) // HARMFUL
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 154, 206, byte.MaxValue));
-
-        Unreportable.SetupCustomOptions();
-
-        Fool.SetupCustomOptions();
-
-        Fragile.SetupCustomOptions();
-
-        Statue.SetupCustomOptions();
-
-        Hurried.SetupCustomOption();
-
-        Influenced.SetupCustomOption();
-
-        Mundane.SetupCustomOption();
-
-        Oblivious.SetupCustomOptions();
-
-        Rascal.SetupCustomOptions();
-
-        Unlucky.SetupCustomOptions();
-
-        Tired.SetupCustomOptions();
-
-        VoidBallot.SetupCustomOptions();
-
-        TextOptionItem.Create(10000017, "RoleType.Mixed", TabGroup.Addons) // MIXED
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 154, 206, byte.MaxValue));
-
-        Antidote.SetupCustomOptions();
-
-        Avanger.SetupCustomOptions();
-
-        Aware.SetupCustomOptions();
-
-        Bloodthirst.SetupCustomOptions();
-
-        Diseased.SetupCustomOptions();
-
-        Ghoul.SetupCustomOptions();
-
-        //BYE GLOW, SEE YOU NEVER - LOOOOOL
-        // SetupAdtRoleOptions(22000, CustomRoles.Glow, canSetNum: true);
-        //ImpCanBeGlow = BooleanOptionItem.Create(22003, "ImpCanBeGlow", true, TabGroup.Addons, false)
-        //.SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        //CrewCanBeGlow = BooleanOptionItem.Create(22004, "CrewCanBeGlow", true, TabGroup.Addons, false)
-        //.SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        //NeutralCanBeGlow = BooleanOptionItem.Create(22005, "NeutralCanBeGlow", true, TabGroup.Addons, false)
-        //.SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-
-        Gravestone.SetupCustomOptions();
-
-        Guesser.SetupCustomOptions();
-
-        Oiiai.SetupCustomOptions();
-
-        Paranoia.SetupCustomOptions();
-
-        Stubborn.SetupCustomOptions();
-
-        Susceptible.SetupCustomOptions();
-
-        TextOptionItem.Create(10000018, "RoleType.Impostor", TabGroup.Addons) // IMPOSTOR
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 25, 25, byte.MaxValue));
-
-        /*
-         * Circumvent
-         */
-        Circumvent.SetupCustomOption();
-
-        /*
-         * Clumsy
-         */
-        Clumsy.SetupCustomOption();
-
-        /*
-         * Last Impostor
-         */
-        LastImpostor.SetupCustomOption();
-
-        /*
-         * Madmate
-         */
-        Madmate.SetupCustomMenuOptions();
-
-        /*
-         * Mare
-         */
-        Mare.SetupCustomOption();
-
-        /*
-         * Mimic
-         */
-        Mimic.SetupCustomOption();
-
-        Stealer.SetupCustomOption();
-
-        /*
-         * Tricky
-         */
-        Tricky.SetupCustomOption();
-
-        TextOptionItem.Create(10000019, "RoleType.Misc", TabGroup.Addons) // NEUTRAL
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(127, 140, 141, byte.MaxValue));
-
-
-        Youtuber.SetupCustomOptions();
-
-        Egoist.SetupCustomOption();
-
-        SetupLoversRoleOptionsToggle(23600);
-        
-        Reach.SetupCustomOptions();
-
-        Rainbow.SetupCustomOptions();
-
-        Workhorse.SetupCustomOption();
-
-        TextOptionItem.Create(10000023, "Experimental.Roles", TabGroup.Addons)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(141, 140, 141, byte.MaxValue));
-
-
-        Glow.SetupCustomOptions();
-
-        Swift.SetupCustomOption();
 
         #endregion
 
@@ -1799,19 +1670,6 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
 
-
-        TextOptionItem.Create(10000029, "MenuTitle.GuesserModeRoles", TabGroup.ModifierSettings)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(Color.yellow)
-            .SetHeader(true);
-
-        DoubleShot.SetupCustomOption();
-
-        Onbound.SetupCustomOptions();
-
-        Rebound.SetupCustomOptions();
-
-
         // Meeting Settings
         TextOptionItem.Create(10000030, "MenuTitle.Meeting", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
@@ -2020,7 +1878,7 @@ public static class Options
         CustomRoleCounts.Add(role, countOption);
     }
 
-    public static void SetupAdtRoleOptions(int id, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool canSetNum = false, TabGroup tab = TabGroup.Addons, bool canSetChance = true)
+    public static void SetupAdtRoleOptions(int id, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool canSetNum = false, TabGroup tab = TabGroup.Addons, bool canSetChance = true, bool teamSpawnOptions = false)
     {
         var spawnOption = StringOptionItem.Create(id, role.ToString(), EnumHelper.GetAllNames<RatesZeroOne>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
@@ -2037,6 +1895,27 @@ public static class Options
             .SetValueFormat(OptionFormat.Percent)
             .SetHidden(!canSetChance)
             .SetGameMode(customGameMode) as IntegerOptionItem;
+
+        if (teamSpawnOptions)
+        {
+            var impOption = BooleanOptionItem.Create(id + 3, "ImpCanBeRole", true, tab, false)
+                .SetParent(spawnOption)
+                .SetGameMode(customGameMode)
+                .AddReplacement(("{role}", role.ToColoredString()));
+
+            var neutralOption = BooleanOptionItem.Create(id + 4, "NeutralCanBeRole", true, tab, false)
+                .SetParent(spawnOption)
+                .SetGameMode(customGameMode)
+                .AddReplacement(("{role}", role.ToColoredString()));
+
+            var crewOption = BooleanOptionItem.Create(id + 5, "CrewCanBeRole", true, tab, false)
+                .SetParent(spawnOption)
+                .SetGameMode(customGameMode)
+                .AddReplacement(("{role}", role.ToColoredString()));
+
+            AddonCanBeSettings.Add(role, (impOption, neutralOption, crewOption));
+        }
+
 
         CustomAdtRoleSpawnRate.Add(role, spawnRateOption);
         CustomRoleSpawnChances.Add(role, spawnOption);
