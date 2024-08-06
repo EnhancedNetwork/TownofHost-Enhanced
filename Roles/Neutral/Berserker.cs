@@ -81,6 +81,9 @@ internal class Berserker : RoleBase
     {
         BerserkerKillMax[playerId] = 0;
         PlayerIds.Add(playerId);
+
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -175,8 +178,6 @@ internal class War : RoleBase
 
     public override void Add(byte playerId)
     {
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }

@@ -65,6 +65,9 @@ internal class Baker : RoleBase
         CanUseAbility = true;
         StarvedNonBreaded = false;
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
+
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
     }
 
     private static (int, int) BreadedPlayerCount(byte playerId)
@@ -110,7 +113,7 @@ internal class Baker : RoleBase
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         if (BarrierList[seer.PlayerId].Contains(seen.PlayerId))
         {
             sb.Append(ColorString(GetRoleColor(CustomRoles.Baker), "●") + ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
@@ -256,7 +259,8 @@ internal class Baker : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        BarrierList[playerIdList.First()].Clear();
+        if (playerIdList.Any())
+            BarrierList[playerIdList.First()].Clear();
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
@@ -304,10 +308,9 @@ internal class Famine : RoleBase
     //==================================================================\\
     public override void Add(byte playerId)
     {
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
+
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
