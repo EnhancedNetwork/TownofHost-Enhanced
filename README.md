@@ -68,7 +68,7 @@
 > 
 ### :star: [RHR](https://github.com/sansaaaaai/Revolutionary-host-roles) :
 > 
-> - Reference: Modify settings menu
+> - Reference: Modify settings menu (Last used [1.6.0](https://github.com/0xDrMoe/TownofHost-Enhanced/releases/tag/v1.6.0))
 > 
 ### :star: [TOH+](https://github.com/ItzLoonie/TownOfHostPlus)
 >
