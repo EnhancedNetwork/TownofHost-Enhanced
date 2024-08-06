@@ -3644,7 +3644,7 @@
   "LastMessageReplay": "Last System Message Replay",
   "Contributor": "Contributor",
 
-  "dbConnect.InitFailure": "Error while connecting to TOHE API, this could be caused by your internett connection. And so Sponsor+ perks are not available, you may continue to play as usual without these.",
+  "dbConnect.InitFailure": "Error while connecting to TOHE API, this could be caused by your internet connection. And so Sponsor+ perks are not available, you may continue to play as usual without these.",
   "dbConnect.nullFriendCode": "This build of TOHE is not available to users with no friendcode!",
 
   "ImpCanBeSusceptible": "<color=#ff1919>Impostors</color> can become Susceptible",
