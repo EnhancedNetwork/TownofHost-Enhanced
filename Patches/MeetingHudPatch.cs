@@ -118,7 +118,7 @@ class CheckForEndVotingPatch
                     {
                         SendMessage(GetString("VoteDead"), pc.PlayerId);
                         __instance.UpdateButtons();
-                        __instance.RpcClearVote(pc.GetClientId());
+                        __instance.RpcClearVoteDelay(pc.GetClientId());
                         Swapper.CheckSwapperTarget(pva.VotedFor);
                         continue;
                     }
@@ -638,7 +638,7 @@ class CheckForEndVotingPatch
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
 class CastVotePatch
 {
-    public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId, [HarmonyArgument(1)] byte suspectPlayerId)
+    public static bool Prefix(MeetingHud __instance, byte srcPlayerId, byte suspectPlayerId)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
         var voter = GetPlayerById(srcPlayerId);
@@ -648,7 +648,7 @@ class CastVotePatch
         if (target == null && suspectPlayerId < 253)
         {
             SendMessage(GetString("VoteDead"), srcPlayerId);
-            __instance.RpcClearVote(voter.GetClientId());
+            __instance.RpcClearVoteDelay(voter.GetClientId());
             return false;
         } //Vote a disconnect player
 
@@ -659,7 +659,7 @@ class CastVotePatch
             {
                 voter.GetRoleClass().HasVoted = true;
                 SendMessage(GetString("VoteNotUseAbility"), voter.PlayerId);
-                __instance.RpcClearVote(voter.GetClientId());
+                __instance.RpcClearVoteDelay(voter.GetClientId());
                 return false;
             }
         }
@@ -669,7 +669,7 @@ class CastVotePatch
             if (!target.IsAlive() || target.Data.Disconnected)
             {
                 SendMessage(GetString("VoteDead"), srcPlayerId);
-                __instance.RpcClearVote(voter.GetClientId());
+                __instance.RpcClearVoteDelay(voter.GetClientId());
                 Swapper.CheckSwapperTarget(suspectPlayerId);
                 return false;
             }
@@ -679,15 +679,12 @@ class CastVotePatch
             {
                 Logger.Info($"Canceling {voter.GetRealName()}'s vote because of {voter.GetCustomRole()}", "CastVotePatch.RoleBase.CheckVote");
                 voter.GetRoleClass().HasVoted = true;
-                __instance.RpcClearVote(voter.GetClientId());
+                __instance.RpcClearVoteDelay(voter.GetClientId());
 
-                if (target != null)
-                {
-                    // Attempts to set thumbsdown color to the same as playerrole to signify player ability used on (only for modded client)
-                    PlayerVoteArea pva = MeetingHud.Instance.playerStates.FirstOrDefault(pva => pva.TargetPlayerId == target.PlayerId);
-                    Color color = GetRoleColor(voter.GetCustomRole()).ShadeColor(0.5f);
-                    pva.ThumbsDown.set_color_Injected(ref color);
-                }
+                // Attempts to set thumbsdown color to the same as playerrole to signify player ability used on (only for modded client)
+                PlayerVoteArea pva = __instance.playerStates.FirstOrDefault(pva => pva.TargetPlayerId == target.PlayerId);
+                Color color = GetRoleColor(voter.GetCustomRole()).ShadeColor(0.5f);
+                pva.ThumbsDown.set_color_Injected(ref color);
                 return false;
             }
 
@@ -697,15 +694,9 @@ class CastVotePatch
                     if (target.Is(CustomRoles.Solsticer))
                     {
                         SendMessage(GetString("VoteSolsticer"), srcPlayerId);
-                        __instance.RpcClearVote(voter.GetClientId());
+                        __instance.RpcClearVoteDelay(voter.GetClientId());
                         return false;
                     }
-                    if (!target.IsAlive())
-                    {
-                        SendMessage(GetString("VoteDead"), srcPlayerId);
-                        __instance.RpcClearVote(voter.GetClientId());
-                        return false;
-                    } //patch here so checkend is not triggered
                     break;
             }
         }
