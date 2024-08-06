@@ -1,14 +1,10 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Linq;
 using System.Text;
 using TOHE.Roles.Core;
-using TOHE.Roles.Impostor;
 using static TOHE.Options;
-using static TOHE.PlayerState;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.Neutral;
 
@@ -29,9 +25,9 @@ internal class Baker : RoleBase
     private static OptionItem BTOS2Baker;
     private static byte BreadID = 0;
 
-    public static readonly Dictionary<byte, List<byte>> BreadList = [];
-    public static readonly Dictionary<byte, List<byte>> RevealList = [];
-    public static readonly Dictionary<byte, List<byte>> BarrierList = [];
+    private static readonly Dictionary<byte, List<byte>> BreadList = [];
+    private static readonly Dictionary<byte, List<byte>> RevealList = [];
+    private static readonly Dictionary<byte, List<byte>> BarrierList = [];
     public static readonly Dictionary<byte, List<byte>> FamineList = [];
     private static bool CanUseAbility;
     public static bool StarvedNonBreaded;
@@ -128,7 +124,7 @@ internal class Baker : RoleBase
     }
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (HasBread(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First())
+        if (playerIdList.Any() && HasBread(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First())
         {
             return ColorString(GetRoleColor(CustomRoles.Baker), "●");
         }
@@ -222,7 +218,7 @@ internal class Baker : RoleBase
         else {
             BreadList[killer.PlayerId].Add(target.PlayerId);
             SendRPC(killer, target);
-            Utils.NotifyRoles(SpecifySeer: killer);
+            NotifyRoles(SpecifySeer: killer);
             killer.Notify(GetString("BakerBreaded"));
             Logger.Info($"Bread given to " + target.GetRealName(), "Baker");
             CanUseAbility = false;

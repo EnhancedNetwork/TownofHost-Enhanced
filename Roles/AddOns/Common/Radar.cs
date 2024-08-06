@@ -14,7 +14,7 @@ public static class Radar
     public static OptionItem CrewCanBeRadar;
     public static OptionItem NeutralCanBeRadar;
 
-    private static Dictionary<byte, byte> ClosestPlayer = [];
+    private static readonly Dictionary<byte, byte> ClosestPlayer = [];
 
     public static void SetupCustomOptions()
     {
