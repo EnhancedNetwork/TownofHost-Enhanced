@@ -905,7 +905,7 @@ class MeetingHudStartPatch
                     };
 
                     if (roleMessage != "")
-                        AddMsg(roleMessage, 255, Utils.ColorString(Utils.GetRoleColor(role), GetString("ApocalypseIsNigh")));
+                        AddMsg(roleMessage, 255, ColorString(GetRoleColor(role), GetString("ApocalypseIsNigh")));
 
                 }, 3f, $"{role} Apocalypse Notify");
             }
