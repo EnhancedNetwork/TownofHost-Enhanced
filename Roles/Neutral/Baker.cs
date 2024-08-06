@@ -370,7 +370,7 @@ internal class Famine : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
-        if (TransformedNeutralApocalypseCanBeGuessed.GetBool()) 
+        if (!TransformedNeutralApocalypseCanBeGuessed.GetBool()) 
         { 
             guesser.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true; 
