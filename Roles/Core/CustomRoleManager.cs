@@ -496,7 +496,7 @@ public static class CustomRoleManager
     // ADDONS ////////////////////////////
 
     public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x => {
-        if (AddonClasses.TryGetValue(x, out var IAddon))
+        if (AddonClasses.TryGetValue(x, out var IAddon) && IAddon != null)
             IAddon.OnFixedUpdate(pc);
         else return;
 
