@@ -71,9 +71,9 @@ public class Glow : IAddon
         opt.SetFloat(FloatOptionNames.CrewLightMod, setCrewVision);
     }
 
-    public static void OnFixedUpdate(PlayerControl player)
+    public void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        if (player == null || !player.Is(CustomRoles.Glow)) return;
+        if (!IsEnable || player == null || !player.Is(CustomRoles.Glow)) return;
         if (!Utils.IsActive(SystemTypes.Electrical)) 
         { 
             InRadius[player.PlayerId].Clear();

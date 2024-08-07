@@ -6,7 +6,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 public class Swift : IAddon
 {
     private const int Id = 23300;
-    public AddonTypes Type => AddonTypes.Impostor;
+    public AddonTypes Type => AddonTypes.Experimental;
 
     public void SetupCustomOption()
     {

@@ -134,6 +134,7 @@ public static class Options
     //public static OptionItem EnableGM;
     public static float DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
     public static OptionItem GhostsDoTasks;
+    public static Dictionary<AddonTypes, List<CustomRoles>> GroupedAddons = [];
 
 
     // ------------ System Settings Tab ------------
@@ -565,6 +566,18 @@ public static class Options
     ];
     public static SuffixModes GetSuffixMode() => (SuffixModes)SuffixMode.GetValue();
 
+    private static void GroupAddons()
+    {
+        GroupedAddons = Assembly
+            .GetExecutingAssembly()
+            .GetTypes()
+            .Where(x => x.GetInterfaces().ToList().Contains(typeof(IAddon)))
+            .Select(x => (IAddon)Activator.CreateInstance(x))
+            .Where(x => x != null)
+            .GroupBy(x => x.Type)
+            .ToDictionary(x => x.Key, x => x.Select(y => Enum.Parse<CustomRoles>(y.GetType().Name, true)).ToList());
+    }
+
 
     public static int SnitchExposeTaskLeft = 1;
 
@@ -617,6 +630,7 @@ public static class Options
         // Start Load Settings
         if (IsLoaded) yield break;
         OptionSaver.Initialize();
+        GroupAddons();
 
         yield return null;
 
@@ -924,17 +938,17 @@ public static class Options
 
         foreach (var addonType in addonTypes)
         {
-            int index = 0;
-
             TextOptionItem.Create(titleId, $"RoleType.{addonType.Key}", TabGroup.Addons)
                 .SetGameMode(CustomGameMode.Standard)
                 .SetColor(GetAddonTypeColor(addonType.Key))
                 .SetHeader(true);
             titleId += 10;
 
+            if (addonType.Key == AddonTypes.Impostor)
+                Madmate.SetupMenuOptions();
+
             foreach (var addon in addonType.Value)
             {
-                index++;
 
                 addon.SetupCustomOption();
             }

@@ -81,8 +81,10 @@ namespace TOHE.Roles.AddOns.Common
             return $"<size={fontsize}%>{string.Format(Translator.GetString("SpurtSuffix"), DetermineCharge(player))}</size>";
         }
 
-        public static void OnFixedUpdate(PlayerControl player)
+        public void OnFixedUpdate(PlayerControl player)
         {
+            if (!player.Is(CustomRoles.Spurt) || !player.IsAlive()) return;
+
             var pos = player.Pos();
             bool moving = Vector2.Distance(pos, LastPos[player.PlayerId]) > 0f || player.MyPhysics.Animations.IsPlayingRunAnimation();
             LastPos[player.PlayerId] = pos;

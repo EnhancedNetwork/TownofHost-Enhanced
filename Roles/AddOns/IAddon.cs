@@ -18,9 +18,14 @@ namespace TOHE.Roles.AddOns
         Mixed,
         Experimental
     }
-    internal interface IAddon
+    public interface IAddon
     {
         public AddonTypes Type { get; }
         public void SetupCustomOption();
+
+        public void OnFixedUpdate(PlayerControl pc)
+        { }
+        public void OnFixedUpdateLowLoad(PlayerControl pc)
+        { }
     }
 }

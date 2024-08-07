@@ -9,6 +9,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using TOHE.Roles.AddOns;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
@@ -358,7 +359,29 @@ public class Main : BasePlugin
         }
         catch (Exception err)
         {
-            TOHE.Logger.Error($"Error at LoadRoleClasses: {err}", "LoadRoleClasses");
+            Utils.ThrowException(err);
+        }
+    }
+    public static void LoadAddonClasses()
+    {
+        TOHE.Logger.Info("Loading All AddonClasses...", "LoadAddonClasses");
+        try
+        {
+            var AddonTypes = Assembly.GetAssembly(typeof(IAddon))!
+                .GetTypes()
+                .Where(myType => myType.IsClass && !myType.IsInterface && myType.IsSubclassOf(typeof(IAddon)));
+
+            foreach (var role in CustomRolesHelper.AllRoles.Skip(500))
+            {
+                Type AddonType = AddonTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase));
+                CustomRoleManager.AddonClasses.Add(role, (IAddon)Activator.CreateInstance(AddonType));
+            }
+
+            TOHE.Logger.Info("AddonClasses Loaded Successfully", "LoadAddonClasses");
+        }
+        catch (Exception err)
+        {
+            Utils.ThrowException(err);
         }
     }
     static void UpdateCustomTranslation()
@@ -495,6 +518,7 @@ public class Main : BasePlugin
         ExceptionMessage = "";
 
         LoadRoleClasses();
+        LoadAddonClasses();
         LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
 
         CustomWinnerHolder.Reset();

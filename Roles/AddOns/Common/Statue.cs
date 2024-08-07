@@ -61,8 +61,10 @@ public class Statue : IAddon
         }, 6f);
     }
 
-    public static void OnFixedUpdate(PlayerControl victim) 
+    public void OnFixedUpdate(PlayerControl victim) 
     {
+        if (!victim.Is(CustomRoles.Statue) || !victim.IsAlive()) return;
+
         foreach (var PVC in Main.AllAlivePlayerControls)
         {
             if (CountNearplr.Contains(PVC.PlayerId) && Vector2.Distance(PVC.transform.position, victim.transform.position) > 2f)

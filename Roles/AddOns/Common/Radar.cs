@@ -52,9 +52,9 @@ public class Radar : IAddon
         ClosestPlayer[radarId] = closest;
     }
 
-    public static void OnFixedUpdate(PlayerControl radarPC)
+    public void OnFixedUpdateLowLoad(PlayerControl radarPC)
     {
-        if (radarPC == null || !radarPC.Is(CustomRoles.Radar) || !GameStates.IsInTask) return;
+        if (!IsEnable || radarPC == null || !radarPC.Is(CustomRoles.Radar) || !GameStates.IsInTask) return;
         if (Main.AllAlivePlayerControls.Length <= 1) return;
 
         if (!ClosestPlayer.ContainsKey(radarPC.PlayerId)) ClosestPlayer[radarPC.PlayerId] = byte.MaxValue;
