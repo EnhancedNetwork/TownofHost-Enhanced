@@ -4,6 +4,7 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
+using MonoMod.Utils;
 using System;
 using System.IO;
 using System.Reflection;
@@ -372,15 +373,21 @@ public class Main : BasePlugin
             var AddonTypes = Assembly
             .GetExecutingAssembly()
             .GetTypes()
-            .Where(t => IAddonType.IsAssignableFrom(t) && !t.IsInterface);
+            .Where(t => IAddonType.IsAssignableFrom(t) && !t.IsInterface)
+            .Select(x => (IAddon)Activator.CreateInstance(x))
+            .Where(x => x != null)
+            .GroupBy(x => Enum.Parse<CustomRoles>(x.GetType().Name, true))
+            .ToDictionary(x => x.Key, x => x.First());
 
-            foreach (var role in CustomRolesHelper.AllRoles.Where(x => x > CustomRoles.NotAssigned))
+            CustomRoleManager.AddonClasses.AddRange(AddonTypes);
+
+            /*foreach (var role in CustomRolesHelper.AllRoles.Where(x => x > CustomRoles.NotAssigned))
             {
                 Type AddonType = AddonTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase));
                 if (AddonType == null) continue;
 
                 CustomRoleManager.AddonClasses.Add(role, (IAddon)Activator.CreateInstance(AddonType));
-            }
+            }*/
 
             TOHE.Logger.Info("AddonClasses Loaded Successfully", "LoadAddonClasses");
         }
