@@ -368,26 +368,14 @@ public class Main : BasePlugin
         TOHE.Logger.Info("Loading All AddonClasses...", "LoadAddonClasses");
         try
         {
-
             var IAddonType = typeof(IAddon);
-            var AddonTypes = Assembly
+            CustomRoleManager.AddonClasses.AddRange(Assembly
             .GetExecutingAssembly()
             .GetTypes()
             .Where(t => IAddonType.IsAssignableFrom(t) && !t.IsInterface)
             .Select(x => (IAddon)Activator.CreateInstance(x))
             .Where(x => x != null)
-            .GroupBy(x => Enum.Parse<CustomRoles>(x.GetType().Name, true))
-            .ToDictionary(x => x.Key, x => x.First());
-
-            CustomRoleManager.AddonClasses.AddRange(AddonTypes);
-
-            /*foreach (var role in CustomRolesHelper.AllRoles.Where(x => x > CustomRoles.NotAssigned))
-            {
-                Type AddonType = AddonTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase));
-                if (AddonType == null) continue;
-
-                CustomRoleManager.AddonClasses.Add(role, (IAddon)Activator.CreateInstance(AddonType));
-            }*/
+            .ToDictionary(x => CustomRolesHelper.AllRoles.First(role => x.GetType().Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)), x => x));
 
             TOHE.Logger.Info("AddonClasses Loaded Successfully", "LoadAddonClasses");
         }
