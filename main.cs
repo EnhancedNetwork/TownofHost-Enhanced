@@ -375,7 +375,7 @@ public class Main : BasePlugin
             .Where(t => IAddonType.IsAssignableFrom(t) && !t.IsInterface)
             .Select(x => (IAddon)Activator.CreateInstance(x))
             .Where(x => x != null)
-            .ToDictionary(x => CustomRolesHelper.AllRoles.First(role => x.GetType().Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)), x => x));
+            .ToDictionary(x => Enum.Parse<CustomRoles>(x.GetType().Name, true), x => x));
 
             TOHE.Logger.Info("AddonClasses Loaded Successfully", "LoadAddonClasses");
         }
