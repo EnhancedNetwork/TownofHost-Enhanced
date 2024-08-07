@@ -354,7 +354,7 @@ public static class CustomRoleManager
             {
                 switch (subRole)
                 {
-                    case CustomRoles.TicketsStealer when !inMeeting && !isSuicide:
+                    case CustomRoles.Stealer when !inMeeting && !isSuicide:
                         Stealer.OnMurderPlayer(killer);
                         break;
 

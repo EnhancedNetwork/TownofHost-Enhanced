@@ -12,11 +12,11 @@ public class Stealer : IAddon
 
     public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.TicketsStealer, canSetNum: true, tab: TabGroup.Addons);
+        SetupAdtRoleOptions(Id, CustomRoles.Stealer, canSetNum: true, tab: TabGroup.Addons);
         TicketsPerKill = FloatOptionItem.Create(Id + 3, "TicketsPerKill", new(0.1f, 10f, 0.1f), 0.5f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.TicketsStealer]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Stealer]);
         HideAdditionalVotes = BooleanOptionItem.Create(Id + 4, "HideAdditionalVotes", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.TicketsStealer]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Stealer]);
     }
     public static int AddRealVotesNum(PlayerVoteArea ps)
     {
@@ -39,7 +39,7 @@ public class Stealer : IAddon
     }
     public static void OnMurderPlayer(PlayerControl killer)
     {
-        killer.Notify(string.Format(Translator.GetString("TicketsStealerGetTicket"),
+        killer.Notify(string.Format(Translator.GetString("StealerGetTicket"),
             ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * TicketsPerKill.GetFloat())
             .ToString("0.0#####")));
     }

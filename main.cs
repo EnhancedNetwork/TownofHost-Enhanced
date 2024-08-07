@@ -367,13 +367,18 @@ public class Main : BasePlugin
         TOHE.Logger.Info("Loading All AddonClasses...", "LoadAddonClasses");
         try
         {
-            var AddonTypes = Assembly.GetAssembly(typeof(IAddon))!
-                .GetTypes()
-                .Where(myType => myType.IsClass && !myType.IsInterface && myType.IsSubclassOf(typeof(IAddon)));
 
-            foreach (var role in CustomRolesHelper.AllRoles.Skip(500))
+            var IAddonType = typeof(IAddon);
+            var AddonTypes = Assembly
+            .GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => IAddonType.IsAssignableFrom(t) && !t.IsInterface);
+
+            foreach (var role in CustomRolesHelper.AllRoles.Where(x => x > CustomRoles.NotAssigned))
             {
                 Type AddonType = AddonTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase));
+                if (AddonType == null) continue;
+
                 CustomRoleManager.AddonClasses.Add(role, (IAddon)Activator.CreateInstance(AddonType));
             }
 
@@ -884,7 +889,7 @@ public enum CustomRoles
     Susceptible,
     Swift,
     Tiebreaker,
-    TicketsStealer, //stealer
+    Stealer, //stealer
     Torch,
     Trapper,
     Tricky,

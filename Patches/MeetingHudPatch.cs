@@ -221,7 +221,7 @@ class CheckForEndVotingPatch
 
                 playerRoleClass?.AddVisualVotes(ps, ref statesList);
 
-                if (CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.Stealer))
                 {
                     Stealer.AddVisualVotes(ps, ref statesList);
                 }
@@ -770,7 +770,7 @@ static class ExtendedMeetingHud
                 }
 
                 // Additional votes
-                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
+                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Stealer))
                 {
                     VoteNum += Stealer.AddRealVotesNum(ps);
                 }

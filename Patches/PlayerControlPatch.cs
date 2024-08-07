@@ -1218,9 +1218,6 @@ class FixedUpdateInNormalGamePatch
                 {
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
 
-                    if (Radar.IsEnable)
-                        Radar.OnFixedUpdate(player);
-
                     if (Options.LadderDeath.GetBool() && player.IsAlive())
                         FallFromLadder.FixedUpdate(player);
 

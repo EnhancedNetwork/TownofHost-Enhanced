@@ -324,7 +324,7 @@ public static class CustomRolesHelper
             CustomRoles.Glitch or
             CustomRoles.Pickpocket or
             CustomRoles.Stubborn or
-            CustomRoles.TicketsStealer;
+            CustomRoles.Stealer;
     }
     public static bool IsSpeedRole(this CustomRoles role)
     {
@@ -364,7 +364,7 @@ public static class CustomRolesHelper
             CustomRoles.Mare or
             CustomRoles.Clumsy or
             CustomRoles.Mimic or
-            CustomRoles.TicketsStealer or
+            CustomRoles.Stealer or
             CustomRoles.Circumvent or
             CustomRoles.Swift;
     }
@@ -373,7 +373,7 @@ public static class CustomRolesHelper
         // Only add-ons
         if (!role.IsAdditionRole()) return false;
 
-        if(Options.AddonCanBeSettings.TryGetValue(role, out var o) && (o.Imp.GetBool() || !pc.GetCustomRole().IsImpostor()) && (o.Neutral.GetBool() || !pc.GetCustomRole().IsNeutral()) && (o.Crew.GetBool() || !pc.GetCustomRole().IsCrewmate())) 
+        if(Options.AddonCanBeSettings.TryGetValue(role, out var o) && ((!o.Imp.GetBool() && pc.GetCustomRole().IsImpostor()) || (!o.Neutral.GetBool() && !pc.GetCustomRole().IsNeutral()) || (!o.Crew.GetBool() && pc.GetCustomRole().IsCrewmate()))) 
             return false;
 
         // if player already has this addon
@@ -611,7 +611,7 @@ public static class CustomRolesHelper
             case CustomRoles.VoidBallot:
                 if (pc.Is(CustomRoles.Mayor)
                     || pc.Is(CustomRoles.Vindicator)
-                    || pc.Is(CustomRoles.TicketsStealer)
+                    || pc.Is(CustomRoles.Stealer)
                     || pc.Is(CustomRoles.Pickpocket)
                     || pc.Is(CustomRoles.Dictator)
                     || pc.Is(CustomRoles.Influenced)
@@ -770,7 +770,7 @@ public static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.TicketsStealer:
+            case CustomRoles.Stealer:
                 if (pc.Is(CustomRoles.Vindicator)
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.VoidBallot)
@@ -837,7 +837,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.BountyHunter)
                     || pc.Is(CustomRoles.Lightning)
                     || pc.Is(CustomRoles.Hangman)
-                    || pc.Is(CustomRoles.TicketsStealer)
+                    || pc.Is(CustomRoles.Stealer)
                     || pc.Is(CustomRoles.Tricky))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())

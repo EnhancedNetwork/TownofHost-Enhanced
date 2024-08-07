@@ -945,7 +945,7 @@ public static class Options
             titleId += 10;
 
             if (addonType.Key == AddonTypes.Impostor)
-                Madmate.SetupMenuOptions();
+                Madmate.SetupCustomMenuOptions();
 
             foreach (var addon in addonType.Value)
             {
