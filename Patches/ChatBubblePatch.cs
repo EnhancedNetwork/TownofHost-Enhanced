@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 namespace TOHE.Patches;
@@ -29,3 +30,4 @@ class ChatBubbleSetNamePatch
         }
     }
 }
+
