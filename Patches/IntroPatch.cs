@@ -565,15 +565,16 @@ class IntroCutsceneDestroyPatch
             {
                 _ = new LateTask(() =>
                 {
-                     Main.UnShapeShifter.Do(x =>
-                     {
+                    Main.UnShapeShifter.Do(x =>
+                    {
                         var PC = Utils.GetPlayerById(x);
-                        var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
-                        PC.RpcShapeshift(randomplayer, false);
-                        PC.RpcRejectShapeshift(); 
+                        var firstPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
+                        PC.RpcShapeshift(firstPlayer, false);
+                        PC.RpcRejectShapeshift();
                         PC.ResetPlayerOutfit(force: true);
-                        Main.GameIsLoaded = true;
-                     });
+                        Main.CheckShapeshift[x] = false;
+                    });
+                    Main.GameIsLoaded = true;
                 }, 3f, "Set UnShapeShift Button");
             }
 
