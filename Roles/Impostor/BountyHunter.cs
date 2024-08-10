@@ -129,6 +129,8 @@ internal class BountyHunter : RoleBase
         else
         {
             var targetId = GetTarget(player);
+            if (targetId == byte.MaxValue) return;
+
             if (ChangeTimer[player.PlayerId] >= TargetChangeTime)
             {
                 ResetTarget(player);
