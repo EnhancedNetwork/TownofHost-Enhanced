@@ -44,7 +44,7 @@ namespace TOHE.Roles.AddOns.Common
             {
                 if (pc.Is(CustomRoles.Spurt))
                 {
-                    LastPos[pc.PlayerId] = pc.Pos();
+                    LastPos[pc.PlayerId] = pc.GetCustomPosition();
                     LastNum[pc.PlayerId] = 0;
                     LastUpdate[pc.PlayerId] = Utils.TimeStamp;
                     StartingSpeed[pc.PlayerId] = speed;
@@ -85,7 +85,7 @@ namespace TOHE.Roles.AddOns.Common
         {
             if (!player.Is(CustomRoles.Spurt) || !player.IsAlive()) return;
 
-            var pos = player.Pos();
+            var pos = player.GetCustomPosition();
             bool moving = Vector2.Distance(pos, LastPos[player.PlayerId]) > 0f || player.MyPhysics.Animations.IsPlayingRunAnimation();
             LastPos[player.PlayerId] = pos;
 

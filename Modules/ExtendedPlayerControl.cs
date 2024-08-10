@@ -349,7 +349,6 @@ static class ExtendedPlayerControl
         }
         player.ResetKillCooldown();
     }
-    public static Vector2 Pos(this PlayerControl pc) => new(pc.transform.position.x, pc.transform.position.y);
     public static void ResetPlayerOutfit(this PlayerControl player, NetworkedPlayerInfo.PlayerOutfit Outfit = null, bool force = false)
     {
         Outfit ??= Main.PlayerStates[player.PlayerId].NormalOutfit;
