@@ -553,6 +553,8 @@ public static class Utils
 
         if (GameStates.IsHideNSeek) return hasTasks;
 
+        if (Imitator.playerIdList.Contains(playerData.PlayerId)) hasTasks = !ForRecompute;
+
         var role = States.MainRole;
 
         if (States.RoleClass != null && States.RoleClass.HasTasks(playerData, role, ForRecompute) == false)
