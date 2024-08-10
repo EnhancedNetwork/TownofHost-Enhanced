@@ -598,7 +598,8 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Bewilder)
                     || pc.Is(CustomRoles.Lighter)
                     || pc.Is(CustomRoles.Tired)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.KillingMachine))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate())
                     return false;
@@ -714,7 +715,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
-                    || pc.Is(CustomRoles.PunchingBag))
+                    || pc.Is(CustomRoles.PunchingBag)
+                    || pc.Is(CustomRoles.KillingMachine))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Bewilder.CrewCanBeBewilder.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Bewilder.NeutralCanBeBewilder.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Bewilder.ImpCanBeBewilder.GetBool()))
                     return false;
