@@ -4,11 +4,13 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
+using MonoMod.Utils;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using TOHE.Roles.AddOns;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
@@ -358,7 +360,28 @@ public class Main : BasePlugin
         }
         catch (Exception err)
         {
-            TOHE.Logger.Error($"Error at LoadRoleClasses: {err}", "LoadRoleClasses");
+            Utils.ThrowException(err);
+        }
+    }
+    public static void LoadAddonClasses()
+    {
+        TOHE.Logger.Info("Loading All AddonClasses...", "LoadAddonClasses");
+        try
+        {
+            var IAddonType = typeof(IAddon);
+            CustomRoleManager.AddonClasses.AddRange(Assembly
+            .GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => IAddonType.IsAssignableFrom(t) && !t.IsInterface)
+            .Select(x => (IAddon)Activator.CreateInstance(x))
+            .Where(x => x != null)
+            .ToDictionary(x => Enum.Parse<CustomRoles>(x.GetType().Name, true), x => x));
+
+            TOHE.Logger.Info("AddonClasses Loaded Successfully", "LoadAddonClasses");
+        }
+        catch (Exception err)
+        {
+            Utils.ThrowException(err);
         }
     }
     static void UpdateCustomTranslation()
@@ -495,6 +518,7 @@ public class Main : BasePlugin
         ExceptionMessage = "";
 
         LoadRoleClasses();
+        LoadAddonClasses();
         LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
 
         CustomWinnerHolder.Reset();
@@ -849,6 +873,7 @@ public enum CustomRoles
     Rascal,
     Reach,
     Rebound,
+    Spurt,
     Recruit,
     Seer,
     Silent,
@@ -859,7 +884,7 @@ public enum CustomRoles
     Susceptible,
     Swift,
     Tiebreaker,
-    TicketsStealer, //stealer
+    Stealer, //stealer
     Torch,
     Trapper,
     Tricky,

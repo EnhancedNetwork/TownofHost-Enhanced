@@ -4,6 +4,7 @@ using TMPro;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -82,40 +83,21 @@ class HudManagerPatch
                 // Set lower info text for modded players
                 if (LowerInfoText == null)
                 {
-                    LowerInfoText = UnityEngine.Object.Instantiate(__instance.KillButton.buttonLabelText);
-                    LowerInfoText.transform.parent = __instance.transform;
-                    LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
+                    LowerInfoText = UnityEngine.Object.Instantiate(__instance.KillButton.cooldownTimerText, __instance.transform, true);
                     LowerInfoText.alignment = TextAlignmentOptions.Center;
-                    LowerInfoText.color = Palette.EnabledColor;
+                    LowerInfoText.transform.localPosition = new(0, -2f, 0);
                     LowerInfoText.overflowMode = TextOverflowModes.Overflow;
                     LowerInfoText.enableWordWrapping = false;
-                    LowerInfoText.fontSizeMin = 2.8f;
-                    LowerInfoText.fontSizeMax = 2.8f;
+                    LowerInfoText.color = Color.white;
+                    LowerInfoText.fontSize = LowerInfoText.fontSizeMax = LowerInfoText.fontSizeMin = 2.8f;
                 }
                 switch (Options.CurrentGameMode)
                 {
                     case CustomGameMode.Standard:
                         var roleClass = player.GetRoleClass();
                         LowerInfoText.text = roleClass?.GetLowerText(player, player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empty;
-                        
 
-                        if (roleClass != null)
-                        {
-                            float size = roleClass.SetModdedLowerText(out Color32? faceColor);
-
-                            if (faceColor != null)
-                            {
-                                LowerInfoText.SetFaceColor(faceColor.Value);
-                                LowerInfoText.SetOutlineColor(new Color32(0, 0, 0, 255));
-                            }
-                            if (LowerInfoText.fontSizeMin != size)
-                            {
-                                LowerInfoText.fontSizeMin = size;
-                                LowerInfoText.fontSizeMax = size;
-                            }
-                        }
-
-                        
+                        LowerInfoText.text += "\n" + Spurt.GetSuffix(player, true, isformeeting: Main.MeetingIsStarted);
                         break;
                 }
 

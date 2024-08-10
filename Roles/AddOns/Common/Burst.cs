@@ -3,23 +3,18 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Burst
+public class Burst : IAddon
 {
     private const int Id = 19000;
     public static bool IsEnable = false;
+    public AddonTypes Type => AddonTypes.Helpful;
 
-    public static OptionItem ImpCanBeBurst;
-    public static OptionItem CrewCanBeBurst;
-    public static OptionItem NeutralCanBeBurst;
     private static OptionItem BurstKillDelay;
 
     private static readonly List<byte> BurstBodies = [];
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Burst, canSetNum: true);
-        ImpCanBeBurst = BooleanOptionItem.Create(Id + 10, "ImpCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
-        CrewCanBeBurst = BooleanOptionItem.Create(Id + 11, "CrewCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
-        NeutralCanBeBurst = BooleanOptionItem.Create(Id + 12, "NeutralCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
+        SetupAdtRoleOptions(Id, CustomRoles.Burst, canSetNum: true, teamSpawnOptions: true);
         BurstKillDelay = FloatOptionItem.Create(Id + 13, "BurstKillDelay", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst])
             .SetValueFormat(OptionFormat.Seconds);
     }

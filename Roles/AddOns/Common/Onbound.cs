@@ -2,20 +2,14 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Onbound
+public class Onbound : IAddon
 {
     private const int Id = 25800;
+    public AddonTypes Type => AddonTypes.Guesser;
 
-    public static OptionItem ImpCanBeOnbound;
-    public static OptionItem CrewCanBeOnbound;
-    public static OptionItem NeutralCanBeOnbound;
-
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Onbound, canSetNum: true, tab: TabGroup.ModifierSettings);
-        ImpCanBeOnbound = BooleanOptionItem.Create(Id + 10, "ImpCanBeOnbound", true, TabGroup.ModifierSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
-        CrewCanBeOnbound = BooleanOptionItem.Create(Id + 11, "CrewCanBeOnbound", true, TabGroup.ModifierSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
-        NeutralCanBeOnbound = BooleanOptionItem.Create(Id + 12, "NeutralCanBeOnbound", true, TabGroup.ModifierSettings, false).SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
+        SetupAdtRoleOptions(Id, CustomRoles.Onbound, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
 }
 

@@ -5,26 +5,17 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Radar
+public class Radar : IAddon
 {
     private const int Id = 28200;
     public static bool IsEnable = false;
-
-    public static OptionItem ImpCanBeRadar;
-    public static OptionItem CrewCanBeRadar;
-    public static OptionItem NeutralCanBeRadar;
+    public AddonTypes Type => AddonTypes.Helpful;
 
     private static readonly Dictionary<byte, byte> ClosestPlayer = [];
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Radar, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeRadar = BooleanOptionItem.Create(Id + 10, "ImpCanBeRadar", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Radar]);
-        CrewCanBeRadar = BooleanOptionItem.Create(Id + 11, "CrewCanBeRadar", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Radar]);
-        NeutralCanBeRadar = BooleanOptionItem.Create(Id + 12, "NeutralCanBeRadar", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Radar]);
+        SetupAdtRoleOptions(Id, CustomRoles.Radar, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
 
     public static void Init()
@@ -61,9 +52,9 @@ public static class Radar
         ClosestPlayer[radarId] = closest;
     }
 
-    public static void OnFixedUpdate(PlayerControl radarPC)
+    public void OnFixedUpdateLowLoad(PlayerControl radarPC)
     {
-        if (radarPC == null || !radarPC.Is(CustomRoles.Radar) || !GameStates.IsInTask) return;
+        if (!IsEnable || radarPC == null || !radarPC.Is(CustomRoles.Radar) || !GameStates.IsInTask) return;
         if (Main.AllAlivePlayerControls.Length <= 1) return;
 
         if (!ClosestPlayer.ContainsKey(radarPC.PlayerId)) ClosestPlayer[radarPC.PlayerId] = byte.MaxValue;
