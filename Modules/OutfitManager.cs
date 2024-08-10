@@ -137,7 +137,7 @@ public static class OutfitManager
         {
             player.SetLevel(newLevel);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetLevel)
-                .Write(newLevel)
+                .WritePacked(newLevel)
                 .EndRpc();
         }
 
