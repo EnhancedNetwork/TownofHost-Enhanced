@@ -291,7 +291,7 @@ internal class DoubleAgent : RoleBase
     {
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.None, -1);
         writer.WriteNetObject(_Player);
-        writer.Write((int)CurrentBombedTime);
+        writer.WritePacked((int)CurrentBombedTime);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
