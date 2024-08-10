@@ -3069,7 +3069,7 @@ class ChatUpdatePatch
         if (player == null) return;
 
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
-        Logger.Info($"MessagesToSend - sendTo: {sendTo} - title: {title}", "ChatUpdatePatch");
+        //Logger.Info($"MessagesToSend - sendTo: {sendTo} - title: {title}", "ChatUpdatePatch");
 
         if (sendTo != byte.MaxValue && GameStates.IsLobby)
         {
