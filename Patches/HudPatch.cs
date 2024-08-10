@@ -97,7 +97,7 @@ class HudManagerPatch
                         var roleClass = player.GetRoleClass();
                         LowerInfoText.text = roleClass?.GetLowerText(player, player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empty;
 
-                        LowerInfoText.text += "\n" + Spurt.GetSuffix(player, true);
+                        LowerInfoText.text += "\n" + Spurt.GetSuffix(player, true, isformeeting: Main.MeetingIsStarted);
                         break;
                 }
 

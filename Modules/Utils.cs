@@ -1865,7 +1865,7 @@ public static class Utils
                 SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
-                SelfSuffix.Append(Spurt.GetSuffix(seer));
+                SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
 
 
                 switch (Options.CurrentGameMode)

@@ -71,9 +71,9 @@ namespace TOHE.Roles.AddOns.Common
             return (int)((Main.AllPlayerSpeed[player.PlayerId] - minSpeed) / (maxSpeed - minSpeed) * 100);
         }
 
-        public static string GetSuffix(PlayerControl player, bool isforhud = false)
+        public static string GetSuffix(PlayerControl player, bool isforhud = false, bool isformeeting = false)
         {
-            if (!player.Is(CustomRoles.Spurt) || !DisplaysCharge.GetBool() || GameStates.IsMeeting)
+            if (!player.Is(CustomRoles.Spurt) || !DisplaysCharge.GetBool() || GameStates.IsMeeting || isformeeting)
                 return string.Empty;
 
             int fontsize = isforhud ? 100 : 55;

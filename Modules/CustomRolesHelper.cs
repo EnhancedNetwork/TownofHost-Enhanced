@@ -330,6 +330,8 @@ public static class CustomRolesHelper
     {
         return role is
             CustomRoles.Flash or
+            CustomRoles.Spurt or
+            CustomRoles.Statue or
             CustomRoles.Alchemist or
             CustomRoles.Tired;
     }
@@ -392,6 +394,9 @@ public static class CustomRolesHelper
         // Checking for conflicts with roles and other add-ons
         switch (role)
         {
+            case var Addon when (pc.IsAnySubRole(x => x.IsSpeedRole()) || pc.GetCustomRole().IsSpeedRole()) && Addon.IsSpeedRole():
+                return false;
+
             case CustomRoles.Autopsy:
                 if (pc.Is(CustomRoles.Doctor)
                     || pc.Is(CustomRoles.Tracefinder)
@@ -1001,13 +1006,6 @@ public static class CustomRolesHelper
                   || pc.Is(CustomRoles.Lighter)
                   || pc.Is(CustomRoles.Flash)
                   || pc.Is(CustomRoles.Mare))
-                    return false;
-                break;
-
-            case CustomRoles.Statue:
-                if (pc.Is(CustomRoles.Alchemist)
-                    || pc.Is(CustomRoles.Flash)
-                    || pc.Is(CustomRoles.Tired))
                     return false;
                 break;
         }
