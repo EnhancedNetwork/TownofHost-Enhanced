@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -90,7 +91,7 @@ internal class Devourer : RoleBase
         {
             if (!Camouflage.IsCamouflage)
             {
-                SetSkin(target, ConsumedOutfit);
+                target.SetNewOutfit(ConsumedOutfit, setName: false, setNamePlate: false);
             }
 
             PlayerSkinsCosumed[shapeshifter.PlayerId].Add(target.PlayerId);
@@ -123,7 +124,7 @@ internal class Devourer : RoleBase
                     Main.AllAlivePlayerControls.FirstOrDefault(a => a.PlayerId == player);
                 if (pc == null) continue;
 
-                SetSkin(pc, OriginalPlayerSkins[player]);
+                pc.SetNewOutfit(OriginalPlayerSkins[player], setName: false, setNamePlate: false);
             }
         }
 
@@ -139,43 +140,6 @@ internal class Devourer : RoleBase
     {
         if (exiled != null && exiled.Object.Is(CustomRoles.Devourer))
             OnDevourerDied(exiled.Object);
-    }
-
-    private static void SetSkin(PlayerControl target, NetworkedPlayerInfo.PlayerOutfit outfit)
-    {
-        var sender = CustomRpcSender.Create(name: $"Devourer.RpcSetSkin({target.Data.PlayerName})");
-
-        target.SetColor(outfit.ColorId);
-        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetColor)
-            .Write(target.Data.NetId)
-            .Write((byte)outfit.ColorId)
-            .EndRpc();
-
-        target.SetHat(outfit.HatId, outfit.ColorId);
-        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetHatStr)
-            .Write(outfit.HatId)
-            .Write(target.GetNextRpcSequenceId(RpcCalls.SetHatStr))
-            .EndRpc();
-
-        target.SetSkin(outfit.SkinId, outfit.ColorId);
-        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetSkinStr)
-            .Write(outfit.SkinId)
-            .Write(target.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
-            .EndRpc();
-
-        target.SetVisor(outfit.VisorId, outfit.ColorId);
-        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetVisorStr)
-            .Write(outfit.VisorId)
-            .Write(target.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
-            .EndRpc();
-
-        target.SetPet(outfit.PetId);
-        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetPetStr)
-            .Write(outfit.PetId)
-            .Write(target.GetNextRpcSequenceId(RpcCalls.SetPetStr))
-            .EndRpc();
-
-        sender.SendMessage();
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
