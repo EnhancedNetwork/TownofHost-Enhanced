@@ -419,12 +419,6 @@ public abstract class RoleBase
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
 
-    public virtual float SetModdedLowerText(out Color32? FaceColor)
-    {
-        FaceColor = null;
-        return 2.8f;
-    }
-
 
     // 
     // IMPORTANT note about otherIcons: 

@@ -1,4 +1,6 @@
 ﻿using System;
+using TMPro;
+using UnityEngine;
 
 namespace TOHE.Patches;
 
@@ -69,6 +71,29 @@ class TextBoxTMPSetTextPatch
         return false;
     }
 }
+
+//Thanks https://github.com/NuclearPowered/Reactor/blob/master/Reactor/Patches/Fixes/CursorPosPatch.cs
+
+/// <summary>
+/// "Fixes" an issue where empty TextBoxes have wrong cursor positions.
+/// </summary>
+[HarmonyPatch(typeof(TextMeshProExtensions), nameof(TextMeshProExtensions.CursorPos))]
+internal static class CursorPosPatch
+{
+    public static bool Prefix(TextMeshPro self, ref Vector2 __result)
+    {
+        if (self.textInfo == null || self.textInfo.lineCount == 0 || self.textInfo.lineInfo[0].characterCount <= 0)
+        {
+            __result = self.GetTextInfo(" ").lineInfo.First().lineExtents.max;
+            return false;
+        }
+
+        return true;
+    }
+}
+
+
+
 /* Originally by KARPED1EM. Reference: https://github.com/KARPED1EM/TownOfNext/blob/TONX/TONX/Patches/TextBoxPatch.cs */
 /*[HarmonyPatch(typeof(TextBoxTMP))]
 public class TextBoxPatch

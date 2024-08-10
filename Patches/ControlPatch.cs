@@ -1,4 +1,3 @@
-using Hazel;
 using System;
 using System.Text;
 using TOHE.Modules;
@@ -64,8 +63,8 @@ internal class ControllerManagerUpdatePatch
                     var lp = PlayerControl.LocalPlayer;
                     var sb = new StringBuilder();
                     sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + lp.GetRoleInfo(true));
-                    if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                        Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb, command: true);
+                    //if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
+                    //    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb, command: true);
                     HudManager.Instance.ShowPopUp(sb.ToString() + "<size=0%>tohe</size>");
                 }
                 catch (Exception ex)
@@ -212,7 +211,13 @@ internal class ControllerManagerUpdatePatch
                 }
             }
 
-            // Forse start/end meeting
+            //Search Bar In Menu "Press Enter" alternative function
+            if (GetKeysDown(KeyCode.Return) && GameSettingMenuPatch.Instance != null && GameSettingMenuPatch.Instance.isActiveAndEnabled == true)
+            {
+                GameSettingMenuPatch._SearchForOptions?.Invoke();
+            }
+
+            // Force start/end meeting
             if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame)
             {
                 if (GameStates.IsHideNSeek) return;

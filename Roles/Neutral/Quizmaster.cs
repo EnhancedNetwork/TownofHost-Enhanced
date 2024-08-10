@@ -486,7 +486,9 @@ class PlrColorQuestion : QuizQuestionBase
             _ => "None"
         };
 
+        HasQuestionTranslation = false;
         HasAnswersTranslation = false;
+        ShowInvalid = false;
 
         if (PossibleAnswers.Contains(Answer))
             PossibleAnswers.Remove(Answer);

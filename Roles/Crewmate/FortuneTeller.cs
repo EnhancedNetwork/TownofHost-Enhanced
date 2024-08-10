@@ -158,7 +158,7 @@ internal class FortuneTeller : RoleBase
         }
         else
         {
-            List<CustomRoles[]> completeRoleList = EnumHelper.Achunk<CustomRoles>(chunkSize: 6, shuffle: true, exclude: (x) => !x.IsGhostRole() && !x.IsAdditionRole() && x != CustomRoles.NotAssigned);
+            List<CustomRoles[]> completeRoleList = EnumHelper.Achunk<CustomRoles>(chunkSize: 6, shuffle: true, exclude: (x) => !x.IsGhostRole() && !x.IsAdditionRole() && x != CustomRoles.NotAssigned && x != CustomRoles.ChiefOfPolice);
 
             var targetRole = target.GetCustomRole();
             string text = string.Empty;

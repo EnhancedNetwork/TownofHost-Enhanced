@@ -4,11 +4,13 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
+using MonoMod.Utils;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using TOHE.Roles.AddOns;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
@@ -39,12 +41,12 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0804.210.00010"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.1.0 Dev 1";
+    public const string PluginVersion = "2024.0807.210.00020"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.1.0 Dev 2";
     public const string SupportedVersionAU = "2024.6.18";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: V2.1.0 Dev 1
+    public static readonly bool devRelease = true; // Latest: V2.1.0 Dev 2
     public static readonly bool canaryRelease = false; // Latest: V2.0.0 Canary 12
     public static readonly bool fullRelease = false; // Latest: V2.0.2
 
@@ -358,7 +360,28 @@ public class Main : BasePlugin
         }
         catch (Exception err)
         {
-            TOHE.Logger.Error($"Error at LoadRoleClasses: {err}", "LoadRoleClasses");
+            Utils.ThrowException(err);
+        }
+    }
+    public static void LoadAddonClasses()
+    {
+        TOHE.Logger.Info("Loading All AddonClasses...", "LoadAddonClasses");
+        try
+        {
+            var IAddonType = typeof(IAddon);
+            CustomRoleManager.AddonClasses.AddRange(Assembly
+            .GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => IAddonType.IsAssignableFrom(t) && !t.IsInterface)
+            .Select(x => (IAddon)Activator.CreateInstance(x))
+            .Where(x => x != null)
+            .ToDictionary(x => Enum.Parse<CustomRoles>(x.GetType().Name, true), x => x));
+
+            TOHE.Logger.Info("AddonClasses Loaded Successfully", "LoadAddonClasses");
+        }
+        catch (Exception err)
+        {
+            Utils.ThrowException(err);
         }
     }
     static void UpdateCustomTranslation()
@@ -495,6 +518,7 @@ public class Main : BasePlugin
         ExceptionMessage = "";
 
         LoadRoleClasses();
+        LoadAddonClasses();
         LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
 
         CustomWinnerHolder.Reset();
@@ -850,6 +874,7 @@ public enum CustomRoles
     Rascal,
     Reach,
     Rebound,
+    Spurt,
     Recruit,
     Seer,
     Silent,
@@ -860,7 +885,7 @@ public enum CustomRoles
     Susceptible,
     Swift,
     Tiebreaker,
-    TicketsStealer, //stealer
+    Stealer, //stealer
     Torch,
     Trapper,
     Tricky,

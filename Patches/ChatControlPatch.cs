@@ -1,5 +1,4 @@
 using AmongUs.Data;
-using System;
 using UnityEngine;
 
 namespace TOHE;
@@ -12,7 +11,7 @@ class ChatControllerUpdatePatch
     public static void Prefix()
     {
         if (AmongUsClient.Instance.AmHost && DataManager.Settings.Multiplayer.ChatMode == InnerNet.QuickChatModes.QuickChatOnly)
-            DataManager.Settings.Multiplayer.ChatMode = InnerNet.QuickChatModes.FreeChatOrQuickChat; //コマンドを打つためにホストのみ常時フリーチャット開放
+            DataManager.Settings.Multiplayer.ChatMode = InnerNet.QuickChatModes.FreeChatOrQuickChat;
     }
     public static void Postfix(ChatController __instance)
     {

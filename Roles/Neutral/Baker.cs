@@ -1,14 +1,10 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Linq;
 using System.Text;
 using TOHE.Roles.Core;
-using TOHE.Roles.Impostor;
 using static TOHE.Options;
-using static TOHE.PlayerState;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.Neutral;
 
@@ -29,9 +25,9 @@ internal class Baker : RoleBase
     private static OptionItem BTOS2Baker;
     private static byte BreadID = 0;
 
-    public static readonly Dictionary<byte, List<byte>> BreadList = [];
-    public static readonly Dictionary<byte, List<byte>> RevealList = [];
-    public static readonly Dictionary<byte, List<byte>> BarrierList = [];
+    private static readonly Dictionary<byte, List<byte>> BreadList = [];
+    private static readonly Dictionary<byte, List<byte>> RevealList = [];
+    private static readonly Dictionary<byte, List<byte>> BarrierList = [];
     public static readonly Dictionary<byte, List<byte>> FamineList = [];
     private static bool CanUseAbility;
     public static bool StarvedNonBreaded;
@@ -65,6 +61,9 @@ internal class Baker : RoleBase
         CanUseAbility = true;
         StarvedNonBreaded = false;
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
+
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
     }
 
     private static (int, int) BreadedPlayerCount(byte playerId)
@@ -110,7 +109,7 @@ internal class Baker : RoleBase
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         if (BarrierList[seer.PlayerId].Contains(seen.PlayerId))
         {
             sb.Append(ColorString(GetRoleColor(CustomRoles.Baker), "●") + ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
@@ -125,7 +124,7 @@ internal class Baker : RoleBase
     }
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (HasBread(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First())
+        if (playerIdList.Any() && HasBread(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First())
         {
             return ColorString(GetRoleColor(CustomRoles.Baker), "●");
         }
@@ -219,7 +218,7 @@ internal class Baker : RoleBase
         else {
             BreadList[killer.PlayerId].Add(target.PlayerId);
             SendRPC(killer, target);
-            Utils.NotifyRoles(SpecifySeer: killer);
+            NotifyRoles(SpecifySeer: killer);
             killer.Notify(GetString("BakerBreaded"));
             Logger.Info($"Bread given to " + target.GetRealName(), "Baker");
             CanUseAbility = false;
@@ -256,7 +255,8 @@ internal class Baker : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        BarrierList[playerIdList.First()].Clear();
+        if (playerIdList.Any())
+            BarrierList[playerIdList.First()].Clear();
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
@@ -304,10 +304,9 @@ internal class Famine : RoleBase
     //==================================================================\\
     public override void Add(byte playerId)
     {
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
+
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
@@ -371,7 +370,7 @@ internal class Famine : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
-        if (TransformedNeutralApocalypseCanBeGuessed.GetBool()) 
+        if (!TransformedNeutralApocalypseCanBeGuessed.GetBool()) 
         { 
             guesser.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true; 

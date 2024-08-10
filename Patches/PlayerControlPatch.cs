@@ -1177,6 +1177,13 @@ class FixedUpdateInNormalGamePatch
                     min.OnFixedUpdates(player);
             }
 
+            if (!GameStates.IsLobby && player.Is(CustomRoles.Spurt) && !Mathf.Approximately(Main.AllPlayerSpeed[player.PlayerId], Spurt.StartingSpeed[player.PlayerId]) && !GameStates.IsInTask && !GameStates.IsMeeting) // fix ludicrous bug
+            {
+                Main.AllPlayerSpeed[player.PlayerId] = Spurt.StartingSpeed[player.PlayerId];
+                player.MarkDirtySettings();
+            }
+
+
             if (GameStates.IsInTask)
             {
                 if (!lowLoad && Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted) 
@@ -1205,18 +1212,11 @@ class FixedUpdateInNormalGamePatch
                     Logger.Info($"Reset {player.GetRealName()}'s outfit", "LateOutfits..OnFixedUpdate");
                 }
 
-                if (player.Is(CustomRoles.Statue) && player.IsAlive())
-                    Statue.OnFixedUpdate(player);
+                player.OnFixedAddonUpdate(lowLoad);
 
                 if (!lowLoad)
                 {
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
-                    
-                    if (Glow.IsEnable)
-                        Glow.OnFixedUpdate(player);
-
-                    if (Radar.IsEnable)
-                        Radar.OnFixedUpdate(player);
 
                     if (Options.LadderDeath.GetBool() && player.IsAlive())
                         FallFromLadder.FixedUpdate(player);

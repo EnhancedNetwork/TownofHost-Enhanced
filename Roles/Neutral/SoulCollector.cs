@@ -4,7 +4,6 @@ using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 internal class SoulCollector : RoleBase
@@ -50,6 +49,9 @@ internal class SoulCollector : RoleBase
         SoulCollectorPoints.TryAdd(playerId, 0);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
+
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
     }
 
     public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), SoulCollectorPoints.TryGetValue(playerId, out var x) ? $"({x}/{SoulCollectorPointsOpt.GetInt()})" : "Invalid");
@@ -87,7 +89,7 @@ internal class SoulCollector : RoleBase
     => SoulCollectorTarget[seer.PlayerId] == seen.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (SoulCollectorTarget[playerIdList.First()] == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First())
+        if (playerIdList.Any() && SoulCollectorTarget[playerIdList.First()] == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First())
         {
             return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠");
         }
@@ -163,12 +165,17 @@ internal class SoulCollector : RoleBase
         {
             SoulCollectorTarget[playerId] = byte.MaxValue;
         }
-        PlayerControl sc = Utils.GetPlayerById(playerIdList.First());
-        if (SoulCollectorPoints[sc.PlayerId] >= SoulCollectorPointsOpt.GetInt() && !sc.Is(CustomRoles.Death))
+        if (playerIdList.Any())
         {
-            sc.RpcSetCustomRole(CustomRoles.Death);
-            sc.Notify(GetString("SoulCollectorToDeath"));
-            sc.RpcGuardAndKill(sc);
+            PlayerControl sc = Utils.GetPlayerById(playerIdList.First());
+            if (sc == null) return;
+
+            if (SoulCollectorPoints[sc.PlayerId] >= SoulCollectorPointsOpt.GetInt() && !sc.Is(CustomRoles.Death))
+            {
+                sc.RpcSetCustomRole(CustomRoles.Death);
+                sc.Notify(GetString("SoulCollectorToDeath"));
+                sc.RpcGuardAndKill(sc);
+            }
         }
     }
     public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
@@ -207,8 +214,6 @@ internal class Death : RoleBase
 
     public override void Add(byte playerId)
     {
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -225,7 +230,7 @@ internal class Death : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
-        if (TransformedNeutralApocalypseCanBeGuessed.GetBool())
+        if (!TransformedNeutralApocalypseCanBeGuessed.GetBool())
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true;

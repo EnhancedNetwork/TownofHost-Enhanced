@@ -181,7 +181,10 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("Message.GhostRoleInfo"), PlayerControl.LocalPlayer.PlayerId);
                     break;
 
-
+                case "/apocalypseinfo":
+                    canceled = true;
+                    Utils.SendMessage(GetString("Message.ApocalypseInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
+                    break;
 
                 case "/rn":
                 case "/rename":
@@ -2010,6 +2013,10 @@ internal class ChatCommands
                 Utils.SendMessage(GetString("Message.GhostRoleInfo"), player.PlayerId);
                 break;
 
+            case "/apocalypseinfo":
+                Utils.SendMessage(GetString("Message.ApocalypseInfo"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
+                break;
+
             case "/rn":
             case "/rename":
             case "/renomear":
@@ -3062,7 +3069,7 @@ class ChatUpdatePatch
         if (player == null) return;
 
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
-        Logger.Info($"MessagesToSend - sendTo: {sendTo} - title: {title}", "ChatUpdatePatch");
+        //Logger.Info($"MessagesToSend - sendTo: {sendTo} - title: {title}", "ChatUpdatePatch");
 
         if (sendTo != byte.MaxValue && GameStates.IsLobby)
         {

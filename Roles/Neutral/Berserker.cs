@@ -81,6 +81,9 @@ internal class Berserker : RoleBase
     {
         BerserkerKillMax[playerId] = 0;
         PlayerIds.Add(playerId);
+
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -105,12 +108,12 @@ internal class Berserker : RoleBase
         if (BerserkerKillMax[killer.PlayerId] < BerserkerMax.GetInt())
         {
             BerserkerKillMax[killer.PlayerId]++;
-            killer.Notify(string.Format(Translator.GetString("BerserkerLevelChanged"), BerserkerKillMax[killer.PlayerId]));
+            killer.Notify(string.Format(GetString("BerserkerLevelChanged"), BerserkerKillMax[killer.PlayerId]));
             Logger.Info($"Increased the lvl to {BerserkerKillMax[killer.PlayerId]}", "CULTIVATOR");
         }
         else
         {
-            killer.Notify(Translator.GetString("BerserkerMaxReached"));
+            killer.Notify(GetString("BerserkerMaxReached"));
             Logger.Info($"Max level reached lvl =  {BerserkerKillMax[killer.PlayerId]}", "CULTIVATOR");
 
         }
@@ -131,7 +134,7 @@ internal class Berserker : RoleBase
             target.SetRealKiller(killer);
 
             killer.SetKillCooldownV2();
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), Translator.GetString("KilledByBerserker")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), GetString("KilledByBerserker")));
             noScav = false;
         }
 
@@ -175,8 +178,6 @@ internal class War : RoleBase
 
     public override void Add(byte playerId)
     {
-
-        if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -195,7 +196,7 @@ internal class War : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
-        if (TransformedNeutralApocalypseCanBeGuessed.GetBool())
+        if (!TransformedNeutralApocalypseCanBeGuessed.GetBool())
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true;

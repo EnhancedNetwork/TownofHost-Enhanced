@@ -2,7 +2,6 @@
 using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 

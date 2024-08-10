@@ -19,7 +19,7 @@ class ExileControllerWrapUpPatch
             }
             catch (Exception error)
             {
-                Utils.ThrowException(error);
+                Logger.Error($"Error after exiled: {error}", "WrapUp");
             }
             finally
             {
