@@ -132,7 +132,7 @@ internal class Troller : RoleBase
             case Events.SabotageActivated:
                 var shipStatusActivated = ShipStatus.Instance;
                 List<SystemTypes> allSabotage = [];
-                switch ((MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId)
+                switch ((MapNames)Utils.GetActiveMapId())
                 {
                     case MapNames.Skeld:
                     case MapNames.Dleks:
