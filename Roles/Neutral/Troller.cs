@@ -17,18 +17,9 @@ internal class Troller : RoleBase
     private static OptionItem TrollsPerRound;
 
     private SystemTypes CurrantActiveSabotage = SystemTypes.Hallway;
-    private static readonly HashSet<SystemTypes> AllSabotages =
-    [
-        SystemTypes.Reactor,
-        SystemTypes.Laboratory,
-        SystemTypes.HeliSabotage,
-        SystemTypes.LifeSupp,
-        SystemTypes.Comms,
-        SystemTypes.Electrical,
-        SystemTypes.MushroomMixupSabotage,
-    ];
+    private List<Events> AllEvents = [];
 
-    enum RandomEvent
+    enum Events
     {
         LowSpeed,
         HighSpeed,
@@ -42,7 +33,7 @@ internal class Troller : RoleBase
         LoseAddon,
         GetBadAddon,
         TelepostEveryoneToVents,
-        //CallMeeting,
+        /* CallMeeting, */
     }
 
     public override void SetupCustomOption()
@@ -52,9 +43,22 @@ internal class Troller : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Troller]);
         OverrideTasksData.Create(Id + 15, TabGroup.NeutralRoles, CustomRoles.Troller);
     }
+    public override void Init()
+    {
+        AllEvents = [];
+    }
     public override void Add(byte playerId)
     {
         AbilityLimit = TrollsPerRound.GetInt();
+
+        AllEvents = [.. EnumHelper.GetAllValues<Events>()];
+
+        if (Utils.GetActiveMapName() is not (MapNames.Airship or MapNames.Polus or MapNames.Fungle))
+        {
+            AllEvents.Remove(Events.AllDoorsOpen);
+            AllEvents.Remove(Events.AllDoorsClose);
+            AllEvents.Remove(Events.SetDoorsRandomly);
+        }
     }
     public override void Remove(byte playerId)
     {
@@ -63,26 +67,30 @@ internal class Troller : RoleBase
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (!player.IsAlive() || AbilityLimit <= 0) return true;
-        
-        AbilityLimit--;
-        var allEvents = EnumHelper.GetAllValues<RandomEvent>().ToList();
 
-        if (Utils.AnySabotageIsActive())
+        AbilityLimit--;
+
+        if (Utils.IsActive(SystemTypes.MushroomMixupSabotage) || Utils.IsActive(SystemTypes.Electrical))
         {
-            allEvents.Remove(RandomEvent.SabotageActivated);
+            AllEvents.Remove(Events.SabotageActivated);
+            AllEvents.Remove(Events.SabotageDisabled);
+        }
+        else if (Utils.AnySabotageIsActive())
+        {
+            AllEvents.Remove(Events.SabotageActivated);
         }
         else
         {
-            allEvents.Remove(RandomEvent.SabotageDisabled);
+            AllEvents.Remove(Events.SabotageDisabled);
         }
 
-        var randomEvent = allEvents.RandomElement();
+        var randomEvent = AllEvents.RandomElement();
 
         switch (randomEvent)
         {
-            case RandomEvent.LowSpeed:
-            case RandomEvent.HighSpeed:
-                var newSpeed = randomEvent is RandomEvent.LowSpeed ? 0.3f : 1.8f;
+            case Events.LowSpeed:
+            case Events.HighSpeed:
+                var newSpeed = randomEvent is Events.LowSpeed ? 0.3f : 1.8f;
                 var tempSpeed = Main.AllPlayerSpeed.ToDictionary(k => k.Key, v => v.Value);
 
                 foreach (var pcSpeed in Main.AllAlivePlayerControls)
@@ -102,20 +110,48 @@ internal class Troller : RoleBase
                     Utils.MarkEveryoneDirtySettings();
                 }, 10f, "Alchemist: Set Speed to default");
                 break;
-            case RandomEvent.SabotageActivated:
+            case Events.SabotageActivated:
                 var shipStatusActivated = ShipStatus.Instance;
-                switch (CurrantActiveSabotage)
+                List<SystemTypes> allSabotage = [];
+                switch ((MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId)
+                {
+                    case MapNames.Skeld:
+                    case MapNames.Dleks:
+                    case MapNames.Mira:
+                        allSabotage.Add(SystemTypes.Reactor);
+                        allSabotage.Add(SystemTypes.LifeSupp);
+                        allSabotage.Add(SystemTypes.Comms);
+                        break;
+                    case MapNames.Polus:
+                        allSabotage.Add(SystemTypes.Laboratory);
+                        allSabotage.Add(SystemTypes.Comms);
+                        break;
+                    case MapNames.Airship:
+                        allSabotage.Add(SystemTypes.HeliSabotage);
+                        allSabotage.Add(SystemTypes.Comms);
+                        break;
+                    case MapNames.Fungle:
+                        allSabotage.Add(SystemTypes.Reactor);
+                        allSabotage.Add(SystemTypes.Comms);
+                        allSabotage.Add(SystemTypes.MushroomMixupSabotage);
+                        break;
+                }
+                var randomSabotage = allSabotage.RandomElement();
+                switch (randomSabotage)
                 {
                     case SystemTypes.Reactor:
                     case SystemTypes.Laboratory:
                     case SystemTypes.HeliSabotage:
                     case SystemTypes.LifeSupp:
                     case SystemTypes.Comms:
-                        shipStatusActivated.RpcUpdateSystem(CurrantActiveSabotage, 128);
+                        shipStatusActivated.RpcUpdateSystem(randomSabotage, 128);
+                        break;
+                    case SystemTypes.MushroomMixupSabotage:
+                        shipStatusActivated.RpcUpdateSystem(randomSabotage, 1);
                         break;
                 }
                 break;
-            case RandomEvent.SabotageDisabled:
+            case Events.SabotageDisabled:
                 var shipStatusDisabled = ShipStatus.Instance;
                 switch (CurrantActiveSabotage)
                 {
@@ -140,34 +176,16 @@ internal class Troller : RoleBase
                         break;
                 }
                 break;
-            case RandomEvent.AllDoorsOpen:
-                try
-                {
-                    DoorsReset.OpenAllDoors();
-                }
-                catch
-                {
-                }
+            case Events.AllDoorsOpen:
+                DoorsReset.OpenAllDoors();
                 break;
-            case RandomEvent.AllDoorsClose:
-                try
-                {
-                    DoorsReset.CloseAllDoors();
-                }
-                catch
-                {
-                }
+            case Events.AllDoorsClose:
+                DoorsReset.CloseAllDoors();
                 break;
-            case RandomEvent.SetDoorsRandomly:
-                try
-                {
-                    DoorsReset.OpenOrCloseAllDoorsRandomly();
-                }
-                catch
-                {
-                }
+            case Events.SetDoorsRandomly:
+                DoorsReset.OpenOrCloseAllDoorsRandomly();
                 break;
-            case RandomEvent.CooldownsResetToDefault:
+            case Events.CooldownsResetToDefault:
                 foreach (var pc in Main.AllAlivePlayerControls)
                 {
                     if (pc.HasKillButton() && pc.CanUseKillButton())
@@ -176,7 +194,7 @@ internal class Troller : RoleBase
                     }
                 }
                 break;
-            case RandomEvent.CooldownsResetToZero:
+            case Events.CooldownsResetToZero:
                 foreach (var pc in Main.AllAlivePlayerControls)
                 {
                     if (pc.HasKillButton() && pc.CanUseKillButton())
@@ -185,13 +203,13 @@ internal class Troller : RoleBase
                     }
                 }
                 break;
-            case RandomEvent.LoseAddon:
+            case Events.LoseAddon:
 
                 break;
-            case RandomEvent.GetBadAddon:
+            case Events.GetBadAddon:
 
                 break;
-            case RandomEvent.TelepostEveryoneToVents:
+            case Events.TelepostEveryoneToVents:
                 foreach (var pcTeleport in Main.AllAlivePlayerControls)
                 {
                     pcTeleport.RpcRandomVentTeleport();
@@ -212,19 +230,10 @@ internal class Troller : RoleBase
                 SystemTypes.HeliSabotage or
                 SystemTypes.Laboratory or
                 SystemTypes.Reactor or
-                SystemTypes.Electrical or
                 SystemTypes.LifeSupp or
-                SystemTypes.Comms or
-                SystemTypes.MushroomMixupSabotage)
+                SystemTypes.Comms)
         {
             CurrantActiveSabotage = systemType;
         }
     }
-    //public override void SwitchSystemUpdate(SwitchSystem __instance, byte amount, PlayerControl player)
-    //{
-    //    if (!Main.MeetingIsStarted)
-    //    {
-    //        CurrantActiveSabotage = SystemTypes.Electrical;
-    //    }
-    //}
 }
