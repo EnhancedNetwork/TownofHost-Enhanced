@@ -1091,6 +1091,7 @@ static class ExtendedPlayerControl
             // Check target status
             || !player.IsAlive()
             || player.inVent
+            || player.walkingToVent
             || player.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
             || player.MyPhysics.Animations.IsPlayingEnterVentAnimation()
             || player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
