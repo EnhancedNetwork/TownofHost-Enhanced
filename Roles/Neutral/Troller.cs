@@ -15,6 +15,7 @@ internal class Troller : RoleBase
     //==================================================================\\
 
     private static OptionItem TrollsPerRound;
+    private static OptionItem CanHaveCallMeetingEvent;
 
     private SystemTypes CurrantActiveSabotage = SystemTypes.Hallway;
     private List<Events> AllEvents = [];
@@ -31,9 +32,11 @@ internal class Troller : RoleBase
         CooldownsResetToDefault,
         CooldownsResetToZero,
         LoseAddon,
-        GetBadAddon,
+        /* GetBadAddon, */
         TelepostEveryoneToVents,
-        /* CallMeeting, */
+        PullEveryone,
+        TwistEveryone,
+        CallMeeting
     }
 
     public override void SetupCustomOption()
@@ -41,11 +44,13 @@ internal class Troller : RoleBase
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Troller);
         TrollsPerRound = IntegerOptionItem.Create(Id + 10, "Troller_TrollsPerRound", new(1, 10, 1), 1, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Troller]);
+        CanHaveCallMeetingEvent = BooleanOptionItem.Create(Id + 11, "Troller_CanHaveCallMeetingEvent", false, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Troller]);
         OverrideTasksData.Create(Id + 15, TabGroup.NeutralRoles, CustomRoles.Troller);
     }
     public override void Init()
     {
-        AllEvents = [];
+        AllEvents.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -59,14 +64,18 @@ internal class Troller : RoleBase
             AllEvents.Remove(Events.AllDoorsClose);
             AllEvents.Remove(Events.SetDoorsRandomly);
         }
+        if (!CanHaveCallMeetingEvent.GetBool())
+        {
+            AllEvents.Remove(Events.CallMeeting);
+        }
     }
     public override void Remove(byte playerId)
     {
         AbilityLimit = 0;
     }
-    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    public override bool OnTaskComplete(PlayerControl troller, int completedTaskCount, int totalTaskCount)
     {
-        if (!player.IsAlive() || AbilityLimit <= 0) return true;
+        if (!troller.IsAlive() || AbilityLimit <= 0) return true;
 
         AbilityLimit--;
 
@@ -104,7 +113,7 @@ internal class Troller : RoleBase
                 {
                     foreach (var pcSpeed in Main.AllAlivePlayerControls)
                     {
-                        Main.AllPlayerSpeed[pcSpeed.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - newSpeed + tempSpeed[pcSpeed.PlayerId];
+                        Main.AllPlayerSpeed[pcSpeed.PlayerId] = Main.AllPlayerSpeed[pcSpeed.PlayerId] - newSpeed + tempSpeed[pcSpeed.PlayerId];
                         pcSpeed.Notify(GetString("TrollerSpeedOut"));
                     }
                     Utils.MarkEveryoneDirtySettings();
@@ -204,10 +213,25 @@ internal class Troller : RoleBase
                 }
                 break;
             case Events.LoseAddon:
-
-                break;
-            case Events.GetBadAddon:
-
+                var randomPC = Main.AllAlivePlayerControls.RandomElement();
+                var addons = Main.PlayerStates[randomPC.PlayerId].SubRoles.ToList();
+                foreach (var role in addons)
+                {
+                    if (role is CustomRoles.LastImpostor ||
+                        role is CustomRoles.Lovers || // Causes issues involving Lovers Suicide
+                        role.IsBetrayalAddon())
+                    {
+                        addons.Remove(role);
+                    }
+                }
+                if (!addons.Any())
+                {
+                    Logger.Info("No addons found on the target", "Troller");
+                    break;
+                }
+                var addon = addons.RandomElement();
+                Main.PlayerStates[randomPC.PlayerId].RemoveSubRole(addon);
+                randomPC.MarkDirtySettings();
                 break;
             case Events.TelepostEveryoneToVents:
                 foreach (var pcTeleport in Main.AllAlivePlayerControls)
@@ -215,10 +239,36 @@ internal class Troller : RoleBase
                     pcTeleport.RpcRandomVentTeleport();
                 }
                 break;
-            //case RandomEvent.CallMeeting:
-            //    var pcCallMeeting = Main.AllAlivePlayerControls.RandomElement();
-            //    pcCallMeeting.NoCheckStartMeeting(null);
-            //    break;
+            case Events.PullEveryone:
+                ExtendedPlayerControl.RpcTeleportAllPlayers(troller.GetCustomPosition());
+                break;
+            case Events.TwistEveryone:
+                List<byte> changePositionPlayers = [];
+                foreach (var pc in Main.AllAlivePlayerControls)
+                {
+                    if (changePositionPlayers.Contains(pc.PlayerId) || Pelican.IsEaten(pc.PlayerId) || pc.onLadder || pc.inVent || pc.inMovingPlat || GameStates.IsMeeting) continue;
+
+                    var filtered = Main.AllAlivePlayerControls.Where(a => !a.inVent && !Pelican.IsEaten(a.PlayerId) && !a.onLadder && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToArray();
+                    if (filtered.Length == 0) break;
+
+                    var target = filtered.RandomElement();
+
+                    changePositionPlayers.Add(target.PlayerId);
+                    changePositionPlayers.Add(pc.PlayerId);
+
+                    pc.RPCPlayCustomSound("Teleport");
+
+                    var originPs = target.GetCustomPosition();
+                    target.RpcTeleport(pc.GetCustomPosition());
+                    pc.RpcTeleport(originPs);
+                }
+                break;
+            case Events.CallMeeting:
+                var pcCallMeeting = Main.AllAlivePlayerControls.RandomElement();
+                pcCallMeeting.NoCheckStartMeeting(null);
+                break;
+                //case Events.GetBadAddon:
+                //    break;
         }
 
         return true;
