@@ -160,48 +160,6 @@ internal class DoubleAgent : RoleBase
         CanBombInMeeting = true;
     }
 
-    // If enabled and if DoubleAgent is last Impostor become set role.
-    public override void OnFixedUpdate(PlayerControl pc)
-    {
-        if (ChangeRoleToOnLast.GetValue() != 0 && StartedWithMoreThanOneImp && GameStates.IsInTask && !GameStates.IsMeeting && !GameStates.IsExilling)
-        {
-            if (pc.Is(CustomRoles.DoubleAgent) && Main.AllAlivePlayerControls.Count(player => player.Is(Custom_Team.Impostor)) < 2)
-            {
-                var Role = CRoleChangeRoles[ChangeRoleToOnLast.GetValue()];
-                if (ChangeRoleToOnLast.GetValue() == 1) // Random
-                    Role = CRoleChangeRoles[UnityEngine.Random.RandomRangeInt(2, CRoleChangeRoles.Length)];
-
-                // If role is not on Impostor team remove all Impostor addons if any.
-                if (!Role.IsImpostorTeam())
-                {
-                    foreach (CustomRoles allAddons in pc.GetCustomSubRoles())
-                    {
-                        if (allAddons.IsImpOnlyAddon())
-                        {
-                            pc.GetCustomSubRoles()?.Remove(allAddons);
-                        }
-                    }
-                }
-                // If Role is ImpostorTOHE aka Admired Impostor opt give Admired Addon if player dose not already have it.
-                if (Role == CustomRoles.ImpostorTOHE && !pc.GetCustomSubRoles().Contains(CustomRoles.Admired))
-                    pc.GetCustomSubRoles()?.Add(CustomRoles.Admired);
-
-                Init();
-                pc.RpcSetCustomRole(Role);
-                pc.GetRoleClass()?.Add(pc.PlayerId);
-                pc.MarkDirtySettings();
-
-                string RoleName = Utils.ColorString(Utils.GetRoleColor(pc.GetCustomRole()), Utils.GetRoleName(pc.GetCustomRole()));
-                if (Role == CustomRoles.ImpostorTOHE)
-                    RoleName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admired), $"{GetString("Admired")} {GetString("ImpostorTOHE")}");
-                pc.Notify(Utils.ColorString(Utils.GetRoleColor(pc.GetCustomRole()), GetString("DoubleAgentRoleChange") + RoleName));
-            }
-        }
-
-        if (CurrentBombedPlayers.Any(playerId => Utils.GetPlayerById(playerId) == null)) // If playerId is a null Player clear bomb.
-            ClearBomb();
-    }
-
     // Active bomb timer update and check.
     private void OnFixedUpdateOthers(PlayerControl player)
     {
@@ -234,6 +192,45 @@ internal class DoubleAgent : RoleBase
                 string Duration = Utils.ColorString(pc.GetRoleColor(), string.Format(GetString("DoubleAgent_BombExplodesIn"), (int)CurrentBombedTime));
                 if ((!NameNotifyManager.Notice.TryGetValue(pc.PlayerId, out var a) || a.Item1 != Duration) && Duration != string.Empty) pc.Notify(Duration, 1.1f);
             }
+
+            if (CurrentBombedPlayers.Any(playerId => Utils.GetPlayerById(playerId) == null)) // If playerId is a null Player clear bomb.
+                ClearBomb();
+        }
+
+        // If enabled and if DoubleAgent is last Impostor become set role.
+        if (ChangeRoleToOnLast.GetValue() != 0 && StartedWithMoreThanOneImp && GameStates.IsInTask && !GameStates.IsMeeting && !GameStates.IsExilling)
+        {
+            if (pc.Is(CustomRoles.DoubleAgent) && Main.AliveImpostorCount < 2)
+            {
+                var Role = CRoleChangeRoles[ChangeRoleToOnLast.GetValue()];
+                if (ChangeRoleToOnLast.GetValue() == 1) // Random
+                    Role = CRoleChangeRoles[UnityEngine.Random.RandomRangeInt(2, CRoleChangeRoles.Length)];
+
+                // If role is not on Impostor team remove all Impostor addons if any.
+                if (!Role.IsImpostorTeam())
+                {
+                    foreach (CustomRoles allAddons in pc.GetCustomSubRoles())
+                    {
+                        if (allAddons.IsImpOnlyAddon())
+                        {
+                            pc.GetCustomSubRoles()?.Remove(allAddons);
+                        }
+                    }
+                }
+                // If Role is ImpostorTOHE aka Admired Impostor opt give Admired Addon if player dose not already have it.
+                if (Role == CustomRoles.ImpostorTOHE && !pc.GetCustomSubRoles().Contains(CustomRoles.Admired))
+                    pc.GetCustomSubRoles()?.Add(CustomRoles.Admired);
+
+                Init();
+                pc.RpcSetCustomRole(Role);
+                pc.GetRoleClass()?.Add(pc.PlayerId);
+                pc.MarkDirtySettings();
+
+                string RoleName = Utils.ColorString(Utils.GetRoleColor(pc.GetCustomRole()), Utils.GetRoleName(pc.GetCustomRole()));
+                if (Role == CustomRoles.ImpostorTOHE)
+                    RoleName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admired), $"{GetString("Admired")} {GetString("ImpostorTOHE")}");
+                pc.Notify(Utils.ColorString(Utils.GetRoleColor(pc.GetCustomRole()), GetString("DoubleAgentRoleChange") + RoleName));
+            }
         }
     }
 
@@ -246,28 +243,20 @@ internal class DoubleAgent : RoleBase
         {
             if (CheckForPlayersInRadius(player, target) <= ExplosionRadius.GetFloat())
             {
-                if (player.inVent) return;
+                if (player.inVent) continue;
                 Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                 target.RpcMurderPlayer(target);
+                target.SetRealKiller(player);
             }
         }
 
-        PlaySoundForAll("Boom");
+        CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
         ClearBomb();
 
         _Player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DoubleAgent), GetString("DoubleAgent_BombExploded")));
     }
 
     private static float CheckForPlayersInRadius(PlayerControl player, PlayerControl target) => Vector2.Distance(player.GetCustomPosition(), target.GetCustomPosition());
-
-    // Play specific sound for all players.
-    private static void PlaySoundForAll(string Sound)
-    {
-        foreach (PlayerControl player in Main.AllPlayerControls)
-        {
-            player.RPCPlayCustomSound(Sound);
-        }
-    }
 
     // Set bomb mark on player.
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
@@ -298,7 +287,7 @@ internal class DoubleAgent : RoleBase
     // Receive and set bomb timer from Host when active.
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        CurrentBombedTime = reader.ReadInt32();
+        CurrentBombedTime = reader.ReadPackedInt32();
     }
 
     // Use button for Modded!
