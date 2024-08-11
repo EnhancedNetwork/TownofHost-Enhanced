@@ -800,6 +800,7 @@ public enum CustomRoles
     Taskinator,
     Terrorist,
     Traitor,
+    Troller,
     Vector,
     VengefulRomantic,
     Virus,
