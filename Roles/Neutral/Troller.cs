@@ -42,7 +42,7 @@ internal class Troller : RoleBase
         LoseAddon,
         GetBadAddon,
         TelepostEveryoneToVents,
-        CallMeeting,
+        //CallMeeting,
     }
 
     public override void SetupCustomOption()
@@ -155,10 +155,22 @@ internal class Troller : RoleBase
                 }
                 break;
             case RandomEvent.CooldownsResetToDefault:
-
+                foreach (var pc in Main.AllAlivePlayerControls)
+                {
+                    if (pc.HasImpKillButton() && pc.CanUseKillButton())
+                    {
+                        pc.SetKillCooldown();
+                    }
+                }
                 break;
             case RandomEvent.CooldownsResetToZero:
-
+                foreach (var pc in Main.AllAlivePlayerControls)
+                {
+                    if (pc.HasImpKillButton() && pc.CanUseKillButton())
+                    {
+                        pc.SetKillCooldown(0.3f);
+                    }
+                }
                 break;
             case RandomEvent.LoseAddon:
 
@@ -172,10 +184,10 @@ internal class Troller : RoleBase
                     pcTeleport.RpcRandomVentTeleport();
                 }
                 break;
-            case RandomEvent.CallMeeting:
-                var pcCallMeeting = Main.AllAlivePlayerControls.RandomElement();
-                pcCallMeeting.NoCheckStartMeeting(null);
-                break;
+            //case RandomEvent.CallMeeting:
+            //    var pcCallMeeting = Main.AllAlivePlayerControls.RandomElement();
+            //    pcCallMeeting.NoCheckStartMeeting(null);
+            //    break;
         }
 
         return true;
