@@ -1663,8 +1663,76 @@ public static class Utils
     }
     public static List<PlayerControl> GetPlayerListByRole(this CustomRoles role)
         => GetPlayerListByIds(Main.PlayerStates.Values.Where(x => x.MainRole == role).Select(r => r.PlayerId));
-    
-    public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
+
+    public static string DetermineSetMessage(PlayerControl Player, PlayerControl killer, out Dictionary<int, string> DeterminedMessage)
+    {
+        string[] Translatables = { "Messenger.KillerLastKillIn",
+            "Messenger.KillerExistIn", "Messenger.KillersRoleIs",
+            "Messenger.KilledType", "Messenger.MyTypeIs", "Messenger.TheLastKillers", 
+            "Messenger.PlayerOnSameTeam", "Messenger.LazyFuck", "Messenger.KillersFaction", "Messenger.ThisRoleExists"};
+
+        static t CreateAndInvoke<t>(Func<t> func)
+        {
+            return func.Invoke();
+        }
+
+        List<string> TakeMsg = Translatables.ToList();
+        var Msg = "";
+        DeterminedMessage = [];
+        for (int i = 0; i < 3; i++)
+        {
+            var ran = TakeMsg.RandomElement();
+            TakeMsg.Remove(ran);
+            var CurrentMessage = ran switch
+            {
+                "Messenger.KillerLastKillIn" when killer != null && killer.IsAlive() && Main.LastKillerRoom.TryGetValue(Player.PlayerId, out var pokoj) => string.Format(GetString("Messenger.KillerLastKillIn"), pokoj.RoomId),
+                "Messenger.KillerExistIn" when Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.IsNeutralKiller() || x.IsNeutralApocalypse()).Shuffle(IRandom.Instance).FirstOrDefault() is not null and PlayerControl killar => CreateAndInvoke(() =>
+                {
+                    SystemTypes room = killar.GetPlainShipRoom().RoomId;
+                    return string.Format(GetString("Messenger.KillerExistIn"), room);
+                }),
+                "Messenger.KillersRoleIs" when killer != null => string.Format(GetString("Messenger.KillersRoleIs"), killer.GetCustomRole()),
+                "Messenger.KilledType" when Main.PlayerKilledBy.TryGetValue(Player.PlayerId, out var KilledType) => string.Format(GetString("Messenger.KilledType"), KilledType),
+                "Messenger.MyTypeIs" => string.Format(GetString("Messenger.MyTypeIs"), (!Player.IsAnySubRole(x => x.IsConverted() && !Player.Is(CustomRoles.Madmate)) ? Player.GetCustomRole().GetCustomRoleTeam() : Custom_Team.Neutral)),
+                "Messenger.TheLastKillers" when Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.IsNeutralKiller() || x.IsNeutralApocalypse()).Any() => CreateAndInvoke(() =>
+                {
+                    var Killers = Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.IsNeutralKiller() || x.IsNeutralApocalypse());
+                    string msg = "";
+                    Killers.Do(x => msg += $"{x.GetCustomRole()}, ");
+                    return string.Format(GetString("Messenger.TheLastKillers"), msg);
+                }),
+                "Messenger.PlayerOnSameTeam" when !Player.IsAnySubRole(x => x.IsConverted())
+                && Main.AllAlivePlayerControls.FirstOrDefault(x => !x.IsAnySubRole(x => x.IsConverted()) && x.GetCustomRole().GetCustomRoleTeam() == Player.GetCustomRole().GetCustomRoleTeam()) is not null and PlayerControl friend => string.Format(GetString("Messenger.PlayerOnSameTeam"), friend.GetRealName(clientData: true)),
+                "Messenger.LazyFuck" => CreateAndInvoke(() =>
+                {
+                    var mintask = Main.AllAlivePlayerControls.Where(x => !x.HasImpKillButton()).Min(x => x.GetPlayerTaskState().CompletedTasksCount);
+                    var lazyfuck = Main.AllAlivePlayerControls.First(x => x.GetPlayerTaskState().CompletedTasksCount == mintask);
+
+                    var suspects = Main.AllAlivePlayerControls.Where(x => x.HasImpKillButton()).AddItem(lazyfuck);
+
+                    var ScapeGoat = suspects.Shuffle(IRandom.Instance).First();
+
+                    return string.Format(GetString("Messenger.LazyFuck"), ScapeGoat.GetRealName(clientData: true));
+                }),
+
+                "Messenger.KillersFaction" when killer != null => string.Format(GetString("Messenger.KillersFaction"), Main.RememberedFaction),
+
+                _ => CreateAndInvoke(() =>
+                {
+                    var rndPC = Main.AllAlivePlayerControls.ToArray().RandomElement();
+                    return string.Format(GetString("Messenger.ThisRoleExists"), rndPC.GetCustomRole());
+                }),
+            };
+            DeterminedMessage[i] = CurrentMessage;
+            Msg += $"{i}) " + CurrentMessage + "\n";
+        }
+
+
+        return Msg;
+
+    }
+
+public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
     {
         try
         {

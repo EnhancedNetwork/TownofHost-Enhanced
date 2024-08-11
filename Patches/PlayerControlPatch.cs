@@ -392,6 +392,21 @@ class MurderPlayerPatch
                     target.RpcShapeshift(target, false);
                 }
             }
+            _ = new LateTask(() => {
+
+                if (!Main.PlayerKilledBy.ContainsKey(target.PlayerId))
+                {
+
+                    if (Vector2.Distance(target.GetRealKiller().GetCustomPosition(), target.transform.position) > 2f)
+                        Main.PlayerKilledBy[target.PlayerId] = KilledType.Remotely;
+                    else if (__instance == target)
+                        Main.PlayerKilledBy[target.PlayerId] = KilledType.Suicide;
+                    else
+                        Main.PlayerKilledBy[target.PlayerId] = KilledType.Directly;
+                }
+
+            }, 0.1f, "Set Main.Playerkilled by in MurderPlayer Patch");
+            
 
             if (!target.IsProtected() && !Doppelganger.CheckDoppelVictim(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
             {
@@ -930,6 +945,7 @@ class ReportDeadBodyPatch
             Main.AllKillers.Clear();
             GuessManager.GuesserGuessed.Clear();
 
+
             Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
             Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
             Logger.Info($"target.PlayerId is - {target?.PlayerId}", "AfterReportTasks");
@@ -939,6 +955,8 @@ class ReportDeadBodyPatch
                 try
                 {
                     playerStates.RoleClass?.OnReportDeadBody(player, target);
+
+                    if (!Utils.GetPlayerById(playerStates.PlayerId).IsAlive()) Main.LastKillerRoom[target.PlayerId] = target.Object.GetRealKiller().GetPlainShipRoom();
                 }
                 catch (Exception error)
                 {
@@ -947,7 +965,14 @@ class ReportDeadBodyPatch
                     Logger.SendInGame($"Error: {error}");
                 }
             }
-
+            if (target.Object != null & target.Object.GetRealKiller() != null)
+            {
+                if (target.Object.GetRealKiller().IsAnySubRole(x => x.IsConverted() && !target.Object.Is(CustomRoles.Madmate)))
+                    Main.RememberedFaction = target.Object.GetRealKiller().GetCustomRole().GetCustomRoleTeam();
+                else
+                    Main.RememberedFaction = Custom_Team.Neutral;
+            }
+            
             // Alchemist & Bloodlust
             Alchemist.OnReportDeadBodyGlobal();
 
@@ -1853,6 +1878,8 @@ public static class PlayerControlDiePatch
                     Utils.LateExileTask.Add(SelfExile);
                 }
             }
+            if (!Main.PlayerKilledBy.ContainsKey(__instance.PlayerId))
+                Main.PlayerKilledBy[__instance.PlayerId] = KilledType.Indirectly;
         }
         catch (Exception exx)
         {

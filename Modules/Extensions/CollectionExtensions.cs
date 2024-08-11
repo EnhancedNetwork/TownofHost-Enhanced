@@ -58,6 +58,8 @@ public static class CollectionExtensions
     /// <returns>The shuffled collection</returns>
     public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> collection, IRandom random)
     {
+        if (!collection.Any()) return default;
+
         var list = collection.ToList();
         int n = list.Count;
         while (n > 1)

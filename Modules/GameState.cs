@@ -399,6 +399,15 @@ public class PlayerVersion(Version ver, string tag_str, string forkId)
         return pv.version == version && pv.tag == tag;
     }
 }
+public enum KilledType
+{
+    Directly,
+    Indirectly,
+    Remotely,
+    Suicide
+
+
+}
 public static class GameStates
 {
     public static bool InGame = false;
