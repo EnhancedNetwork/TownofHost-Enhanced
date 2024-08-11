@@ -57,7 +57,7 @@ internal class Twister : RoleBase
             }
 
             var filtered = Main.AllAlivePlayerControls.Where(a =>
-                pc.CanBeTeleported() && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToList();
+                a.CanBeTeleported() && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToList();
 
             if (filtered.Count == 0) return;
 
