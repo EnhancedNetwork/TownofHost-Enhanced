@@ -944,6 +944,9 @@ public static class Options
             if (addonType.Key == AddonTypes.Impostor)
                 Madmate.SetupCustomMenuOptions();
 
+            if (addonType.Key == AddonTypes.Misc)
+                SetupLoversRoleOptionsToggle(23600); // KYS 
+
             foreach (var addon in addonType.Value)
             {
 
