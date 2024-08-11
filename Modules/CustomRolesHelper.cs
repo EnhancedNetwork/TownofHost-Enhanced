@@ -996,7 +996,11 @@ public static class CustomRolesHelper
 
             case CustomRoles.Rainbow:
                 if (pc.Is(CustomRoles.Doppelganger)
-                    || pc.Is(CustomRoles.DollMaster))
+                    || pc.Is(CustomRoles.DollMaster)
+                    || pc.Is(CustomRoles.Chameleon)
+                    || pc.Is(CustomRoles.Swooper)
+                    || pc.Is(CustomRoles.Alchemist)
+                    || pc.Is(CustomRoles.Wraith))
                     return false;
                 break;
 
