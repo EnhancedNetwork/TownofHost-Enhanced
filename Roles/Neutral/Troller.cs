@@ -74,6 +74,8 @@ internal class Troller : RoleBase
     {
         AbilityLimit = 0;
     }
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
+
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.EngineerCooldown = 1f;
@@ -205,24 +207,21 @@ internal class Troller : RoleBase
                 DoorsReset.OpenOrCloseAllDoorsRandomly();
                 break;
             case Events.CooldownsResetToDefault:
-                foreach (var pc in Main.AllAlivePlayerControls)
-                {
-                    if (pc.HasKillButton() && pc.CanUseKillButton())
-                    {
-                        pc.SetKillCooldown();
-                        pc.Notify(GetString("Troller_ChangeYourCooldown"));
-                    }
-                }
-                break;
             case Events.CooldownsResetToZero:
+                var setToDefault = randomEvent is Events.CooldownsResetToDefault;
                 foreach (var pc in Main.AllAlivePlayerControls)
                 {
                     if (pc.HasKillButton() && pc.CanUseKillButton())
                     {
-                        pc.SetKillCooldown(0.3f);
+                        if (setToDefault)
+                            pc.SetKillCooldown();
+                        else
+                            pc.SetKillCooldown(0.3f);
+
                         pc.Notify(GetString("Troller_ChangeYourCooldown"));
                     }
                 }
+                troller.Notify(GetString("Troller_YouChangedCooldown"));
                 break;
             case Events.LoseAddon:
                 var randomPC = Main.AllAlivePlayerControls.RandomElement();

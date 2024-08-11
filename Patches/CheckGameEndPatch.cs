@@ -320,7 +320,7 @@ class GameEndCheckerForNormal
                             }
                             break;
                         case CustomRoles.Troller when pc.IsAlive():
-                            AdditionalWinnerTeams.Add(AdditionalWinners.Hater);
+                            AdditionalWinnerTeams.Add(AdditionalWinners.Troller);
                             WinnerIds.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Romantic:
