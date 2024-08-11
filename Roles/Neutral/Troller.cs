@@ -109,7 +109,7 @@ internal class Troller : RoleBase
         {
             case Events.LowSpeed:
             case Events.HighSpeed:
-                var newSpeed = randomEvent is Events.LowSpeed ? 0.3f : 1.8f;
+                var newSpeed = randomEvent is Events.LowSpeed ? 0.3f : 5f;
                 var tempSpeed = Main.AllPlayerSpeed.ToDictionary(k => k.Key, v => v.Value);
 
                 foreach (var pcSpeed in Main.AllAlivePlayerControls)
