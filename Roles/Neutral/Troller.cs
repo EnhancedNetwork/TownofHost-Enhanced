@@ -18,7 +18,7 @@ internal class Troller : RoleBase
     private static OptionItem TrollsPerRound;
     private static OptionItem CanHaveCallMeetingEvent;
 
-    private SystemTypes CurrantActiveSabotage = SystemTypes.Hallway;
+    private SystemTypes CurrentActiveSabotage = SystemTypes.Hallway;
     private List<Events> AllEvents = [];
 
     enum Events
@@ -173,26 +173,26 @@ internal class Troller : RoleBase
                 break;
             case Events.SabotageDisabled:
                 var shipStatusDisabled = ShipStatus.Instance;
-                switch (CurrantActiveSabotage)
+                switch (CurrentActiveSabotage)
                 {
                     case SystemTypes.Reactor:
                     case SystemTypes.Laboratory:
-                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 16);
+                        shipStatusDisabled.RpcUpdateSystem(CurrentActiveSabotage, 16);
                         break;
                     case SystemTypes.HeliSabotage:
-                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 16);
-                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 17);
+                        shipStatusDisabled.RpcUpdateSystem(CurrentActiveSabotage, 16);
+                        shipStatusDisabled.RpcUpdateSystem(CurrentActiveSabotage, 17);
                         break;
                     case SystemTypes.LifeSupp:
-                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 66);
-                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 67);
+                        shipStatusDisabled.RpcUpdateSystem(CurrentActiveSabotage, 66);
+                        shipStatusDisabled.RpcUpdateSystem(CurrentActiveSabotage, 67);
                         break;
                     case SystemTypes.Comms:
                         var mapId = Utils.GetActiveMapId();
 
-                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 16);
+                        shipStatusDisabled.RpcUpdateSystem(CurrentActiveSabotage, 16);
                         if (mapId is 1 or 5) // Mira HQ or The Fungle
-                            shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 17);
+                            shipStatusDisabled.RpcUpdateSystem(CurrentActiveSabotage, 17);
                         break;
                 }
                 troller.Notify(GetString("Troller_YouFixedSabotage"));
@@ -296,7 +296,7 @@ internal class Troller : RoleBase
                 SystemTypes.LifeSupp or
                 SystemTypes.Comms)
         {
-            CurrantActiveSabotage = systemType;
+            CurrentActiveSabotage = systemType;
         }
     }
 }
