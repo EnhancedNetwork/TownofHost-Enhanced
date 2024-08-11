@@ -1,28 +1,39 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace TOHE.Patches;
 
-// Credits : KARPED1EM from https://github.com/KARPED1EM/TownOfNext/blob/TONX/TONX/Patches/RegionMenuPatch.cs
 [HarmonyPatch(typeof(RegionMenu))]
 public static class RegionMenuPatch
 {
-    public static Scroller Scroller;
-
-    [HarmonyPatch(nameof(RegionMenu.Awake)), HarmonyPostfix]
-    public static void Awake_Postfix(RegionMenu __instance)
+    [HarmonyPatch(nameof(RegionMenu.OnEnable))]
+    [HarmonyPostfix]
+    public static void AdjustButtonPositions_Postfix(RegionMenu __instance)
     {
-        if (Scroller != null) return;
+        const int maxColumns = 4;
+        int buttonsPerColumn = 6;
+        float buttonSpacing = 0.6f;
+        float buttonSpacingSide = 2.25f;
 
-        var back = __instance.ButtonPool.transform.FindChild("Backdrop");
-        back.transform.localScale *= 10f;
+        List<UiElement> buttons = __instance.controllerSelectable.ToArray().ToList();
 
-        Scroller = __instance.ButtonPool.transform.parent.gameObject.AddComponent<Scroller>();
-        Scroller.Inner = __instance.ButtonPool.transform;
-        Scroller.MouseMustBeOverToScroll = true;
-        Scroller.ClickMask = back.GetComponent<BoxCollider2D>();
-        Scroller.ScrollWheelSpeed = 0.7f;
-        Scroller.SetYBoundsMin(0f);
-        Scroller.SetYBoundsMax(4f);
-        Scroller.allowY = true;
+        int columnCount = (buttons.Count + buttonsPerColumn - 1) / buttonsPerColumn;
+
+        while (columnCount > maxColumns)
+        {
+            buttonsPerColumn++;
+            columnCount = (buttons.Count + buttonsPerColumn - 1) / buttonsPerColumn;
+        }
+
+        float totalWidth = (columnCount - 1) * buttonSpacingSide;
+        float totalHeight = (buttonsPerColumn - 1) * buttonSpacing;
+
+        Vector3 startPosition = new Vector3(-totalWidth / 2, totalHeight / 2, 0f);
+
+        for (int i = 0; i < buttons.Count; i++)
+        {
+            int col = i / buttonsPerColumn;
+            int row = i % buttonsPerColumn;
+            buttons[i].transform.localPosition = startPosition + new Vector3(col * buttonSpacingSide, -row * buttonSpacing, 0f);
+        }
     }
 }
