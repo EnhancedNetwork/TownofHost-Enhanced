@@ -645,7 +645,7 @@ static class ExtendedPlayerControl
 
         return false;
     }
-    public static bool HasKillButton(PlayerControl pc = null)
+    public static bool HasKillButton(this PlayerControl pc)
     {
         if (pc == null) return false;
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
@@ -659,6 +659,7 @@ static class ExtendedPlayerControl
         { 
             CustomRoles.Impostor => true,
             CustomRoles.Shapeshifter => true,
+            CustomRoles.Phantom => true,
             _ => false
         };
     }

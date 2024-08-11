@@ -96,34 +96,47 @@ internal class Troller : RoleBase
                 {
                     foreach (var pcSpeed in Main.AllAlivePlayerControls)
                     {
-                        Main.AllPlayerSpeed[pcSpeed.PlayerId] = tempSpeed[pcSpeed.PlayerId];
+                        Main.AllPlayerSpeed[pcSpeed.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - newSpeed + tempSpeed[pcSpeed.PlayerId];
                         pcSpeed.Notify(GetString("TrollerSpeedOut"));
                     }
                     Utils.MarkEveryoneDirtySettings();
                 }, 10f, "Alchemist: Set Speed to default");
                 break;
             case RandomEvent.SabotageActivated:
-
-                break;
-            case RandomEvent.SabotageDisabled:
-                var shipStatus = ShipStatus.Instance;
+                var shipStatusActivated = ShipStatus.Instance;
                 switch (CurrantActiveSabotage)
                 {
                     case SystemTypes.Reactor:
-                        shipStatus.RpcUpdateSystem(SystemTypes.Reactor, 16);
-                        shipStatus.RpcUpdateSystem(SystemTypes.Reactor, 17);
-                        break;
                     case SystemTypes.Laboratory:
-                        shipStatus.RpcUpdateSystem(SystemTypes.Laboratory, 67);
-                        shipStatus.RpcUpdateSystem(SystemTypes.Laboratory, 66);
+                    case SystemTypes.HeliSabotage:
+                    case SystemTypes.LifeSupp:
+                    case SystemTypes.Comms:
+                        shipStatusActivated.RpcUpdateSystem(CurrantActiveSabotage, 128);
+                        break;
+                }
+                break;
+            case RandomEvent.SabotageDisabled:
+                var shipStatusDisabled = ShipStatus.Instance;
+                switch (CurrantActiveSabotage)
+                {
+                    case SystemTypes.Reactor:
+                    case SystemTypes.Laboratory:
+                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 16);
+                        break;
+                    case SystemTypes.HeliSabotage:
+                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 16);
+                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 17);
                         break;
                     case SystemTypes.LifeSupp:
-                        shipStatus.RpcUpdateSystem(SystemTypes.LifeSupp, 67);
-                        shipStatus.RpcUpdateSystem(SystemTypes.LifeSupp, 66);
+                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 66);
+                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 67);
                         break;
                     case SystemTypes.Comms:
-                        shipStatus.RpcUpdateSystem(SystemTypes.Comms, 16);
-                        shipStatus.RpcUpdateSystem(SystemTypes.Comms, 17);
+                        var mapId = Utils.GetActiveMapId();
+
+                        shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 16);
+                        if (mapId is 1 or 5) // Mira HQ or The Fungle
+                            shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 17);
                         break;
                 }
                 break;
@@ -157,7 +170,7 @@ internal class Troller : RoleBase
             case RandomEvent.CooldownsResetToDefault:
                 foreach (var pc in Main.AllAlivePlayerControls)
                 {
-                    if (pc.HasImpKillButton() && pc.CanUseKillButton())
+                    if (pc.HasKillButton() && pc.CanUseKillButton())
                     {
                         pc.SetKillCooldown();
                     }
@@ -166,7 +179,7 @@ internal class Troller : RoleBase
             case RandomEvent.CooldownsResetToZero:
                 foreach (var pc in Main.AllAlivePlayerControls)
                 {
-                    if (pc.HasImpKillButton() && pc.CanUseKillButton())
+                    if (pc.HasKillButton() && pc.CanUseKillButton())
                     {
                         pc.SetKillCooldown(0.3f);
                     }
@@ -207,11 +220,11 @@ internal class Troller : RoleBase
             CurrantActiveSabotage = systemType;
         }
     }
-    public override void SwitchSystemUpdate(SwitchSystem __instance, byte amount, PlayerControl player)
-    {
-        if (!Main.MeetingIsStarted)
-        {
-            CurrantActiveSabotage = SystemTypes.Electrical;
-        }
-    }
+    //public override void SwitchSystemUpdate(SwitchSystem __instance, byte amount, PlayerControl player)
+    //{
+    //    if (!Main.MeetingIsStarted)
+    //    {
+    //        CurrantActiveSabotage = SystemTypes.Electrical;
+    //    }
+    //}
 }
