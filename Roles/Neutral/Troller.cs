@@ -115,7 +115,7 @@ internal class Troller : RoleBase
                 foreach (var pcSpeed in Main.AllAlivePlayerControls)
                 {
                     Main.AllPlayerSpeed[pcSpeed.PlayerId] = newSpeed;
-                    pcSpeed.Notify(GetString("TrollerChangesSpeed"));
+                    pcSpeed.Notify(GetString("Troller_ChangesSpeed"));
                 }
                 Utils.MarkEveryoneDirtySettings();
 
@@ -124,7 +124,7 @@ internal class Troller : RoleBase
                     foreach (var pcSpeed in Main.AllAlivePlayerControls)
                     {
                         Main.AllPlayerSpeed[pcSpeed.PlayerId] = Main.AllPlayerSpeed[pcSpeed.PlayerId] - newSpeed + tempSpeed[pcSpeed.PlayerId];
-                        pcSpeed.Notify(GetString("TrollerSpeedOut"));
+                        pcSpeed.Notify(GetString("Troller_SpeedOut"));
                     }
                     Utils.MarkEveryoneDirtySettings();
                 }, 10f, "Troller: Set Speed to default");
@@ -158,15 +158,11 @@ internal class Troller : RoleBase
                 var randomSabotage = allSabotage.RandomElement();
                 switch (randomSabotage)
                 {
-                    case SystemTypes.Reactor:
-                    case SystemTypes.Laboratory:
-                    case SystemTypes.HeliSabotage:
-                    case SystemTypes.LifeSupp:
-                    case SystemTypes.Comms:
-                        shipStatusActivated.RpcUpdateSystem(randomSabotage, 128);
-                        break;
                     case SystemTypes.MushroomMixupSabotage:
                         shipStatusActivated.RpcUpdateSystem(randomSabotage, 1);
+                        break;
+                    default:
+                        shipStatusActivated.RpcUpdateSystem(randomSabotage, 128);
                         break;
                 }
                 troller.Notify(GetString("Troller_YouCausedSabotage"));

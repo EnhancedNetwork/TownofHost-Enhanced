@@ -1804,8 +1804,8 @@
 
   "Troller_TrollsPerRound": "Trolls Per Round",
   "Troller_CanHaveStartMeetingEvent": "Can Start Meeting By Event",
-  "TrollerChangesSpeed": "Troller changed everyone speed!",
-  "TrollerSpeedOut": "Speed returned back",
+  "Troller_ChangesSpeed": "Troller changed everyone speed!",
+  "Troller_SpeedOut": "Speed returned back",
   "Troller_YouChangedCooldown": "You changed the cooldown of all players",
   "Troller_ChangeYourCooldown": "Troller change your cooldown!",
   "Troller_NoAddons": "No addons found on the random target",
