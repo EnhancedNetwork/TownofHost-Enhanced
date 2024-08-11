@@ -1,4 +1,5 @@
-﻿using TOHE.Modules;
+﻿using AmongUs.GameOptions;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -36,15 +37,15 @@ internal class Troller : RoleBase
         TelepostEveryoneToVents,
         PullEveryone,
         TwistEveryone,
-        CallMeeting
+        StartMeeting
     }
 
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Troller);
-        TrollsPerRound = IntegerOptionItem.Create(Id + 10, "Troller_TrollsPerRound", new(1, 10, 1), 1, TabGroup.NeutralRoles, false)
+        TrollsPerRound = IntegerOptionItem.Create(Id + 10, "Troller_TrollsPerRound", new(1, 10, 1), 2, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Troller]);
-        CanHaveCallMeetingEvent = BooleanOptionItem.Create(Id + 11, "Troller_CanHaveCallMeetingEvent", false, TabGroup.NeutralRoles, false)
+        CanHaveCallMeetingEvent = BooleanOptionItem.Create(Id + 11, "Troller_CanHaveStartMeetingEvent", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Troller]);
         OverrideTasksData.Create(Id + 15, TabGroup.NeutralRoles, CustomRoles.Troller);
     }
@@ -66,12 +67,17 @@ internal class Troller : RoleBase
         }
         if (!CanHaveCallMeetingEvent.GetBool())
         {
-            AllEvents.Remove(Events.CallMeeting);
+            AllEvents.Remove(Events.StartMeeting);
         }
     }
     public override void Remove(byte playerId)
     {
         AbilityLimit = 0;
+    }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown = 1f;
+        AURoleOptions.EngineerInVentMaxTime = 0f;
     }
     public override bool OnTaskComplete(PlayerControl troller, int completedTaskCount, int totalTaskCount)
     {
@@ -95,6 +101,8 @@ internal class Troller : RoleBase
 
         var randomEvent = AllEvents.RandomElement();
 
+        Logger.Info($"Random Event: {randomEvent}", "Troller");
+
         switch (randomEvent)
         {
             case Events.LowSpeed:
@@ -117,7 +125,7 @@ internal class Troller : RoleBase
                         pcSpeed.Notify(GetString("TrollerSpeedOut"));
                     }
                     Utils.MarkEveryoneDirtySettings();
-                }, 10f, "Alchemist: Set Speed to default");
+                }, 10f, "Troller: Set Speed to default");
                 break;
             case Events.SabotageActivated:
                 var shipStatusActivated = ShipStatus.Instance;
@@ -159,6 +167,7 @@ internal class Troller : RoleBase
                         shipStatusActivated.RpcUpdateSystem(randomSabotage, 1);
                         break;
                 }
+                troller.Notify(GetString("Troller_YouCausedSabotage"));
                 break;
             case Events.SabotageDisabled:
                 var shipStatusDisabled = ShipStatus.Instance;
@@ -184,6 +193,7 @@ internal class Troller : RoleBase
                             shipStatusDisabled.RpcUpdateSystem(CurrantActiveSabotage, 17);
                         break;
                 }
+                troller.Notify(GetString("Troller_YouFixedSabotage"));
                 break;
             case Events.AllDoorsOpen:
                 DoorsReset.OpenAllDoors();
@@ -200,6 +210,7 @@ internal class Troller : RoleBase
                     if (pc.HasKillButton() && pc.CanUseKillButton())
                     {
                         pc.SetKillCooldown();
+                        pc.Notify(GetString("Troller_ChangeYourCooldown"));
                     }
                 }
                 break;
@@ -209,6 +220,7 @@ internal class Troller : RoleBase
                     if (pc.HasKillButton() && pc.CanUseKillButton())
                     {
                         pc.SetKillCooldown(0.3f);
+                        pc.Notify(GetString("Troller_ChangeYourCooldown"));
                     }
                 }
                 break;
@@ -226,11 +238,13 @@ internal class Troller : RoleBase
                 }
                 if (!addons.Any())
                 {
-                    Logger.Info("No addons found on the target", "Troller");
+                    troller.Notify(GetString("Troller_NoAddons"));
                     break;
                 }
                 var addon = addons.RandomElement();
                 Main.PlayerStates[randomPC.PlayerId].RemoveSubRole(addon);
+                troller.Notify(GetString("Troller_RemoveRandomAddon"));
+                randomPC.Notify(GetString("Troller_RemoveYourAddon"));
                 randomPC.MarkDirtySettings();
                 break;
             case Events.TelepostEveryoneToVents:
@@ -263,7 +277,7 @@ internal class Troller : RoleBase
                     pc.RpcTeleport(originPs);
                 }
                 break;
-            case Events.CallMeeting:
+            case Events.StartMeeting:
                 var pcCallMeeting = Main.AllAlivePlayerControls.RandomElement();
                 pcCallMeeting.NoCheckStartMeeting(null);
                 break;

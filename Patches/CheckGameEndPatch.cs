@@ -319,6 +319,10 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(Hater);
                             }
                             break;
+                        case CustomRoles.Troller when pc.IsAlive():
+                            AdditionalWinnerTeams.Add(AdditionalWinners.Hater);
+                            WinnerIds.Add(pc.PlayerId);
+                            break;
                         case CustomRoles.Romantic:
                             if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) 
                                 && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))))
