@@ -800,6 +800,7 @@ public enum CustomRoles
     Taskinator,
     Terrorist,
     Traitor,
+    Troller,
     Vector,
     VengefulRomantic,
     Virus,
@@ -987,6 +988,7 @@ public enum AdditionalWinners
     Pixie = CustomRoles.Pixie,
     Quizmaster = CustomRoles.Quizmaster,
     SchrodingersCat = CustomRoles.SchrodingersCat,
+    Troller = CustomRoles.Troller,
     //   NiceMini = CustomRoles.NiceMini,
     //   Baker = CustomRoles.Baker,
 }

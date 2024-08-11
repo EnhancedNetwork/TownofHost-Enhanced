@@ -509,6 +509,9 @@ internal class Alchemist : RoleBase
     }
     public override void SwitchSystemUpdate(SwitchSystem __instance, byte amount, PlayerControl player)
     {
+        if (!FixNextSabo) return;
+        FixNextSabo = false;
+
         __instance.ActualSwitches = 0;
         __instance.ExpectedSwitches = 0;
 
