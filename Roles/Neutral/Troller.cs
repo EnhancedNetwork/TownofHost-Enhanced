@@ -246,10 +246,10 @@ internal class Troller : RoleBase
                 List<byte> changePositionPlayers = [];
                 foreach (var pc in Main.AllAlivePlayerControls)
                 {
-                    if (changePositionPlayers.Contains(pc.PlayerId) || Pelican.IsEaten(pc.PlayerId) || pc.onLadder || pc.inVent || pc.inMovingPlat || GameStates.IsMeeting) continue;
+                    if (changePositionPlayers.Contains(pc.PlayerId) || !pc.CanBeTeleported()) continue;
 
-                    var filtered = Main.AllAlivePlayerControls.Where(a => !a.inVent && !Pelican.IsEaten(a.PlayerId) && !a.onLadder && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToArray();
-                    if (filtered.Length == 0) break;
+                    var filtered = Main.AllAlivePlayerControls.Where(a => a.CanBeTeleported() && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToArray();
+                    if (!filtered.Any()) break;
 
                     var target = filtered.RandomElement();
 
