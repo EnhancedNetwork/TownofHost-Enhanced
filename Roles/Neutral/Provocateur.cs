@@ -48,7 +48,7 @@ internal class Provocateur : RoleBase
         killer.RpcMurderPlayer(target);
         killer.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
-        Provoked.TryAdd(killer.PlayerId, target.PlayerId);
+        Provoked.Add(killer.PlayerId, target.PlayerId);
         return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

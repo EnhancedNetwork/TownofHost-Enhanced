@@ -59,7 +59,11 @@ internal class Bloodmoon : RoleBase
             return true;
         }
 
-        bool canMurder = AbilityLimit > 0 && killer.RpcCheckAndMurder(target, true);
+        bool canMurder = AbilityLimit > 0
+            && !target.Is(CustomRoles.Jinx)
+            && !target.Is(CustomRoles.CursedWolf)
+            && !target.IsNeutralApocalypse() killer.RpcCheckAndMurder(target, true);
+
         bool targetNotRecorded = !PlayerDie.ContainsKey(target.PlayerId);
 
         if (canMurder && targetNotRecorded)

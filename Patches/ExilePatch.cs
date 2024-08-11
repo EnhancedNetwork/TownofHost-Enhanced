@@ -19,7 +19,7 @@ class ExileControllerWrapUpPatch
             }
             catch (Exception error)
             {
-                Utils.ThrowException(error);
+                Logger.Error($"Error after exiled: {error}", "WrapUp");
             }
             finally
             {
@@ -123,7 +123,7 @@ class ExileControllerWrapUpPatch
         Main.MeetingsPassed++;
 
         FallFromLadder.Reset();
-        Utils.CountAlivePlayers(true, Options.CurrentGameMode is CustomGameMode.Standard);
+        Utils.CountAlivePlayers(sendLog: true, checkGameEnd: Options.CurrentGameMode is CustomGameMode.Standard);
         Utils.AfterMeetingTasks();
         Utils.SyncAllSettings();
         Utils.NotifyRoles(NoCache: true);

@@ -1,19 +1,12 @@
 ﻿
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Silent
+public class Silent : IAddon
 {
     private const int Id = 26600;
-
-    public static OptionItem CanBeOnCrew;
-    public static OptionItem CanBeOnImp;
-    public static OptionItem CanBeOnNeutral;
-
-    public static void SetupCustomOptions()
+    public AddonTypes Type => AddonTypes.Helpful;
+    public void SetupCustomOption()
     {
-        Options.SetupAdtRoleOptions(Id, CustomRoles.Silent, canSetNum: true, tab: TabGroup.Addons);
-        CanBeOnImp = BooleanOptionItem.Create(Id + 11, "ImpCanBeSilent", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Silent]);
-        CanBeOnCrew = BooleanOptionItem.Create(Id + 12, "CrewCanBeSilent", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Silent]);
-        CanBeOnNeutral = BooleanOptionItem.Create(Id + 13, "NeutralCanBeSilent", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Silent]);
+        Options.SetupAdtRoleOptions(Id, CustomRoles.Silent, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
 }

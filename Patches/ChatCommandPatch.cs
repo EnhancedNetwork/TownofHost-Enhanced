@@ -181,7 +181,10 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("Message.GhostRoleInfo"), PlayerControl.LocalPlayer.PlayerId);
                     break;
 
-
+                case "/apocalypseinfo":
+                    canceled = true;
+                    Utils.SendMessage(GetString("Message.ApocalypseInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
+                    break;
 
                 case "/rn":
                 case "/rename":
@@ -353,6 +356,7 @@ internal class ChatCommands
                     int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
                     int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
                     int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
+                    int apocnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNA());
 
                     var sub = new StringBuilder();
                     sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
@@ -360,11 +364,53 @@ internal class ChatCommands
                     if (Options.ShowMadmatesInLeftCommand.GetBool())
                         sub.Append(string.Format("\n\r" + GetString("Remaining.MadmateCount"), madnum));
 
+                    if (Options.ShowApocalypseInLeftCommand.GetBool())
+                        sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
+
                     sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
 
                     Utils.SendMessage(sub.ToString(), PlayerControl.LocalPlayer.PlayerId);
                     break;
+                case "/vote":
+                    subArgs = args.Length != 2 ? "" : args[1];
+                    if (subArgs == "" || !int.TryParse(subArgs, out int arg))
+                        break;
+                    var plr = Utils.GetPlayerById(arg);
 
+                    if (GameStates.IsLobby)
+                    {
+                        Utils.SendMessage(GetString("Message.CanNotUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+
+                    if (!Options.EnableVoteCommand.GetBool())
+                    {
+                        Utils.SendMessage(GetString("VoteDisabled"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    if (Options.ShouldVoteCmdsSpamChat.GetBool())
+                    {
+                        canceled = true;
+                    }
+
+                    if (arg != 253) // skip
+                    {
+                        if (plr == null || !plr.IsAlive())
+                        {
+                            Utils.SendMessage(GetString("VoteDead"), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }
+                    }
+                    if (!PlayerControl.LocalPlayer.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("CannotVoteWhenDead"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    if (GameStates.IsMeeting)
+                    {
+                        PlayerControl.LocalPlayer.RpcCastVote((byte)arg);
+                    }
+                    break;
 
                 case "/d":
                 case "/death":
@@ -1967,6 +2013,10 @@ internal class ChatCommands
                 Utils.SendMessage(GetString("Message.GhostRoleInfo"), player.PlayerId);
                 break;
 
+            case "/apocalypseinfo":
+                Utils.SendMessage(GetString("Message.ApocalypseInfo"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
+                break;
+
             case "/rn":
             case "/rename":
             case "/renomear":
@@ -2087,6 +2137,7 @@ internal class ChatCommands
                 var allAlivePlayers = Main.AllAlivePlayerControls;
                 int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
                 int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                int apocnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNA());
                 int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
 
                 var sub = new StringBuilder();
@@ -2094,6 +2145,9 @@ internal class ChatCommands
 
                 if (Options.ShowMadmatesInLeftCommand.GetBool())
                     sub.Append(string.Format("\n\r" + GetString("Remaining.MadmateCount"), madnum));
+
+                if (Options.ShowApocalypseInLeftCommand.GetBool())
+                    sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
 
                 sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
 
@@ -2201,7 +2255,8 @@ internal class ChatCommands
 
             case "/id":
             case "/айди":
-                if (Options.ApplyModeratorList.GetValue() == 0 || !Utils.IsPlayerModerator(player.FriendCode)) break;
+                if ((Options.ApplyModeratorList.GetValue() == 0 || !Utils.IsPlayerModerator(player.FriendCode))
+                    && !Options.EnableVoteCommand.GetBool()) break;
 
                 string msgText = GetString("PlayerIdList");
                 foreach (var pc in Main.AllPlayerControls)
@@ -2634,6 +2689,49 @@ internal class ChatCommands
                 player.RpcTeleport(new Vector2(-0.2f, 1.3f));
                 break;
 
+            case "/vote":
+                subArgs = args.Length != 2 ? "" : args[1];
+                if (subArgs == "" || !int.TryParse(subArgs, out int arg))
+                    break;
+                var plr = Utils.GetPlayerById(arg);
+
+                if (GameStates.IsLobby)
+                {
+                    Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
+                    break;
+                }
+
+                
+                if (!Options.EnableVoteCommand.GetBool())
+                {
+                    Utils.SendMessage(GetString("VoteDisabled"), player.PlayerId);
+                    break;
+                }
+                if (Options.ShouldVoteCmdsSpamChat.GetBool())
+                {
+                    canceled = true;
+                    ChatManager.SendPreviousMessagesToAll();
+                }
+
+                if (arg != 253) // skip
+                {
+                    if (plr == null || !plr.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("VoteDead"), player.PlayerId);
+                        break;
+                    }
+                }
+                if (!player.IsAlive())
+                {
+                    Utils.SendMessage(GetString("CannotVoteWhenDead"), player.PlayerId);
+                    break;
+                }
+                if (GameStates.IsMeeting)
+                {
+                    player.RpcCastVote((byte)arg);
+                }
+                break;
+
             case "/say":
             case "/s":
             case "/с":
@@ -2944,10 +3042,13 @@ internal class ChatCommands
 class ChatUpdatePatch
 {
     public static bool DoBlockChat = false;
+    public static ChatController Instance;
     public static void Postfix(ChatController __instance)
     {
         if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
         if (DoBlockChat) return;
+
+        Instance ??= __instance;
 
         if (Main.DarkTheme.Value)
         {
@@ -2968,7 +3069,7 @@ class ChatUpdatePatch
         if (player == null) return;
 
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
-        Logger.Info($"MessagesToSend - sendTo: {sendTo} - title: {title}", "ChatUpdatePatch");
+        //Logger.Info($"MessagesToSend - sendTo: {sendTo} - title: {title}", "ChatUpdatePatch");
 
         if (sendTo != byte.MaxValue && GameStates.IsLobby)
         {
@@ -3021,21 +3122,6 @@ class ChatUpdatePatch
         __instance.timeSinceLastMessage = 0f;
     }
 }
-
-[HarmonyPatch(typeof(ChatController), nameof(ChatController.AddChat))]
-internal class AddChatPatch
-{
-    public static void Postfix(string chatText)
-    {
-        switch (chatText)
-        {
-            default:
-                break;
-        }
-        if (!AmongUsClient.Instance.AmHost) return;
-    }
-}
-
 [HarmonyPatch(typeof(FreeChatInputField), nameof(FreeChatInputField.UpdateCharCount))]
 internal class UpdateCharCountPatch
 {

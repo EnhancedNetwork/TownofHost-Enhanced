@@ -54,6 +54,7 @@ public static class GameOptionsMenuPatch
         Instance ??= __instance;
         // When is vanilla tab, run vanilla code
         if (ModGameOptionsMenu.TabIndex < 3) return true;
+        
         __instance.scrollBar.SetYBoundsMax(CalculateScrollBarYBoundsMax());
         __instance.StartCoroutine(CoRoutine().WrapToIl2Cpp());
         return false;
@@ -61,6 +62,7 @@ public static class GameOptionsMenuPatch
         System.Collections.IEnumerator CoRoutine()
         {
             var modTab = (TabGroup)(ModGameOptionsMenu.TabIndex - 3);
+
 
             float num = 2.0f;
             const float posX = 0.952f;
@@ -70,7 +72,7 @@ public static class GameOptionsMenuPatch
                 var option = OptionItem.AllOptions[index];
                 if (option.Tab != modTab) continue;
 
-                var enabled = !option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null || (!option.Parent.IsHiddenOn(Options.CurrentGameMode) && option.Parent.GetBool()));
+                var enabled = !option.IsHiddenOn(Options.CurrentGameMode) && option.Parent?.GetBool() is null or true;
 
                 if (option is TextOptionItem)
                 {
@@ -117,6 +119,11 @@ public static class GameOptionsMenuPatch
                             optionBehaviour.transform.localPosition = new(posX, num, posZ);
 
                             OptionBehaviourSetSizeAndPosition(optionBehaviour, option, baseGameSetting.Type);
+
+                            if (option.Name == "Preset" && !ModGameOptionsMenu.OptionList.ContainsValue(index))
+                            {
+                                GameSettingMenuPatch.PresetBehaviour = optionBehaviour as StringOption;
+                            }
 
                             optionBehaviour.SetClickMask(__instance.ButtonClickMask);
                             optionBehaviour.SetUpFromData(baseGameSetting, 20);
@@ -170,7 +177,7 @@ public static class GameOptionsMenuPatch
             {
                 if (option.Tab != (TabGroup)(ModGameOptionsMenu.TabIndex - 3)) continue;
 
-                var enabled = !option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null || (!option.Parent.IsHiddenOn(Options.CurrentGameMode) && option.Parent.GetBool()));
+                var enabled = !option.IsHiddenOn(Options.CurrentGameMode) && option.Parent?.GetBool() is null or true;
 
                 if (option is TextOptionItem) num -= 0.63f;
                 else if (enabled)
@@ -183,6 +190,7 @@ public static class GameOptionsMenuPatch
             return -num - 1.65f;
         }
     }
+
     private static void OptionBehaviourSetSizeAndPosition(OptionBehaviour optionBehaviour, OptionItem option, OptionTypes type)
     {
         Vector3 positionOffset = new(0f, 0f, 0f);
@@ -253,7 +261,7 @@ public static class GameOptionsMenuPatch
                 break;
         }
     }
-    public static void ReOpenSettings(bool IsPresset)
+    public static void ReOpenSettings(int index = 4)
     {
         //Close setting menu
         GameSettingMenu.Instance.Close();
@@ -267,12 +275,17 @@ public static class GameOptionsMenuPatch
             hostButtons.transform.FindChild("Edit").GetComponent<PassiveButton>().ReceiveClickDown();
         }, 0.1f, "Click Edit Button");
 
-        // Change tab to "System Settings"
+       
+        if (index < 3)
+            return;
+
+        // Change tab to Original Tab
         _ = new LateTask(() =>
         {
             if (!GameStates.IsLobby || GameSettingMenu.Instance == null) return;
-            GameSettingMenu.Instance.ChangeTab(IsPresset ? 3 : 4, Controller.currentTouchType == Controller.TouchType.Joystick);
+            GameSettingMenu.Instance.ChangeTab(index, Controller.currentTouchType == Controller.TouchType.Joystick);
         }, 0.28f, "Change Tab");
+
     }
     [HarmonyPatch(nameof(GameOptionsMenu.ValueChanged)), HarmonyPrefix]
     private static bool ValueChangedPrefix(GameOptionsMenu __instance, OptionBehaviour option)
@@ -286,7 +299,7 @@ public static class GameOptionsMenuPatch
         }
         return false;
     }
-    private static void ReCreateSettings(GameOptionsMenu __instance)
+    public static void ReCreateSettings(GameOptionsMenu __instance)
     {
         if (ModGameOptionsMenu.TabIndex < 3) return;
         var modTab = (TabGroup)(ModGameOptionsMenu.TabIndex - 3);
@@ -297,7 +310,7 @@ public static class GameOptionsMenuPatch
             var option = OptionItem.AllOptions[index];
             if (option.Tab != modTab) continue;
 
-            var enabled = !option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null || (!option.Parent.IsHiddenOn(Options.CurrentGameMode) && option.Parent.GetBool()));
+            var enabled = !option.IsHiddenOn(Options.CurrentGameMode) && option.Parent?.GetBool() is null or true;
 
             if (ModGameOptionsMenu.CategoryHeaderList.TryGetValue(index, out var categoryHeaderMasked))
             {
@@ -569,10 +582,11 @@ public static class StringOptionPatch
         {
             var item = OptionItem.AllOptions[index];
             var name = item.GetName();
+            var name1 = name;
             var language = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
             //Logger.Info($" Language: {language}", "StringOption.Initialize");
 
-            if (EnumHelper.GetAllValues<CustomRoles>().Any(x => GetString($"{x}") == name.RemoveHtmlTags()))
+            if (EnumHelper.GetAllValues<CustomRoles>().Find(x => GetString($"{x}") == name1.RemoveHtmlTags(), out var role))
             {
                 name = $"<size=3.5>{name}</size>";
                 __instance.TitleText.fontWeight = FontWeight.Black;
@@ -581,12 +595,28 @@ public static class StringOptionPatch
                     SupportedLangs.Russian or SupportedLangs.Japanese or SupportedLangs.SChinese or SupportedLangs.TChinese => 0.15f,
                     _ => 0.35f,
                 };
+
+                SetupHelpIcon(role, __instance);
             }
             __instance.TitleText.text = name;
             return false;
         }
         return true;
     }
+    private static void SetupHelpIcon(CustomRoles role, StringOption option)
+    {
+        var template = option.transform.FindChild("MinusButton (1)");
+        var icon = Object.Instantiate(template, template.parent, true);
+        icon.name = $"{role}HelpIcon";
+        var text = icon.FindChild("Plus_TMP").GetComponent<TextMeshPro>();
+        text.text = "?";
+        text.color = Color.white;
+        icon.FindChild("InactiveSprite").GetComponent<SpriteRenderer>().color = Color.black;
+        icon.FindChild("ActiveSprite").GetComponent<SpriteRenderer>().color = Color.gray;
+        icon.localPosition += new Vector3(-0.8f, 0f, 0f);
+        icon.SetAsLastSibling();
+    }
+
     [HarmonyPatch(nameof(StringOption.UpdateValue)), HarmonyPrefix]
     private static bool UpdateValuePrefix(StringOption __instance)
     {
@@ -596,7 +626,6 @@ public static class StringOptionPatch
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
             item.SetValue(__instance.GetInt());
-
             if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {
                 if (Options.GameMode.GetInt() == 2 && !GameStates.IsHideNSeek) //Hide And Seek
@@ -607,7 +636,7 @@ public static class StringOptionPatch
                 {
                     Options.GameMode.SetValue(2);
                 }
-                GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode");
+                GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode" ? 1 : 4);
             }
             return false;
         }
@@ -655,6 +684,24 @@ public static class StringOptionPatch
     [HarmonyPatch(nameof(StringOption.Decrease)), HarmonyPrefix]
     public static bool DecreasePrefix(StringOption __instance)
     {
+        //Credit For SetupHelpIcon to EHR https://github.com/Gurge44/EndlessHostRoles/blob/main/Patches/GameOptionsMenuPatch.cs
+
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index) && !__instance.transform.FindChild("MinusButton (1)").GetComponent<PassiveButton>().activeSprites.activeSelf)
+        {
+            var item = OptionItem.AllOptions[index];
+            var name = item.GetName();
+            if (Enum.GetValues<CustomRoles>().Find(x => GetString($"{x}") == name.RemoveHtmlTags(), out var role))
+            {
+                var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
+                var str = Translator.GetString($"{roleName}InfoLong");
+                int Lenght = str.Length > 360 ? 360 : str.Length;
+                var infoLong = str[(str.IndexOf('\n') + 1)..Lenght];
+                var ColorRole = Utils.ColorString(Utils.GetRoleColor(role), role.ToString());
+                var info = $"<size=70%>{ColorRole}: {infoLong}</size>";
+                GameSettingMenu.Instance.MenuDescriptionText.text = info;
+                return false;
+            }
+        }
         if (__instance.Value == 0)
         {
             __instance.Value = __instance.Values.Length - 1;

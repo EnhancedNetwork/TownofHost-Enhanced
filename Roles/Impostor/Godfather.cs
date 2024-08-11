@@ -1,4 +1,6 @@
 ﻿using TOHE.Roles.Core;
+using static TOHE.Utils;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
@@ -16,6 +18,7 @@ internal class Godfather : RoleBase
     private static OptionItem GodfatherChangeOpt;
 
     private static readonly HashSet<byte> GodfatherTarget = [];
+    private bool Didvote = false;
 
     private enum GodfatherChangeModeList
     {
@@ -54,11 +57,15 @@ internal class Godfather : RoleBase
             else killer.RpcSetCustomRole(CustomRoles.Madmate);
         }
     }
-
-    public override void OnVote(PlayerControl votePlayer, PlayerControl voteTarget)
+    public override void AfterMeetingTasks() => Didvote = false;
+    public override bool CheckVote(PlayerControl votePlayer, PlayerControl voteTarget)
     {
-        if (votePlayer == null || voteTarget == null) return;
+        if (votePlayer == null || voteTarget == null) return true;
+        if (Didvote == true) return false;
+        Didvote = true;
 
         GodfatherTarget.Add(voteTarget.PlayerId);
+        SendMessage(GetString("VoteHasReturned"), votePlayer.PlayerId, title: ColorString(GetRoleColor(CustomRoles.Godfather), string.Format(GetString("VoteAbilityUsed"), GetString("Godfather"))));
+        return false;
     }
 }

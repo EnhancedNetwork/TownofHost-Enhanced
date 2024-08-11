@@ -112,7 +112,7 @@ internal class Infectious : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Pestilence)) return true;
+        if (target.IsTransformedNeutralApocalypse()) return true;
         if (target.Is(CustomRoles.Infectious)) return true;
         if (target.Is(CustomRoles.SerialKiller)) return true;
 

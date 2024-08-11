@@ -115,7 +115,7 @@ internal class Shroud : RoleBase
             float dis;
             foreach (var target in Main.AllAlivePlayerControls)
             {
-                if (target.PlayerId != shroud.PlayerId && !target.Is(CustomRoles.Shroud) && !target.Is(CustomRoles.Pestilence))
+                if (target.PlayerId != shroud.PlayerId && !target.Is(CustomRoles.Shroud) && !target.IsTransformedNeutralApocalypse())
                 {
                     dis = Vector2.Distance(shroudPos, target.transform.position);
                     targetDistance.Add(target.PlayerId, dis);

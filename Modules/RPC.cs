@@ -15,15 +15,14 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 194/255 USED
+enum CustomRPC : byte // 197/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
-    SyncCustomSettings = 100,
-    RestTOHESetting,
-    SetDeathReason,
+    SyncCustomSettings = 100, // AUM use 101 rpc
+    SetDeathReason = 102,
     EndGame,
     PlaySound,
     SetCustomRole,
@@ -50,6 +49,7 @@ enum CustomRPC : byte // 194/255 USED
     SyncLobbyTimer,
     SyncPlayerSetting,
     ShowChat,
+    SyncShieldPersonDiedFirst,
 
     //Roles 
     SetBountyTarget,
@@ -496,9 +496,6 @@ internal class RPCHandlerPatch
             case CustomRPC.BenefactorRPC:
                 Benefactor.ReceiveRPC(reader);
                 break;
-            case CustomRPC.RestTOHESetting:
-                OptionItem.AllOptions.ToArray().Where(x => x.Id > 0).Do(x => x.SetValueNoRpc(x.DefaultValue));
-                break;
             case CustomRPC.GuessKill:
                 GuessManager.RpcClientGuess(Utils.GetPlayerById(reader.ReadByte()));
                 break;
@@ -628,6 +625,10 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveSwapRPC(reader, __instance);
+                break;
+            case CustomRPC.SyncShieldPersonDiedFirst:
+                Main.FirstDied = reader.ReadString();
+                Main.FirstDiedPrevious = reader.ReadString();
                 break;
         }
     }
@@ -848,8 +849,8 @@ internal static class RPC
     public static void GetDeathReason(MessageReader reader)
     {
         var playerId = reader.ReadByte();
-        var deathReason = (PlayerState.DeathReason)reader.ReadInt32();
-        Main.PlayerStates[playerId].deathReason = deathReason;
+        var deathReason = reader.ReadInt32();
+        Main.PlayerStates[playerId].deathReason = (PlayerState.DeathReason)deathReason;
         Main.PlayerStates[playerId].IsDead = true;
     }
     public static void ForceEndGame(CustomWinner win)

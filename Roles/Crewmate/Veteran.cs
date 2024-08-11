@@ -61,14 +61,22 @@ internal class Veteran : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
+        var killerRole = killer.GetCustomRole();
+        // Not should kill
+        if (killerRole is CustomRoles.Taskinator
+            or CustomRoles.Crusader
+            or CustomRoles.Bodyguard
+            or CustomRoles.Deputy)
+            return true;
+
         if (killer.PlayerId != target.PlayerId && VeteranInProtect.TryGetValue(target.PlayerId, out var time))
             if (time + VeteranSkillDuration.GetInt() >= GetTimeStamp())
             {
-                if (killer.Is(CustomRoles.Pestilence))
+                if (killer.Is(CustomRoles.Pestilence) || killer.Is(CustomRoles.War))
                 {
                     killer.RpcMurderPlayer(target);
                     target.SetRealKiller(killer);
-                    Logger.Info($"{killer.GetRealName()} kill {target.GetRealName()} because killer Pestilence", "Veteran");
+                    Logger.Info($"{killer.GetRealName()} kill {target.GetRealName()} because killer Pestilence or War", "Veteran");
                     return false;
                 }
                 else if (killer.Is(CustomRoles.Jinx))

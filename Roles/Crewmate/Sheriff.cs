@@ -82,7 +82,7 @@ internal class Sheriff : RoleBase
     }
     private static void SetUpNeutralOptions(int Id)
     {
-        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && x is not CustomRoles.Pestilence && x is not CustomRoles.Glitch).ToArray())
+        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && !x.IsTNA() && x is not CustomRoles.Glitch).ToArray())
         {
             SetUpKillTargetOption(neutral, Id, true, CanKillNeutralsMode);
             Id++;
@@ -160,7 +160,7 @@ internal class Sheriff : RoleBase
         return cRole switch
         {
             CustomRoles.Trickster => false,
-            CustomRoles.Pestilence => true,
+            var r when cRole.IsTNA() => false,
             _ => cRole.GetCustomRoleTeam() switch
             {
                 Custom_Team.Impostor => true,

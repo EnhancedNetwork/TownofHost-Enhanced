@@ -116,7 +116,7 @@ internal class Admirer : RoleBase
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerAdmired")));
             }
-            else if (killer.Is(CustomRoles.Madmate) && target.CanBeMadmate(inGame: true, forGangster: true))
+            else if (killer.Is(CustomRoles.Madmate) && target.CanBeMadmate(forAdmirer: true))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Madmate.ToString(), "Admirer Assign");
                 target.RpcSetCustomRole(CustomRoles.Madmate);

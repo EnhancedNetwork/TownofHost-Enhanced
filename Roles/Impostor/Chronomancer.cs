@@ -98,12 +98,6 @@ internal class Chronomancer : RoleBase
 
         return sb.ToString();
     }
-    private string GetModdedCharge()
-    {
-        var sb = new StringBuilder($"{(int)Math.Round(((double)ChargedTime / FullCharge) * 100)}% ");
-
-        return sb.ToString();
-    }
     public void SetCooldown()
     {
         if (IsInMassacre)
@@ -174,14 +168,11 @@ internal class Chronomancer : RoleBase
         bool ismeeting = GameStates.IsMeeting || isForMeeting;
         if (seer == seen && !ismeeting)
         {
-            if (!seer.IsModClient()) return GetCharge();
-            else if (isForHud) return GetModdedCharge();
+            if (!isForHud && seer.IsModClient())
+                return string.Empty;
+
+            return GetCharge();
         }
         return "";
-    }
-    public override float SetModdedLowerText(out Color32? FaceColor)
-    {
-        FaceColor = GetPercentColor(ChargedTime);
-        return 3.8f;
     }
 }
