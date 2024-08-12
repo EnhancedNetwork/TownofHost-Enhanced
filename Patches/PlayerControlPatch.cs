@@ -394,22 +394,7 @@ class MurderPlayerPatch
                     target.RpcShapeshift(target, false);
                 }
             }
-            _ = new LateTask(() => {
-
-                if (!Main.PlayerKilledBy.ContainsKey(target.PlayerId))
-                {
-
-                    if (Vector2.Distance(target.GetRealKiller().GetCustomPosition(), target.transform.position) > 2f)
-                        Main.PlayerKilledBy[target.PlayerId] = KilledType.Remotely;
-                    else if (target.GetRealKiller() == target)
-                        Main.PlayerKilledBy[target.PlayerId] = KilledType.Suicide_;
-                    else
-                        Main.PlayerKilledBy[target.PlayerId] = KilledType.Directly;
-                }
-
-            }, 1f, "Set Main.Playerkilled by in MurderPlayer Patch");
-            
-
+           
             if (!target.IsProtected() && !Doppelganger.CheckDoppelVictim(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
             {
                 Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
@@ -504,6 +489,21 @@ class MurderPlayerPatch
 
         Utils.NotifyRoles(SpecifySeer: killer);
         Utils.NotifyRoles(SpecifySeer: target);
+
+        _ = new LateTask(() => {
+
+            if (!Main.PlayerKilledBy.ContainsKey(target.PlayerId))
+            {
+
+                if (Vector2.Distance(target.GetRealKiller().GetCustomPosition(), target.transform.position) > 2f)
+                    Main.PlayerKilledBy[target.PlayerId] = KilledType.Remotely;
+                else if (target.GetRealKiller() == target)
+                    Main.PlayerKilledBy[target.PlayerId] = KilledType.Suicide_;
+                else
+                    Main.PlayerKilledBy[target.PlayerId] = KilledType.Directly;
+            }
+
+        }, 1f, "Set Main.Playerkilled by in MurderPlayer Patch");
     }
     public static void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
