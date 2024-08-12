@@ -2076,6 +2076,8 @@
   "CleanerCleanBody": "The body has been cleaned",
   "QuickShooterStoraging": "Bullets stored successfully",
   "PoisonerTargetDead": "Target died",
+  "HexesLookLikeSpells": "<color=#ff00ff>Hexes</color> appear as <color=#ff1919>spells</color>",
+  "HexButtonText": "Hex",
   "BloodthirstAdded": "Your bloodthirst is now active!",
   "WarlockNoTarget": "Manipulation failed due to no target",
   "WarlockNoTargetYet": "You haven't marked a target.",
