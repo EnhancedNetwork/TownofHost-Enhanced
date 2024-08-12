@@ -842,6 +842,7 @@ public enum CustomRoles
     DoubleShot,
     Egoist,
     EvilSpirit,
+    FateGiver,
     Flash,
     Fool,
     Fragile,
