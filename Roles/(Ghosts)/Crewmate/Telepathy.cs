@@ -123,7 +123,7 @@ internal class Telepathy : RoleBase
                 if (!int.TryParse(args[1], out int id) || !DetermineMessage?.ContainsKey(id) is null or true)
                 {
                     SendMessage(GetString("TelepathyMODE2Usage"), pc.PlayerId, title: ColorString(GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
-                    return false;
+                    break;
                 }
                 ((Telepathy)pc.GetRoleClass()).HasMessaged = true;
 
