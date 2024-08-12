@@ -158,12 +158,10 @@ public class RoleAssign
         // Take - Takes the first x roles of the list ... x is the maximum number of roles we could need of that team
         
         Roles[RoleAssignType.Impostor] = Roles[RoleAssignType.Impostor].Shuffle(rd).Take(optImpNum).ToList();
-
         Roles[RoleAssignType.NeutralKilling] = Roles[RoleAssignType.NeutralKilling].Shuffle(rd).Take(optNeutralKillingNum).ToList();
         Roles[RoleAssignType.NeutralApocalypse] = Roles[RoleAssignType.NeutralApocalypse].Shuffle(rd).Take(optNeutralApocalypseNum).ToList();
         Roles[RoleAssignType.NonKillingNeutral] = Roles[RoleAssignType.NonKillingNeutral].Shuffle(rd).Take(optNonNeutralKillingNum).ToList();
         Roles[RoleAssignType.Crewmate] = Roles[RoleAssignType.Crewmate].Shuffle(rd).Take(playerCount).ToList();
-
 
         Roles[RoleAssignType.Impostor].AddRange(TempAlwaysImpRoles);
         Roles[RoleAssignType.NeutralKilling].AddRange(TempAlwaysNKRoles);
@@ -176,7 +174,6 @@ public class RoleAssign
         Roles[RoleAssignType.NeutralApocalypse] = Roles[RoleAssignType.NeutralApocalypse].DistinctBy(x => x.Role).ToList();
         Roles[RoleAssignType.NonKillingNeutral] = Roles[RoleAssignType.NonKillingNeutral].DistinctBy(x => x.Role).ToList();
         Roles[RoleAssignType.Crewmate] = Roles[RoleAssignType.Crewmate].DistinctBy(x => x.Role).ToList();
-
 
         Logger.Msg("======================================================", "SelectedRoles");
         Logger.Info(string.Join(", ", Roles[RoleAssignType.Impostor].Select(x => x.Role.ToString())), "Selected-Impostor-Roles");
