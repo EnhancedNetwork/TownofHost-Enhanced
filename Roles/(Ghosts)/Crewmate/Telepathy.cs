@@ -14,7 +14,6 @@ internal class Telepathy : RoleBase
     //===========================SETUP================================\\
     private const int Id = 28900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.NotAssigned);
-    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateGhosts;
     //==================================================================\\
@@ -36,7 +35,7 @@ internal class Telepathy : RoleBase
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Telepathy);
         AbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.GuardianAngelBase_ProtectCooldown, new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Telepathy])
             .SetValueFormat(OptionFormat.Seconds);
-        AbilityUses = IntegerOptionItem.Create(Id + 11, "TelepathyUses", new(1, 14, 1), 14, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Telepathy])
+        AbilityUses = IntegerOptionItem.Create(Id + 11, "TelepathyUses", new(1, 99, 1), 14, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Telepathy])
            .SetValueFormat(OptionFormat.Times);
         MessageMode = StringOptionItem.Create(Id + 12, "Telepathy_MessageMode", EnumHelper.GetAllNames<MessageModeCount>(), 0, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Telepathy]);
     }
