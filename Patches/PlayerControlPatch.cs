@@ -407,7 +407,7 @@ class MurderPlayerPatch
                         Main.PlayerKilledBy[target.PlayerId] = KilledType.Directly;
                 }
 
-            }, 0.1f, "Set Main.Playerkilled by in MurderPlayer Patch");
+            }, 1f, "Set Main.Playerkilled by in MurderPlayer Patch");
             
 
             if (!target.IsProtected() && !Doppelganger.CheckDoppelVictim(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
