@@ -167,6 +167,8 @@ internal class Telepathy : RoleBase
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
+        if (_Player == null) return;
+
         switch (MessageMode.GetInt())
         {
             case 0:
