@@ -2087,7 +2087,7 @@
   "TelepathyUses": "Max Connections",
   "Telepathy_MessageMode": "Message Mode",
   "Telepathy_MessageMode_YesNo": "Yes/No Confirmation",
-  "Telepathy_MessageMode_Message": "A Helpful Message",
+  "Telepathy_MessageMode_Message": "Helpful Messages",
   "TelepathyCantConnect": "Could not connect with target",
   "TelepathyConnectWith": "You have made a connection with {0}",
   "TelepathyYesNoUsage": "Use /tms {yes/no} to answer the player",
