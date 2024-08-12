@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using System;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
@@ -66,6 +67,7 @@ internal class Telepathy : RoleBase
         angel.Notify(string.Format(GetString("TelepathyConnectWith"), target.GetRealName(clientData: true)));
         AbilityLimit--;
         SendSkillRPC();
+        angel.RpcResetAbilityCooldown();
 
         return false;
     }
@@ -201,4 +203,6 @@ internal class Telepathy : RoleBase
 
         return string.Empty;
     }
+    public override string GetProgressText(byte playerId, bool coms)
+        => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.Telepathy).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }
