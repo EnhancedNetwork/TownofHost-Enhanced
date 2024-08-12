@@ -65,6 +65,9 @@ internal class ChangeRoleSettings
             Main.clientIdList.Clear();
 
             PlayerControlSetRolePatch.DidSetGhost.Clear();
+            Main.LastKillerRoom.Clear();
+            Main.RememberedFaction = null;
+            Main.PlayerKilledBy.Clear();
 
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();

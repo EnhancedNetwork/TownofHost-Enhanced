@@ -404,9 +404,7 @@ public enum KilledType
     Directly,
     Indirectly,
     Remotely,
-    Suicide
-
-
+    Suicide_
 }
 public static class GameStates
 {

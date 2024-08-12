@@ -55,7 +55,7 @@ internal class Telepathy : RoleBase
     public override bool OnCheckProtect(PlayerControl angel, PlayerControl target)
     {
         if (AbilityLimit < 1) return false;
-        if (target.Is(CustomRoles.Medium))
+        if (target.Is(CustomRoles.Medium) || TargetPlayer.ContainsValue(target.PlayerId))
         {
             angel.Notify(GetString("TelepathyCantConnect"));
             return false;
@@ -92,15 +92,16 @@ internal class Telepathy : RoleBase
         switch (MessageMode.GetInt())
         {
             case 0:
-                var Validation = (args[1].Equals(GetString("yes"), StringComparison.OrdinalIgnoreCase) || args[1].Equals(GetString("no"), StringComparison.OrdinalIgnoreCase));
+                var Validation = (args[1].Equals(GetString("Yes"), StringComparison.OrdinalIgnoreCase) || args[1].Equals(GetString("No"), StringComparison.OrdinalIgnoreCase));
                 if (!Validation)
                 {
                     SendMessage(GetString("TelepathyYesNoUsage"), pc.PlayerId, title: GetString("TelepathyTitle"));
                     break;
                 }
-                var confirm = args[1].Equals(GetString("yes"), StringComparison.OrdinalIgnoreCase);
+                var confirm = args[1].Equals(GetString("Yes"), StringComparison.OrdinalIgnoreCase);
+                ((Telepathy)pc.GetRoleClass()).HasMessaged = true;
 
-                SendMessage(GetString("Telepathy" + (confirm ? "Yes" : "No")), TargetPlayer[pc.PlayerId], ColorString(GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
+                SendMessage(GetString("Telepathy" + (confirm ? "Yes" : "No")), TargetPlayer[pc.PlayerId], ColorString(GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitleTarget")));
                 SendMessage(GetString("TelepathyConfirmSelf"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
 
                 break;
@@ -112,8 +113,9 @@ internal class Telepathy : RoleBase
                     SendMessage(GetString("TelepathyMODE2Usage"), pc.PlayerId, title: ColorString(GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
                     break;
                 }
+                ((Telepathy)pc.GetRoleClass()).HasMessaged = true;
 
-                Utils.SendMessage(DetermineMessage[id], TargetPlayer[pc.PlayerId], title: ColorString(GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
+                Utils.SendMessage(DetermineMessage[id], TargetPlayer[pc.PlayerId], title: ColorString(GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitleTarget")));
                 SendMessage(GetString("TelepathyConfirmSelf"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
 
                 break;
@@ -126,6 +128,10 @@ internal class Telepathy : RoleBase
     {
         HasMessaged = false;
     }
+    public override void AfterMeetingTasks()
+    {
+        TargetPlayer.Clear();
+    }
 
     public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
@@ -135,29 +141,26 @@ internal class Telepathy : RoleBase
         {
             case 0:
                 if (TargetPlayer.TryGetValue(_Player.PlayerId, out var t) && t == pc.PlayerId)
-                    AddMsg(string.Format(GetString("TelepathyNotifyTarget"), _Player.GetRealName(clientData: true), AbilityLimit), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
+                    AddMsg(string.Format(GetString("TelepathyNotifyTarget"), _Player.GetRealName(clientData: true)), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
 
                 break;
 
 
             case 1:
                 if (TargetPlayer.TryGetValue(_Player.PlayerId, out var w) && w == pc.PlayerId)
-                    AddMsg(string.Format(GetString("TelepathyNotifyTargetMODE2"), _Player.GetRealName(clientData: true), AbilityLimit), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
+                    AddMsg(string.Format(GetString("TelepathyNotifyTargetMODE2"), _Player.GetRealName(clientData: true)), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
 
                 break;
         }
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
-
         switch (MessageMode.GetInt())
         {
             case 0:
                 if (TargetPlayer.TryGetValue(pc.PlayerId, out var tar) && Utils.GetPlayerById(tar) != null)
-                    AddMsg(string.Format(GetString("TelepathyNotifySelf"), Utils.GetPlayerById(tar).GetRealName(clientData: true), AbilityLimit), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
-
+                    AddMsg(string.Format(GetString("TelepathyNotifySelf"), Utils.GetPlayerById(tar).GetRealName(clientData: true)), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
                 break;
-
 
             case 1:
                 if (TargetPlayer.TryGetValue(pc.PlayerId, out var rat) && Utils.GetPlayerById(rat) != null)
