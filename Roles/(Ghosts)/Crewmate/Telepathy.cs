@@ -170,6 +170,24 @@ internal class Telepathy : RoleBase
                 }
                 break;
         }
-       
+    }
+
+    public override string GetSuffixOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
+    {
+        if (!isForMeeting) return string.Empty;
+
+        var checkTar = TargetPlayer.Where(x => x.Value == seer.PlayerId);
+        if (TargetPlayer.TryGetValue(seer.PlayerId, out var tar) && tar == seen.PlayerId) 
+        {
+            return ColorString(GetRoleColor(CustomRoles.Telepathy), "¿");
+        }
+        else if (checkTar.Any())
+        {
+            var Telepathy = Utils.GetPlayerById(checkTar.First().Key);
+
+            return seen == Telepathy ? ColorString(GetRoleColor(CustomRoles.Telepathy), "¿") : "";
+        }
+
+        return string.Empty;
     }
 }
