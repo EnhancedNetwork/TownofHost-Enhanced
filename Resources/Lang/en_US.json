@@ -3215,7 +3215,7 @@
 
   "ImpCanBeRole": "<color=#ff1919>Impostors</color> can become {role}",
   "CrewCanBeRole": "<color=#8cffff>Crewmates</color> can become {role}",
-  "NeutralCanBeRole": "<color=#ffab1b>Neutrals</color> can become {role}",
+  "NeutralCanBeRole": "<color=#7f8c8d>Neutrals</color> can become {role}",
 
   "VotesPerKill": "Votes gained for each kill",
   "PickpocketGetVote": "You've got {0} votes",
