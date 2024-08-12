@@ -1711,7 +1711,7 @@ public static class Utils
                     "Messenger.KillerExistIn" when Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.IsNeutralKiller() || x.IsNeutralApocalypse() || x.IsTransformedNeutralApocalypse()).Shuffle(IRandom.Instance).FirstOrDefault() is not null and PlayerControl killar => CreateAndInvoke(() =>
                     { // yes using Apoc/TApoc may not be 100% accurate but they may or may not keep the game keep going and I'm too lazy to make a specific check
                         SystemTypes room = killar.GetPlainShipRoom().RoomId;
-                        return string.Format(GetString("Messenger.KillerExistIn"), room);
+                        return string.Format(GetString("Messenger.KillerExistIn"), GetString($"{room}"));
                     }),
                     "Messenger.KillersRoleIs" when Main.RememberKillerRole != "" => string.Format(GetString("Messenger.KillersRoleIs"), Main.RememberKillerRole),
                     "Messenger.KilledType" when Main.PlayerKilledBy.TryGetValue(Player.PlayerId, out var KilledType) => string.Format(GetString("Messenger.KilledType"), GetString($"{KilledType}")),
