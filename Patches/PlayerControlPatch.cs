@@ -951,7 +951,6 @@ class ReportDeadBodyPatch
             Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
             Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
             Logger.Info($"target.PlayerId is - {target?.PlayerId}", "AfterReportTasks");
-            Main.RememberKillerRole = "";
 
             foreach (var playerStates in Main.PlayerStates.Values.ToArray())
             {
@@ -961,7 +960,6 @@ class ReportDeadBodyPatch
 
                     if (!Utils.GetPlayerById(playerStates.PlayerId).IsAlive() && target?.Object?.GetRealKiller() != null)
                     {
-                        Main.RememberKillerRole = GetString($"{target.Object.GetRealKiller().GetCustomRole()}");
                         Main.LastKillerRoom[target.PlayerId] = target.Object.GetRealKiller().GetPlainShipRoom();
                     }
                 }
@@ -974,8 +972,10 @@ class ReportDeadBodyPatch
             }
 
             Main.RememberedFaction = null;
+            Main.RememberKillerRole = "";
             if (target?.Object?.GetRealKiller() != null)
             {
+                Main.RememberKillerRole = GetString($"{target.Object.GetRealKiller().GetCustomRole()}");
                 if (target.Object.GetRealKiller().IsAnySubRole(x => x.IsConverted() && !target.Object.Is(CustomRoles.Madmate)))
                     Main.RememberedFaction = target.Object.GetRealKiller().GetCustomRole().GetCustomRoleTeam();
                 else
