@@ -1737,7 +1737,7 @@ public static class Utils
                         return string.Format(GetString("Messenger.LazyFuck"), ScapeGoat.GetRealName(clientData: true));
                     }),
 
-                    "Messenger.KillersFaction" when Main.RememberedFaction != null => string.Format(GetString("Messenger.KillersFaction"), Main.RememberedFaction.Value),
+                    "Messenger.KillersFaction" when Main.RememberedFaction != null => string.Format(GetString("Messenger.KillersFaction"), GetString($"Team{Main.RememberedFaction.Value}")),
 
                     _ => CreateAndInvoke(() =>
                     {
