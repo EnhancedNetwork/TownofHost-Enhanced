@@ -11,7 +11,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Messenger : IAddon
 {
-    private const int Id = 29000;
+    private const int Id = 29100;
     private static OptionItem ImpostorsHearMessage;
     private static OptionItem NeutralsHearMessage;
     private static OptionItem KnowMessenger;
