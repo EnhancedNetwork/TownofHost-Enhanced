@@ -55,7 +55,7 @@ internal class Telepathy : RoleBase
     public override bool OnCheckProtect(PlayerControl angel, PlayerControl target)
     {
         if (AbilityLimit < 1) return false;
-        if (target.Is(CustomRoles.Medium) || TargetPlayer.ContainsValue(target.PlayerId))
+        if (TargetPlayer.ContainsValue(target.PlayerId))
         {
             angel.Notify(GetString("TelepathyCantConnect"));
             return false;
