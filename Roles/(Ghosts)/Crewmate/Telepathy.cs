@@ -91,7 +91,7 @@ internal class Telepathy : RoleBase
     public static bool TelepathyMessage(PlayerControl pc, string[] args)
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsMeeting || pc == null) return false;
-        if (!TargetPlayer.TryGetValue(pc.PlayerId, out var tar) || tar == byte.MaxValue) return false;
+        if (!TargetPlayer.TryGetValue(pc.PlayerId, out var tar) || GetPlayerById(tar) == null) return false;
         if (args.Length < 2) return false;
         if (((Telepathy)pc.GetRoleClass())?.HasMessaged is null or true) return false;
 
