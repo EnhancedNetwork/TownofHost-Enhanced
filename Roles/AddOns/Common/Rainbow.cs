@@ -21,7 +21,7 @@ public class Rainbow : IAddon
         ChangeInCamouflage = BooleanOptionItem.Create(Id + 14, "RainbowInCamouflage", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
     }
-    public static void Init()
+    public void Init()
     {
         LastColorChange = Utils.GetTimeStamp();
         isEnabled = false;

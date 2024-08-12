@@ -18,7 +18,7 @@ public class Radar : IAddon
         SetupAdtRoleOptions(Id, CustomRoles.Radar, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
 
-    public static void Init()
+    public void Init()
     {
         ClosestPlayer.Clear();
         IsEnable = false;

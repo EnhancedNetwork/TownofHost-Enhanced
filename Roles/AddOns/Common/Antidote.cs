@@ -24,7 +24,7 @@ public class Antidote : IAddon
         AntidoteCDReset = BooleanOptionItem.Create(Id + 14, "AntidoteCDReset", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
     }
 
-    public static void Init()
+    public void Init()
     {
         KilledAntidote = [];
         IsEnable = false;

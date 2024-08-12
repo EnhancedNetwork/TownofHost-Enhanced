@@ -23,7 +23,7 @@ public class Cyber : IAddon
         CyberKnown = BooleanOptionItem.Create(Id + 16, "CyberKnown", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
     }
 
-    public static void Init()
+    public void Init()
     {
         CyberDead = [];
     }

@@ -12,7 +12,7 @@ public class Fool : IAddon
         SetupAdtRoleOptions(Id, CustomRoles.Fool, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
 
-    public static void Init()
+    public void Init()
     {
         IsEnable = false;
     }

@@ -880,6 +880,7 @@ public enum CustomRoles
     Reach,
     Rebound,
     Spurt,
+    Messenger,
     Recruit,
     Seer,
     Silent,

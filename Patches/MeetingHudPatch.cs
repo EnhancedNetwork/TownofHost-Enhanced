@@ -905,6 +905,7 @@ class MeetingHudStartPatch
         {
             pc?.GetRoleClass()?.OnMeetingHudStart(pc);
             Main.PlayerStates.Do(plr => plr.Value.RoleClass.OnOthersMeetingHudStart(pc));
+            Messenger.NotifyAddonOnMeeting(pc);
 
             foreach (var csId in Cyber.CyberDead)
             {

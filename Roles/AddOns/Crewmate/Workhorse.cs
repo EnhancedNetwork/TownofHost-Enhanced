@@ -32,7 +32,7 @@ public class Workhorse : IAddon
             .SetValueFormat(OptionFormat.Pieces);
         OptionSnitchCanBeWorkhorse = BooleanOptionItem.Create(Id + 14, "SnitchCanBeWorkhorse", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse]);
     }
-    public static void Init()
+    public void Init()
     {
         playerIdList.Clear();
         IsEnable = false;

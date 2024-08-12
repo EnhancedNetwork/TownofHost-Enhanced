@@ -30,7 +30,7 @@ public class Bait : IAddon
         BaitCanBeReportedUnderAllConditions = BooleanOptionItem.Create(Id + 17, "BaitCanBeReportedUnderAllConditions", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
     }
 
-    public static void Init()
+    public void Init()
     {
         BaitAlive = [];
     }

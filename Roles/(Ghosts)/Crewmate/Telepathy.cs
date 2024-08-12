@@ -74,11 +74,22 @@ internal class Telepathy : RoleBase
         if (TargetPlayer.ContainsValue(DeadPlayer.PlayerId))
         {
             TargetPlayer.Remove(TargetPlayer.First(x => x.Value == DeadPlayer.PlayerId).Key);
+            if (_Player != null)
+            {
+                if (GameStates.IsMeeting || Main.MeetingIsStarted)
+                {
+                    Utils.SendMessage(GetString("TelepathyTargetDisconnect"), _state.PlayerId);
+                }
+                else
+                {
+                    _Player.Notify(GetString("TelepathyTargetDisconnect"));
+                }
+            }
         }
     }
     public static bool TelepathyMessage(PlayerControl pc, string[] args)
     {
-        if (!GameStates.IsMeeting || pc == null) return false;
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsMeeting || pc == null) return false;
         if (!TargetPlayer.TryGetValue(pc.PlayerId, out var tar) || tar == byte.MaxValue) return false;
         if (args.Length < 2) return false;
         if (((Telepathy)pc.GetRoleClass())?.HasMessaged is null or true) return false;
@@ -86,7 +97,7 @@ internal class Telepathy : RoleBase
         Dictionary<int, string> DetermineMessage = ((Telepathy)pc.GetRoleClass())?.Determinemessage;
 
 
-        string[] cmds =  {"/tms"};
+        string[] cmds =  {"/tms"}; // Here you can add custom cmds
         if (!cmds.Any(x => x.Equals(args[0], StringComparison.OrdinalIgnoreCase))) return false;
 
         switch (MessageMode.GetInt())
@@ -111,7 +122,7 @@ internal class Telepathy : RoleBase
                 if (!int.TryParse(args[1], out int id) || !DetermineMessage?.ContainsKey(id) is null or true)
                 {
                     SendMessage(GetString("TelepathyMODE2Usage"), pc.PlayerId, title: ColorString(GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
-                    break;
+                    return false;
                 }
                 ((Telepathy)pc.GetRoleClass()).HasMessaged = true;
 

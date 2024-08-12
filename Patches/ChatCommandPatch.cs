@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles._Ghosts_.Crewmate;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
@@ -70,6 +71,7 @@ internal class ChatCommands
         if (Medium.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sw && sw.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Telepathy.TelepathyMessage(PlayerControl.LocalPlayer, args)) goto Canceled;
+        if (Messenger.CheckMessage(PlayerControl.LocalPlayer, args)) goto Canceled;
 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
@@ -1891,7 +1893,8 @@ internal class ChatCommands
         if (Medium.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
         if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info($"Is Nemesis Revenge command", "OnReceiveChat"); return; }
         if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
-        if (Telepathy.TelepathyMessage(PlayerControl.LocalPlayer, args)) { Logger.Info("Is Telepathy MSG command", "OnRecieveChat"); return; }
+        if (Telepathy.TelepathyMessage(player, args)) { Logger.Info("Is Telepathy MSG command", "OnRecieveChat"); return; }
+        if (Messenger.CheckMessage(player, args)) { Logger.Info("Is Messenger MSG command", "OnRecieveChat"); return; }
 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);

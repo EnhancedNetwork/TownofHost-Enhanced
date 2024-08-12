@@ -19,7 +19,7 @@ public class Clumsy : IAddon
             .SetValueFormat(OptionFormat.Percent);
     }
 
-    public static void Init()
+    public void Init()
     {
         HasMissed = [];
     }

@@ -21,7 +21,7 @@ public class Bewilder : IAddon
         KillerGetBewilderVision = BooleanOptionItem.Create(Id + 14, "KillerGetBewilderVision", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
     }
 
-    public static void Init()
+    public void Init()
     {
         IsEnable = false;
     }

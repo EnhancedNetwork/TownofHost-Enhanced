@@ -15,7 +15,7 @@ public class Sleuth : IAddon
         SleuthCanKnowKillerRole = BooleanOptionItem.Create(Id + 13, "SleuthCanKnowKillerRole", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sleuth]);
     }
 
-    public static void Init()
+    public void Init()
     {
         SleuthNotify = [];
     }
