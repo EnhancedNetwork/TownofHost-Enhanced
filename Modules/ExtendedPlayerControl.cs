@@ -898,8 +898,6 @@ static class ExtendedPlayerControl
         && !target.Data.IsDead;
 
     private readonly static LogHandler logger = Logger.Handler("KnowRoleTarget");
-
-   
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target, bool isVanilla = false)
     {
         if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd)

@@ -1695,7 +1695,7 @@ public static class Utils
             return func.Invoke();
         }
 
-        List<string> TakeMsg = Translatables.ToList();
+        List<string> TakeMsg = [..Translatables];
         var Msg = "";
         DeterminedMessage = [];
         for (int i = 0; i < 3; i++)
@@ -1708,8 +1708,8 @@ public static class Utils
                 CurrentMessage = ran switch
                 {
                     "Messenger.KillerLastKillIn" when killer != null && killer.IsAlive() && Main.LastKillerRoom.TryGetValue(Player.PlayerId, out var pokoj) => string.Format(GetString("Messenger.KillerLastKillIn"), pokoj.RoomId),
-                    "Messenger.KillerExistIn" when Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.IsNeutralKiller() || x.IsNeutralApocalypse()).Shuffle(IRandom.Instance).FirstOrDefault() is not null and PlayerControl killar => CreateAndInvoke(() =>
-                    {
+                    "Messenger.KillerExistIn" when Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.IsNeutralKiller() || x.IsNeutralApocalypse() || x.IsTransformedNeutralApocalypse()).Shuffle(IRandom.Instance).FirstOrDefault() is not null and PlayerControl killar => CreateAndInvoke(() =>
+                    { // yes using Apoc/TApoc may not be 100% accurate but they may or may not keep the game keep going and I'm too lazy to make a specific check
                         SystemTypes room = killar.GetPlainShipRoom().RoomId;
                         return string.Format(GetString("Messenger.KillerExistIn"), room);
                     }),
@@ -1725,7 +1725,7 @@ public static class Utils
                     }),
                     "Messenger.PlayerOnSameTeam" when Main.AllAlivePlayerControls.Shuffle(IRandom.Instance).FirstOrDefault(x => Player.IsSameTeammate(x, out _)) is not null and PlayerControl friend => string.Format(GetString("Messenger.PlayerOnSameTeam"), friend.GetRealName(clientData: true)),
                     "Messenger.LazyFuck" => CreateAndInvoke(() =>
-                    {
+                    { 
                         var mintask = Main.AllAlivePlayerControls.Where(x => !x.HasImpKillButton()).Min(x => x.GetPlayerTaskState().CompletedTasksCount);
                         var lazyfuck = Main.AllAlivePlayerControls.First(x => x.GetPlayerTaskState().CompletedTasksCount == mintask);
 
@@ -2182,6 +2182,7 @@ public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
 
                         TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                         TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
+                        TargetSuffix.Append(Messenger.GetSuffix(target, isForMeeting));
 
                         if (TargetSuffix.Length > 0)
                         {

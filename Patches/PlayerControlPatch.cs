@@ -119,6 +119,8 @@ class CheckMurderPatch
 
         Logger.Info($"End: CustomRoleManager.OnCheckMurder", "CheckMurder");
 
+        Main.PlayerKilledBy[target.PlayerId] = KilledType.Directly;
+
         //== Kill target ==
         __instance.RpcMurderPlayer(target);
         //============

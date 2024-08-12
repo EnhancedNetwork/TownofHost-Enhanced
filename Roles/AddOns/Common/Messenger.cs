@@ -14,6 +14,7 @@ public class Messenger : IAddon
     private const int Id = 29000;
     private static OptionItem ImpostorsHearMessage;
     private static OptionItem NeutralsHearMessage;
+    private static OptionItem KnowMessenger;
     public AddonTypes Type => AddonTypes.Helpful;
     public static Dictionary<byte, Dictionary<int, string>> Determinemessage = [];
     public static Dictionary<byte, bool> DidSay = [];
@@ -22,11 +23,18 @@ public class Messenger : IAddon
         SetupAdtRoleOptions(Id, CustomRoles.Messenger, canSetNum: true, teamSpawnOptions: true);
         ImpostorsHearMessage = BooleanOptionItem.Create(Id + 10, "MessengersImpsHear", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Messenger]);
         NeutralsHearMessage = BooleanOptionItem.Create(Id + 11, "MessengersNeutsHear", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Messenger]);
+        KnowMessenger = BooleanOptionItem.Create(Id + 12, "EveryoneKnowsMessenger", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Messenger]);
     }
     public void Init()
     {
         DidSay.Clear();
         Determinemessage.Clear();
+    }
+    public static string GetSuffix(PlayerControl seen, bool ismeeting)
+    {
+        if (!seen.Is(CustomRoles.Messenger) || !ismeeting || !KnowMessenger.GetBool() || seen.IsAlive() || DidSay.TryGetValue(seen.PlayerId, out var say) && say) return string.Empty;
+
+        return ColorString(GetRoleColor(CustomRoles.Messenger), "⌘");
     }
     public static void NotifyAddonOnMeeting(PlayerControl pc) 
     {

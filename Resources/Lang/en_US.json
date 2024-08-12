@@ -2072,6 +2072,7 @@
   "Messenger.ThisRoleExists": "There is a {0} alive",
   "MessengersImpsHear": "Impostors See Messenger Msg",
   "MessengersNeutsHear": "Neutrals See Messenger Msg",
+  "EveryoneKnowsMessenger": "Everyone Knows Messenger",
 
   "MessengerTitle": "MESSENGER",
   "MessengerTitleTarget": "A Voice From Above Whispers...",
