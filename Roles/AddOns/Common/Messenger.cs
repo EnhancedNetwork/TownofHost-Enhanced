@@ -57,9 +57,9 @@ public class Messenger : IAddon
 
         List<byte> ExceptList = [];
         if (!ImpostorsHearMessage.GetBool())
-            ExceptList.AddRange(Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostorTeamV2()).Select(x => x.PlayerId));
+            ExceptList.AddRange(Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostorTeamV2()).Select(x => x.PlayerId));
         if (!NeutralsHearMessage.GetBool())
-            ExceptList.AddRange(Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsNeutralTeamV2()).Select(x => x.PlayerId));
+            ExceptList.AddRange(Main.AllPlayerControls.Where(x => x.GetCustomRole().IsNeutralTeamV2()).Select(x => x.PlayerId));
 
         foreach (var par in Main.AllAlivePlayerControls.ExceptBy(ExceptList, x => x.PlayerId))
         {

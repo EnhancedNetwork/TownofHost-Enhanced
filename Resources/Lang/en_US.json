@@ -2070,8 +2070,8 @@
   "Messenger.LazyFuck": "{0} has done none or the least amount of tasks",
   "Messenger.KillersFaction": "The killer's faction is {0}",
   "Messenger.ThisRoleExists": "There is a {0} alive",
-  "MessengersImpsHear": "Impostors see messenger Msg",
-  "MessengersNeutsHear": "Neutrals see messenger Msg",
+  "MessengersImpsHear": "Impostors See Messenger Msg",
+  "MessengersNeutsHear": "Neutrals See Messenger Msg",
 
   "MessengerTitle": "MESSENGER",
   "MessengerTitleTarget": "A Voice From Above Whispers...",
