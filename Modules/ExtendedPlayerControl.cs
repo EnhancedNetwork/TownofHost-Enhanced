@@ -12,6 +12,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -1239,6 +1240,12 @@ static class ExtendedPlayerControl
     public static PlayerControl GetRealKiller(this PlayerControl target)
     {
         var killerId = Main.PlayerStates[target.Data.PlayerId].GetRealKiller();
+        return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
+    }
+    public static PlayerControl GetRealKiller(this PlayerControl target, out CustomRoles killerRole)
+    {
+        var killerId = Main.PlayerStates[target.Data.PlayerId].GetRealKiller();
+        killerRole = Main.PlayerStates[target.Data.PlayerId].RoleofKiller;
         return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
     }
     public static PlayerControl GetRealKillerById(this byte targetId)

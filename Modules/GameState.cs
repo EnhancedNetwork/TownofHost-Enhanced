@@ -20,6 +20,7 @@ public class PlayerState(byte playerId)
     public CountTypes countTypes = CountTypes.OutOfGame;
     public bool IsDead { get; set; } = false;
     public bool Disconnected { get; set; } = false;
+    public CustomRoles RoleofKiller = CustomRoles.NotAssigned;
 #pragma warning disable IDE1006 // Naming Styles
     public DeathReason deathReason { get; set; } = DeathReason.etc;
 #pragma warning restore IDE1006
