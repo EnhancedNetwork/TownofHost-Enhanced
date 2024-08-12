@@ -23,6 +23,7 @@ using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using TOHE.Patches;
+using MS.Internal.Xml.XPath;
 
 
 namespace TOHE;
@@ -1707,7 +1708,7 @@ public static class Utils
             {
                 CurrentMessage = ran switch
                 {
-                    "Messenger.KillerLastKillIn" when killer != null && killer.IsAlive() && Main.LastKillerRoom.TryGetValue(Player.PlayerId, out var pokoj) => string.Format(GetString("Messenger.KillerLastKillIn"), pokoj.RoomId),
+                    "Messenger.KillerLastKillIn" when killer != null && killer.IsAlive() && Main.LastKillerRoom.TryGetValue(Player.PlayerId, out var pokoj) => string.Format(GetString("Messenger.KillerLastKillIn"), GetString($"{pokoj.RoomId}")),
                     "Messenger.KillerExistIn" when Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.IsNeutralKiller() || x.IsNeutralApocalypse() || x.IsTransformedNeutralApocalypse()).Shuffle(IRandom.Instance).FirstOrDefault() is not null and PlayerControl killar => CreateAndInvoke(() =>
                     { // yes using Apoc/TApoc may not be 100% accurate but they may or may not keep the game keep going and I'm too lazy to make a specific check
                         SystemTypes room = killar.GetPlainShipRoom().RoomId;
