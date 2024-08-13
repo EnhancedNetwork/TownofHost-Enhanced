@@ -561,6 +561,20 @@ class IntroCutsceneDestroyPatch
                 }, 3f, "Set Dev Ghost-Roles");
             }
 
+            bool chatVisible = Options.CurrentGameMode switch
+            {
+                CustomGameMode.FFA => true,
+                _ => false
+            };
+            try
+            {
+                if (chatVisible) Utils.SetChatVisibleForEveryone();
+            }
+            catch (Exception error)
+            {
+                Logger.Error($"Error: {error}", "FFA chat visible");
+            }
+
             if (Main.UnShapeShifter.Any())
             {
                 _ = new LateTask(() =>
