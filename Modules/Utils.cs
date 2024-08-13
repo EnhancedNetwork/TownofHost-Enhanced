@@ -1697,9 +1697,9 @@ public static class Utils
         }
 
         List<string> TakeMsg = [..Translatables];
-        var Msg = "";
+        var Msg = new StringBuilder();
         DeterminedMessage = [];
-        for (int i = 0; i < 3; i++)
+        for (int i = 1; i <= 3; i++)
         {
             var ran = TakeMsg.RandomElement();
             TakeMsg.Remove(ran);
@@ -1720,9 +1720,9 @@ public static class Utils
                     "Messenger.TheLastKillers" when Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.IsNeutralKiller() || x.IsNeutralApocalypse()).Any() => CreateAndInvoke(() =>
                     {
                         var Killers = Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.IsNeutralKiller() || x.IsNeutralApocalypse());
-                        string msg = "";
-                        Killers.Do(x => msg += $"{GetString($"{x.GetCustomRole()}")}, ");
-                        return string.Format(GetString("Messenger.TheLastKillers"), msg);
+                        var msg = new StringBuilder();
+                        Killers.Do(x => msg.Append($"{GetString($"{x.GetCustomRole()}")}, "));
+                        return string.Format(GetString("Messenger.TheLastKillers"), msg.ToString());
                     }),
                     "Messenger.PlayerOnSameTeam" when Main.AllAlivePlayerControls.Shuffle(IRandom.Instance).FirstOrDefault(x => Player.IsSameTeammate(x, out _)) is not null and PlayerControl friend => string.Format(GetString("Messenger.PlayerOnSameTeam"), friend.GetRealName(clientData: true)),
                     "Messenger.LazyFuck" => CreateAndInvoke(() =>
@@ -1757,11 +1757,11 @@ public static class Utils
                 Utils.ThrowException(exx);
             }
             DeterminedMessage[i] = CurrentMessage;
-            Msg += $"{i}) " + CurrentMessage + "\n";
+            Msg.Append($"{i}) " + CurrentMessage + "\n");
         }
 
 
-        return Msg;
+        return Msg.ToString();
 
     }
 
