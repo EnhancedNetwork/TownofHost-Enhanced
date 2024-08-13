@@ -611,7 +611,7 @@ public static class StringOptionPatch
     }
     private static void SetupHelpIcon(CustomRoles role, StringOption option)
     {
-        var template = option.transform.FindChild("MinusButton (1)");
+        var template = option.transform.FindChild("MinusButton");
         var icon = Object.Instantiate(template, template.parent, true);
         icon.name = $"{role}HelpIcon";
         var text = icon.FindChild("Plus_TMP").GetComponent<TextMeshPro>();
@@ -693,7 +693,7 @@ public static class StringOptionPatch
     {
         //Credit For SetupHelpIcon to EHR https://github.com/Gurge44/EndlessHostRoles/blob/main/Patches/GameOptionsMenuPatch.cs
 
-        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index) && !__instance.transform.FindChild("MinusButton (1)").GetComponent<PassiveButton>().activeSprites.activeSelf)
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index) && !__instance.transform.FindChild("MinusButton").GetComponent<PassiveButton>().activeSprites.activeSelf)
         {
             var item = OptionItem.AllOptions[index];
             var name = item.GetName();
