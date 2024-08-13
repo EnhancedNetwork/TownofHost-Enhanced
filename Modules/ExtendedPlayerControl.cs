@@ -1241,6 +1241,12 @@ static class ExtendedPlayerControl
         var killerId = Main.PlayerStates[target.Data.PlayerId].GetRealKiller();
         return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
     }
+    public static PlayerControl GetRealKiller(this PlayerControl target, out CustomRoles killerRole)
+    {
+        var killerId = Main.PlayerStates[target.Data.PlayerId].GetRealKiller();
+        killerRole = Main.PlayerStates[target.Data.PlayerId].RoleofKiller;
+        return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
+    }
     public static PlayerControl GetRealKillerById(this byte targetId)
     {
         var killerId = Main.PlayerStates[targetId].GetRealKiller();
