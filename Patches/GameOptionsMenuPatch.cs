@@ -232,8 +232,8 @@ public static class GameOptionsMenuPatch
                 break;
 
             case OptionTypes.String:
-                optionBehaviour.transform.FindChild("PlusButton (1)").localPosition += new Vector3(option.IsText ? 500f : 1.7f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
-                optionBehaviour.transform.FindChild("MinusButton (1)").localPosition += new Vector3(option.IsText ? 500f : 0.9f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
+                optionBehaviour.transform.FindChild("PlusButton").localPosition += new Vector3(option.IsText ? 500f : 1.7f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
+                optionBehaviour.transform.FindChild("MinusButton").localPosition += new Vector3(option.IsText ? 500f : 0.9f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
                 var valueTMP = optionBehaviour.transform.FindChild("Value_TMP (1)");
                 valueTMP.localPosition += new Vector3(1.3f, 0f, 0f);
                 valueTMP.GetComponent<RectTransform>().sizeDelta = new(2.3f, 0.4f);
@@ -466,6 +466,7 @@ public static class NumberOptionPatch
         {
             var item = OptionItem.AllOptions[index];
             __instance.TitleText.text = item.GetName();
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -522,6 +523,7 @@ public static class NumberOptionPatch
             __instance.Value = __instance.ValidRange.min;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -531,6 +533,7 @@ public static class NumberOptionPatch
             __instance.Value += increment;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -544,6 +547,7 @@ public static class NumberOptionPatch
             __instance.Value = __instance.ValidRange.max;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -553,6 +557,7 @@ public static class NumberOptionPatch
             __instance.Value -= increment;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -583,6 +588,7 @@ public static class StringOptionPatch
                 };
             }
             __instance.TitleText.text = name;
+            __instance.AdjustButtonsActiveState();
             return false;
         }
         return true;
@@ -648,6 +654,7 @@ public static class StringOptionPatch
             __instance.Value = 0;
             __instance.UpdateValue();
             __instance.OnValueChanged?.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
         return true;
@@ -660,6 +667,7 @@ public static class StringOptionPatch
             __instance.Value = __instance.Values.Length - 1;
             __instance.UpdateValue();
             __instance.OnValueChanged?.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
         return true;
