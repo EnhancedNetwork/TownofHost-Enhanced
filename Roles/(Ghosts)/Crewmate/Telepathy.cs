@@ -95,7 +95,7 @@ internal class Telepathy : RoleBase
         if (args.Length < 2) return false;
         if (((Telepathy)pc.GetRoleClass())?.HasMessaged is null or true) return false;
 
-        Dictionary<int, string> DetermineMessage = ((Telepathy)pc.GetRoleClass())?.Determinemessage;
+        Dictionary<int, string> DetermineMessage = ((Telepathy)pc.GetRoleClass()).Determinemessage;
 
 
         string[] cmds =  {"/tms"}; // Here you can add custom cmds
@@ -120,7 +120,7 @@ internal class Telepathy : RoleBase
 
 
             case 1:
-                if (!int.TryParse(args[1], out int id) || !DetermineMessage?.ContainsKey(id) is null or true)
+                if (!int.TryParse(args[1], out int id) || !DetermineMessage.ContainsKey(id))
                 {
                     SendMessage(GetString("TelepathyMODE2Usage"), pc.PlayerId, title: ColorString(GetRoleColor(CustomRoles.Telepathy), GetString("TelepathyTitle")));
                     break;
