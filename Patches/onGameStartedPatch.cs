@@ -169,10 +169,10 @@ internal class ChangeRoleSettings
                 };
 
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
-                
+
                 if (GameStates.IsNormalGame)
                     Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);
-                
+
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
                 pc.cosmetics.nameText.text = pc.name;
