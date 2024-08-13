@@ -787,7 +787,6 @@ static class ExtendedPlayerControl
             DollMaster.CheckMurderAsPossessed(killer, target);
             return;
         }
-        if (!Main.PlayerKilledBy.ContainsKey(target.PlayerId)) Main.PlayerKilledBy[target.PlayerId] = KilledType.Indirectly;
         killer.RpcMurderPlayer(target, true);
     }
 
