@@ -1015,6 +1015,13 @@ public static class CustomRolesHelper
                   || pc.Is(CustomRoles.Mare))
                     return false;
                 break;
+
+            case CustomRoles.Statue:
+                if (pc.Is(CustomRoles.Alchemist)
+                    || pc.Is(CustomRoles.Flash)
+                    || pc.Is(CustomRoles.Tired))
+                    return false;
+                break;
         }
 
         return true;
