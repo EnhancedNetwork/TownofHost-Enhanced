@@ -77,7 +77,8 @@ class TextBoxTMPSetTextPatch
 /// <summary>
 /// "Fixes" an issue where empty TextBoxes have wrong cursor positions.
 /// </summary>
-/*[HarmonyPatch(typeof(TextMeshProExtensions), nameof(TextMeshProExtensions.CursorPos))]
+[HarmonyPatch(typeof(TextMeshProExtensions), nameof(TextMeshProExtensions.CursorPos), typeof(TextMeshPro))]
+[HarmonyPatch(typeof(TextMeshProExtensions), nameof(TextMeshProExtensions.CursorPos), typeof(TextMeshPro), typeof(int))]
 internal static class CursorPosPatch
 {
     public static bool Prefix(TextMeshPro self, ref Vector2 __result)
@@ -90,7 +91,7 @@ internal static class CursorPosPatch
 
         return true;
     }
-}*/ // 2024.8.13 break this
+} 
 
 
 
