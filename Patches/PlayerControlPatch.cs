@@ -976,7 +976,7 @@ class ReportDeadBodyPatch
             if (target?.Object?.GetRealKiller() != null)
             {
                 Main.RememberKillerRole = GetString($"{target.Object.GetRealKiller().GetCustomRole()}");
-                if (target.Object.GetRealKiller().IsAnySubRole(x => x.IsConverted() && !target.Object.Is(CustomRoles.Madmate)))
+                if (!target.Object.GetRealKiller().IsAnySubRole(x => x.IsConverted() && !target.Object.Is(CustomRoles.Madmate)))
                     Main.RememberedFaction = target.Object.GetRealKiller().GetCustomRole().GetCustomRoleTeam();
                 else
                     Main.RememberedFaction = Custom_Team.Neutral;
