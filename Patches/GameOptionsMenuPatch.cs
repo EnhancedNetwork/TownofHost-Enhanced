@@ -601,7 +601,7 @@ public static class StringOptionPatch
                     _ => 0.35f,
                 };
 
-                SetupHelpIcon(role, __instance);
+                //SetupHelpIcon(role, __instance);
             }
             __instance.TitleText.text = name;
             __instance.AdjustButtonsActiveState();
@@ -609,19 +609,19 @@ public static class StringOptionPatch
         }
         return true;
     }
-    private static void SetupHelpIcon(CustomRoles role, StringOption option)
-    {
-        var template = option.transform.FindChild("MinusButton");
-        var icon = Object.Instantiate(template, template.parent, true);
-        icon.name = $"{role}HelpIcon";
-        var text = icon.FindChild("Plus_TMP").GetComponent<TextMeshPro>();
-        text.text = "?";
-        text.color = Color.white;
-        icon.FindChild("InactiveSprite").GetComponent<SpriteRenderer>().color = Color.black;
-        icon.FindChild("ActiveSprite").GetComponent<SpriteRenderer>().color = Color.gray;
-        icon.localPosition += new Vector3(-0.8f, 0f, 0f);
-        icon.SetAsLastSibling();
-    }
+    //private static void SetupHelpIcon(CustomRoles role, StringOption option)
+    //{
+    //    var template = option.transform.FindChild("MinusButton");
+    //    var icon = Object.Instantiate(template, template.parent, true);
+    //    icon.name = $"{role}HelpIcon";
+    //    var text = icon.FindChild("Plus_TMP").GetComponent<TextMeshPro>();
+    //    text.text = "?";
+    //    text.color = Color.white;
+    //    icon.FindChild("InactiveSprite").GetComponent<SpriteRenderer>().color = Color.black;
+    //    icon.FindChild("ActiveSprite").GetComponent<SpriteRenderer>().color = Color.gray;
+    //    icon.localPosition += new Vector3(-0.8f, 0f, 0f);
+    //    icon.SetAsLastSibling();
+    //}
 
     [HarmonyPatch(nameof(StringOption.UpdateValue)), HarmonyPrefix]
     private static bool UpdateValuePrefix(StringOption __instance)
