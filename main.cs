@@ -156,8 +156,8 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, long> AllKillers = [];
     public static readonly Dictionary<byte, PlainShipRoom> LastKillerRoom = [];
     public static readonly Dictionary<byte, KilledType> PlayerKilledBy = [];
-    public static Custom_Team? RememberedFaction;
-    public static string RememberKillerRole = "";
+    public static Custom_Team? RememberTeamOfDeadBodyKiller;
+    public static string RememberRoleOfDeadBodyKiller = "";
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
 

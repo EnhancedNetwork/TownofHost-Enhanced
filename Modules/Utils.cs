@@ -1714,7 +1714,7 @@ public static class Utils
                         SystemTypes room = killar.GetPlainShipRoom().RoomId;
                         return string.Format(GetString("Messenger.KillerExistIn"), GetString($"{room}"));
                     }),
-                    "Messenger.KillersRoleIs" when Main.RememberKillerRole != "" => string.Format(GetString("Messenger.KillersRoleIs"), Main.RememberKillerRole),
+                    "Messenger.KillersRoleIs" when Main.RememberRoleOfDeadBodyKiller != "" => string.Format(GetString("Messenger.KillersRoleIs"), Main.RememberRoleOfDeadBodyKiller),
                     "Messenger.KilledType" when Main.PlayerKilledBy.TryGetValue(Player.PlayerId, out var KilledType) => string.Format(GetString("Messenger.KilledType"), GetString($"{KilledType}")),
                     "Messenger.MyTypeIs" => string.Format(GetString("Messenger.MyTypeIs"), (!Player.IsAnySubRole(x => x.IsConverted() && !Player.Is(CustomRoles.Madmate)) ? Player.GetCustomRole().GetCustomRoleTeam() : Custom_Team.Neutral)),
                     "Messenger.TheLastKillers" when Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.IsNeutralKiller() || x.IsNeutralApocalypse()).Any() => CreateAndInvoke(() =>
@@ -1737,7 +1737,7 @@ public static class Utils
                         return string.Format(GetString("Messenger.LazyFuck"), ScapeGoat.GetRealName(clientData: true));
                     }),
 
-                    "Messenger.KillersFaction" when Main.RememberedFaction != null => string.Format(GetString("Messenger.KillersFaction"), GetString($"Team{Main.RememberedFaction.Value}")),
+                    "Messenger.KillersFaction" when Main.RememberTeamOfDeadBodyKiller != null => string.Format(GetString("Messenger.KillersFaction"), GetString($"Team{Main.RememberTeamOfDeadBodyKiller.Value}")),
 
                     _ => CreateAndInvoke(() =>
                     {

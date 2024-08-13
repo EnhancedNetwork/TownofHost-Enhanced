@@ -971,15 +971,15 @@ class ReportDeadBodyPatch
                 }
             }
 
-            Main.RememberedFaction = null;
-            Main.RememberKillerRole = "";
+            Main.RememberTeamOfDeadBodyKiller = null;
+            Main.RememberRoleOfDeadBodyKiller = "";
             if (target?.Object?.GetRealKiller() != null)
             {
-                Main.RememberKillerRole = GetString($"{target.Object.GetRealKiller().GetCustomRole()}");
+                Main.RememberRoleOfDeadBodyKiller = GetString($"{target.Object.GetRealKiller().GetCustomRole()}");
                 if (!target.Object.GetRealKiller().IsAnySubRole(x => x.IsConverted() && !target.Object.Is(CustomRoles.Madmate)))
-                    Main.RememberedFaction = target.Object.GetRealKiller().GetCustomRole().GetCustomRoleTeam();
+                    Main.RememberTeamOfDeadBodyKiller = target.Object.GetRealKiller().GetCustomRole().GetCustomRoleTeam();
                 else
-                    Main.RememberedFaction = Custom_Team.Neutral;
+                    Main.RememberTeamOfDeadBodyKiller = Custom_Team.Neutral;
             }
 
             // Alchemist & Bloodlust

@@ -66,7 +66,7 @@ internal class ChangeRoleSettings
 
             PlayerControlSetRolePatch.DidSetGhost.Clear();
             Main.LastKillerRoom.Clear();
-            Main.RememberedFaction = null;
+            Main.RememberTeamOfDeadBodyKiller = null;
             Main.PlayerKilledBy.Clear();
 
             Main.CheckShapeshift.Clear();
