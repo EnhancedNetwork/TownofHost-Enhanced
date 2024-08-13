@@ -500,7 +500,7 @@ class MurderPlayerPatch
                 else if (target.GetRealKiller() == target)
                     Main.PlayerKilledBy[target.PlayerId] = KilledType.Suicide_;
                 else
-                    Main.PlayerKilledBy[target.PlayerId] = KilledType.Directly;
+                    Main.PlayerKilledBy[target.PlayerId] = KilledType.Indirectly;
             }
 
         }, 1f, "Set Main.Playerkilled by in MurderPlayer Patch");
