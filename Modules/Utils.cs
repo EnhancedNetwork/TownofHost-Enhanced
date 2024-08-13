@@ -1521,141 +1521,131 @@ public static class Utils
 
         string name = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n) ? n : "";
         if (Main.HostRealName != "" && player.AmOwner) name = Main.HostRealName;
-        if (name == "") return;
-        if (AmongUsClient.Instance.IsGameStarted)
+        if (name == "" || !GameStates.IsLobby) return;
+
+        if (player.AmOwner && player.IsModClient())
         {
-            if (Options.FormatNameMode.GetInt() == 1 && Main.HostRealName == "") name = Palette.GetColorName(player.Data.DefaultOutfit.ColorId);
+            if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
+            {
+                name = Options.HideHostText.GetBool() ? $"<color={GetString("NameColor")}>{name}</color>"
+                                                      : $"<color={GetString("HostColor")}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={GetString("NameColor")}>{name}</color>";
+            }
+            if (Options.CurrentGameMode == CustomGameMode.FFA)
+                name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
         }
-        else
+
+        var modtag = "";
+        if (Options.ApplyVipList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
         {
-            if (!GameStates.IsLobby) return;
-            if (player.AmOwner)
+            if (IsPlayerVIP(player.FriendCode))
             {
-                if (!player.IsModClient()) return;
+                string colorFilePath = @$"./TOHE-DATA/Tags/VIP_TAGS/{player.FriendCode}.txt";
+                //static color
+                if (!Options.GradientTagsOpt.GetBool())
                 {
-                    if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
+                    string startColorCode = "ffff00";
+                    if (File.Exists(colorFilePath))
                     {
-                        name = Options.HideHostText.GetBool() ? $"<color={GetString("NameColor")}>{name}</color>"
-                                                              : $"<color={GetString("HostColor")}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={GetString("NameColor")}>{name}</color>";
+                        string ColorCode = File.ReadAllText(colorFilePath);
+                        _ = ColorCode.Trim();
+                        if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
                     }
-
-
-                    //name = $"<color=#902efd>{GetString("HostText")}</color><color=#4bf4ff>♥</color>" + name;
+                    //"ffff00"
+                    modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
                 }
-                if (Options.CurrentGameMode == CustomGameMode.FFA)
-                    name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
-            }
-            var modtag = "";
-            if (Options.ApplyVipList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
-            {
-                if (IsPlayerVIP(player.FriendCode))
+                else //gradient color
                 {
-                    string colorFilePath = @$"./TOHE-DATA/Tags/VIP_TAGS/{player.FriendCode}.txt";
-                    //static color
-                    if (!Options.GradientTagsOpt.GetBool())
-                    { 
-                        string startColorCode = "ffff00";
-                        if (File.Exists(colorFilePath))
-                        {
-                            string ColorCode = File.ReadAllText(colorFilePath);
-                            _ = ColorCode.Trim();
-                            if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
-                        }
-                        //"ffff00"
-                        modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
-                        }
-                    else //gradient color
+                    string startColorCode = "ffff00";
+                    string endColorCode = "ffff00";
+                    string ColorCode = "";
+                    if (File.Exists(colorFilePath))
                     {
-                        string startColorCode = "ffff00";
-                        string endColorCode = "ffff00";
-                        string ColorCode = "";
-                        if (File.Exists(colorFilePath))
+                        ColorCode = File.ReadAllText(colorFilePath);
+                        if (ColorCode.Split(" ").Length == 2)
                         {
-                            ColorCode = File.ReadAllText(colorFilePath);
-                            if (ColorCode.Split(" ").Length == 2)
-                            {
-                                startColorCode = ColorCode.Split(" ")[0];
-                                endColorCode = ColorCode.Split(" ")[1];
-                            }
+                            startColorCode = ColorCode.Split(" ")[0];
+                            endColorCode = ColorCode.Split(" ")[1];
                         }
-                        if (!CheckGradientCode(ColorCode))
-                        {
-                            startColorCode = "ffff00";
-                            endColorCode = "ffff00";
-                        }
-                        //"33ccff", "ff99cc"
-                        if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
-
-                        else modtag = GradientColorText(startColorCode, endColorCode, GetString("VipTag"));
                     }
+                    if (!CheckGradientCode(ColorCode))
+                    {
+                        startColorCode = "ffff00";
+                        endColorCode = "ffff00";
+                    }
+                    //"33ccff", "ff99cc"
+                    if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
+
+                    else modtag = GradientColorText(startColorCode, endColorCode, GetString("VipTag"));
                 }
             }
-            if (Options.ApplyModeratorList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
-            {
-                if (IsPlayerModerator(player.FriendCode))
-                {
-                    string colorFilePath = @$"./TOHE-DATA/Tags/MOD_TAGS/{player.FriendCode}.txt";
-                    //static color
-                    if (!Options.GradientTagsOpt.GetBool())
-                    { 
-                        string startColorCode = "8bbee0";
-                        if (File.Exists(colorFilePath))
-                        {
-                            string ColorCode = File.ReadAllText(colorFilePath);
-                            _ = ColorCode.Trim();
-                            if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
-                        }
-                        //"33ccff", "ff99cc"
-                        modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
-                    }
-                    else //gradient color
-                    {
-                        string startColorCode = "8bbee0";
-                        string endColorCode = "8bbee0";
-                        string ColorCode = "";
-                        if (File.Exists(colorFilePath))
-                        {
-                            ColorCode = File.ReadAllText(colorFilePath);
-                            if (ColorCode.Split(" ").Length == 2)
-                            {
-                                startColorCode = ColorCode.Split(" ")[0];
-                                endColorCode = ColorCode.Split(" ")[1];
-                            }
-                        }
-                        if (!CheckGradientCode(ColorCode))
-                        {
-                            startColorCode = "8bbee0";
-                            endColorCode = "8bbee0";
-                        }
-                        //"33ccff", "ff99cc"
-                        if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
-
-                        else modtag = GradientColorText(startColorCode, endColorCode, GetString("ModTag"));
-                    }
-                }
-            }
-            if (player.AmOwner)
-            {
-                name = Options.GetSuffixMode() switch
-                {
-                    SuffixModes.TOHE => name += $"\r\n<color={Main.ModColor}>TOHE v{Main.PluginDisplayVersion}</color>",
-                    SuffixModes.Streaming => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
-                    SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
-                    SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
-                    SuffixModes.OriginalName => name += $"\r\n<size=1.7><color={Main.ModColor}>{DataManager.player.Customization.Name}</color></size>",
-                    SuffixModes.DoNotKillMe => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.DoNotKillMe")}</color></size>",
-                    SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.NoAndroidPlz")}</color></size>",
-                    SuffixModes.AutoHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.AutoHost")}</color></size>",
-                    _ => name
-                };
-            }
-
-            if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag() && (player.AmOwner || player.IsModClient()))
-            {
-                name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
-            }
-            else name = modtag + name;
         }
+        if (Options.ApplyModeratorList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
+        {
+            if (IsPlayerModerator(player.FriendCode))
+            {
+                string colorFilePath = @$"./TOHE-DATA/Tags/MOD_TAGS/{player.FriendCode}.txt";
+                //static color
+                if (!Options.GradientTagsOpt.GetBool())
+                {
+                    string startColorCode = "8bbee0";
+                    if (File.Exists(colorFilePath))
+                    {
+                        string ColorCode = File.ReadAllText(colorFilePath);
+                        _ = ColorCode.Trim();
+                        if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
+                    }
+                    //"33ccff", "ff99cc"
+                    modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
+                }
+                else //gradient color
+                {
+                    string startColorCode = "8bbee0";
+                    string endColorCode = "8bbee0";
+                    string ColorCode = "";
+                    if (File.Exists(colorFilePath))
+                    {
+                        ColorCode = File.ReadAllText(colorFilePath);
+                        if (ColorCode.Split(" ").Length == 2)
+                        {
+                            startColorCode = ColorCode.Split(" ")[0];
+                            endColorCode = ColorCode.Split(" ")[1];
+                        }
+                    }
+                    if (!CheckGradientCode(ColorCode))
+                    {
+                        startColorCode = "8bbee0";
+                        endColorCode = "8bbee0";
+                    }
+                    //"33ccff", "ff99cc"
+                    if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
+
+                    else modtag = GradientColorText(startColorCode, endColorCode, GetString("ModTag"));
+                }
+            }
+        }
+        if (player.AmOwner)
+        {
+            name = Options.GetSuffixMode() switch
+            {
+                SuffixModes.TOHE => name += $"\r\n<color={Main.ModColor}>TOHE v{Main.PluginDisplayVersion}</color>",
+                SuffixModes.Streaming => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
+                SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
+                SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
+                SuffixModes.OriginalName => name += $"\r\n<size=1.7><color={Main.ModColor}>{DataManager.player.Customization.Name}</color></size>",
+                SuffixModes.DoNotKillMe => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.DoNotKillMe")}</color></size>",
+                SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.NoAndroidPlz")}</color></size>",
+                SuffixModes.AutoHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.AutoHost")}</color></size>",
+                _ => name
+            };
+        }
+
+        if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag() && (player.AmOwner || player.IsModClient()))
+        {
+            name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
+        }
+        else name = modtag + name;
+
+        // Set name
         if (name != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
             player.RpcSetName(name);
     }
