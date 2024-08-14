@@ -1014,7 +1014,7 @@ internal static class RPC
         var state = Main.PlayerStates[targetId];
         state.RealKiller.Item1 = DateTime.Now;
         state.RealKiller.Item2 = killerId;
-        state.RoleofKiller = Main.PlayerStates[killerId].MainRole;
+        state.RoleofKiller = Main.PlayerStates.TryGetValue(killerId, out var kState) ? kState.MainRole : CustomRoles.NotAssigned;
 
         if (!AmongUsClient.Instance.AmHost) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRealKiller, SendOption.Reliable, -1);
