@@ -1,0 +1,167 @@
+﻿using AmongUs.GameOptions;
+using TOHE.Roles.Core;
+using UnityEngine;
+using static TOHE.Options;
+using static TOHE.Translator;
+
+namespace TOHE.Roles._Ghosts_.Impostor;
+
+internal class Possessor : RoleBase
+{
+    //===========================SETUP================================\\
+    private const int Id = 29800;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Possessor);
+    public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorGhosts;
+    //==================================================================\\
+    public static bool controllingPlayer = false;
+    public static byte controllingTargetId = byte.MaxValue;
+    public static float controllingLastSpeed = float.MinValue;
+    public static float possessTime = float.MinValue;
+
+    public static OptionItem PossessCooldown;
+    public static OptionItem PossessDuration;
+    public static OptionItem AlertRange;
+    public static OptionItem FocusRange;
+
+    public override void SetupCustomOption()
+    {
+        SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Possessor);
+        PossessCooldown = FloatOptionItem.Create(Id + 10, "PossessorPossessCooldown", new(2.5f, 120f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Possessor])
+        .SetValueFormat(OptionFormat.Seconds);
+        PossessDuration = FloatOptionItem.Create(Id + 11, "PossessorPossessDuration", new(2.5f, 120f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Possessor])
+        .SetValueFormat(OptionFormat.Seconds);
+        AlertRange = FloatOptionItem.Create(Id + 12, "PossessorAlertRange", new(1f, 10f, 0.5f), 2.5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Possessor])
+        .SetValueFormat(OptionFormat.Multiplier);
+        FocusRange = FloatOptionItem.Create(Id + 13, "PossessorFocusRange", new(5f, 25f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Possessor])
+        .SetValueFormat(OptionFormat.Multiplier);
+    }
+    public override void Init()
+    {
+    }
+    public override void Add(byte PlayerId)
+    {
+        CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOther);
+    }
+    // EAC bans players when GA uses sabotage
+    public override bool CanUseSabotage(PlayerControl pc) => false;
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.GuardianAngelCooldown = controllingPlayer ? 0f : PossessCooldown.GetFloat();
+        AURoleOptions.ProtectionDurationSeconds = 0f;
+    }
+
+    private void OnFixedUpdateOther(PlayerControl target)
+    {
+        if (target.PlayerId == controllingTargetId)
+        {
+            if (controllingPlayer && possessTime >= 0)
+            {
+                if (CheckRange(_Player.GetCustomPosition(), target.GetCustomPosition()) > 5f)
+                {
+                    _Player.RpcTeleport((_Player.GetCustomPosition() + target.GetCustomPosition()) / 2);
+                }
+
+                foreach (var allPlayers in Main.AllAlivePlayerControls.Where(pc => pc != target))
+                {
+                    if (CheckRange(target.GetCustomPosition(), allPlayers.GetCustomPosition()) < AlertRange.GetFloat())
+                    {
+                        controllingPlayer = false;
+                    }
+                }
+
+                if (CheckRange(_Player.GetCustomPosition(), target.GetCustomPosition()) < 1f)
+                {
+                    if (target.MyPhysics.Animations.IsPlayingRunAnimation())
+                    {
+                        target.RpcTeleport(target.GetCustomPosition());
+                        target.MyPhysics.RpcCancelPet();
+                    }
+                }
+                else if (CheckRange(_Player.GetCustomPosition(), target.GetCustomPosition()) < 3.5f)
+                {
+                    if (!target.petting && CheckRange(_Player.GetCustomPosition(), target.GetCustomPosition()) > 1f)
+                    {
+                        target.MyPhysics.RpcPet(_Player.GetCustomPosition(), new Vector2(500f, 500f));
+                    }
+                    else if (!target.MyPhysics.Animations.IsPlayingRunAnimation())
+                    {
+                        target.MyPhysics.RpcCancelPet();
+                        target.RpcTeleport(target.GetCustomPosition());
+                    }
+                }
+
+                possessTime -= Time.deltaTime;
+            }
+            else
+            {
+                target.MyPhysics.RpcCancelPet();
+                target.RpcTeleport(target.GetCustomPosition());
+                Main.AllPlayerSpeed[target.PlayerId] = controllingLastSpeed;
+                target.MarkDirtySettings();
+                controllingTargetId = byte.MaxValue;
+                controllingLastSpeed = float.MinValue;
+                _Player.RpcGuardAndKill(_Player);
+
+                if (controllingPlayer)
+                {
+                    float checkPos = float.MaxValue;
+                    foreach (var allPlayers in Main.AllAlivePlayerControls.Where(pc => pc != target))
+                    {
+                        if (CheckRange(_Player.GetCustomPosition(), allPlayers.GetCustomPosition()) < checkPos)
+                        {
+                            checkPos = CheckRange(_Player.GetCustomPosition(), allPlayers.GetCustomPosition());
+                        }
+                    }
+                    if (checkPos >= FocusRange.GetFloat())
+                    {
+                        target.RpcMurderPlayer(target);
+                        target.SetDeathReason(PlayerState.DeathReason.Curse);
+                        target.SetRealKiller(_Player);
+                    }
+                }
+
+                controllingPlayer = false;
+                _Player.RpcResetAbilityCooldown();
+            }
+        }
+    }
+
+    private static float CheckRange(Vector2 pos1, Vector2 pos2) => Vector2.Distance(pos1, pos2);
+
+    public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
+    {
+        if (target.GetCustomRole().IsImpostorTeam())
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Possessor), GetString("DollMaster_CannotPossessImpTeammate")));
+            return false;
+        }
+
+        if (!controllingPlayer)
+        {
+            // Cancel if Target is around other players
+            foreach (var allPlayers in Main.AllAlivePlayerControls.Where(pc => pc != target))
+            {
+                if (CheckRange(target.GetCustomPosition(), allPlayers.GetCustomPosition()) < AlertRange.GetFloat())
+                {
+                    _Player.RpcResetAbilityCooldown();
+                    return false;
+                }
+            }
+
+            _Player.RpcGuardAndKill(target);
+            controllingTargetId = target.PlayerId;
+            controllingLastSpeed = Main.AllPlayerSpeed[target.PlayerId];
+            Main.AllPlayerSpeed[target.PlayerId] = Main.MinSpeed;
+            target.MarkDirtySettings();
+            possessTime = PossessDuration.GetFloat();
+            controllingPlayer = true;
+        }
+        else
+        {
+            controllingPlayer = false;
+        }
+
+        return false;
+    }
+}
