@@ -6,7 +6,11 @@ namespace TOHE.Patches;
 
 // Originally code by Gurge44. Reference: https://github.com/Gurge44/EndlessHostRoles/blob/main/Patches/TextBoxPatch.cs
 
-[HarmonyPatch(typeof(TextBoxTMP), nameof(TextBoxTMP.SetText))]
+// Update 2024.8.13 drastically changed how the textbox works, so this is currently not working
+
+
+
+/*[HarmonyPatch(typeof(TextBoxTMP), nameof(TextBoxTMP.SetText))]
 class TextBoxTMPSetTextPatch
 {
     public static bool Prefix(TextBoxTMP __instance, [HarmonyArgument(0)] string input, [HarmonyArgument(1)] string inputCompo = "")
@@ -70,14 +74,14 @@ class TextBoxTMPSetTextPatch
 
         return false;
     }
-}
+}*/
 
 //Thanks https://github.com/NuclearPowered/Reactor/blob/master/Reactor/Patches/Fixes/CursorPosPatch.cs
 
 /// <summary>
 /// "Fixes" an issue where empty TextBoxes have wrong cursor positions.
 /// </summary>
-[HarmonyPatch(typeof(TextMeshProExtensions), nameof(TextMeshProExtensions.CursorPos), typeof(TextMeshPro))]
+/*[HarmonyPatch(typeof(TextMeshProExtensions), nameof(TextMeshProExtensions.CursorPos), typeof(TextMeshPro))]
 [HarmonyPatch(typeof(TextMeshProExtensions), nameof(TextMeshProExtensions.CursorPos), typeof(TextMeshPro), typeof(int))]
 internal static class CursorPosPatch
 {
@@ -91,7 +95,7 @@ internal static class CursorPosPatch
 
         return true;
     }
-} 
+} */
 
 
 
