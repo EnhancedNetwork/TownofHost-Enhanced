@@ -635,7 +635,7 @@ public static class StringOptionPatch
                     var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
                     var str = Translator.GetString($"{roleName}InfoLong");
                     int Lenght = str.Length > 360 ? 360 : str.Length;
-                    int strIndex = str.Contains('\n')?  str.IndexOf("\n") : 0;
+                    int strIndex = str.Contains('\n') ? str.IndexOf("\n") : 0;
                     var infoLong = str[(strIndex + 1)..Lenght];
                     var ColorRole = Utils.ColorString(Utils.GetRoleColor(role), role.ToString());
                     var info = $"<size=70%>{ColorRole}: {infoLong}</size>";
