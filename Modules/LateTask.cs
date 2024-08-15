@@ -25,6 +25,8 @@ class LateTask
         this.timer = time;
         this.name = name;
         this.shouldLog = shoudLog;
+        shoudLog &= name != "No Name Task" && name != "";
+
         Tasks.Add(this);
         if (name != "")
             if (shoudLog)
