@@ -298,23 +298,23 @@ class CheckForEndVotingPatch
             bool braked = false;
             if (tie)
             {
-                byte target = byte.MaxValue;
+                byte targetId = byte.MaxValue;
                 foreach (var data in VotingData.Where(x => x.Key < 15 && x.Value == max).ToArray())
                 {
                     if (Tiebreaker.VoteFor.Contains(data.Key))
                     {
-                        if (target != byte.MaxValue)
+                        if (targetId != byte.MaxValue)
                         {
-                            target = byte.MaxValue;
+                            targetId = byte.MaxValue;
                             break;
                         }
-                        target = data.Key;
+                        targetId = data.Key;
                     }
                 }
-                if (target != byte.MaxValue)
+                if (targetId != byte.MaxValue)
                 {
                     Logger.Info("Flat breakers cover expulsion of players", "Tiebreaker Vote");
-                    exiledPlayer = GetPlayerInfoById(target);
+                    exiledPlayer = GetPlayerInfoById(targetId);
                     tie = false;
                     braked = true;
                 }

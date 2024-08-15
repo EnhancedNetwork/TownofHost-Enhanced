@@ -70,11 +70,11 @@ internal class Doppelganger : RoleBase
 
         var killerSkin = new NetworkedPlayerInfo.PlayerOutfit()
             .Set(kname, killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
-        var killerLvl = Utils.GetPlayerInfoById(killer.PlayerId).PlayerLevel;
+        var killerLvl = killer.Data.PlayerLevel;
 
         var targetSkin = new NetworkedPlayerInfo.PlayerOutfit()
             .Set(tname, target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
-        var targetLvl = Utils.GetPlayerInfoById(target.PlayerId).PlayerLevel;
+        var targetLvl = target.Data.PlayerLevel;
 
         DoppelVictim[target.PlayerId] = tname;
 

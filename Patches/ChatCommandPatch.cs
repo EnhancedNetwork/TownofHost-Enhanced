@@ -3075,11 +3075,10 @@ class ChatUpdatePatch
 
         if (sendTo != byte.MaxValue && GameStates.IsLobby)
         {
-            if (Utils.GetPlayerInfoById(sendTo) != null)
+            var networkedPlayerInfo = Utils.GetPlayerInfoById(sendTo);
+            if (networkedPlayerInfo != null)
             {
-                var targetinfo = Utils.GetPlayerInfoById(sendTo);
-
-                if (targetinfo.DefaultOutfit.ColorId == -1)
+                if (networkedPlayerInfo.DefaultOutfit.ColorId == -1)
                 {
                     var delaymessage = Main.MessagesToSend[0];
                     Main.MessagesToSend.RemoveAt(0);
