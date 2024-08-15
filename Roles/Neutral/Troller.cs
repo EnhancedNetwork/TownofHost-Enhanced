@@ -55,7 +55,7 @@ internal class Troller : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = TrollsPerRound.GetInt();
+        ResetAbility();
 
         AllEvents = [.. EnumHelper.GetAllValues<Events>()];
 
@@ -74,6 +74,7 @@ internal class Troller : RoleBase
     {
         AbilityLimit = 0;
     }
+    private void ResetAbility() => AbilityLimit = TrollsPerRound.GetInt();
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -81,6 +82,7 @@ internal class Troller : RoleBase
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
+    public override void AfterMeetingTasks() => ResetAbility();
     public override bool OnTaskComplete(PlayerControl troller, int completedTaskCount, int totalTaskCount)
     {
         if (!troller.IsAlive() || AbilityLimit <= 0) return true;
