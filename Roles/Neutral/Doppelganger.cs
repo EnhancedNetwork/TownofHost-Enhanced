@@ -1,3 +1,4 @@
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using UnityEngine;
@@ -10,6 +11,7 @@ internal class Doppelganger : RoleBase
     //===========================SETUP================================\\
     private const int Id = 25000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doppelganger);
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -48,64 +50,6 @@ internal class Doppelganger : RoleBase
 
     public static bool CheckDoppelVictim(byte playerId) => DoppelVictim.ContainsKey(playerId);
 
-    private static void RpcChangeSkin(PlayerControl pc, NetworkedPlayerInfo.PlayerOutfit newOutfit, uint level)
-    {
-        var sender = CustomRpcSender.Create(name: $"Doppelganger.RpcChangeSkin({pc.Data.PlayerName})");
-
-        pc.SetName(newOutfit.PlayerName);
-        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetName)
-            .Write(pc.Data.NetId)
-            .Write(newOutfit.PlayerName)
-        .EndRpc();
-
-        Main.AllPlayerNames[pc.PlayerId] = newOutfit.PlayerName;
-
-        pc.SetColor(newOutfit.ColorId);
-        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetColor)
-            .Write(pc.Data.NetId)
-            .Write((byte)newOutfit.ColorId)
-        .EndRpc();
-
-        pc.SetHat(newOutfit.HatId, newOutfit.ColorId);
-        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetHatStr)
-            .Write(newOutfit.HatId)
-            .Write(pc.GetNextRpcSequenceId(RpcCalls.SetHatStr))
-        .EndRpc();
-
-        pc.SetSkin(newOutfit.SkinId, newOutfit.ColorId);
-        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetSkinStr)
-            .Write(newOutfit.SkinId)
-            .Write(pc.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
-        .EndRpc();
-
-        pc.SetVisor(newOutfit.VisorId, newOutfit.ColorId);
-        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetVisorStr)
-            .Write(newOutfit.VisorId)
-            .Write(pc.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
-        .EndRpc();
-
-        pc.SetPet(newOutfit.PetId);
-        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetPetStr)
-            .Write(newOutfit.PetId)
-            .Write(pc.GetNextRpcSequenceId(RpcCalls.SetPetStr))
-            .EndRpc();
-
-        pc.SetNamePlate(newOutfit.NamePlateId);
-        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetNamePlateStr)
-            .Write(newOutfit.NamePlateId)
-            .Write(pc.GetNextRpcSequenceId(RpcCalls.SetNamePlateStr))
-            .EndRpc();
-
-        pc.SetLevel(level);
-        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetLevel)
-            .Write(level)
-            .EndRpc();
-
-        sender.SendMessage();
-
-        DoppelPresentSkin[pc.PlayerId] = newOutfit;
-    }
-
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null || Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)) return true;
@@ -121,30 +65,30 @@ internal class Doppelganger : RoleBase
 
         AbilityLimit--;
 
-        //string kname = killer.GetRealName();
-        //string tname = target.GetRealName();
+        string kname = killer.GetRealName(isMeeting: true);
+        string tname = target.GetRealName(isMeeting: true);
 
         var killerSkin = new NetworkedPlayerInfo.PlayerOutfit()
-            .Set(killer.GetRealName(), killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
-        var killerLvl = Utils.GetPlayerInfoById(killer.PlayerId).PlayerLevel;
+            .Set(kname, killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
+        var killerLvl = killer.Data.PlayerLevel;
 
         var targetSkin = new NetworkedPlayerInfo.PlayerOutfit()
-            .Set(target.GetRealName(), target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
-        var targetLvl = Utils.GetPlayerInfoById(target.PlayerId).PlayerLevel;
+            .Set(tname, target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
+        var targetLvl = target.Data.PlayerLevel;
 
-        DoppelVictim[target.PlayerId] = target.GetRealName();
+        DoppelVictim[target.PlayerId] = tname;
 
-        RpcChangeSkin(target, killerSkin, killerLvl);
+        target.SetNewOutfit(killerSkin, newLevel: killerLvl);
+        DoppelPresentSkin[target.PlayerId] = killerSkin;
         Logger.Info("Changed target skin", "Doppelganger");
-        RpcChangeSkin(killer, targetSkin, targetLvl);
+
+        killer.SetNewOutfit(targetSkin, newLevel: targetLvl);
+        DoppelPresentSkin[killer.PlayerId] = targetSkin;
         Logger.Info("Changed killer skin", "Doppelganger");
 
-        killer.Data.MarkDirty();
-        target.Data.MarkDirty();
-        
         SendSkillRPC();
         RPC.SyncAllPlayerNames();
-        Utils.NotifyRoles(ForceLoop: true, NoCache: true);
+        Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
 
         killer.ResetKillCooldown();
         killer.SetKillCooldown();

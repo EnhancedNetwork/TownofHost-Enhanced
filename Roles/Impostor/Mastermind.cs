@@ -68,7 +68,7 @@ internal class Mastermind : RoleBase
         return killer.CheckDoubleTrigger(target, () =>
         {
             killer.SetKillCooldown(time: ManipulateCD);
-            if (ExtendedPlayerControl.HasKillButton(target) || CopyCat.playerIdList.Contains(target.PlayerId) || Main.TasklessCrewmate.Contains(target.PlayerId))
+            if (target.HasKillButton() || CopyCat.playerIdList.Contains(target.PlayerId) || Main.TasklessCrewmate.Contains(target.PlayerId))
             {
                 ManipulateDelays.TryAdd(target.PlayerId, GetTimeStamp());
                 NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);

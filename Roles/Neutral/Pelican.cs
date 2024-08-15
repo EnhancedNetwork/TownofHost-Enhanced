@@ -118,7 +118,7 @@ internal class Pelican : RoleBase
             }
         }
 
-        return target != null && target.CanBeTeleported() && !target.Is(CustomRoles.Pestilence) && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
+        return target != null && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
     }
     public static Vector2 GetBlackRoomPSForPelican()
     {
@@ -225,34 +225,46 @@ internal class Pelican : RoleBase
     }
     private void ReturnEatenPlayerBack(PlayerControl pelican)
     {
-        var pc = pelican.PlayerId;
-        if (!eatenList.ContainsKey(pc)) return;
-        Vector2 teleportPosition;
-        if ((pelican.GetCustomPosition() == GetBlackRoomPSForPelican() || pelican.GetCustomPosition() == ExtendedPlayerControl.GetBlackRoomPosition())
-            && PelicanLastPosition.ContainsKey(pc))
-            teleportPosition = PelicanLastPosition[pc];
-        else teleportPosition = pelican.GetCustomPosition();
+        var pelicanId = pelican.PlayerId;
+        if (!eatenList.ContainsKey(pelicanId)) return;
 
-        foreach (var tar in eatenList[pc])
+        GameEndCheckerForNormal.ShouldNotCheck = true;
+
+        try
         {
-            var target = Utils.GetPlayerById(tar);
-            var player = Utils.GetPlayerById(pc);
-            if (player == null || target == null) continue;
+            Vector2 teleportPosition;
+            if (Scavenger.KilledPlayersId.Contains(pelicanId) && PelicanLastPosition.TryGetValue(pelicanId, out var lastPosition))
+                teleportPosition = lastPosition;
+            else 
+                teleportPosition = pelican.GetCustomPosition();
 
-            target.RpcTeleport(teleportPosition);
+            foreach (var tar in eatenList[pelicanId])
+            {
+                var target = Utils.GetPlayerById(tar);
+                var player = Utils.GetPlayerById(pelicanId);
+                if (player == null || target == null) continue;
 
-            Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
-            ReportDeadBodyPatch.CanReport[tar] = true;
+                target.RpcTeleport(teleportPosition);
 
-            target.SyncSettings();
+                Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
+                ReportDeadBodyPatch.CanReport[tar] = true;
 
-            RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
+                target.SyncSettings();
 
-            Logger.Info($"{Utils.GetPlayerById(pc).GetRealName()} dead, player return back: {target.GetRealName()}", "Pelican");
+                RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
+
+                Logger.Info($"{pelican?.Data?.PlayerName} dead, player return back: {target?.Data?.PlayerName} in {teleportPosition}", "Pelican");
+            }
+            eatenList.Remove(pelicanId);
+            SyncEatenList();
+            Utils.NotifyRoles();
         }
-        eatenList.Remove(pc);
-        SyncEatenList();
-        Utils.NotifyRoles();
+        catch (System.Exception error)
+        {
+            Utils.ThrowException(error);
+        }
+
+        GameEndCheckerForNormal.ShouldNotCheck = false;
     }
 
     public override void OnFixedUpdateLowLoad(PlayerControl pelican)

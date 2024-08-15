@@ -2,14 +2,15 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Mundane
+public class Mundane : IAddon
 {
     private const int Id = 26700;
+    public AddonTypes Type => AddonTypes.Harmful;
 
     public static OptionItem CanBeOnCrew;
     public static OptionItem CanBeOnNeutral;
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Mundane, canSetNum: true, tab: TabGroup.Addons);
         CanBeOnCrew = BooleanOptionItem.Create(Id + 11, "CrewCanBeMundane", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mundane]);

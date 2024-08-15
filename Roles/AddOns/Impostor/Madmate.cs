@@ -81,9 +81,9 @@ public static class Madmate
         "MadmateCountMode.Original",
     ];
 
-    public static bool CanBeMadmate(this PlayerControl pc, bool inGame = false, bool forGangster = false)
+    public static bool CanBeMadmate(this PlayerControl pc, bool forAdmirer = false, bool forGangster = false)
     {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || (pc.GetCustomRole().IsNeutral() && inGame)) && !pc.Is(CustomRoles.Madmate)
+        return pc != null && !pc.Is(CustomRoles.Madmate) && (pc.GetCustomRole().IsCrewmate() || (forAdmirer && pc.GetCustomRole().IsNeutral()))
         && !(pc.CheckCanBeMadmate(forGangster) ||
             pc.Is(CustomRoles.LazyGuy) ||
             pc.Is(CustomRoles.Lazy) ||

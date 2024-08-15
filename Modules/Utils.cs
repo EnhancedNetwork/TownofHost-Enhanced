@@ -231,7 +231,7 @@ public static class Utils
         }
         return;
     }
-
+    
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
         if (!target.Data.IsDead || GameStates.IsMeeting) return;
@@ -1521,141 +1521,131 @@ public static class Utils
 
         string name = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n) ? n : "";
         if (Main.HostRealName != "" && player.AmOwner) name = Main.HostRealName;
-        if (name == "") return;
-        if (AmongUsClient.Instance.IsGameStarted)
+        if (name == "" || !GameStates.IsLobby) return;
+
+        if (player.AmOwner && player.IsModClient())
         {
-            if (Options.FormatNameMode.GetInt() == 1 && Main.HostRealName == "") name = Palette.GetColorName(player.Data.DefaultOutfit.ColorId);
+            if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
+            {
+                name = Options.HideHostText.GetBool() ? $"<color={GetString("NameColor")}>{name}</color>"
+                                                      : $"<color={GetString("HostColor")}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={GetString("NameColor")}>{name}</color>";
+            }
+            if (Options.CurrentGameMode == CustomGameMode.FFA)
+                name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
         }
-        else
+
+        var modtag = "";
+        if (Options.ApplyVipList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
         {
-            if (!GameStates.IsLobby) return;
-            if (player.AmOwner)
+            if (IsPlayerVIP(player.FriendCode))
             {
-                if (!player.IsModClient()) return;
+                string colorFilePath = @$"./TOHE-DATA/Tags/VIP_TAGS/{player.FriendCode}.txt";
+                //static color
+                if (!Options.GradientTagsOpt.GetBool())
                 {
-                    if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
+                    string startColorCode = "ffff00";
+                    if (File.Exists(colorFilePath))
                     {
-                        name = Options.HideHostText.GetBool() ? $"<color={GetString("NameColor")}>{name}</color>"
-                                                              : $"<color={GetString("HostColor")}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={GetString("NameColor")}>{name}</color>";
+                        string ColorCode = File.ReadAllText(colorFilePath);
+                        _ = ColorCode.Trim();
+                        if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
                     }
-
-
-                    //name = $"<color=#902efd>{GetString("HostText")}</color><color=#4bf4ff>♥</color>" + name;
+                    //"ffff00"
+                    modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
                 }
-                if (Options.CurrentGameMode == CustomGameMode.FFA)
-                    name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
-            }
-            var modtag = "";
-            if (Options.ApplyVipList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
-            {
-                if (IsPlayerVIP(player.FriendCode))
+                else //gradient color
                 {
-                    string colorFilePath = @$"./TOHE-DATA/Tags/VIP_TAGS/{player.FriendCode}.txt";
-                    //static color
-                    if (!Options.GradientTagsOpt.GetBool())
-                    { 
-                        string startColorCode = "ffff00";
-                        if (File.Exists(colorFilePath))
-                        {
-                            string ColorCode = File.ReadAllText(colorFilePath);
-                            _ = ColorCode.Trim();
-                            if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
-                        }
-                        //"ffff00"
-                        modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
-                        }
-                    else //gradient color
+                    string startColorCode = "ffff00";
+                    string endColorCode = "ffff00";
+                    string ColorCode = "";
+                    if (File.Exists(colorFilePath))
                     {
-                        string startColorCode = "ffff00";
-                        string endColorCode = "ffff00";
-                        string ColorCode = "";
-                        if (File.Exists(colorFilePath))
+                        ColorCode = File.ReadAllText(colorFilePath);
+                        if (ColorCode.Split(" ").Length == 2)
                         {
-                            ColorCode = File.ReadAllText(colorFilePath);
-                            if (ColorCode.Split(" ").Length == 2)
-                            {
-                                startColorCode = ColorCode.Split(" ")[0];
-                                endColorCode = ColorCode.Split(" ")[1];
-                            }
+                            startColorCode = ColorCode.Split(" ")[0];
+                            endColorCode = ColorCode.Split(" ")[1];
                         }
-                        if (!CheckGradientCode(ColorCode))
-                        {
-                            startColorCode = "ffff00";
-                            endColorCode = "ffff00";
-                        }
-                        //"33ccff", "ff99cc"
-                        if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
-
-                        else modtag = GradientColorText(startColorCode, endColorCode, GetString("VipTag"));
                     }
+                    if (!CheckGradientCode(ColorCode))
+                    {
+                        startColorCode = "ffff00";
+                        endColorCode = "ffff00";
+                    }
+                    //"33ccff", "ff99cc"
+                    if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
+
+                    else modtag = GradientColorText(startColorCode, endColorCode, GetString("VipTag"));
                 }
             }
-            if (Options.ApplyModeratorList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
-            {
-                if (IsPlayerModerator(player.FriendCode))
-                {
-                    string colorFilePath = @$"./TOHE-DATA/Tags/MOD_TAGS/{player.FriendCode}.txt";
-                    //static color
-                    if (!Options.GradientTagsOpt.GetBool())
-                    { 
-                        string startColorCode = "8bbee0";
-                        if (File.Exists(colorFilePath))
-                        {
-                            string ColorCode = File.ReadAllText(colorFilePath);
-                            _ = ColorCode.Trim();
-                            if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
-                        }
-                        //"33ccff", "ff99cc"
-                        modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
-                    }
-                    else //gradient color
-                    {
-                        string startColorCode = "8bbee0";
-                        string endColorCode = "8bbee0";
-                        string ColorCode = "";
-                        if (File.Exists(colorFilePath))
-                        {
-                            ColorCode = File.ReadAllText(colorFilePath);
-                            if (ColorCode.Split(" ").Length == 2)
-                            {
-                                startColorCode = ColorCode.Split(" ")[0];
-                                endColorCode = ColorCode.Split(" ")[1];
-                            }
-                        }
-                        if (!CheckGradientCode(ColorCode))
-                        {
-                            startColorCode = "8bbee0";
-                            endColorCode = "8bbee0";
-                        }
-                        //"33ccff", "ff99cc"
-                        if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
-
-                        else modtag = GradientColorText(startColorCode, endColorCode, GetString("ModTag"));
-                    }
-                }
-            }
-            if (player.AmOwner)
-            {
-                name = Options.GetSuffixMode() switch
-                {
-                    SuffixModes.TOHE => name += $"\r\n<color={Main.ModColor}>TOHE v{Main.PluginDisplayVersion}</color>",
-                    SuffixModes.Streaming => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
-                    SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
-                    SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
-                    SuffixModes.OriginalName => name += $"\r\n<size=1.7><color={Main.ModColor}>{DataManager.player.Customization.Name}</color></size>",
-                    SuffixModes.DoNotKillMe => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.DoNotKillMe")}</color></size>",
-                    SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.NoAndroidPlz")}</color></size>",
-                    SuffixModes.AutoHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.AutoHost")}</color></size>",
-                    _ => name
-                };
-            }
-
-            if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag() && (player.AmOwner || player.IsModClient()))
-            {
-                name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
-            }
-            else name = modtag + name;
         }
+        if (Options.ApplyModeratorList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
+        {
+            if (IsPlayerModerator(player.FriendCode))
+            {
+                string colorFilePath = @$"./TOHE-DATA/Tags/MOD_TAGS/{player.FriendCode}.txt";
+                //static color
+                if (!Options.GradientTagsOpt.GetBool())
+                {
+                    string startColorCode = "8bbee0";
+                    if (File.Exists(colorFilePath))
+                    {
+                        string ColorCode = File.ReadAllText(colorFilePath);
+                        _ = ColorCode.Trim();
+                        if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
+                    }
+                    //"33ccff", "ff99cc"
+                    modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
+                }
+                else //gradient color
+                {
+                    string startColorCode = "8bbee0";
+                    string endColorCode = "8bbee0";
+                    string ColorCode = "";
+                    if (File.Exists(colorFilePath))
+                    {
+                        ColorCode = File.ReadAllText(colorFilePath);
+                        if (ColorCode.Split(" ").Length == 2)
+                        {
+                            startColorCode = ColorCode.Split(" ")[0];
+                            endColorCode = ColorCode.Split(" ")[1];
+                        }
+                    }
+                    if (!CheckGradientCode(ColorCode))
+                    {
+                        startColorCode = "8bbee0";
+                        endColorCode = "8bbee0";
+                    }
+                    //"33ccff", "ff99cc"
+                    if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
+
+                    else modtag = GradientColorText(startColorCode, endColorCode, GetString("ModTag"));
+                }
+            }
+        }
+        if (player.AmOwner)
+        {
+            name = Options.GetSuffixMode() switch
+            {
+                SuffixModes.TOHE => name += $"\r\n<color={Main.ModColor}>TOHE v{Main.PluginDisplayVersion}</color>",
+                SuffixModes.Streaming => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
+                SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
+                SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
+                SuffixModes.OriginalName => name += $"\r\n<size=1.7><color={Main.ModColor}>{DataManager.player.Customization.Name}</color></size>",
+                SuffixModes.DoNotKillMe => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.DoNotKillMe")}</color></size>",
+                SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.NoAndroidPlz")}</color></size>",
+                SuffixModes.AutoHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.AutoHost")}</color></size>",
+                _ => name
+            };
+        }
+
+        if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag() && (player.AmOwner || player.IsModClient()))
+        {
+            name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
+        }
+        else name = modtag + name;
+
+        // Set name
         if (name != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
             player.RpcSetName(name);
     }
@@ -1693,6 +1683,17 @@ public static class Utils
         return null;
     }
 
+    public static bool IsMethodOverridden(this RoleBase roleInstance, string methodName)
+    {
+        Type baseType = typeof(RoleBase);
+        Type derivedType = roleInstance.GetType();
+
+        MethodInfo baseMethod = baseType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+        MethodInfo derivedMethod = derivedType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+
+        return baseMethod.DeclaringType != derivedMethod.DeclaringType;
+    }
+
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
@@ -1701,9 +1702,8 @@ public static class Utils
     private static readonly StringBuilder TargetMark = new(20);
     public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || OnPlayerLeftPatch.StartingProcessing) return;
         if (Main.AllPlayerControls == null) return;
-        if (GameStates.IsHideNSeek) return;
 
         //Do not update NotifyRoles during meetings
         if (GameStates.IsMeeting && !GameEndCheckerForNormal.ShowAllRolesWhenGameEnd) return;
@@ -1718,9 +1718,8 @@ public static class Utils
     }
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost) return Task.CompletedTask;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || OnPlayerLeftPatch.StartingProcessing) return Task.CompletedTask;
         if (Main.AllPlayerControls == null) return Task.CompletedTask;
-        if (GameStates.IsHideNSeek) return Task.CompletedTask;
 
         //Do not update NotifyRoles during meetings
         if (GameStates.IsMeeting && !GameEndCheckerForNormal.ShowAllRolesWhenGameEnd) return Task.CompletedTask;
@@ -1856,6 +1855,8 @@ public static class Utils
                 SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
+                SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
+
 
                 switch (Options.CurrentGameMode)
                 {
@@ -1875,6 +1876,12 @@ public static class Utils
                 string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, false)}{SelfTaskText}</size>";
                 string SelfDeathReason = seer.KnowDeathReason(seer) ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : string.Empty;
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
+
+                // Add protected player icon from ShieldPersonDiedFirst
+                if (seer.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting && !isForMeeting)
+                {
+                    SelfName = $"{ColorString(seer.GetRoleColor(), $"<color=#4fa1ff><u></color>{SeerRealName}</u>")}{SelfDeathReason}<color=#4fa1ff>✚</color>{SelfMark}";
+                }
 
                 bool IsDisplayInfo = false;
                 if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode != CustomGameMode.FFA)
@@ -2048,6 +2055,9 @@ public static class Utils
                                     if (Options.NeutralKillersCanGuess.GetBool() && seer.GetCustomRole().IsNK())
                                         TargetPlayerName = GetTragetId;
 
+                                    if (Options.NeutralApocalypseCanGuess.GetBool() && seer.GetCustomRole().IsNA())
+                                        TargetPlayerName = GetTragetId;
+
                                     if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))
                                         TargetPlayerName = GetTragetId;
                                 }
@@ -2098,6 +2108,12 @@ public static class Utils
                         string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}{TargetSuffix}";
                         //TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
 
+                        // Add protected player icon from ShieldPersonDiedFirst
+                        if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting && !isForMeeting && Options.ShowShieldedPlayerToAll.GetBool())
+                        {
+                            TargetName = $"{TargetRoleText}<color=#4fa1ff><u></color>{TargetPlayerName}</u>{TargetDeathReason}<color=#4fa1ff>✚</color>{TargetMark}{TargetSuffix}";
+                        }
+
                         realTarget.RpcSetNamePrivate(TargetName, seer, force: NoCache);
                     }
                 }
@@ -2123,7 +2139,8 @@ public static class Utils
             return rso is PlayerState.DeathReason.Overtired 
                 or PlayerState.DeathReason.etc
                 or PlayerState.DeathReason.Vote 
-                or PlayerState.DeathReason.Gambled;
+                or PlayerState.DeathReason.Gambled
+                or PlayerState.DeathReason.Armageddon;
         }
 
         return checkbanned ? !BannedReason(reason) : reason switch
@@ -2174,6 +2191,7 @@ public static class Utils
             var Breason when BannedReason(Breason) => false,
             PlayerState.DeathReason.Slice => CustomRoles.Hawk.IsEnable(),
             PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
+            PlayerState.DeathReason.Starved => CustomRoles.Baker.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };
@@ -2190,7 +2208,10 @@ public static class Utils
 
         foreach (var playerState in Main.PlayerStates.Values.ToArray())
         {
-            playerState.RoleClass?.AfterMeetingTasks();
+            if (playerState.RoleClass == null) continue;
+
+            playerState.RoleClass.AfterMeetingTasks();
+            playerState.RoleClass.HasVoted = false;
         }
 
         //Set kill timer
@@ -2225,6 +2246,7 @@ public static class Utils
             ventilationSystem.IsDirty = true;
         }
     }
+
     // Get vent that is the furthest from alive player position's
     public static Vent GetFurthestVentFromPlayers()
     {
@@ -2260,13 +2282,16 @@ public static class Utils
 
         return furthestVent;
     }
+  
+    public static string ToColoredString(this CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString($"{role}"));
+  
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {
         var tmp = ChangeTo * 10;
         tmp += input;
         ChangeTo = Math.Clamp(tmp, 0, max);
     }
-    public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = true)
+    public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = false)
     {
         int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor));
         if (Main.AliveImpostorCount != AliveImpostorCount)
@@ -2290,19 +2315,26 @@ public static class Utils
             }
             sb.Append($"All:{AllAlivePlayersCount}/{AllPlayersCount}");
             Logger.Info(sb.ToString(), "CountAlivePlayers");
-
-            if (AmongUsClient.Instance.AmHost && checkGameEnd)
-                GameEndCheckerForNormal.Prefix();
         }
+
+        if (AmongUsClient.Instance.AmHost && checkGameEnd)
+            GameEndCheckerForNormal.Prefix();
     }
     public static string GetVoteName(byte num)
     {
+        //  HasNotVoted = 255;
+        //  MissedVote = 254;
+        //  SkippedVote = 253;
+        //  DeadVote = 252;
+
         string name = "invalid";
         var player = GetPlayerById(num);
-        if (num < 15 && player != null) name = player?.GetNameWithRole();
+        var playerCount = Main.AllPlayerControls.Length;
+        if (num < playerCount && player != null) name = player?.GetNameWithRole();
+        if (num == 252) name = "Dead";
         if (num == 253) name = "Skip";
-        if (num == 254) name = "None";
-        if (num == 255) name = "Dead";
+        if (num == 254) name = "MissedVote";
+        if (num == 255) name = "HasNotVoted";
         return name;
     }
     public static string PadRightV2(this object text, int num)

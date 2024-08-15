@@ -86,12 +86,24 @@ class GameEndCheckerForNormal
                         if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
                             pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId))
                         {
+                            // When admired neutral win, set end game reason "HumansByVote"
+                            if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
+                            {
+                                reason = GameOverReason.HumansByVote;
+                            }
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Impostor:
                         if (((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)))
                             || pc.Is(CustomRoles.Madmate) && !WinnerIds.Contains(pc.PlayerId))
+                        {
+                            WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
+                    case CustomWinner.Apocalypse:
+                        if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
+                            && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -275,7 +287,7 @@ class GameEndCheckerForNormal
                             break;
                         case CustomRoles.Pursuer when pc.IsAlive() && WinnerTeam is not CustomWinner.Jester and not CustomWinner.Lovers and not CustomWinner.Terrorist and not CustomWinner.Executioner and not CustomWinner.Collector and not CustomWinner.Innocent and not CustomWinner.Youtuber:
                             WinnerIds.Add(pc.PlayerId);
-                            AdditionalWinnerTeams.Add(AdditionalWinners.Taskinator);
+                            AdditionalWinnerTeams.Add(AdditionalWinners.Pursuer);
                             break;
                         case CustomRoles.Sunnyboy when !pc.IsAlive():
                             WinnerIds.Add(pc.PlayerId);
@@ -289,8 +301,8 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Specter);
                             break;
-                        case CustomRoles.Provocateur when Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tar):
-                            if (!WinnerIds.Contains(tar))
+                        case CustomRoles.Provocateur:
+                            if (Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tarId) && !WinnerIds.Contains(tarId))
                             {
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Provocateur);
@@ -306,6 +318,10 @@ class GameEndCheckerForNormal
                             {
                                 WinnerIds.Add(Hater);
                             }
+                            break;
+                        case CustomRoles.Troller when pc.IsAlive():
+                            AdditionalWinnerTeams.Add(AdditionalWinners.Troller);
+                            WinnerIds.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Romantic:
                             if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) 
@@ -332,7 +348,14 @@ class GameEndCheckerForNormal
                             break;
                     }
                 }
-
+                if (Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse()))
+                {
+                    foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse()))
+                    {
+                        if (!WinnerIds.Contains(pc.PlayerId))
+                            WinnerIds.Add(pc.PlayerId);
+                    }
+                }
                 if (WinnerTeam is CustomWinner.Youtuber)
                 {
                     var youTuber = Main.AllPlayerControls.FirstOrDefault(x => x.Is(CustomRoles.Youtuber) && WinnerIds.Contains(x.PlayerId));

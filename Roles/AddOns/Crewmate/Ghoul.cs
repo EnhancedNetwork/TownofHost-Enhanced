@@ -2,13 +2,14 @@
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
-public class Ghoul
+public class Ghoul : IAddon
 {
     private const int Id = 21900;
+    public AddonTypes Type => AddonTypes.Mixed;
     public static HashSet<byte> KillGhoul = [];
     public static bool IsEnable;
     
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Ghoul, canSetNum: true, tab: TabGroup.Addons);
     }
@@ -28,7 +29,7 @@ public class Ghoul
     {
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
         {
-            if (!player.Is(CustomRoles.Pestilence))
+            if (!player.IsTransformedNeutralApocalypse())
                 KillGhoul.Add(player.PlayerId);
         }
     }

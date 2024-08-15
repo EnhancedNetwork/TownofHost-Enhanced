@@ -60,7 +60,7 @@ internal class Werewolf : RoleBase
                 if (player == killer) continue;
                 if (player == target) continue;
 
-                if (player.Is(CustomRoles.Pestilence)) continue;
+                if (player.IsTransformedNeutralApocalypse()) continue;
                 else if ((player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini)) && Mini.Age < 18) continue;
 
                 if (Vector2.Distance(killer.transform.position, player.transform.position) <= MaulRadius.GetFloat())

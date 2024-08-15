@@ -3,13 +3,13 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public class Reach
+public class Reach : IAddon
 {
     private const int Id = 23700;
-
-    public static CustomRoles IsReach = CustomRoles.Reach; // Used to find "references" of this addon.
+    public AddonTypes Type => AddonTypes.Helpful;
+    public static CustomRoles IsReach => CustomRoles.Reach; // Used to find "references" of this addon.
     
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Reach, canSetNum: true);
     }

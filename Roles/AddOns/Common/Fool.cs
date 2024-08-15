@@ -2,21 +2,14 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Fool
+public class Fool : IAddon
 {
     private const int Id = 25600;
     public static bool IsEnable = false;
-
-    public static OptionItem ImpCanBeFool;
-    public static OptionItem CrewCanBeFool;
-    public static OptionItem NeutralCanBeFool;
-
-    public static void SetupCustomOptions()
+    public AddonTypes Type => AddonTypes.Harmful;
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Fool, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeFool = BooleanOptionItem.Create(Id + 10, "ImpCanBeFool", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
-        CrewCanBeFool = BooleanOptionItem.Create(Id + 11, "CrewCanBeFool", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
-        NeutralCanBeFool = BooleanOptionItem.Create(Id + 12, "NeutralCanBeFool", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
+        SetupAdtRoleOptions(Id, CustomRoles.Fool, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
 
     public static void Init()

@@ -2,25 +2,20 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Diseased
+public class Diseased : IAddon
 {
     private const int Id = 21800;
     public static bool IsEnable = false;
+    public AddonTypes Type => AddonTypes.Mixed;
 
-    public static OptionItem ImpCanBeDiseased;
-    public static OptionItem CrewCanBeDiseased;
-    public static OptionItem NeutralCanBeDiseased;
     private static OptionItem DiseasedCDOpt;
     private static OptionItem DiseasedCDReset;
 
     private static Dictionary<byte, int> KilledDiseased;
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Diseased, canSetNum: true);
-        ImpCanBeDiseased = BooleanOptionItem.Create(Id + 10, "ImpCanBeDiseased", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
-        CrewCanBeDiseased = BooleanOptionItem.Create(Id + 11, "CrewCanBeDiseased", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
-        NeutralCanBeDiseased = BooleanOptionItem.Create(Id + 12, "NeutralCanBeDiseased", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
+        SetupAdtRoleOptions(Id, CustomRoles.Diseased, canSetNum: true, teamSpawnOptions: true);
         DiseasedCDOpt = FloatOptionItem.Create(Id + 13, "DiseasedCDOpt", new(0f, 180f, 1f), 25f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Diseased])
             .SetValueFormat(OptionFormat.Seconds);
         DiseasedCDReset = BooleanOptionItem.Create(Id + 14, "DiseasedCDReset", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);

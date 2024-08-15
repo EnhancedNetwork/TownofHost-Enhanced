@@ -1,21 +1,15 @@
 ﻿namespace TOHE.Roles.AddOns.Common;
 
-public static class Tiebreaker
+public class Tiebreaker : IAddon
 {
     private const int Id = 20200;
-
-    public static OptionItem ImpCanBeTiebreaker;
-    public static OptionItem CrewCanBeTiebreaker;
-    public static OptionItem NeutralCanBeTiebreaker;
+    public AddonTypes Type => AddonTypes.Helpful;
 
     public static List<byte> VoteFor = [];
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        Options.SetupAdtRoleOptions(Id, CustomRoles.Tiebreaker, canSetNum: true);
-        ImpCanBeTiebreaker = BooleanOptionItem.Create(Id + 10, "ImpCanBeTiebreaker", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Tiebreaker]);
-        CrewCanBeTiebreaker = BooleanOptionItem.Create(Id + 11, "CrewCanBeTiebreaker", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Tiebreaker]);
-        NeutralCanBeTiebreaker = BooleanOptionItem.Create(Id + 12, "NeutralCanBeTiebreaker", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Tiebreaker]);
+        Options.SetupAdtRoleOptions(Id, CustomRoles.Tiebreaker, canSetNum: true, teamSpawnOptions: true);
     }
 
     public static void Clear()

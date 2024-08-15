@@ -487,28 +487,22 @@ class PlrColorQuestion : QuizQuestionBase
         };
 
         HasAnswersTranslation = false;
+        ShowInvalid = false;
 
         if (PossibleAnswers.Contains(Answer))
             PossibleAnswers.Remove(Answer);
 
         for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
         {
-            var prefix = "";
             if (numOfQuestionsDone == positionForRightAnswer)
             {
                 AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
-                if (Answer == "None") prefix = "Quizmaster.";
-                if (prefix != "")
-                    Answer = GetString(prefix + Answer);
-                Answers.Add(prefix + Answer);
+                Answers.Add(Answer);
             }
             else
             {
-                string thatAnswer = PossibleAnswers[rnd.Next(PossibleAnswers.Count)];
-                if (thatAnswer == "None") prefix = "Quizmaster.";
-                if (prefix != "")
-                    thatAnswer = GetString(prefix + thatAnswer);
-                Answers.Add(prefix + thatAnswer);
+                string thatAnswer = PossibleAnswers.RandomElement();
+                Answers.Add(thatAnswer);
                 PossibleAnswers.Remove(thatAnswer);
             }
         }
