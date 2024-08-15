@@ -74,6 +74,7 @@ class EndGamePatch
         }
 
         CustomRoleManager.RoleClass.Values.Where(x => x.IsEnable).Do(x => x.IsEnable = false);
+        CustomNetObject.Reset();
 
         var sb = new StringBuilder(GetString("KillLog") + ":");
         if (Options.OldKillLog.GetBool())

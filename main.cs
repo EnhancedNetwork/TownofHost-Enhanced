@@ -641,6 +641,7 @@ public enum CustomRoles
     Sniper,
     SoulCatcher,
     Stealth,
+    Abyssbringer,
     Swooper,
     TimeThief,
     Trapster,

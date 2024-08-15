@@ -15,7 +15,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 197/255 USED
+public enum CustomRPC : byte // 197/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -50,6 +50,7 @@ enum CustomRPC : byte // 197/255 USED
     SyncPlayerSetting,
     ShowChat,
     SyncShieldPersonDiedFirst,
+    FixModdedClientCNO,
 
     //Roles 
     SetBountyTarget,
@@ -595,6 +596,10 @@ internal class RPCHandlerPatch
                 {
                     Logger.Info($"Player {target.GetNameWithRole()} used /dump", "RPC_DumpLogger");
                 }
+                break;
+            case CustomRPC.FixModdedClientCNO:
+                var CNO = reader.ReadNetObject<PlayerControl>();
+                CNO.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true);
                 break;
             case CustomRPC.SetCoronerArrow:
                 Coroner.ReceiveRPC(reader);
