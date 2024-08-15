@@ -14,15 +14,15 @@ internal class Possessor : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorGhosts;
     //==================================================================\\
-    public static bool controllingPlayer = false;
-    public static byte controllingTargetId = byte.MaxValue;
-    public static float controllingLastSpeed = float.MinValue;
-    public static float possessTime = float.MinValue;
+    private static bool controllingPlayer = false;
+    private static byte controllingTargetId = byte.MaxValue;
+    private static float controllingLastSpeed = float.MinValue;
+    private static float possessTime = float.MinValue;
 
-    public static OptionItem PossessCooldown;
-    public static OptionItem PossessDuration;
-    public static OptionItem AlertRange;
-    public static OptionItem FocusRange;
+    private static OptionItem PossessCooldown;
+    private static OptionItem PossessDuration;
+    private static OptionItem AlertRange;
+    private static OptionItem FocusRange;
 
     public override void SetupCustomOption()
     {
@@ -115,8 +115,8 @@ internal class Possessor : RoleBase
                     }
                     if (checkPos >= FocusRange.GetFloat())
                     {
-                        target.RpcMurderPlayer(target);
                         target.SetDeathReason(PlayerState.DeathReason.Curse);
+                        target.RpcMurderPlayer(target);
                         target.SetRealKiller(_Player);
                     }
                 }
