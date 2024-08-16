@@ -26,7 +26,7 @@ internal class AbyssBringer : RoleBase
     private static OptionItem BlackHoleMoveSpeed;
     private static OptionItem BlackHoleRadius;
 
-    private List<BlackHoleData> BlackHoles = [];
+    private readonly List<BlackHoleData> BlackHoles = [];
 
     public override void SetupCustomOption()
     {
@@ -51,11 +51,6 @@ internal class AbyssBringer : RoleBase
             .SetValueFormat(OptionFormat.Multiplier);
     }
 
-    public override void Add(byte playerId)
-    {
-        BlackHoles = [];
-    }
-
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = BlackHolePlaceCooldown.GetInt();
@@ -64,15 +59,10 @@ internal class AbyssBringer : RoleBase
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        CreateBlackHole(shapeshifter);
-    }
-
-    private void CreateBlackHole(PlayerControl shapeshifter)
-    {
         var pos = shapeshifter.GetCustomPosition();
         var room = shapeshifter.GetPlainShipRoom();
         var roomName = room == null ? string.Empty : Translator.GetString($"{room.RoomId}");
-        BlackHoles.Add(new(new(pos), Utils.TimeStamp, pos, roomName, 0));
+        BlackHoles.Add(new(new(pos, _state.PlayerId), Utils.TimeStamp, pos, roomName, 0));
         Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 1, pos, roomName);
     }
 
@@ -87,6 +77,7 @@ internal class AbyssBringer : RoleBase
             var despawnMode = (DespawnMode)BlackHoleDespawnMode.GetValue();
             switch (despawnMode)
             {
+                case DespawnMode.AfterTime when Utils.TimeStamp - blackHole.PlaceTimeStamp > BlackHoleDespawnTime.GetInt():
                 case DespawnMode.AfterTime when Utils.TimeStamp - blackHole.PlaceTimeStamp > BlackHoleDespawnTime.GetInt():
                     RemoveBlackHole();
                     continue;
@@ -148,7 +139,7 @@ internal class AbyssBringer : RoleBase
             case 1:
                 var pos = reader.ReadVector2();
                 var roomName = reader.ReadString();
-                BlackHoles.Add(new(new(pos), Utils.TimeStamp, pos, roomName, 0));
+                BlackHoles.Add(new(new(pos, _state.PlayerId), Utils.TimeStamp, pos, roomName, 0));
                 break;
             case 2:
                 var blackHole = BlackHoles[reader.ReadPackedInt32()];

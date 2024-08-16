@@ -112,11 +112,6 @@ internal class Fireworker : RoleBase
         }
         return canUse;
     }
-    public override void OnSelfReducedToAtoms(bool IsAfterMeeting)
-    {
-        Fireworks.Do(x => x.Despawn());
-        Fireworks.Clear();
-    }
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
@@ -130,7 +125,7 @@ internal class Fireworker : RoleBase
                 Logger.Info("One firework set up", "Fireworker");
 
                 FireworkerPosition[shapeshifterId].Add(shapeshifter.transform.position);
-                Fireworks.Add(new(shapeshifter.GetCustomPosition(), [.. Main.AllPlayerControls.Where(x => x.GetCountTypes() == CountTypes.Impostor).Select(x => x.PlayerId)]));
+                Fireworks.Add(new(shapeshifter.GetCustomPosition(), [.. Main.AllPlayerControls.Where(x => x.GetCountTypes() == CountTypes.Impostor).Select(x => x.PlayerId)], _state.PlayerId));
                 nowFireworkerCount[shapeshifterId]--;
                 state[shapeshifterId] = nowFireworkerCount[shapeshifterId] == 0
                     ? Main.AliveImpostorCount <= 1 ? FireworkerState.ReadyFire : FireworkerState.WaitTime
