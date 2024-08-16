@@ -1904,6 +1904,7 @@
   "DeathReason.Quantization": "Quantization",
   "DeathReason.Overtired": "Overtired",
   "DeathReason.Ashamed": "Ashamed",
+  "DeathReason.Consumed": "Consumed",
   "DeathReason.PissedOff": "Destroyed",
   "DeathReason.Dismembered": "Dismembered",
   "DeathReason.LossOfHead": "Strangled",
