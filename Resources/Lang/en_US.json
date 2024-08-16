@@ -69,6 +69,7 @@
   "ShowOnlyEnabledRolesInGuesserUI": "Show Only Enabled Roles In Guesser UI",
   "CrewCanGuessCrew": "<color=#8cffff>Crewmates</color> Can Guess <color=#8cffff>Crewmate</color> Roles",
   "ImpCanGuessImp": "<color=#ff1919>Impostors</color> Can Guess <color=#ff1919>Impostor</color> Roles",
+  "ApocCanGuessApoc": "<color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Can Guess <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles",
   "GuessImmune": "Sorry, but target is immune to being guessed!",
 
 
@@ -2019,6 +2020,7 @@
   "GuessAdtRole": "Unfortunately, the Host's settings do not allow you to guess add-ons",
   "GuessImpRole": "Unfortunately, the Host's settings do not allow Impostors to guess Impostor roles.",
   "GuessCrewRole": "Unfortunately, the Host's settings do not allow crewmates to guess crewmate roles.",
+  "GuessApocRole": "Fortunately, the Host's settings does not allow Apocalypse to guess Apocalypse roles.",
   "GuessKill": "<b>{0}</b> was guessed",
   "GuessNull": "Please select an ID of a living player to guess their role",
   "GuessHelp": "Instructions: /bt [Player ID] [Role Name] \nExample: /bt 3 Bait \nYou can see the player IDs before everyone's names \n or use the /id command to list the player IDs",
