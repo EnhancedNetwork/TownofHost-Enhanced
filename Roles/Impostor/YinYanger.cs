@@ -43,7 +43,7 @@ namespace TOHE.Roles.Impostor
         public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
         {
             var (yin, yang) = Yanged[killer.PlayerId];
-            if (yin && yang) return true;
+            if (yin && yang || Main.AllAlivePlayerControls.Length <= 2) return true;
             if (Yanged.Where(x => x.Key != killer.PlayerId).Any(x => x.Value.yin == target || x.Value.yang == target))
             {
                 killer.Notify(string.Format(GetString("YinYangerAlreadyMarked"), target.GetRealName(clientData: true)));
@@ -63,7 +63,7 @@ namespace TOHE.Roles.Impostor
                 Yanged[killer.PlayerId] = (target, yang);
             }
 
-            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return false;
         }
         public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
