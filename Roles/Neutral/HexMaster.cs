@@ -162,7 +162,7 @@ internal class HexMaster : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (Medic.ProtectList.Contains(target.PlayerId)) return false;
-        if (target.Is(CustomRoles.Pestilence)) return false;
+        if (target.IsTransformedNeutralApocalypse()) return false;
 
         if (NowSwitchTrigger == SwitchTriggerList.TriggerDouble)
         {

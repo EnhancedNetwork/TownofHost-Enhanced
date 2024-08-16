@@ -49,6 +49,7 @@ enum CustomRPC : byte // 197/255 USED
     SyncLobbyTimer,
     SyncPlayerSetting,
     ShowChat,
+    SyncShieldPersonDiedFirst,
 
     //Roles 
     SetBountyTarget,
@@ -625,6 +626,10 @@ internal class RPCHandlerPatch
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveSwapRPC(reader, __instance);
                 break;
+            case CustomRPC.SyncShieldPersonDiedFirst:
+                Main.FirstDied = reader.ReadString();
+                Main.FirstDiedPrevious = reader.ReadString();
+                break;
         }
     }
 
@@ -844,8 +849,8 @@ internal static class RPC
     public static void GetDeathReason(MessageReader reader)
     {
         var playerId = reader.ReadByte();
-        var deathReason = (PlayerState.DeathReason)reader.ReadInt32();
-        Main.PlayerStates[playerId].deathReason = deathReason;
+        var deathReason = reader.ReadInt32();
+        Main.PlayerStates[playerId].deathReason = (PlayerState.DeathReason)deathReason;
         Main.PlayerStates[playerId].IsDead = true;
     }
     public static void ForceEndGame(CustomWinner win)
@@ -1009,6 +1014,7 @@ internal static class RPC
         var state = Main.PlayerStates[targetId];
         state.RealKiller.Item1 = DateTime.Now;
         state.RealKiller.Item2 = killerId;
+        state.RoleofKiller = Main.PlayerStates.TryGetValue(killerId, out var kState) ? kState.MainRole : CustomRoles.NotAssigned;
 
         if (!AmongUsClient.Instance.AmHost) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRealKiller, SendOption.Reliable, -1);

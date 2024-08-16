@@ -1,18 +1,13 @@
 ﻿namespace TOHE.Roles.AddOns.Common;
 
-public static class Influenced
+public class Influenced : IAddon
 {
     private const int Id = 21200;
-    public static OptionItem CanBeOnCrew;
-    public static OptionItem CanBeOnImp;
-    public static OptionItem CanBeOnNeutral;
+    public AddonTypes Type => AddonTypes.Harmful;
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
-        Options.SetupAdtRoleOptions(Id, CustomRoles.Influenced, canSetNum: true);
-        CanBeOnImp = BooleanOptionItem.Create(Id + 10, "ImpCanBeInfluenced", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Influenced]);
-        CanBeOnCrew = BooleanOptionItem.Create(Id + 11, "CrewCanBeInfluenced", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Influenced]);
-        CanBeOnNeutral = BooleanOptionItem.Create(Id + 12, "NeutralCanBeInfluenced", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Influenced]);
+        Options.SetupAdtRoleOptions(Id, CustomRoles.Influenced, canSetNum: true, teamSpawnOptions: true);
     }
     public static void ChangeVotingData(Dictionary<byte, int> VotingData)
     { 

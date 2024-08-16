@@ -43,7 +43,7 @@ internal class Jinx : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (AbilityLimit <= 0) return true;
-        if (killer.Is(CustomRoles.Pestilence)) return true;
+        if (killer.IsTransformedNeutralApocalypse()) return true;
         if (killer == target) return true;
         
         killer.RpcGuardAndKill(target);

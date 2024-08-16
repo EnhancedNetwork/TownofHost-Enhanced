@@ -256,11 +256,23 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
-        else if (PlayerControl.LocalPlayer.Is(Custom_Team.Neutral) && !role.IsMadmate())
+        else if (PlayerControl.LocalPlayer.IsNeutralApocalypse())
+        {
+            var apocTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            apocTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.IsNeutralApocalypse() && pc != PlayerControl.LocalPlayer)
+                    apocTeam.Add(pc);
+            }
+            teamToDisplay = apocTeam;
+        }
+        else if (PlayerControl.LocalPlayer.Is(Custom_Team.Neutral))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
         }
+
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Executioner))
         {
             var exeTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
@@ -548,6 +560,37 @@ class IntroCutsceneDestroyPatch
 
                     });
                 }, 3f, "Set Dev Ghost-Roles");
+            }
+
+            bool chatVisible = Options.CurrentGameMode switch
+            {
+                CustomGameMode.FFA => true,
+                _ => false
+            };
+            try
+            {
+                if (chatVisible) Utils.SetChatVisibleForEveryone();
+            }
+            catch (Exception error)
+            {
+                Logger.Error($"Error: {error}", "FFA chat visible");
+            }
+
+            if (Main.UnShapeShifter.Any())
+            {
+                _ = new LateTask(() =>
+                {
+                    Main.UnShapeShifter.Do(x =>
+                    {
+                        var PC = Utils.GetPlayerById(x);
+                        var firstPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
+                        PC.RpcShapeshift(firstPlayer, false);
+                        PC.RpcRejectShapeshift();
+                        PC.ResetPlayerOutfit(force: true);
+                        Main.CheckShapeshift[x] = false;
+                    });
+                    Main.GameIsLoaded = true;
+                }, 3f, "Set UnShapeShift Button");
             }
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))

@@ -61,8 +61,8 @@ internal class Mechanic : RoleBase
                 if (SkillLimit.GetFloat() > 0 && AbilityLimit + UsesUsedWhenFixingReactorOrO2.GetFloat() - 1 <= 0) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Reactor, 16);
-                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Reactor, 17);
+                    __instance.RpcUpdateSystem(SystemTypes.Reactor, 16);
+                    __instance.RpcUpdateSystem(SystemTypes.Reactor, 17);
                     AbilityLimit -= UsesUsedWhenFixingReactorOrO2.GetFloat();
                     SendSkillRPC();
                 }
@@ -72,8 +72,8 @@ internal class Mechanic : RoleBase
                 if (SkillLimit.GetFloat() > 0 && AbilityLimit + UsesUsedWhenFixingReactorOrO2.GetFloat() - 1 <= 0) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Laboratory, 67);
-                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Laboratory, 66);
+                    __instance.RpcUpdateSystem(SystemTypes.Laboratory, 67);
+                    __instance.RpcUpdateSystem(SystemTypes.Laboratory, 66);
                     AbilityLimit -= UsesUsedWhenFixingReactorOrO2.GetFloat();
                     SendSkillRPC();
                 }
@@ -83,8 +83,8 @@ internal class Mechanic : RoleBase
                 if (SkillLimit.GetFloat() > 0 && AbilityLimit + UsesUsedWhenFixingReactorOrO2.GetFloat() - 1 <= 0) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.LifeSupp, 67);
-                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.LifeSupp, 66);
+                    __instance.RpcUpdateSystem(SystemTypes.LifeSupp, 67);
+                    __instance.RpcUpdateSystem(SystemTypes.LifeSupp, 66);
                     AbilityLimit -= UsesUsedWhenFixingReactorOrO2.GetFloat();
                     SendSkillRPC();
                 }
@@ -94,8 +94,8 @@ internal class Mechanic : RoleBase
                 if (SkillLimit.GetFloat() > 0 && AbilityLimit + UsesUsedWhenFixingLightsOrComms.GetFloat() - 1 <= 0) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Comms, 16);
-                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Comms, 17);
+                    __instance.RpcUpdateSystem(SystemTypes.Comms, 16);
+                    __instance.RpcUpdateSystem(SystemTypes.Comms, 17);
                     AbilityLimit -= UsesUsedWhenFixingLightsOrComms.GetFloat();
                     SendSkillRPC();
                 }

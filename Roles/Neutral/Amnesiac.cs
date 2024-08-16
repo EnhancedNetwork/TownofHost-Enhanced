@@ -117,11 +117,12 @@ internal class Amnesiac : RoleBase
     }
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting) return;
+        if (inMeeting || Main.MeetingIsStarted) return;
         foreach (var pc in playerIdList.ToArray())
         {
             var player = Utils.GetPlayerById(pc);
-            if (player == null || !player.IsAlive()) continue;
+            if (!player.IsAlive()) continue;
+
             LocateArrow.Add(pc, target.transform.position);
             SendRPC(pc, true, target.transform.position);
         }
@@ -164,6 +165,13 @@ internal class Amnesiac : RoleBase
                     tempRole = CustomRoles.EngineerTOHE;
                 }
                 Main.TasklessCrewmate.Add(__instance.PlayerId);
+            }
+            if (tar.GetCustomRole().IsNA())
+            {
+                __instance.RpcSetCustomRole(tar.GetCustomRole());
+                __instance.GetRoleClass().Add(__instance.PlayerId);
+                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
             }
             if (tar.GetCustomRole().IsAmneNK())
             {

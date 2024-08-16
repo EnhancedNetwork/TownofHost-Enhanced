@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
+using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -14,6 +15,7 @@ namespace TOHE.Roles.Core;
 public static class CustomRoleManager
 {
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
+    public static readonly Dictionary<CustomRoles, IAddon> AddonClasses = [];
     public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup();
     public static List<RoleBase> AllEnabledRoles => Main.PlayerStates.Values.Select(x => x.RoleClass).ToList(); //Since there are classes which use object attributes and playerstate is not removed.
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
@@ -167,7 +169,7 @@ public static class CustomRoleManager
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
-        if (PlagueBearer.HasEnabled)
+        if (PlagueBearer.HasEnabled && !killer.Is(CustomRoles.PlagueBearer))
         {
             PlagueBearer.CheckAndInfect(killer, target);
         }
@@ -336,6 +338,10 @@ public static class CustomRoleManager
                         target.RpcSetRole(RoleTypes.GuardianAngel);
                         break;
 
+                    case CustomRoles.Spurt:
+                        Spurt.DeathTask(target);
+                        break;
+
                 }
             }
 
@@ -348,7 +354,7 @@ public static class CustomRoleManager
             {
                 switch (subRole)
                 {
-                    case CustomRoles.TicketsStealer when !inMeeting && !isSuicide:
+                    case CustomRoles.Stealer when !inMeeting && !isSuicide:
                         Stealer.OnMurderPlayer(killer);
                         break;
 
@@ -452,6 +458,7 @@ public static class CustomRoleManager
         {
             sb.Append(lower(seer, seen, isForMeeting, isForHud));
         }
+
         return sb.ToString();
     }
 
@@ -485,4 +492,15 @@ public static class CustomRoleManager
         SuffixOthers = AllEnabledRoles.Select(suffix => (Func<PlayerControl, PlayerControl, bool, string>)suffix.GetSuffixOthers).FilterDuplicates();
         OtherCollectionsSet = true;
     }
+
+    // ADDONS ////////////////////////////
+
+    public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x => {
+        if (AddonClasses.TryGetValue(x, out var IAddon) && IAddon != null)
+            IAddon.OnFixedUpdate(pc);
+        else return;
+
+        if (!lowload)
+            IAddon.OnFixedUpdateLowLoad(pc);
+    });
 }

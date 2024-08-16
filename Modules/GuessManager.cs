@@ -407,7 +407,7 @@ public static class GuessManager
             voteArea.Overlay.color = Color.white;
             voteArea.XMark.gameObject.SetActive(true);
             voteArea.XMark.transform.localScale = Vector3.one;
-            foreach (var playerVoteArea in meetingHud.playerStates.ToArray())
+            foreach (var playerVoteArea in meetingHud.playerStates)
             {
                 if (playerVoteArea.VotedFor != pc.PlayerId) continue;
                 playerVoteArea.UnsetVote();
@@ -418,7 +418,7 @@ public static class GuessManager
             Swapper.CheckSwapperTarget(pc.PlayerId);
 
             // Prevent double check end voting
-            if (meetingHud.state == MeetingHud.VoteStates.Discussion)
+            if (meetingHud.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
             {
                 meetingHud.CheckForEndVoting();
             }
@@ -576,6 +576,8 @@ public static class GuessManager
                     CreateGuesserButton(__instance);
 
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsNK() && Options.NeutralKillersCanGuess.GetBool())
+                    CreateGuesserButton(__instance);
+                if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsNA() && Options.NeutralApocalypseCanGuess.GetBool())
                     CreateGuesserButton(__instance);
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsNonNK() && Options.PassiveNeutralsCanGuess.GetBool())
                     CreateGuesserButton(__instance);
@@ -892,6 +894,30 @@ public static class GuessManager
                         listOfRoles.Add(CustomRoles.Admired);
                 }
 
+                if (CustomRoles.PlagueBearer.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Pestilence))
+                        listOfRoles.Add(CustomRoles.Pestilence);
+                }
+
+                if (CustomRoles.SoulCollector.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Death))
+                        listOfRoles.Add(CustomRoles.Death);
+                }
+
+                if (CustomRoles.Baker.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Famine))
+                        listOfRoles.Add(CustomRoles.Famine);
+                }
+
+                if (CustomRoles.Berserker.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.War))
+                        listOfRoles.Add(CustomRoles.War);
+                }
+
                 arrayOfRoles = [.. listOfRoles];
             }
             else
@@ -924,7 +950,7 @@ public static class GuessManager
                     or CustomRoles.LastImpostor
                     or CustomRoles.Mare
                     or CustomRoles.Cyber
-                    ) continue;
+                    || (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())) continue;
 
                 CreateRole(role);
             }

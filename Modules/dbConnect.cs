@@ -94,11 +94,11 @@ public class dbConnect
             // Show waring message
             if (GameStates.IsLobby || GameStates.InGame)
             {
-                DestroyableSingleton<HudManager>.Instance.ShowPopUp(GetString("dbConnect.InitFailure"));
+                DestroyableSingleton<HudManager>.Instance.ShowPopUp(GetString("dbConnect.InitFailurePublic"));
             }
             else
             {
-                DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
+                DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailurePublic"));
             }
         }
         else

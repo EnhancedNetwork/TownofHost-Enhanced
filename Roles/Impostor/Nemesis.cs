@@ -123,9 +123,9 @@ internal class Nemesis : RoleBase
             pc.ShowInfoMessage(isUI, GetString("NemesisKillDead"));
             return true;
         }
-        else if (target.Is(CustomRoles.Pestilence))
+        else if (target.IsTransformedNeutralApocalypse())
         {
-            pc.ShowInfoMessage(isUI, GetString("PestilenceImmune"));
+            pc.ShowInfoMessage(isUI, GetString("ApocalypseImmune"));
             return true;
         }
         else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
@@ -190,6 +190,7 @@ internal class Nemesis : RoleBase
         NemesisMsgCheck(pc, $"/rv {PlayerId}", true);
     }
 
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CheckCanUseKillButton() ? DefaultKillCooldown : 300f;
     public override bool CanUseKillButton(PlayerControl pc) => CheckCanUseKillButton();
 
     public static bool CheckCanUseKillButton()

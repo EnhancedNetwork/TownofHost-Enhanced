@@ -22,6 +22,7 @@ internal class Psychic : RoleBase
     private static OptionItem NBshowEvil;
     private static OptionItem NEshowEvil;
     private static OptionItem NCshowEvil;
+    private static OptionItem NAshowEvil;
 
     private static readonly HashSet<byte> RedPlayer = [];
 
@@ -35,6 +36,7 @@ internal class Psychic : RoleBase
         NBshowEvil = BooleanOptionItem.Create(Id + 4, "NBareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
         NEshowEvil = BooleanOptionItem.Create(Id + 5, "NEareRed", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
         NCshowEvil = BooleanOptionItem.Create(Id + 7, "NCareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
+        NAshowEvil = BooleanOptionItem.Create(Id + 8, "NAareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
     }
     public override void Init()
     {
@@ -82,7 +84,8 @@ internal class Psychic : RoleBase
         (x.GetCustomRole().IsCrewKiller() && CkshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNE() && NEshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNC() && NCshowEvil.GetBool()) ||
-        (x.GetCustomRole().IsNB() && NBshowEvil.GetBool())
+        (x.GetCustomRole().IsNB() && NBshowEvil.GetBool()) ||
+        (x.GetCustomRole().IsNA() && NAshowEvil.GetBool())
         ).ToList();
 
         List<byte> BadList = [];

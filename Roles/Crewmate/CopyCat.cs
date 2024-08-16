@@ -1,4 +1,5 @@
 using TOHE.Roles.Core;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -133,6 +134,7 @@ internal class CopyCat : RoleBase
                     break;
                 case CustomRoles.Arrogance:
                 case CustomRoles.Juggernaut:
+                case CustomRoles.Berserker:
                     role = CustomRoles.Reverie;
                     break;
                 //case CustomRoles.EvilGuesser:
@@ -150,6 +152,20 @@ internal class CopyCat : RoleBase
                     break;
                 case CustomRoles.Pursuer:
                     role = CustomRoles.Deceiver;
+                    break;
+                case CustomRoles.Baker:
+                    switch (Baker.CurrentBread())
+                    {
+                        case 0:
+                            role = CustomRoles.Overseer;
+                            break;
+                        case 1:
+                            role = CustomRoles.Deputy;
+                            break;    
+                        case 2:
+                            role = CustomRoles.Crusader; // medic would make more sense but medic cant be used
+                            break;
+                    }
                     break;
             }
         }

@@ -20,6 +20,7 @@ public class PlayerState(byte playerId)
     public CountTypes countTypes = CountTypes.OutOfGame;
     public bool IsDead { get; set; } = false;
     public bool Disconnected { get; set; } = false;
+    public CustomRoles RoleofKiller = CustomRoles.NotAssigned;
 #pragma warning disable IDE1006 // Naming Styles
     public DeathReason deathReason { get; set; } = DeathReason.etc;
 #pragma warning restore IDE1006
@@ -230,7 +231,7 @@ public class PlayerState(byte playerId)
         if (AmongUsClient.Instance.AmHost)
         {
             RPC.SendDeathReason(PlayerId, deathReason);
-            if (GameStates.IsMeeting && MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion)
+            if (GameStates.IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
             {
                 MeetingHud.Instance.CheckForEndVoting();
             }
@@ -285,6 +286,8 @@ public class PlayerState(byte playerId)
         Slice,
         BloodLet,
         WrongAnswer,
+        Starved,
+        Armageddon,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
