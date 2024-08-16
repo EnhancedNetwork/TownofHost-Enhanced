@@ -38,7 +38,7 @@ namespace TOHE.Roles.Impostor
         public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
         private static bool CheckAvailability() {
             var tocheck = Main.AllAlivePlayerControls.Length - Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.YinYanger)).Count();
-            var result = 1 + (Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.YinYanger)).Count() * 2);
+            var result = (Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.YinYanger)).Count() * 2);
             return tocheck >= result;
         }
         public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
