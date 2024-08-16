@@ -294,6 +294,15 @@ internal class Baker : RoleBase
         BreadList[baker.PlayerId].Clear();
         StarvedNonBreaded = true;
     }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (!ApocCanGuessApoc.GetBool() && target.IsNeutralApocalypse() && guesser.IsNeutralApocalypse())
+        {
+            guesser.ShowInfoMessage(isUI, GetString("GuessApocRole"));
+            return true;
+        }
+        return false;
+    }
 }
 internal class Famine : RoleBase
 {
