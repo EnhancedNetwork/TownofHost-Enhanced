@@ -1667,22 +1667,8 @@ public static class Utils
 
     public static bool IsSameTeammate(this PlayerControl player, PlayerControl target, out Custom_Team team)
     {
-        team = default;
-        if (player.IsAnySubRole(x => x.IsConverted()))
-        {
-            var Compare = player.GetCustomSubRoles().First(x => x.IsConverted());
-
-            team = player.Is(CustomRoles.Madmate) ? Custom_Team.Impostor : Custom_Team.Neutral;
-            return target.Is(Compare);
-        }
-        else if (!target.IsAnySubRole(x => x.IsConverted()))
-        {
-            team = player.GetCustomRole().GetCustomRoleTeam();
-            return target.Is(team);
-        }
-
-
-        return false;
+        team = player.IsAnySubRole(x => x.IsConverted() && x is CustomRoles.Madmate) ? player.GetCustomRole().GetCustomRoleTeam() : Custom_Team.Neutral;
+        return player.GetCountTypes() == target.GetCountTypes();
     }
     public static string DetermineSetMessage(PlayerControl Player, PlayerControl killer, out Dictionary<int, string> DeterminedMessage)
     {
