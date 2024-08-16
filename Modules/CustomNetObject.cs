@@ -494,14 +494,5 @@ namespace TOHE
             this.OwnerId = OwnerId;
         }
     }
-    internal sealed class Landmine : CustomNetObject
-    {
-        internal Landmine(Vector2 position, List<byte> visibleList, byte OwnerId)
-        {
-            CreateNetObject("<size=50%><font=\"VCR SDF\"><line-height=67%><alpha=#00>█<alpha=#00>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<alpha=#00>█<alpha=#00>█<br><alpha=#00>█<#8a8a8a>█<#9e948a>█<#9e948a>█<#9e948a>█<#9e948a>█<#8a8a8a>█<alpha=#00>█<br><#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#9e948a>█<#9e948a>█<#8a8a8a>█<br><#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#707070>█<#707070>█<#8a8a8a>█<#9e948a>█<#8a8a8a>█<br><#8a8a8a>█<#8a8a8a>█<#707070>█<#8a8a8a>█<#8a8a8a>█<#707070>█<#9e948a>█<#8a8a8a>█<br><#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#9e948a>█<#8a8a8a>█<br><alpha=#00>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<alpha=#00>█<br><alpha=#00>█<alpha=#00>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<alpha=#00>█<alpha=#00>█<br></color></line-height></font></size>", position);
-            Main.AllAlivePlayerControls.ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
-            this.OwnerId = OwnerId;
-        }
-    }
 
 }
