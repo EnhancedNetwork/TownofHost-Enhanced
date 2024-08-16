@@ -44,7 +44,7 @@ namespace TOHE.Roles.Impostor
         public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
         {
             var (yin, yang) = Yanged[killer.PlayerId];
-            if (yin && yang || Main.AllAlivePlayerControls.Length <= 2 || !CheckAvailability()) return true;
+            if (yin && yang || !CheckAvailability()) return true;
             if (Yanged.Where(x => x.Key != killer.PlayerId).Any(x => x.Value.yin == target || x.Value.yang == target))
             {
                 killer.Notify(string.Format(GetString("YinYangerAlreadyMarked"), target.GetRealName(clientData: true)));
