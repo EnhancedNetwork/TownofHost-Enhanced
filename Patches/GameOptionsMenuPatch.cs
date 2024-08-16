@@ -629,10 +629,10 @@ public static class StringOptionPatch
                 if (Enum.GetValues<CustomRoles>().Find(x => GetString($"{x}") == name.RemoveHtmlTags(), out var role))
                 {
                     var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
-                    var str = Translator.GetString($"{roleName}InfoLong");
+                    var str = GetString($"{roleName}InfoLong");
                     int Lenght = str.Length > 360 ? 360 : str.Length;
                     var infoLong = str[(str.IndexOf('\n') + 1)..Lenght];
-                    var ColorRole = Utils.ColorString(Utils.GetRoleColor(role), role.ToString());
+                    var ColorRole = Utils.ColorString(Utils.GetRoleColor(role), GetString(role.ToString()));
                     var info = $"<size=70%>{ColorRole}: {infoLong}</size>";
                     GameSettingMenu.Instance.MenuDescriptionText.text = info;
                 }
