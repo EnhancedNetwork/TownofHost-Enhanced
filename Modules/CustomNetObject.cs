@@ -32,7 +32,7 @@ namespace TOHE
         public PlayerControl playerControl;
         private float PlayerControlTimer;
         public Vector2 Position;
-        public List<byte> HiddenList = [];
+        public HashSet<byte> HiddenList = [];
 
         private string Sprite;
 
