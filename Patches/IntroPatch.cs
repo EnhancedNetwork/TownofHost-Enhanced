@@ -589,7 +589,7 @@ class IntroCutsceneDestroyPatch
                         Main.CheckShapeshift[x] = false;
                     });
                     Main.GameIsLoaded = true;
-                }, 3f, "Set UnShapeShift Button");
+                }, 1f, "Set UnShapeShift Button");
             }
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
