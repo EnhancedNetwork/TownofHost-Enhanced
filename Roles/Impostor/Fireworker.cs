@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -29,17 +30,22 @@ internal class Fireworker : RoleBase
     private static OptionItem FireworkerCount;
     private static OptionItem FireworkerRadius;
     private static OptionItem CanKill;
+    private static OptionItem PlaceCooldown;
 
     private static readonly Dictionary<byte, int> nowFireworkerCount = [];
     private static readonly Dictionary<byte, List<Vector3>> FireworkerPosition = [];
     private static readonly Dictionary<byte, FireworkerState> state = [];
     private static readonly Dictionary<byte, int> FireworkerBombKill = [];
+    private readonly List<Firework> Fireworks = [];
+
     private static int fireworkerCount = 1;
     private static float fireworkerRadius = 1;
 
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Fireworker);
+        PlaceCooldown = FloatOptionItem.Create(Id + 9, "FireworkerCooldown", new(1f, 180f, 0.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
+            .SetValueFormat(OptionFormat.Multiplier);
         FireworkerCount = IntegerOptionItem.Create(Id + 10, "FireworkerMaxCount", new(1, 20, 1), 3, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
             .SetValueFormat(OptionFormat.Pieces);
         FireworkerRadius = FloatOptionItem.Create(Id + 11, "FireworkerRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
@@ -88,8 +94,7 @@ internal class Fireworker : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ShapeshifterDuration = state[playerId] != FireworkerState.FireEnd ? 1f : 30f;
-        AURoleOptions.ShapeshifterLeaveSkin = true;
+        AURoleOptions.ShapeshifterCooldown = PlaceCooldown.GetFloat();
     }
 
     public override bool CanUseKillButton(PlayerControl pc)
@@ -107,11 +112,15 @@ internal class Fireworker : RoleBase
         }
         return canUse;
     }
+    public override void OnSelfReducedToAtoms(bool IsAfterMeeting)
+    {
+        Fireworks.Do(x => x.Despawn());
+        Fireworks.Clear();
+    }
 
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
         Logger.Info($"Fireworker ShapeShift", "Fireworker");
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         var shapeshifterId = shapeshifter.PlayerId;
         switch (state[shapeshifterId])
@@ -121,6 +130,7 @@ internal class Fireworker : RoleBase
                 Logger.Info("One firework set up", "Fireworker");
 
                 FireworkerPosition[shapeshifterId].Add(shapeshifter.transform.position);
+                Fireworks.Add(new(shapeshifter.GetCustomPosition(), [.. Main.AllPlayerControls.Where(x => x.GetCountTypes() == CountTypes.Impostor).Select(x => x.PlayerId)]));
                 nowFireworkerCount[shapeshifterId]--;
                 state[shapeshifterId] = nowFireworkerCount[shapeshifterId] == 0
                     ? Main.AliveImpostorCount <= 1 ? FireworkerState.ReadyFire : FireworkerState.WaitTime
@@ -132,6 +142,8 @@ internal class Fireworker : RoleBase
             case FireworkerState.ReadyFire:
                 Logger.Info("Blowing up fireworks", "Fireworker");
                 bool suicide = false;
+                Fireworks.Do(x => x.Despawn());
+                Fireworks.Clear();
                 foreach (var player in Main.AllAlivePlayerControls)
                 {
                     foreach (var pos in FireworkerPosition[shapeshifterId].ToArray())
@@ -167,7 +179,7 @@ internal class Fireworker : RoleBase
         SendRPC(shapeshifterId);
         Utils.NotifyRoles(ForceLoop: true);
 
-        return false;
+        return;
     }
 
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)

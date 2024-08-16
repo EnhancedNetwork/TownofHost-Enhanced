@@ -1474,7 +1474,7 @@
   "AfterTime": "After Time",
   "After1PlayerEaten": "After 1 Player Was Eaten",
   "AfterMeeting": "After Meeting",
-  "None":  "None",
+  "None": "None",
   "SheriffShotLimit": "Max number of Kills",
   "SheriffCanKillAllAlive": "Can Kill When No One Is Dead",
   "SheriffCanKillCharmed": "Can kill <color=#cf6acd>Charmed</color> players",
@@ -1488,6 +1488,9 @@
   "SheriffMadCanKillImp": "Can kill <color=#ff1919>Impostors</color>",
   "SheriffMadCanKillNeutral": "Can kill <color=#7f8c8d>Neutrals</color>",
   "SheriffMadCanKillCrew": "Can kill <color=#8cffff>Crewmates</color>",
+
+
+  "FireworkerCooldown": "Placement Cooldown",
 
   "ReverieIncreaseKillCooldown": "Increase kill cooldown",
   "ReverieMaxKillCooldown": "Max kill cooldown",

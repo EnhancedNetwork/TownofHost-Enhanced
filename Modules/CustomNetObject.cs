@@ -29,6 +29,7 @@ namespace TOHE
         public PlayerControl playerControl;
         private float PlayerControlTimer;
         public Vector2 Position;
+        public List<byte> HiddenList = [];
 
         private string Sprite;
 
@@ -95,12 +96,26 @@ namespace TOHE
         protected void Hide(PlayerControl player)
         {
             Logger.Info($" Hide Custom Net Object {this.GetType().Name} (ID {Id}) from {player.GetNameWithRole()}", "CNO.Hide");
+
+            HiddenList.Add(player.PlayerId);
             if (player.AmOwner)
             {
+                _ = new LateTask(() =>
+                {
+                   playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(false);
+                }, 0.1f);
                 playerControl.Visible = false;
                 return;
             }
-
+                
+            _ = new LateTask(() => {
+                CustomRpcSender sender = CustomRpcSender.Create("FixModdedClientCNOText", sendOption: SendOption.Reliable);
+                sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FixModdedClientCNO, player.GetClientId())
+                    .WriteNetObject(playerControl)
+                    .Write(false)
+                    .EndRpc();
+                sender.SendMessage();
+            }, 0.4f); 
 
             MessageWriter writer = MessageWriter.Get();
             writer.StartMessage(6);
@@ -112,6 +127,8 @@ namespace TOHE
             writer.EndMessage();
             AmongUsClient.Instance.SendOrDisconnect(writer);
             writer.Recycle();
+
+            
         }
 
         protected virtual void OnFixedUpdate() 
@@ -230,14 +247,18 @@ namespace TOHE
                 }
 
                 _ = new LateTask(() => { // Fix for host
-                    playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true);
+                    if (!HiddenList.Contains(PlayerControl.LocalPlayer.PlayerId))
+                        playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true);
                 }, 0.1f);
                 _ = new LateTask(() => { // Fix for Modded
-                    CustomRpcSender sender = CustomRpcSender.Create("FixModdedClientCNOText", sendOption: SendOption.Reliable);
-                    sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FixModdedClientCNO)
-                        .WriteNetObject(playerControl)
-                        .EndRpc();
-                    sender.SendMessage();
+                    foreach (var visiblePC in Main.AllPlayerControls.ExceptBy(HiddenList, x => x.PlayerId)) {
+                        CustomRpcSender sender = CustomRpcSender.Create("FixModdedClientCNOText", sendOption: SendOption.Reliable);
+                        sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FixModdedClientCNO, visiblePC.GetClientId())
+                            .WriteNetObject(playerControl)
+                            .Write(true)
+                            .EndRpc();
+                        sender.SendMessage();
+                    }
                 }, 0.4f);
                 PlayerControlTimer = 0f;
             }
@@ -363,6 +384,7 @@ namespace TOHE
                 CustomRpcSender sender = CustomRpcSender.Create("FixModdedClientCNOText", sendOption: SendOption.Reliable);
                 sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FixModdedClientCNO)
                     .WriteNetObject(playerControl)
+                    .Write(true)
                     .EndRpc();
                 sender.SendMessage();
             }, 0.4f);
@@ -442,7 +464,15 @@ namespace TOHE
     {
         internal BlackHole(Vector2 position)
         {
-            CreateNetObject("<size=100%><font=\"VCR SDF\"><line-height=70%><alpha=#00>█<alpha=#00>█<#000000>█<#19131c>█<#000000>█<#000000>█<alpha=#00>█<alpha=#00>█<br><alpha=#00>█<#412847>█<#000000>█<#19131c>█<#000000>█<#412847>█<#260f26>█<alpha=#00>█<br><#000000>█<#412847>█<#412847>█<#000000>█<#260f26>█<#1c0d1c>█<#19131c>█<#000000>█<br><#19131c>█<#000000>█<#412847>█<#1c0d1c>█<#1c0d1c>█<#000000>█<#19131c>█<#000000>█<br><#000000>█<#000000>█<#260f26>█<#1c0d1c>█<#1c0d1c>█<#000000>█<#000000>█<#260f26>█<br><#000000>█<#260f26>█<#1c0d1c>█<#1c0d1c>█<#19131c>█<#412847>█<#412847>█<#19131c>█<br><alpha=#00>█<#260f26>█<#412847>█<#412847>█<#19131c>█<#260f26>█<#19131c>█<alpha=#00>█<br><alpha=#00>█<alpha=#00>█<#412847>█<#260f26>█<#260f26>█<#000000>█<alpha=#00>█<alpha=#00>█<br></line-height></size>", position);
+            CreateNetObject("<size=100%><font=\"VCR SDF\"><line-height=69%><alpha=#00>█<alpha=#00>█<#000000>█<#19131c>█<#000000>█<#000000>█<alpha=#00>█<alpha=#00>█<br><alpha=#00>█<#412847>█<#000000>█<#19131c>█<#000000>█<#412847>█<#260f26>█<alpha=#00>█<br><#000000>█<#412847>█<#412847>█<#000000>█<#260f26>█<#1c0d1c>█<#19131c>█<#000000>█<br><#19131c>█<#000000>█<#412847>█<#1c0d1c>█<#1c0d1c>█<#000000>█<#19131c>█<#000000>█<br><#000000>█<#000000>█<#260f26>█<#1c0d1c>█<#1c0d1c>█<#000000>█<#000000>█<#260f26>█<br><#000000>█<#260f26>█<#1c0d1c>█<#1c0d1c>█<#19131c>█<#412847>█<#412847>█<#19131c>█<br><alpha=#00>█<#260f26>█<#412847>█<#412847>█<#19131c>█<#260f26>█<#19131c>█<alpha=#00>█<br><alpha=#00>█<alpha=#00>█<#412847>█<#260f26>█<#260f26>█<#000000>█<alpha=#00>█<alpha=#00>█<br></line-height></size>", position);
+        }
+    }
+    internal sealed class Firework : CustomNetObject
+    {
+        internal Firework(Vector2 position, List<byte> visibleList)
+        {
+            CreateNetObject("<size=100%><font=\"VCR SDF\"><line-height=69%><alpha=#00>█<alpha=#00>█<alpha=#00>█<#f2ce1c>█<#f2eb0d>█<alpha=#00>█<alpha=#00>█<alpha=#00>█<br><alpha=#00>█<alpha=#00>█<#f2eb0d>█<#f2eb0d>█<#f2ce1c>█<#f2eb0d>█<alpha=#00>█<alpha=#00>█<br><alpha=#00>█<#f2eb0d>█<#f2eb0d>█<#f2eb0d>█<#f2eb0d>█<#f2ce1c>█<#f2eb0d>█<alpha=#00>█<br><alpha=#00>█<#e60000>█<#e60000>█<#f2f2f2>█<#e60000>█<#e60000>█<#f2f2f2>█<alpha=#00>█<br><alpha=#00>█<#f2f2f2>█<#f20d0d>█<#f20d0d>█<#f2f2f2>█<#f20d0d>█<#e60000>█<alpha=#00>█<br><#f2740d>█<#f2740d>█<#f2f2f2>█<#f20d0d>█<#f20d0d>█<#f2f2f2>█<#e60000>█<#f2740d>█<br><#f2740d>█<#f2740d>█<#f2740d>█<#f2f2f2>█<#f20d0d>█<#f20d0d>█<#f2740d>█<#f2740d>█<br><#cb5f06>█<#cb5f06>█<#cb5f06>█<#f20d0d>█<#f2f2f2>█<#cb5f06>█<#cb5f06>█<#cb5f06>█<br></color></line-height></font></size>", position);
+            Main.AllAlivePlayerControls.ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
         }
     }
 
