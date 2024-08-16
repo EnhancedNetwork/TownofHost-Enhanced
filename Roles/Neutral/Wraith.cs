@@ -14,6 +14,7 @@ internal class Wraith : RoleBase
     //===========================SETUP================================\\
     private const int Id = 18500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Wraith);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -44,11 +45,6 @@ internal class Wraith : RoleBase
         InvisTime.Clear();
         lastTime.Clear();
         ventedId.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     private void SendRPC(PlayerControl pc)
     {

@@ -16,6 +16,9 @@ public abstract class RoleBase
 
     public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
+    public virtual bool IsExperimental => false;
+    public virtual bool IsDesyncRole => false;
+
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;
@@ -96,8 +99,6 @@ public abstract class RoleBase
 
     public virtual void SetupCustomOption()
     { }
-
-    public virtual bool IsExperimental => false;
 
     /// <summary>
     /// A generic method to send a CustomRole's Gameoptions.
