@@ -64,7 +64,7 @@ namespace TOHE.Roles.Impostor
                 Yanged[killer.PlayerId] = (target, yang);
             }
 
-            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return false;
         }
         public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
