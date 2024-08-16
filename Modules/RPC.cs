@@ -87,7 +87,6 @@ public enum CustomRPC : byte // 198/255 USED
     KeeperRPC,
     SetAlchemistTimer,
     UndertakerLocationSync,
-    RiftMakerSyncData,
     LightningSetGhostPlayer,
     SetDarkHiderKillCount,
     SetConsigliere,
@@ -428,9 +427,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.UndertakerLocationSync:
                 Undertaker.ReceiveRPC(reader);
-                break;
-            case CustomRPC.RiftMakerSyncData:
-                RiftMaker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetLoversPlayers:
                 Main.LoversPlayers.Clear();

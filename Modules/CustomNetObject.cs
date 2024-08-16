@@ -19,6 +19,8 @@ using UnityEngine;
 // 10x10 : https://ultradragon005.github.io/AmongUs-Utilities/10xeditor.html
 // For special grid such as "8x6" jsut copy 10x10 code and ask gpt to make u that specific grid.
 
+//Sidenote: 8x8 on 100% size is a pretty golden standard and trying to make something smaller than that is very ugly (as the grean bean is very visible) so I wouldn't recommend it. 
+
 namespace TOHE
 {
     internal class CustomNetObject
@@ -247,6 +249,10 @@ namespace TOHE
                     }, 0.1f);
                 }
 
+                foreach (var pc in Main.AllPlayerControls.Where(x => HiddenList.Contains(x.PlayerId)))
+                {
+                    Hide(pc);
+                }
                 _ = new LateTask(() => { // Fix for host
                     if (!HiddenList.Contains(PlayerControl.LocalPlayer.PlayerId))
                         playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true);
@@ -474,6 +480,25 @@ namespace TOHE
         internal Firework(Vector2 position, List<byte> visibleList, byte OwnerId)
         {
             CreateNetObject("<size=100%><font=\"VCR SDF\"><line-height=67%><alpha=#00>█<alpha=#00>█<alpha=#00>█<#f2ce1c>█<#f2eb0d>█<alpha=#00>█<alpha=#00>█<alpha=#00>█<br><alpha=#00>█<alpha=#00>█<#f2eb0d>█<#f2eb0d>█<#f2ce1c>█<#f2eb0d>█<alpha=#00>█<alpha=#00>█<br><alpha=#00>█<#f2eb0d>█<#f2eb0d>█<#f2eb0d>█<#f2eb0d>█<#f2ce1c>█<#f2eb0d>█<alpha=#00>█<br><alpha=#00>█<#e60000>█<#e60000>█<#f2f2f2>█<#e60000>█<#e60000>█<#f2f2f2>█<alpha=#00>█<br><alpha=#00>█<#f2f2f2>█<#f20d0d>█<#f20d0d>█<#f2f2f2>█<#f20d0d>█<#e60000>█<alpha=#00>█<br><#f2740d>█<#f2740d>█<#f2f2f2>█<#f20d0d>█<#f20d0d>█<#f2f2f2>█<#e60000>█<#f2740d>█<br><#f2740d>█<#f2740d>█<#f2740d>█<#f2f2f2>█<#f20d0d>█<#f20d0d>█<#f2740d>█<#f2740d>█<br><#cb5f06>█<#cb5f06>█<#cb5f06>█<#f20d0d>█<#f2f2f2>█<#cb5f06>█<#cb5f06>█<#cb5f06>█<br></color></line-height></font></size>", position);
+            Main.AllAlivePlayerControls.ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
+            this.OwnerId = OwnerId;
+        }
+    }
+    internal sealed class RiftPortal : CustomNetObject
+    {
+        internal RiftPortal(Vector2 position, List<byte> visibleList, byte OwnerId)
+        {
+            if (!AmongUsClient.Instance.AmHost) return; // Spawning gets ignored for rift maker RPC, because it already does an rpc as Host
+            CreateNetObject("<size=100%><font=\"VCR SDF\"><line-height=67%><alpha=#00>█<alpha=#00>█<#e81111>█<#e81111>█<#e81111>█<#e81111>█<alpha=#00>█<alpha=#00>█<br><alpha=#00>█<#e81111>█<#ac2020>█<#ac2020>█<#ac2020>█<#ac2020>█<#e81111>█<alpha=#00>█<br><#e81111>█<#ac2020>█<#db5c5c>█<#db5c5c>█<#db5c5c>█<#db5c5c>█<#ac2020>█<#e81111>█<br><#e81111>█<#ac2020>█<#db5c5c>█<#ac2020>█<#ac2020>█<#db5c5c>█<#ac2020>█<#e81111>█<br><#e81111>█<#ac2020>█<#db5c5c>█<#ac2020>█<#db5c5c>█<#db5c5c>█<#ac2020>█<#e81111>█<br><#e81111>█<#ac2020>█<#db5c5c>█<#ac2020>█<#ac2020>█<#ac2020>█<#ac2020>█<#e81111>█<br><alpha=#00>█<#e81111>█<#ac2020>█<#db5c5c>█<#db5c5c>█<#db5c5c>█<#e81111>█<alpha=#00>█<br><alpha=#00>█<alpha=#00>█<#e81111>█<#ac2020>█<#ac2020>█<#ac2020>█<alpha=#00>█<alpha=#00>█<br></color></line-height></font></size>", position);
+            Main.AllAlivePlayerControls.ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
+            this.OwnerId = OwnerId;
+        }
+    }
+    internal sealed class Landmine : CustomNetObject
+    {
+        internal Landmine(Vector2 position, List<byte> visibleList, byte OwnerId)
+        {
+            CreateNetObject("<size=50%><font=\"VCR SDF\"><line-height=67%><alpha=#00>█<alpha=#00>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<alpha=#00>█<alpha=#00>█<br><alpha=#00>█<#8a8a8a>█<#9e948a>█<#9e948a>█<#9e948a>█<#9e948a>█<#8a8a8a>█<alpha=#00>█<br><#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#9e948a>█<#9e948a>█<#8a8a8a>█<br><#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#707070>█<#707070>█<#8a8a8a>█<#9e948a>█<#8a8a8a>█<br><#8a8a8a>█<#8a8a8a>█<#707070>█<#8a8a8a>█<#8a8a8a>█<#707070>█<#9e948a>█<#8a8a8a>█<br><#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#9e948a>█<#8a8a8a>█<br><alpha=#00>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<alpha=#00>█<br><alpha=#00>█<alpha=#00>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<#8a8a8a>█<alpha=#00>█<alpha=#00>█<br></color></line-height></font></size>", position);
             Main.AllAlivePlayerControls.ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
             this.OwnerId = OwnerId;
         }
