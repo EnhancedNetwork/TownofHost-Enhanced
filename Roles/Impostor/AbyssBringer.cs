@@ -81,7 +81,7 @@ internal class AbyssBringer : RoleBase
                 case DespawnMode.AfterTime when Utils.TimeStamp - blackHole.PlaceTimeStamp > BlackHoleDespawnTime.GetInt():
                     RemoveBlackHole();
                     continue;
-                case DespawnMode.AfterMeeting when GameStates.IsMeeting:
+                case DespawnMode.AfterMeeting when Main.MeetingIsStarted:
                     RemoveBlackHole();
                     continue;
             }
