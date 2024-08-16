@@ -423,6 +423,7 @@ class CheckForEndVotingPatch
         var name = "";
         int impnum = 0;
         int neutralnum = 0;
+        int apocnum = 0;
 
         if (CustomRoles.Bard.RoleExist())
         {
@@ -440,6 +441,8 @@ class CheckForEndVotingPatch
                 impnum++;
             else if (pc_role.IsNK() && pc != exiledPlayer.Object)
                 neutralnum++;
+            else if (pc_role.IsNA() && pc != exiledPlayer.Object)
+                apocnum++;
         }
         switch (Options.CEMode.GetInt())
         {
@@ -493,6 +496,8 @@ class CheckForEndVotingPatch
                     name += string.Format(GetString("OneNeutralRemain"), neutralnum) + comma;
                 else
                     name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
+            if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
+                    name += string.Format(GetString("ApocRemain"), neutralnum) + comma;
         }
 
     EndOfSession:
