@@ -480,7 +480,6 @@ public static class NumberOptionPatch
         {
             var item = OptionItem.AllOptions[index];
             __instance.TitleText.text = item.GetName();
-            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -512,13 +511,13 @@ public static class NumberOptionPatch
     {
         if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
         {
-            var item = OptionItem.AllOptions[index];
-            //Logger.Info($"{item.Name}, {index}", "NumberOption.FixedUpdate.TryGetValue");
+            __instance.MinusBtn.SetInteractable(true);
+            __instance.PlusBtn.SetInteractable(true);
 
             if (__instance.oldValue != __instance.Value)
             {
                 __instance.oldValue = __instance.Value;
-                __instance.ValueText.text = GetValueString(__instance, __instance.Value, item);
+                __instance.ValueText.text = GetValueString(__instance, __instance.Value, OptionItem.AllOptions[index]);
             }
             return false;
         }
@@ -537,7 +536,6 @@ public static class NumberOptionPatch
             __instance.Value = __instance.ValidRange.min;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
-            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -547,7 +545,6 @@ public static class NumberOptionPatch
             __instance.Value += increment;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
-            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -561,7 +558,6 @@ public static class NumberOptionPatch
             __instance.Value = __instance.ValidRange.max;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
-            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -571,7 +567,6 @@ public static class NumberOptionPatch
             __instance.Value -= increment;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
-            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -605,7 +600,6 @@ public static class StringOptionPatch
                SetupHelpIcon(role, __instance);
             }
             __instance.TitleText.text = name;
-            __instance.AdjustButtonsActiveState();
             return false;
         }
         return true;
@@ -682,6 +676,8 @@ public static class StringOptionPatch
         if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
         {
             var item = OptionItem.AllOptions[index];
+            __instance.MinusBtn.SetInteractable(true);
+            __instance.PlusBtn.SetInteractable(true);
 
             if (item is StringOptionItem stringOptionItem)
             {
@@ -711,7 +707,6 @@ public static class StringOptionPatch
             __instance.Value = 0;
             __instance.UpdateValue();
             __instance.OnValueChanged?.Invoke(__instance);
-            __instance.AdjustButtonsActiveState();
             return false;
         }
         return true;
@@ -724,7 +719,6 @@ public static class StringOptionPatch
             __instance.Value = __instance.Values.Length - 1;
             __instance.UpdateValue();
             __instance.OnValueChanged?.Invoke(__instance);
-            __instance.AdjustButtonsActiveState();
             return false;
         }
         return true;
