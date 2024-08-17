@@ -8,7 +8,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Rebirth : IAddon
 {
-    private const int Id = 29300;
+    private const int Id = 29500;
     public AddonTypes Type => AddonTypes.Helpful;
     public static OptionItem RebirthUses;
     public static Dictionary<byte, int> Rebirths = [];
