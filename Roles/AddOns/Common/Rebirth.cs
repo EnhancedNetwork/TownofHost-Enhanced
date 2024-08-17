@@ -51,7 +51,7 @@ public class Rebirth : IAddon
         Main.OvverideOutfit[ViablePlayer.PlayerId] = (Main.PlayerStates[pc.PlayerId].NormalOutfit, Main.PlayerStates[pc.PlayerId].NormalOutfit.PlayerName);
 
         NewExiledPlayer = ViablePlayer.Data;
-
+        _ = new LateTask(() => Utils.NotifyRoles(SpecifySeer: pc, SpecifyTarget: pc), 3f);
         if (Rebirths[pc.PlayerId] <= 0)
         {
             Main.PlayerStates[pc.PlayerId].RemoveSubRole(CustomRoles.Rebirth);
