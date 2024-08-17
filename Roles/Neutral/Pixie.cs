@@ -10,6 +10,7 @@ internal class Pixie : RoleBase
     //===========================SETUP================================\\
     private const int Id = 25900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pirate);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -43,9 +44,6 @@ internal class Pixie : RoleBase
     {
         PixieTargets[playerId] = [];
         PixiePoints.Add(playerId, 0);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     public override void Remove(byte playerId)

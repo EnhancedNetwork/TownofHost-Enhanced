@@ -1083,7 +1083,7 @@ class MeetingHudStartPatch
             if (target == null) continue;
 
             // if based role is Shapeshifter and is Desync Shapeshifter
-            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && Main.ResetCamPlayerList.Contains(seer.PlayerId))
+            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && seer.HasDesyncRole())
             {
                 // When target is impostor, set name color as white
                 target.cosmetics.SetNameColor(Color.white);

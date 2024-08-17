@@ -39,6 +39,12 @@ public abstract class RoleBase
         {
             CustomRoleManager.Add();
         }
+
+        // Remember desync player so that when changing role he will still be as desync
+        if (IsDesyncRole)
+        {
+            Main.DesyncPlayerList.Add(playerid);
+        }
     }
     public void OnRemove(byte playerId)
     {

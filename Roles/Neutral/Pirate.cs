@@ -15,6 +15,7 @@ internal class Pirate : RoleBase
     //===========================SETUP================================\\
     private const int Id = 15000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pirate);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -51,9 +52,6 @@ internal class Pirate : RoleBase
     public override void Add(byte playerId)
     {
         DuelDone.Add(playerId, false);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void MeetingHudClear()
     {

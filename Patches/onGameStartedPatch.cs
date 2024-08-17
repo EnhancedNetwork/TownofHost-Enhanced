@@ -59,10 +59,10 @@ internal class ChangeRoleSettings
             Main.LastEnteredVent.Clear();
             Main.LastEnteredVentLocation.Clear();
 
+            Main.DesyncPlayerList.Clear();
             Main.PlayersDiedInMeeting.Clear();
             GuessManager.GuesserGuessed.Clear();
             Main.AfterMeetingDeathPlayers.Clear();
-            Main.ResetCamPlayerList.Clear();
             Main.clientIdList.Clear();
 
             PlayerControlSetRolePatch.DidSetGhost.Clear();
@@ -503,15 +503,13 @@ internal class SelectRolesPatch
 
                 var roleClass = pc.GetRoleClass();
 
-                if (pc.GetRoleClass()?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
-
                 roleClass?.OnAdd(pc.PlayerId);
 
                 // if based role is Shapeshifter
                 if (roleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter)
                 {
                     // Is Desync Shapeshifter
-                    if (Main.ResetCamPlayerList.Contains(pc.PlayerId))
+                    if (pc.HasDesyncRole())
                     {
                         foreach (var target in Main.AllPlayerControls)
                         {
@@ -615,11 +613,6 @@ internal class SelectRolesPatch
                     break;
                 case CustomGameMode.FFA:
                     GameEndCheckerForNormal.SetPredicateToFFA();
-
-                    // Added players in reset cam   
-                    Main.ResetCamPlayerList.UnionWith(Main.AllPlayerControls
-                        .Where(pc => pc.GetCustomRole() is CustomRoles.Killer)
-                        .Select(pc => pc.PlayerId));
                     break;
             }
 

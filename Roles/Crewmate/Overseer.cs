@@ -16,7 +16,7 @@ internal class Overseer : RoleBase
     private const int Id = 12200;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -102,9 +102,6 @@ internal class Overseer : RoleBase
         }
 
         RandomRole.Add(playerId, GetRandomCrewRoleString());
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

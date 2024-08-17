@@ -607,7 +607,7 @@ class IntroCutsceneDestroyPatch
                 if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
             }
 
-            var amDesyncImpostor = Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId);
+            var amDesyncImpostor = PlayerControl.LocalPlayer.HasDesyncRole();
             if (amDesyncImpostor)
             {
                 PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
