@@ -86,7 +86,7 @@ public class Glow : IAddon
         InRadius[player.PlayerId] = Main.AllAlivePlayerControls
             .Where(target => target != null 
                 && !target.Is(CustomRoles.Glow) 
-                && Vector2.Distance(player.GetCustomPosition(), target.GetCustomPosition()) <= GlowRadius.GetFloat())
+                && Utils.GetDistance(player.GetCustomPosition(), target.GetCustomPosition()) <= GlowRadius.GetFloat())
             .Select(target => target.PlayerId)
             .ToHashSet();
 

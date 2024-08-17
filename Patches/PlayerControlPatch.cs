@@ -315,7 +315,7 @@ class CheckMurderPatch
                                 if (Main.AllAlivePlayerControls.Any(x =>
                                     x.PlayerId != killer.PlayerId &&
                                     x.PlayerId != target.PlayerId &&
-                                    Vector2.Distance(x.transform.position, target.transform.position) < 2f))
+                                    Utils.GetDistance(x.transform.position, target.transform.position) < 2f))
                                     return false;
                             }
                         }

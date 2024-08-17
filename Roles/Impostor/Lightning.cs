@@ -136,7 +136,7 @@ internal class Lightning : RoleBase
             foreach (var pc in allAlivePlayerControls)
             {
                 var pos = gs.transform.position;
-                var dis = Vector2.Distance(pos, pc.transform.position);
+                var dis = Utils.GetDistance(pos, pc.transform.position);
                 if (dis > 0.3f) continue;
 
                 deList.Add(gs.PlayerId);

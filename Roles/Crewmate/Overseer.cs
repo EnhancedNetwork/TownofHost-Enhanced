@@ -229,7 +229,7 @@ internal class Overseer : RoleBase
             {
 
                 float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                float dis = Vector2.Distance(player.GetCustomPosition(), farTarget.GetCustomPosition());
+                float dis = GetDistance(player.GetCustomPosition(), farTarget.GetCustomPosition());
                 if (dis <= range)
                 {
                     OverseerTimer[playerId] = (farTarget, farTime + Time.fixedDeltaTime);

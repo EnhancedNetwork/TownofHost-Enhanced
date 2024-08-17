@@ -379,6 +379,7 @@ public static class Utils
     {
         return GetString("DeathReason." + Enum.GetName(typeof(PlayerState.DeathReason), status));
     }
+    public static float GetDistance(Vector2 pos1, Vector2 pos2) => Vector2.Distance(pos1, pos2);
     public static Color GetRoleColor(CustomRoles role)
     {
         if (Main.roleColors.TryGetValue(role, out var hexColor))

@@ -18,10 +18,7 @@ namespace TOHE.Roles.Impostor
         public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
         //==================================================================\\
 
-
         public static OptionItem KillCooldown;
-
-
         public static Dictionary<byte, (PlayerControl yin, PlayerControl yang)> Yanged = [];
 
         public override void SetupCustomOption()
@@ -30,7 +27,6 @@ namespace TOHE.Roles.Impostor
             KillCooldown = FloatOptionItem.Create(Id + 2, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.YinYanger])
                 .SetValueFormat(OptionFormat.Seconds);
         }
-
         public override void Init()
         {
             Yanged.Clear();
@@ -40,10 +36,15 @@ namespace TOHE.Roles.Impostor
             Yanged[playerId] = new();
         }
         public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+        private static bool CheckAvailability() {
+            var tocheck = Main.AllAlivePlayerControls.Length - Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.YinYanger)).Count();
+            var result = (Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.YinYanger)).Count() * 2);
+            return tocheck >= result;
+        }
         public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
         {
             var (yin, yang) = Yanged[killer.PlayerId];
-            if (yin && yang) return true;
+            if (yin && yang || !CheckAvailability()) return true;
             if (Yanged.Where(x => x.Key != killer.PlayerId).Any(x => x.Value.yin == target || x.Value.yang == target))
             {
                 killer.Notify(string.Format(GetString("YinYangerAlreadyMarked"), target.GetRealName(clientData: true)));
@@ -70,7 +71,11 @@ namespace TOHE.Roles.Impostor
         {
             Yanged[_state.PlayerId] = new();
         }
-
+        public override void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+        {
+            if (Yanged.TryGetValue(DeadPlayer.PlayerId, out _))
+                Yanged[DeadPlayer.PlayerId] = new();
+        }
         public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
         {
             var (yin, yang) = Yanged[seer.PlayerId];
@@ -78,7 +83,6 @@ namespace TOHE.Roles.Impostor
 
             return seen.PlayerId == yin?.PlayerId || seen.PlayerId == yang?.PlayerId ? ColorString(col, "☯") : string.Empty;
         }
-
         public override void OnFixedUpdate(PlayerControl pc)
         {
             var (yin, yang) = Yanged[pc.PlayerId];
