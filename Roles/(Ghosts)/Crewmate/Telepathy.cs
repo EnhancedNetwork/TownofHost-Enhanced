@@ -12,7 +12,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate;
 internal class Telepathy : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 28900;
+    private const int Id = 29300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.NotAssigned);
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateGhosts;
