@@ -67,7 +67,7 @@ public class Statue : IAddon
 
         foreach (var PVC in Main.AllAlivePlayerControls)
         {
-            if (CountNearplr.Contains(PVC.PlayerId) && Vector2.Distance(PVC.transform.position, victim.transform.position) > 2f)
+            if (CountNearplr.Contains(PVC.PlayerId) && Utils.GetDistance(PVC.transform.position, victim.transform.position) > 2f)
             {
                 CountNearplr.Remove(PVC.PlayerId);
             }
@@ -77,7 +77,7 @@ public class Statue : IAddon
         {
             foreach (var plr in Main.AllAlivePlayerControls)
             {
-                if (Vector2.Distance(plr.transform.position, victim.transform.position) < 2f && plr != victim)
+                if (Utils.GetDistance(plr.transform.position, victim.transform.position) < 2f && plr != victim)
                 {
                     if (!CountNearplr.Contains(plr.PlayerId)) CountNearplr.Add(plr.PlayerId);
                 }

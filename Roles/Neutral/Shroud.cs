@@ -115,7 +115,7 @@ internal class Shroud : RoleBase
             {
                 if (target.PlayerId != shroud.PlayerId && !target.Is(CustomRoles.Shroud) && !target.IsTransformedNeutralApocalypse())
                 {
-                    dis = Vector2.Distance(shroudPos, target.transform.position);
+                    dis = Utils.GetDistance(shroudPos, target.transform.position);
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }

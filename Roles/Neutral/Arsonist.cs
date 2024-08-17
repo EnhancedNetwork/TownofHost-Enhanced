@@ -152,7 +152,7 @@ internal class Arsonist : RoleBase
                 else
                 {
                     float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                    float distance = Vector2.Distance(player.GetCustomPosition(), arTarget.GetCustomPosition());
+                    float distance = GetDistance(player.GetCustomPosition(), arTarget.GetCustomPosition());
 
                     if (distance <= range)
                     {

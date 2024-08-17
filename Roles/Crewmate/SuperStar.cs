@@ -41,7 +41,7 @@ internal class SuperStar : RoleBase
         return !Main.AllAlivePlayerControls.Any(x =>
                 x.PlayerId != killer.PlayerId &&
                 x.PlayerId != target.PlayerId &&
-                Vector2.Distance(x.transform.position, target.transform.position) < 2f);
+                GetDistance(x.transform.position, target.transform.position) < 2f);
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {

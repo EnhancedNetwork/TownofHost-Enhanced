@@ -238,7 +238,7 @@ internal class Revolutionist : RoleBase
                 else
                 {
                     float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                    float dis = Vector2.Distance(player.GetCustomPosition(), rv_target.GetCustomPosition());
+                    float dis = GetDistance(player.GetCustomPosition(), rv_target.GetCustomPosition());
                     if (dis <= range)
                     {
                         RevolutionistTimer[playerId] = (rv_target, rv_time + Time.fixedDeltaTime);

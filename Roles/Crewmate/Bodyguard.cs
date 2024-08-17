@@ -37,7 +37,7 @@ internal class Bodyguard : RoleBase
             return false;
 
         var pos = target.transform.position;
-        var dis = Vector2.Distance(pos, bodyguard.transform.position);
+        var dis = Utils.GetDistance(pos, bodyguard.transform.position);
         if (dis > ProtectRadiusOpt.GetFloat()) return false;
 
         if (bodyguard.Is(CustomRoles.Madmate) && killer.GetCustomRole().IsImpostorTeam())
