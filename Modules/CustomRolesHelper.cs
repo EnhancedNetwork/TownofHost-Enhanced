@@ -846,7 +846,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Lightning)
                     || pc.Is(CustomRoles.Hangman)
                     || pc.Is(CustomRoles.Stealer)
-                    || pc.Is(CustomRoles.Tricky))
+                    || pc.Is(CustomRoles.Tricky)
+                    || pc.Is(CustomRoles.DoubleAgent))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1152,6 +1153,7 @@ public static class CustomRolesHelper
            CustomRoles.Pelican => CountTypes.Pelican,
            CustomRoles.Minion => CountTypes.Impostor,
            CustomRoles.Bloodmoon => CountTypes.Impostor,
+           CustomRoles.Possessor => CountTypes.Impostor,
            CustomRoles.Demon => CountTypes.Demon,
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
            CustomRoles.Cultist => CountTypes.Cultist,

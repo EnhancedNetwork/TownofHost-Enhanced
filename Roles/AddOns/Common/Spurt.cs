@@ -81,7 +81,7 @@ namespace TOHE.Roles.AddOns.Common
             if (!player.Is(CustomRoles.Spurt) || !player.IsAlive()) return;
 
             var pos = player.GetCustomPosition();
-            bool moving = Vector2.Distance(pos, LastPos[player.PlayerId]) > 0f || player.MyPhysics.Animations.IsPlayingRunAnimation();
+            bool moving = Utils.GetDistance(pos, LastPos[player.PlayerId]) > 0f || player.MyPhysics.Animations.IsPlayingRunAnimation();
             LastPos[player.PlayerId] = pos;
 
             float modulator = Modulator.GetFloat();

@@ -582,6 +582,7 @@ public enum CustomRoles
     // Impostor Ghost
     Bloodmoon,
     Minion,
+    Possessor,
 
     //Impostor
     Anonymous,
@@ -604,6 +605,7 @@ public enum CustomRoles
     Devourer,
     Disperser,
     DollMaster,
+    DoubleAgent,
     Eraser,
     Escapist,
     EvilGuesser,
