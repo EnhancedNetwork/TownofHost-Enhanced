@@ -13,7 +13,7 @@ namespace TOHE.Roles.Impostor;
 internal class DoubleAgent : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 28600;
+    private const int Id = 29000;
     private static readonly List<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
@@ -124,8 +124,11 @@ internal class DoubleAgent : RoleBase
 
     public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
-        if (voter.IsModClient()) return true;
-        if (!CanBombInMeeting) return true;
+        if (voter.IsModClient() || !CanBombInMeeting)
+        {
+            voter.GetRoleClass().HasVoted = true;
+            return true;
+        }
 
         if (!BombIsActive)
         {
