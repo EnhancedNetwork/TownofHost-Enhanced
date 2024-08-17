@@ -15,7 +15,7 @@ internal class Baker : RoleBase
 
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
@@ -61,9 +61,6 @@ internal class Baker : RoleBase
         CanUseAbility = true;
         StarvedNonBreaded = false;
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     private static (int, int) BreadedPlayerCount(byte playerId)
@@ -308,14 +305,12 @@ internal class Famine : RoleBase
 {
     //===========================SETUP================================\\
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Baker);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
     public override void Add(byte playerId)
     {
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
-
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);

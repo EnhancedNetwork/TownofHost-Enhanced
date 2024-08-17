@@ -13,7 +13,7 @@ internal class Infectious : RoleBase
     private const int Id = 16600;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -52,9 +52,6 @@ internal class Infectious : RoleBase
         PlayerIds.Add(playerId);
         var pc = Utils.GetPlayerById(playerId);
         pc?.AddDoubleTrigger();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(HasImpostorVision.GetBool());

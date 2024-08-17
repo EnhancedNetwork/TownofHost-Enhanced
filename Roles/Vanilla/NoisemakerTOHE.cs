@@ -1,4 +1,6 @@
 ﻿
+using TOHE.Roles.Core;
+
 namespace TOHE.Roles.Vanilla;
 
 internal class NoisemakerTOHE : RoleBase
@@ -40,7 +42,7 @@ internal class NoisemakerTOHE : RoleBase
 
         var playerRole = player.GetCustomRole();
         // When impostor alert is off, and player is desync crewamte, make impostor alert as true
-        if (playerRole.IsDesyncRole() && playerRole.IsCrewmate() && !ImpostorAlert.GetBool())
+        if (player.HasDesyncRole() && !playerRole.IsImpostorTeamV3() && !ImpostorAlert.GetBool())
         {
             AURoleOptions.NoisemakerImpostorAlert = true;
         }

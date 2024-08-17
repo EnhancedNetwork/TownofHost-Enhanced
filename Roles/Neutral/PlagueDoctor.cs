@@ -15,6 +15,7 @@ internal class PlagueDoctor : RoleBase
     //===========================SETUP================================\\
     private const int Id = 27600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.PlagueDoctor);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -83,9 +84,6 @@ internal class PlagueDoctor : RoleBase
         // Fixed airship respawn selection delay
         if (Main.NormalOptions.MapId == 4)
             InfectInactiveTime += 5f;
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {

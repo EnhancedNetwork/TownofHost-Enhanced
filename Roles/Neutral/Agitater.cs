@@ -12,7 +12,7 @@ internal class Agitater : RoleBase
     private const int Id = 15800;
     private static readonly List<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -57,9 +57,6 @@ internal class Agitater : RoleBase
     {
         playerIdList.Add(playerId);
         CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     public void ResetBomb()

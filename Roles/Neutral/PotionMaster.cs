@@ -12,6 +12,7 @@ internal class PotionMaster : RoleBase
     //===========================SETUP================================\\
     private const int Id = 17700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.PotionMaster);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -44,9 +45,6 @@ internal class PotionMaster : RoleBase
 
         var pc = Utils.GetPlayerById(playerId);
         pc?.AddDoubleTrigger();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     private void SendRPC(byte playerId, byte targetId)

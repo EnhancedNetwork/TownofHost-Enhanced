@@ -756,7 +756,7 @@ class SetRoleInvisibilityPatch
 
         foreach (var target in Main.AllAlivePlayerControls)
         {
-            if (phantom == target || target.AmOwner || !target.GetCustomRole().IsDesyncRole()) continue;
+            if (phantom == target || target.AmOwner || !target.HasDesyncRole()) continue;
 
             if (isActive)
             {
@@ -1778,7 +1778,7 @@ public static class PlayerControlMixupOutfitPatch
         // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
         if (PlayerControl.LocalPlayer.Data.Role.IsImpostor &&  // Impostor with vanilla
             !PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) &&  // Not an Impostor
-            Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId))  // Desync Impostor
+            PlayerControl.LocalPlayer.HasDesyncRole())  // Desync Impostor
         {
             // Hide names
             __instance.cosmetics.ToggleNameVisible(false);
@@ -1894,13 +1894,13 @@ class PlayerControlSetRolePatch
                 Logger.Warn($"Error After RpcSetRole: {error}", "RpcSetRole.Prefix.GhostAssignPatch");
             }
 
-            var targetIsKiller = target.Is(Custom_Team.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
+            var targetIsKiller = target.Is(Custom_Team.Impostor) || target.HasDesyncRole();
             ghostRoles.Clear();
 
             foreach (var seer in Main.AllPlayerControls)
             {
                 var self = seer.PlayerId == target.PlayerId;
-                var seerIsKiller = seer.Is(Custom_Team.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
+                var seerIsKiller = seer.Is(Custom_Team.Impostor) || seer.HasDesyncRole();
 
                 if (target.GetCustomRole().IsGhostRole() || target.IsAnySubRole(x => x.IsGhostRole()))
                 {
