@@ -124,11 +124,7 @@ internal class DoubleAgent : RoleBase
 
     public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
-        if (voter.IsModClient() || !CanBombInMeeting)
-        {
-            voter.GetRoleClass().HasVoted = true;
-            return true;
-        }
+        if (voter.IsModClient() || !CanBombInMeeting)return true;
 
         if (!BombIsActive)
         {
@@ -146,7 +142,11 @@ internal class DoubleAgent : RoleBase
     // Clear active bombed players on meeting call if ClearBombedOnMeetingCall is enabled.
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        
+        if (_Player != null && (_Player.AmOwner || _Player.IsModClient()))
+        {
+            HasVoted = true;
+        }
+
         if (BombIsActive && ClearBombedOnMeetingCall.GetBool())
         {
             ClearBomb();
