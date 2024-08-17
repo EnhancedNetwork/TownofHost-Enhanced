@@ -2607,7 +2607,7 @@
   "BerserkerMaxReached": "達到最高等級！",
   "BerserkerLevelChanged": "等級提升到 {0}",
   "BerserkerLevelRequirement": "解鎖等級需求",
-  "KilledByBerserker": "被狂戰士所殺",
+  "KilledByBerserker": "你被狂戰士殺死了",
   "ImpCanBeUnlucky": "<color=#ff1919>偽裝者</color>可以成為<color=#b8d7a3>倒霉</color>",
   "CrewCanBeUnlucky": "<color=#8cffff>船員</color>可以成為<color=#b8d7a3>倒霉</color>",
   "NeutralCanBeUnlucky": "<color=#7f8c8d>中立</color>玩家可以成為<color=#b8d7a3>倒霉</color>",
