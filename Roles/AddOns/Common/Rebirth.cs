@@ -3,6 +3,7 @@ using static TOHE.Utils;
 using static TOHE.Translator;
 using TOHE.Modules;
 using static UnityEngine.GraphicsBuffer;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -33,7 +34,8 @@ public class Rebirth : IAddon
         if (!pc.Is(CustomRoles.Rebirth)) return false;
         var ViablePlayer = Main.AllAlivePlayerControls.Where(x => x != pc).Shuffle(IRandom.Instance)
             .FirstOrDefault(x => x != null && !x.OwnedByHost() && !x.IsAnySubRole(x => x.IsConverted()) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Knighted) && 
-/*All converters */    (!x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infected) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal) && !x.Is(CustomRoles.Admirer)));
+/*All converters */    (!x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infected) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal) && !x.Is(CustomRoles.Admirer)) &&
+                !x.Is(CustomRoles.Lovers) && x.Is(CustomRoles.Romantic) && !x.GetCustomRole().IsImpostor());
 
         if (ViablePlayer == null)
         {
