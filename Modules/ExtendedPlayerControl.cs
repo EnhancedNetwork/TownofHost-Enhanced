@@ -869,7 +869,7 @@ static class ExtendedPlayerControl
         var rangePlayersIL = RoleBehaviour.GetTempPlayerList();
         List<PlayerControl> rangePlayers = [];
         player.Data.Role.GetPlayersInAbilityRangeSorted(rangePlayersIL, ignoreColliders);
-        foreach (var pc in rangePlayersIL.ToArray())
+        foreach (var pc in rangePlayersIL.GetFastEnumerator())
         {
             if (predicate(pc)) rangePlayers.Add(pc);
         }

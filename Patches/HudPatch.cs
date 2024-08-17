@@ -3,7 +3,6 @@ using System;
 using TMPro;
 using TOHE.Roles.Core;
 using UnityEngine;
-using AmongUs.GameOptions;
 using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;
 

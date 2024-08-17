@@ -381,9 +381,12 @@ public static class Utils
     }
     public static Color GetRoleColor(CustomRoles role)
     {
-        if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
-        _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
-        return c;
+        if (Main.roleColors.TryGetValue(role, out var hexColor))
+        {
+            _ = ColorUtility.TryParseHtmlString(hexColor, out var color);
+            return color;
+        }
+        return Color.white;
     }
     public static Color GetTeamColor(PlayerControl player)
     {
