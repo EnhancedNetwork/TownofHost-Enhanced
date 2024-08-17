@@ -582,6 +582,7 @@ public enum CustomRoles
     // Impostor Ghost
     Bloodmoon,
     Minion,
+    Possessor,
 
     //Impostor
     Anonymous,

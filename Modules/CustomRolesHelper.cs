@@ -1153,6 +1153,7 @@ public static class CustomRolesHelper
            CustomRoles.Pelican => CountTypes.Pelican,
            CustomRoles.Minion => CountTypes.Impostor,
            CustomRoles.Bloodmoon => CountTypes.Impostor,
+           CustomRoles.Possessor => CountTypes.Impostor,
            CustomRoles.Demon => CountTypes.Demon,
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
            CustomRoles.Cultist => CountTypes.Cultist,
