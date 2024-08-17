@@ -324,6 +324,7 @@
   "Seer": "Seer",
   "Tiebreaker": "Tiebreaker",
   "Oblivious": "Oblivious",
+  "Rebirth": "Rebirth",
   "Bewilder": "Bewilder",
   "Workhorse": "Workhorse",
   "Fool": "Fool",
@@ -502,6 +503,7 @@
   "MediumInfo": "Talk with ghosts",
   "ObserverInfo": "You can see all shield-animations",
   "PacifistInfo": "Vent to reset kill cooldowns",
+  "RebirthInfo": "Arise Again",
   "MonarchInfo": "Give your crew extra voting power!",
   "SpurtInfo": "Spring Like A rabbit!",
   "StealthInfo": "Killing Blinds Everyone in the Room",
@@ -953,6 +955,7 @@
   "GravestoneInfoLong": "(Add-ons):\nAs the Gravestone, your role is revealed to everyone when you die.",
   "LazyInfoLong": "(Add-ons):\nAs the Lazy, you are assigned a single short task and are immune to Warlocks, Puppeteers, and Gangsters.",
   "AutopsyInfoLong": "(Add-ons):\nAs the Autopsy, you can see how people died.\n\nCannot be assigned to Doctor, Tracefinder, Scientist, or Sunnyboy.",
+  "RebirthInfoLong": "(Add-ons):\nAs the Rebirth, if you're the player about to be ejected, you will swap skins with someone and thrive once more.",
   "LoyalInfoLong": "(Add-ons):\nAs the Loyal, you cannot be recruited by roles such as Jackal or Cultist.\n\nCannot be assigned to neutrals.",
   "EvilSpiritInfoLong": "(Add-ons):\nAs Evil Spirit, it's your job to help the Spiritcaller to victory. You can use your Haunt button to freeze players and reduce their vision. Alternatively, you can use your Haunt button to give the Spiritcaller a shield against a kill attempt temporarily.",
   "RecruitInfoLong": "(Betrayal Add-ons):\nAs a recruit, you are on the Jackal's team and help out the Jackal and their Sidekicks.\n\nYou cannot win with your original team.",
@@ -1478,6 +1481,8 @@
   "SheriffMadCanKillImp": "Can kill <color=#ff1919>Impostors</color>",
   "SheriffMadCanKillNeutral": "Can kill <color=#7f8c8d>Neutrals</color>",
   "SheriffMadCanKillCrew": "Can kill <color=#8cffff>Crewmates</color>",
+
+  "RebirthFailed": "Ahh, how unfortunate, you did not find any viable souls to swap bodies with",
 
   "ReverieIncreaseKillCooldown": "Increase kill cooldown",
   "ReverieMaxKillCooldown": "Max kill cooldown",

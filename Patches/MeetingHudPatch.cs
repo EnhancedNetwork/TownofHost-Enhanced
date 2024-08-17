@@ -351,6 +351,10 @@ class CheckForEndVotingPatch
                 exileId = 0xff;
                 exiledPlayer = GetPlayerInfoById(exileId);
             }
+            else if (exiledPlayer.Object?.Is(CustomRoles.Rebirth) == true && Rebirth.SwapSkins(exiledPlayer.Object, out var NewExiled))
+            {
+                exiledPlayer = NewExiled;
+            }
 
             exiledPlayer?.Object.SetRealKiller(null);
 

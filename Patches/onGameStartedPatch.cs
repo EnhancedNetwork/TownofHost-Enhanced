@@ -576,7 +576,9 @@ internal class SelectRolesPatch
                         case CustomRoles.Bloodthirst:
                             Bloodthirst.Add();
                             break;
-
+                        case CustomRoles.Rebirth:
+                            Rebirth.Add(pc.PlayerId);
+                            break;
                         default:
                             break;
                     }
