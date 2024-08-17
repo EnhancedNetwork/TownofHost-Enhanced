@@ -72,6 +72,7 @@ internal class ChangeRoleSettings
             Main.AllKillers.Clear();
             Main.OverDeadPlayerList.Clear();
             Main.UnShapeShifter.Clear();
+            Main.OvverideOutfit.Clear();
             Main.GameIsLoaded = false;
             Utils.LateExileTask.Clear();
 

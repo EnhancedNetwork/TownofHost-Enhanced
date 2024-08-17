@@ -43,8 +43,13 @@ public class Rebirth : IAddon
         }
         Rebirths[pc.PlayerId]--;
         pc.ResetPlayerOutfit(Main.PlayerStates[ViablePlayer.PlayerId].NormalOutfit, ViablePlayer.Data.PlayerLevel, true);
+        Main.OvverideOutfit[pc.PlayerId] = (Main.PlayerStates[ViablePlayer.PlayerId].NormalOutfit, Main.PlayerStates[ViablePlayer.PlayerId].NormalOutfit.PlayerName);
+
         ViablePlayer.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit, pc.Data.PlayerLevel, true);
+        Main.OvverideOutfit[ViablePlayer.PlayerId] = (Main.PlayerStates[pc.PlayerId].NormalOutfit, Main.PlayerStates[pc.PlayerId].NormalOutfit.PlayerName);
+
         NewExiledPlayer = ViablePlayer.Data;
+
         if (Rebirths[pc.PlayerId] <= 0)
         {
             Main.PlayerStates[pc.PlayerId].RemoveSubRole(CustomRoles.Rebirth);
