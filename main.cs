@@ -643,6 +643,7 @@ public enum CustomRoles
     Sniper,
     SoulCatcher,
     Stealth,
+    YinYanger,
     Swooper,
     TimeThief,
     Trapster,

@@ -283,6 +283,7 @@ public class PlayerState(byte playerId)
         Trap,
         Targeted,
         Retribution,
+        Equilibrium,
         Slice,
         BloodLet,
         WrongAnswer,
