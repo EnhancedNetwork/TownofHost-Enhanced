@@ -50,6 +50,7 @@ enum CustomRPC : byte // 197/255 USED
     SyncPlayerSetting,
     ShowChat,
     SyncShieldPersonDiedFirst,
+    RemoveSubRole,
 
     //Roles 
     SetBountyTarget,
@@ -332,6 +333,12 @@ internal class RPCHandlerPatch
                         option.SetValue(4); // 4 => Preset 5
                     }
                 }
+                break;
+
+            case CustomRPC.RemoveSubRole:
+                byte targetId = reader.ReadByte();
+                var Subrole = (CustomRoles)reader.ReadPackedInt32();
+                Main.PlayerStates[targetId].RemoveSubRole(Subrole);
                 break;
 
             case CustomRPC.SetDeathReason:

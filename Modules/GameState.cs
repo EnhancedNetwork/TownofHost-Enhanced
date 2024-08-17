@@ -8,6 +8,7 @@ using TOHE.Roles.Neutral;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using static TOHE.Utils;
+using Hazel;
 
 namespace TOHE;
 
@@ -217,6 +218,13 @@ public class PlayerState(byte playerId)
     {
         if (SubRoles.Contains(role))
             SubRoles.Remove(role);
+
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveSubRole, SendOption.Reliable);
+        writer.Write(PlayerId);
+        writer.WritePacked((int)role);
+        writer.EndMessage();
     }
 
     public void SetDead()
