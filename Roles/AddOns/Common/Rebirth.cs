@@ -22,6 +22,11 @@ public class Rebirth : IAddon
     {
         Rebirths[Playerid] = RebirthUses.GetInt();
     }
+    public static void Remove(byte Playerid) 
+    {
+        Rebirths.Remove(Playerid);
+    }
+
     public static bool SwapSkins(PlayerControl pc, out NetworkedPlayerInfo NewExiledPlayer)
     {
         NewExiledPlayer = default;
