@@ -42,8 +42,8 @@ public class Rebirth : IAddon
             return false;
         }
         Rebirths[pc.PlayerId]--;
-        pc.ResetPlayerOutfit(Main.PlayerStates[ViablePlayer.PlayerId].NormalOutfit, ViablePlayer.Data.PlayerLevel);
-        ViablePlayer.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit, pc.Data.PlayerLevel);
+        pc.ResetPlayerOutfit(Main.PlayerStates[ViablePlayer.PlayerId].NormalOutfit, ViablePlayer.Data.PlayerLevel, true);
+        ViablePlayer.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit, pc.Data.PlayerLevel, true);
         NewExiledPlayer = ViablePlayer.Data;
         if (Rebirths[pc.PlayerId] <= 0)
         {
