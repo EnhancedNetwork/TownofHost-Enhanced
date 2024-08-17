@@ -31,9 +31,9 @@ public class Rebirth : IAddon
     {
         NewExiledPlayer = default;
         if (!pc.Is(CustomRoles.Rebirth)) return false;
-        var ViablePlayer = Main.AllAlivePlayerControls.Where(x => x != pc)
+        var ViablePlayer = Main.AllAlivePlayerControls.Where(x => x != pc).Shuffle(IRandom.Instance)
             .FirstOrDefault(x => x != null && !x.OwnedByHost() && !x.IsAnySubRole(x => x.IsConverted()) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Knighted) && 
-/*All converters */    (!x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infected) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal)));
+/*All converters */    (!x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infected) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal) && !x.Is(CustomRoles.Admirer)));
 
         if (ViablePlayer == null)
         {
