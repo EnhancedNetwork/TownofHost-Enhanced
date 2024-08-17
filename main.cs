@@ -184,8 +184,45 @@ public class Main : BasePlugin
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
 
-    public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToArray();
-    public static PlayerControl[] AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToArray();
+    public static PlayerControl[] AllPlayerControls
+    {
+        get
+        {
+            int count = PlayerControl.AllPlayerControls.Count;
+            var result = new PlayerControl[count];
+            int i = 0;
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                if (pc == null || pc.PlayerId == 255) continue;
+                result[i++] = pc;
+            }
+
+            if (i == 0) return [];
+
+            Array.Resize(ref result, i);
+            return result;
+        }
+    }
+
+    public static PlayerControl[] AllAlivePlayerControls
+    {
+        get
+        {
+            int count = PlayerControl.AllPlayerControls.Count;
+            var result = new PlayerControl[count];
+            int i = 0;
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                if (pc == null || pc.PlayerId == 255 || !pc.IsAlive() || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
+                result[i++] = pc;
+            }
+
+            if (i == 0) return [];
+
+            Array.Resize(ref result, i);
+            return result;
+        }
+    }
 
     public static Main Instance;
 
