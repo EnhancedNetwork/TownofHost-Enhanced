@@ -10,7 +10,7 @@ internal class Pickpocket : RoleBase
     //===========================SETUP================================\\
     private const int Id = 17400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pickpocket);
-
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -34,11 +34,6 @@ internal class Pickpocket : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Pickpocket]);
         HideAdditionalVotes = BooleanOptionItem.Create(Id + 14, GeneralOption.HideAdditionalVotes, false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Pickpocket]);
-    }
-    public override void Add(byte playerId)
-    {
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());

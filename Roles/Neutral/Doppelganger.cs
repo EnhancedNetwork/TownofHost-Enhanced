@@ -12,6 +12,7 @@ internal class Doppelganger : RoleBase
     private const int Id = 25000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doppelganger);
     public override bool IsExperimental => true;
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -39,10 +40,6 @@ internal class Doppelganger : RoleBase
     {
         AbilityLimit = MaxSteals.GetInt();
         DoppelVictim[playerId] = Utils.GetPlayerById(playerId).GetRealName() ?? "Invalid";
-
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;

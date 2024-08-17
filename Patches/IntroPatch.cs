@@ -538,7 +538,8 @@ class IntroCutsceneDestroyPatch
                     }
                 }
 
-                _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, false, -3)), 2f, "Set Impostor For Server");
+                // Not entirely sure if this is really necessary
+                //_ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, false, -3)), 2f, "Set Impostor For Server");
             }
 
             if (PlayerControl.LocalPlayer.Is(CustomRoles.GM)) // Incase user has /up access
@@ -606,7 +607,7 @@ class IntroCutsceneDestroyPatch
                 if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
             }
 
-            var amDesyncImpostor = Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId);
+            var amDesyncImpostor = PlayerControl.LocalPlayer.HasDesyncRole();
             if (amDesyncImpostor)
             {
                 PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;

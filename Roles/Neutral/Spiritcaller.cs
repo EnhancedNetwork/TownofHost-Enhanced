@@ -12,6 +12,7 @@ internal class Spiritcaller : RoleBase
     //===========================SETUP================================\\
     private const int Id = 25200;
     public static bool HasEnabled = CustomRoleManager.HasEnabled(CustomRoles.Spiritcaller);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -59,9 +60,6 @@ internal class Spiritcaller : RoleBase
     {
         AbilityLimit = SpiritMax.GetInt();
         ProtectTimeStamp = 0;
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {

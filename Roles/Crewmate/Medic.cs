@@ -14,6 +14,7 @@ internal class Medic : RoleBase
     //===========================SETUP================================\\
     private const int Id = 8600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medic);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -69,9 +70,6 @@ internal class Medic : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = 1;
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     private static void SendRPCForProtectList()
     {
