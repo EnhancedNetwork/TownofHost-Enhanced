@@ -2571,7 +2571,7 @@
   "FortuneTellerCheck.TaskDone": "[{0}]Role -[{1}]",
   "DevAndSpnTitle": "TOHE family",
   "FortuneTellerCheck.Null": "<b>{0}</b> is a role that is not listed.\nThis message should not appear normally.",
-  "FortuneTellerCheck.Result": "<b>{0}</b> is either one of the following roles:-\n{1}",
+  "FortuneTellerCheck.Result": "<b>{0}</b> is either one of the following roles:\n{1}",
   "SunnyboyChance": "<color=#ff9902>Sunnyboy</color> Chance",
   "BardChance": "<color=#ff1919>Bard</color> Chance",
   "SkeldChance": "Chance that the map is <color=#66a186>The Skeld</color>",
