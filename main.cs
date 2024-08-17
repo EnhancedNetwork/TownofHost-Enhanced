@@ -134,7 +134,6 @@ public class Main : BasePlugin
     public static float RefixCooldownDelay = 0f;
     public static NetworkedPlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
-    public static readonly HashSet<byte> ResetCamPlayerList = [];
     public static readonly HashSet<byte> winnerList = [];
     public static readonly HashSet<string> winnerNameList = [];
     public static readonly HashSet<int> clientIdList = [];
@@ -143,6 +142,7 @@ public class Main : BasePlugin
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
 
+    public static readonly HashSet<byte> DesyncPlayerList = [];
     public static readonly HashSet<byte> TasklessCrewmate = [];
     public static readonly HashSet<byte> OverDeadPlayerList = [];
     public static readonly HashSet<byte> UnreportableBodies = [];

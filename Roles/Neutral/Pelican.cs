@@ -16,6 +16,7 @@ internal class Pelican : RoleBase
     //===========================SETUP================================\\
     private const int Id = 17300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pelican);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -45,11 +46,6 @@ internal class Pelican : RoleBase
         PelicanLastPosition.Clear();
 
         Count = 0;
-    }
-    public override void Add(byte playerId)
-    {
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

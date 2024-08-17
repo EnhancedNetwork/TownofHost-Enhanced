@@ -11,6 +11,7 @@ internal class CopyCat : RoleBase
     private const int Id = 11500;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -40,9 +41,6 @@ internal class CopyCat : RoleBase
     {
         playerIdList.Add(playerId);
         CurrentKillCooldown = KillCooldown.GetFloat();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
     {
@@ -171,7 +169,6 @@ internal class CopyCat : RoleBase
         }
         if (role.IsCrewmate())
         {
-
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcSetCustomRole(role);

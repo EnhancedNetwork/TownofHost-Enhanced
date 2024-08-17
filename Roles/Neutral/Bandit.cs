@@ -13,6 +13,7 @@ internal class Bandit : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Bandit);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -56,9 +57,6 @@ internal class Bandit : RoleBase
 
         var pc = Utils.GetPlayerById(playerId);
         pc?.AddDoubleTrigger();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id)
     {

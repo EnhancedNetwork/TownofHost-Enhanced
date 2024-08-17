@@ -13,6 +13,7 @@ internal class Huntsman : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Huntsman);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -50,16 +51,12 @@ internal class Huntsman : RoleBase
     }
     public override void Add(byte playerId)
     {
+        KCD = KillCooldown.GetFloat();
 
         _ = new LateTask(() =>
         {
             ResetTargets(isStartedGame: true);
         }, 8f, "Huntsman Reset Targets");
-
-        KCD = KillCooldown.GetFloat();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     public void SendRPC(bool isSetTarget, byte targetId = byte.MaxValue)
