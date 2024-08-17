@@ -124,7 +124,7 @@ internal class DoubleAgent : RoleBase
 
     public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
-        if (voter.IsModClient() || !CanBombInMeeting)return true;
+        if (voter.IsModClient() || !CanBombInMeeting) return true;
 
         if (!BombIsActive)
         {
