@@ -279,7 +279,7 @@ internal class Pelican : RoleBase
                 if (target == null) continue;
 
                 var pos = GetBlackRoomPSForPelican();
-                var dis = Vector2.Distance(pos, target.GetCustomPosition());
+                var dis = Utils.GetDistance(pos, target.GetCustomPosition());
                 if (dis < 1f) continue;
 
                 target.RpcTeleport(pos, sendInfoInLogs: false);

@@ -151,7 +151,7 @@ internal class Agitater : RoleBase
             {
                 if (target.PlayerId != player.PlayerId && target.PlayerId != LastBombedPlayer)
                 {
-                    dis = Vector2.Distance(playerPos, target.transform.position);
+                    dis = Utils.GetDistance(playerPos, target.transform.position);
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }

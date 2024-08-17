@@ -36,9 +36,6 @@ internal class Possessor : RoleBase
         FocusRange = FloatOptionItem.Create(Id + 13, "PossessorFocusRange", new(5f, 25f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Possessor])
         .SetValueFormat(OptionFormat.Multiplier);
     }
-    public override void Init()
-    {
-    }
     public override void Add(byte PlayerId)
     {
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOther);
@@ -53,24 +50,26 @@ internal class Possessor : RoleBase
 
     private void OnFixedUpdateOther(PlayerControl target)
     {
+        if (_Player == null) return;
+
         if (target.PlayerId == controllingTargetId)
         {
             if (controllingPlayer && possessTime >= 0)
             {
-                if (CheckRange(_Player.GetCustomPosition(), target.GetCustomPosition()) > 5f)
+                if (Utils.GetDistance(_Player.GetCustomPosition(), target.GetCustomPosition()) > 5f)
                 {
                     _Player.RpcTeleport((_Player.GetCustomPosition() + target.GetCustomPosition()) / 2);
                 }
 
                 foreach (var allPlayers in Main.AllAlivePlayerControls.Where(pc => pc != target))
                 {
-                    if (CheckRange(target.GetCustomPosition(), allPlayers.GetCustomPosition()) < AlertRange.GetFloat())
+                    if (Utils.GetDistance(target.GetCustomPosition(), allPlayers.GetCustomPosition()) < AlertRange.GetFloat())
                     {
                         controllingPlayer = false;
                     }
                 }
 
-                if (CheckRange(_Player.GetCustomPosition(), target.GetCustomPosition()) < 1f)
+                if (Utils.GetDistance(_Player.GetCustomPosition(), target.GetCustomPosition()) < 1f)
                 {
                     if (target.MyPhysics.Animations.IsPlayingRunAnimation())
                     {
@@ -78,9 +77,9 @@ internal class Possessor : RoleBase
                         target.MyPhysics.RpcCancelPet();
                     }
                 }
-                else if (CheckRange(_Player.GetCustomPosition(), target.GetCustomPosition()) < 3.5f)
+                else if (Utils.GetDistance(_Player.GetCustomPosition(), target.GetCustomPosition()) < 3.5f)
                 {
-                    if (!target.petting && CheckRange(_Player.GetCustomPosition(), target.GetCustomPosition()) > 1f)
+                    if (!target.petting && Utils.GetDistance(_Player.GetCustomPosition(), target.GetCustomPosition()) > 1f)
                     {
                         target.MyPhysics.RpcPet(_Player.GetCustomPosition(), new Vector2(500f, 500f));
                     }
@@ -108,9 +107,9 @@ internal class Possessor : RoleBase
                     float checkPos = float.MaxValue;
                     foreach (var allPlayers in Main.AllAlivePlayerControls.Where(pc => pc != target))
                     {
-                        if (CheckRange(_Player.GetCustomPosition(), allPlayers.GetCustomPosition()) < checkPos)
+                        if (Utils.GetDistance(_Player.GetCustomPosition(), allPlayers.GetCustomPosition()) < checkPos)
                         {
-                            checkPos = CheckRange(_Player.GetCustomPosition(), allPlayers.GetCustomPosition());
+                            checkPos = Utils.GetDistance(_Player.GetCustomPosition(), allPlayers.GetCustomPosition());
                         }
                     }
                     if (checkPos >= FocusRange.GetFloat())
@@ -127,8 +126,6 @@ internal class Possessor : RoleBase
         }
     }
 
-    private static float CheckRange(Vector2 pos1, Vector2 pos2) => Vector2.Distance(pos1, pos2);
-
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         if (target.GetCustomRole().IsImpostorTeam())
@@ -142,7 +139,7 @@ internal class Possessor : RoleBase
             // Cancel if Target is around other players
             foreach (var allPlayers in Main.AllAlivePlayerControls.Where(pc => pc != target))
             {
-                if (CheckRange(target.GetCustomPosition(), allPlayers.GetCustomPosition()) < AlertRange.GetFloat())
+                if (Utils.GetDistance(target.GetCustomPosition(), allPlayers.GetCustomPosition()) < AlertRange.GetFloat())
                 {
                     _Player.RpcResetAbilityCooldown();
                     return false;

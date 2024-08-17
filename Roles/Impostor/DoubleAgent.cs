@@ -99,7 +99,7 @@ internal class DoubleAgent : RoleBase
             if (pc.PlayerId == Agitater.CurrentBombedPlayer)
             {
                 Agitater.ResetBomb();
-                PlaySoundForAll("Boom");
+                CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
                 _ = new LateTask(() =>
                 {
                     if (pc.inVent) pc.MyPhysics.RpcBootFromVent(vent.Id);
@@ -241,7 +241,7 @@ internal class DoubleAgent : RoleBase
 
         foreach (PlayerControl target in Main.AllAlivePlayerControls) // Get players in radius of bomb that are not in a vent.
         {
-            if (CheckForPlayersInRadius(player, target) <= ExplosionRadius.GetFloat())
+            if (Utils.GetDistance(player.GetCustomPosition(), target.GetCustomPosition()) <= ExplosionRadius.GetFloat())
             {
                 if (player.inVent) continue;
                 Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
@@ -255,8 +255,6 @@ internal class DoubleAgent : RoleBase
 
         _Player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DoubleAgent), GetString("DoubleAgent_BombExploded")));
     }
-
-    private static float CheckForPlayersInRadius(PlayerControl player, PlayerControl target) => Vector2.Distance(player.GetCustomPosition(), target.GetCustomPosition());
 
     // Set bomb mark on player.
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)

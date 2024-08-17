@@ -122,7 +122,7 @@ internal class Crewpostor : RoleBase
         }
         else
         {
-            list = [.. list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position))];
+            list = [.. list.OrderBy(x => Utils.GetDistance(player.transform.position, x.transform.position))];
             var target = list[0];
 
             if (!target.IsTransformedNeutralApocalypse())

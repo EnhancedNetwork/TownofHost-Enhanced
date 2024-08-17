@@ -108,7 +108,7 @@ internal class Warlock : RoleBase
                     if (Pelican.IsEaten(p.PlayerId) || Medic.ProtectList.Contains(p.PlayerId)) continue;
                     if (p.Is(CustomRoles.Glitch) || p.Is(CustomRoles.Pestilence)) continue;
                     
-                    dis = Vector2.Distance(cppos, p.transform.position);
+                    dis = Utils.GetDistance(cppos, p.transform.position);
                     cpdistance.Add(p, dis);
                     Logger.Info($"{p?.Data?.PlayerName} distance: {dis}", "Warlock");
                 }
