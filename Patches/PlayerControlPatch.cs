@@ -613,7 +613,7 @@ public static class CheckShapeshiftPatch
         if (instance == target && Main.UnShapeShifter.Contains(instance.PlayerId))
         {
             if (!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) instance.GetRoleClass().UnShapeShiftButton(instance);
-            instance.RpcResetAbilityCooldown();
+            instance.RpcResetAbilityCooldown(); // jsut incase
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
             return false;
         }
