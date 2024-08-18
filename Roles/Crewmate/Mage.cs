@@ -47,7 +47,7 @@ internal class Mage : RoleBase
 
     //
     bool Isinvincible;
-    Vector2? guwienko;
+    Vector2? guwienko; // temporary to test, cuz I weant this to be a CNO
 
     //
     private Action Spellaction => CurrentSpell switch
