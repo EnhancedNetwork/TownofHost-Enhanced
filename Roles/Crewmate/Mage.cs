@@ -43,11 +43,11 @@ internal class Mage : RoleBase
 
     private Spell CurrentSpell;
     private Direction direction;
-
+    private readonly List<byte> GraspedPlayers = [];
 
     //
     bool Isinvincible;
-    Vector2 gwuienko;
+    Vector2? guwienko;
 
     //
     private Action Spellaction => CurrentSpell switch
@@ -84,14 +84,14 @@ internal class Mage : RoleBase
 
             var addVector = direction switch
             {
-                Direction.Left => new(-0.25f, 0),
-                Direction.UpLeft => new(-0.25f, 0.25f),
-                Direction.Up => new(0, 0.25f),
-                Direction.UpRight => new(0.25f, 0.25f),
-                Direction.Right => new(0.25f, 0),
-                Direction.DownRight => new(0.25f, -0.25f),
-                Direction.Down => new(0, -0.25f),
-                Direction.DownLeft => new(-0.25f, -0.25f),
+                Direction.Left => new(-2f, 0),
+                Direction.UpLeft => new(-2f, 2f),
+                Direction.Up => new(0, 2f),
+                Direction.UpRight => new(2f, 2f),
+                Direction.Right => new(2f, 0),
+                Direction.DownRight => new(2f, -2f),
+                Direction.Down => new(0, -2f),
+                Direction.DownLeft => new(-2f, -2f),
                 _ => Vector2.zero
             };
 
@@ -100,6 +100,10 @@ internal class Mage : RoleBase
         },
         Spell.Disguise => () =>
         {
+            if (Main.AllAlivePlayerControls.Length < 2)
+            {
+                return;
+            }
             if (Mana < 10)
             {
                 _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 10));
@@ -107,7 +111,7 @@ internal class Mage : RoleBase
             }
             Mana -= 10;
 
-            var RandPC = Main.AllPlayerControls.Where(x => x != _Player).ToArray().RandomElement();
+            var RandPC = Main.AllAlivePlayerControls.Where(x => x != _Player).ToArray().RandomElement();
 
             _Player.ResetPlayerOutfit(Main.PlayerStates[RandPC.PlayerId].NormalOutfit);
 
@@ -121,20 +125,64 @@ internal class Mage : RoleBase
                 }
                 thiz._Player.ResetPlayerOutfit();
             }
-        }
-        ,
-        Spell.Warp => () => { 
-        
-        
-        
-        
-        
         },
+        Spell.Warp => () => {
+            if (Mana < 30 && guwienko == null)
+            {
+                _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 30));
+                return;
+            }
 
+            if (guwienko != null)
+            {
+                _Player.RpcTeleport(guwienko.Value);
+                guwienko = null;
+                return;
+            }
 
+            Mana -= 30;
+            guwienko = _Player.GetCustomPosition();
 
+        },
+        Spell.Sweep => () =>
+        {
+            if (Mana < 40)
+            {
+                _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 40));
+                return;
+            }
+            var Players = Main.AllAlivePlayerControls.Where(x => Utils.GetDistance(_Player.GetCustomPosition(), x.GetCustomPosition()) < 2);
+
+            if (Players.Any())
+            {
+                _Player.Notify(GetString("MageTrySweepGhosts"));
+                return;
+            }
+            Mana -= 40;
+
+            foreach (var pc in Players)
+            {
+                var vent = ShipStatus.Instance.AllVents.RandomElement();
+                pc.RpcTeleport(vent.transform.localPosition);
+            }
+        },
+        _ => () => { }
     };
+    private Action SwitchSpell => () => {
+
+        if (Enum.GetValues<Spell>().Length >= (int)CurrentSpell + 1)
+        {
+            CurrentSpell = CurrentSpell + 1;
+        }
+        else
+        {
+            CurrentSpell = default;
+        }
+        Utils.NotifyRoles(SpecifySeer: _Player, SpecifyTarget: _Player);
+    };
+
     Vector2 LastPosition = Vector2.zeroVector;
+    private int Lastmana = 0;
     private int Mana = 0;
     private const int FullCharge = 100;
     private int Charges => (int)Math.Round(FullCharge / 10.0);
@@ -147,7 +195,7 @@ internal class Mage : RoleBase
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        base.UnShapeShiftButton(shapeshifter);
+        Doubletrigger.CheckDoubleTrigger(Spellaction, SwitchSpell);
     }
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => !Isinvincible;
@@ -176,6 +224,53 @@ internal class Mage : RoleBase
 
         return sb.ToString();
     }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+
+        switch (CurrentSpell)
+        {
+            case Spell.Crush:
+                if (Mana < 70)
+                {
+                    _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 70));
+                    break;
+                }
+                Mana -= 70;
+                return true;
+
+            case Spell.Grasp:
+                if (GraspedPlayers.Contains(target.PlayerId))
+                    break;
+
+                if (Mana < 50)
+                {
+                    _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 70));
+                    break;
+                }
+                Mana -= 50;
+                GraspedPlayers.Add(target.PlayerId);
+                break;
+
+        }
+        return false;
+    }
+    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (GraspedPlayers.Remove(target.PlayerId))
+        {
+            Main.PlayerStates[killer.PlayerId].IsBlackOut = true;
+            killer.MarkDirtySettings();
+            _ = new LateTask(() => {
+                Main.PlayerStates[killer.PlayerId].IsBlackOut = false;
+                killer.MarkDirtySettings();
+
+            }, 2f);
+
+            target.RpcTeleport(_Player.GetCustomPosition());
+            return true;
+        }
+        return base.CheckMurderOnOthersTarget(killer, target);
+    }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         bool ismeeting = GameStates.IsMeeting || isForMeeting;
@@ -194,11 +289,20 @@ internal class Mage : RoleBase
     {
         Doubletrigger.FixedUpdate();
 
+        if (Lastmana != Mana)
+        {
+            Lastmana = Mana;
+            DoNotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
+        }
+
         if (countnowF >= LastNowF && Mana < FullCharge)
         {
+            LastNowF = countnowF + 1f;
             Mana++;
         }
         countnowF += Time.deltaTime;
+
+        ChangeDir(pc);
     }
 
     private void ChangeDir(PlayerControl pc)
@@ -206,7 +310,7 @@ internal class Mage : RoleBase
         var pos = pc.GetCustomPosition();
         if (Vector2.Distance(pos, LastPosition) < 0.1f) return;
 
-        var direction = pos.x < LastPosition.x
+        direction = pos.x < LastPosition.x
             ? pos.y < LastPosition.y
                 ? Direction.DownLeft
                 : pos.y > LastPosition.y
