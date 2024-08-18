@@ -99,6 +99,7 @@
   "Phantom": "Phantom",
   "PhantomTOHE": "Phantom",
 
+
   "BountyHunter": "Bounty Hunter",
   "Fireworker": "Fireworker",
   "Mercenary": "Mercenary",
@@ -311,6 +312,7 @@
   "VengefulRomantic": "Vengeful Romantic",
   "RuthlessRomantic": "Ruthless Romantic",
   "Poisoner": "Poisoner",
+  "Mage": "Mage",
   "HexMaster": "Hex Master",
   "Wraith": "Wraith",
   "Jinx": "Jinx",
@@ -517,6 +519,7 @@
   "CoronerInfo": "Find corpses and their killers",
   "PresidentInfo": "You are in charge of the meeting",
   "MerchantInfo": "Sell add-ons and bribe killers",
+  "MageInfo": "Cast Spells",
   "RetributionistInfo": "Help the crew after you die",
   "HawkInfo": "Seek murdering the bad guys!",
   "DeputyInfo": "Handcuff killers to increase their cooldowns",
@@ -797,6 +800,7 @@
   "DetectiveInfoLong": "(Crewmate):\nAfter the Detective reports the body, they will receive a clue message, which will tell the Detective what the victim's role is. According to the Host's settings, the Detective may know what the murderer's role is. Note: Detective won't be Oblivious.",
   "UndercoverInfoLong": "(Crewmates):\nThe Impostors knows who Undercover is and sees him as a teammate, but Undercover himself does not know who the Impostors are.",
   "NiceGuesserInfoLong": "(Crewmates):\nThe Nice Guesser can guess the role of a certain player during the meeting. If it is correct, it will kill the target, and if it is wrong, Nice Guesser will suicide.\nThe guessing command is: /bt [player id] [role]\nYou can see the player's id before the player's name or use the /id command to view the id of all players.\nNice Guesser can guess crewmate when become madmate.",
+  "MageInfoLong": "(Crewmates):\nAs The Mage, you are able to cast spells via single click (shapeshift), double click shapeshift to switch spells.",
   "GuessMasterInfoLong": "(Crewmates):\nAs the Guess Master, you will receive information about every attempted guess made during a meeting. You will be informed about the role the guesser tried to guess, and you will also be notified in case of a misguess.",
   "KnightInfoLong": "(Crewmates):\nThe Knight has no tasks. They can kill anyone but only do it once the whole game.",
   "TransporterInfoLong": "(Crewmates):\nWhenever the Transporter completes the task, two random players will switch positions, but if there are not enough players left, nothing will happen. Note: Players in the vent will not be selected.",
@@ -1350,7 +1354,7 @@
   "DollMasterPossessionDuration": "Possession Duration",
   "DollMasterCanKillAsMainBody": "Can kill as the main body",
   "DollMasterTargetDiesAfterPossession": "Target dies after possession",
-  
+
   "DoubleAgentCanDiffuseBombs": "Double Agent can diffuse bombs from other roles",
   "DoubleAgentClearBombOnMeetingCall": "Diffuse active bomb on meeting call",
   "DoubleAgentCanUseAbilityInCalledMeeting": "If diffused can use ability in called meeting",
@@ -2714,6 +2718,17 @@
   "ChronomancerDecreaseTime": "Slaughter Decrease Time (lower is faster)",
   "ChronomancerStartMassacre": "SLAUGHTER: ACTIVATED",
   "ChronomancerVisionMassacre": "Vision When In Slaughter",
+
+  "MageTrySweepGhosts": "You try to sweep players, but realize air cannot be swept",
+  "MageNotEnoughMana": "You don't have enough mana for this spell ({0})!",
+  "MageSpell": "Current Spell: {0}",
+  "Spell.Invincible": "Invincible",
+  "Spell.Dash": "Dash",
+  "Spell.Disguise": "Disguise",
+  "Spell.Crush": "Crush",
+  "Spell.Grasp": "Grasp",
+  "Spell.Warp": "Warp",
+  "Spell.Sweep": "Sweep",
 
   "ShamanButtonText": "Voodoo",
   "ShamanTargetAlreadySelected": "You have already selected a voodoo doll in this round",

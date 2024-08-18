@@ -266,7 +266,8 @@ public abstract class RoleBase
     /// <summary>
     /// A method which when implemented automatically makes the players always shapeshifted (as themselves). Inside you can put functions to happen when "Un-Shapeshift" button is pressed.
     /// </summary>
-    public virtual void UnShapeShiftButton(PlayerControl shapeshifter) { }
+    public virtual void UnShapeShiftButton(PlayerControl shapeshifter) 
+    { }
 
     /// <summary>
     /// Check start meeting by press meeting button

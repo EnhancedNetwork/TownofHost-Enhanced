@@ -37,7 +37,7 @@ internal class Mage : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ShapeshifterCooldown = 0f;
+        AURoleOptions.ShapeshifterCooldown = 0.1f;
     }
 
 
@@ -56,6 +56,7 @@ internal class Mage : RoleBase
             if (Mana < 30)
             {
                 _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 30));
+                return;
             }
             Isinvincible = true;
             Mana -= 30;
@@ -153,7 +154,7 @@ internal class Mage : RoleBase
             }
             var Players = Main.AllAlivePlayerControls.Where(x => Utils.GetDistance(_Player.GetCustomPosition(), x.GetCustomPosition()) < 2);
 
-            if (Players.Any())
+            if (!Players.Any())
             {
                 _Player.Notify(GetString("MageTrySweepGhosts"));
                 return;
@@ -172,11 +173,11 @@ internal class Mage : RoleBase
 
         if (Enum.GetValues<Spell>().Length >= (int)CurrentSpell + 1)
         {
-            CurrentSpell = CurrentSpell + 1;
+            CurrentSpell++;
         }
         else
         {
-            CurrentSpell = default;
+            CurrentSpell = Spell.Invincible;
         }
         Utils.NotifyRoles(SpecifySeer: _Player, SpecifyTarget: _Player);
     };
@@ -278,8 +279,9 @@ internal class Mage : RoleBase
         {
             if (!isForHud && seer.IsModClient())
                 return string.Empty;
+            string spelltext = ColorString(new(57, 46, 99, 255), string.Format($"{GetString("MageSpell")}", GetString($"Spell.{CurrentSpell}")));
 
-            return GetCharge();
+            return $"{spelltext}\n" + GetCharge();
         }
         return "";
     }
@@ -346,31 +348,31 @@ internal class Mage : RoleBase
 
     public class DoubleShapeShift
     {
-        public long TimeSpan = 0;
-        public Action CurrentAction;
-
-
+        public float TimeSpan = 0;
+        public float count = 0;
+        public Action Firstaction;
         public void CheckDoubleTrigger(System.Action firstaction, System.Action secondAction)
         {
-            if (CurrentAction != null)
+            if (Firstaction != null)
             {
-                CurrentAction = null;
+                Firstaction = null;
                 secondAction.Invoke();
             }
             else
             {
-                TimeSpan = Utils.GetTimeStamp() + 1;
-                CurrentAction = firstaction;
+                TimeSpan = count + 1.4f;
+                Firstaction = firstaction;
             }
         }
         public void FixedUpdate()
         {
-            if (CurrentAction == null) return;
+            count += Time.deltaTime;
+            if (Firstaction == null) return;
 
-            if (TimeSpan >= Utils.GetTimeStamp())
+            if (count >= TimeSpan)
             {
-                CurrentAction.Invoke();
-                CurrentAction = null;
+                Firstaction.Invoke();
+                Firstaction = null;
             }
         }
 
