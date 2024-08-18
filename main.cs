@@ -753,6 +753,7 @@ public enum CustomRoles
     President,
     Psychic,
     Randomizer,
+    Mage,
     Retributionist,
     Reverie,
     Sheriff,
