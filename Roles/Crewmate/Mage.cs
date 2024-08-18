@@ -6,6 +6,8 @@ using TOHE.Roles.Core;
 using AmongUs.GameOptions;
 using System;
 using System.Text;
+using Rewired.ControllerExtensions;
+using TOHE.Modules;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -45,6 +47,7 @@ internal class Mage : RoleBase
 
     //
     bool Isinvincible;
+    Vector2 gwuienko;
 
     //
     private Action Spellaction => CurrentSpell switch
@@ -55,6 +58,7 @@ internal class Mage : RoleBase
                 _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 30));
             }
             Isinvincible = true;
+            Mana -= 30;
 
             Main.Instance.StartCoroutine(EndInvincibility(GetTimeStamp(), this));
 
@@ -68,9 +72,63 @@ internal class Mage : RoleBase
                 thiz.Isinvincible = false;
 
             }
+        },
+        Spell.Dash => () => {
+            
+            if (Mana < 5)
+            {
+                _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 5));
+                return;
+            }
+            Mana -= 5;
 
+            var addVector = direction switch
+            {
+                Direction.Left => new(-0.25f, 0),
+                Direction.UpLeft => new(-0.25f, 0.25f),
+                Direction.Up => new(0, 0.25f),
+                Direction.UpRight => new(0.25f, 0.25f),
+                Direction.Right => new(0.25f, 0),
+                Direction.DownRight => new(0.25f, -0.25f),
+                Direction.Down => new(0, -0.25f),
+                Direction.DownLeft => new(-0.25f, -0.25f),
+                _ => Vector2.zero
+            };
 
+            _Player.RpcTeleport(_Player.GetCustomPosition() + addVector);
 
+        },
+        Spell.Disguise => () =>
+        {
+            if (Mana < 10)
+            {
+                _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 10));
+                return;
+            }
+            Mana -= 10;
+
+            var RandPC = Main.AllPlayerControls.Where(x => x != _Player).ToArray().RandomElement();
+
+            _Player.ResetPlayerOutfit(Main.PlayerStates[RandPC.PlayerId].NormalOutfit);
+
+            Main.Instance.StartCoroutine(EndDisguise(GetTimeStamp(), this));
+
+            static System.Collections.IEnumerator EndDisguise(long Timestamp, Mage thiz)
+            {
+                while ((Timestamp + 30 > GetTimeStamp()) && !Main.MeetingIsStarted)
+                {
+                    yield return null;
+                }
+                thiz._Player.ResetPlayerOutfit();
+            }
+        }
+        ,
+        Spell.Warp => () => { 
+        
+        
+        
+        
+        
         },
 
 
