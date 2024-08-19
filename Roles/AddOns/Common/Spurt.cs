@@ -1,5 +1,7 @@
 ﻿using static TOHE.Options;
 using UnityEngine;
+using Hazel;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.AddOns.Common
 {
@@ -32,7 +34,19 @@ namespace TOHE.Roles.AddOns.Common
             DisplaysCharge = BooleanOptionItem.Create(id + 9, "EnableSpurtCharge", false, TabGroup.Addons, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Spurt]);
         }
-
+        private static void Sendrpc(byte playerId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpurtSync, SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(Main.AllPlayerSpeed[playerId]);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        public static void RecieveRPC(MessageReader reader)
+        {
+            byte playerid = reader.ReadByte();
+            float speed = reader.ReadSingle();
+            Main.AllPlayerSpeed[playerid] = speed;
+        }
         public static void Add()
         {
             foreach ((PlayerControl pc, float speed) in Main.AllAlivePlayerControls.Zip(Main.AllPlayerSpeed.Values))
@@ -97,6 +111,7 @@ namespace TOHE.Roles.AddOns.Common
                 {
                     Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: player);
                     LastUpdate[player.PlayerId] = now;
+                    Sendrpc(player.PlayerId);
                 }
             }
 
