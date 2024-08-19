@@ -503,8 +503,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetMarkedPlayer:
                 Ninja.ReceiveRPC(reader);
                 break;
-
-
             case CustomRPC.SetMedicalerProtectList:
                 Medic.ReceiveRPCForProtectList(reader);
                 break;
