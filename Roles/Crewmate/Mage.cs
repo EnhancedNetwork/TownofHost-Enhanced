@@ -16,6 +16,7 @@ internal class Mage : RoleBase
     //===========================SETUP================================\\
     private const int Id = 29600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Mage);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -274,7 +275,6 @@ internal class Mage : RoleBase
                 _Player.SyncSettings();
                 _Player.RpcResetAbilityCooldown();
                 SpellUsed = false;
-                killer.SetKillCooldown();
 
                 Mana -= 70;
                 return true;
@@ -293,7 +293,6 @@ internal class Mage : RoleBase
                 _Player.SyncSettings();
                 _Player.RpcResetAbilityCooldown();
                 SpellUsed = false;
-                killer.SetKillCooldown();
 
                 Mana -= 50;
                 GraspedPlayers.Add(target.PlayerId);
