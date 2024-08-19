@@ -777,7 +777,7 @@
   "TimeManagerInfoLong": "(船员阵营):\n时间操控者做的任务越多，会议时间就会越长，当时间操控者死亡则会议时间恢复正常。当时间操控者成为叛徒时则技能变为减少会议时长而不是增加会议时长。",
   "VeteranInfoLong": "(船员阵营):\n老兵可以通过使用通风管道进入戒备状态，如果戒备状态下有玩家尝试击杀老兵，则老兵反杀凶手。老兵进入以及退出戒备状态时会看到自己身上有护盾破碎作为提示。",
   "BastionInfoLong": "(船员阵营):\n埋雷兵通过使用通风口放置炸弹来击杀内鬼阵营和中立阵营。\n注意：炸弹也会炸死船员",
-  "CopyCatInfoLong": "(Crewmate):\nAs the Copycat, you can use your kill button to copy the target's role.\n\nYou can only copy some crewmate roles.\nIf you try to copy a madmate or rascal, you become the madmate variation of the target role.\nIf you target an evil with a crewmate variant, you'll become the crewmate variant.\n\nAdditionally, Your role will be set back to Copycat after every meeting.\nNote You can't guess people in meetings.",
+  "CopyCatInfoLong": "(船员阵营):\n模仿猫可以使用击杀按钮模仿其他玩家的职业。模仿猫的职业在交互的瞬间获得，在交互后的会议后重置。模仿猫只能模仿一些船员的职业。如果模仿猫试图模仿叛徒，模仿猫将会成为叛徒。如果模仿猫模仿拥有船员变种职业的坏人，模仿猫会成为对应的船员职业（例如模仿抹除者变成清理工）\n此外，你的职业会在每次会议结束后被重置回模仿猫\n注意：你不能在会议上赌人",
   "BodyguardInfoLong": "(船员阵营):\n在保镖附近如果有玩家将被击杀，则保镖会阻止这次击杀并与凶手同归于尽。保镖的技能会作用在任何阵营的玩家上。当保镖成为叛徒且凶手不是内鬼的时候，保镖不会发动技能。",
   "DeceiverInfoLong": "(船员阵营):\n赝品商可以通过击杀键将赝品卖给其他玩家，如贩卖成功赝品商将会看到自己身上出现护盾破碎动画作为提示。赝品将在下一次会议结束后生效，若无击杀能力的玩家持有赝品会立刻走火自杀，若有击杀能力的玩家持有赝品将在他下次尝试击杀时走火自杀。",
   "GrenadierInfoLong": "(船员阵营):\n掷雷兵可以通过使用通风管道使用闪光弹，闪光弹会导致内鬼失去大部分视野（根据房主设置闪光弹可能影响到中立阵营玩家）。闪光弹生效以及失效时掷雷兵会看到自己身上有护盾破碎作为提示。当掷雷兵成为叛徒时闪光弹只对船员生效。",
