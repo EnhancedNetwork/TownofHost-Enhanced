@@ -23,7 +23,7 @@ public class Rebirth : IAddon
            .SetValueFormat(OptionFormat.Times);
         OnlyVoted = BooleanOptionItem.Create(Id + 12, "RebirthCountVotes", false, TabGroup.Addons, false);
     }
-    public static void Init()
+    public void Init()
     {
         Rebirths.Clear();
         VotedCount.Clear();
