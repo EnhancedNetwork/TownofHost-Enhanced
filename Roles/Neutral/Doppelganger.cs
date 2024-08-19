@@ -41,8 +41,6 @@ internal class Doppelganger : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
-    public static bool CheckDoppelVictim(byte playerId) => Main.OvverideOutfit.ContainsKey(playerId);
-
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null || Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)) return true;

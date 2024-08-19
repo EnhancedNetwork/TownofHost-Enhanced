@@ -393,7 +393,7 @@ class MurderPlayerPatch
                 }
             }
 
-            if (!target.IsProtected() && !Doppelganger.CheckDoppelVictim(target.PlayerId) && !Main.OvverideOutfit.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+            if (!target.IsProtected() && !Main.OvverideOutfit.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
             {
                 Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
                 Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
