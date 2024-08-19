@@ -1353,7 +1353,7 @@
   "DollMasterPossessionDuration": "Possession Duration",
   "DollMasterCanKillAsMainBody": "Can kill as the main body",
   "DollMasterTargetDiesAfterPossession": "Target dies after possession",
-  
+
   "DoubleAgentCanDiffuseBombs": "Double Agent can diffuse bombs from other roles",
   "DoubleAgentClearBombOnMeetingCall": "Diffuse active bomb on meeting call",
   "DoubleAgentCanUseAbilityInCalledMeeting": "If diffused can use ability in called meeting",
@@ -1506,6 +1506,7 @@
   "SheriffMadCanKillCrew": "Can kill <color=#8cffff>Crewmates</color>",
 
   "RebirthUses": "Amount of Rebirths",
+  "RebirthCountVotes": "Only rebirth to players who voted for them",
   "RebirthFailed": "Ahh, how unfortunate, you did not find any viable souls to swap bodies with",
 
   "ReverieIncreaseKillCooldown": "Increase kill cooldown",

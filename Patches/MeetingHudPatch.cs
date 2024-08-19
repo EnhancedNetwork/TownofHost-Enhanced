@@ -133,6 +133,10 @@ class CheckForEndVotingPatch
                         {
                             Aware.OnVoted(pc, pva);
                         }
+                        else if (voteTarget.Is(CustomRoles.Rebirth))
+                        {
+                            Rebirth.CountVotes(voteTarget.PlayerId, pva.TargetPlayerId);
+                        }
                     }
                 }
             }

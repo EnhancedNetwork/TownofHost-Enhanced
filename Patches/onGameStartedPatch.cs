@@ -222,6 +222,7 @@ internal class ChangeRoleSettings
             Statue.Init();
             Ghoul.Init();
             Rainbow.Init();
+            Rebirth.Init();
 
             //FFA
             FFAManager.Init();
