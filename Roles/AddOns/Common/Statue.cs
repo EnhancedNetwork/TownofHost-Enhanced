@@ -32,15 +32,20 @@ public class Statue : IAddon
         IsEnable = false;
     }
 
-    public static void Add(byte player)
+    public static void Add(byte playerId)
     {
-        tempSpeed.Add(player, Main.AllPlayerSpeed[player]);
+        tempSpeed.Add(playerId, Main.AllPlayerSpeed[playerId]);
         IsEnable = true;
     }
 
-    public static void Remove(byte player)
+    public static void Remove(byte playerId)
     {
-        tempSpeed.Remove(player);
+        if (Main.AllPlayerSpeed[playerId] == SlowDown.GetFloat())
+        {
+            Main.AllPlayerSpeed[playerId] = Main.AllPlayerSpeed[playerId] - SlowDown.GetFloat() + tempSpeed[playerId];
+            Utils.GetPlayerById(playerId)?.MarkDirtySettings();
+        }
+        tempSpeed.Remove(playerId);
     }
 
     public static void AfterMeetingTasks()
