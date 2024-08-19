@@ -1186,23 +1186,6 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask)
             {
-                if (!lowLoad && Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted) 
-                    && !player.IsMushroomMixupActive() && Main.GameIsLoaded)
-                { // using lowload because it is a pretty long domino of tasks 💀
-                    Main.UnShapeShifter.Where(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
-                        .Do(x =>
-                        {
-                            var PC = Utils.GetPlayerById(x);
-                            var randomplayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
-                            PC.RpcShapeshift(randomplayer, false);
-                            PC.RpcRejectShapeshift();
-                            PC.ResetPlayerOutfit();
-                            
-                            Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
-                        });
-                }
-
-
                 CustomRoleManager.OnFixedUpdate(player);
 
                 if (Main.LateOutfits.TryGetValue(player.PlayerId, out var Method) && !player.CheckCamoflague())
@@ -1231,6 +1214,27 @@ class FixedUpdateInNormalGamePatch
 
                         if (Rainbow.isEnabled)
                             Rainbow.OnFixedUpdate();
+
+                        if (!lowLoad && Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
+                            && !player.IsMushroomMixupActive() && Main.GameIsLoaded)
+                        {
+                            foreach (var UnShapeshifterId in Main.UnShapeShifter)
+                            {
+                                var UnShapeshifter = Utils.GetPlayerById(UnShapeshifterId);
+                                if (UnShapeshifter == null)
+                                {
+                                    Main.UnShapeShifter.Remove(UnShapeshifterId);
+                                    continue;
+                                }
+                                if (UnShapeshifter.CurrentOutfitType == PlayerOutfitType.Shapeshifted) continue;
+
+                                var randomPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != UnShapeshifter);
+                                UnShapeshifter.RpcShapeshift(randomPlayer, false);
+                                UnShapeshifter.RpcRejectShapeshift();
+                                UnShapeshifter.ResetPlayerOutfit();
+                                Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
+                            }
+                        }
                     }
                 }
             }
