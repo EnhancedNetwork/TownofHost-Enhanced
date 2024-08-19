@@ -30,11 +30,9 @@ internal class Mage : RoleBase
         Warp,
         Sweep,
     }
-    private static OptionItem MageCanBeGuessed;
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mage);
-        MageCanBeGuessed = BooleanOptionItem.Create(Id + 10, CustomRoles.Mage, false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mage]);
     }
 
     private float cd => !SpellUsed ? 0.1f : CurrentSpell switch
@@ -217,17 +215,6 @@ internal class Mage : RoleBase
     private float countnowF = 0;
 
     private readonly DoubleShapeShift Doubletrigger = new();
-
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
-    {
-        if (!MageCanBeGuessed.GetBool())
-        {
-            guesser.ShowInfoMessage(isUI, GetString("GuessMage"));
-            return true;
-        }
-        return false;
-    }
-
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         return seer == seen && Isinvincible ? ColorString(new(89, 85, 125, 255), "❖") : string.Empty;
