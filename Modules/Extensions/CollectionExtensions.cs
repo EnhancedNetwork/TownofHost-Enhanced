@@ -126,6 +126,29 @@ public static class CollectionExtensions
         element = default;
         return false;
     }
+    /// <summary>
+    /// Removes an element from a collection
+    /// </summary>
+    /// <param name="collection">The collection to remove the element from</param>
+    /// <param name="element">The element to remove</param>
+    /// <typeparam name="T">The type of the elements in the collection</typeparam>
+    /// <returns>A collection containing all elements of <paramref name="collection"/> except for <paramref name="element"/></returns>
+    public static IEnumerable<T> Without<T>(this IEnumerable<T> collection, T element)
+    {
+        return collection.Where(x => !x.Equals(element));
+    }
+
+    /// <summary>
+    /// Removes an element from a collection
+    /// </summary>
+    /// <param name="collection">The collection to remove the element from</param>
+    /// <param name="element">The element to remove</param>
+    /// <returns>A collection containing all elements of <paramref name="collection"/> except for <paramref name="element"/></returns>
+    public static IEnumerable<PlayerControl> Without(this IEnumerable<PlayerControl> collection, PlayerControl element)
+    {
+        return collection.Where(x => x.PlayerId != element.PlayerId);
+    }
+
 
     /// <summary>
     /// Return the first byte of a HashSet(Byte)

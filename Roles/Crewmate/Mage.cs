@@ -30,24 +30,37 @@ internal class Mage : RoleBase
         Warp,
         Sweep,
     }
+    private static OptionItem MageCanBeGuessed;
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mage);
+        MageCanBeGuessed = BooleanOptionItem.Create(Id + 10, CustomRoles.Mage, false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mage]);
     }
 
+    private float cd => !SpellUsed ? 0.1f : CurrentSpell switch
+    {
+        Spell.Warp => 20f,
+        Spell.Grasp or Spell.Invincible => 10f,
+        Spell.Crush => 40f,
+        Spell.Sweep => 40f,
+        _ => 0.1f,
+    };
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ShapeshifterCooldown = 0.1f;
+        
+        AURoleOptions.ShapeshifterCooldown = cd;
     }
 
-
+    private bool SpellUsed;
     private Spell CurrentSpell;
     private Direction direction;
     private readonly List<byte> GraspedPlayers = [];
 
     //
+    Coroutine InvincibilityCoroutine;
     bool Isinvincible;
     Vector2? guwienko; // temporary to test, cuz I weant this to be a CNO
+    Coroutine DisguiseCoroutine;
 
     //
     private Action Spellaction => CurrentSpell switch
@@ -60,18 +73,21 @@ internal class Mage : RoleBase
             }
             Isinvincible = true;
             Mana -= 30;
+            SpellUsed = true;
+            _Player.SyncSettings();
+            _Player.RpcResetAbilityCooldown();
+            SpellUsed = false;
 
-            Main.Instance.StartCoroutine(EndInvincibility(GetTimeStamp(), this));
+            Main.Instance.StopCoroutine(InvincibilityCoroutine);
+            InvincibilityCoroutine = Main.Instance.StartCoroutine(EndInvincibility(GetTimeStamp(), this));
 
             static System.Collections.IEnumerator EndInvincibility(long Timestamp, Mage thiz)
             {
-
-                while (Timestamp + 30 > GetTimeStamp())
+                while (Timestamp + 20 > GetTimeStamp())
                 {
                     yield return null;
                 }
                 thiz.Isinvincible = false;
-
             }
         },
         Spell.Dash => () => {
@@ -116,7 +132,8 @@ internal class Mage : RoleBase
 
             _Player.ResetPlayerOutfit(Main.PlayerStates[RandPC.PlayerId].NormalOutfit);
 
-            Main.Instance.StartCoroutine(EndDisguise(GetTimeStamp(), this));
+            Main.Instance.StopCoroutine(DisguiseCoroutine);
+            DisguiseCoroutine = Main.Instance.StartCoroutine(EndDisguise(GetTimeStamp(), this));
 
             static System.Collections.IEnumerator EndDisguise(long Timestamp, Mage thiz)
             {
@@ -141,6 +158,11 @@ internal class Mage : RoleBase
                 return;
             }
 
+            SpellUsed = true;
+            _Player.SyncSettings();
+            _Player.RpcResetAbilityCooldown();
+            SpellUsed = false;
+
             Mana -= 30;
             guwienko = _Player.GetCustomPosition();
 
@@ -152,7 +174,11 @@ internal class Mage : RoleBase
                 _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 40));
                 return;
             }
-            var Players = Main.AllAlivePlayerControls.Where(x => Utils.GetDistance(_Player.GetCustomPosition(), x.GetCustomPosition()) < 2);
+            var Players = Main.AllAlivePlayerControls.Without(_Player).Where(x => Utils.GetDistance(_Player.GetCustomPosition(), x.GetCustomPosition()) < 2);
+            SpellUsed = true;
+            _Player.SyncSettings();
+            _Player.RpcResetAbilityCooldown();
+            SpellUsed = false;
 
             if (!Players.Any())
             {
@@ -170,8 +196,7 @@ internal class Mage : RoleBase
         _ => () => { }
     };
     private Action SwitchSpell => () => {
-
-        if (Enum.GetValues<Spell>().Length >= (int)CurrentSpell + 1)
+        if (Enum.GetValues<Spell>().Length - 1 >= (int)CurrentSpell + 1)
         {
             CurrentSpell++;
         }
@@ -186,16 +211,35 @@ internal class Mage : RoleBase
     private int Lastmana = 0;
     private int Mana = 0;
     private const int FullCharge = 100;
-    private int Charges => (int)Math.Round(FullCharge / 10.0);
+    private static int Charges => (int)Math.Round(FullCharge / 10.0);
 
     private float LastNowF = 0;
     private float countnowF = 0;
 
     private readonly DoubleShapeShift Doubletrigger = new();
 
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (!MageCanBeGuessed.GetBool())
+        {
+            guesser.ShowInfoMessage(isUI, GetString("GuessMage"));
+            return true;
+        }
+        return false;
+    }
 
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
+    {
+        return seer == seen && Isinvincible ? ColorString(new(89, 85, 125, 255), "❖") : string.Empty;
+    }
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
+    {
+        return GraspedPlayers.Contains(seen.PlayerId) ? ColorString(new(90, 145, 142, 255), "⊙") : string.Empty;
+    }
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
+        _Player.SyncSettings();
+        _Player.RpcResetAbilityCooldown();
         Doubletrigger.CheckDoubleTrigger(Spellaction, SwitchSpell);
     }
 
@@ -225,6 +269,8 @@ internal class Mage : RoleBase
 
         return sb.ToString();
     }
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = cd;
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
 
@@ -236,6 +282,13 @@ internal class Mage : RoleBase
                     _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 70));
                     break;
                 }
+                Main.AllPlayerKillCooldown[killer.PlayerId] = cd;
+                SpellUsed = true;
+                _Player.SyncSettings();
+                _Player.RpcResetAbilityCooldown();
+                SpellUsed = false;
+                killer.SetKillCooldown();
+
                 Mana -= 70;
                 return true;
 
@@ -245,9 +298,16 @@ internal class Mage : RoleBase
 
                 if (Mana < 50)
                 {
-                    _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 70));
+                    _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 50));
                     break;
                 }
+                Main.AllPlayerKillCooldown[killer.PlayerId] = cd;
+                SpellUsed = true;
+                _Player.SyncSettings();
+                _Player.RpcResetAbilityCooldown();
+                SpellUsed = false;
+                killer.SetKillCooldown();
+
                 Mana -= 50;
                 GraspedPlayers.Add(target.PlayerId);
                 break;
