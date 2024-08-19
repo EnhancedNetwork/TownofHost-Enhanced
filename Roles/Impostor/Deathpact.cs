@@ -193,7 +193,7 @@ internal class Deathpact : RoleBase
             float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
             foreach (var otherPlayerInPact in PlayersInDeathpact[deathpact.PlayerId].Where(a => a.PlayerId != player.PlayerId).ToArray())
             {
-                float dis = Vector2.Distance(player.transform.position, otherPlayerInPact.transform.position);
+                float dis = GetDistance(player.transform.position, otherPlayerInPact.transform.position);
                 cancelDeathpact = cancelDeathpact && (dis <= range);
             }
         }

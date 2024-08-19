@@ -15,7 +15,7 @@ internal class Berserker : RoleBase
 
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
@@ -81,9 +81,6 @@ internal class Berserker : RoleBase
     {
         BerserkerKillMax[playerId] = 0;
         PlayerIds.Add(playerId);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -150,7 +147,7 @@ internal class Berserker : RoleBase
                 if (player == killer) continue;
                 if (player == target) continue;
 
-                if (Vector2.Distance(killer.transform.position, player.transform.position) <= Bomber.BomberRadius.GetFloat())
+                if (Utils.GetDistance(killer.transform.position, player.transform.position) <= Bomber.BomberRadius.GetFloat())
                 {
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                     player.RpcMurderPlayer(player);
@@ -167,20 +164,25 @@ internal class Berserker : RoleBase
 
         return noScav;
     }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (!ApocCanGuessApoc.GetBool() && target.IsNeutralApocalypse() && guesser.IsNeutralApocalypse())
+        {
+            guesser.ShowInfoMessage(isUI, GetString("GuessApocRole"));
+            return true;
+        }
+        return false;
+    }
 }
 internal class War : RoleBase
 {
     //===========================SETUP================================\\
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Berserker);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
 
-    public override void Add(byte playerId)
-    {
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
-    }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) 
         => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)

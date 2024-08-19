@@ -21,7 +21,7 @@ public static class GhostRoleAssign
             || player == null 
             || player.Data.Disconnected 
             || GhostGetPreviousRole.ContainsKey(player.PlayerId)
-            || player.GetCustomRole().IsDesyncRole()) return;
+            || player.HasDesyncRole()) return;
         if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) {
             Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");
             player.GetRoleClass()?.OnRemove(player.PlayerId);

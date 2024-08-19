@@ -13,6 +13,7 @@ internal class Demon : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Demon);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -55,9 +56,6 @@ internal class Demon : RoleBase
 
         foreach (var pc in Main.AllAlivePlayerControls)
             PlayerHealth[pc.PlayerId] = HealthMax.GetInt();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

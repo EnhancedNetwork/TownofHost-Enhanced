@@ -380,11 +380,15 @@ public static class Utils
     {
         return GetString("DeathReason." + Enum.GetName(typeof(PlayerState.DeathReason), status));
     }
+    public static float GetDistance(Vector2 pos1, Vector2 pos2) => Vector2.Distance(pos1, pos2);
     public static Color GetRoleColor(CustomRoles role)
     {
-        if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
-        _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
-        return c;
+        if (Main.roleColors.TryGetValue(role, out var hexColor))
+        {
+            _ = ColorUtility.TryParseHtmlString(hexColor, out var color);
+            return color;
+        }
+        return Color.white;
     }
     public static Color GetTeamColor(PlayerControl player)
     {
@@ -1885,7 +1889,7 @@ public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
                 string RoleInfo = $"<size=25%>\n</size><size={GetInfoSize(seer.GetRoleInfo())}%>{Font}{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</font></size>";
                 string RoleNameUp = "<size=1350%>\n\n</size>";
 
-                if (!seer.GetCustomRole().IsDesyncRole())
+                if (!seer.HasDesyncRole())
                 {
                     SelfTeamName = string.Empty;
                     RoleNameUp = "<size=565%>\n</size>";
@@ -1923,7 +1927,7 @@ public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
             var seerRoleClass = seer.GetRoleClass();
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
+            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(Custom_Team.Impostor) && seer.HasDesyncRole())
             {
                 seer.RpcSetNamePrivate("<size=0%>", force: NoCache);
             }
@@ -2074,7 +2078,7 @@ public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
                     //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
+                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(Custom_Team.Impostor) && seer.HasDesyncRole())
                     {
                         realTarget.RpcSetNamePrivate("<size=0%>", seer, force: NoCache);
                     }

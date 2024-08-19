@@ -1,6 +1,4 @@
 ﻿using System;
-using TMPro;
-using UnityEngine;
 
 namespace TOHE.Patches;
 
@@ -9,31 +7,37 @@ namespace TOHE.Patches;
 [HarmonyPatch(typeof(TextBoxTMP), nameof(TextBoxTMP.SetText))]
 class TextBoxTMPSetTextPatch
 {
+    // The only characters to treat specially are \r, \n and \b, allow all other characters to be written
     public static bool Prefix(TextBoxTMP __instance, [HarmonyArgument(0)] string input, [HarmonyArgument(1)] string inputCompo = "")
     {
-        if (!GameStates.IsModHost) return true;
-
         bool flag = false;
         char ch = ' ';
+        __instance.AdjustCaretPosition(input.Length - __instance.text.Length);
         __instance.tempTxt.Clear();
 
-        foreach (var str in input)
+        foreach (char c in input)
         {
-            char upperInvariant = str;
-            if (ch != ' ' || upperInvariant != ' ')
+            char upperInvariant = c;
+            if (ch == ' ' && upperInvariant == ' ')
+            {
+                __instance.AdjustCaretPosition(-1);
+            }
+            else
             {
                 switch (upperInvariant)
                 {
-                    case '\r' or '\n':
+                    case '\r':
+                    case '\n':
                         flag = true;
                         break;
                     case '\b':
                         __instance.tempTxt.Length = Math.Max(__instance.tempTxt.Length - 1, 0);
+                        __instance.AdjustCaretPosition(-2);
                         break;
                 }
 
                 if (__instance.ForceUppercase) upperInvariant = char.ToUpperInvariant(upperInvariant);
-                if (upperInvariant is not '\b' and not '\n' and not '\r')
+                if (upperInvariant is not '\r' and not '\n' and not '\b')
                 {
                     __instance.tempTxt.Append(upperInvariant);
                     ch = upperInvariant;
@@ -42,9 +46,13 @@ class TextBoxTMPSetTextPatch
         }
 
         if (!__instance.tempTxt.ToString().Equals(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.EnterName), StringComparison.OrdinalIgnoreCase) && __instance.characterLimit > 0)
+        {
+            int length = __instance.tempTxt.Length;
             __instance.tempTxt.Length = Math.Min(__instance.tempTxt.Length, __instance.characterLimit);
-        input = __instance.tempTxt.ToString();
+            __instance.AdjustCaretPosition(-(length - __instance.tempTxt.Length));
+        }
 
+        input = __instance.tempTxt.ToString();
         if (!input.Equals(__instance.text) || !inputCompo.Equals(__instance.compoText))
         {
             __instance.text = input;
@@ -66,7 +74,7 @@ class TextBoxTMPSetTextPatch
         }
 
         if (flag) __instance.OnEnter.Invoke();
-        __instance.Pipe.transform.localPosition = __instance.outputText.CursorPos();
+        __instance.SetPipePosition();
 
         return false;
     }
@@ -74,10 +82,13 @@ class TextBoxTMPSetTextPatch
 
 //Thanks https://github.com/NuclearPowered/Reactor/blob/master/Reactor/Patches/Fixes/CursorPosPatch.cs
 
+//2024.8.13 break this
+
 /// <summary>
 /// "Fixes" an issue where empty TextBoxes have wrong cursor positions.
 /// </summary>
-[HarmonyPatch(typeof(TextMeshProExtensions), nameof(TextMeshProExtensions.CursorPos))]
+/*[HarmonyPatch(typeof(TextMeshProExtensions), nameof(TextMeshProExtensions.CursorPos), typeof(TextMeshPro))]
+[HarmonyPatch(typeof(TextMeshProExtensions), nameof(TextMeshProExtensions.CursorPos), typeof(TextMeshPro), typeof(int))]
 internal static class CursorPosPatch
 {
     public static bool Prefix(TextMeshPro self, ref Vector2 __result)
@@ -90,7 +101,7 @@ internal static class CursorPosPatch
 
         return true;
     }
-}
+} */
 
 
 

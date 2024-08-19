@@ -16,7 +16,7 @@ internal class Overseer : RoleBase
     private const int Id = 12200;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -102,9 +102,6 @@ internal class Overseer : RoleBase
         }
 
         RandomRole.Add(playerId, GetRandomCrewRoleString());
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -232,7 +229,7 @@ internal class Overseer : RoleBase
             {
 
                 float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                float dis = Vector2.Distance(player.GetCustomPosition(), farTarget.GetCustomPosition());
+                float dis = GetDistance(player.GetCustomPosition(), farTarget.GetCustomPosition());
                 if (dis <= range)
                 {
                     OverseerTimer[playerId] = (farTarget, farTime + Time.fixedDeltaTime);

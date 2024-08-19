@@ -14,7 +14,8 @@ internal class PlagueBearer : RoleBase
     private const int Id = 17600;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
@@ -52,9 +53,6 @@ internal class PlagueBearer : RoleBase
         PlaguedList[playerId] = [];
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -217,21 +215,26 @@ internal class PlagueBearer : RoleBase
     {
         hud.KillButton.OverrideText(GetString("InfectiousKillButtonText"));
     }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (!ApocCanGuessApoc.GetBool() && target.IsNeutralApocalypse() && guesser.IsNeutralApocalypse())
+        {
+            guesser.ShowInfoMessage(isUI, GetString("GuessApocRole"));
+            return true;
+        }
+        return false;
+    }
 }
 
 internal class Pestilence : RoleBase
 {
     //===========================SETUP================================\\
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.PlagueBearer);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
 
-    public override void Add(byte playerId)
-    {
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
-    }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
         => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());

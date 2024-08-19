@@ -41,14 +41,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0812.210.00030"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.1.0 Dev 3";
-    public const string SupportedVersionAU = "2024.6.18";
+    public const string PluginVersion = "2024.0820.210.00060"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.1.0 Alpha 6";
+    public const string SupportedVersionAU = "2024.8.13";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: V2.1.0 Dev 3
+    public static readonly bool devRelease = true; // Latest: V2.1.0 Alpha 6
     public static readonly bool canaryRelease = false; // Latest: V2.0.0 Canary 12
-    public static readonly bool fullRelease = false; // Latest: V2.0.2
+    public static readonly bool fullRelease = false; // Latest: V2.0.3
 
     public static bool hasAccess = true;
 
@@ -134,7 +134,6 @@ public class Main : BasePlugin
     public static float RefixCooldownDelay = 0f;
     public static NetworkedPlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
-    public static readonly HashSet<byte> ResetCamPlayerList = [];
     public static readonly HashSet<byte> winnerList = [];
     public static readonly HashSet<string> winnerNameList = [];
     public static readonly HashSet<int> clientIdList = [];
@@ -143,6 +142,7 @@ public class Main : BasePlugin
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
 
+    public static readonly HashSet<byte> DesyncPlayerList = [];
     public static readonly HashSet<byte> TasklessCrewmate = [];
     public static readonly HashSet<byte> OverDeadPlayerList = [];
     public static readonly HashSet<byte> UnreportableBodies = [];
@@ -154,6 +154,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
     public static readonly HashSet<byte> PlayersDiedInMeeting = [];
     public static readonly Dictionary<byte, long> AllKillers = [];
+    public static readonly Dictionary<byte, (NetworkedPlayerInfo.PlayerOutfit outfit, string name)> OvverideOutfit = [];
     public static readonly Dictionary<byte, PlainShipRoom> LastKillerRoom = [];
     public static readonly Dictionary<byte, KilledType> PlayerKilledBy = [];
     public static Custom_Team? RememberTeamOfDeadBodyKiller;
@@ -187,9 +188,47 @@ public class Main : BasePlugin
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
+    
 
-    public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToArray();
-    public static PlayerControl[] AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToArray();
+    public static PlayerControl[] AllPlayerControls
+    {
+        get
+        {
+            int count = PlayerControl.AllPlayerControls.Count;
+            var result = new PlayerControl[count];
+            int i = 0;
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                if (pc == null || pc.PlayerId == 255) continue;
+                result[i++] = pc;
+            }
+
+            if (i == 0) return [];
+
+            Array.Resize(ref result, i);
+            return result;
+        }
+    }
+
+    public static PlayerControl[] AllAlivePlayerControls
+    {
+        get
+        {
+            int count = PlayerControl.AllPlayerControls.Count;
+            var result = new PlayerControl[count];
+            int i = 0;
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                if (pc == null || pc.PlayerId == 255 || !pc.IsAlive() || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
+                result[i++] = pc;
+            }
+
+            if (i == 0) return [];
+
+            Array.Resize(ref result, i);
+            return result;
+        }
+    }
 
     public static Main Instance;
 
@@ -586,6 +625,7 @@ public enum CustomRoles
     // Impostor Ghost
     Bloodmoon,
     Minion,
+    Possessor,
 
     //Impostor
     Anonymous,
@@ -608,6 +648,7 @@ public enum CustomRoles
     Devourer,
     Disperser,
     DollMaster,
+    DoubleAgent,
     Eraser,
     Escapist,
     EvilGuesser,
@@ -645,6 +686,7 @@ public enum CustomRoles
     Sniper,
     SoulCatcher,
     Stealth,
+    YinYanger,
     Swooper,
     TimeThief,
     Trapster,
@@ -865,6 +907,7 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
+    Rebirth,
     Mimic,
     Mundane,
     Necroview,

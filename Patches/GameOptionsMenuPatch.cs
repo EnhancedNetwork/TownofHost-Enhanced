@@ -240,8 +240,9 @@ public static class GameOptionsMenuPatch
                 break;
 
             case OptionTypes.String:
-                optionBehaviour.transform.FindChild("PlusButton (1)").localPosition += new Vector3(option.IsText ? 500f : 1.7f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
-                optionBehaviour.transform.FindChild("MinusButton (1)").localPosition += new Vector3(option.IsText ? 500f : 0.9f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
+                optionBehaviour.transform.FindChild("PlusButton").localPosition += new Vector3(option.IsText ? 500f : 1.7f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
+                optionBehaviour.transform.FindChild("MinusButton").localPosition += new Vector3(option.IsText ? 500f : 0.9f, option.IsText ? 500f : 0f, option.IsText ? 500f : 0f);
+
                 var valueTMP = optionBehaviour.transform.FindChild("Value_TMP (1)");
                 valueTMP.localPosition += new Vector3(1.3f, 0f, 0f);
                 valueTMP.GetComponent<RectTransform>().sizeDelta = new(2.3f, 0.4f);
@@ -510,13 +511,13 @@ public static class NumberOptionPatch
     {
         if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
         {
-            var item = OptionItem.AllOptions[index];
-            //Logger.Info($"{item.Name}, {index}", "NumberOption.FixedUpdate.TryGetValue");
+            __instance.MinusBtn.SetInteractable(true);
+            __instance.PlusBtn.SetInteractable(true);
 
             if (__instance.oldValue != __instance.Value)
             {
                 __instance.oldValue = __instance.Value;
-                __instance.ValueText.text = GetValueString(__instance, __instance.Value, item);
+                __instance.ValueText.text = GetValueString(__instance, __instance.Value, OptionItem.AllOptions[index]);
             }
             return false;
         }
@@ -596,25 +597,52 @@ public static class StringOptionPatch
                     _ => 0.35f,
                 };
 
-                SetupHelpIcon(role, __instance);
+               SetupHelpIcon(role, __instance);
             }
             __instance.TitleText.text = name;
             return false;
         }
         return true;
     }
-    private static void SetupHelpIcon(CustomRoles role, StringOption option)
+
+    //Credit For SetupHelpIcon to EHR https://github.com/Gurge44/EndlessHostRoles/blob/main/Patches/GameOptionsMenuPatch.cs
+    private static void SetupHelpIcon(CustomRoles role, StringOption __instance)
     {
-        var template = option.transform.FindChild("MinusButton (1)");
-        var icon = Object.Instantiate(template, template.parent, true);
+        var template = __instance.transform.FindChild("MinusButton");
+        var icon = GameObject.Instantiate(template, template.parent, true);
+        icon.gameObject.SetActive(true);
         icon.name = $"{role}HelpIcon";
-        var text = icon.FindChild("Plus_TMP").GetComponent<TextMeshPro>();
+        var text = icon.GetComponentInChildren<TextMeshPro>();
         text.text = "?";
         text.color = Color.white;
-        icon.FindChild("InactiveSprite").GetComponent<SpriteRenderer>().color = Color.black;
-        icon.FindChild("ActiveSprite").GetComponent<SpriteRenderer>().color = Color.gray;
+        _ = ColorUtility.TryParseHtmlString("#117055", out var clr);
+        _ = ColorUtility.TryParseHtmlString("#33d6a3", out var clr2);
+        icon.FindChild("ButtonSprite").GetComponent<SpriteRenderer>().color = clr;
+        var GameOptionsButton = icon.GetComponent<GameOptionButton>();
+        GameOptionsButton.OnClick = new();
+        GameOptionsButton.OnClick.AddListener((Action)(() => {
+
+            if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+            {
+                var item = OptionItem.AllOptions[index];
+                var name = item.GetName();
+                if (Enum.GetValues<CustomRoles>().Find(x => GetString($"{x}") == name.RemoveHtmlTags(), out var role))
+                {
+                    var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
+                    var str = GetString($"{roleName}InfoLong");
+                    int Lenght = str.Length > 360 ? 360 : str.Length;
+                    var infoLong = str[(str.IndexOf('\n') + 1)..Lenght];
+                    var ColorRole = Utils.ColorString(Utils.GetRoleColor(role), GetString(role.ToString()));
+                    var info = $"<size=70%>{ColorRole}: {infoLong}</size>";
+                    GameSettingMenu.Instance.MenuDescriptionText.text = info;
+                }
+            }
+        }));
+        GameOptionsButton.interactableColor = clr;
+        GameOptionsButton.interactableHoveredColor = clr2;
         icon.localPosition += new Vector3(-0.8f, 0f, 0f);
         icon.SetAsLastSibling();
+
     }
 
     [HarmonyPatch(nameof(StringOption.UpdateValue)), HarmonyPrefix]
@@ -648,6 +676,8 @@ public static class StringOptionPatch
         if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
         {
             var item = OptionItem.AllOptions[index];
+            __instance.MinusBtn.SetInteractable(true);
+            __instance.PlusBtn.SetInteractable(true);
 
             if (item is StringOptionItem stringOptionItem)
             {
@@ -684,24 +714,6 @@ public static class StringOptionPatch
     [HarmonyPatch(nameof(StringOption.Decrease)), HarmonyPrefix]
     public static bool DecreasePrefix(StringOption __instance)
     {
-        //Credit For SetupHelpIcon to EHR https://github.com/Gurge44/EndlessHostRoles/blob/main/Patches/GameOptionsMenuPatch.cs
-
-        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index) && !__instance.transform.FindChild("MinusButton (1)").GetComponent<PassiveButton>().activeSprites.activeSelf)
-        {
-            var item = OptionItem.AllOptions[index];
-            var name = item.GetName();
-            if (Enum.GetValues<CustomRoles>().Find(x => GetString($"{x}") == name.RemoveHtmlTags(), out var role))
-            {
-                var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
-                var str = Translator.GetString($"{roleName}InfoLong");
-                int Lenght = str.Length > 360 ? 360 : str.Length;
-                var infoLong = str[(str.IndexOf('\n') + 1)..Lenght];
-                var ColorRole = Utils.ColorString(Utils.GetRoleColor(role), role.ToString());
-                var info = $"<size=70%>{ColorRole}: {infoLong}</size>";
-                GameSettingMenu.Instance.MenuDescriptionText.text = info;
-                return false;
-            }
-        }
         if (__instance.Value == 0)
         {
             __instance.Value = __instance.Values.Length - 1;
