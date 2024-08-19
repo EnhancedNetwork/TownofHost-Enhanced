@@ -110,6 +110,7 @@ enum CustomRPC : byte // 197/255 USED
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
     SetCoronerArrow,
+    SpurtSync,
     SetCoronerkKillerArrow,
     SetVultureArrow,
     SetRadarArrow,
@@ -573,6 +574,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.NemesisRevenge:
                 Nemesis.ReceiveRPC_Custom(reader, __instance);
+                break;
+            case CustomRPC.SpurtSync:
+                Spurt.RecieveRPC(reader);
                 break;
             case CustomRPC.RetributionistRevenge:
                 Retributionist.ReceiveRPC_Custom(reader, __instance);
