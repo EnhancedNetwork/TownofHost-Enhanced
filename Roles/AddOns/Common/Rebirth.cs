@@ -44,6 +44,13 @@ public class Rebirth : IAddon
         VotedCount[playerid].Add(voter);
 
     }
+    public static void OnReportDeadBody()
+    {
+        foreach(var KvP in VotedCount)
+        {
+            KvP.Value.Clear();
+        }
+    }
     public static bool SwapSkins(PlayerControl pc, out NetworkedPlayerInfo NewExiledPlayer)
     {
         NewExiledPlayer = default;

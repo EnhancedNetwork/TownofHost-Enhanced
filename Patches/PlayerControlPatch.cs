@@ -947,6 +947,7 @@ class ReportDeadBodyPatch
                     Logger.SendInGame($"Error: {error}");
                 }
             }
+            Rebirth.OnReportDeadBody();
 
             // Alchemist & Bloodlust
             Alchemist.OnReportDeadBodyGlobal();
