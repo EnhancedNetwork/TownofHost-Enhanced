@@ -154,6 +154,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
     public static readonly HashSet<byte> PlayersDiedInMeeting = [];
     public static readonly Dictionary<byte, long> AllKillers = [];
+    public static readonly Dictionary<byte, (NetworkedPlayerInfo.PlayerOutfit outfit, string name)> OvverideOutfit = [];
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
 
@@ -183,6 +184,7 @@ public class Main : BasePlugin
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
+    
 
     public static PlayerControl[] AllPlayerControls
     {
@@ -900,6 +902,7 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
+    Rebirth,
     Mimic,
     Mundane,
     Necroview,

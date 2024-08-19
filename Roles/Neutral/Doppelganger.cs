@@ -22,9 +22,6 @@ internal class Doppelganger : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem MaxSteals;
 
-    public static readonly Dictionary<byte, string> DoppelVictim = [];
-    public static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> DoppelPresentSkin = [];
-
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Doppelganger, 1, zeroOne: false);
@@ -39,13 +36,10 @@ internal class Doppelganger : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = MaxSteals.GetInt();
-        DoppelVictim[playerId] = Utils.GetPlayerById(playerId).GetRealName() ?? "Invalid";
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-
-    public static bool CheckDoppelVictim(byte playerId) => DoppelVictim.ContainsKey(playerId);
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -73,14 +67,13 @@ internal class Doppelganger : RoleBase
             .Set(tname, target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
         var targetLvl = target.Data.PlayerLevel;
 
-        DoppelVictim[target.PlayerId] = tname;
 
         target.SetNewOutfit(killerSkin, newLevel: killerLvl);
-        DoppelPresentSkin[target.PlayerId] = killerSkin;
+        Main.OvverideOutfit[target.PlayerId] = (killerSkin, Main.PlayerStates[killer.PlayerId].NormalOutfit.PlayerName);
         Logger.Info("Changed target skin", "Doppelganger");
 
         killer.SetNewOutfit(targetSkin, newLevel: targetLvl);
-        DoppelPresentSkin[killer.PlayerId] = targetSkin;
+        Main.OvverideOutfit[killer.PlayerId] = (targetSkin, Main.PlayerStates[target.PlayerId].NormalOutfit.PlayerName);
         Logger.Info("Changed killer skin", "Doppelganger");
 
         SendSkillRPC();

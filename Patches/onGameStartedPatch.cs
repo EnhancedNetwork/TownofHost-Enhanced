@@ -72,6 +72,7 @@ internal class ChangeRoleSettings
             Main.AllKillers.Clear();
             Main.OverDeadPlayerList.Clear();
             Main.UnShapeShifter.Clear();
+            Main.OvverideOutfit.Clear();
             Main.GameIsLoaded = false;
             Utils.LateExileTask.Clear();
 
@@ -221,6 +222,7 @@ internal class ChangeRoleSettings
             Statue.Init();
             Ghoul.Init();
             Rainbow.Init();
+            Rebirth.Init();
 
             //FFA
             FFAManager.Init();
@@ -576,7 +578,9 @@ internal class SelectRolesPatch
                         case CustomRoles.Bloodthirst:
                             Bloodthirst.Add();
                             break;
-
+                        case CustomRoles.Rebirth:
+                            Rebirth.Add(pc.PlayerId);
+                            break;
                         default:
                             break;
                     }

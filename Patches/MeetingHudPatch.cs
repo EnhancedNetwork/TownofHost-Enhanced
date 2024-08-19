@@ -133,6 +133,10 @@ class CheckForEndVotingPatch
                         {
                             Aware.OnVoted(pc, pva);
                         }
+                        else if (voteTarget.Is(CustomRoles.Rebirth))
+                        {
+                            Rebirth.CountVotes(voteTarget.PlayerId, pva.TargetPlayerId);
+                        }
                     }
                 }
             }
@@ -350,6 +354,11 @@ class CheckForEndVotingPatch
             {
                 exileId = 0xff;
                 exiledPlayer = GetPlayerInfoById(exileId);
+            }
+            else if (exiledPlayer?.Object.Is(CustomRoles.Rebirth) == true && Rebirth.SwapSkins(exiledPlayer.Object, out var NewExiled))
+            {
+                exileId = NewExiled.PlayerId;
+                exiledPlayer = NewExiled;
             }
 
             exiledPlayer?.Object.SetRealKiller(null);
