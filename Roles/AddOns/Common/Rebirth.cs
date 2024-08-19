@@ -21,7 +21,7 @@ public class Rebirth : IAddon
         SetupAdtRoleOptions(Id, CustomRoles.Rebirth, canSetNum: true, teamSpawnOptions: true);
         RebirthUses = IntegerOptionItem.Create(Id + 11, "RebirthUses", new(1, 14, 1), 1, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Rebirth])
            .SetValueFormat(OptionFormat.Times);
-        OnlyVoted = BooleanOptionItem.Create(Id + 12, "RebirthCountVotes", false, TabGroup.Addons, false);
+        OnlyVoted = BooleanOptionItem.Create(Id + 12, "RebirthCountVotes", false, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Rebirth]);
     }
     public static void Init()
     {
