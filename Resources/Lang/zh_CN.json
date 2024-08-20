@@ -713,7 +713,7 @@
   "PossessorInfoLong": "(Impostors [Ghost]):\nAs the Possessor, you are able to possess players when others aren't in the Alert Range. Lead the possessed player as far as possible from other players that are in the Focus Range. Once the possession duration is up, the possessed player will be killed if others aren't in the Focus Range. If you run into another player in the Alert Range while possessing, the Possessor will immediately unpossess.",
   "PuppeteerInfoLong": "(内鬼阵营):\n傀儡师可以使用击杀按钮来 操纵傀儡（单击）或 正常击杀（双击）。玩家变成傀儡后，在接触不是傀儡的目标时就会死亡。根据选项，傀儡的目标一旦被击杀也会死亡",
   "MastermindInfoLong": "(内鬼阵营):\n策划者可以对一位玩家使用击杀按键来操控目标，如果目标没有击杀键，这次操控无效。但是，如果目标拥有击杀按键，则会在一段时间后被告知玩家被操控了。被操控的玩家必须在规定时间内击杀一位玩家才能存活，若时间到了或者召开紧急会议，目标就会死亡，双击可以正常击杀",
-  "YinYangerInfoLong": "(Impostors):\nAs the YinYanger, you can use your kill button once to pick your Yin, and a second time to choose a Yang. When those 2 players meet, they'll kill each-other. When Yin & Yang have been chosen you can kill normally.",
+  "YinYangerInfoLong": "(Impostors):\nAs the YinYanger, you can use your kill button one time to pick your Yin, and then a second time to choose a Yang. When those 2 players meet, they'll kill each-other. When Yin & Yang have been chosen you can kill normally.",
   "TimeThiefInfoLong": "(内鬼阵营):\n蚀时者每击杀一个人，会议时间就将减少一定时间。根据房主设置，如果蚀时者死亡，会议时间会恢复正常",
   "SniperInfoLong": "(内鬼阵营):\n狙击手拥有远距离射杀的能力\n方法为：进入变形到解除变形的位置连成一条线，这条线包括这条线的射线上距离最近的玩家会被狙杀。狙击手在子弹用完后可以进行正常击杀",
   "UndertakerInfoLong": "(内鬼阵营):\n暗杀者变形后就会标记该位置。击杀玩家后，该玩家的尸体会传送到标记的位置。每次击杀和会议后，标记位置都会重置。每次传送击杀后，会在设置的时间内被冻结（无法移动）",
