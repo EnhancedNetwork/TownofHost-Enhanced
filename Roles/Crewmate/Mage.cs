@@ -368,7 +368,7 @@ internal class Mage : RoleBase
     private void ChangeDir(PlayerControl pc)
     {
         var pos = pc.GetCustomPosition();
-        if (Vector2.Distance(pos, LastPosition) < 0.1f) return;
+        if (GetDistance(pos, LastPosition) < 0.1f) return;
 
         direction = pos.x < LastPosition.x
             ? pos.y < LastPosition.y
