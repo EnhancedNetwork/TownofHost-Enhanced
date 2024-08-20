@@ -271,7 +271,7 @@ internal class DoubleAgent : RoleBase
 
 
     // Set timer for Double Agent Modded Clients.
-    public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    public override string GetLowerText(PlayerControl player, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
         if (player == null || player != seen || player.IsModClient() && !isForHud) return string.Empty;
         if (CurrentBombedTime > 0 && CurrentBombedTime < BombExplosionTimer.GetFloat() + 1) return Utils.ColorString(player.GetRoleColor(), string.Format(GetString("DoubleAgent_BombExplodesIn"), (int)CurrentBombedTime));
