@@ -162,6 +162,7 @@ internal class Mage : RoleBase
             if (guwienko != null)
             {
                 _Player.RpcTeleport(guwienko.Value);
+                _Player.RpcGuardAndKill();
                 guwienko = null;
                 return;
             }
