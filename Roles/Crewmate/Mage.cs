@@ -31,9 +31,13 @@ internal class Mage : RoleBase
         Warp,
         Sweep,
     }
+    public static OptionItem InvincibilityDur;
+    public static OptionItem DisguiseDur;
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mage);
+        InvincibilityDur = IntegerOptionItem.Create(Id + 10, "MageInvincibilitydur", new(1, 80, 1), 20, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mage]);
+        DisguiseDur = IntegerOptionItem.Create(Id + 11, "MageDisguisedur", new(1, 80, 1), 30, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mage]);
     }
 
     private float cd => !SpellUsed ? 0.1f : CurrentSpell switch
@@ -46,7 +50,6 @@ internal class Mage : RoleBase
     };
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        
         AURoleOptions.ShapeshifterCooldown = cd;
     }
 
@@ -76,13 +79,14 @@ internal class Mage : RoleBase
             _Player.SyncSettings();
             _Player.RpcResetAbilityCooldown();
             SpellUsed = false;
+            _Player.RpcGuardAndKill();
 
             Main.Instance.StopCoroutine(InvincibilityCoroutine);
             InvincibilityCoroutine = Main.Instance.StartCoroutine(EndInvincibility(GetTimeStamp(), this));
 
             static System.Collections.IEnumerator EndInvincibility(long Timestamp, Mage thiz)
             {
-                while (Timestamp + 20 > GetTimeStamp())
+                while (Timestamp + InvincibilityDur.GetInt() > GetTimeStamp())
                 {
                     yield return null;
                 }
@@ -136,8 +140,13 @@ internal class Mage : RoleBase
 
             static System.Collections.IEnumerator EndDisguise(long Timestamp, Mage thiz)
             {
-                while ((Timestamp + 30 > GetTimeStamp()) && !Main.MeetingIsStarted)
+                while ((Timestamp + DisguiseDur.GetInt()+1 > GetTimeStamp()) && !Main.MeetingIsStarted)
                 {
+                    if (Timestamp + DisguiseDur.GetInt() - GetTimeStamp() == 5)
+                    {
+                        Timestamp--;
+                        thiz._Player.Notify(GetString("MageAboutRunOut"));
+                    }
                     yield return null;
                 }
                 thiz._Player.ResetPlayerOutfit();
@@ -174,23 +183,28 @@ internal class Mage : RoleBase
                 return;
             }
             var Players = Main.AllAlivePlayerControls.Without(_Player).Where(x => Utils.GetDistance(_Player.GetCustomPosition(), x.GetCustomPosition()) < 2);
-            SpellUsed = true;
-            _Player.SyncSettings();
-            _Player.RpcResetAbilityCooldown();
-            SpellUsed = false;
 
             if (!Players.Any())
             {
                 _Player.Notify(GetString("MageTrySweepGhosts"));
                 return;
             }
+            SpellUsed = true;
+            _Player.SyncSettings();
+            _Player.RpcResetAbilityCooldown();
+            SpellUsed = false;
             Mana -= 40;
 
-            foreach (var pc in Players)
+            RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
             {
-                var vent = ShipStatus.Instance.AllVents.RandomElement();
-                pc.RpcTeleport(vent.transform.localPosition);
-            }
+                0 => new RandomSpawn.SkeldSpawnMap(),
+                1 => new RandomSpawn.MiraHQSpawnMap(),
+                2 => new RandomSpawn.PolusSpawnMap(),
+                3 => new RandomSpawn.DleksSpawnMap(),
+                5 => new RandomSpawn.FungleSpawnMap(),
+                _ => null,
+            };
+            if (map != null) Players.Do(map.RandomTeleport);
         },
         _ => () => { }
     };
@@ -270,9 +284,9 @@ internal class Mage : RoleBase
                     _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 70));
                     break;
                 }
-                Main.AllPlayerKillCooldown[killer.PlayerId] = cd;
                 SpellUsed = true;
                 _Player.SyncSettings();
+                _Player.SetKillCooldown(cd);
                 _Player.RpcResetAbilityCooldown();
                 SpellUsed = false;
 
@@ -288,9 +302,9 @@ internal class Mage : RoleBase
                     _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 50));
                     break;
                 }
-                Main.AllPlayerKillCooldown[killer.PlayerId] = cd;
                 SpellUsed = true;
                 _Player.SyncSettings();
+                _Player.SetKillCooldown(cd);
                 _Player.RpcResetAbilityCooldown();
                 SpellUsed = false;
 
@@ -329,7 +343,7 @@ internal class Mage : RoleBase
 
             return $"{spelltext}\n" + GetCharge();
         }
-        return "";
+        return string.Empty;
     }
 
 
@@ -392,7 +406,7 @@ internal class Mage : RoleBase
     }
 
 
-    public class DoubleShapeShift
+    private class DoubleShapeShift
     {
         public float TimeSpan = 0;
         public float count = 0;
