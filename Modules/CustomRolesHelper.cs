@@ -847,7 +847,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Hangman)
                     || pc.Is(CustomRoles.Stealer)
                     || pc.Is(CustomRoles.Tricky)
-                    || pc.Is(CustomRoles.DoubleAgent))
+                    || pc.Is(CustomRoles.DoubleAgent)
+                    || pc.Is(CustomRoles.YinYanger))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
