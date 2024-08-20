@@ -208,7 +208,7 @@ internal class Mage : RoleBase
                 5 => new RandomSpawn.FungleSpawnMap(),
                 _ => null,
             };
-            if (map != null) Players.Do(map.RandomTeleport);
+            if (map != null) Players.DoIf(x => true, map.RandomTeleport);
         },
         _ => () => { }
     };
@@ -225,7 +225,6 @@ internal class Mage : RoleBase
     };
 
     Vector2 LastPosition = Vector2.zeroVector;
-    private int Lastmana = 0;
     private int Mana = 0;
     private const int FullCharge = 100;
     private static int Charges => (int)Math.Round(FullCharge / 10.0);
@@ -355,16 +354,11 @@ internal class Mage : RoleBase
     {
         Doubletrigger.FixedUpdate();
 
-        if (Lastmana != Mana)
-        {
-            Lastmana = Mana;
-            DoNotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
-        }
-
         if (countnowF >= LastNowF && Mana < FullCharge)
         {
             LastNowF = countnowF + 1f;
             Mana++;
+            DoNotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
         }
         countnowF += Time.deltaTime;
 
