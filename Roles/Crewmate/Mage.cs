@@ -24,8 +24,8 @@ internal class Mage : RoleBase
     public enum Spell
     {
         Invincible,
+        Disguise,
         Dash,
-        Disguise, 
         Crush,
         Grasp,
         Warp,
@@ -36,8 +36,10 @@ internal class Mage : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mage);
-        InvincibilityDur = IntegerOptionItem.Create(Id + 10, "MageInvincibilitydur", new(1, 80, 1), 20, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mage]);
-        DisguiseDur = IntegerOptionItem.Create(Id + 11, "MageDisguisedur", new(1, 80, 1), 30, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mage]);
+        InvincibilityDur = IntegerOptionItem.Create(Id + 10, "MageInvincibilitydur", new(1, 80, 1), 20, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mage])
+            .SetValueFormat(OptionFormat.Seconds);
+        DisguiseDur = IntegerOptionItem.Create(Id + 11, "MageDisguisedur", new(1, 80, 1), 30, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mage])
+            .SetValueFormat(OptionFormat.Seconds); 
     }
 
     private float cd => !SpellUsed ? 0.1f : CurrentSpell switch
@@ -93,6 +95,41 @@ internal class Mage : RoleBase
                 thiz.Isinvincible = false;
             }
         },
+        Spell.Disguise => () =>
+        {
+            if (Main.AllAlivePlayerControls.Length < 2)
+            {
+                return;
+            }
+            if (Mana < 10)
+            {
+                _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 10));
+                return;
+            }
+            Mana -= 10;
+
+            var RandPC = Main.AllAlivePlayerControls.Where(x => x != _Player).ToArray().RandomElement();
+
+            _Player.ResetPlayerOutfit(Main.PlayerStates[RandPC.PlayerId].NormalOutfit);
+
+            Main.Instance.StopCoroutine(DisguiseCoroutine);
+            DisguiseCoroutine = Main.Instance.StartCoroutine(EndDisguise(GetTimeStamp(), this));
+
+            static System.Collections.IEnumerator EndDisguise(long Timestamp, Mage thiz)
+            {
+                while ((Timestamp + DisguiseDur.GetInt() + 1 > GetTimeStamp()) && !Main.MeetingIsStarted)
+                {
+                    if (Timestamp + DisguiseDur.GetInt() - GetTimeStamp() == 5)
+                    {
+                        Timestamp--;
+                        thiz._Player.Notify(GetString("MageAboutRunOut"));
+                    }
+                    yield return null;
+                }
+                thiz._Player.ResetPlayerOutfit();
+            }
+        }
+        ,
         Spell.Dash => () => {
             
             if (Mana < 5)
@@ -117,40 +154,6 @@ internal class Mage : RoleBase
 
             _Player.RpcTeleport(_Player.GetCustomPosition() + addVector);
 
-        },
-        Spell.Disguise => () =>
-        {
-            if (Main.AllAlivePlayerControls.Length < 2)
-            {
-                return;
-            }
-            if (Mana < 10)
-            {
-                _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 10));
-                return;
-            }
-            Mana -= 10;
-
-            var RandPC = Main.AllAlivePlayerControls.Where(x => x != _Player).ToArray().RandomElement();
-
-            _Player.ResetPlayerOutfit(Main.PlayerStates[RandPC.PlayerId].NormalOutfit);
-
-            Main.Instance.StopCoroutine(DisguiseCoroutine);
-            DisguiseCoroutine = Main.Instance.StartCoroutine(EndDisguise(GetTimeStamp(), this));
-
-            static System.Collections.IEnumerator EndDisguise(long Timestamp, Mage thiz)
-            {
-                while ((Timestamp + DisguiseDur.GetInt()+1 > GetTimeStamp()) && !Main.MeetingIsStarted)
-                {
-                    if (Timestamp + DisguiseDur.GetInt() - GetTimeStamp() == 5)
-                    {
-                        Timestamp--;
-                        thiz._Player.Notify(GetString("MageAboutRunOut"));
-                    }
-                    yield return null;
-                }
-                thiz._Player.ResetPlayerOutfit();
-            }
         },
         Spell.Warp => () => {
             if (Mana < 30 && guwienko == null)
