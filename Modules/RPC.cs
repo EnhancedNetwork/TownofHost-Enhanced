@@ -50,6 +50,7 @@ enum CustomRPC : byte // 197/255 USED
     SyncPlayerSetting,
     ShowChat,
     SyncShieldPersonDiedFirst,
+    RemoveSubRole,
 
     //Roles 
     SetBountyTarget,
@@ -109,6 +110,7 @@ enum CustomRPC : byte // 197/255 USED
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
     SetCoronerArrow,
+    SpurtSync,
     SetCoronerkKillerArrow,
     SetVultureArrow,
     SetRadarArrow,
@@ -334,6 +336,12 @@ internal class RPCHandlerPatch
                 }
                 break;
 
+            case CustomRPC.RemoveSubRole:
+                byte targetId = reader.ReadByte();
+                var Subrole = (CustomRoles)reader.ReadPackedInt32();
+                Main.PlayerStates[targetId].RemoveSubRole(Subrole);
+                break;
+
             case CustomRPC.SetDeathReason:
                 RPC.GetDeathReason(reader);
                 break;
@@ -459,9 +467,9 @@ internal class RPCHandlerPatch
                 EvilTracker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetRealKiller:
-                byte targetId = reader.ReadByte();
+                byte tarid = reader.ReadByte();
                 byte killerId = reader.ReadByte();
-                RPC.SetRealKiller(targetId, killerId);
+                RPC.SetRealKiller(tarid, killerId);
                 break;
             //case CustomRPC.SetTrackerTarget:
             //    Tracker.ReceiveRPC(reader);
@@ -566,6 +574,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.NemesisRevenge:
                 Nemesis.ReceiveRPC_Custom(reader, __instance);
+                break;
+            case CustomRPC.SpurtSync:
+                Spurt.RecieveRPC(reader);
                 break;
             case CustomRPC.RetributionistRevenge:
                 Retributionist.ReceiveRPC_Custom(reader, __instance);

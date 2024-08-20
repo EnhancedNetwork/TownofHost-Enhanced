@@ -41,12 +41,12 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0814.210.00050"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.1.0 Alpha 5";
+    public const string PluginVersion = "2024.0820.210.00060"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.1.0 Alpha 6";
     public const string SupportedVersionAU = "2024.8.13";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: V2.1.0 Alpha 5
+    public static readonly bool devRelease = true; // Latest: V2.1.0 Alpha 6
     public static readonly bool canaryRelease = false; // Latest: V2.0.0 Canary 12
     public static readonly bool fullRelease = false; // Latest: V2.0.3
 
@@ -154,6 +154,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
     public static readonly HashSet<byte> PlayersDiedInMeeting = [];
     public static readonly Dictionary<byte, long> AllKillers = [];
+    public static readonly Dictionary<byte, (NetworkedPlayerInfo.PlayerOutfit outfit, string name)> OvverideOutfit = [];
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
 
@@ -183,6 +184,7 @@ public class Main : BasePlugin
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
+    
 
     public static PlayerControl[] AllPlayerControls
     {
@@ -901,6 +903,7 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
+    Rebirth,
     Mimic,
     Mundane,
     Necroview,
