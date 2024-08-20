@@ -201,7 +201,7 @@ internal class Mage : RoleBase
                 5 => new RandomSpawn.FungleSpawnMap(),
                 _ => null,
             };
-            if (map != null) Players.DoIf(x => true, map.RandomTeleport);
+            if (map != null) Players.Do(map.RandomTeleport);
         },
         _ => () => { }
     };
