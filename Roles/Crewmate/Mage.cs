@@ -42,7 +42,7 @@ internal class Mage : RoleBase
             .SetValueFormat(OptionFormat.Seconds); 
     }
 
-    private float cd => !SpellUsed ? 0.1f : CurrentSpell switch
+    private float cd => CurrentSpell switch
     {
         Spell.Warp => 20f,
         Spell.Grasp or Spell.Invincible => 10f,
@@ -55,7 +55,6 @@ internal class Mage : RoleBase
         AURoleOptions.ShapeshifterCooldown = cd;
     }
 
-    private bool SpellUsed;
     private Spell CurrentSpell;
     private Direction direction;
     private readonly List<byte> GraspedPlayers = [];
@@ -77,10 +76,8 @@ internal class Mage : RoleBase
             }
             Isinvincible = true;
             Mana -= 30;
-            SpellUsed = true;
             _Player.SyncSettings();
             _Player.RpcResetAbilityCooldown();
-            SpellUsed = false;
             _Player.RpcGuardAndKill();
 
             Main.Instance.StopCoroutine(InvincibilityCoroutine);
@@ -170,10 +167,8 @@ internal class Mage : RoleBase
                 return;
             }
 
-            SpellUsed = true;
             _Player.SyncSettings();
             _Player.RpcResetAbilityCooldown();
-            SpellUsed = false;
 
             Mana -= 30;
             guwienko = _Player.GetCustomPosition();
@@ -193,10 +188,8 @@ internal class Mage : RoleBase
                 _Player.Notify(GetString("MageTrySweepGhosts"));
                 return;
             }
-            SpellUsed = true;
             _Player.SyncSettings();
             _Player.RpcResetAbilityCooldown();
-            SpellUsed = false;
             Mana -= 40;
 
             RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
@@ -287,11 +280,9 @@ internal class Mage : RoleBase
                     _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 70));
                     break;
                 }
-                SpellUsed = true;
                 _Player.SyncSettings();
                 _Player.SetKillCooldown(cd);
                 _Player.RpcResetAbilityCooldown();
-                SpellUsed = false;
 
                 Mana -= 70;
                 return true;
@@ -305,11 +296,9 @@ internal class Mage : RoleBase
                     _Player.Notify(string.Format(GetString("MageNotEnoughMana"), 50));
                     break;
                 }
-                SpellUsed = true;
                 _Player.SyncSettings();
                 _Player.SetKillCooldown(cd);
                 _Player.RpcResetAbilityCooldown();
-                SpellUsed = false;
 
                 Mana -= 50;
                 GraspedPlayers.Add(target.PlayerId);
