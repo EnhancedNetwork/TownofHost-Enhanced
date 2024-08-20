@@ -331,7 +331,7 @@ internal class Mage : RoleBase
         {
             if (!isForHud && seer.IsModClient())
                 return string.Empty;
-            string spelltext = ColorString(new(57, 46, 99, 255), string.Format($"{GetString("MageSpell")}", GetString($"Spell.{CurrentSpell}")));
+            string spelltext = ColorString(GetRoleColor(CustomRoles.Mage), string.Format($"{GetString("MageSpell")}", GetString($"Spell.{CurrentSpell}")));
 
             return $"{spelltext}\n" + GetCharge();
         }
