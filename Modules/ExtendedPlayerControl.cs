@@ -253,8 +253,8 @@ static class ExtendedPlayerControl
     }
     public static void RpcChangeRoleBasis(this PlayerControl player, RoleTypes Type, bool IsDesyncImpostor = false)
     {
-        //Havne't tested method yet.
-        if (!GameStates.IsInGame || AmongUsClient.Instance.AmHost) return;
+        //Seems work
+        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
 
         if (IsDesyncImpostor)
         {
@@ -262,20 +262,10 @@ static class ExtendedPlayerControl
             {
                 if (seer.PlayerId == player.PlayerId) continue;
 
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.PlayerId, (byte)RpcCalls.SetRole, SendOption.Reliable, seer.GetClientId());
-                writer.Write((ushort)RoleTypes.Crewmate);
-                writer.Write(true);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-                MessageWriter writer2 = AmongUsClient.Instance.StartRpcImmediately(seer.PlayerId, (byte)RpcCalls.SetRole, SendOption.Reliable, player.GetClientId());
-                writer2.Write((ushort)RoleTypes.Crewmate);
-                writer2.Write(true);
-                AmongUsClient.Instance.FinishRpcImmediately(writer2);
+                player.RpcSetRoleDesync(RoleTypes.Crewmate, true, seer.GetClientId());
+                seer.RpcSetRoleDesync(RoleTypes.Crewmate, true, player.GetClientId());
             }
-            MessageWriter writer3 = AmongUsClient.Instance.StartRpcImmediately(player.PlayerId, (byte)RpcCalls.SetRole, SendOption.Reliable, player.GetClientId());
-            writer3.Write((ushort)Type);
-            writer3.Write(true);
-            AmongUsClient.Instance.FinishRpcImmediately(writer3);
+            player.RpcSetRoleDesync(Type, true, player.GetClientId());
         }
         else
         {
