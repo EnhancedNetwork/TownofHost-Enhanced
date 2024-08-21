@@ -337,7 +337,7 @@ public static class CustomRoleManager
                         break;
 
                     case CustomRoles.EvilSpirit when !inMeeting && !isSuicide:
-                        target.RpcSetRole(RoleTypes.GuardianAngel);
+                        target.RpcSetRole(RoleTypes.GuardianAngel, true);
                         break;
 
                     case CustomRoles.Spurt:

@@ -254,12 +254,12 @@ static class ExtendedPlayerControl
         if (player == null) return;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
-            player.SetRole(role, canOverride);
+            player.SetRole(role, true);
             return;
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
         writer.Write((ushort)role);
-        writer.Write(canOverride);
+        writer.Write(true);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 

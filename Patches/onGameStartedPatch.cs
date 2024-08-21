@@ -281,7 +281,7 @@ internal class SelectRolesPatch
             if (Main.EnableGM.Value)
             {
                 PlayerControl.LocalPlayer.RpcSetCustomRole(CustomRoles.GM);
-                PlayerControl.LocalPlayer.RpcSetRole(RoleTypes.Crewmate);
+                PlayerControl.LocalPlayer.RpcSetRole(RoleTypes.Crewmate, true);
                 PlayerControl.LocalPlayer.Data.IsDead = true;
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
@@ -299,7 +299,7 @@ internal class SelectRolesPatch
             if (Main.EnableGM.Value && Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 PlayerControl.LocalPlayer.RpcSetCustomRole(CustomRoles.GM);
-                PlayerControl.LocalPlayer.RpcSetRole(RoleTypes.Crewmate);
+                PlayerControl.LocalPlayer.RpcSetRole(RoleTypes.Crewmate, true);
                 PlayerControl.LocalPlayer.Data.IsDead = true;
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
@@ -666,7 +666,7 @@ internal class SelectRolesPatch
         RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
 
         //Set role for host
-        player.SetRole(othersRole, false);
+        player.SetRole(othersRole, true);
 
         // Override RoleType for host
         if (isHost && BaseRole == RoleTypes.Shapeshifter)
@@ -740,7 +740,7 @@ internal class SelectRolesPatch
 
                         SetDisconnectedMessage(sender.Value.stream, true);
 
-                        seer.SetRole(roleType, false);
+                        seer.SetRole(roleType, true);
                         sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
                             .Write((ushort)roleType)
                             .Write(true)
