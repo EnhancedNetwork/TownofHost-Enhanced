@@ -15,7 +15,7 @@ class ExileControllerWrapUpPatch
         {
             try
             {
-                WrapUpPostfix(__instance.exiled);
+                WrapUpPostfix(__instance.initData.networkedPlayer);
             }
             catch (Exception error)
             {
@@ -23,7 +23,7 @@ class ExileControllerWrapUpPatch
             }
             finally
             {
-                WrapUpFinalizer(__instance.exiled);
+                WrapUpFinalizer(__instance.initData.networkedPlayer);
             }
         }
     }
@@ -35,7 +35,7 @@ class ExileControllerWrapUpPatch
         {
             try
             {
-                WrapUpPostfix(__instance.exiled);
+                WrapUpPostfix(__instance.initData.networkedPlayer);
             }
             catch (Exception error)
             {
@@ -43,7 +43,7 @@ class ExileControllerWrapUpPatch
             }
             finally
             {
-                WrapUpFinalizer(__instance.exiled);
+                WrapUpFinalizer(__instance.initData.networkedPlayer);
             }
         }
     }
@@ -73,7 +73,7 @@ class ExileControllerWrapUpPatch
         if (CLThingy && exiled != null)
         {
             // Reset player cam for exiled desync impostor
-            if (Main.ResetCamPlayerList.Contains(exiled.PlayerId))
+            if (exiled.Object.HasDesyncRole())
             {
                 exiled.Object?.ResetPlayerCam(1f);
             }
@@ -181,7 +181,7 @@ class ExileControllerWrapUpPatch
                         player?.SetRealKiller(player, true);
 
                     // Reset player cam for dead desync impostor
-                    if (Main.ResetCamPlayerList.Contains(x.Key))
+                    if (player.HasDesyncRole())
                     {
                         player?.ResetPlayerCam(1f);
                     }

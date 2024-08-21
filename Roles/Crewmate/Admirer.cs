@@ -15,6 +15,7 @@ internal class Admirer : RoleBase
     //===========================SETUP================================\\
     private const int Id = 24800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Admired);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -42,9 +43,6 @@ internal class Admirer : RoleBase
     {
         AbilityLimit =  SkillLimit.GetInt();
         AdmiredList.Add(playerId, []);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

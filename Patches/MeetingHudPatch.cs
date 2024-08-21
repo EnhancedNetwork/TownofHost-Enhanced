@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -131,6 +132,10 @@ class CheckForEndVotingPatch
                         if (voteTarget.Is(CustomRoles.Aware))
                         {
                             Aware.OnVoted(pc, pva);
+                        }
+                        else if (voteTarget.Is(CustomRoles.Rebirth))
+                        {
+                            Rebirth.CountVotes(voteTarget.PlayerId, pva.TargetPlayerId);
                         }
                     }
                 }
@@ -298,23 +303,23 @@ class CheckForEndVotingPatch
             bool braked = false;
             if (tie)
             {
-                byte target = byte.MaxValue;
+                byte targetId = byte.MaxValue;
                 foreach (var data in VotingData.Where(x => x.Key < 15 && x.Value == max).ToArray())
                 {
                     if (Tiebreaker.VoteFor.Contains(data.Key))
                     {
-                        if (target != byte.MaxValue)
+                        if (targetId != byte.MaxValue)
                         {
-                            target = byte.MaxValue;
+                            targetId = byte.MaxValue;
                             break;
                         }
-                        target = data.Key;
+                        targetId = data.Key;
                     }
                 }
-                if (target != byte.MaxValue)
+                if (targetId != byte.MaxValue)
                 {
                     Logger.Info("Flat breakers cover expulsion of players", "Tiebreaker Vote");
-                    exiledPlayer = GetPlayerInfoById(target);
+                    exiledPlayer = GetPlayerInfoById(targetId);
                     tie = false;
                     braked = true;
                 }
@@ -349,6 +354,11 @@ class CheckForEndVotingPatch
             {
                 exileId = 0xff;
                 exiledPlayer = GetPlayerInfoById(exileId);
+            }
+            else if (exiledPlayer?.Object.Is(CustomRoles.Rebirth) == true && Rebirth.SwapSkins(exiledPlayer.Object, out var NewExiled))
+            {
+                exileId = NewExiled.PlayerId;
+                exiledPlayer = NewExiled;
             }
 
             exiledPlayer?.Object.SetRealKiller(null);
@@ -423,6 +433,7 @@ class CheckForEndVotingPatch
         var name = "";
         int impnum = 0;
         int neutralnum = 0;
+        int apocnum = 0;
 
         if (CustomRoles.Bard.RoleExist())
         {
@@ -440,6 +451,8 @@ class CheckForEndVotingPatch
                 impnum++;
             else if (pc_role.IsNK() && pc != exiledPlayer.Object)
                 neutralnum++;
+            else if (pc_role.IsNA() && pc != exiledPlayer.Object)
+                apocnum++;
         }
         switch (Options.CEMode.GetInt())
         {
@@ -493,6 +506,8 @@ class CheckForEndVotingPatch
                     name += string.Format(GetString("OneNeutralRemain"), neutralnum) + comma;
                 else
                     name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
+            if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
+                    name += string.Format(GetString("ApocRemain"), neutralnum) + comma;
         }
 
     EndOfSession:
@@ -1076,6 +1091,13 @@ class MeetingHudStartPatch
             PlayerControl target = GetPlayerById(pva.TargetPlayerId);
             if (target == null) continue;
 
+            // if based role is Shapeshifter and is Desync Shapeshifter
+            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && seer.HasDesyncRole())
+            {
+                // When target is impostor, set name color as white
+                target.cosmetics.SetNameColor(Color.white);
+                pva.NameText.color = Color.white;
+            }
 
             var sb = new StringBuilder();
 

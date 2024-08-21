@@ -10,7 +10,7 @@ internal class Innocent : RoleBase
     private const int Id = 14300;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
@@ -30,9 +30,6 @@ internal class Innocent : RoleBase
     public override void Add(byte playerId)
     {
         PlayerIds.Add(playerId);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

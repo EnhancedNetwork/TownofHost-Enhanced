@@ -32,15 +32,20 @@ public class Statue : IAddon
         IsEnable = false;
     }
 
-    public static void Add(byte player)
+    public static void Add(byte playerId)
     {
-        tempSpeed.Add(player, Main.AllPlayerSpeed[player]);
+        tempSpeed.Add(playerId, Main.AllPlayerSpeed[playerId]);
         IsEnable = true;
     }
 
-    public static void Remove(byte player)
+    public static void Remove(byte playerId)
     {
-        tempSpeed.Remove(player);
+        if (Main.AllPlayerSpeed[playerId] == SlowDown.GetFloat())
+        {
+            Main.AllPlayerSpeed[playerId] = Main.AllPlayerSpeed[playerId] - SlowDown.GetFloat() + tempSpeed[playerId];
+            Utils.GetPlayerById(playerId)?.MarkDirtySettings();
+        }
+        tempSpeed.Remove(playerId);
     }
 
     public static void AfterMeetingTasks()
@@ -67,7 +72,7 @@ public class Statue : IAddon
 
         foreach (var PVC in Main.AllAlivePlayerControls)
         {
-            if (CountNearplr.Contains(PVC.PlayerId) && Vector2.Distance(PVC.transform.position, victim.transform.position) > 2f)
+            if (CountNearplr.Contains(PVC.PlayerId) && Utils.GetDistance(PVC.transform.position, victim.transform.position) > 2f)
             {
                 CountNearplr.Remove(PVC.PlayerId);
             }
@@ -77,7 +82,7 @@ public class Statue : IAddon
         {
             foreach (var plr in Main.AllAlivePlayerControls)
             {
-                if (Vector2.Distance(plr.transform.position, victim.transform.position) < 2f && plr != victim)
+                if (Utils.GetDistance(plr.transform.position, victim.transform.position) < 2f && plr != victim)
                 {
                     if (!CountNearplr.Contains(plr.PlayerId)) CountNearplr.Add(plr.PlayerId);
                 }

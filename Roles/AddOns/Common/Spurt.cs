@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static TOHE.Options;
+﻿using static TOHE.Options;
 using UnityEngine;
+using Hazel;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.AddOns.Common
 {
@@ -37,7 +34,19 @@ namespace TOHE.Roles.AddOns.Common
             DisplaysCharge = BooleanOptionItem.Create(id + 9, "EnableSpurtCharge", false, TabGroup.Addons, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Spurt]);
         }
-
+        private static void Sendrpc(byte playerId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpurtSync, SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(Main.AllPlayerSpeed[playerId]);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        public static void RecieveRPC(MessageReader reader)
+        {
+            byte playerid = reader.ReadByte();
+            float speed = reader.ReadSingle();
+            Main.AllPlayerSpeed[playerid] = speed;
+        }
         public static void Add()
         {
             foreach ((PlayerControl pc, float speed) in Main.AllAlivePlayerControls.Zip(Main.AllPlayerSpeed.Values))
@@ -86,7 +95,7 @@ namespace TOHE.Roles.AddOns.Common
             if (!player.Is(CustomRoles.Spurt) || !player.IsAlive()) return;
 
             var pos = player.GetCustomPosition();
-            bool moving = Vector2.Distance(pos, LastPos[player.PlayerId]) > 0f || player.MyPhysics.Animations.IsPlayingRunAnimation();
+            bool moving = Utils.GetDistance(pos, LastPos[player.PlayerId]) > 0f || player.MyPhysics.Animations.IsPlayingRunAnimation();
             LastPos[player.PlayerId] = pos;
 
             float modulator = Modulator.GetFloat();
@@ -102,6 +111,7 @@ namespace TOHE.Roles.AddOns.Common
                 {
                     Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: player);
                     LastUpdate[player.PlayerId] = now;
+                    Sendrpc(player.PlayerId);
                 }
             }
 

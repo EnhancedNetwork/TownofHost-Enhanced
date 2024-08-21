@@ -453,9 +453,9 @@ internal class ChatCommands
                     else
                     {
                         Logger.Info("GetRealKiller()", "/death command");
-                        var killer = PlayerControl.LocalPlayer.GetRealKiller();
+                        var killer = PlayerControl.LocalPlayer.GetRealKiller(out var MurderRole);
                         string killerName = killer == null ? "N/A" : killer.GetRealName();
-                        string killerRole = killer == null ? "N/A" : Utils.GetRoleName(killer.GetCustomRole());
+                        string killerRole = killer == null ? "N/A" : Utils.GetRoleName(MurderRole);
                         Utils.SendMessage(text: GetString("DeathCmd.YourName") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(PlayerControl.LocalPlayer.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killerName + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{killerRole}</color>" + "</b>", sendTo: PlayerControl.LocalPlayer.PlayerId);
 
                         break;
@@ -2188,9 +2188,9 @@ internal class ChatCommands
                 }
                 else
                 {
-                    var killer = player.GetRealKiller();
+                    var killer = player.GetRealKiller(out var MurderRole);
                     string killerName = killer == null ? "N/A" : killer.GetRealName();
-                    string killerRole = killer == null ? "N/A" : Utils.GetRoleName(killer.GetCustomRole());
+                    string killerRole = killer == null ? "N/A" : Utils.GetRoleName(MurderRole);
                     Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + player.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(player.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killerName + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{killerRole}</color>" + "</b>", player.PlayerId);
                     break;
                 }
@@ -3075,11 +3075,10 @@ class ChatUpdatePatch
 
         if (sendTo != byte.MaxValue && GameStates.IsLobby)
         {
-            if (Utils.GetPlayerInfoById(sendTo) != null)
+            var networkedPlayerInfo = Utils.GetPlayerInfoById(sendTo);
+            if (networkedPlayerInfo != null)
             {
-                var targetinfo = Utils.GetPlayerInfoById(sendTo);
-
-                if (targetinfo.DefaultOutfit.ColorId == -1)
+                if (networkedPlayerInfo.DefaultOutfit.ColorId == -1)
                 {
                     var delaymessage = Main.MessagesToSend[0];
                     Main.MessagesToSend.RemoveAt(0);

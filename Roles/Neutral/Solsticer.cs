@@ -180,7 +180,7 @@ internal class Solsticer : RoleBase
             Count = 15;
 
             var pos = ExtendedPlayerControl.GetBlackRoomPosition();
-            var dis = Vector2.Distance(pos, pc.GetCustomPosition());
+            var dis = Utils.GetDistance(pos, pc.GetCustomPosition());
             if (dis < 1f)
                 return;
 
