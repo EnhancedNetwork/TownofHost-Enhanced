@@ -733,24 +733,22 @@ internal class SelectRolesPatch
                 if (sender.Value.CurrentState != CustomRpcSender.State.InRootMessage)
                     throw new InvalidOperationException("A CustomRpcSender had Invalid State.");
 
-                SetDisconnectedMessage(sender.Value.stream, true);
                 foreach (var (seer, roleType) in StoragedData)
                 {
                     try
                     {
-
-
+                        SetDisconnectedMessage(sender.Value.stream, true);
                         seer.SetRole(roleType, true);
                         sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
                             .Write((ushort)roleType)
                             .Write(true)
                             .EndRpc();
 
+                        SetDisconnectedMessage(sender.Value.stream, false);
                     }
                     catch
                     { }
                 }
-                SetDisconnectedMessage(sender.Value.stream, false);
                 sender.Value.EndMessage();
             }
             doReplace = false;
