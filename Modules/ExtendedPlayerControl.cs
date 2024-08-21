@@ -253,7 +253,7 @@ static class ExtendedPlayerControl
     }
     public static void RpcChangeRoleBasis(this PlayerControl player, RoleTypes Type, bool IsDesyncImpostor = false)
     {
-        //Seems work
+        //not complete yet, but the current version works with normal roles (have yet to fix for noisemaker etc..)
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
 
         if (IsDesyncImpostor)
