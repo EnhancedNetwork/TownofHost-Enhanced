@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using MonoMod.Cil;
 using System;
 using System.Text;
 using TOHE.Modules;
@@ -12,6 +13,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE;
 
@@ -248,6 +250,38 @@ static class ExtendedPlayerControl
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, seer.GetClientId());
         writer.WritePacked(ventId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void RpcChangeRoleBasis(this PlayerControl player, RoleTypes Type, bool IsDesyncImpostor = false)
+    {
+        //Havne't tested method yet.
+        if (!GameStates.IsInGame || AmongUsClient.Instance.AmHost) return;
+
+        if (IsDesyncImpostor)
+        {
+            foreach (var seer in Main.AllPlayerControls)
+            {
+                if (seer.PlayerId == player.PlayerId) continue;
+
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.PlayerId, (byte)RpcCalls.SetRole, SendOption.Reliable, seer.GetClientId());
+                writer.Write((ushort)RoleTypes.Crewmate);
+                writer.Write(true);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                MessageWriter writer2 = AmongUsClient.Instance.StartRpcImmediately(seer.PlayerId, (byte)RpcCalls.SetRole, SendOption.Reliable, player.GetClientId());
+                writer2.Write((ushort)RoleTypes.Crewmate);
+                writer2.Write(true);
+                AmongUsClient.Instance.FinishRpcImmediately(writer2);
+            }
+            MessageWriter writer3 = AmongUsClient.Instance.StartRpcImmediately(player.PlayerId, (byte)RpcCalls.SetRole, SendOption.Reliable, player.GetClientId());
+            writer3.Write((ushort)Type);
+            writer3.Write(true);
+            AmongUsClient.Instance.FinishRpcImmediately(writer3);
+        }
+        else
+        {
+            player.RpcSetRole(Type, true);
+        }
+
     }
     public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role, bool canOverride, int clientId)
     {

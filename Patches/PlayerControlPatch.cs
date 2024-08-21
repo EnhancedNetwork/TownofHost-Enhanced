@@ -2016,8 +2016,11 @@ class PlayerControlSetRolePatch
                 Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");
 
                 if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel)
+                {
                     if (!DidSetGhost.ContainsKey(__instance.PlayerId))
                         DidSetGhost.Add(__instance.PlayerId, true);
+
+                }
             }
             _ = new LateTask(() => { Main.AllPlayerControls.Do(x => Logger.Info($"{x.GetRealName()}/{x.Data.Role.GetType().Name}/{x.Data.Role.Role}", "Test All Roletypes, and Roleclass")); }, 3f);
         }
