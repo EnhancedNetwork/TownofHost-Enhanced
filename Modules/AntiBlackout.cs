@@ -258,6 +258,8 @@ public static class ReassignImpostorPatch
     {
         if (!AmongUsClient.Instance.AmHost || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()) return;
 
+        //idk if this is needed since anyways ghost-role desyncs aren't in here (cuz that is set later), so maybe I'll remove.
+
         foreach (var Killer in Main.AllPlayerControls.Where(x => x.HasKillButton() && x != __instance))
         {
             Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
