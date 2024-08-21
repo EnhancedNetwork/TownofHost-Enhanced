@@ -35,7 +35,7 @@ internal class EAC
         // nvm, it works so im not doing more changes
 
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (RoleBasisChanger.IsChangeInProgress) return false;
+        //if (RoleBasisChanger.IsChangeInProgress) return false;
         if (pc == null || reader == null) return false;
         try
         {

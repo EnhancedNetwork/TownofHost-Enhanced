@@ -102,7 +102,7 @@ class CoBeginPatch
 {
     public static void Prefix()
     {
-        if (RoleBasisChanger.IsChangeInProgress) return;
+        //if (RoleBasisChanger.IsChangeInProgress) return;
 
         var logger = Logger.Handler("Info");
 
@@ -507,7 +507,7 @@ class IntroCutsceneDestroyPatch
 {
     public static void Postfix()
     {
-        if (!GameStates.IsInGame || RoleBasisChanger.SkipTasksAfterAssignRole) return;
+        if (!GameStates.IsInGame/* || RoleBasisChanger.SkipTasksAfterAssignRole*/) return;
 
         Main.introDestroyed = true;
 
