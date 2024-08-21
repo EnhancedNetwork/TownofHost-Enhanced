@@ -103,6 +103,11 @@ public class FateGiver : IAddon
 
     public static void OnVote(PlayerControl votePlayer, PlayerControl voteTarget = null)
     {
+        if (SkillRecords.ContainsKey(votePlayer.PlayerId) && SkillRecords[votePlayer.PlayerId].Item2 == voteTarget)
+        {
+            return;
+        }
+
         var skill = pickskill();
 
         if (voteTarget == null)
