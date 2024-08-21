@@ -753,7 +753,7 @@ internal class SelectRolesPatch
             }
             doReplace = false;
         }
-        public static void SetDisconnectedMessage(MessageWriter stream, bool disconnected)
+        private static void SetDisconnectedMessage(MessageWriter stream, bool disconnected)
         {
             foreach (var pc in Main.AllPlayerControls)
             {
