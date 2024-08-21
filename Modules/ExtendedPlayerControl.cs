@@ -34,7 +34,7 @@ static class ExtendedPlayerControl
         {
             if (Cleanser.CantGetAddon() && player.Is(CustomRoles.Cleansed)) return;
             if (role == CustomRoles.Cleansed) Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
-            else Main.PlayerStates[player.PlayerId].SetSubRole(role);            
+            else Main.PlayerStates[player.PlayerId].SetSubRole(role);
         }
         if (AmongUsClient.Instance.AmHost)
         {
@@ -251,25 +251,36 @@ static class ExtendedPlayerControl
         writer.WritePacked(ventId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void RpcChangeRoleBasis(this PlayerControl player, RoleTypes Type, bool IsDesyncImpostor = false)
-    {
-        //not complete yet, but the current version works with normal roles (have yet to fix for noisemaker etc..)
-        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
 
-        if (IsDesyncImpostor)
+    /// <summary>
+    /// Changes the RoleBase of player during the game.
+    /// </summary>
+    /// <param name="roleTypes">The type to change into</param>
+    /// <param name="IsDesyncImpostor">If the player should be desynced from impostor teammates</param>
+    /// <param name="FellowImps">Will only function if <paramref name="IsDesyncImpostor"/> is active and makes it so you can't kill them, neither can they kill you</param>
+    public static void RpcChangeRoleBasis(this PlayerControl player, RoleTypes roleTypes, bool IsDesyncImpostor = false, List<PlayerControl> FellowImps = null) 
+    {
+        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
+        FellowImps = [];
+
+        if (IsDesyncImpostor && roleTypes is RoleTypes.Impostor or RoleTypes.Shapeshifter or RoleTypes.Phantom)
         {
             foreach (var seer in Main.AllPlayerControls)
             {
                 if (seer.PlayerId == player.PlayerId) continue;
+                RoleTypes Typa = RoleTypes.Scientist;
 
-                player.RpcSetRoleDesync(RoleTypes.Crewmate, true, seer.GetClientId());
-                seer.RpcSetRoleDesync(RoleTypes.Crewmate, true, player.GetClientId());
+                if (seer.GetCustomRole() is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE) Typa = RoleTypes.Noisemaker;
+                else if (FellowImps.Contains(seer) && seer.HasKillButton()) Typa = seer.GetCustomRole().GetVNRole().GetRoleTypes();
+                
+                player.RpcSetRoleDesync(Typa, true, seer.GetClientId());
+                seer.RpcSetRoleDesync(Typa, true, player.GetClientId());
             }
-            player.RpcSetRoleDesync(Type, true, player.GetClientId());
+            player.RpcSetRoleDesync(roleTypes, true, player.GetClientId());
         }
         else
         {
-            player.RpcSetRole(Type, true);
+            player.RpcSetRole(roleTypes, true);
         }
 
     }

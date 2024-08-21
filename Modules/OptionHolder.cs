@@ -377,6 +377,7 @@ public static class Options
     public static OptionItem GhostCanSeeOtherVotes;
     public static OptionItem GhostCanSeeDeathReason;
     public static OptionItem ConvertedCanBecomeGhost;
+    public static OptionItem NeutralCanBecomeGhost;
     public static OptionItem MaxImpGhost;
     public static OptionItem MaxCrewGhost;
     public static OptionItem DefaultAngelCooldown;
@@ -1818,6 +1819,11 @@ public static class Options
         ConvertedCanBecomeGhost = BooleanOptionItem.Create(60840, "ConvertedCanBeGhostRole", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+        ConvertedCanBecomeGhost = BooleanOptionItem.Create(60841, "NeutralCanBeGhostRole", false, TabGroup.ModSettings, false)
+            .SetParent(ConvertedCanBecomeGhost)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+            
         MaxImpGhost = IntegerOptionItem.Create(60850, "MaxImpGhostRole", new(0, 15, 1), 15, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Times)

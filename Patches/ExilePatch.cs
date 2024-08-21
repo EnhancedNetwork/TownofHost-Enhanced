@@ -73,10 +73,10 @@ class ExileControllerWrapUpPatch
         if (CLThingy && exiled != null)
         {
             // Reset player cam for exiled desync impostor
-            if (exiled.Object.HasDesyncRole())
-            {
-                exiled.Object?.ResetPlayerCam(1f);
-            }
+           //if (exiled.Object.HasDesyncRole())
+           // {
+           //     exiled.Object?.ResetPlayerCam(1f);
+           // }
 
             exiled.IsDead = true;
             exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
@@ -104,12 +104,12 @@ class ExileControllerWrapUpPatch
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
             // Check Anti BlackOut
-            if (player.GetCustomRole().IsImpostor() 
-                && !player.IsAlive() // if player is dead impostor
-                && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
-            {
-                player.ResetPlayerCam(1f);
-            }
+           // if (player.GetCustomRole().IsImpostor() 
+           //     && !player.IsAlive() // if player is dead impostor
+           //     && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
+          //  {
+          //      player.ResetPlayerCam(1f);
+          //  }
 
             // Check for remove pet
             player.RpcRemovePet();
@@ -117,6 +117,8 @@ class ExileControllerWrapUpPatch
             // Reset Kill/Ability cooldown
             player.ResetKillCooldown();
             player.RpcResetAbilityCooldown();
+
+            player.FixDesyncImpostorRoles(); // Fix Impostor For Desync roles, also doing this once after death dosen't help and has to be done every exile.
         }
 
         Main.MeetingIsStarted = false;
@@ -181,10 +183,10 @@ class ExileControllerWrapUpPatch
                         player?.SetRealKiller(player, true);
 
                     // Reset player cam for dead desync impostor
-                    if (player.HasDesyncRole())
-                    {
-                        player?.ResetPlayerCam(1f);
-                    }
+                   // if (player.HasDesyncRole())
+                    //{
+                    //    player?.ResetPlayerCam(1f);
+                   // }
 
                     MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
                 });

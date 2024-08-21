@@ -20,8 +20,7 @@ public static class GhostRoleAssign
             || Options.CurrentGameMode == CustomGameMode.FFA 
             || player == null 
             || player.Data.Disconnected 
-            || GhostGetPreviousRole.ContainsKey(player.PlayerId)
-            || player.HasDesyncRole()) return;
+            || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
         if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) {
             Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");
             player.GetRoleClass()?.OnRemove(player.PlayerId);
@@ -38,8 +37,9 @@ public static class GhostRoleAssign
         if (getplrRole is CustomRoles.GM or CustomRoles.Nemesis or CustomRoles.Retributionist or CustomRoles.NiceMini) return;
 
         var IsNeutralAllowed = !player.IsAnySubRole(x => x.IsConverted()) || Options.ConvertedCanBecomeGhost.GetBool();
-        var IsCrewmate = (getplrRole.IsCrewmate() || player.Is(CustomRoles.Admired)) && IsNeutralAllowed;
-        var IsImpostor = (getplrRole.IsImpostor()) && (IsNeutralAllowed || player.Is(CustomRoles.Madmate));
+        var CheckNeutral = player.GetCustomRole().IsNeutral() && Options.NeutralCanBecomeGhost.GetBool();
+        var IsCrewmate = ((getplrRole.IsCrewmate() || player.Is(CustomRoles.Admired)) && IsNeutralAllowed) || CheckNeutral;
+        var IsImpostor = ((getplrRole.IsImpostor()) && (IsNeutralAllowed || player.Is(CustomRoles.Madmate))) || CheckNeutral;
 
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole() || x == CustomRoles.Gravestone) || !Options.CustomGhostRoleCounts.Any()) return;
 

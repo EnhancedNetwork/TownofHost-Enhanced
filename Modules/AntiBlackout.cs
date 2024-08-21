@@ -1,8 +1,10 @@
+using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using TOHE.Roles.Core.AssignManager;
 
 namespace TOHE;
 
@@ -248,4 +250,28 @@ public static class AntiBlackout
 
     public static bool ShowExiledInfo = false;
     public static string StoreExiledMessage = "";
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
+public static class ReassignImpostorPatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()) return;
+
+        foreach (var Killer in Main.AllPlayerControls.Where(x => x.HasKillButton() && x != __instance))
+        {
+            Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
+        }
+    }
+
+    public static void FixDesyncImpostorRoles(this PlayerControl __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()
+            && (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(__instance.PlayerId, out var role) || !role.IsDesyncRole() || !role.IsImpostor())) return;
+
+        foreach (var Killer in Main.AllPlayerControls.Where(x => x.HasKillButton() && x != __instance))
+        {
+            Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
+        }
+    }
 }
