@@ -253,7 +253,7 @@ static class ExtendedPlayerControl
     }
 
     /// <summary>
-    /// Changes the RoleBase of player during the game.
+    /// Changes the Role Basis of player during the game.
     /// </summary>
     /// <param name="roleTypes">The type to change into</param>
     /// <param name="IsDesyncImpostor">If the player should be desynced from impostor teammates</param>

@@ -389,14 +389,18 @@ internal class SelectRolesPatch
                 AssignDesyncRole(role, pc, senders, rolesMap, BaseRole: role.GetDYRole());
 
             // Set Desync RoleType by "RpcSetRole"
-            MakeDesyncSender(senders, rolesMap);
+            //MakeDesyncSender(senders, rolesMap);
 
+            RpcSetRoleReplacer.DesyncPlayers.Clear();
             // Override RoleType for others players
             foreach (var (pc, role) in RoleAssign.RoleResult)
             {
-                if (pc == null || role.IsDesyncRole()) continue;
+                if (pc == null) continue;
+                var realrole = role;
+                if (role.IsDesyncRole()) realrole = CustomRoles.Scientist;
 
-                RpcSetRoleReplacer.StoragedData.Add(pc, role.GetRoleTypes());
+                if (role.IsDesyncRole()) RpcSetRoleReplacer.DesyncPlayers.Add(pc, role);
+                RpcSetRoleReplacer.StoragedData.Add(pc, realrole.GetRoleTypes());
 
                 Logger.Warn($"Set original role type => {pc.GetRealName()}: {role} => {role.GetRoleTypes()}", "Override Role Select");
             }
@@ -719,6 +723,7 @@ internal class SelectRolesPatch
         public static bool doReplace = false;
         public static Dictionary<byte, CustomRpcSender> senders;
         public static Dictionary<PlayerControl, RoleTypes> StoragedData = [];
+        public static Dictionary<PlayerControl, CustomRoles> DesyncPlayers = [];
         // List of Senders that do not require additional writing because SetRoleRpc has already been written by another process such as Position Desync
         public static List<CustomRpcSender> OverriddenSenderList;
         public static bool Prefix()
@@ -729,7 +734,7 @@ internal class SelectRolesPatch
         {
             foreach (var sender in senders)
             {
-                if (OverriddenSenderList.Contains(sender.Value)) continue;
+                //if (OverriddenSenderList.Contains(sender.Value)) continue;
                 if (sender.Value.CurrentState != CustomRpcSender.State.InRootMessage)
                     throw new InvalidOperationException("A CustomRpcSender had Invalid State.");
 
@@ -738,11 +743,18 @@ internal class SelectRolesPatch
                     try
                     {
                         SetDisconnectedMessage(sender.Value.stream, true);
-                        seer.SetRole(roleType, true);
-                        sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
-                            .Write((ushort)roleType)
-                            .Write(true)
-                            .EndRpc();
+                        if (!DesyncPlayers.TryGetValue(seer, out var role) || role.IsCrewmate())
+                        {
+                            seer.SetRole(roleType, true);
+                            sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
+                                .Write((ushort)roleType)
+                                .Write(true)
+                                .EndRpc();
+                        }
+                        else
+                        {
+                            seer.RpcChangeRoleBasis(role.GetRoleTypes(), true);
+                        }
 
                         SetDisconnectedMessage(sender.Value.stream, false);
                     }
