@@ -40,12 +40,12 @@ internal class Innocent : RoleBase
 
     public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
-        var role = exiled.GetCustomRole();
-        var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId);
+        var exiledRole = exiled.GetCustomRole();
+        var innocentArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId);
 
-        if (!pcArray.Any()) return;
+        if (!innocentArray.Any()) return;
 
-        if (!InnocentCanWinByImp.GetBool() && role.IsImpostor())
+        if (!InnocentCanWinByImp.GetBool() && exiledRole.IsImpostor())
         {
             if (!isMeetingHud)
                 Logger.Info("Exeiled Winner Check for impostor", "Innocent");
@@ -60,7 +60,7 @@ internal class Innocent : RoleBase
             else
             {
                 bool isInnocentWinConverted = false;
-                foreach (var Innocent in pcArray)
+                foreach (var Innocent in innocentArray)
                 {
                     if (CustomWinnerHolder.CheckForConvertedWinner(Innocent.PlayerId))
                     {
@@ -79,7 +79,11 @@ internal class Innocent : RoleBase
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Innocent);
                     }
 
-                    pcArray.Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
+                    innocentArray.Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
+                    if (exiledRole.IsImpostor())
+                    {
+                        CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
+                    }
                 }
             }
             DecidedWinner = true;
