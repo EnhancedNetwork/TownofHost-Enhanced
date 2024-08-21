@@ -512,6 +512,7 @@ class IntroCutsceneDestroyPatch
 
         Main.introDestroyed = true;
 
+
         if (!GameStates.AirshipIsActive)
         {
             foreach (var state in Main.PlayerStates.Values)
@@ -602,8 +603,11 @@ class IntroCutsceneDestroyPatch
                     DYpc.RpcChangeRoleBasis(DYpc.GetCustomRole().GetRoleTypes(), true);
                 }
 
-            }, 1f, "Assign Impostor desync roels for crewmates");
-
+            }, 1f, "Assign Impostor desync roles for crewmates");
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                pc.MarkDirtySettings();
+            }
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
             {

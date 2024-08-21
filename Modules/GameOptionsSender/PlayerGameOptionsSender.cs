@@ -79,7 +79,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         else if (GameStates.IsHideNSeek) return opt;
 
         var state = Main.PlayerStates[player.PlayerId];
-        opt.BlackOut(state.IsBlackOut);
+        opt.BlackOut(state.IsBlackOut || !Main.introDestroyed);
 
         CustomRoles role = player.GetCustomRole();
         if (Options.CurrentGameMode == CustomGameMode.FFA)

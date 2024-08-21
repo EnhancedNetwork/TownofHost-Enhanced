@@ -397,7 +397,7 @@ internal class SelectRolesPatch
             {
                 if (pc == null) continue;
                 var realrole = role;
-                if (role.IsDesyncRole()) realrole = CustomRoles.Scientist;
+                if (role.IsDesyncRole()) realrole = CustomRoles.Crewmate;
 
                 if (role.IsDesyncRole()) RpcSetRoleReplacer.DesyncPlayers.Add(pc, role);
                 RpcSetRoleReplacer.StoragedData.Add(pc, realrole.GetRoleTypes());
@@ -752,8 +752,9 @@ internal class SelectRolesPatch
                                 .EndRpc();
                         }
                         else
-                        {
-                            seer.RpcChangeRoleBasis(role.GetRoleTypes(), true);
+                        { // DESYNC NEUTRALS TEMPORALILY BROKEN, I need to fix it. 
+                            throw new NotImplementedException();
+                            // seer.RpcChangeRoleBasis(role.GetRoleTypes(), true);
                         }
 
                         SetDisconnectedMessage(sender.Value.stream, false);
