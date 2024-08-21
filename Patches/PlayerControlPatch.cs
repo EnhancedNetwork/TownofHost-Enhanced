@@ -1877,6 +1877,7 @@ class PlayerControlSetRolePatch
         // canOverrideRole = true; /* set this to true no matter the case */
         if (GameStates.IsHideNSeek || __instance == null) return true;
         if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
+        canOverrideRole = true;
 
         var target = __instance;
         var targetName = __instance.GetNameWithRole().RemoveHtmlTags();

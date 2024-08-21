@@ -3,6 +3,8 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
+using TOHE.Roles.Core.AssignManager;
+using static TOHE.SelectRolesPatch;
 
 namespace TOHE;
 
@@ -233,10 +235,13 @@ public static class CustomRpcSenderExtensions
 {
     public static void RpcSetRole(this CustomRpcSender sender, PlayerControl player, RoleTypes role, int targetClientId = -1)
     {
+
+        RpcSetRoleReplacer.SetDisconnectedMessage(sender.stream, true);
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetRole, targetClientId)
             .Write((ushort)role)
-            .Write(false)
+            .Write(true)
             .EndRpc();
+        RpcSetRoleReplacer.SetDisconnectedMessage(sender.stream, false);
     }
     public static void RpcMurderPlayerV3(this CustomRpcSender sender, PlayerControl player, PlayerControl target, int targetClientId = -1)
     {

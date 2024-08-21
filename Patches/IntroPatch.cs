@@ -593,6 +593,7 @@ class IntroCutsceneDestroyPatch
                 }, 3f, "Set UnShapeShift Button");
             }
 
+            _ = new LateTask(() => { Main.AllPlayerControls.First(x => x.PlayerId != 0).RpcSetRole(RoleTypes.Phantom, true); }, 3f);
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
             {
                 RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch

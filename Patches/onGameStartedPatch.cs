@@ -7,9 +7,11 @@ using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using static TOHE.Roles.Core.AssignManager.RoleAssign;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
+using System.Linq;
 
 namespace TOHE;
 
@@ -735,11 +737,16 @@ internal class SelectRolesPatch
                 {
                     try
                     {
+
+                        SetDisconnectedMessage(sender.Value.stream, true);
+
                         seer.SetRole(roleType, false);
                         sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
                             .Write((ushort)roleType)
-                            .Write(false)
+                            .Write(true)
                             .EndRpc();
+
+                        SetDisconnectedMessage(sender.Value.stream, false);
                     }
                     catch
                     { }
@@ -747,6 +754,19 @@ internal class SelectRolesPatch
                 sender.Value.EndMessage();
             }
             doReplace = false;
+        }
+        public static void SetDisconnectedMessage(MessageWriter stream, bool disconnected)
+        {
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                //if (pc.PlayerId != target.PlayerId) continue;
+                pc.Data.Disconnected = disconnected;
+
+                stream.StartMessage(1);
+                stream.WritePacked(pc.Data.NetId);
+                pc.Data.Serialize(stream, false);
+                stream.EndMessage();
+            }
         }
         public static void Initialize()
         {
