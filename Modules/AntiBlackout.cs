@@ -13,7 +13,7 @@ public static class AntiBlackout
     ///<summary>
     /// Check num alive Impostors & Crewmates & NeutralKillers
     ///</summary>
-    public static bool BlackOutIsActive => /*!Options.DisableAntiBlackoutProtects.GetBool() &&*/ CheckBlackOut();
+    public static bool BlackOutIsActive => false; /*!Options.DisableAntiBlackoutProtects.GetBool() && CheckBlackOut();*/
 
     ///<summary>
     /// Count alive players and check black out 
@@ -65,7 +65,7 @@ public static class AntiBlackout
             BlackOutIsActive = numAliveNeutralKillers == 1 && numAliveImpostors == 1 && numAliveCrewmates <= 2;
 
         Logger.Info($" {BlackOutIsActive}", "BlackOut Is Active");
-        return false; //blackout is not needed anymore BlackOutIsActive;
+        return BlackOutIsActive;
     }
 
     public static bool IsCached { get; private set; } = false;
