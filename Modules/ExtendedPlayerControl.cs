@@ -261,7 +261,7 @@ static class ExtendedPlayerControl
     public static void RpcChangeRoleBasis(this PlayerControl player, RoleTypes roleTypes, bool IsDesyncImpostor = false, List<PlayerControl> FellowImps = null) 
     {
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
-        FellowImps = [];
+        FellowImps ??= [];
 
         if (IsDesyncImpostor && roleTypes is RoleTypes.Impostor or RoleTypes.Shapeshifter or RoleTypes.Phantom)
         {
