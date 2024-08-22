@@ -710,7 +710,7 @@ internal class SelectRolesPatch
             }
             else
             {
-                Logger.Fatal($"{seer.GetRealName()}/ {seer.GetCustomRole()} Was desync but cannot get out Rolesmap group", "OnGameStartedPatch.MakeDesyncSender");
+                Logger.Fatal($"seer: {seer.GetRealName()}/ target: {target.GetCustomRole()} Was desync but cannot get out Rolesmap group", "OnGameStartedPatch.MakeDesyncSender");
             }
         }
         foreach (var VTAR in Main.AllPlayerControls) // HOW DESYNC {target} SEE OTHER PEOPLE
@@ -736,7 +736,7 @@ internal class SelectRolesPatch
             }
             else
             {
-                Logger.Fatal($"{target.GetRealName()}/ {target.GetCustomRole()} Was desync but cannot get out Rolesmap group", "OnGameStartedPatch.MakeDesyncSender");
+                Logger.Fatal($" seer: {target.GetRealName()}/ target: {VTAR.GetCustomRole()} Was desync but cannot get out Rolesmap group", "OnGameStartedPatch.MakeDesyncSender");
             }
         }
     }

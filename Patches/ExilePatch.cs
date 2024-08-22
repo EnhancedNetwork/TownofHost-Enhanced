@@ -119,7 +119,7 @@ class ExileControllerWrapUpPatch
             player.ResetKillCooldown();
             player.RpcResetAbilityCooldown();
 
-            player.FixDesyncImpostorRoles(); // Fix Impostor For Desync roles, also doing this once after death dosen't help and has to be done every exile.
+            player.FixDesyncImpostorRoles(); // Fix Impostor For Desync roles
         }
 
         Main.MeetingIsStarted = false;
