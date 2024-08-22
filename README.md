@@ -48,6 +48,7 @@
 > - Provided roles: AntiAdminer, CursedWolf, Workaholic, Greedier (Greedy), DarkHide (Stalker)
 > - Reference: Modify game announcement
 > - Ported new UI for settings (for version AU v2024.6.18)
+> - Reference: Role-Basis changer fix
 > 
 ### :star: [TOH:TOR](https://github.com/discus-sions/TownOfHost-TheOtherRoles) :
 > 

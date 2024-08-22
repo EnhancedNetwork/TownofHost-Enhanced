@@ -269,17 +269,21 @@ static class ExtendedPlayerControl
             {
                 if (seer.PlayerId == player.PlayerId) continue;
                 RoleTypes Typa = RoleTypes.Scientist;
-                RoleTypes TypaTwo = RoleTypes.Scientist;
+                RoleTypes Typatwo = RoleTypes.Scientist;
 
                 if (seer.GetCustomRole() is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE) Typa = RoleTypes.Noisemaker;
                 else if (FellowImps.Contains(seer) && seer.HasKillButton())
                 {
                     Typa = seer.GetCustomRole().GetVNRole().GetRoleTypes();
-                    TypaTwo = seer.GetCustomRole().GetVNRole().GetRoleTypes(); 
+                    Typatwo = seer.GetCustomRole().GetVNRole().GetRoleTypes(); 
                 }
-                
-                player.RpcSetRoleDesync(Typa, true, seer.GetClientId());
-                seer.RpcSetRoleDesync(TypaTwo, true, player.GetClientId());
+                else if (!seer.HasKillButton())
+                {
+                    Typatwo = roleTypes;
+                }
+
+                seer.RpcSetRoleDesync(Typa, true, player.GetClientId());
+                player.RpcSetRoleDesync(Typatwo, true, seer.GetClientId());
             }
             player.RpcSetRoleDesync(roleTypes, true, player.GetClientId());
         }

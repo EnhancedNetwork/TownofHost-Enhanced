@@ -701,7 +701,7 @@ internal class SelectRolesPatch
                     }
 
 
-                    Logger.Info($"seer: {seer.GetCustomRole()} target: {target.GetCustomRole()} , Roletype {roleType}", "Desync Neutral Roles [FOR OTHERS]");
+                    Logger.Info($"seer: {seer.GetCustomRole()} target: {target.GetCustomRole()} , Roletype {roleType}", "Desync Neutral Roles [FOR SELF]");
                     var sender = senders[target.PlayerId];
                     sender.RpcSetRole(seer, roleType, target.GetClientId());
                 }
@@ -727,7 +727,7 @@ internal class SelectRolesPatch
                     }
 
 
-                    Logger.Info($"seer: {target.GetCustomRole()} target: {VTAR.GetCustomRole()} , Roletype {roleType}", "Desync Neutral Roles [FOR SELF]");
+                    Logger.Info($"seer: {target.GetCustomRole()} target: {VTAR.GetCustomRole()} , Roletype {roleType}", "Desync Neutral Roles [FOR OTHERS]");
                     var sender = senders[VTAR.PlayerId];
                     sender.RpcSetRole(target, roleType, VTAR.GetClientId());
                 }
