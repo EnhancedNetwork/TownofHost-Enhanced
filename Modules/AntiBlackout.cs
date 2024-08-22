@@ -254,7 +254,7 @@ public static class AntiBlackout
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class ReassignImpostorPatch
 {
-    public static void Postfix(PlayerControl __instance)
+    /*public static void Postfix(PlayerControl __instance)
     {
         if (!AmongUsClient.Instance.AmHost || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()) return;
 
@@ -264,13 +264,20 @@ public static class ReassignImpostorPatch
         {
             Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
         }
-    }
+    }*/ // If this part is needed, then it would have to be rpcsetrole and I'd try to avoid that cuz it's very goofy, so hopefully it is not.
 
     public static void FixDesyncImpostorRoles(this PlayerControl __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()
+        if (!AmongUsClient.Instance.AmHost || __instance.IsAlive() || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()
             && (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(__instance.PlayerId, out var role) || !role.IsDesyncRole() || !role.IsImpostor())) return;
 
+        foreach (var Killer in Main.AllPlayerControls.Where(x => x.HasKillButton() && x != __instance))
+        {
+            Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
+        }
+    }
+    public static void FixDesyncImpostorRolesBYPASS(this PlayerControl __instance) // Completely skips all related checks and does it anyways
+    {
         foreach (var Killer in Main.AllPlayerControls.Where(x => x.HasKillButton() && x != __instance))
         {
             Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());

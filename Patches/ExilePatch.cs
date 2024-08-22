@@ -73,10 +73,11 @@ class ExileControllerWrapUpPatch
         if (CLThingy && exiled != null)
         {
             // Reset player cam for exiled desync impostor
-           //if (exiled.Object.HasDesyncRole())
-           // {
-           //     exiled.Object?.ResetPlayerCam(1f);
-           // }
+           if (exiled.Object.HasDesyncRole())
+            {
+                //exiled.Object?.ResetPlayerCam(1f);
+                exiled.Object.FixDesyncImpostorRolesBYPASS();
+           }
 
             exiled.IsDead = true;
             exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
