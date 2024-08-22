@@ -397,16 +397,19 @@ internal class SelectRolesPatch
             {
                 if (pc == null) continue;
                 var realrole = role;
-                if (role.IsDesyncRole()) realrole = CustomRoles.Crewmate;
+                if (role.IsDesyncRole())
+                {
+                    realrole = CustomRoles.Crewmate;
+                    RpcSetRoleReplacer.DesyncPlayers.Add(pc, role);
+                }
 
-                if (role.IsDesyncRole()) RpcSetRoleReplacer.DesyncPlayers.Add(pc, role);
                 RpcSetRoleReplacer.StoragedData.Add(pc, realrole.GetRoleTypes());
 
                 Logger.Warn($"Set original role type => {pc.GetRealName()}: {role} => {role.GetRoleTypes()}", "Override Role Select");
             }
 
             // Set RoleType by "RpcSetRole"
-            RpcSetRoleReplacer.Release(); //Write RpcSetRole for all players
+            RpcSetRoleReplacer.Release(senders, rolesMap); //Write RpcSetRole for all players
             RpcSetRoleReplacer.senders.Do(kvp => kvp.Value.SendMessage());
 
             // Delete unwanted objects
@@ -682,29 +685,58 @@ internal class SelectRolesPatch
 
         Logger.Info($"Registered Role: {player?.Data?.PlayerName} => {role} : RoleType for self => {selfRole}, for others => {othersRole}", "AssignDesyncRoles");
     }
-    private static void MakeDesyncSender(Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), RoleTypes> rolesMap)
+    private static void MakeDesyncSender(PlayerControl target, Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), RoleTypes> rolesMap)
     {
-        foreach (var seer in Main.AllPlayerControls)
+        foreach (var seer in Main.AllPlayerControls) // HOW OTHER PEOPLE SEE DESYNC {target}
         {
-            foreach (var target in Main.AllPlayerControls)
+            if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var roleType))
             {
-                if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var roleType))
+                try
                 {
-                    try
+                    // Change Scientist to Noisemaker when role is desync and target have Noisemaker role
+                    if (roleType is RoleTypes.Scientist && RoleAssign.RoleResult.Any(x => x.Key.PlayerId == seer.PlayerId && x.Value is CustomRoles.NoisemakerTOHE or CustomRoles.Noisemaker))
                     {
-                        // Change Scientist to Noisemaker when role is desync and target have Noisemaker role
-                        if (roleType is RoleTypes.Scientist && RoleAssign.RoleResult.Any(x => x.Key.PlayerId == seer.PlayerId && x.Value is CustomRoles.NoisemakerTOHE or CustomRoles.Noisemaker))
-                        {
-                            Logger.Info($"seer: {seer.PlayerId}, target: {target.PlayerId}, {roleType} => {RoleTypes.Noisemaker}", "OverrideRoleForDesync");
-                            roleType = RoleTypes.Noisemaker;
-                        }
-
-                        var sender = senders[seer.PlayerId];
-                        sender.RpcSetRole(seer, roleType, target.GetClientId());
+                        Logger.Info($"seer: {seer.PlayerId}, target: {target.PlayerId}, {roleType} => {RoleTypes.Noisemaker}", "OverrideRoleForDesync");
+                        roleType = RoleTypes.Noisemaker;
                     }
-                    catch
-                    { }
+
+
+                    Logger.Info($"seer: {seer.GetCustomRole()} target: {target.GetCustomRole()} , Roletype {roleType}", "Desync Neutral Roles [FOR OTHERS]");
+                    var sender = senders[target.PlayerId];
+                    sender.RpcSetRole(seer, roleType, target.GetClientId());
                 }
+                catch
+                { }
+            }
+            else
+            {
+                Logger.Fatal($"{seer.GetRealName()}/ {seer.GetCustomRole()} Was desync but cannot get out Rolesmap group", "OnGameStartedPatch.MakeDesyncSender");
+            }
+        }
+        foreach (var VTAR in Main.AllPlayerControls) // HOW DESYNC {target} SEE OTHER PEOPLE
+        {
+            if (rolesMap.TryGetValue((target.PlayerId, VTAR.PlayerId), out var roleType))
+            {
+                try
+                {
+                    // Change Scientist to Noisemaker when role is desync and target have Noisemaker role
+                    if (roleType is RoleTypes.Scientist && RoleAssign.RoleResult.Any(x => x.Key.PlayerId == VTAR.PlayerId && x.Value is CustomRoles.NoisemakerTOHE or CustomRoles.Noisemaker))
+                    {
+                        Logger.Info($"seer: {target.PlayerId}, target: {VTAR.PlayerId}, {roleType} => {RoleTypes.Noisemaker}", "OverrideRoleForDesync");
+                        roleType = RoleTypes.Noisemaker;
+                    }
+
+
+                    Logger.Info($"seer: {target.GetCustomRole()} target: {VTAR.GetCustomRole()} , Roletype {roleType}", "Desync Neutral Roles [FOR SELF]");
+                    var sender = senders[VTAR.PlayerId];
+                    sender.RpcSetRole(target, roleType, VTAR.GetClientId());
+                }
+                catch
+                { }
+            }
+            else
+            {
+                Logger.Fatal($"{target.GetRealName()}/ {target.GetCustomRole()} Was desync but cannot get out Rolesmap group", "OnGameStartedPatch.MakeDesyncSender");
             }
         }
     }
@@ -730,7 +762,7 @@ internal class SelectRolesPatch
         {
             return !doReplace;
         }
-        public static void Release()
+        public static void Release(Dictionary<byte, CustomRpcSender> senderDY, Dictionary<(byte, byte), RoleTypes> RolesMapDY)
         {
             foreach (var sender in senders)
             {
@@ -743,6 +775,7 @@ internal class SelectRolesPatch
                     try
                     {
                         SetDisconnectedMessage(sender.Value.stream, true);
+
                         if (!DesyncPlayers.TryGetValue(seer, out var role) || role.IsCrewmate())
                         {
                             seer.SetRole(roleType, true);
@@ -752,9 +785,8 @@ internal class SelectRolesPatch
                                 .EndRpc();
                         }
                         else
-                        { // DESYNC NEUTRALS TEMPORALILY BROKEN, I need to fix it. 
-                            throw new NotImplementedException();
-                            // seer.RpcChangeRoleBasis(role.GetRoleTypes(), true);
+                        {
+                            MakeDesyncSender(seer, senderDY, RolesMapDY);
                         }
 
                         SetDisconnectedMessage(sender.Value.stream, false);

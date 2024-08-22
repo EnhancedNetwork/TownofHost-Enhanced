@@ -603,7 +603,7 @@ class IntroCutsceneDestroyPatch
                     DYpc.RpcChangeRoleBasis(DYpc.GetCustomRole().GetRoleTypes(), true);
                 }
 
-            }, 1f, "Assign Impostor desync roles for crewmates");
+            }, 0.1f, "Assign Impostor desync roles for crewmates");
             foreach (var pc in Main.AllPlayerControls)
             {
                 pc.MarkDirtySettings();
