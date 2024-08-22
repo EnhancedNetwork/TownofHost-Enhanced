@@ -681,13 +681,13 @@ internal class SelectRolesPatch
             DestroyableSingleton<RoleManager>.Instance.SetRole(player, BaseRole);
             DestroyableSingleton<RoleBehaviour>.Instance.CanBeKilled = true;
         }
-        player.Data.IsDead = true;
+       // player.Data.IsDead = true;
 
         Logger.Info($"Registered Role: {player?.Data?.PlayerName} => {role} : RoleType for self => {selfRole}, for others => {othersRole}", "AssignDesyncRoles");
     }
     private static void MakeDesyncSender(PlayerControl target, Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), RoleTypes> rolesMap)
     {
-        foreach (var seer in Main.AllPlayerControls) // HOW OTHER PEOPLE SEE DESYNC {target}
+        foreach (var seer in Main.AllPlayerControls) // HOW {target} see other people
         {
             if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var roleType))
             {
@@ -713,7 +713,7 @@ internal class SelectRolesPatch
                 Logger.Fatal($"seer: {seer.GetRealName()}/ target: {target.GetCustomRole()} Was desync but cannot get out Rolesmap group", "OnGameStartedPatch.MakeDesyncSender");
             }
         }
-        foreach (var VTAR in Main.AllPlayerControls) // HOW DESYNC {target} SEE OTHER PEOPLE
+        foreach (var VTAR in Main.AllPlayerControls) // HOW other people see {target}
         {
             if (rolesMap.TryGetValue((target.PlayerId, VTAR.PlayerId), out var roleType))
             {

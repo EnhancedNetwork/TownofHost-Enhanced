@@ -82,6 +82,12 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         var state = Main.PlayerStates[player.PlayerId];
         opt.BlackOut(state.IsBlackOut || CheckStartGameCREW);
 
+        AURoleOptions.EmergencyMeetings = 0;
+        //if (!Main.introDestroyed) // If someone calls emergency meeting before host is loaded, the game goes KABOOM ??
+        //{
+        //    AURoleOptions.EmergencyMeetings = 0;
+        //} NVM DIDN'T WORK
+
         CustomRoles role = player.GetCustomRole();
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {

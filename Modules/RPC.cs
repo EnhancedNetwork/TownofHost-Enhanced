@@ -185,6 +185,11 @@ internal class RPCHandlerPatch
             case RpcCalls.StartMeeting:
                 var p = Utils.GetPlayerById(subReader.ReadByte());
                 Logger.Info($"{__instance.GetNameWithRole()} => {p?.GetNameWithRole() ?? "null"}", "StartMeeting");
+
+                if (!Main.GameIsLoaded)
+                {
+                    return false;
+                }
                 break;
         }
         if (!__instance.OwnedByHost() &&

@@ -275,7 +275,7 @@ static class ExtendedPlayerControl
                 else if (FellowImps.Contains(seer) && seer.HasKillButton())
                 {
                     Typa = seer.GetCustomRole().GetVNRole().GetRoleTypes();
-                    TypaTwo = seer.GetCustomRole().GetVNRole().GetRoleTypes(); ;
+                    TypaTwo = seer.GetCustomRole().GetVNRole().GetRoleTypes(); 
                 }
                 
                 player.RpcSetRoleDesync(Typa, true, seer.GetClientId());
