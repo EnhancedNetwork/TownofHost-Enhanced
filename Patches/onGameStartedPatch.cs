@@ -425,7 +425,7 @@ internal class SelectRolesPatch
             }
             static bool CheckSeerPassive(CustomRoles role)
             {
-                return role.GetVNRole() is not CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
+                return role.GetVNRole() is not CustomRoles.Impostor and not CustomRoles.Shapeshifter and not CustomRoles.Phantom;
             }
 
             // Set RoleType by "RpcSetRole"
