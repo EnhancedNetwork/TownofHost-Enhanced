@@ -280,7 +280,7 @@ public static class ReassignImpostorPatch
         Logger.Info($"I am running for {__instance.GetRealName()}/{__instance.GetCustomRole()}", "DesyncIMPFIX");
 
 
-        //Toh-y somehow works, so it would be better to get a similar, and this is a simple temp-fix that works
+        //Toh-y somehow works, so it would be better to get a similar fix, and this is a simple temp-fix that works
         __instance.ReactorFlash();
         RoleTypes prevtype = __instance.Data.Role.Role;
         __instance.RpcSetRoleDesync(RoleTypes.Crewmate, true, __instance.GetClientId());
