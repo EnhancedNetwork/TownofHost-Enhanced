@@ -118,15 +118,7 @@ class ExileControllerWrapUpPatch
             // Reset Kill/Ability cooldown
             player.ResetKillCooldown();
             player.RpcResetAbilityCooldown();
-
-            if (ReassignImpostorPatch.DesyncAlive.TryGetValue(player.PlayerId, out var Typa))
-            {
-                player.RpcSetRoleDesync(Typa, player.GetClientId());
-            }
-            //player.FixDesyncImpostorRoles(); // Fix Impostor For Desync roles
         }
-        ReassignImpostorPatch.DesyncAlive.Clear();
-        //exiled?.Object?.FixDesyncImpostorRoles(true);
 
         Main.MeetingIsStarted = false;
         Main.MeetingsPassed++;
