@@ -188,13 +188,6 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("Message.ApocalypseInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
                     break;
 
-                case "/revive":
-                    if (args.Length != 2 || !int.TryParse(args[1], out int identity)) break;
-
-                    Utils.GetPlayerById(identity).RpcRevive(RoleTypes.Crewmate);
-
-
-                break;
 
                 case "/rn":
                 case "/rename":
