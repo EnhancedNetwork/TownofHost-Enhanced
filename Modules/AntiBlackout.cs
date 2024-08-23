@@ -245,7 +245,7 @@ public static class AntiBlackout
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
-        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.HasKillButton()).ToList();
+        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != ExilePlayerId && x.HasKillButton()).ToList();
 
         foreach (var pc in Main.AllPlayerControls.Where(x => !x.Data.Disconnected))
         {
