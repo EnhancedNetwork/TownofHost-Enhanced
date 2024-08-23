@@ -252,6 +252,18 @@ static class ExtendedPlayerControl
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
+    public static void RpcRevive(this PlayerControl player, RoleTypes roleTypes, bool IsDesyncImpostor = false, List<PlayerControl> FellowImps = null)
+    {
+        if (player.Data.IsDead == false || roleTypes is RoleTypes.GuardianAngel or RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
+        {
+            Logger.Warn($"Invalid Revive for {player.GetRealName()} of roletype: {roleTypes} / Player was already alive? {!player.Data.IsDead}", "RpcRevive");
+            return;
+        }
+
+        player.RpcChangeRoleBasis(roleTypes, IsDesyncImpostor, FellowImps);
+        Main.PlayerStates[player.PlayerId].IsDead = false;
+    }
+
     /// <summary>
     /// Changes the Role Basis of player during the game.
     /// </summary>

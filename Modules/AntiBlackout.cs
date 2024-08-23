@@ -93,6 +93,11 @@ public static class AntiBlackout
     }
     public static void RestoreIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            pc.FixDesyncImpostorRoles();
+        }
+
         logger.Info($"RestoreIsDead is called from {callerMethodName}");
         foreach (var info in GameData.Instance.AllPlayers)
         {
@@ -251,7 +256,6 @@ public static class AntiBlackout
     public static bool ShowExiledInfo = false;
     public static string StoreExiledMessage = "";
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class ReassignImpostorPatch
 {
     /*public static void Postfix(PlayerControl __instance)
@@ -271,16 +275,38 @@ public static class ReassignImpostorPatch
         if (!AmongUsClient.Instance.AmHost || __instance.IsAlive() || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()
             && (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(__instance.PlayerId, out var role) || !role.IsDesyncRole() || !role.IsImpostor())) return;
 
-        foreach (var Killer in Main.AllPlayerControls.Where(x => x.HasKillButton() && x != __instance))
+        Logger.Info($"I am running for {__instance.GetRealName()}/{__instance.GetCustomRole()}", "DesyncIMPFIX");
+
+
+        //Toh-y somehow works, so it would be better to get a similar, and this is a simple temp-fix that works
+        __instance.ReactorFlash();
+        RoleTypes prevtype = __instance.Data.Role.Role;
+        __instance.RpcSetRoleDesync(RoleTypes.Crewmate, true, __instance.GetClientId());
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.Exiled, SendOption.None, __instance.GetClientId());
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        __instance.RpcSetRoleDesync(prevtype, true, __instance.GetClientId());
+
+        /*
+        foreach (var Killer in Main.AllPlayerControls.Where(x => x != __instance))
         {
             Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
-        }
+        }*/ // dosen't work, will have to change it to be similar to toh-y but not change to crewmate ghost.
     }
     public static void FixDesyncImpostorRolesBYPASS(this PlayerControl __instance) // Completely skips all related checks and does it anyways
     {
+
+        //Toh-y somehow works, so it would be better to get smt similar, and this is a simple temp-fix that works
+        __instance.ReactorFlash();
+        RoleTypes prevtype = __instance.Data.Role.Role;
+        __instance.RpcSetRoleDesync(RoleTypes.Crewmate, true, __instance.GetClientId());
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.Exiled, SendOption.None, __instance.GetClientId());
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        __instance.RpcSetRoleDesync(prevtype, true, __instance.GetClientId());
+
+        /*
         foreach (var Killer in Main.AllPlayerControls.Where(x => x.HasKillButton() && x != __instance))
         {
             Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
-        }
+        }*/
     }
 }
