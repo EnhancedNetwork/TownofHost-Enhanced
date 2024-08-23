@@ -14,6 +14,7 @@ public static class AntiBlackout
     /// Check num alive Impostors & Crewmates & NeutralKillers
     ///</summary>
     public static bool BlackOutIsActive => false; /*!Options.DisableAntiBlackoutProtects.GetBool() && CheckBlackOut();*/
+    public static int ExilePlayerId = -1;
 
     ///<summary>
     /// Count alive players and check black out 
@@ -74,6 +75,7 @@ public static class AntiBlackout
 
     public static void SetIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
+        SetRole();
         logger.Info($"SetIsDead is called from {callerMethodName}");
         if (IsCached)
         {
@@ -239,6 +241,31 @@ public static class AntiBlackout
             Logger.Error($"{error}", "AntiBlackout.AfterMeetingTasks");
         }
     }
+    public static void SetRole()
+    {
+        if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
+
+        PlayerControl OurImp = Main.AllAlivePlayerControls.First(pc => pc.PlayerId != ExilePlayerId && pc.HasKillButton());
+
+        foreach (var pc in Main.AllPlayerControls.Where(x => !x.Data.Disconnected))
+        {
+            if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
+            if (pc.IsAlive() && pc.GetCustomRole().IsDesyncRole()) continue;
+
+            
+            OurImp.RpcSetRoleDesync(OurImp.GetCustomRole().GetVNRole().GetRoleTypes(), pc.GetClientId());
+            
+            foreach (var dead in Main.AllPlayerControls.Where(x => !x.Data.Disconnected && x.Data.IsDead))
+            {
+                RoleTypes typa = RoleTypes.CrewmateGhost;
+                if (dead.GetCustomRole().IsGhostRole()) typa = RoleTypes.GuardianAngel;
+
+                dead.RpcSetRoleDesync(typa, pc.GetClientId());
+            }
+            Logger.Info($"SetDummyImpostor player: {pc?.name}", "AntiBlackout");
+        }
+        ExilePlayerId = -1;
+    }
     public static void Reset()
     {
         logger.Info("==Reset==");
@@ -251,28 +278,4 @@ public static class AntiBlackout
 
     public static bool ShowExiledInfo = false;
     public static string StoreExiledMessage = "";
-}
-public static class ReassignImpostorPatch
-{
-    public readonly static Dictionary<byte, RoleTypes> DesyncAlive = [];
-    public static void FixDesyncImpostorRoles(this PlayerControl __instance, bool skipCheck = false)
-    {
-        //everytime I fix it, it decidec to break again, how fun.-.
-
-        if (__instance.OwnedByHost()) return;
-        if (AmongUsClient.Instance.AmHost && skipCheck) goto fixrole;
-        if (!AmongUsClient.Instance.AmHost || __instance.IsAlive() || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()
-                  && (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(__instance.PlayerId, out var role) || !role.IsDesyncRole() || !role.IsImpostor())) return;
-        fixrole:
-
-        Logger.Info($"I am running for {__instance.GetRealName()}/{__instance.GetCustomRole()}", "DesyncIMPFIX");
-
-        DesyncAlive[__instance.PlayerId] = __instance.GetCustomRole().GetVNRole().GetRoleTypes();
-        __instance.RpcSetRoleDesync(RoleTypes.Impostor, __instance.GetClientId());
-
-        foreach (var Killer in Main.AllAlivePlayerControls.Where(x => x != __instance && x.HasKillButton()))
-        {
-            Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), __instance.GetClientId());
-        } // this is supposed to be a fix for them to see phantom players now, but I think it dosen't work lmfao
-    }
 }
