@@ -230,21 +230,3 @@ public class CustomRpcSender
         Finished, //送信後 何もできない
     }
 }
-
-public static class CustomRpcSenderExtensions
-{
-    public static void RpcSetRole(this CustomRpcSender sender, PlayerControl player, RoleTypes role, int targetClientId = -1)
-    {
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetRole, targetClientId)
-            .Write((ushort)role)
-            .Write(true)
-            .EndRpc();
-    }
-    public static void RpcMurderPlayerV3(this CustomRpcSender sender, PlayerControl player, PlayerControl target, int targetClientId = -1)
-    {
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer, targetClientId)
-            .WriteNetObject(target)
-            .Write((int)ExtendedPlayerControl.ResultFlags)
-            .EndRpc();
-    }
-}
