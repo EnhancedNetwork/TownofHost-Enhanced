@@ -1963,7 +1963,6 @@ class PlayerControlSetRolePatch
             {
                 Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");
             }
-            _ = new LateTask(() => { Main.AllPlayerControls.Do(x => Logger.Info($"{x.GetRealName()}/{x.Data.Role.GetType().Name}/{x.Data.Role.Role}", "Test All Roletypes, and Roleclass")); }, 3f);
         }
         catch (Exception e)
         {
