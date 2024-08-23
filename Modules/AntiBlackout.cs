@@ -262,7 +262,6 @@ public static class AntiBlackout
 
                 dead.RpcSetRoleDesync(typa, pc.GetClientId());
             }
-            Logger.Info($"SetDummyImpostor player: {pc?.name}", "AntiBlackout");
         }
         ExilePlayerId = -1;
     }
