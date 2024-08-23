@@ -14,7 +14,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Mage : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 29600;
+    private const int Id = 29520;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Mage);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
