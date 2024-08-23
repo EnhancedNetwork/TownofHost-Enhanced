@@ -53,13 +53,13 @@ class Logger
         if (!IsEnable || DisableList.Contains(tag)) return;
         var logger = Main.Logger;
 
-        if (SendToGameList.Contains(tag))
+        if (SendToGameList.Contains(tag) || isAlsoInGame)
         {
             SendInGame($"[{tag}]{text}");
         }
 
         string log_text;
-        if (level is LogLevel.Error or LogLevel.Fatal && !multiLine && !NowDetailedErrorLog.Contains(tag))
+        if (level is LogLevel.Error or LogLevel.Fatal or LogLevel.Warning && !multiLine && !NowDetailedErrorLog.Contains(tag))
         {
             string t = DateTime.Now.ToString("HH:mm:ss");
             StackFrame stack = new(2);
