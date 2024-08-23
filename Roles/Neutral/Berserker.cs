@@ -79,6 +79,7 @@ internal class Berserker : RoleBase
     }
     public override void Add(byte playerId)
     {
+        Main.AllPlayerKillCooldown[playerId] = BerserkerKillCooldown.GetFloat();
         BerserkerKillMax[playerId] = 0;
         PlayerIds.Add(playerId);
     }
@@ -92,8 +93,6 @@ internal class Berserker : RoleBase
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) 
         => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
     public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker).ShadeColor(0.25f), BerserkerKillMax.TryGetValue(playerId, out var x) ? $"({x}/{BerserkerMax.GetInt()})" : "Invalid");
-    public override void SetKillCooldown(byte id) 
-        => Main.AllPlayerKillCooldown[id] = BerserkerKillCooldown.GetFloat();
     public override bool CanUseImpostorVentButton(PlayerControl pc) => BerserkerCanVent.GetBool();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) 
         => opt.SetVision(BerserkerHasImpostorVision.GetBool());
