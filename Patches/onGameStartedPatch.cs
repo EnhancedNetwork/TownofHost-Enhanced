@@ -385,33 +385,33 @@ internal class SelectRolesPatch
                 RoleAssign.RoleResult[blotnik].GetStaticRoleClass().SetDesyncImpostorBuddies(ref DesyncImpTeammates, blotnik);
             }
 
-            foreach (var (pc, role) in RoleAssign.RoleResult)
+            foreach (var (target, role) in RoleAssign.RoleResult)
             {
-                if (pc == null) continue;
+                if (target == null) continue;
 
 
                 foreach (var seer in Main.AllPlayerControls)
                 {
                     CustomRoles ResultRole = RoleAssign.RoleResult[seer];
 
-                    bool isSelf = seer == pc;
+                    bool isSelf = seer == target;
                     RoleTypes typa = role.GetRoleTypes();
 
                     if (role is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE) typa = RoleTypes.Noisemaker;
 
                     //Desynced Imps see others as scientist if they are not a teammate
                     else if (!isSelf && ResultRole.IsDesyncRole() && !ResultRole.IsCrewmate() &&
-                        (!DesyncImpTeammates.TryGetValue(seer, out var teammates) || !teammates.Contains(pc))) typa = RoleTypes.Scientist;
+                        (!DesyncImpTeammates.TryGetValue(seer, out var teammates) || !teammates.Contains(target))) typa = RoleTypes.Scientist;
 
                     //Other see the desynced-imp target as scientist if they are not a teammate or not an crew
                     else if (!isSelf && role.IsDesyncRole() && !role.IsCrewmate() && !CheckSeerPassive(ResultRole) &&
-                        (!DesyncImpTeammates.TryGetValue(pc, out var bracy) || !bracy.Contains(seer))) typa = RoleTypes.Scientist;
+                        (!DesyncImpTeammates.TryGetValue(target, out var bracy) || !bracy.Contains(seer))) typa = RoleTypes.Scientist;
 
                     //Crewmates are assigned later
                     else if (role.IsCrewmate() && role.IsDesyncRole()) typa = RoleTypes.Crewmate;
 
-                    Logger.Warn($"Set Role for Target: {pc.GetRealName(clientData: true)}|{role} Seer: {seer.GetRealName(clientData: true)}|{ResultRole} of RoleType: {typa}", "SetStoragedPlayerData");
-                    RpcSetRoleReplacer.StoragedPlayerRoleData[(pc, seer)] = typa;
+                    Logger.Warn($"Set Role for Target: {target.GetRealName(clientData: true)}|{role} Seer: {seer.GetRealName(clientData: true)}|{ResultRole} of RoleType: {typa}", "SetStoragedPlayerData");
+                    RpcSetRoleReplacer.StoragedPlayerRoleData[(target, seer)] = typa;
                     
 
                 }
