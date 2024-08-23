@@ -262,6 +262,7 @@ static class ExtendedPlayerControl
 
         player.RpcChangeRoleBasis(roleTypes, IsDesyncImpostor, FellowImps);
         Main.PlayerStates[player.PlayerId].IsDead = false;
+        player.SyncGeneralOptions();
     }
 
     /// <summary>

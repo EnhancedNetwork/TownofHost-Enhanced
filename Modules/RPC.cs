@@ -15,7 +15,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 197/255 USED
+enum CustomRPC : byte // 198/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -51,6 +51,7 @@ enum CustomRPC : byte // 197/255 USED
     ShowChat,
     SyncShieldPersonDiedFirst,
     RemoveSubRole,
+    SyncGeneralOptions,
 
     //Roles 
     SetBountyTarget,
@@ -515,6 +516,29 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncPsychicRedList:
                 Psychic.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SyncGeneralOptions:
+                byte paciefID = reader.ReadByte();
+                //playerstate:
+                {
+                    CustomRoles rola = (CustomRoles)reader.ReadPackedInt32();
+                    bool isdead = reader.ReadBoolean();
+                    bool IsDC = reader.ReadBoolean();
+                    PlayerState.DeathReason drip = (PlayerState.DeathReason)reader.ReadPackedInt32();
+                    if (Main.PlayerStates.ContainsKey(paciefID))
+                    {
+                        var state = Main.PlayerStates[paciefID];
+                        state.MainRole = rola;
+                        state.IsDead = isdead;
+                        state.Disconnected = isdead;
+                        state.deathReason = drip;
+                    }
+                }
+                float Killcd = reader.ReadSingle();
+                float speed = reader.ReadSingle();
+
+                Main.AllPlayerKillCooldown[paciefID] = Killcd;
+                Main.AllPlayerSpeed[paciefID] = speed;
                 break;
             case CustomRPC.SyncPlayerSetting:
                 byte playerid = reader.ReadByte();
