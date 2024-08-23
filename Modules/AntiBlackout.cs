@@ -93,10 +93,6 @@ public static class AntiBlackout
     }
     public static void RestoreIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
-        foreach (var pc in Main.AllPlayerControls)
-        {
-            pc.FixDesyncImpostorRoles();
-        }
 
         logger.Info($"RestoreIsDead is called from {callerMethodName}");
         foreach (var info in GameData.Instance.AllPlayers)
@@ -258,8 +254,11 @@ public static class AntiBlackout
 }
 public static class ReassignImpostorPatch
 {
+    public readonly static Dictionary<byte, RoleTypes> DesyncAlive = [];
     public static void FixDesyncImpostorRoles(this PlayerControl __instance, bool skipCheck = false)
     {
+        //everytime I fix it, it decidec to break again, how fun.-.
+
         if (__instance.OwnedByHost()) return;
         if (AmongUsClient.Instance.AmHost && skipCheck) goto fixrole;
         if (!AmongUsClient.Instance.AmHost || __instance.IsAlive() || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()
@@ -268,20 +267,12 @@ public static class ReassignImpostorPatch
 
         Logger.Info($"I am running for {__instance.GetRealName()}/{__instance.GetCustomRole()}", "DesyncIMPFIX");
 
-        //okay idfk how toh-y made it work, feel free to make it like that, cuz idk
+        DesyncAlive[__instance.PlayerId] = __instance.GetCustomRole().GetVNRole().GetRoleTypes();
+        __instance.RpcSetRoleDesync(RoleTypes.Impostor, __instance.GetClientId());
 
-        //Toh-y somehow works, so it would be better to get a similar fix, and this is a simple temp-fix that works
-        __instance.ReactorFlash();
-        RoleTypes prevtype = __instance.Data.Role.Role;
-        __instance.RpcSetRoleDesync(RoleTypes.Crewmate, __instance.GetClientId());
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.Exiled, SendOption.None, __instance.GetClientId());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-        __instance.RpcSetRoleDesync(prevtype, __instance.GetClientId());
-
-        /*
         foreach (var Killer in Main.AllAlivePlayerControls.Where(x => x != __instance && x.HasKillButton()))
         {
-            Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
-        }*/ // dosen't work, will have to change it to be similar to toh-y but not change to crewmate ghost.
+            Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), __instance.GetClientId());
+        } // this is supposed to be a fix for them to see phantom players now, but I think it dosen't work lmfao
     }
 }

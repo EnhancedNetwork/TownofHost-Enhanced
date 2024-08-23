@@ -615,7 +615,6 @@ class IntroCutsceneDestroyPatch
                 {
                     DYpc.RpcChangeRoleBasis(DYpc.GetCustomRole().GetRoleTypes(), true);
                 }
-
             }, 0.1f, "Assign Impostor desync roles for crewmates"); 
             foreach (var pc in Main.AllPlayerControls)
             {
