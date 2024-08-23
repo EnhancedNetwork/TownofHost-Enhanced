@@ -78,9 +78,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         if (GameStates.IsNormalGame) AURoleOptions.SetOpt(opt);
         else if (GameStates.IsHideNSeek) return opt;
 
-        var CheckStartGameCREW = player.GetCustomRole().IsDesyncRole() && player.GetCustomRole().IsCrewmate() && !Main.introDestroyed;
         var state = Main.PlayerStates[player.PlayerId];
-        opt.BlackOut(state.IsBlackOut || CheckStartGameCREW);
+        opt.BlackOut(state.IsBlackOut);
 
         CustomRoles role = player.GetCustomRole();
         if (Options.CurrentGameMode == CustomGameMode.FFA)

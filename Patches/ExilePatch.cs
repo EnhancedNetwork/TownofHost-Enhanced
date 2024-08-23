@@ -121,7 +121,7 @@ class ExileControllerWrapUpPatch
 
             //player.FixDesyncImpostorRoles(); // Fix Impostor For Desync roles
         }
-        exiled?.Object?.FixDesyncImpostorRolesBYPASS();
+        exiled?.Object?.FixDesyncImpostorRoles(true);
 
         Main.MeetingIsStarted = false;
         Main.MeetingsPassed++;

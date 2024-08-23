@@ -270,10 +270,12 @@ public static class ReassignImpostorPatch
         }
     }*/ // If this part is needed, then it would have to be rpcsetrole and I'd try to avoid that cuz it's very goofy, so hopefully it is not.
 
-    public static void FixDesyncImpostorRoles(this PlayerControl __instance)
+    public static void FixDesyncImpostorRoles(this PlayerControl __instance, bool skipCheck = false)
     {
+        if (AmongUsClient.Instance.AmHost && skipCheck) goto fixrole;
         if (!AmongUsClient.Instance.AmHost || __instance.IsAlive() || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()
-            && (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(__instance.PlayerId, out var role) || !role.IsDesyncRole() || !role.IsImpostor())) return;
+                  && (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(__instance.PlayerId, out var role) || !role.IsDesyncRole() || !role.IsImpostor())) return;
+        fixrole:
 
         Logger.Info($"I am running for {__instance.GetRealName()}/{__instance.GetCustomRole()}", "DesyncIMPFIX");
 
@@ -291,22 +293,5 @@ public static class ReassignImpostorPatch
         {
             Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
         }*/ // dosen't work, will have to change it to be similar to toh-y but not change to crewmate ghost.
-    }
-    public static void FixDesyncImpostorRolesBYPASS(this PlayerControl __instance) // Completely skips all related checks and does it anyways
-    {
-
-        //Toh-y somehow works, so it would be better to get smt similar, and this is a simple temp-fix that works
-        __instance.ReactorFlash();
-        RoleTypes prevtype = __instance.Data.Role.Role;
-        __instance.RpcSetRoleDesync(RoleTypes.Crewmate, true, __instance.GetClientId());
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.Exiled, SendOption.None, __instance.GetClientId());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-        __instance.RpcSetRoleDesync(prevtype, true, __instance.GetClientId());
-
-        /*
-        foreach (var Killer in Main.AllPlayerControls.Where(x => x.HasKillButton() && x != __instance))
-        {
-            Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
-        }*/
     }
 }
