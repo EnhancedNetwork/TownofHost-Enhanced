@@ -76,7 +76,7 @@ class ExileControllerWrapUpPatch
            if (exiled.Object.HasDesyncRole())
             {
                 //exiled.Object?.ResetPlayerCam(1f);
-                exiled.Object.FixDesyncImpostorRolesBYPASS();
+              //  exiled.Object.FixDesyncImpostorRolesBYPASS();
            }
 
             exiled.IsDead = true;
@@ -119,7 +119,7 @@ class ExileControllerWrapUpPatch
             player.ResetKillCooldown();
             player.RpcResetAbilityCooldown();
 
-            player.FixDesyncImpostorRoles(); // Fix Impostor For Desync roles
+            //player.FixDesyncImpostorRoles(); // Fix Impostor For Desync roles
         }
 
         Main.MeetingIsStarted = false;

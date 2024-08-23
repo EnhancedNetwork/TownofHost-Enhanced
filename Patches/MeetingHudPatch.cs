@@ -366,6 +366,12 @@ class CheckForEndVotingPatch
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
             Main.LastVotedPlayerInfo = exiledPlayer;
 
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                pc.FixDesyncImpostorRoles();
+            }
+            exiledPlayer?.Object?.FixDesyncImpostorRolesBYPASS();
+
             //RPC
             if (AntiBlackout.BlackOutIsActive)
             {

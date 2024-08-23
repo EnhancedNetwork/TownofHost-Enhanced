@@ -595,17 +595,18 @@ class IntroCutsceneDestroyPatch
                 }, 3f, "Set UnShapeShift Button");
             }
 
-            foreach (var DYpc in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && RpcSetRoleReplacer.DesyncPlayers.TryGetValue(x, out _)))
+
+            /*foreach (var DYpc in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && RpcSetRoleReplacer.DesyncPlayers.TryGetValue(x, out _)))
             {
                 DYpc.RpcChangeRoleBasis(DYpc.GetCustomRole().GetRoleTypes(), true);
-            }
+            }*/
             _ = new LateTask(() => { // try again jsut incase it didn't work the first time
-                foreach (var DYpc in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && RpcSetRoleReplacer.DesyncPlayers.TryGetValue(x, out _)))
+                foreach (var DYpc in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && x.GetCustomRole().IsDesyncRole()))
                 {
                     DYpc.RpcChangeRoleBasis(DYpc.GetCustomRole().GetRoleTypes(), true);
                 }
 
-            }, 3f, "Assign Impostor desync roles for crewmates"); 
+            }, 0.1f, "Assign Impostor desync roles for crewmates"); 
             foreach (var pc in Main.AllPlayerControls)
             {
                 pc.MarkDirtySettings();
