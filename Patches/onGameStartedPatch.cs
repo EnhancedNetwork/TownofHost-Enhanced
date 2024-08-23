@@ -691,7 +691,7 @@ internal class SelectRolesPatch
 
                 if (seer.OwnedByHost())
                 {
-                    target.SetRole(roleType, true);
+                    target.SetRole(roleType);
                     continue;
                 }
                 var sender = senders[seer.PlayerId];
@@ -722,7 +722,7 @@ internal class SelectRolesPatch
 
                     if (pc.OwnedByHost())
                     {
-                        pc.SetRole(roleType, true);
+                        pc.SetRole(roleType);
                     }
 
                     stream.StartMessage(2);

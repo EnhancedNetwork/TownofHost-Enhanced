@@ -1944,7 +1944,7 @@ class PlayerControlSetRolePatch
                 {
                     if (seer == null || target == null) continue;
                     Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
-                    target.RpcSetRoleDesync(role, true, seer.GetClientId());
+                    target.RpcSetRoleDesync(role, seer.GetClientId());
                 }
                 return false;
             }

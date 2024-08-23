@@ -272,10 +272,10 @@ public static class ReassignImpostorPatch
         //Toh-y somehow works, so it would be better to get a similar fix, and this is a simple temp-fix that works
         __instance.ReactorFlash();
         RoleTypes prevtype = __instance.Data.Role.Role;
-        __instance.RpcSetRoleDesync(RoleTypes.Crewmate, true, __instance.GetClientId());
+        __instance.RpcSetRoleDesync(RoleTypes.Crewmate, __instance.GetClientId());
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.Exiled, SendOption.None, __instance.GetClientId());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        __instance.RpcSetRoleDesync(prevtype, true, __instance.GetClientId());
+        __instance.RpcSetRoleDesync(prevtype, __instance.GetClientId());
 
         /*
         foreach (var Killer in Main.AllAlivePlayerControls.Where(x => x != __instance && x.HasKillButton()))

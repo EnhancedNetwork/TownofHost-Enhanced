@@ -19,9 +19,9 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride = false)
+    public static void SetRole(this PlayerControl player, RoleTypes role/*, bool canOverride = false*/)
     {
-        player.StartCoroutine(player.CoSetRole(role, canOverride));
+        player.StartCoroutine(player.CoSetRole(role, true));
     }
 
     public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role)
@@ -295,10 +295,10 @@ static class ExtendedPlayerControl
                     Typatwo = roleTypes;
                 }
 
-                seer.RpcSetRoleDesync(Typa, true, player.GetClientId());
-                player.RpcSetRoleDesync(Typatwo, true, seer.GetClientId());
+                seer.RpcSetRoleDesync(Typa, player.GetClientId());
+                player.RpcSetRoleDesync(Typatwo, seer.GetClientId());
             }
-            player.RpcSetRoleDesync(roleTypes, true, player.GetClientId());
+            player.RpcSetRoleDesync(roleTypes, player.GetClientId());
         }
         else
         {
@@ -306,12 +306,12 @@ static class ExtendedPlayerControl
         }
 
     }
-    public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role, bool canOverride, int clientId)
+    public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role,/* bool canOverride,*/ int clientId)
     {
         if (player == null) return;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
-            player.SetRole(role, true);
+            player.SetRole(role);
             return;
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
