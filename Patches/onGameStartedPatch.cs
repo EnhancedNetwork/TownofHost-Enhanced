@@ -384,7 +384,7 @@ internal class SelectRolesPatch
 
             foreach (var blotnik in Main.AllPlayerControls)
             {
-                RoleAssign.RoleResult[blotnik].GetStaticRoleClass();
+                RoleAssign.RoleResult[blotnik].GetStaticRoleClass().SetDesyncImpostorBuddies(ref DesyncImpTeammates, blotnik);
             }
 
             foreach (var (pc, role) in RoleAssign.RoleResult)

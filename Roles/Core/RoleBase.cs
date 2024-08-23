@@ -19,6 +19,8 @@ public abstract class RoleBase
     public bool HasVoted = false;
     public virtual bool IsExperimental => false;
     public virtual bool IsDesyncRole => false;
+    public virtual bool IsSideKick => false;
+
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;
@@ -84,6 +86,15 @@ public abstract class RoleBase
     /// </summary>
     public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
 
+
+
+    /// <summary>
+    /// A generic method to set if someone (desync imps) should see each-other on the reveal screen.
+    /// </summary>
+    public virtual void SetDesyncImpostorBuddies(ref Dictionary<PlayerControl, List<PlayerControl>> DesyncImpostorBuddy, PlayerControl caller)
+    {
+
+    }
     /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.
     /// </summary>
