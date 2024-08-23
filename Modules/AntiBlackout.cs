@@ -258,18 +258,6 @@ public static class AntiBlackout
 }
 public static class ReassignImpostorPatch
 {
-    /*public static void Postfix(PlayerControl __instance)
-    {
-        if (!AmongUsClient.Instance.AmHost || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()) return;
-
-        //idk if this is needed since anyways ghost-role desyncs aren't in here (cuz that is set later), so maybe I'll remove.
-
-        foreach (var Killer in Main.AllPlayerControls.Where(x => x.HasKillButton() && x != __instance))
-        {
-            Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
-        }
-    }*/ // If this part is needed, then it would have to be rpcsetrole and I'd try to avoid that cuz it's very goofy, so hopefully it is not.
-
     public static void FixDesyncImpostorRoles(this PlayerControl __instance, bool skipCheck = false)
     {
         if (AmongUsClient.Instance.AmHost && skipCheck) goto fixrole;
