@@ -251,7 +251,12 @@ static class ExtendedPlayerControl
         writer.WritePacked(ventId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-
+    /// <summary>
+    /// Revives the player if the given roletype is alive and player is dead.
+    /// </summary>
+    /// <param name="roleTypes">The type to change into</param>
+    /// <param name="IsDesyncImpostor">If the player should be desynced from impostor teammates</param>
+    /// <param name="FellowImps">Will only function if <paramref name="IsDesyncImpostor"/> is active and makes it so you can't kill them, neither can they kill you</param>
     public static void RpcRevive(this PlayerControl player, RoleTypes roleTypes, bool IsDesyncImpostor = false, List<PlayerControl> FellowImps = null)
     {
         if (player.Data.IsDead == false || roleTypes is RoleTypes.GuardianAngel or RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
