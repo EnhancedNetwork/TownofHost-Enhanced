@@ -804,6 +804,11 @@ static class ExtendedMeetingHud
                 }
                 //Set influenced vote num to zero while counting votes, and count influenced vote upon finishing influenced check
 
+                if (target.Is(CustomRoles.Evader))
+                {
+                    Evader.CheckExile(ref VoteNum);
+                }
+
                 //Add 1 vote If key is not defined, overwrite with 1 and define
                 dic[ps.VotedFor] = !dic.TryGetValue(ps.VotedFor, out int num) ? VoteNum : num + VoteNum; //Count the number of times this player has been voted in
             }

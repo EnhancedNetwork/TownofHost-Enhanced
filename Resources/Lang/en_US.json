@@ -392,6 +392,7 @@
   "Rainbow": "Rainbow",
   "Tired": "Tired",
   "Statue": "Statue",
+  "Evader": "Evader",
   "DollMaster": "Dollmaster",
   "DoubleAgent": "Double Agent",
   "BracketAddons": "Add Brackets To Add-ons",
@@ -693,6 +694,7 @@
   "TrickyInfo": "Tricky slays, in mysterious ways.",
   "TiredInfo": "Labor makes you rest Zzz..",
   "StatueInfo": "You're still as a rock nearby people",
+  "EvaderInfo": "Get chance not be exiled!",
   "GMInfo": "Spectate the chaos!",
   "NotAssignedInfo": "No assigned role",
   "SunnyboyInfo": "Shine, shine my sunshine!",
@@ -994,6 +996,7 @@
   "TrickyInfoLong": "(Add-ons):\nAs the Tricky, your kills will have a random death reason.",
   "TiredInfoLong": "(Add-ons):\nWhenever Tired kills (or uses kill ability on) someone, alternatively whenever they finish a task, they will temporarily get lower vision & lower speed.",
   "StatueInfoLong": "(Add-ons):\nWhenever many people are near the Statue, the Statue is completely frozen or slowed down depending on the settings.",
+  "EvaderInfoLong": "(Add-ons):\nYou have a definite chance of not be exiled",
   "CyberInfoLong": "(Add-ons):\nAs the Cyber, you cannot die while in a group.\nDepending on the settings, Imposters, Neutrals, and or Crewmates will know if you die.",
   "HurriedInfoLong": "(Add-ons):\nAs the hurried, you must finish all your tasks to win with your team! If you fail with your tasks, you lose.\nHurried hurries to his goal, so it won't get madmate, charmed or so.",
   "OiiaiInfoLong": "(Add-ons):\nAs the Oiiai, when you die, you will make your killer forget their role.\nAdditionally, you may pass Oiiai on to the killer, depending on settings.",
@@ -3730,5 +3733,7 @@
   "WardenWarn": "DANGER! RUN!",
 
   "MinionAbilityTime": "Ability Duration",
-  "Minion_Blind": "blinded"
+  "Minion_Blind": "blinded",
+
+  "Evader_ChanceNotExiled": "Chance not be exiled"
 }
