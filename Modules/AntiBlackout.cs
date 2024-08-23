@@ -245,16 +245,20 @@ public static class AntiBlackout
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
-        PlayerControl OurImp = Main.AllAlivePlayerControls.First(pc => pc.PlayerId != ExilePlayerId && pc.HasKillButton());
+        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.HasKillButton()).ToList();
 
         foreach (var pc in Main.AllPlayerControls.Where(x => !x.Data.Disconnected))
         {
             if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
-            if (pc.IsAlive() && pc.GetCustomRole().IsDesyncRole()) continue;
+            if (pc.IsAlive() && (pc.GetCustomRole().IsDesyncRole())) continue;
 
-            
-            OurImp.RpcSetRoleDesync(OurImp.GetCustomRole().GetVNRole().GetRoleTypes(), pc.GetClientId());
-            
+
+            foreach (var dummy in list)
+            {
+                if (pc.GetCustomRole().IsImpostor() && !pc.IsSameTeammate(dummy, out _)) continue;
+                dummy.RpcSetRoleDesync(dummy.GetCustomRole().GetVNRole().GetRoleTypes(), pc.GetClientId());
+            }
+
             foreach (var dead in Main.AllPlayerControls.Where(x => !x.Data.Disconnected && x.Data.IsDead))
             {
                 RoleTypes typa = RoleTypes.CrewmateGhost;

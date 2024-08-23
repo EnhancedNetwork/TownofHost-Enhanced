@@ -1689,7 +1689,25 @@ public static class Utils
     }
     public static List<PlayerControl> GetPlayerListByRole(this CustomRoles role)
         => GetPlayerListByIds(Main.PlayerStates.Values.Where(x => x.MainRole == role).Select(r => r.PlayerId));
-    
+    public static bool IsSameTeammate(this PlayerControl player, PlayerControl target, out Custom_Team team)
+    {
+        team = default;
+        if (player.IsAnySubRole(x => x.IsConverted()))
+        {
+            var Compare = player.GetCustomSubRoles().First(x => x.IsConverted());
+
+            team = player.Is(CustomRoles.Madmate) ? Custom_Team.Impostor : Custom_Team.Neutral;
+            return target.Is(Compare);
+        }
+        else if (!target.IsAnySubRole(x => x.IsConverted()))
+        {
+            team = player.GetCustomRole().GetCustomRoleTeam();
+            return target.Is(team);
+        }
+
+
+        return false;
+    }
     public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
     {
         try
