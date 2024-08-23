@@ -118,6 +118,7 @@ internal class Berserker : RoleBase
         if (BerserkerKillMax[killer.PlayerId] >= BerserkerKillCooldownLevel.GetInt() && BerserkerOneCanKillCooldown.GetBool())
         {
             Main.AllPlayerKillCooldown[killer.PlayerId] = BerserkerOneKillCooldown.GetFloat();
+            killer.SetKillCooldown();
         }
 
         if (BerserkerKillMax[killer.PlayerId] >= BerserkerScavengerLevel.GetInt() && BerserkerTwoCanScavenger.GetBool())
