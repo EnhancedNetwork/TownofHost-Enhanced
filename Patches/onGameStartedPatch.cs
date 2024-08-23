@@ -698,6 +698,10 @@ internal class SelectRolesPatch
                     .Write((ushort)roleType)
                     .Write(true)
                     .EndRpc();
+
+                //Fix host
+                if (RoleResult[target].IsImpostor() && RoleResult[seer].IsImpostor() && seer.OwnedByHost())
+                    DestroyableSingleton<RoleBehaviour>.Instance.CanBeKilled = false;
             }
             SetSelfRoles();
 
