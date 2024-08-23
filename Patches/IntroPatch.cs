@@ -596,11 +596,7 @@ class IntroCutsceneDestroyPatch
             }
 
 
-            /*foreach (var DYpc in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && RpcSetRoleReplacer.DesyncPlayers.TryGetValue(x, out _)))
-            {
-                DYpc.RpcChangeRoleBasis(DYpc.GetCustomRole().GetRoleTypes(), true);
-            }*/
-            _ = new LateTask(() => { // try again jsut incase it didn't work the first time
+            _ = new LateTask(() => { 
                 foreach (var DYpc in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && x.GetCustomRole().IsDesyncRole()))
                 {
                     DYpc.RpcChangeRoleBasis(DYpc.GetCustomRole().GetRoleTypes(), true);
