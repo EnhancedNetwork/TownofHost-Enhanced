@@ -530,7 +530,7 @@ internal class RPCHandlerPatch
                         var state = Main.PlayerStates[paciefID];
                         state.MainRole = rola;
                         state.IsDead = isdead;
-                        state.Disconnected = isdead;
+                        state.Disconnected = IsDC;
                         state.deathReason = drip;
                     }
                 }
