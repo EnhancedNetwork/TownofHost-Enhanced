@@ -8,6 +8,7 @@ using TOHE.Roles.Neutral;
 using Hazel;
 using InnerNet;
 using System;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 internal class DoubleAgent : RoleBase
@@ -134,6 +135,7 @@ internal class DoubleAgent : RoleBase
             CurrentBombedTime = 999f;
             CurrentBombedPlayers.Add(target.PlayerId);
             BombIsActive = true;
+            SendMessage(GetString("VoteHasReturned"), voter.PlayerId, title: ColorString(GetRoleColor(CustomRoles.DoubleAgent), string.Format(GetString("VoteAbilityUsed"), GetString("DoubleAgent"))));
             return false;
         }
         return true;
@@ -269,9 +271,9 @@ internal class DoubleAgent : RoleBase
 
 
     // Set timer for Double Agent Modded Clients.
-    public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    public override string GetLowerText(PlayerControl player, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
-        if (player == null) return string.Empty;
+        if (player == null || player != seen || player.IsModClient() && !isForHud) return string.Empty;
         if (CurrentBombedTime > 0 && CurrentBombedTime < BombExplosionTimer.GetFloat() + 1) return Utils.ColorString(player.GetRoleColor(), string.Format(GetString("DoubleAgent_BombExplodesIn"), (int)CurrentBombedTime));
         return string.Empty;
     }
@@ -346,3 +348,4 @@ internal class DoubleAgent : RoleBase
 }
 
 // FieryFlower was here ඞ
+// Drakos wasn't here, 100% not
