@@ -267,6 +267,7 @@ public static class ReassignImpostorPatch
 
         Logger.Info($"I am running for {__instance.GetRealName()}/{__instance.GetCustomRole()}", "DesyncIMPFIX");
 
+        //okay idfk how toh-y made it work, feel free to make it like that, cuz idk
 
         //Toh-y somehow works, so it would be better to get a similar fix, and this is a simple temp-fix that works
         __instance.ReactorFlash();
@@ -277,7 +278,7 @@ public static class ReassignImpostorPatch
         __instance.RpcSetRoleDesync(prevtype, true, __instance.GetClientId());
 
         /*
-        foreach (var Killer in Main.AllPlayerControls.Where(x => x != __instance))
+        foreach (var Killer in Main.AllAlivePlayerControls.Where(x => x != __instance && x.HasKillButton()))
         {
             Killer.RpcSetRoleDesync(Killer.GetCustomRole().GetVNRole().GetRoleTypes(), true, __instance.GetClientId());
         }*/ // dosen't work, will have to change it to be similar to toh-y but not change to crewmate ghost.
