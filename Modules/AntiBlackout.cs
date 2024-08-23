@@ -260,6 +260,7 @@ public static class ReassignImpostorPatch
 {
     public static void FixDesyncImpostorRoles(this PlayerControl __instance, bool skipCheck = false)
     {
+        if (__instance.OwnedByHost()) return;
         if (AmongUsClient.Instance.AmHost && skipCheck) goto fixrole;
         if (!AmongUsClient.Instance.AmHost || __instance.IsAlive() || !__instance.GetCustomRole().IsDesyncRole() && !__instance.GetCustomRole().IsImpostor()
                   && (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(__instance.PlayerId, out var role) || !role.IsDesyncRole() || !role.IsImpostor())) return;
