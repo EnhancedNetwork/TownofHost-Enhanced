@@ -67,8 +67,6 @@ internal class ChangeRoleSettings
             Main.AfterMeetingDeathPlayers.Clear();
             Main.clientIdList.Clear();
 
-            PlayerControlSetRolePatch.DidSetGhost.Clear();
-
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();
             Main.AllKillers.Clear();

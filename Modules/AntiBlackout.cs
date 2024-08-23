@@ -261,10 +261,7 @@ public static class AntiBlackout
 
             foreach (var dead in Main.AllPlayerControls.Where(x => !x.Data.Disconnected && x.Data.IsDead))
             {
-                RoleTypes typa = RoleTypes.CrewmateGhost;
-                if (dead.GetCustomRole().IsGhostRole()) typa = RoleTypes.GuardianAngel;
-
-                dead.RpcSetRoleDesync(typa, pc.GetClientId());
+                dead.RpcSetRoleDesync(RoleTypes.CrewmateGhost, pc.GetClientId());
             }
         }
         ExilePlayerId = -1;

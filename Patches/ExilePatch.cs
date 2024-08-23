@@ -1,4 +1,5 @@
 ﻿using AmongUs.Data;
+using AmongUs.GameOptions;
 using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
@@ -189,6 +190,14 @@ class ExileControllerWrapUpPatch
                     MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
+
+
+                //WELP, all GuardianAngel players have to be desynced + reset cams now, but hey at least everyone else desync is fine now.
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
+                {
+                    pc.ResetPlayerCam();
+                    pc.RpcSetRoleDesync(RoleTypes.GuardianAngel, pc.GetClientId());
+                }
 
             }, 0.8f, "AfterMeetingDeathPlayers Task");
         }

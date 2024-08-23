@@ -1,4 +1,8 @@
-﻿namespace TOHE.Roles.Core.AssignManager;
+﻿using AmongUs.GameOptions;
+using Hazel;
+using System.Text;
+
+namespace TOHE.Roles.Core.AssignManager;
 
 public static class GhostRoleAssign
 {
@@ -139,4 +143,58 @@ public static class GhostRoleAssign
             Logger.Info($"Logged: {role.Key} / {role.Value}", "GhostAssignPatch.Add.GetCount");
         }
     }
+    public static void CreateGAMessage(PlayerControl __instance)
+    {
+        Utils.NotifyRoles(SpecifyTarget: __instance);
+        _ = new LateTask(() => {
+
+            __instance.RpcResetAbilityCooldown();
+
+            if (Options.SendRoleDescriptionFirstMeeting.GetBool())
+            {
+                var host = PlayerControl.LocalPlayer;
+                var name = host.Data.PlayerName;
+                var lp = __instance;
+                var sb = new StringBuilder();
+                var conf = new StringBuilder();
+                var role = __instance.GetCustomRole();
+                var rlHex = Utils.GetRoleColorCode(role);
+                sb.Append(Utils.GetRoleTitle(role) + lp.GetRoleInfo(true));
+                if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
+                    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref conf);
+                var cleared = conf.ToString();
+                conf.Clear().Append($"<size={ChatCommands.Csize}>" + $"<color={rlHex}>{Translator.GetString(role.ToString())} {Translator.GetString("Settings:")}</color>\n" + cleared + "</size>");
+
+                var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
+                writer.StartMessage(__instance.GetClientId());
+                writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                    .Write(host.Data.NetId)
+                    .Write(Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString("GhostTransformTitle")))
+                    .EndRpc();
+                writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
+                    .Write(sb.ToString())
+                    .EndRpc();
+                writer.EndMessage();
+                writer.SendMessage();
+
+                var writer2 = CustomRpcSender.Create("SendGhostRoleConfig", SendOption.None);
+                writer2.StartMessage(__instance.GetClientId());
+                writer2.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
+                    .Write(conf.ToString())
+                    .EndRpc();
+                writer2.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                    .Write(host.Data.NetId)
+                    .Write(name)
+                    .EndRpc();
+                writer2.EndMessage();
+                writer2.SendMessage();
+
+                // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
+
+            }
+
+        }, 0.1f, $"SetGuardianAngel for playerId: {__instance.PlayerId}");
+    }
+
+
 }
