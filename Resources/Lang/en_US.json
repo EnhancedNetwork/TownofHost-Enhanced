@@ -2563,7 +2563,8 @@
 
   "RpcAntiBlackOutNotifyInLobby": "Because of <b>{0}</b>, an unknown error occurred. To prevent a black screen, turn off [{1}] in settings.",
   "RpcAntiBlackOutEndGame": "Because of <b>{0}</b>, an unknown error occurred, the game will end to prevent a black screen.",
-  "RpcAntiBlackOutIgnored": "Because of <b>{0}</b>, an unknown error occurred, RPC will be ignored.",
+  "RpcAntiBlackOutIgnored": "Because of <b>{0}</b>, an unknown error occurred, but the game will continue without that player due to host settings.",
+  "RpcAntiBlackOutKicked": "<b>{0}</b> was kicked due to having a blackout error on its side.",
 
   "NextPage": "Next Page",
   "PreviousPage": "Previous Page",
