@@ -6,11 +6,6 @@ public static class AURoleOptions
 {
     private static IGameOptions Opt;
     public static void SetOpt(IGameOptions opt) => Opt = opt;
-    public static int EmergencyMeetings
-    {
-        get => Opt.GetInt(Int32OptionNames.NumEmergencyMeetings);
-        set => Opt.SetInt(Int32OptionNames.NumEmergencyMeetings, value);
-    }
     public static float KillCooldown
     {
         get => Opt.GetFloat(FloatOptionNames.KillCooldown);

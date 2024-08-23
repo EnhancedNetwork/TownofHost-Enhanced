@@ -12,9 +12,6 @@ using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
 using System.Linq;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.ParticleSystem.PlaybackState;
-using Il2CppInterop.Generator.Extensions;
 
 namespace TOHE;
 
