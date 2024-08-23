@@ -255,7 +255,7 @@ public static class AntiBlackout
 
             foreach (var dummy in list)
             {
-                if (pc.GetCustomRole().IsImpostor() && !pc.IsSameTeammate(dummy, out _)) continue;
+                if (pc.GetCustomRole().IsImpostor() && !pc.IsSameTeammate(dummy, out _) && pc.IsAlive()) continue;
                 dummy.RpcSetRoleDesync(dummy.GetCustomRole().GetVNRole().GetRoleTypes(), pc.GetClientId());
             }
 
