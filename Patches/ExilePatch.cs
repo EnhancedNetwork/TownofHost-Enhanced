@@ -192,11 +192,17 @@ class ExileControllerWrapUpPatch
                 Main.AfterMeetingDeathPlayers.Clear();
 
 
-                //WELP, all GuardianAngel players have to be desynced + reset cams now, but hey at least everyone else desync is fine now.
+                //Kill off GAS again
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
                 {
-                    pc.ResetPlayerCam();
-                    pc.RpcSetRoleDesync(RoleTypes.GuardianAngel, pc.GetClientId());
+                    foreach (var reciever in Main.AllPlayerControls)
+                    {
+                        if (reciever.OwnedByHost()) continue;
+                        RoleTypes typa = pc == reciever ? RoleTypes.GuardianAngel : RoleTypes.CrewmateGhost;
+                        pc.RpcSetRoleDesync(typa, reciever.GetClientId());
+                    }
+                    //pc.ResetPlayerCam();
+                    //pc.RpcSetRoleDesync(RoleTypes.GuardianAngel, pc.GetClientId());
                 }
 
             }, 0.8f, "AfterMeetingDeathPlayers Task");

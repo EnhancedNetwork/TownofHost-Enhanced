@@ -1922,6 +1922,11 @@ class PlayerControlSetRolePatch
             {
                 roleType = RoleTypes.GuardianAngel;
                 __instance.RpcSetRoleDesync(RoleTypes.GuardianAngel, __instance.GetClientId());
+                foreach (var seer in Main.AllPlayerControls)
+                {
+                    if (seer == __instance) continue;
+                    __instance.RpcSetRoleDesync(RoleTypes.CrewmateGhost, seer.GetClientId());
+                }
                 GhostRoleAssign.CreateGAMessage(__instance);
                 return false;
             }

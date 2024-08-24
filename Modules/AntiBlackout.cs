@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.Runtime.CompilerServices;
@@ -75,6 +75,7 @@ public static class AntiBlackout
 
     public static void SetIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
+        TempReviveGuardianAngels();
         SetRole();
         logger.Info($"SetIsDead is called from {callerMethodName}");
         if (IsCached)
@@ -241,7 +242,18 @@ public static class AntiBlackout
             Logger.Error($"{error}", "AntiBlackout.AfterMeetingTasks");
         }
     }
-    public static void SetRole()
+    private static void TempReviveGuardianAngels() // FUCK IT WE BALL 🗣💯💯
+    {
+        foreach (var pc in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
+        {
+            foreach (var reciever in Main.AllPlayerControls)
+            {
+                if (reciever.OwnedByHost()) continue;
+                pc.RpcSetRoleDesync(RoleTypes.Impostor, reciever.GetClientId());
+            }
+        }
+    }
+    private static void SetRole()
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
