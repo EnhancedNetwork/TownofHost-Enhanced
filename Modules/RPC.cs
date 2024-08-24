@@ -228,12 +228,21 @@ internal class RPCHandlerPatch
 
                         if (AmongUsClient.Instance.AmHost)
                         {
-                            _ = new LateTask(() =>
+                            if (GameStates.IsInGame)
                             {
                                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                                 RPC.ForceEndGame(CustomWinner.Error);
-                            }, 5.5f, "RPC Anti-Black End Game As Critical Error");
+                            }
+                            else
+                            {
+                                _ = new LateTask(() =>
+                                {
+                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
+                                    GameManager.Instance.LogicFlow.CheckEndCriteria();
+                                    RPC.ForceEndGame(CustomWinner.Error);
+                                }, 5.5f, "RPC Anti-Black End Game As Critical Error");
+                            }
                         }
                     }
                     else
@@ -245,11 +254,21 @@ internal class RPCHandlerPatch
 
                         if (AmongUsClient.Instance.AmHost && __instance != null)
                         {
-                            _ = new LateTask(() =>
+                            if (GameStates.IsInGame)
                             {
                                 AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
                                 Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutKicked"), __instance?.Data?.PlayerName));
-                            }, 5.5f, "RPC Anti-Black Ignored Kick Player");
+                            }
+                            else
+                            {
+                                _ = new LateTask(() =>
+                                {
+                                    AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
+                                    Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutKicked"), __instance?.Data?.PlayerName));
+                                }, 5.5f, "RPC Anti-Black Kicked As Critical Error");
+                            }
+
+                            ChatUpdatePatch.DoBlockChat = false;
                         }
                     }
                 }
