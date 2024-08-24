@@ -1026,7 +1026,6 @@
   "SMUsesUsedWhenFixingReactorOrO2": "Uses it takes to fix Reactor/O2",
   "SMUsesUsedWhenFixingLightsOrComms": "Uses it takes to fix Lights/Comms",
 
-  "AbilityCD": "Ability Cooldown",
   "GrenadierSkillMaxOfUseage": "(Initial) Max number of Grenades",
   "ShowSpecificRole": "Know specific roles on Task Completion",
   "TimeMasterMaxUses": "(Initial) Max Amount of Ability Uses",
@@ -1445,6 +1444,7 @@
 
   "Cooldown": "Cooldown",
   "AbilityCooldown": "Ability Cooldown",
+  "SkillLimitTimes": "Max Number of Ability Uses",
   "CanKill": "Can Kill",
   "KillCooldown": "Kill Cooldown",
   "CanVent": "Can Vent",
@@ -1656,11 +1656,7 @@
   "BaitNotification": "Reveal <color=#00f7ff>Bait</color> at the first meeting",
   "BaitAdviceAlive": "<b>{0}</b> is the Bait. Whoever kills the Bait will commit self-report.",
   "BaitCanBeReportedUnderAllConditions": "Bait Can Be Reported even if a meeting is disabled during comms sabotage",
-  "DeceiverSkillCooldown": "Ability cooldown",
-  "DeceiverSkillLimitTimes": "Max number of uses",
   "DeceiverAbilityLost": "Deceiver loses ability if it deceives player without kill button",
-  "PursuerSkillCooldown": "Ability cooldown",
-  "PursuerSkillLimitTimes": "Max number of uses",
   "AddictSuicideTimer": "Time Until Suicide",
   "GrenadierSkillCooldown": "Grenade Cooldown",
   "GrenadierSkillDuration": "Grenade Duration",
@@ -1691,7 +1687,6 @@
   "MedicShieldDeactivationIsVisible_OFF": "<color=#ff0000>OFF</color>",
   "MedicResetCooldown": "On kill attempt, reset murderer's cooldown to",
   "MedicShieldedCanBeGuessed": "Guessing ignores <color=#00ff97>Medic</color> shield",
-  "FortuneTellerSkillLimit": "Max number of ability uses",
   "MadmateSpawnMode": "<color=#ff1919>Madmate</color> spawning mode",
   "MadmateSpawnMode.Assign": "Assign",
   "MadmateSpawnMode.FirstKill": "First Kill",
@@ -1821,13 +1816,10 @@
   "Jackal_SidekickCanKillJackal": "<color=#00b4eb>Sidekick</color> can kill <color=#00b4eb>Jackal</color>",
   "JackalCanKillSidekick": "<color=#00b4eb>Jackal</color> can kill <color=#00b4eb>Sidekick</color>",
 
-  "PacifistCooldown": "Ability Cooldown",
-  "PacifistMaxOfUseage": "Max Number of Ability Uses",
   "CoronerArrowsPointingToDeadBody": "Arrows pointing to dead bodies",
   "CoronerLeaveDeadBodyUnreportable": "Bodies the <color=#8B0000>Coroner</color> uses can't be reported",
   "CoronerInformKillerBeingTracked": "Inform the Killer that he gets tracked",
 
-  "PresidentAbilityUses": "Max Number of Ability Uses",
   "PresidentCanBeGuessedAfterRevealing": "<color=#00ffac>President</color> can be guessed after revealing",
   "HidePresidentEndCommand": "Hide <color=#00ffac>President</color>'s commands",
   "NeutralsSeePresident": "<color=#7f8c8d>Neutrals</color> can see revealed <color=#00ffac>President</color>",
@@ -2083,7 +2075,6 @@
   "MorticianGetNoInfo": "According to your inspection, <b>{0}</b> did not seem to have contact with anyone during their lifetime.",
   "MorticianGetInfo": "According to your inspection, the last person <b>{0}</b> came into contact with during their lifetime was <b>{1}</b>.",
 
-  "MediumContactLimit": "Max number of contacts (ability uses)",
   "MediumOnlyReceiveMsgFromCrew": "Receive messages only from <color=#8cffff>Crewmates</color> (including <color=#ff1919>Madmates</color> and <color=#cf6acd>Charmed</color> Players)",
   "MediumTitle": "MEDIUM",
   "MediumHelp": "<b>/ms yes</b> to agree\n<b>/ms no</b> to disagree",
