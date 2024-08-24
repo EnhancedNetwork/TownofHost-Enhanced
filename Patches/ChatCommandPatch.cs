@@ -1,4 +1,3 @@
-using AmongUs.GameOptions;
 using Assets.CoreScripts;
 using Hazel;
 using System;

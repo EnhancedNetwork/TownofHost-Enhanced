@@ -1,9 +1,4 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
-using UnityEngine;
-
-namespace TOHE.Modules;
+﻿namespace TOHE.Modules;
 
 // https://github.com/Rabek009/MoreGamemodes
 // https://github.com/Gurge44/EndlessHostRoles

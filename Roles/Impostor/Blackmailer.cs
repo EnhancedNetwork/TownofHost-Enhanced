@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
-using TOHE.Roles.Neutral;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
 

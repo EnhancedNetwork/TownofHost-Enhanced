@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using UnityEngine;
 using static TOHE.Options;
 using AmongUs.GameOptions;
 

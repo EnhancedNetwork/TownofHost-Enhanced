@@ -1,10 +1,7 @@
-using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
-using TOHE.Roles.Core.AssignManager;
-using static TOHE.SelectRolesPatch;
 
 namespace TOHE;
 

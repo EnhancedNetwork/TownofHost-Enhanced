@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using TOHE.Modules;
+﻿using TOHE.Modules;
 using TOHE.Roles.Impostor;
 using static TOHE.Options;
 using static TOHE.Translator;

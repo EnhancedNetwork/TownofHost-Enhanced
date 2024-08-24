@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using MonoMod.Cil;
 using System;
 using System.Text;
 using TOHE.Modules;

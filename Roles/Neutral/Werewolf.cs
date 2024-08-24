@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.Double;
 using static TOHE.Options;
-using UnityEngine;
 
 namespace TOHE.Roles.Neutral;
 

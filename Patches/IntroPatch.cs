@@ -10,7 +10,6 @@ using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using static TOHE.SelectRolesPatch;
 using static TOHE.Translator;
 
 namespace TOHE;

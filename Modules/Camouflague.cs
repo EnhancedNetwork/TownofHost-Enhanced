@@ -1,7 +1,6 @@
 using AmongUs.Data;
 using TOHE.Modules;
 using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 
 namespace TOHE;
 

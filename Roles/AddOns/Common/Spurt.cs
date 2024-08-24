@@ -1,7 +1,6 @@
 ﻿using static TOHE.Options;
 using UnityEngine;
 using Hazel;
-using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.AddOns.Common
 {
