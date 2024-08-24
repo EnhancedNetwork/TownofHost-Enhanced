@@ -75,9 +75,9 @@ class ExileControllerWrapUpPatch
             var exiledPC = exiled.Object;
 
             // Reset player cam for exiled desync impostor
-            if (exiledPC != null && exiledPC.HasDesyncRole())
+            if (exiledPC.HasDesyncRole())
             {
-                exiledPC.ResetPlayerCam(1f);
+                exiledPC?.ResetPlayerCam(1f);
             }
 
             exiled.IsDead = true;
