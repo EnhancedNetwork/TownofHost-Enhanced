@@ -1556,7 +1556,7 @@ class CoEnterVentPatch
             {
                 _ = new LateTask(() => __instance?.RpcBootFromVent(id), 0.5f, "Prevent Enter Vents");
             }
-            return false;
+            //return false;
         }
 
         playerRoleClass?.OnCoEnterVent(__instance, id);

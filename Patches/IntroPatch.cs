@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
@@ -523,7 +524,7 @@ class IntroCutsceneDestroyPatch
     {
         if (!GameStates.IsInGame || RoleBasisChanger.SkipTasksAfterAssignRole) return;
 
-        Main.introDestroyed = true;
+        Main.IntroDestroyed = true;
 
         if (!GameStates.AirshipIsActive)
         {
@@ -625,6 +626,16 @@ class IntroCutsceneDestroyPatch
             if (amDesyncImpostor)
             {
                 PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
+            }
+
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                if (VentSystemDeterioratePatch.BlockVentInteraction(pc))
+                {
+                    Utils.SetAllVentInteractions();
+                    break;
+                }
             }
         }
         Logger.Info("OnDestroy", "IntroCutscene");

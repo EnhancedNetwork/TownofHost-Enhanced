@@ -2142,6 +2142,10 @@ public static class Utils
         PlayerGameOptionsSender.SetDirtyToAll();
         GameOptionsSender.SendAllGameOptions();
     }
+    public static void SetAllVentInteractions()
+    {
+        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>());
+    }
     public static bool DeathReasonIsEnable(this PlayerState.DeathReason reason, bool checkbanned = false)
     {
         static bool BannedReason(PlayerState.DeathReason rso)
