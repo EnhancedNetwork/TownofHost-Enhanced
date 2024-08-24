@@ -1,14 +1,14 @@
-﻿using UnityEngine;
-using static TOHE.Options;
-using static TOHE.Translator;
+﻿using Hazel;
+using System;
+using InnerNet;
+using UnityEngine;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
-using TOHE.Modules;
 using TOHE.Roles.Neutral;
-using Hazel;
-using InnerNet;
-using System;
 using static TOHE.Utils;
+using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 internal class DoubleAgent : RoleBase
@@ -104,7 +104,7 @@ internal class DoubleAgent : RoleBase
                 _ = new LateTask(() =>
                 {
                     if (pc.inVent) pc.MyPhysics.RpcBootFromVent(vent.Id);
-                    pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DoubleAgent), GetString("DoubleAgent_DiffusedAgitaterBomb")));
+                    pc.Notify(ColorString(GetRoleColor(CustomRoles.DoubleAgent), GetString("DoubleAgent_DiffusedAgitaterBomb")));
                 }, 0.8f, "Boot Player from vent: " + vent.Id);
                 return;
             }
@@ -115,7 +115,7 @@ internal class DoubleAgent : RoleBase
                 _ = new LateTask(() =>
                 {
                     if (pc.inVent) pc.MyPhysics.RpcBootFromVent(vent.Id);
-                    pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DoubleAgent), GetString("DoubleAgent_DiffusedBastionBomb")));
+                    pc.Notify(ColorString(GetRoleColor(CustomRoles.DoubleAgent), GetString("DoubleAgent_DiffusedBastionBomb")));
                 }, 0.5f, "Boot Player from vent: " + vent.Id);
             }
         }
@@ -173,7 +173,7 @@ internal class DoubleAgent : RoleBase
         if (!player.IsAlive()) // If Player is dead clear bomb.
             ClearBomb();
 
-        if (BombIsActive && (GameStates.IsInTask && GameStates.IsInGame) && !(GameStates.IsMeeting && GameStates.IsExilling))
+        if (BombIsActive && GameStates.IsInTask && GameStates.IsInGame && !(GameStates.IsMeeting && GameStates.IsExilling))
         {
             var OldCurrentBombedTime = (int)CurrentBombedTime;
 
@@ -194,11 +194,11 @@ internal class DoubleAgent : RoleBase
         {
             if (!pc.IsModClient())
             {
-                string Duration = Utils.ColorString(pc.GetRoleColor(), string.Format(GetString("DoubleAgent_BombExplodesIn"), (int)CurrentBombedTime));
+                string Duration = ColorString(pc.GetRoleColor(), string.Format(GetString("DoubleAgent_BombExplodesIn"), (int)CurrentBombedTime));
                 if ((!NameNotifyManager.Notice.TryGetValue(pc.PlayerId, out var a) || a.Item1 != Duration) && Duration != string.Empty) pc.Notify(Duration, 1.1f);
             }
 
-            if (CurrentBombedPlayers.Any(playerId => Utils.GetPlayerById(playerId) == null)) // If playerId is a null Player clear bomb.
+            if (CurrentBombedPlayers.Any(playerId => !GetPlayerById(playerId).IsAlive())) // If playerId is a null Player clear bomb.
                 ClearBomb();
         }
 
@@ -231,10 +231,10 @@ internal class DoubleAgent : RoleBase
                 pc.GetRoleClass()?.Add(pc.PlayerId);
                 pc.MarkDirtySettings();
 
-                string RoleName = Utils.ColorString(Utils.GetRoleColor(pc.GetCustomRole()), Utils.GetRoleName(pc.GetCustomRole()));
+                string RoleName = ColorString(GetRoleColor(pc.GetCustomRole()), GetRoleName(pc.GetCustomRole()));
                 if (Role == CustomRoles.ImpostorTOHE)
-                    RoleName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admired), $"{GetString("Admired")} {GetString("ImpostorTOHE")}");
-                pc.Notify(Utils.ColorString(Utils.GetRoleColor(pc.GetCustomRole()), GetString("DoubleAgentRoleChange") + RoleName));
+                    RoleName = ColorString(GetRoleColor(CustomRoles.Admired), $"{GetString("Admired")} {GetString("ImpostorTOHE")}");
+                pc.Notify(ColorString(GetRoleColor(pc.GetCustomRole()), GetString("DoubleAgentRoleChange") + RoleName));
             }
         }
     }
@@ -246,7 +246,7 @@ internal class DoubleAgent : RoleBase
 
         foreach (PlayerControl target in Main.AllAlivePlayerControls) // Get players in radius of bomb that are not in a vent.
         {
-            if (Utils.GetDistance(player.GetCustomPosition(), target.GetCustomPosition()) <= ExplosionRadius.GetFloat())
+            if (GetDistance(player.GetCustomPosition(), target.GetCustomPosition()) <= ExplosionRadius.GetFloat())
             {
                 if (player.inVent) continue;
                 Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
@@ -258,14 +258,14 @@ internal class DoubleAgent : RoleBase
         CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
         ClearBomb();
 
-        _Player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DoubleAgent), GetString("DoubleAgent_BombExploded")));
+        _Player.Notify(ColorString(GetRoleColor(CustomRoles.DoubleAgent), GetString("DoubleAgent_BombExploded")));
     }
 
     // Set bomb mark on player.
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (seen == null ) return string.Empty;
-        if (CurrentBombedPlayers.Contains(seen.PlayerId)) return Utils.ColorString(Color.red, "Ⓑ"); // L Rizz :)
+        if (CurrentBombedPlayers.Contains(seen.PlayerId)) return ColorString(Color.red, "Ⓑ"); // L Rizz :)
         return string.Empty;
     }
 
@@ -274,7 +274,7 @@ internal class DoubleAgent : RoleBase
     public override string GetLowerText(PlayerControl player, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
         if (player == null || player != seen || player.IsModClient() && !isForHud) return string.Empty;
-        if (CurrentBombedTime > 0 && CurrentBombedTime < BombExplosionTimer.GetFloat() + 1) return Utils.ColorString(player.GetRoleColor(), string.Format(GetString("DoubleAgent_BombExplodesIn"), (int)CurrentBombedTime));
+        if (CurrentBombedTime > 0 && CurrentBombedTime < BombExplosionTimer.GetFloat() + 1) return ColorString(player.GetRoleColor(), string.Format(GetString("DoubleAgent_BombExplodesIn"), (int)CurrentBombedTime));
         return string.Empty;
     }
 
@@ -307,7 +307,7 @@ internal class DoubleAgent : RoleBase
     {
         foreach (var pva in __instance.playerStates)
         {
-            var pc = Utils.GetPlayerById(pva.TargetPlayerId);
+            var pc = GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !pc.IsAlive()) continue;
             if (pc.GetCustomRole().GetCustomRoleTeam() == Custom_Team.Impostor || PlayerControl.LocalPlayer == pc) continue;
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
