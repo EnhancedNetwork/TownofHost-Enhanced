@@ -19,11 +19,6 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void SetRole(this PlayerControl player, RoleTypes role/*, bool canOverride = false*/)
-    {
-        player.StartCoroutine(player.CoSetRole(role, true));
-    }
-
     public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role)
     {
         if (role < CustomRoles.NotAssigned)
@@ -54,22 +49,97 @@ static class ExtendedPlayerControl
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
+    public static void SetRole(this PlayerControl player, RoleTypes role/*, bool canOverride = false*/)
+    {
+        player.StartCoroutine(player.CoSetRole(role, true));
+    }
+    public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role,/* bool canOverride,*/ int clientId)
+    {
+        if (player == null) return;
+        if (AmongUsClient.Instance.ClientId == clientId)
+        {
+            player.SetRole(role);
+            return;
+        }
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
+        writer.Write((ushort)role);
+        writer.Write(true);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    /// <summary>
+    /// Changes the Role Basis of player during the game
+    /// </summary>
+    /// <param name="newCustomRole">The custom role to change into</param>
+    public static void RpcChangeRoleBasis(this PlayerControl player, CustomRoles newCustomRole)
+    {
+        var playerRole = player.GetCustomRole();
+        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
 
+        // When player change desync role to normal role
+        if (playerRole.IsDesyncRole() && !newCustomRole.IsDesyncRole())
+        {
+            var newRoleType = newCustomRole.GetRoleTypes();
+            foreach (var seer in Main.AllPlayerControls)
+            {
+                RpcSetRoleReplacer.RoleMap[(seer, player)] = (newRoleType, newCustomRole);
+            }
+            player.RpcSetRole(newRoleType, true);
+        }
+        // When player change normal role to desync role
+        else if (!playerRole.IsDesyncRole() && newCustomRole.IsDesyncRole())
+        {
+            RoleTypes targetRoleType;
+            var isModded = player.OwnedByHost() || player.IsModClient();
+            foreach (var target in Main.AllPlayerControls)
+            {
+                var isSelf = player.PlayerId == target.PlayerId;
+                if (isSelf)
+                {
+                    if (isModded)
+                    {
+                        if (newCustomRole.GetDYRole() == RoleTypes.Shapeshifter)
+                        {
+                            targetRoleType = RoleTypes.Shapeshifter;
+                        }
+                        else
+                        {
+                            targetRoleType = RoleTypes.Crewmate;
+                        }
+                    }
+                    else
+                    {
+                        targetRoleType = RoleTypes.Impostor;
+                    }
+                }
+                else
+                {
+                    targetRoleType = RoleTypes.Scientist;
+                }
+                RpcSetRoleReplacer.RoleMap[(player, target)] = (targetRoleType, newCustomRole);
+                player.RpcSetRoleDesync(targetRoleType, target.GetClientId());
+            }
+        }
+        // When player change desync role to desync role
+        // Or player change normal role to normal role
+        else
+        {
+            RpcSetRoleReplacer.RoleMap[(player, player)] = (newCustomRole.GetRoleTypes(), newCustomRole);
+        }
+    }
     public static void RpcExile(this PlayerControl player)
     {
         RPC.ExileAsync(player);
     }
-    public static ClientData GetClient(this PlayerControl player)
+    public static void RpcExileV2(this PlayerControl player)
     {
-        try
+        if (player.Is(CustomRoles.Susceptible))
         {
-            var client = AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Character.PlayerId == player.PlayerId);
-            return client;
+            Susceptible.CallEnabledAndChange(player);
         }
-        catch
-        {
-            return null;
-        }
+        player.Exiled();
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcCastVote(this PlayerControl player, byte suspectIdx)
     {
@@ -113,60 +183,6 @@ static class ExtendedPlayerControl
             writer.AutoStartRpc(meeting.NetId, (byte)RpcCalls.ClearVote, clientId).EndRpc();
             writer.SendMessage();
         }, 0.5f, "Clear Vote");
-    }
-    public static int GetClientId(this PlayerControl player)
-    {
-        if (player == null) return -1;
-        var client = player.GetClient();
-        return client == null ? -1 : client.Id;
-    }
-    public static CustomRoles GetCustomRole(this NetworkedPlayerInfo player)
-    {
-        return player == null || player.Object == null ? CustomRoles.Crewmate : player.Object.GetCustomRole();
-    }
-    /// <summary>
-    /// Only roles (no add-ons)
-    /// </summary>
-    public static CustomRoles GetCustomRole(this PlayerControl player)
-    {
-        if (player == null)
-        {
-            var caller = new System.Diagnostics.StackFrame(1, false);
-            var callerMethod = caller.GetMethod();
-            string callerMethodName = callerMethod.Name;
-            string callerClassName = callerMethod.DeclaringType.FullName;
-            Logger.Warn($"{callerClassName}.{callerMethodName} tried to retrieve CustomRole, but the target was null", "GetCustomRole");
-            return CustomRoles.Crewmate;
-        }
-        return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.MainRole : CustomRoles.Crewmate;
-    }
-
-    public static List<CustomRoles> GetCustomSubRoles(this PlayerControl player)
-    {
-        if (player == null)
-        {
-            var caller = new System.Diagnostics.StackFrame(1, false);
-            var callerMethod = caller.GetMethod();
-            string callerMethodName = callerMethod.Name;
-            string callerClassName = callerMethod.DeclaringType.FullName;
-            Logger.Warn($"{callerClassName}.{callerMethodName} tried to get CustomSubRole, but the target was null", "GetCustomRole");
-            return [CustomRoles.NotAssigned];
-        }
-        return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.SubRoles : [CustomRoles.NotAssigned];
-    }
-    public static CountTypes GetCountTypes(this PlayerControl player)
-    {
-        if (player == null)
-        {
-            var caller = new System.Diagnostics.StackFrame(1, false);
-            var callerMethod = caller.GetMethod();
-            string callerMethodName = callerMethod.Name;
-            string callerClassName = callerMethod.DeclaringType.FullName;
-            Logger.Warn($"{callerClassName}.{callerMethodName} tried to get CountTypes, but the target was null", "GetCountTypes");
-            return CountTypes.None;
-        }
-
-        return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.countTypes : CountTypes.None;
     }
     public static void RpcSetNameEx(this PlayerControl player, string name)
     {
@@ -254,9 +270,6 @@ static class ExtendedPlayerControl
     /// <summary>
     /// Revives the player if the given roletype is alive and player is dead.
     /// </summary>
-    /// <param name="roleTypes">The type to change into</param>
-    /// <param name="IsDesyncImpostor">If the player should be desynced from impostor teammates</param>
-    /// <param name="FellowImps">Will only function if <paramref name="IsDesyncImpostor"/> is active and makes it so you can't kill them, neither can they kill you</param>
     public static void RpcRevive(this PlayerControl player)
     {
         if (player.Data.IsDead == false)
@@ -270,81 +283,20 @@ static class ExtendedPlayerControl
         player.SetKillCooldown();
         player.SyncGeneralOptions();
     }
-
     /// <summary>
-    /// Changes the Role Basis of player during the game
+    /// ONLY to be used when killer surely may kill the target, please check with killer.RpcCheckAndMurder(target, check: true) for indirect kill.
     /// </summary>
-    /// <param name="newCustomRole">The custom role to change into</param>
-    public static void RpcChangeRoleBasis(this PlayerControl player, CustomRoles newCustomRole) 
+    public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
     {
-        var playerRole = player.GetCustomRole();
-        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
-
-        // When player change desync role to normal role
-        if (playerRole.IsDesyncRole() && !newCustomRole.IsDesyncRole())
+        // If Target is Dollmaster or Possessed Player run Dollmasters kill check instead.
+        if (DollMaster.SwapPlayerInfo(target) != target)
         {
-            var newRoleType = newCustomRole.GetRoleTypes();
-            foreach (var seer in Main.AllPlayerControls)
-            {
-                RpcSetRoleReplacer.RoleMap[(seer, player)] = (newRoleType, newCustomRole);
-            }
-            player.RpcSetRole(newRoleType, true);
-        }
-        // When player change normal role to desync role
-        else if (!playerRole.IsDesyncRole() && newCustomRole.IsDesyncRole())
-        {
-            RoleTypes targetRoleType;
-            var isModded = player.OwnedByHost() || player.IsModClient();
-            foreach (var target in Main.AllPlayerControls)
-            {
-                var isSelf = player.PlayerId == target.PlayerId;
-                if (isSelf)
-                {
-                    if (isModded)
-                    {
-                        if (newCustomRole.GetDYRole() == RoleTypes.Shapeshifter)
-                        {
-                            targetRoleType = RoleTypes.Shapeshifter;
-                        }
-                        else
-                        {
-                            targetRoleType = RoleTypes.Crewmate;
-                        }
-                    }
-                    else
-                    {
-                        targetRoleType = RoleTypes.Impostor;
-                    }
-                }
-                else
-                {
-                    targetRoleType = RoleTypes.Scientist;
-                }
-                RpcSetRoleReplacer.RoleMap[(player, target)] = (targetRoleType, newCustomRole);
-                player.RpcSetRoleDesync(targetRoleType, target.GetClientId());
-            }
-        }
-        // When player change desync role to desync role
-        // Or player change normal role to normal role
-        else
-        {
-            RpcSetRoleReplacer.RoleMap[(player, player)] = (newCustomRole.GetRoleTypes(), newCustomRole);
-        }
-    }
-    public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role,/* bool canOverride,*/ int clientId)
-    {
-        if (player == null) return;
-        if (AmongUsClient.Instance.ClientId == clientId)
-        {
-            player.SetRole(role);
+            DollMaster.CheckMurderAsPossessed(killer, target);
             return;
         }
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
-        writer.Write((ushort)role);
-        writer.Write(true);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
 
+        killer.RpcMurderPlayer(target, true);
+    }
     public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, bool forObserver = false, bool fromSetKCD = false)
     {
         if (!AmongUsClient.Instance.AmHost)
@@ -380,17 +332,6 @@ static class ExtendedPlayerControl
         }
 
         if (!fromSetKCD) killer.SetKillTimer(half: true);
-    }
-    public static void SetKillCooldownV2(this PlayerControl player, float time = -1f)
-    {
-        if (player == null) return;
-        if (!player.CanUseKillButton()) return;
-        player.SetKillTimer(CD: time);
-        if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
-        else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
-        player.SyncSettings();
-        player.RpcGuardAndKill(fromSetKCD: true);
-        player.ResetKillCooldown();
     }
     public static void SetKillCooldown(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
     {
@@ -429,6 +370,17 @@ static class ExtendedPlayerControl
                 Observer.ActivateGuardAnimation(target.PlayerId, target);
             }
         }
+        player.ResetKillCooldown();
+    }
+    public static void SetKillCooldownV2(this PlayerControl player, float time = -1f)
+    {
+        if (player == null) return;
+        if (!player.CanUseKillButton()) return;
+        player.SetKillTimer(CD: time);
+        if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
+        else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
+        player.SyncSettings();
+        player.RpcGuardAndKill(fromSetKCD: true);
         player.ResetKillCooldown();
     }
     public static void SetKillCooldownV3(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
@@ -596,9 +548,159 @@ static class ExtendedPlayerControl
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
 
+    public static void RpcTeleportAllPlayers(Vector2 location)
+    {
+        foreach (var pc in Main.AllAlivePlayerControls)
+        {
+            pc.RpcTeleport(location);
+        }
+    }
+    public static void RpcDesyncTeleport(this PlayerControl player, Vector2 position, PlayerControl seer)
+    {
+        if (player == null) return;
+        var netTransform = player.NetTransform;
+        var clientId = seer.GetClientId();
+        ushort addSid = GameStates.IsLocalGame ? (ushort)4 : (ushort)40;
+        if (AmongUsClient.Instance.ClientId == clientId)
+        {
+            netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + addSid));
+            return;
+        }
+        ushort newSid = (ushort)(netTransform.lastSequenceId + addSid);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, clientId);
+        NetHelpers.WriteVector2(position, writer);
+        writer.Write(newSid);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void RpcTeleport(this PlayerControl player, Vector2 position, bool isRandomSpawn = false, bool sendInfoInLogs = true)
+    {
+        if (sendInfoInLogs)
+        {
+            Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {position}", "RpcTeleport");
+            Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
+        }
+
+        // Don't check player status during random spawn
+        if (!isRandomSpawn)
+        {
+            var cancelTeleport = false;
+
+            if (player.inVent || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+            {
+                Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
+                cancelTeleport = true;
+            }
+            else if (player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+            {
+                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
+                cancelTeleport = true;
+            }
+            else if (player.inMovingPlat)
+            {
+                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
+                cancelTeleport = true;
+            }
+
+            if (cancelTeleport)
+            {
+                player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("ErrorTeleport")));
+                return;
+            }
+        }
+
+        var netTransform = player.NetTransform;
+
+        if (AmongUsClient.Instance.AmClient)
+        {
+            // +328 because lastSequenceId has delay between the host and the vanilla client
+            // And this cannot forced teleport the player
+            netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + 328));
+        }
+
+        ushort newSid = (ushort)(netTransform.lastSequenceId + 8);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
+        NetHelpers.WriteVector2(position, messageWriter);
+        messageWriter.Write(newSid);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
+    public static void RpcRandomVentTeleport(this PlayerControl player)
+    {
+        var vents = ShipStatus.Instance.AllVents;
+        var vent = vents.RandomElement();
+
+        Logger.Info($" {vent.transform.position}", "RpcVentTeleportPosition");
+        player.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));
+    }
+
     public static bool OwnedByHost(this InnerNetObject innerObject)
         => innerObject.OwnerId == AmongUsClient.Instance.HostId;
 
+    public static ClientData GetClient(this PlayerControl player)
+    {
+        try
+        {
+            var client = AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Character.PlayerId == player.PlayerId);
+            return client;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+    public static int GetClientId(this PlayerControl player)
+    {
+        if (player == null) return -1;
+        var client = player.GetClient();
+        return client == null ? -1 : client.Id;
+    }
+    /// <summary>
+    /// Only roles (no add-ons)
+    /// </summary>
+    public static CustomRoles GetCustomRole(this NetworkedPlayerInfo player) => player == null || player.Object == null ? CustomRoles.Crewmate : player.Object.GetCustomRole();
+    /// <summary>
+    /// Only roles (no add-ons)
+    /// </summary>
+    public static CustomRoles GetCustomRole(this PlayerControl player)
+    {
+        if (player == null)
+        {
+            var caller = new System.Diagnostics.StackFrame(1, false);
+            var callerMethod = caller.GetMethod();
+            string callerMethodName = callerMethod.Name;
+            string callerClassName = callerMethod.DeclaringType.FullName;
+            Logger.Warn($"{callerClassName}.{callerMethodName} tried to retrieve CustomRole, but the target was null", "GetCustomRole");
+            return CustomRoles.Crewmate;
+        }
+        return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.MainRole : CustomRoles.Crewmate;
+    }
+
+    public static List<CustomRoles> GetCustomSubRoles(this PlayerControl player)
+    {
+        if (player == null)
+        {
+            var caller = new System.Diagnostics.StackFrame(1, false);
+            var callerMethod = caller.GetMethod();
+            string callerMethodName = callerMethod.Name;
+            string callerClassName = callerMethod.DeclaringType.FullName;
+            Logger.Warn($"{callerClassName}.{callerMethodName} tried to get CustomSubRole, but the target was null", "GetCustomRole");
+            return [CustomRoles.NotAssigned];
+        }
+        return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.SubRoles : [CustomRoles.NotAssigned];
+    }
+    public static CountTypes GetCountTypes(this PlayerControl player)
+    {
+        if (player == null)
+        {
+            var caller = new System.Diagnostics.StackFrame(1, false);
+            var callerMethod = caller.GetMethod();
+            string callerMethodName = callerMethod.Name;
+            string callerClassName = callerMethod.DeclaringType.FullName;
+            Logger.Warn($"{callerClassName}.{callerMethodName} tried to get CountTypes, but the target was null", "GetCountTypes");
+            return CountTypes.None;
+        }
+
+        return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.countTypes : CountTypes.None;
+    }
     public static void MarkDirtySettings(this PlayerControl player)
     {
         PlayerGameOptionsSender.SetDirty(player.PlayerId);
@@ -846,31 +948,6 @@ static class ExtendedPlayerControl
             CustomRoles.Lovers and not
             CustomRoles.Infected and not
             CustomRoles.Contagious;
-    }
-    public static void RpcExileV2(this PlayerControl player)
-    {
-        if (player.Is(CustomRoles.Susceptible))
-        {
-            Susceptible.CallEnabledAndChange(player);
-        }
-        player.Exiled();
-
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    /// <summary>
-    /// ONLY to be used when killer surely may kill the target, please check with killer.RpcCheckAndMurder(target, check: true) for indirect kill.
-    /// </summary>
-    public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
-    {
-        // If Target is Dollmaster or Possessed Player run Dollmasters kill check instead.
-        if (DollMaster.SwapPlayerInfo(target) != target)
-        {
-            DollMaster.CheckMurderAsPossessed(killer, target);
-            return;
-        }
-        
-        killer.RpcMurderPlayer(target, true);
     }
 
     public static void AddInSwitchAddons(PlayerControl Killed, PlayerControl target, CustomRoles Addon = CustomRoles.NotAssigned, CustomRoles? IsAddon = CustomRoles.NotAssigned)
@@ -1202,90 +1279,6 @@ static class ExtendedPlayerControl
             5 => new Vector2(10.2f, 18.1f), // The Fungle
             _ => throw new NotImplementedException(),
         };
-    }
-    
-    public static void RpcTeleportAllPlayers(Vector2 location)
-    {
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            pc.RpcTeleport(location);
-        }
-    }
-    public static void RpcDesyncTeleport(this PlayerControl player, Vector2 position, PlayerControl seer)
-    {
-        if (player == null) return;
-        var netTransform = player.NetTransform;
-        var clientId = seer.GetClientId();
-        ushort addSid = GameStates.IsLocalGame ? (ushort)4 : (ushort)40;
-        if (AmongUsClient.Instance.ClientId == clientId)
-        {
-            netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + addSid));
-            return;
-        }
-        ushort newSid = (ushort)(netTransform.lastSequenceId + addSid);
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, clientId);
-        NetHelpers.WriteVector2(position, writer);
-        writer.Write(newSid);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void RpcTeleport(this PlayerControl player, Vector2 position, bool isRandomSpawn = false, bool sendInfoInLogs = true)
-    {
-        if (sendInfoInLogs)
-        {
-            Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {position}", "RpcTeleport");
-            Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
-        }
-
-        // Don't check player status during random spawn
-        if (!isRandomSpawn)
-        {
-            var cancelTeleport = false;
-
-            if (player.inVent || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
-            {
-                Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
-                cancelTeleport = true;
-            }
-            else if (player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
-            {
-                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
-                cancelTeleport = true;
-            }
-            else if (player.inMovingPlat)
-            {
-                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
-                cancelTeleport = true;
-            }
-
-            if (cancelTeleport)
-            {
-                player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("ErrorTeleport")));
-                return;
-            }
-        }
-
-        var netTransform = player.NetTransform;
-
-        if (AmongUsClient.Instance.AmClient)
-        {
-            // +328 because lastSequenceId has delay between the host and the vanilla client
-            // And this cannot forced teleport the player
-            netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + 328));
-        }
-
-        ushort newSid = (ushort)(netTransform.lastSequenceId + 8);
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
-        NetHelpers.WriteVector2(position, messageWriter);
-        messageWriter.Write(newSid);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-    }
-    public static void RpcRandomVentTeleport(this PlayerControl player)
-    {
-        var vents = ShipStatus.Instance.AllVents;
-        var vent = vents.RandomElement();
-
-        Logger.Info($" {vent.transform.position}", "RpcVentTeleportPosition");
-        player.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));
     }
     public static int GetPlayerVentId(this PlayerControl player)
     {
