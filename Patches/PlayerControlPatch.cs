@@ -167,14 +167,14 @@ class CheckMurderPatch
             return false;
         }
 
-        var divice = Options.CurrentGameMode == CustomGameMode.FFA ? 3000f : 2000f;
+        var divice = Options.CurrentGameMode == CustomGameMode.FFA ? 3000f : 1500f;
         float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
 
         //↓ If not permitted
         if (TimeSinceLastKill.TryGetValue(killer.PlayerId, out var time) && time < minTime)
         {
-            Logger.Info($"Last kill was too shortly before, canceled - time: {time}, minTime: {minTime}", "CheckMurder");
+            Logger.Info($"Last kill was too shortly before, canceled - Ping: {AmongUsClient.Instance.Ping}, Time: {time}, MinTime: {minTime}", "CheckMurder");
             return false;
         }
         TimeSinceLastKill[killer.PlayerId] = 0f;
@@ -1781,8 +1781,7 @@ public static class PlayerControlMixupOutfitPatch
         }
 
         // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
-        if (PlayerControl.LocalPlayer.Data.Role.IsImpostor &&  // Impostor with vanilla
-            !PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) &&  // Not an Impostor
+        if (!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) &&  // Not an Impostor
             PlayerControl.LocalPlayer.HasDesyncRole())  // Desync Impostor
         {
             // Hide names

@@ -512,6 +512,8 @@ public class Main : BasePlugin
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
         TOHE.Logger.Disable("CustomRpcSender");
+        TOHE.Logger.Disable("RpcSetNamePrivate");
+        TOHE.Logger.Disable("KnowRoleTarget");
         if (!DebugModeManager.AmDebugger)
         {
             TOHE.Logger.Disable("2018k");
@@ -522,7 +524,6 @@ public class Main : BasePlugin
             TOHE.Logger.Disable("Info.Role");
             TOHE.Logger.Disable("TaskState.Init");
             //TOHE.Logger.Disable("Vote");
-            TOHE.Logger.Disable("RpcSetNamePrivate");
             //TOHE.Logger.Disable("SendChat");
             TOHE.Logger.Disable("SetName");
             //TOHE.Logger.Disable("AssignRoles");
