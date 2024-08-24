@@ -213,7 +213,7 @@ internal class RPCHandlerPatch
             case CustomRPC.AntiBlackout:
                 Logger.Fatal($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): Error: {reader.ReadString()} - end the game according to the setting", "Anti-black");
 
-                if (GameStates.IsShip || !GameStates.IsLobby)
+                if (GameStates.IsShip || !GameStates.IsLobby || GameStates.IsCoStartGame)
                 {
                     //CoStartGame is running, we are fucked.
                     ChatUpdatePatch.DoBlockChat = true;
@@ -228,7 +228,7 @@ internal class RPCHandlerPatch
 
                         if (AmongUsClient.Instance.AmHost)
                         {
-                            if (GameStates.IsInGame)
+                            if (GameStates.IsInGame && !GameStates.IsCoStartGame)
                             {
                                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                                 GameManager.Instance.LogicFlow.CheckEndCriteria();
@@ -254,7 +254,7 @@ internal class RPCHandlerPatch
 
                         if (AmongUsClient.Instance.AmHost && __instance != null)
                         {
-                            if (GameStates.IsInGame)
+                            if (GameStates.IsInGame && !GameStates.IsCoStartGame)
                             {
                                 AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
                                 Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutKicked"), __instance?.Data?.PlayerName));

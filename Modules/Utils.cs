@@ -46,7 +46,7 @@ public static class Utils
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
             }, 3f, "Anti-Black Msg SendInGame Error During Loading");
 
-            if (GameStates.IsShip || !GameStates.IsLobby)
+            if (GameStates.IsShip || !GameStates.IsLobby || GameStates.IsCoStartGame)
             {
                 _ = new LateTask(() =>
                 {
