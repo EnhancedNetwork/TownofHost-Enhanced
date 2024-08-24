@@ -1155,6 +1155,7 @@
   "GhostCanSeeDeathReason": "Ghost Can See Cause Of Death",
   "GhostIgnoreTasks": "Ghosts Exempt From Tasks",
   "ConvertedCanBeGhostRole": "Converted Players Can Be Any Ghost-Roles",
+  "NeutralCanBeGhostRole": "Neutral Players Can Be Any Ghost-Roles (Will change team respectively)",
   "MaxImpGhostRole": "Max Impostor Ghost-Roles",
   "MaxCrewGhostRole": "Max Crewmate Ghost-Roles",
   "DefaultAngelCooldown": "Default Ability Cooldown",

@@ -1,4 +1,5 @@
 ﻿using AmongUs.Data;
+using AmongUs.GameOptions;
 using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
@@ -103,12 +104,12 @@ class ExileControllerWrapUpPatch
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
             // Check Anti BlackOut
-            if (player.GetCustomRole().IsImpostor() 
-                && !player.IsAlive() // if player is dead impostor
-                && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
-            {
-                player.ResetPlayerCam(1f);
-            }
+           // if (player.GetCustomRole().IsImpostor() 
+           //     && !player.IsAlive() // if player is dead impostor
+           //     && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
+          //  {
+          //      player.ResetPlayerCam(1f);
+          //  }
 
             // Check for remove pet
             player.RpcRemovePet();
@@ -180,14 +181,28 @@ class ExileControllerWrapUpPatch
                         player?.SetRealKiller(player, true);
 
                     // Reset player cam for dead desync impostor
-                    if (player.HasDesyncRole())
-                    {
-                        player?.ResetPlayerCam(1f);
-                    }
+                   // if (player.HasDesyncRole())
+                    //{
+                    //    player?.ResetPlayerCam(1f);
+                   // }
 
                     MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
+
+
+                //Kill off GAS again
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
+                {
+                    foreach (var reciever in Main.AllPlayerControls)
+                    {
+                        if (reciever.OwnedByHost()) continue;
+                        RoleTypes typa = pc == reciever ? RoleTypes.GuardianAngel : RoleTypes.CrewmateGhost;
+                        pc.RpcSetRoleDesync(typa, reciever.GetClientId());
+                    }
+                    //pc.ResetPlayerCam();
+                    //pc.RpcSetRoleDesync(RoleTypes.GuardianAngel, pc.GetClientId());
+                }
 
             }, 0.8f, "AfterMeetingDeathPlayers Task");
         }

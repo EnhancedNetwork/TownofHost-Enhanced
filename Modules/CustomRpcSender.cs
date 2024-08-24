@@ -3,6 +3,8 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
+using TOHE.Roles.Core.AssignManager;
+using static TOHE.SelectRolesPatch;
 
 namespace TOHE;
 
@@ -226,23 +228,5 @@ public class CustomRpcSender
         InRootMessage, //StartMessage～EndMessageの間の状態 StartRpcとEndMessageを実行可能
         InRpc, //StartRpc～EndRpcの間の状態 WriteとEndRpcを実行可能
         Finished, //送信後 何もできない
-    }
-}
-
-public static class CustomRpcSenderExtensions
-{
-    public static void RpcSetRole(this CustomRpcSender sender, PlayerControl player, RoleTypes role, int targetClientId = -1)
-    {
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetRole, targetClientId)
-            .Write((ushort)role)
-            .Write(false)
-            .EndRpc();
-    }
-    public static void RpcMurderPlayerV3(this CustomRpcSender sender, PlayerControl player, PlayerControl target, int targetClientId = -1)
-    {
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer, targetClientId)
-            .WriteNetObject(target)
-            .Write((int)ExtendedPlayerControl.ResultFlags)
-            .EndRpc();
     }
 }

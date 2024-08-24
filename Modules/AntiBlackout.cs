@@ -1,8 +1,10 @@
+﻿using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using TOHE.Roles.Core.AssignManager;
 
 namespace TOHE;
 
@@ -11,7 +13,8 @@ public static class AntiBlackout
     ///<summary>
     /// Check num alive Impostors & Crewmates & NeutralKillers
     ///</summary>
-    public static bool BlackOutIsActive => !Options.DisableAntiBlackoutProtects.GetBool() && CheckBlackOut();
+    public static bool BlackOutIsActive => false; /*!Options.DisableAntiBlackoutProtects.GetBool() && CheckBlackOut();*/
+    public static int ExilePlayerId = -1;
 
     ///<summary>
     /// Count alive players and check black out 
@@ -72,6 +75,8 @@ public static class AntiBlackout
 
     public static void SetIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
+        TempReviveGuardianAngels();
+        SetRole();
         logger.Info($"SetIsDead is called from {callerMethodName}");
         if (IsCached)
         {
@@ -91,6 +96,7 @@ public static class AntiBlackout
     }
     public static void RestoreIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
+
         logger.Info($"RestoreIsDead is called from {callerMethodName}");
         foreach (var info in GameData.Instance.AllPlayers)
         {
@@ -235,6 +241,44 @@ public static class AntiBlackout
         {
             Logger.Error($"{error}", "AntiBlackout.AfterMeetingTasks");
         }
+    }
+    private static void TempReviveGuardianAngels() // FUCK IT WE BALL 🗣💯💯
+    {
+        if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
+
+        foreach (var pc in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
+        {
+            foreach (var reciever in Main.AllPlayerControls)
+            {
+                if (reciever.OwnedByHost()) continue;
+                pc.RpcSetRoleDesync(RoleTypes.Impostor, reciever.GetClientId());
+            }
+        }
+    }
+    private static void SetRole()
+    {
+        if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
+
+        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != ExilePlayerId && x.HasKillButton()).ToList();
+
+        foreach (var pc in Main.AllPlayerControls.Where(x => !x.Data.Disconnected))
+        {
+            if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
+            if (pc.IsAlive() && (pc.GetCustomRole().IsDesyncRole())) continue;
+
+
+            foreach (var dummy in list)
+            {
+                if (pc.GetCustomRole().IsImpostor() && !pc.IsSameTeammate(dummy, out _) && pc.IsAlive()) continue;
+                dummy.RpcSetRoleDesync(dummy.GetCustomRole().GetRoleTypes(), pc.GetClientId());
+            }
+
+            foreach (var dead in Main.AllPlayerControls.Where(x => !x.Data.Disconnected && x.Data.IsDead))
+            {
+                dead.RpcSetRoleDesync(RoleTypes.CrewmateGhost, pc.GetClientId());
+            }
+        }
+        ExilePlayerId = -1;
     }
     public static void Reset()
     {

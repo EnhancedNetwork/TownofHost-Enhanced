@@ -379,6 +379,21 @@ public static class Utils
     {
         return GetString("DeathReason." + Enum.GetName(typeof(PlayerState.DeathReason), status));
     }
+
+    public static void SyncGeneralOptions(this PlayerControl player)
+    {
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame) return;
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncGeneralOptions, SendOption.Reliable, -1);
+        writer.Write(player.PlayerId);
+        writer.WritePacked((int)player.GetCustomRole());
+        writer.Write(Main.PlayerStates[player.PlayerId].IsDead);
+        writer.Write(Main.PlayerStates[player.PlayerId].Disconnected);
+        writer.WritePacked((int)Main.PlayerStates[player.PlayerId].deathReason);
+        writer.Write(Main.AllPlayerKillCooldown[player.PlayerId]);
+        writer.Write(Main.AllPlayerSpeed[player.PlayerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
     public static float GetDistance(Vector2 pos1, Vector2 pos2) => Vector2.Distance(pos1, pos2);
     public static Color GetRoleColor(CustomRoles role)
     {
@@ -1673,7 +1688,25 @@ public static class Utils
     }
     public static List<PlayerControl> GetPlayerListByRole(this CustomRoles role)
         => GetPlayerListByIds(Main.PlayerStates.Values.Where(x => x.MainRole == role).Select(r => r.PlayerId));
-    
+    public static bool IsSameTeammate(this PlayerControl player, PlayerControl target, out Custom_Team team)
+    {
+        team = default;
+        if (player.IsAnySubRole(x => x.IsConverted()))
+        {
+            var Compare = player.GetCustomSubRoles().First(x => x.IsConverted());
+
+            team = player.Is(CustomRoles.Madmate) ? Custom_Team.Impostor : Custom_Team.Neutral;
+            return target.Is(Compare);
+        }
+        else if (!target.IsAnySubRole(x => x.IsConverted()))
+        {
+            team = player.GetCustomRole().GetCustomRoleTeam();
+            return target.Is(team);
+        }
+
+
+        return false;
+    }
     public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
     {
         try

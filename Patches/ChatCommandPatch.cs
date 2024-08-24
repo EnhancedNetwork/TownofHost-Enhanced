@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using Assets.CoreScripts;
 using Hazel;
 using System;
@@ -186,6 +187,7 @@ internal class ChatCommands
                     canceled = true;
                     Utils.SendMessage(GetString("Message.ApocalypseInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
                     break;
+
 
                 case "/rn":
                 case "/rename":
@@ -945,7 +947,7 @@ internal class ChatCommands
                         if (setRole == roleName)
                         {
                             PlayerControl.LocalPlayer.GetRoleClass()?.OnRemove(PlayerControl.LocalPlayer.PlayerId);
-                            PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes());
+                            PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes(), true);
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
                             PlayerControl.LocalPlayer.GetRoleClass().OnAdd(PlayerControl.LocalPlayer.PlayerId);
                             Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);

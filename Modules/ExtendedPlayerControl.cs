@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using MonoMod.Cil;
 using System;
 using System.Text;
 using TOHE.Modules;
@@ -12,14 +13,15 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride = false)
+    public static void SetRole(this PlayerControl player, RoleTypes role/*, bool canOverride = false*/)
     {
-        player.StartCoroutine(player.CoSetRole(role, canOverride));
+        player.StartCoroutine(player.CoSetRole(role, true));
     }
 
     public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role)
@@ -32,7 +34,7 @@ static class ExtendedPlayerControl
         {
             if (Cleanser.CantGetAddon() && player.Is(CustomRoles.Cleansed)) return;
             if (role == CustomRoles.Cleansed) Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
-            else Main.PlayerStates[player.PlayerId].SetSubRole(role);            
+            else Main.PlayerStates[player.PlayerId].SetSubRole(role);
         }
         if (AmongUsClient.Instance.AmHost)
         {
@@ -249,17 +251,78 @@ static class ExtendedPlayerControl
         writer.WritePacked(ventId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role, bool canOverride, int clientId)
+    /// <summary>
+    /// Revives the player if the given roletype is alive and player is dead.
+    /// </summary>
+    /// <param name="roleTypes">The type to change into</param>
+    /// <param name="IsDesyncImpostor">If the player should be desynced from impostor teammates</param>
+    /// <param name="FellowImps">Will only function if <paramref name="IsDesyncImpostor"/> is active and makes it so you can't kill them, neither can they kill you</param>
+    public static void RpcRevive(this PlayerControl player, RoleTypes roleTypes, bool IsDesyncImpostor = false, List<PlayerControl> FellowImps = null)
+    {
+        if (player.Data.IsDead == false || roleTypes is RoleTypes.GuardianAngel or RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
+        {
+            Logger.Warn($"Invalid Revive for {player.GetRealName()} of roletype: {roleTypes} / Player was already alive? {!player.Data.IsDead}", "RpcRevive");
+            return;
+        }
+
+        player.RpcChangeRoleBasis(roleTypes, IsDesyncImpostor, FellowImps);
+        Main.PlayerStates[player.PlayerId].IsDead = false;
+        player.SetKillCooldown();
+        player.SyncGeneralOptions();
+    }
+
+    /// <summary>
+    /// Changes the Role Basis of player during the game.
+    /// </summary>
+    /// <param name="roleTypes">The type to change into</param>
+    /// <param name="IsDesyncImpostor">If the player should be desynced from impostor teammates</param>
+    /// <param name="FellowImps">Will only function if <paramref name="IsDesyncImpostor"/> is active and makes it so you can't kill them, neither can they kill you</param>
+    public static void RpcChangeRoleBasis(this PlayerControl player, RoleTypes roleTypes, bool IsDesyncImpostor = false, List<PlayerControl> FellowImps = null) 
+    {
+        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
+        FellowImps ??= [];
+
+        if (IsDesyncImpostor && roleTypes is RoleTypes.Impostor or RoleTypes.Shapeshifter or RoleTypes.Phantom)
+        {
+            foreach (var seer in Main.AllPlayerControls)
+            {
+                if (seer.PlayerId == player.PlayerId) continue;
+                RoleTypes Typa = RoleTypes.Scientist;
+                RoleTypes Typatwo = RoleTypes.Scientist;
+
+                if (seer.GetCustomRole() is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE) Typa = RoleTypes.Noisemaker;
+                else if (FellowImps.Contains(seer) && seer.HasKillButton())
+                {
+                    Typa = seer.GetCustomRole().GetVNRole().GetRoleTypes();
+                    Typatwo = seer.GetCustomRole().GetVNRole().GetRoleTypes(); 
+                }
+                else if (!seer.HasKillButton())
+                {
+                    Typatwo = roleTypes;
+                }
+
+                seer.RpcSetRoleDesync(Typa, player.GetClientId());
+                player.RpcSetRoleDesync(Typatwo, seer.GetClientId());
+            }
+            player.RpcSetRoleDesync(roleTypes, player.GetClientId());
+        }
+        else
+        {
+            player.RpcSetRole(roleTypes, true);
+        }
+
+    }
+    public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role,/* bool canOverride,*/ int clientId)
     {
         if (player == null) return;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
-            player.SetRole(role, canOverride);
+            player.SetRole(role);
             return;
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
         writer.Write((ushort)role);
-        writer.Write(canOverride);
+        writer.Write(true);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 

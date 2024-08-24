@@ -1869,11 +1869,10 @@ public static class PlayerControlDiePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
 class PlayerControlSetRolePatch
 {
-    public static readonly Dictionary<byte, bool> DidSetGhost = [];
     private static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole)
     {
-        // canOverrideRole = true; /* set this to true no matter the case */
+        canOverrideRole = true;
         if (GameStates.IsHideNSeek || __instance == null) return true;
         if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
 
@@ -1883,8 +1882,6 @@ class PlayerControlSetRolePatch
         // Ghost assign
         if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
         {
-            if (DidSetGhost.TryGetValue(target.PlayerId, out var isGhost) && isGhost) // Prevent double assignment if player gets killed as a ghost
-                return false;
 
             try
             {
@@ -1923,7 +1920,14 @@ class PlayerControlSetRolePatch
             if (ghostRoles.All(kvp => kvp.Value == RoleTypes.GuardianAngel))
             {
                 roleType = RoleTypes.GuardianAngel;
-                return true;
+                __instance.RpcSetRoleDesync(RoleTypes.GuardianAngel, __instance.GetClientId());
+                foreach (var seer in Main.AllPlayerControls)
+                {
+                    if (seer == __instance) continue;
+                    __instance.RpcSetRoleDesync(RoleTypes.CrewmateGhost, seer.GetClientId());
+                }
+                GhostRoleAssign.CreateGAMessage(__instance);
+                return false;
             }
             // If all players see player as Crewmate Ghost
             else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
@@ -1943,7 +1947,7 @@ class PlayerControlSetRolePatch
                 {
                     if (seer == null || target == null) continue;
                     Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
-                    target.RpcSetRoleDesync(role, false, seer.GetClientId());
+                    target.RpcSetRoleDesync(role, seer.GetClientId());
                 }
                 return false;
             }
@@ -1957,66 +1961,11 @@ class PlayerControlSetRolePatch
 
         try
         {
-            if (roleType == RoleTypes.GuardianAngel && !DidSetGhost.ContainsKey(__instance.PlayerId))
-            {
-                Utils.NotifyRoles(SpecifyTarget: __instance);
-                _ = new LateTask(() => {
-
-                    __instance.RpcResetAbilityCooldown();
-
-                    if (Options.SendRoleDescriptionFirstMeeting.GetBool())
-                    {
-                        var host = PlayerControl.LocalPlayer;
-                        var name = host.Data.PlayerName;
-                        var lp = __instance;
-                        var sb = new StringBuilder();
-                        var conf = new StringBuilder();
-                        var role = __instance.GetCustomRole();
-                        var rlHex = Utils.GetRoleColorCode(role);
-                        sb.Append(Utils.GetRoleTitle(role) + lp.GetRoleInfo(true));
-                        if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                            Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref conf);
-                        var cleared = conf.ToString();
-                        conf.Clear().Append($"<size={ChatCommands.Csize}>" + $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n" + cleared + "</size>");
-
-                        var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
-                        writer.StartMessage(__instance.GetClientId());
-                        writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
-                            .Write(host.Data.NetId)
-                            .Write(Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")))
-                            .EndRpc();
-                        writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
-                            .Write(sb.ToString())
-                            .EndRpc();
-                        writer.EndMessage();
-                        writer.SendMessage();
-
-                        var writer2 = CustomRpcSender.Create("SendGhostRoleConfig", SendOption.None);
-                        writer2.StartMessage(__instance.GetClientId());
-                        writer2.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
-                            .Write(conf.ToString())
-                            .EndRpc();
-                        writer2.StartRpc(host.NetId, (byte)RpcCalls.SetName)
-                            .Write(host.Data.NetId)
-                            .Write(name)
-                            .EndRpc();
-                        writer2.EndMessage();
-                        writer2.SendMessage();
-
-                        // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
-
-                    }
-
-                }, 0.1f, $"SetGuardianAngel for playerId: {__instance.PlayerId}");
-            }
+            
 
             if (__runOriginal)
             {
                 Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");
-
-                if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel)
-                    if (!DidSetGhost.ContainsKey(__instance.PlayerId))
-                        DidSetGhost.Add(__instance.PlayerId, true);
             }
         }
         catch (Exception e)

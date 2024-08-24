@@ -11,7 +11,7 @@ internal class Sheriff : RoleBase
     private const int Id = 11200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Sheriff);
     public override bool IsDesyncRole => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor; 
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
