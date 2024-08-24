@@ -44,50 +44,53 @@ static class VentSystemDeterioratePatch
                 writer.StartMessage(6);
                 writer.Write(AmongUsClient.Instance.GameId);
                 writer.WritePacked(pc.GetClientId());
-                writer.StartMessage(1);
-                writer.WritePacked(ShipStatus.Instance.NetId);
-                writer.StartMessage((byte)SystemTypes.Ventilation);
-                int vents = 0;
-                foreach (var vent in ShipStatus.Instance.AllVents)
                 {
-                    if (!pc.CanUseVent())
-                        ++vents;
-                }
-                List<NetworkedPlayerInfo> AllPlayers = [];
-                foreach (var playerInfo in GameData.Instance.AllPlayers)
-                {
-                    if (playerInfo != null && !playerInfo.Disconnected)
-                        AllPlayers.Add(playerInfo);
-                }
-                int maxVents = Math.Min(vents, AllPlayers.Count);
-                int blockedVents = 0;
-                writer.WritePacked(maxVents);
-                foreach (var vent in pc.GetVentsFromClosest())
-                {
-                    if (!pc.CanUseVent())
+                    writer.StartMessage(1);
+                    writer.WritePacked(ShipStatus.Instance.NetId);
                     {
-                        writer.Write(AllPlayers[blockedVents].PlayerId);
-                        writer.Write((byte)vent.Id);
-                        ++blockedVents;
+                        writer.StartMessage((byte)SystemTypes.Ventilation);
+                        int vents = 0;
+                        foreach (var vent in ShipStatus.Instance.AllVents)
+                        {
+                            if (!pc.CanUseVent())
+                                ++vents;
+                        }
+                        List<NetworkedPlayerInfo> AllPlayers = [];
+                        foreach (var playerInfo in GameData.Instance.AllPlayers)
+                        {
+                            if (playerInfo != null && !playerInfo.Disconnected)
+                                AllPlayers.Add(playerInfo);
+                        }
+                        int maxVents = Math.Min(vents, AllPlayers.Count);
+                        int blockedVents = 0;
+                        writer.WritePacked(maxVents);
+                        foreach (var vent in pc.GetVentsFromClosest())
+                        {
+                            if (!pc.CanUseVent())
+                            {
+                                writer.Write(AllPlayers[blockedVents].PlayerId);
+                                writer.Write((byte)vent.Id);
+                                ++blockedVents;
+                            }
+                            if (blockedVents >= maxVents)
+                                break;
+                        }
+                        writer.WritePacked(__instance.PlayersInsideVents.Count);
+                        foreach (Il2CppSystem.Collections.Generic.KeyValuePair<byte, byte> keyValuePair2 in __instance.PlayersInsideVents)
+                        {
+                            writer.Write(keyValuePair2.Key);
+                            writer.Write(keyValuePair2.Value);
+                        }
+                        writer.EndMessage();
                     }
-                    if (blockedVents >= maxVents)
-                        break;
+                    writer.EndMessage();
                 }
-                writer.WritePacked(__instance.PlayersInsideVents.Count);
-                foreach (Il2CppSystem.Collections.Generic.KeyValuePair<byte, byte> keyValuePair2 in __instance.PlayersInsideVents)
-                {
-                    writer.Write(keyValuePair2.Key);
-                    writer.Write(keyValuePair2.Value);
-                }
-                writer.EndMessage();
-                writer.EndMessage();
                 writer.EndMessage();
                 AmongUsClient.Instance.SendOrDisconnect(writer);
                 writer.Recycle();
             }
         }
     }
-    public static bool CanUseVent(this PlayerControl player) => player.CanUseImpostorVentButton() || player.Data.Role.Role == RoleTypes.Engineer;
     public static bool BlockVentInteraction(PlayerControl pc)
     {
         if (!pc.AmOwner && !pc.IsModClient() && !pc.Data.IsDead && !pc.CanUseVent())
@@ -114,43 +117,47 @@ static class VentSystemDeterioratePatch
                 writer.StartMessage(6);
                 writer.Write(AmongUsClient.Instance.GameId);
                 writer.WritePacked(pc.GetClientId());
-                writer.StartMessage(1);
-                writer.WritePacked(ShipStatus.Instance.NetId);
-                writer.StartMessage((byte)SystemTypes.Ventilation);
-                int vents = 0;
-                foreach (var vent in ShipStatus.Instance.AllVents)
                 {
-                    if (!pc.CanUseVent())
-                        ++vents;
-                }
-                List<NetworkedPlayerInfo> AllPlayers = [];
-                foreach (var playerInfo in GameData.Instance.AllPlayers)
-                {
-                    if (playerInfo != null && !playerInfo.Disconnected)
-                        AllPlayers.Add(playerInfo);
-                }
-                int maxVents = Math.Min(vents, AllPlayers.Count);
-                int blockedVents = 0;
-                writer.WritePacked(maxVents);
-                foreach (var vent in pc.GetVentsFromClosest())
-                {
-                    if (!pc.CanUseVent())
+                    writer.StartMessage(1);
+                    writer.WritePacked(ShipStatus.Instance.NetId);
                     {
-                        writer.Write(AllPlayers[blockedVents].PlayerId);
-                        writer.Write((byte)vent.Id);
-                        ++blockedVents;
+                        writer.StartMessage((byte)SystemTypes.Ventilation);
+                        int vents = 0;
+                        foreach (var vent in ShipStatus.Instance.AllVents)
+                        {
+                            if (!pc.CanUseVent())
+                                ++vents;
+                        }
+                        List<NetworkedPlayerInfo> AllPlayers = [];
+                        foreach (var playerInfo in GameData.Instance.AllPlayers)
+                        {
+                            if (playerInfo != null && !playerInfo.Disconnected)
+                                AllPlayers.Add(playerInfo);
+                        }
+                        int maxVents = Math.Min(vents, AllPlayers.Count);
+                        int blockedVents = 0;
+                        writer.WritePacked(maxVents);
+                        foreach (var vent in pc.GetVentsFromClosest())
+                        {
+                            if (!pc.CanUseVent())
+                            {
+                                writer.Write(AllPlayers[blockedVents].PlayerId);
+                                writer.Write((byte)vent.Id);
+                                ++blockedVents;
+                            }
+                            if (blockedVents >= maxVents)
+                                break;
+                        }
+                        writer.WritePacked(__instance.PlayersInsideVents.Count);
+                        foreach (Il2CppSystem.Collections.Generic.KeyValuePair<byte, byte> keyValuePair2 in __instance.PlayersInsideVents)
+                        {
+                            writer.Write(keyValuePair2.Key);
+                            writer.Write(keyValuePair2.Value);
+                        }
+                        writer.EndMessage();
                     }
-                    if (blockedVents >= maxVents)
-                        break;
+                    writer.EndMessage();
                 }
-                writer.WritePacked(__instance.PlayersInsideVents.Count);
-                foreach (Il2CppSystem.Collections.Generic.KeyValuePair<byte, byte> keyValuePair2 in __instance.PlayersInsideVents)
-                {
-                    writer.Write(keyValuePair2.Key);
-                    writer.Write(keyValuePair2.Value);
-                }
-                writer.EndMessage();
-                writer.EndMessage();
                 writer.EndMessage();
                 AmongUsClient.Instance.SendOrDisconnect(writer);
                 writer.Recycle();
@@ -166,7 +173,9 @@ static class VentSystemDeterioratePatch
                     writer.WritePacked(ShipStatus.Instance.NetId);
                     {
                         writer.StartMessage((byte)SystemTypes.Ventilation);
-                        __instance.Serialize(writer, false);
+                        {
+                            __instance.Serialize(writer, false);
+                        }
                         writer.EndMessage();
                     }
                     writer.EndMessage();

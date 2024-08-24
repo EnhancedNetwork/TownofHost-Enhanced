@@ -413,9 +413,7 @@ static class ExtendedPlayerControl
     public static List<Vent> GetVentsFromClosest(this PlayerControl player)
     {
         Vector2 playerpos = player.transform.position;
-        List<Vent> vents = new();
-        foreach (var vent in ShipStatus.Instance.AllVents)
-            vents.Add(vent);
+        List<Vent> vents = [.. ShipStatus.Instance.AllVents];
         vents.Sort((v1, v2) => Vector2.Distance(playerpos, v1.transform.position).CompareTo(Vector2.Distance(playerpos, v2.transform.position)));
         return vents;
     }
@@ -678,6 +676,7 @@ static class ExtendedPlayerControl
             _ => false
         };
     }
+    public static bool CanUseVent(this PlayerControl player) => player.CanUseImpostorVentButton() || player.Data.Role.Role == RoleTypes.Engineer;
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
         if (!pc.IsAlive()) return false;
