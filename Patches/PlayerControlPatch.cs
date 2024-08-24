@@ -723,7 +723,7 @@ class CmdCheckAppearPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckVanish))]
 class CheckVanishPatch
 {
-    public static bool Prefix(PlayerControl __instance)
+    public static bool Prefix(/*PlayerControl __instance*/)
     {
         return true;
     }
@@ -733,7 +733,7 @@ class CheckVanishPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckAppear))]
 class CheckAppearPatch
 {
-    public static bool Prefix(PlayerControl __instance, bool shouldAnimate)
+    public static bool Prefix(/*PlayerControl __instance, bool shouldAnimate*/)
     {
         return true;
     }
@@ -1749,7 +1749,7 @@ class PlayerControlCheckNamePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckName))]
 class CmdCheckNameVersionCheckPatch
 {
-    public static void Postfix(PlayerControl __instance)
+    public static void Postfix()
     {
         RPC.RpcVersionCheck();
     }
@@ -1955,7 +1955,7 @@ class PlayerControlSetRolePatch
 
         return true;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole, bool __runOriginal)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes roleType, bool __runOriginal)
     {
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
 
@@ -1976,7 +1976,7 @@ class PlayerControlSetRolePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoSetRole))]
 class PlayerControlLocalSetRolePatch
 {
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role, [HarmonyArgument(1)] bool canOverrideRole)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
     {
         if (!AmongUsClient.Instance.AmHost && GameStates.IsNormalGame && !GameStates.IsModHost)
         {

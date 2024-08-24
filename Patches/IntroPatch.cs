@@ -220,7 +220,7 @@ class SetUpRoleTextPatch
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
 class CoBeginPatch
 {
-    public static void Prefix(IntroCutscene __instance)
+    public static void Prefix()
     {
         //if (RoleBasisChanger.IsChangeInProgress) return;
 
