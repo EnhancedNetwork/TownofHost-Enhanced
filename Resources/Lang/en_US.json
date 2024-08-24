@@ -1363,7 +1363,7 @@
   "DoubleAgent_DiffusedAgitaterBomb": "Agitator bomb successfully diffused",
   "DoubleAgent_DiffusedBastionBomb": "Bastion bomb successfully diffused",
   "DoubleAgent_BombExplodesIn": "Bomb Explodes In: {0}s",
-  "DoubleAgent_BombExploded": "Bomb has exploited!",
+  "DoubleAgent_BombExploded": "Bomb has exploded!",
   "DoubleAgentChangeRoleTo": "Change role on last <color=#ff1919>Imposter</color>",
   "DoubleAgentRoleChange": "You have become a: ",
 

@@ -39,7 +39,8 @@ public static class MessageReaderUpdateSystemPatch
             or SystemTypes.Security
             or SystemTypes.Decontamination
             or SystemTypes.Decontamination2
-            or SystemTypes.Decontamination3) return true;
+            or SystemTypes.Decontamination3
+            or SystemTypes.MedBay) return true;
 
         if (GameStates.IsHideNSeek) return true;
 
@@ -59,7 +60,8 @@ public static class MessageReaderUpdateSystemPatch
             or SystemTypes.Security
             or SystemTypes.Decontamination
             or SystemTypes.Decontamination2
-            or SystemTypes.Decontamination3) return;
+            or SystemTypes.Decontamination3
+            or SystemTypes.MedBay) return;
 
         if (GameStates.IsHideNSeek) return;
 

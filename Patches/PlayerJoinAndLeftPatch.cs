@@ -371,14 +371,25 @@ class OnPlayerLeftPatch
 
                 if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
 
-                Main.PlayerStates[data.Character.PlayerId].Disconnected = true;
-                Main.PlayerStates[data.Character.PlayerId].SetDead();
+                var state = Main.PlayerStates[data.Character.PlayerId];
+                state.Disconnected = true;
+                state.SetDead();
 
                 // if the player left while he had a Notice message, clear it
                 if (NameNotifyManager.Notifying(data.Character))
                 {
                     NameNotifyManager.Notice.Remove(data.Character.PlayerId);
                     //Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
+                }
+
+                if (AmongUsClient.Instance.AmHost)
+                {
+                    try
+                    {
+                        data.Character.RpcSetName(state.NormalOutfit.PlayerName);
+                    }
+                    catch
+                    { }
                 }
 
                 AntiBlackout.OnDisconnect(data.Character.Data);

@@ -564,8 +564,8 @@ public static class Utils
         }
 
         if (playerData.Disconnected) return false;
-        if (playerData.Role.IsImpostor)
-            hasTasks = false; //Tasks are determined based on CustomRole
+        //if (playerData.Role.IsImpostor)
+        //    hasTasks = false; //Tasks are determined based on CustomRole
 
         if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
         if (playerData.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
@@ -584,7 +584,7 @@ public static class Utils
                 break;
             default:
                 // player based on an impostor not should have tasks
-                if (States.RoleClass.ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter)
+                if (States.RoleClass.ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom)
                     hasTasks = false;
                 break;
         }
@@ -601,7 +601,6 @@ public static class Utils
                 case CustomRoles.Contagious:
                 case CustomRoles.Soulless:
                 case CustomRoles.Rascal:
-                    //Lovers don't count the task as a win
                     hasTasks &= !ForRecompute;
                     break;
                 case CustomRoles.Mundane:
