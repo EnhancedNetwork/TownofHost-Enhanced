@@ -50,7 +50,7 @@ static class VentSystemDeterioratePatch
         {
             //foreach (var vent in ShipStatus.Instance.AllVents)
             //{
-            //    if (!(pc.Data.Role.Role == RoleTypes.Engineer || pc.Data.Role.IsImpostor))
+            //    if ()
             //        return true;
             //}
 
@@ -73,6 +73,9 @@ static class VentSystemDeterioratePatch
             }
         }
     }
+    /// <summary>
+    /// Block specifics vent use or all vents
+    /// </summary>
     private static void RpcCloseVent(this PlayerControl pc, VentilationSystem __instance)
     {
         MessageWriter writer = MessageWriter.Get(SendOption.None);

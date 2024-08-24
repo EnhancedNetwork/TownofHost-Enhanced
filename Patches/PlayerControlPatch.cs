@@ -1555,7 +1555,9 @@ class CoEnterVentPatch
             {
                 _ = new LateTask(() => __instance?.RpcBootFromVent(id), 0.5f, "Prevent Enter Vents");
             }
-            //return false;
+            // Returning false causes errors in the logs
+            // I don’t yet know how to patch the IEnumerator function in Harmony, but need to send false in a certain place
+            return false;
         }
 
         playerRoleClass?.OnCoEnterVent(__instance, id);

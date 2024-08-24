@@ -418,6 +418,10 @@ static class ExtendedPlayerControl
         return vents;
     }
 
+    /// <summary>
+    /// Update vent interaction if player again can use vent
+    /// Or vice versa if he cannot use it
+    /// </summary>
     public static void RpcSetVentInteraction(this PlayerControl player)
     {
         VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>(), player);
