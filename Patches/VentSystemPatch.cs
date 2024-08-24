@@ -1,6 +1,4 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using Il2CppSystem.Linq.Expressions;
+﻿using Hazel;
 using System;
 
 namespace TOHE.Patches;
