@@ -608,6 +608,7 @@ internal class SelectRolesPatch
         {
             Utils.ErrorEnd("Set Roles After Select");
             Utils.ThrowException(ex);
+            Logger.Error(ex.ToString(), "SetRolesAfterSelect");
         }
     }
     private static void AssignCustomRole(CustomRoles role, PlayerControl player)

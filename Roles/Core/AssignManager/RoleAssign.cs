@@ -183,7 +183,7 @@ public class RoleAssign
         Logger.Info(string.Join(", ", Roles[RoleAssignType.Crewmate].Select(x => x.Role.ToString())), "Selected-Crew-Roles");
         Logger.Msg("======================================================", "SelectedRoles");
 
-        var AllPlayers = Main.AllAlivePlayerControls.ToList();
+        var AllPlayers = Main.AllPlayerControls.ToList();
 
         // Players on the EAC banned list will be assigned as GM when opening rooms
         if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()))
