@@ -359,16 +359,12 @@ internal class SelectRolesPatch
                     );
                 }
 
-                //Utils.CountAlivePlayers(true);
-
                 EAC.LogAllRoles();
                 Utils.SyncAllSettings();
-
                 return;
             }
 
             Logger.Msg("Is Started", "AssignRoles");
-            //Main.AssignRolesIsStarted = true;
 
             //Initialization of CustomRpcSender and RpcSetRoleReplacer
             RpcSetRoleReplacer.StartReplace();
@@ -722,10 +718,6 @@ internal class SelectRolesPatch
                     .Write((ushort)roleType)
                     .Write(true)
                     .EndRpc();
-
-                //Fix host
-                //if (RoleResult[target].IsImpostor() && RoleResult[seer].IsImpostor() && seer.OwnedByHost())
-                //    DestroyableSingleton<RoleBehaviour>.Instance.CanBeKilled = false;
             }
             SetSelfRoles();
 

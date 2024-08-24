@@ -280,7 +280,6 @@ static class ExtendedPlayerControl
         var playerRole = player.GetCustomRole();
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
 
-        var playerId = player.PlayerId;
         // When player change desync role to desync role
         // Or player change normal role to normal role
         if ((playerRole.IsDesyncRole() && newCustomRole.IsDesyncRole()) || (!playerRole.IsDesyncRole() && !newCustomRole.IsDesyncRole()))
@@ -303,36 +302,32 @@ static class ExtendedPlayerControl
             var isModded = player.OwnedByHost() || player.IsModClient();
             foreach (var target in Main.AllPlayerControls)
             {
-                var isSelf = target.PlayerId == player.PlayerId;
+                var isSelf = player.PlayerId == target.PlayerId;
                 if (isSelf)
                 {
                     if (isModded)
                     {
-                        RpcSetRoleReplacer.RoleMap[(player, target)] = (RoleTypes.Crewmate, newCustomRole);
-                        player.RpcSetRoleDesync(RoleTypes.Crewmate, player.GetClientId());
+                        if (newCustomRole.GetDYRole() == RoleTypes.Shapeshifter)
+                        {
+                            RpcSetRoleReplacer.RoleMap[(player, player)] = (RoleTypes.Shapeshifter, newCustomRole);
+                            player.RpcSetRoleDesync(RoleTypes.Shapeshifter, player.GetClientId());
+                        }
+                        else
+                        {
+                            RpcSetRoleReplacer.RoleMap[(player, player)] = (RoleTypes.Crewmate, newCustomRole);
+                            player.RpcSetRoleDesync(RoleTypes.Crewmate, player.GetClientId());
+                        }
                     }
                     else
                     {
-                        RpcSetRoleReplacer.RoleMap[(player, target)] = (RoleTypes.Impostor, newCustomRole);
+                        RpcSetRoleReplacer.RoleMap[(player, player)] = (RoleTypes.Impostor, newCustomRole);
                         player.RpcSetRoleDesync(RoleTypes.Impostor, player.GetClientId());
                     }
                 }
                 else
                 {
-                    var targetRole = target.GetCustomRole();
-                    if (targetRole is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE)
-                    {
-                        RpcSetRoleReplacer.RoleMap[(player, target)] = (RoleTypes.Noisemaker, targetRole);
-                        target.RpcSetRoleDesync(RoleTypes.Noisemaker, player.GetClientId());
-                    }
-                    else
-                    {
-                        RpcSetRoleReplacer.RoleMap[(player, target)] = (RoleTypes.Scientist, targetRole);
-                        target.RpcSetRoleDesync(RoleTypes.Scientist, player.GetClientId());
-                    }
-
-                    RpcSetRoleReplacer.RoleMap[(target, player)] = (RoleTypes.Scientist, playerRole);
-                    player.RpcSetRoleDesync(RoleTypes.Scientist, target.GetClientId());
+                    RpcSetRoleReplacer.RoleMap[(player, target)] = (RoleTypes.Scientist, newCustomRole);
+                    target.RpcSetRoleDesync(RoleTypes.Scientist, player.GetClientId());
                 }
             }
         }
