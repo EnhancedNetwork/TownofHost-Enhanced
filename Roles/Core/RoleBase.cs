@@ -87,9 +87,10 @@ public abstract class RoleBase
     public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
 
 
+    //this is a draft, it is not usable yet, Imma fix it in another PR
 
     /// <summary>
-    /// A generic method to set if someone (desync imps) should see each-other on the reveal screen.
+    /// A generic method to set if someone (desync imps) should see each-other on the reveal screen. (they will also not be able to kill eachother)
     /// </summary>
     public virtual void SetDesyncImpostorBuddies(ref Dictionary<PlayerControl, List<PlayerControl>> DesyncImpostorBuddy, PlayerControl caller)
     {
