@@ -625,6 +625,7 @@ internal class SelectRolesPatch
             var seerRole = RoleAssign.RoleResult[seer];
             foreach (var target in Main.AllPlayerControls)
             {
+                RoleTypes targetRoleType;
                 var isSelf = seer.PlayerId == target.PlayerId;
                 var targetRole = RoleAssign.RoleResult[target];
                 if (targetRole.IsDesyncRole())
@@ -634,16 +635,16 @@ internal class SelectRolesPatch
                         if (isModded)
                         {
                             if (targetRole.GetDYRole() == RoleTypes.Shapeshifter)
-                                RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Shapeshifter, seerRole);
+                                targetRoleType = RoleTypes.Shapeshifter;
                             else
-                                RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Crewmate, seerRole);
+                                targetRoleType = RoleTypes.Crewmate;
                         }
                         else
-                            RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Impostor, seerRole);
+                            targetRoleType = RoleTypes.Impostor;
                     }
                     else
                     {
-                        RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Scientist, targetRole);
+                        targetRoleType = RoleTypes.Scientist;
                     }
                 }
                 else
@@ -652,18 +653,19 @@ internal class SelectRolesPatch
                     {
                         if (target.GetCustomRole() is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE)
                         {
-                            RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Noisemaker, targetRole);
+                            targetRoleType = RoleTypes.Noisemaker;
                         }
                         else
                         {
-                            RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Scientist, targetRole);
+                            targetRoleType = RoleTypes.Scientist;
                         }
                     }
                     else
                     {
-                        RpcSetRoleReplacer.RoleMap[(seer, target)] = (targetRole.GetRoleTypes(), targetRole);
+                        targetRoleType = targetRole.GetRoleTypes();
                     }
                 }
+                RpcSetRoleReplacer.RoleMap[(seer, target)] = (targetRoleType, targetRole);
             }
         }
 

@@ -293,6 +293,7 @@ static class ExtendedPlayerControl
         // When player change normal role to desync role
         else if (!playerRole.IsDesyncRole() && newCustomRole.IsDesyncRole())
         {
+            RoleTypes targetRoleType;
             var isModded = player.OwnedByHost() || player.IsModClient();
             foreach (var target in Main.AllPlayerControls)
             {
@@ -303,26 +304,24 @@ static class ExtendedPlayerControl
                     {
                         if (newCustomRole.GetDYRole() == RoleTypes.Shapeshifter)
                         {
-                            RpcSetRoleReplacer.RoleMap[(player, player)] = (RoleTypes.Shapeshifter, newCustomRole);
-                            player.RpcSetRoleDesync(RoleTypes.Shapeshifter, player.GetClientId());
+                            targetRoleType = RoleTypes.Shapeshifter;
                         }
                         else
                         {
-                            RpcSetRoleReplacer.RoleMap[(player, player)] = (RoleTypes.Crewmate, newCustomRole);
-                            player.RpcSetRoleDesync(RoleTypes.Crewmate, player.GetClientId());
+                            targetRoleType = RoleTypes.Crewmate;
                         }
                     }
                     else
                     {
-                        RpcSetRoleReplacer.RoleMap[(player, player)] = (RoleTypes.Impostor, newCustomRole);
-                        player.RpcSetRoleDesync(RoleTypes.Impostor, player.GetClientId());
+                        targetRoleType = RoleTypes.Impostor;
                     }
                 }
                 else
                 {
-                    RpcSetRoleReplacer.RoleMap[(player, target)] = (RoleTypes.Scientist, newCustomRole);
-                    target.RpcSetRoleDesync(RoleTypes.Scientist, player.GetClientId());
+                    targetRoleType = RoleTypes.Scientist;
                 }
+                RpcSetRoleReplacer.RoleMap[(player, target)] = (targetRoleType, newCustomRole);
+                player.RpcSetRoleDesync(targetRoleType, target.GetClientId());
             }
         }
         // When player change desync role to desync role
