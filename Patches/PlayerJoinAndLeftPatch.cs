@@ -316,8 +316,7 @@ class OnPlayerLeftPatch
         {
             Logger.Warn($"Assign roles not ended, try remove player {data.Character.PlayerId} from role assign", "OnPlayerLeft");
             RoleAssign.RoleResult?.Remove(data.Character);
-            RpcSetRoleReplacer.senders?.Remove(data.Character.PlayerId);
-            RpcSetRoleReplacer.StoragedPlayerRoleData = RpcSetRoleReplacer.StoragedPlayerRoleData?.Where(x => x.Key.target != data.Character && x.Key.seer != data.Character).ToDictionary(x => x.Key, x => x.Value);
+            RpcSetRoleReplacer.Senders?.Remove(data.Character.PlayerId);
         }
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)

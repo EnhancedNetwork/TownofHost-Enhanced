@@ -123,7 +123,7 @@ class SetUpRoleTextPatch
         sb.Append("------------Player Names------------\n");
         foreach (var pc in allPlayerControlsArray)
         {
-            sb.Append($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{pc.cosmetics.nameText.text}({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", "")})\n");
+            sb.Append($"{(pc.AmOwner ? "[*]" : string.Empty),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{pc.cosmetics.nameText.text} ({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", string.Empty)})\n");
             pc.cosmetics.nameText.text = pc.name;
         }
 
@@ -608,24 +608,6 @@ class IntroCutsceneDestroyPatch
                     Main.GameIsLoaded = true;
                 }, 3f, "Set UnShapeShift Button");
             }
-
-
-            _ = new LateTask(() => {
-
-                foreach (var desyncPC in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && x.GetCustomRole().IsDesyncRole()))
-                {
-                    desyncPC.RpcChangeRoleBasis(desyncPC.GetCustomRole());
-                }
-
-                foreach (var seer1 in Main.AllPlayerControls)
-                {
-                    foreach (var target1 in Main.AllPlayerControls)
-                    {
-                        RpcSetRoleReplacer.RoleMap.TryGetValue((seer1.PlayerId, target1.PlayerId), out var map);
-                        Logger.Info($"seer {seer1?.Data?.PlayerName}-{seer1.PlayerId}, target {target1?.Data?.PlayerName}-{target1.PlayerId} => {map.roleType}, {map.customRole}", "Now Role Map");
-                    }
-                }
-            }, 0.1f, "Assign Impostor desync roles for crewmates"); 
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
             {

@@ -1961,8 +1961,6 @@ class PlayerControlSetRolePatch
 
         try
         {
-            
-
             if (__runOriginal)
             {
                 Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");

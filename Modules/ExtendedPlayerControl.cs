@@ -285,7 +285,7 @@ static class ExtendedPlayerControl
         // Or player change normal role to normal role
         if ((playerRole.IsDesyncRole() && newCustomRole.IsDesyncRole()) || (!playerRole.IsDesyncRole() && !newCustomRole.IsDesyncRole()))
         {
-            RpcSetRoleReplacer.RoleMap[(playerId, playerId)] = (newCustomRole.GetRoleTypes(), newCustomRole);
+            RpcSetRoleReplacer.RoleMap[(player, player)] = (newCustomRole.GetRoleTypes(), newCustomRole);
         }
         // When player change desync role to normal role
         else if (playerRole.IsDesyncRole() && !newCustomRole.IsDesyncRole())
@@ -293,7 +293,7 @@ static class ExtendedPlayerControl
             var newRoleType = newCustomRole.GetRoleTypes();
             foreach (var seer in Main.AllPlayerControls)
             {
-                RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (newRoleType, newCustomRole);
+                RpcSetRoleReplacer.RoleMap[(seer, player)] = (newRoleType, newCustomRole);
             }
             player.RpcSetRole(newRoleType, true);
         }
@@ -308,12 +308,12 @@ static class ExtendedPlayerControl
                 {
                     if (isModded)
                     {
-                        RpcSetRoleReplacer.RoleMap[(playerId, target.PlayerId)] = (RoleTypes.Crewmate, newCustomRole);
+                        RpcSetRoleReplacer.RoleMap[(player, target)] = (RoleTypes.Crewmate, newCustomRole);
                         player.RpcSetRoleDesync(RoleTypes.Crewmate, player.GetClientId());
                     }
                     else
                     {
-                        RpcSetRoleReplacer.RoleMap[(playerId, target.PlayerId)] = (RoleTypes.Impostor, newCustomRole);
+                        RpcSetRoleReplacer.RoleMap[(player, target)] = (RoleTypes.Impostor, newCustomRole);
                         player.RpcSetRoleDesync(RoleTypes.Impostor, player.GetClientId());
                     }
                 }
@@ -322,16 +322,16 @@ static class ExtendedPlayerControl
                     var targetRole = target.GetCustomRole();
                     if (targetRole is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE)
                     {
-                        RpcSetRoleReplacer.RoleMap[(playerId, target.PlayerId)] = (RoleTypes.Noisemaker, targetRole);
+                        RpcSetRoleReplacer.RoleMap[(player, target)] = (RoleTypes.Noisemaker, targetRole);
                         target.RpcSetRoleDesync(RoleTypes.Noisemaker, player.GetClientId());
                     }
                     else
                     {
-                        RpcSetRoleReplacer.RoleMap[(playerId, target.PlayerId)] = (RoleTypes.Scientist, targetRole);
+                        RpcSetRoleReplacer.RoleMap[(player, target)] = (RoleTypes.Scientist, targetRole);
                         target.RpcSetRoleDesync(RoleTypes.Scientist, player.GetClientId());
                     }
 
-                    RpcSetRoleReplacer.RoleMap[(target.PlayerId, playerId)] = (RoleTypes.Scientist, playerRole);
+                    RpcSetRoleReplacer.RoleMap[(target, player)] = (RoleTypes.Scientist, playerRole);
                     player.RpcSetRoleDesync(RoleTypes.Scientist, target.GetClientId());
                 }
             }

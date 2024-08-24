@@ -10,7 +10,6 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
-using static TOHE.Roles.Core.AssignManager.RoleAssign;
 
 namespace TOHE;
 
@@ -377,58 +376,17 @@ internal class SelectRolesPatch
             //Not in use rn, but is gonna make it able to have neutral players of the same team spawn together
             //Important to remember that all team players need to have all teamplayers in their lists
             //gonna make a seperate thing making so that it's a rolebasething in another PR.
-            Dictionary<PlayerControl, List<PlayerControl>> DesyncImpTeammates = [];
+            //Dictionary<PlayerControl, List<PlayerControl>> DesyncImpTeammates = [];
 
-            foreach (var blotnik in Main.AllPlayerControls)
-            {
-                RoleAssign.RoleResult[blotnik].GetStaticRoleClass().SetDesyncImpostorBuddies(ref DesyncImpTeammates, blotnik);
-            }
+            //foreach (var blotnik in Main.AllPlayerControls)
+            //{
+            //    RoleAssign.RoleResult[blotnik].GetStaticRoleClass().SetDesyncImpostorBuddies(ref DesyncImpTeammates, blotnik);
+            //}
 
-            foreach (var (target, role) in RoleAssign.RoleResult)
-            {
-                if (target == null) continue;
-
-                foreach (var seer in Main.AllPlayerControls)
-                {
-                    CustomRoles ResultRole = RoleAssign.RoleResult[seer];
-
-                    bool isSelf = seer == target;
-                    RoleTypes typa = role.GetRoleTypes();
-
-                    if (role is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE) typa = RoleTypes.Noisemaker;
-
-                    //Desynced Imps see others as scientist if they are not a teammate
-                    else if (!isSelf && ResultRole.IsDesyncRole() && !ResultRole.IsCrewmate() &&
-                        (!DesyncImpTeammates.TryGetValue(seer, out var teammates) || !teammates.Contains(target))) typa = RoleTypes.Scientist;
-
-                    //Other see the desynced-imp target as scientist if they are not a teammate or not an crew
-                    else if (!isSelf && role.IsDesyncRole() && !role.IsCrewmate() && !CheckSeerPassive(ResultRole) &&
-                        (!DesyncImpTeammates.TryGetValue(target, out var bracy) || !bracy.Contains(seer))) typa = RoleTypes.Scientist;
-
-                    //Crewmates are assigned later
-                    else if (role.IsCrewmate() && role.IsDesyncRole()) typa = RoleTypes.Crewmate;
-
-                    Logger.Warn($"Set Role for Target: {target.GetRealName(clientData: true)}|{role} Seer: {seer.GetRealName(clientData: true)}|{ResultRole} of RoleType: {typa}", "SetStoragedPlayerData");
-                    RpcSetRoleReplacer.StoragedPlayerRoleData[(target, seer)] = typa;
-                }
-
-               // Logger.Warn($"Set original role type => {pc.GetRealName()} : {role} => {role.GetRoleTypes()}", "Override Role Select");
-            }
-            static bool CheckSeerPassive(CustomRoles role)
-            {
-                return role.GetVNRole() is not CustomRoles.Impostor and not CustomRoles.Shapeshifter and not CustomRoles.Phantom;
-            }
+            CreateRoleMap();
 
             // Set RoleType by "RpcSetRole"
-            RpcSetRoleReplacer.Release(); //Write RpcSetRole for all players
-            RpcSetRoleReplacer.senders.Do(kvp => kvp.Value.SendMessage());
-
-            // Delete unwanted objects
-            RpcSetRoleReplacer.senders = null;
-            RpcSetRoleReplacer.StoragedPlayerRoleData = null;
-
-            //Main.AssignRolesIsStarted = false;
-            //Utils.ApplySuffix();
+            RpcSetRoleReplacer.Release();
 
             foreach (var pc in Main.AllPlayerControls)
             {
@@ -507,8 +465,6 @@ internal class SelectRolesPatch
                 foreach (var subRole in pair.Value.SubRoles.ToArray())
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
-
-
 
             GhostRoleAssign.Add();
 
@@ -637,8 +593,6 @@ internal class SelectRolesPatch
                     break;
             }
 
-            CreateRoleMap();
-
             GameOptionsSender.AllSenders.Clear();
             foreach (var pc in Main.AllPlayerControls)
             {
@@ -672,41 +626,46 @@ internal class SelectRolesPatch
         foreach (var seer in Main.AllPlayerControls)
         {
             var isModded = seer.OwnedByHost() || seer.IsModClient();
-            var seerRole = seer.GetCustomRole();
+            var seerRole = RoleAssign.RoleResult[seer];
             foreach (var target in Main.AllPlayerControls)
             {
                 var isSelf = seer.PlayerId == target.PlayerId;
-                var targetRole = target.GetCustomRole();
+                var targetRole = RoleAssign.RoleResult[target];
                 if (targetRole.IsDesyncRole())
                 {
                     if (isSelf)
                     {
                         if (isModded)
-                            RpcSetRoleReplacer.RoleMap[(seer.PlayerId, target.PlayerId)] = (RoleTypes.Crewmate, seerRole);
+                        {
+                            if (targetRole.GetDYRole() == RoleTypes.Shapeshifter)
+                                RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Shapeshifter, seerRole);
+                            else
+                                RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Crewmate, seerRole);
+                        }
                         else
-                            RpcSetRoleReplacer.RoleMap[(seer.PlayerId, target.PlayerId)] = (RoleTypes.Impostor, seerRole);
+                            RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Impostor, seerRole);
                     }
                     else
                     {
-                        RpcSetRoleReplacer.RoleMap[(seer.PlayerId, target.PlayerId)] = (RoleTypes.Scientist, targetRole);
+                        RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Scientist, targetRole);
                     }
                 }
                 else
                 {
-                    if (seerRole.IsDesyncRole())
+                    if (seerRole.IsDesyncRole() && !isModded)
                     {
                         if (target.GetCustomRole() is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE)
                         {
-                            RpcSetRoleReplacer.RoleMap[(seer.PlayerId, target.PlayerId)] = (RoleTypes.Noisemaker, targetRole);
+                            RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Noisemaker, targetRole);
                         }
                         else
                         {
-                            RpcSetRoleReplacer.RoleMap[(seer.PlayerId, target.PlayerId)] = (RoleTypes.Scientist, targetRole);
+                            RpcSetRoleReplacer.RoleMap[(seer, target)] = (RoleTypes.Scientist, targetRole);
                         }
                     }
                     else
                     {
-                        RpcSetRoleReplacer.RoleMap[(seer.PlayerId, target.PlayerId)] = (targetRole.GetRoleTypes(), targetRole);
+                        RpcSetRoleReplacer.RoleMap[(seer, target)] = (targetRole.GetRoleTypes(), targetRole);
                     }
                 }
             }
@@ -716,7 +675,7 @@ internal class SelectRolesPatch
         {
             foreach (var target1 in Main.AllPlayerControls)
             {
-                RpcSetRoleReplacer.RoleMap.TryGetValue((seer1.PlayerId, target1.PlayerId), out var map);
+                RpcSetRoleReplacer.RoleMap.TryGetValue((seer1, target1), out var map);
                 Logger.Info($"seer {seer1?.Data?.PlayerName}-{seer1.PlayerId}, target {target1?.Data?.PlayerName}-{target1.PlayerId} => {map.roleType}, {map.customRole}", "Role Map");
             }
         }
@@ -725,39 +684,54 @@ internal class SelectRolesPatch
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
     public static class RpcSetRoleReplacer
     {
-        public static bool doReplace = false;
-        public static Dictionary<byte, CustomRpcSender> senders;
-        public static Dictionary<(PlayerControl target, PlayerControl seer), RoleTypes> StoragedPlayerRoleData = [];
-        public static Dictionary<(byte seerId, byte targetId), (RoleTypes roleType, CustomRoles customRole)> RoleMap = [];
+        public static bool BlockSetRole = false;
+        public static Dictionary<byte, CustomRpcSender> Senders = [];
+        public static Dictionary<(PlayerControl seer, PlayerControl target), (RoleTypes roleType, CustomRoles customRole)> RoleMap = [];
+        public static void Initialize()
+        {
+            Senders = [];
+            RoleMap = [];
+            BlockSetRole = true;
+        }
         public static bool Prefix()
         {
-            return !doReplace;
+            return !BlockSetRole;
+        }
+        public static void StartReplace()
+        {
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                Senders[pc.PlayerId] = new CustomRpcSender($"{pc.name}'s SetRole Sender", SendOption.Reliable, false)
+                        .StartMessage(pc.GetClientId());
+            }
         }
         public static void Release()
         {
-            foreach (var ((target, seer), roleType) in StoragedPlayerRoleData)
+            foreach (var ((seer, target), (roleType, _)) in RoleMap)
             {
-                if (target == seer) continue;
+                if (seer == target) continue;
 
                 if (seer.OwnedByHost())
                 {
                     target.SetRole(roleType);
                     continue;
                 }
-                var sender = senders[seer.PlayerId];
 
+                var sender = Senders[seer.PlayerId];
                 sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetRole, seer.GetClientId())
                     .Write((ushort)roleType)
                     .Write(true)
                     .EndRpc();
 
                 //Fix host
-                if (RoleResult[target].IsImpostor() && RoleResult[seer].IsImpostor() && seer.OwnedByHost())
-                    DestroyableSingleton<RoleBehaviour>.Instance.CanBeKilled = false;
+                //if (RoleResult[target].IsImpostor() && RoleResult[seer].IsImpostor() && seer.OwnedByHost())
+                //    DestroyableSingleton<RoleBehaviour>.Instance.CanBeKilled = false;
             }
             SetSelfRoles();
 
-            doReplace = false;
+            BlockSetRole = false;
+            Senders.Do(kvp => kvp.Value.SendMessage());
+            EndReplace();
         }
 
         //Self roles set seperately so that we can trick the game into intro-cutsene via disconnecting everyone temporarily for client.
@@ -765,38 +739,38 @@ internal class SelectRolesPatch
         {
             foreach (var pc in Main.AllPlayerControls)
             {
-                var roleType = StoragedPlayerRoleData[(pc, pc)];
+                var roleType = RoleMap[(pc, pc)].roleType;
 
                 var stream = MessageWriter.Get(SendOption.Reliable);
                 stream.StartMessage(6);
                 stream.Write(AmongUsClient.Instance.GameId);
                 stream.WritePacked(pc.GetClientId());
                 {
-                    SetDisconnectedMessage(stream, true);
+                    RpcSetDisconnect(stream, true);
 
-                    if (pc.OwnedByHost())
-                    {
-                        pc.SetRole(roleType);
-                    }
+                    //if (pc.OwnedByHost())
+                    //{
+                    //    pc.SetRole(roleType);
+                    //}
 
                     stream.StartMessage(2);
                     stream.WritePacked(pc.NetId);
                     stream.Write((byte)RpcCalls.SetRole);
                     {
                         stream.Write((ushort)roleType);
-                        stream.Write(true);     //canOverrideRole
+                        stream.Write(true); //canOverrideRole
                     }
                     stream.EndMessage();
                     Logger.Info($"SetSelfRole to:{pc?.name}({pc.GetClientId()}) player:{pc?.name}({roleType})", "★RpcSetRole");
 
-                    SetDisconnectedMessage(stream, false);
+                    RpcSetDisconnect(stream, false);
                 }
                 stream.EndMessage();
                 AmongUsClient.Instance.SendOrDisconnect(stream);
                 stream.Recycle();
             }
         }
-        private static void SetDisconnectedMessage(MessageWriter stream, bool disconnected)
+        private static void RpcSetDisconnect(MessageWriter stream, bool disconnected)
         {
             foreach (var pc in Main.AllPlayerControls)
             {
@@ -808,21 +782,9 @@ internal class SelectRolesPatch
                 stream.EndMessage();
             }
         }
-        public static void Initialize()
+        private static void EndReplace()
         {
-            StoragedPlayerRoleData = [];
-            doReplace = true;
-        }
-        public static void StartReplace()
-        {
-            Dictionary<byte, CustomRpcSender> senders = [];
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                senders[pc.PlayerId] = new CustomRpcSender($"{pc.name}'s SetRole Sender", SendOption.Reliable, false)
-                        .StartMessage(pc.GetClientId());
-            }
-            RpcSetRoleReplacer.senders = senders;
-            doReplace = true;
+            Senders = null;
         }
     }
 }
