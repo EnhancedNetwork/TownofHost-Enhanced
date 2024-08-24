@@ -83,6 +83,8 @@ class SetUpRoleTextPatch
             }
         }, 0.0001f, "Override Role Text");
 
+        __instance.StartCoroutine(CoLoggerGameInfo().WrapToIl2Cpp());
+
         // Fixed bug where NotifyRoles works on modded clients during loading and it's name set as double
         // Run this code only for clients
         if (!AmongUsClient.Instance.AmHost)
@@ -98,51 +100,10 @@ class SetUpRoleTextPatch
             }, 1f, "Reset Name For Modded Client");
         }
     }
-}
-[HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
-class CoBeginPatch
-{
-    public static void Prefix(IntroCutscene __instance)
-    {
-        //if (RoleBasisChanger.IsChangeInProgress) return;
-
-        if (GameStates.IsNormalGame)
-        {
-            foreach (var player in Main.AllPlayerControls)
-            {
-                Main.PlayerStates[player.PlayerId].InitTask(player);
-            }
-
-            GameData.Instance.RecomputeTaskCounts();
-            TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
-        }
-
-        __instance.StartCoroutine(CoLoggerGameInfo().WrapToIl2Cpp());
-
-        GameStates.InGame = true;
-        RPC.RpcVersionCheck();
-
-        // Do not move this code, it should be executed at the very end to prevent a visual bug
-        Utils.DoNotifyRoles(ForceLoop: true);
-
-        if (AmongUsClient.Instance.AmHost && GameStates.IsHideNSeek && RandomSpawn.IsRandomSpawn())
-        {
-            RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
-            {
-                0 => new RandomSpawn.SkeldSpawnMap(),
-                1 => new RandomSpawn.MiraHQSpawnMap(),
-                2 => new RandomSpawn.PolusSpawnMap(),
-                3 => new RandomSpawn.DleksSpawnMap(),
-                5 => new RandomSpawn.FungleSpawnMap(),
-                _ => null,
-            };
-            if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
-        }
-    }
-    public static byte[] EncryptDES(byte[] data, string key)
+    private static byte[] EncryptDES(byte[] data, string key)
     {
         using SymmetricAlgorithm desAlg = DES.Create();
-        
+
         // Incoming key must be 8 bit or will cause error
         desAlg.Key = Encoding.UTF8.GetBytes(key);
         desAlg.IV = Encoding.UTF8.GetBytes(key);
@@ -254,6 +215,45 @@ class CoBeginPatch
         yield return null;
 
         Logger.Info(sb.ToString(), "GameInfo", multiLine: true);
+    }
+}
+[HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
+class CoBeginPatch
+{
+    public static void Prefix(IntroCutscene __instance)
+    {
+        //if (RoleBasisChanger.IsChangeInProgress) return;
+
+        if (GameStates.IsNormalGame)
+        {
+            foreach (var player in Main.AllPlayerControls)
+            {
+                Main.PlayerStates[player.PlayerId].InitTask(player);
+            }
+
+            GameData.Instance.RecomputeTaskCounts();
+            TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
+        }
+
+        GameStates.InGame = true;
+        RPC.RpcVersionCheck();
+
+        // Do not move this code, it should be executed at the very end to prevent a visual bug
+        Utils.DoNotifyRoles(ForceLoop: true);
+
+        if (AmongUsClient.Instance.AmHost && GameStates.IsHideNSeek && RandomSpawn.IsRandomSpawn())
+        {
+            RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
+            {
+                0 => new RandomSpawn.SkeldSpawnMap(),
+                1 => new RandomSpawn.MiraHQSpawnMap(),
+                2 => new RandomSpawn.PolusSpawnMap(),
+                3 => new RandomSpawn.DleksSpawnMap(),
+                5 => new RandomSpawn.FungleSpawnMap(),
+                _ => null,
+            };
+            if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
+        }
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
@@ -610,10 +610,20 @@ class IntroCutsceneDestroyPatch
             }
 
 
-            _ = new LateTask(() => { 
-                foreach (var DYpc in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && x.GetCustomRole().IsDesyncRole()))
+            _ = new LateTask(() => {
+
+                foreach (var desyncPC in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && x.GetCustomRole().IsDesyncRole()))
                 {
-                    DYpc.RpcChangeRoleBasis(DYpc.GetCustomRole().GetRoleTypes(), true);
+                    desyncPC.RpcChangeRoleBasis(desyncPC.GetCustomRole());
+                }
+
+                foreach (var seer1 in Main.AllPlayerControls)
+                {
+                    foreach (var target1 in Main.AllPlayerControls)
+                    {
+                        RpcSetRoleReplacer.RoleMap.TryGetValue((seer1.PlayerId, target1.PlayerId), out var map);
+                        Logger.Info($"seer {seer1?.Data?.PlayerName}-{seer1.PlayerId}, target {target1?.Data?.PlayerName}-{target1.PlayerId} => {map.roleType}, {map.customRole}", "Now Role Map");
+                    }
                 }
             }, 0.1f, "Assign Impostor desync roles for crewmates"); 
 

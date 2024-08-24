@@ -9,6 +9,8 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Vanilla;
+using static TOHE.SelectRolesPatch;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.Core;
 
