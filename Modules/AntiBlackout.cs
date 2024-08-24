@@ -244,6 +244,8 @@ public static class AntiBlackout
     }
     private static void TempReviveGuardianAngels() // FUCK IT WE BALL 🗣💯💯
     {
+        if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
+
         foreach (var pc in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
         {
             foreach (var reciever in Main.AllPlayerControls)
