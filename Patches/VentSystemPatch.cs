@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using Il2CppSystem.Linq.Expressions;
 using System;
 
 namespace TOHE.Patches;
@@ -77,7 +78,7 @@ static class VentSystemDeterioratePatch
         }
     }
     /// <summary>
-    /// Send rpc for block specifics vent use or all vents
+    /// Send rpc for blocking specifics vent use or all vents
     /// </summary>
     private static void RpcCloseVent(this PlayerControl pc, VentilationSystem __instance)
     {
