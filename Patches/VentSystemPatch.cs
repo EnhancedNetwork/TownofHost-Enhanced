@@ -44,6 +44,9 @@ static class VentSystemDeterioratePatch
             }
         }
     }
+    /// <summary>
+    /// Check blocking vents
+    /// </summary>
     public static bool BlockVentInteraction(this PlayerControl pc)
     {
         if (!pc.AmOwner && !pc.IsModClient() && !pc.Data.IsDead && !pc.CanUseVent())
@@ -74,7 +77,7 @@ static class VentSystemDeterioratePatch
         }
     }
     /// <summary>
-    /// Block specifics vent use or all vents
+    /// Send rpc for block specifics vent use or all vents
     /// </summary>
     private static void RpcCloseVent(this PlayerControl pc, VentilationSystem __instance)
     {
