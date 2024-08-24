@@ -119,7 +119,7 @@ class HudManagerPatch
                     __instance.KillButton.ToggleVisible(false);
                 }
 
-                bool CanUseVent = player.CanUseImpostorVentButton();
+                bool CanUseVent = player.CanUseVent();
                 __instance.ImpostorVentButton.ToggleVisible(CanUseVent);
                 player.Data.Role.CanVent = CanUseVent;
 

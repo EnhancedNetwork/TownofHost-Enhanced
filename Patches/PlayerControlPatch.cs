@@ -1544,8 +1544,7 @@ class CoEnterVentPatch
         var playerRoleClass = __instance.myPlayer.GetRoleClass();
 
         // Prevent vanilla players from enter vents if their current role does not allow it
-        if ((__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer && !__instance.myPlayer.CanUseImpostorVentButton())
-            || (playerRoleClass != null && playerRoleClass.CheckBootFromVent(__instance, id))
+        if (!__instance.myPlayer.CanUseVent() || (playerRoleClass != null && playerRoleClass.CheckBootFromVent(__instance, id))
         )
         {
             try

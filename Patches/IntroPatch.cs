@@ -631,7 +631,7 @@ class IntroCutsceneDestroyPatch
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
                 VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
-                if (VentSystemDeterioratePatch.BlockVentInteraction(pc))
+                if (pc.BlockVentInteraction())
                 {
                     Utils.SetAllVentInteractions();
                     break;
