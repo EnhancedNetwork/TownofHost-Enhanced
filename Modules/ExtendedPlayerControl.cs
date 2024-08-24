@@ -272,7 +272,7 @@ static class ExtendedPlayerControl
     }
 
     /// <summary>
-    /// Changes the Role Basis of player during the game.
+    /// Changes the Role Basis of player during the game
     /// </summary>
     /// <param name="newCustomRole">The custom role to change into</param>
     public static void RpcChangeRoleBasis(this PlayerControl player, CustomRoles newCustomRole) 
@@ -280,14 +280,8 @@ static class ExtendedPlayerControl
         var playerRole = player.GetCustomRole();
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
 
-        // When player change desync role to desync role
-        // Or player change normal role to normal role
-        if ((playerRole.IsDesyncRole() && newCustomRole.IsDesyncRole()) || (!playerRole.IsDesyncRole() && !newCustomRole.IsDesyncRole()))
-        {
-            RpcSetRoleReplacer.RoleMap[(player, player)] = (newCustomRole.GetRoleTypes(), newCustomRole);
-        }
         // When player change desync role to normal role
-        else if (playerRole.IsDesyncRole() && !newCustomRole.IsDesyncRole())
+        if (playerRole.IsDesyncRole() && !newCustomRole.IsDesyncRole())
         {
             var newRoleType = newCustomRole.GetRoleTypes();
             foreach (var seer in Main.AllPlayerControls)
@@ -331,7 +325,12 @@ static class ExtendedPlayerControl
                 }
             }
         }
-
+        // When player change desync role to desync role
+        // Or player change normal role to normal role
+        else
+        {
+            RpcSetRoleReplacer.RoleMap[(player, player)] = (newCustomRole.GetRoleTypes(), newCustomRole);
+        }
     }
     public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role,/* bool canOverride,*/ int clientId)
     {
