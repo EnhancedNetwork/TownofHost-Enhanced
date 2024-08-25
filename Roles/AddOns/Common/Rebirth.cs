@@ -1,9 +1,7 @@
-﻿using static TOHE.Options;
+﻿using TOHE.Modules;
+using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
-using TOHE.Modules;
-using static UnityEngine.GraphicsBuffer;
-using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -19,9 +17,9 @@ public class Rebirth : IAddon
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Rebirth, canSetNum: true, teamSpawnOptions: true);
-        RebirthUses = IntegerOptionItem.Create(Id + 11, "RebirthUses", new(1, 14, 1), 1, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Rebirth])
+        RebirthUses = IntegerOptionItem.Create(Id + 11, "RebirthUses", new(1, 14, 1), 1, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebirth])
            .SetValueFormat(OptionFormat.Times);
-        OnlyVoted = BooleanOptionItem.Create(Id + 12, "RebirthCountVotes", false, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Rebirth]);
+        OnlyVoted = BooleanOptionItem.Create(Id + 12, "RebirthCountVotes", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebirth]);
     }
     public static void Init()
     {
@@ -63,7 +61,7 @@ public class Rebirth : IAddon
 
         var ViablePlayer = list.Where(x => x != pc).Shuffle(IRandom.Instance)
             .FirstOrDefault(x => x != null && !x.OwnedByHost() && !x.IsAnySubRole(x => x.IsConverted()) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Knighted) && 
-/*All converters */    (!x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infectious) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal) && !x.Is(CustomRoles.Admirer)) &&
+/*All converters */    !x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infectious) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal) && !x.Is(CustomRoles.Admirer) &&
                 !x.Is(CustomRoles.Lovers) && !x.Is(CustomRoles.Romantic) && !x.GetCustomRole().IsImpostor());
 
         if (ViablePlayer == null)

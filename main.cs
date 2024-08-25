@@ -884,6 +884,7 @@ public enum CustomRoles
     Diseased,
     DoubleShot,
     Egoist,
+    Evader,
     EvilSpirit,
     Flash,
     Fool,
