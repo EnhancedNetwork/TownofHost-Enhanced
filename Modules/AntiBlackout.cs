@@ -257,7 +257,7 @@ public static class AntiBlackout
             var realtype = roletype;
             if (target.Data.IsDead)
             {
-                realtype = seer.HasKillButton() && seer.CanUseSabotage() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost;
+                realtype = seer.CanUseSabotage() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost;
             }
             target.RpcSetRoleDesync(realtype, seer.GetClientId());
         }
