@@ -258,7 +258,7 @@ public static class AntiBlackout
             Logger.Error($"{error}", "AntiBlackout.AfterMeetingTasks");
         }
     }
-    public static void SerRealPlayerRoles()
+    public static void SetRealPlayerRoles()
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
