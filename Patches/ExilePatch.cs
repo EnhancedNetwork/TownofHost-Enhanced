@@ -12,6 +12,10 @@ class ExileControllerWrapUpPatch
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
+        public static void Prefix(ExileController __instance)
+        {
+            AntiBlackout.SetIsDead();
+        }
         public static void Postfix(ExileController __instance)
         {
             try
@@ -165,7 +169,7 @@ class ExileControllerWrapUpPatch
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, 1f, "Restore IsDead Task");
+            }, 1.5f, "Restore IsDead Task");
 
             _ = new LateTask(() =>
             {
@@ -193,21 +197,7 @@ class ExileControllerWrapUpPatch
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
 
-
-                //Kill off GAS again
-                /*foreach (var pc in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
-                {
-                    foreach (var reciever in Main.AllPlayerControls)
-                    {
-                        if (reciever.OwnedByHost()) continue;
-                        RoleTypes typa = pc == reciever ? RoleTypes.GuardianAngel : RoleTypes.CrewmateGhost;
-                        pc.RpcSetRoleDesync(typa, reciever.GetClientId());
-                    }
-                    //pc.ResetPlayerCam();
-                    //pc.RpcSetRoleDesync(RoleTypes.GuardianAngel, pc.GetClientId());
-                }*/
-
-            }, 1.1f, "AfterMeetingDeathPlayers Task");
+            }, 1.6f, "AfterMeetingDeathPlayers Task");
         }
         //This should happen shortly after the Exile Controller wrap up finished for clients
         //For Certain Laggy clients 0.8f delay is still not enough. The finish time can differ.

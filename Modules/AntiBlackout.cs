@@ -99,17 +99,16 @@ public static class AntiBlackout
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
-        PlayerControl dummyImp = Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId && x.HasKillButton())
-            ?? Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId);
+        PlayerControl dummyImp = Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId);
 
         foreach (var seer in Main.AllPlayerControls)
         {
             if (seer.OwnedByHost() || seer.IsModClient()) continue;
             foreach (var target in Main.AllPlayerControls)
             {
-                RoleTypes typa = target == dummyImp ? RoleTypes.Impostor : RoleTypes.Crewmate;
+                RoleTypes targetRoleType = target.PlayerId == dummyImp.PlayerId ? RoleTypes.Impostor : RoleTypes.Crewmate;
 
-                target.RpcSetRoleDesync(typa, seer.GetClientId());
+                target.RpcSetRoleDesync(targetRoleType, seer.GetClientId());
             }
         }
     }
@@ -278,9 +277,14 @@ public static class AntiBlackout
             var realRoleType = roletype;
             if (target.Data.IsDead)
             {
-                realRoleType = seer.CanUseSabotage() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost;
+                realRoleType = target.CanUseSabotage() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost;
             }
             target.RpcSetRoleDesync(realRoleType, seer.GetClientId());
+        }
+        foreach (var seer in Main.AllPlayerControls.Where(x => x.Data.IsDead))
+        {
+            if (seer.OwnedByHost() || seer.IsModClient()) continue;
+            seer.RpcExile();
         }
         _ = new LateTask(() =>
         {
