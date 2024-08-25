@@ -160,7 +160,7 @@ class ExileControllerWrapUpPatch
             {
                 exiled = AntiBlackout_LastExiled;
                 AntiBlackout.SendGameData();
-                AntiBlackout.ResetPlayerMaps();
+                AntiBlackout.SerRealPlayerRoles();
                 AntiBlackout.ExilePlayerId = -1;
 
                 if (AntiBlackout.BlackOutIsActive && // State in which the expulsion target is overwritten (need not be executed if the expulsion target is not overwritten)

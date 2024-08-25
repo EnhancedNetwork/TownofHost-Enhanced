@@ -77,11 +77,10 @@ public static class AntiBlackout
 
     public static void SetIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
-        TempRevivePlayers();
+        RevivePlayersAndSetDummyImp();
         logger.Info($"SetIsDead is called from {callerMethodName}");
         if (IsCached)
         {
-            logger.Info("Please run RestoreIsDead before running SetIsDead again.");
             return;
         }
         isDeadCache.Clear();
@@ -95,7 +94,7 @@ public static class AntiBlackout
         IsCached = true;
         if (doSend) SendGameData();
     }
-    private static void TempRevivePlayers()
+    private static void RevivePlayersAndSetDummyImp()
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
@@ -259,7 +258,7 @@ public static class AntiBlackout
             Logger.Error($"{error}", "AntiBlackout.AfterMeetingTasks");
         }
     }
-    public static void ResetPlayerMaps()
+    public static void SerRealPlayerRoles()
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
@@ -281,6 +280,10 @@ public static class AntiBlackout
             }
             target.RpcSetRoleDesync(realRoleType, seer.GetClientId());
         }
+        SetDeadPlayersAsExiled();
+    }
+    public static void SetDeadPlayersAsExiled()
+    {
         foreach (var seer in Main.AllPlayerControls.Where(x => x.Data.IsDead))
         {
             if (seer.OwnedByHost() || seer.IsModClient()) continue;
@@ -292,7 +295,7 @@ public static class AntiBlackout
             {
                 seer.RpcSetRoleDesync(RoleTypes.GuardianAngel, seer.GetClientId());
             } // for some reason has to be done later
-        }, 0.5f, "AntiBlackout - Fix Movement For Ghosts"); 
+        }, 0.5f, "AntiBlackout - Fix Movement For Ghosts");
     }
     public static void Reset()
     {
