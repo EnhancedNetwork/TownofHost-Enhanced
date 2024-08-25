@@ -265,14 +265,14 @@ public static class AntiBlackout
             foreach (var seer in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
             {
                 seer.RpcSetRoleDesync(RoleTypes.GuardianAngel, seer.GetClientId());
-            } // idk why, but they simply have to be set afterwards
+            } 
 
             foreach (var target in Main.AllPlayerControls)
             {
                 foreach (var seer in Main.AllPlayerControls.Where(x => x.Data.IsDead)) // fix not being able to go trough walls
                 {
                     if (seer.OwnedByHost()) continue;
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(seer.NetId, (byte)RpcCalls.Exiled, SendOption.None, seer.GetClientId());
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.Exiled, SendOption.None, seer.GetClientId());
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                 }
             }

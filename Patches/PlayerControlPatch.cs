@@ -29,6 +29,9 @@ class CheckProtectPatch
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
         var angel = __instance;
 
+        if (target.Data.IsDead) // bad protect
+            return false;
+
         if (!angel.GetRoleClass().OnCheckProtect(angel, target))
             return false;
 
