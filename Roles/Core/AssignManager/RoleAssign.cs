@@ -8,7 +8,7 @@ namespace TOHE.Roles.Core.AssignManager;
 public class RoleAssign
 {
     public static Dictionary<byte, CustomRoles> SetRoles = [];
-    public static Dictionary<PlayerControl, CustomRoles> RoleResult;
+    public static Dictionary<PlayerControl, CustomRoles> RoleResult = [];
     public static CustomRoles[] AllRoles => [.. RoleResult.Values];
 
     enum RoleAssignType

@@ -820,12 +820,6 @@ internal static class RPC
         writer.Write(title);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ExileAsync(PlayerControl player)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-        player.Exiled();
-    }
     public static void RpcSetFriendCode(string fc)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetFriendCode, SendOption.None);

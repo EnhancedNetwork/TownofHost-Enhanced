@@ -127,7 +127,20 @@ static class ExtendedPlayerControl
     }
     public static void RpcExile(this PlayerControl player)
     {
-        RPC.ExileAsync(player);
+        player.Exiled();
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void RpcExileDesync(this PlayerControl player, PlayerControl seer)
+    {
+        var clientId = seer.GetClientId();
+        if (AmongUsClient.Instance.ClientId == clientId)
+        {
+            player.Exiled();
+            return;
+        }
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, clientId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcExileV2(this PlayerControl player)
     {
@@ -453,31 +466,56 @@ static class ExtendedPlayerControl
         messageWriter.Write(cnt);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
-
-    public static void RpcSpecificVanish(this PlayerControl player, PlayerControl seer)
+    public static void RpcCheckVanishDesync(this PlayerControl player, PlayerControl seer)
     {
-        /*
-         *  Unluckily the vanish animation cannot be disabled
-         *  For vanila client seer side, the player must be with Phantom Role behavior, or the rpc will do nothing
-         */
-        if (!AmongUsClient.Instance.AmHost) return;
-
+        if (AmongUsClient.Instance.ClientId == seer.GetClientId())
+        {
+            player.CheckVanish();
+            return;
+        }
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckVanish, SendOption.None, seer.GetClientId());
+        messageWriter.Write(0); // not used, lol
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
+    public static void RpcStartVanishDesync(this PlayerControl player, PlayerControl seer)
+    {
+        if (AmongUsClient.Instance.ClientId == seer.GetClientId())
+        {
+            player.SetRoleInvisibility(true, false, true);
+            return;
+        }
         MessageWriter msg = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartVanish, SendOption.None, seer.GetClientId());
         AmongUsClient.Instance.FinishRpcImmediately(msg);
     }
-
-    public static void RpcSpecificAppear(this PlayerControl player, PlayerControl seer, bool shouldAnimate)
+    public static void RpcCheckAppearDesync(this PlayerControl player, bool shouldAnimate, PlayerControl seer)
     {
-        /*
-         *  For vanila client seer side, the player must be with Phantom Role behavior, or the rpc will do nothing
-         */
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        MessageWriter msg = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartAppear, SendOption.None, seer.GetClientId());
-        msg.Write(shouldAnimate);
-        AmongUsClient.Instance.FinishRpcImmediately(msg);
+        if (AmongUsClient.Instance.ClientId == seer.GetClientId())
+        {
+            player.CheckAppear(shouldAnimate);
+            return;
+        }
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckAppear, SendOption.None, seer.GetClientId());
+        messageWriter.Write(shouldAnimate);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
-
+    public static void RpcCheckAppear(this PlayerControl player, bool shouldAnimate)
+    {
+        player.CheckAppear(shouldAnimate);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckAppear, SendOption.None);
+        messageWriter.Write(shouldAnimate);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
+    public static void RpcStartAppearDesync(this PlayerControl player, bool shouldAnimate, PlayerControl seer)
+    {
+        if (AmongUsClient.Instance.ClientId == seer.GetClientId())
+        {
+            player.SetRoleInvisibility(false, shouldAnimate, true);
+            return;
+        }
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartAppear, SendOption.None, seer.GetClientId());
+        messageWriter.Write(shouldAnimate);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
     public static void RpcSpecificMurderPlayer(this PlayerControl killer, PlayerControl target, PlayerControl seer)
     {
         if (seer.AmOwner)

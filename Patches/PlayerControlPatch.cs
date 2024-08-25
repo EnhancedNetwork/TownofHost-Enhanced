@@ -714,18 +714,30 @@ class CmdCheckAppearPatch
         return false;
     }
 }
-/*
- *  I have no idea how the check vanish is approved by host & server and how to reject it
- *  Suggest leaving phantom stuffs after 2.1.0
- *  
- *  Called when Phantom press vanish button when visible
- */
+// Called when Phantom press vanish button when visible
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckVanish))]
 class CheckVanishPatch
 {
-    public static bool Prefix(/*PlayerControl __instance*/)
+    public static void Prefix(PlayerControl __instance)
     {
-        return true;
+        Logger.Info($"Player: {__instance.GetRealName()}", "CheckVanish");
+
+        var phantom = __instance;
+
+        foreach (var target in Main.AllAlivePlayerControls)
+        {
+            if (phantom == target || target.AmOwner || !target.HasDesyncRole()) continue;
+
+            // Set Phantom when his start vanish
+            phantom.RpcSetRoleDesync(RoleTypes.Phantom, target.GetClientId());
+            // Check vanish again for desync role
+            phantom.RpcCheckVanishDesync(target);
+
+            _ = new LateTask(() =>
+            {
+                phantom.RpcExileDesync(target);
+            }, 1.2f, "Set Phantom invisible", shoudLog: false);
+        }
     }
 }
 
@@ -733,49 +745,45 @@ class CheckVanishPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckAppear))]
 class CheckAppearPatch
 {
-    public static bool Prefix(/*PlayerControl __instance, bool shouldAnimate*/)
+    public static void Prefix(PlayerControl __instance, bool shouldAnimate)
     {
-        return true;
+        Logger.Info($"Player: {__instance.GetRealName()} => shouldAnimate {shouldAnimate}", "CheckAppear");
+
+        var phantom = __instance;
+
+        if (shouldAnimate)
+        {
+            foreach (var target in Main.AllAlivePlayerControls)
+            {
+                if (phantom == target || target.AmOwner || !target.HasDesyncRole()) continue;
+
+                // Set Phantom when his end vanish
+                phantom.RpcSetRoleDesync(RoleTypes.Phantom, target.GetClientId());
+
+                _ = new LateTask(() =>
+                {
+                    // Check appear again for desync role
+                    phantom.RpcCheckAppearDesync(true, target);
+                }, 0.2f, "Check Appear when vanish is over", shoudLog: false);
+
+                _ = new LateTask(() =>
+                {
+                    phantom.RpcSetRoleDesync(RoleTypes.Scientist, target.GetClientId());
+                }, 2.2f, "Set Scientist when vanish is over", shoudLog: false);
+            }
+        }
     }
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRoleInvisibility))]
 class SetRoleInvisibilityPatch
 {
-    public static readonly Dictionary<byte, Vent> PhantomIsInvisibility = [];
+    //public static readonly Dictionary<byte, Vent> PhantomIsInvisibility = [];
     public static void Prefix(PlayerControl __instance, bool isActive, bool shouldAnimate, bool playFullAnimation)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
         Logger.Info($"Player: {__instance.GetRealName()} => Is Active {isActive}, Animate:{shouldAnimate}, Full Animation:{playFullAnimation}", "SetRoleInvisibility");
-
-        if (GameStates.IsMeeting) return;
-
-        var phantom = __instance;
-        var randomVent = ShipStatus.Instance.AllVents.RandomElement();
-
-        foreach (var target in Main.AllAlivePlayerControls)
-        {
-            if (phantom == target || target.AmOwner || !target.HasDesyncRole()) continue;
-
-            if (isActive)
-            {
-                var randomVentId = randomVent.Id;
-                var ventPosition = randomVent.transform.position;
-
-                phantom.RpcDesyncTeleport(ventPosition, target);
-                phantom.MyPhysics.RpcEnterVentDesync(randomVentId, target);
-            }
-            else if (!isActive && shouldAnimate)
-            {
-                _ = PhantomIsInvisibility.TryGetValue(phantom.PlayerId, out var vent);
-                phantom.MyPhysics.RpcExitVentDesync(vent.Id, target);
-                phantom.RpcDesyncTeleport(phantom.GetCustomPosition(), target);
-            }
-        }
-
-        if (isActive) PhantomIsInvisibility.Add(phantom.PlayerId, randomVent);
-        else PhantomIsInvisibility.Remove(phantom.PlayerId);
     }
 }
 
