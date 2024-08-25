@@ -109,7 +109,7 @@ public static class PhantomRolePatch
 
     public static void OnReportBody(PlayerControl seer)
     {
-        if (!seer.IsAlive() || seer.Data.Role.Role is RoleTypes.Phantom || seer.AmOwner || !seer.HasDesyncRole()) return;
+        if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data.Role.Role is RoleTypes.Phantom || seer.AmOwner || !seer.HasDesyncRole()) return;
 
         foreach (var phantom in InvisibilityList.GetFastEnumerator())
         {
