@@ -64,7 +64,6 @@ class ExileControllerWrapUpPatch
         bool DecidedWinner = false;
         if (!AmongUsClient.Instance.AmHost) return;
         AntiBlackout.RestoreIsDead(doSend: false);
-        AntiBlackout.ResetPlayerMaps();
 
         List<Collector> collectorCL = Utils.GetRoleBasesByType<Collector>()?.ToList();
 
@@ -77,7 +76,7 @@ class ExileControllerWrapUpPatch
             var exiledPC = exiled.Object;
 
             // Reset player cam for exiled desync impostor
-            if (exiledPC.HasDesyncRole() || AntiBlackout.LesserBlackOutActive)
+            if (exiledPC.HasDesyncRole())
             {
                 exiledPC?.ResetPlayerCam(1f);
             }
@@ -157,6 +156,9 @@ class ExileControllerWrapUpPatch
             {
                 exiled = AntiBlackout_LastExiled;
                 AntiBlackout.SendGameData();
+                AntiBlackout.ResetPlayerMaps();
+                AntiBlackout.ExilePlayerId = -1;
+
                 if (AntiBlackout.BlackOutIsActive && // State in which the expulsion target is overwritten (need not be executed if the expulsion target is not overwritten)
                     exiled != null && // exiled is not null
                     exiled.Object != null) //exiled.Object is not null

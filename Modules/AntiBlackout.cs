@@ -16,7 +16,6 @@ public static class AntiBlackout
     public static bool BlackOutIsActive => false; /*!Options.DisableAntiBlackoutProtects.GetBool() && CheckBlackOut();*/
 
     //this is simply just called in less places, because antiblackout with role-basis changing is OP
-    public static bool LesserBlackOutActive => CheckBlackOut();
     public static int ExilePlayerId = -1;
 
     ///<summary>
@@ -96,9 +95,26 @@ public static class AntiBlackout
         IsCached = true;
         if (doSend) SendGameData();
     }
+    private static void TempRevivePlayers()
+    {
+        if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
+
+        PlayerControl dummyImp = Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId && x.HasKillButton())
+            ?? Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId);
+
+        foreach (var seer in Main.AllPlayerControls)
+        {
+            if (seer.OwnedByHost() || seer.IsModClient()) continue;
+            foreach (var target in Main.AllPlayerControls)
+            {
+                RoleTypes typa = target == dummyImp ? RoleTypes.Impostor : RoleTypes.Crewmate;
+
+                target.RpcSetRoleDesync(typa, seer.GetClientId());
+            }
+        }
+    }
     public static void RestoreIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
-
         logger.Info($"RestoreIsDead is called from {callerMethodName}");
         foreach (var info in GameData.Instance.AllPlayers)
         {
@@ -149,27 +165,27 @@ public static class AntiBlackout
     ///Execute the code with IsDead temporarily set back to what it should be
     ///<param name="action">Execution details</param>
     ///</summary>
-    public static void TempRestore(Action action)
-    {
-        logger.Info("==Temp Restore==");
-        // Whether TempRestore was executed with IsDead overwritten
-        bool before_IsCached = IsCached;
-        try
-        {
-            if (before_IsCached) RestoreIsDead(doSend: false);
-            action();
-        }
-        catch (Exception ex)
-        {
-            logger.Warn("An exception occurred within AntiBlackout.TempRestore");
-            logger.Exception(ex);
-        }
-        finally
-        {
-            if (before_IsCached) SetIsDead(doSend: false);
-            logger.Info("==/Temp Restore==");
-        }
-    }
+    //public static void TempRestore(Action action)
+    //{
+    //    logger.Info("==Temp Restore==");
+    //    // Whether TempRestore was executed with IsDead overwritten
+    //    bool before_IsCached = IsCached;
+    //    try
+    //    {
+    //        if (before_IsCached) RestoreIsDead(doSend: false);
+    //        action();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        logger.Warn("An exception occurred within AntiBlackout.TempRestore");
+    //        logger.Exception(ex);
+    //    }
+    //    finally
+    //    {
+    //        if (before_IsCached) SetIsDead(doSend: false);
+    //        logger.Info("==/Temp Restore==");
+    //    }
+    //}
     public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, NetworkedPlayerInfo exiled, bool tie)
     {
         if (AmongUsClient.Instance.AmClient)
@@ -252,54 +268,27 @@ public static class AntiBlackout
         {
             // skip host
             if (seerId == 0) continue;
-
+            
             var seer = Utils.GetPlayerById(seerId);
             var target = Utils.GetPlayerById(targetId);
+            
             if (seer == null || target == null) continue;
+            if (seer.IsModClient()) continue;
 
-            var realtype = roletype;
+            var realRoleType = roletype;
             if (target.Data.IsDead)
             {
-                realtype = seer.CanUseSabotage() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost;
+                realRoleType = seer.CanUseSabotage() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost;
             }
-            target.RpcSetRoleDesync(realtype, seer.GetClientId());
+            target.RpcSetRoleDesync(realRoleType, seer.GetClientId());
         }
-        _ = new LateTask(() => {
+        _ = new LateTask(() =>
+        {
             foreach (var seer in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
             {
                 seer.RpcSetRoleDesync(RoleTypes.GuardianAngel, seer.GetClientId());
             } // for some reason has to be done later
-
-            foreach (var target in Main.AllPlayerControls.Where(x => x.Data.IsDead))
-            {
-                foreach (var seer in Main.AllPlayerControls) // fix not being able to go trough walls
-                {
-                    if (seer.OwnedByHost()) continue;
-                    
-                    target.RpcExileDesync(seer);
-                }
-            }
         }, 0.5f, "AntiBlackout - Fix Movement For Ghosts"); 
-    }
-    private static void TempRevivePlayers()
-    {
-        if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
-
-        PlayerControl dummyImp = Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId && x.HasKillButton())
-            ?? Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId);
-
-        foreach (var pc in Main.AllPlayerControls)
-        {
-            foreach (var reciever in Main.AllPlayerControls)
-            {
-                if (reciever.OwnedByHost()) continue;
-                RoleTypes typa = pc == dummyImp ? RoleTypes.Impostor : RoleTypes.Crewmate;
-
-                pc.RpcSetRoleDesync(typa, reciever.GetClientId());
-            }
-        }
-        
-        ExilePlayerId = -1;
     }
     public static void Reset()
     {
