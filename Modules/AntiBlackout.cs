@@ -255,20 +255,28 @@ public static class AntiBlackout
             if (seer.OwnedByHost()) continue;
 
             var realtype = roletype;
-            if (seer.Data.IsDead)
+            if (target.Data.IsDead)
             {
                 realtype = seer.HasKillButton() && seer.CanUseSabotage() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost;
-                if (target == seer && target.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel) realtype = RoleTypes.GuardianAngel;
             }
             target.RpcSetRoleDesync(realtype, seer.GetClientId());
         }
         _ = new LateTask(() => {
-            foreach (var seer in Main.AllPlayerControls.Where(x => x.Data.IsDead)) // fix not being able to go trough walls
+            foreach (var seer in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
             {
-                seer.Exiled();
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(seer.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                seer.RpcSetRoleDesync(RoleTypes.GuardianAngel, seer.GetClientId());
+            } // idk why, but they simply have to be set afterwards
+
+            foreach (var target in Main.AllPlayerControls)
+            {
+                foreach (var seer in Main.AllPlayerControls.Where(x => x.Data.IsDead)) // fix not being able to go trough walls
+                {
+                    if (seer.OwnedByHost()) continue;
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(seer.NetId, (byte)RpcCalls.Exiled, SendOption.None, seer.GetClientId());
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                }
             }
+            
 
         }, 0.5f, "AntiBlackout - Fix Movement For Ghosts"); 
     }
