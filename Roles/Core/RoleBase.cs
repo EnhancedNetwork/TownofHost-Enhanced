@@ -477,6 +477,7 @@ public abstract class RoleBase
         // Ability
         Cooldown,
         AbilityCooldown,
+        SkillLimitTimes,
 
         // Impostor-based settings
         CanKill,

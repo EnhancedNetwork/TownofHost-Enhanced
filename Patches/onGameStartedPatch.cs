@@ -10,6 +10,7 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -223,6 +224,7 @@ internal class ChangeRoleSettings
             Ghoul.Init();
             Rainbow.Init();
             Rebirth.Init();
+            Evader.Init();
 
             //FFA
             FFAManager.Init();
@@ -551,6 +553,9 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Rebirth:
                             Rebirth.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Evader:
+                            Evader.Add(pc.PlayerId);
                             break;
                         default:
                             break;
