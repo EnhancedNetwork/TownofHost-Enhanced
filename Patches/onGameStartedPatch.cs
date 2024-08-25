@@ -48,7 +48,7 @@ internal class ChangeRoleSettings
             }
 
             Main.PlayerStates = [];
-
+            RoleAssign.RoleResult = [];
             KillTimerManager.Initializate();
             Main.AllPlayerKillCooldown.Clear();
             Main.AllPlayerSpeed.Clear();
@@ -172,6 +172,8 @@ internal class ChangeRoleSettings
 
                 if (GameStates.IsNormalGame)
                     Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);
+
+                RoleAssign.RoleResult[pc.PlayerId] = CustomRoles.NotAssigned;
 
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
@@ -438,7 +440,7 @@ internal class SelectRolesPatch
 
             foreach (var kv in RoleAssign.RoleResult)
             {
-                AssignCustomRole(kv.Value, kv.Key);
+                AssignCustomRole(kv.Value, Utils.GetPlayerById(kv.Key));
             }
 
             try
@@ -620,15 +622,15 @@ internal class SelectRolesPatch
     }
     private static void CreateRoleMap()
     {
-        foreach (var seer in Main.AllPlayerControls)
+        foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             var isModded = seer.OwnedByHost() || seer.IsModClient();
-            var seerRole = RoleAssign.RoleResult[seer];
-            foreach (var target in Main.AllPlayerControls)
+            var seerRole = RoleAssign.RoleResult[seer.PlayerId];
+            foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 RoleTypes targetRoleType;
                 var isSelf = seer.PlayerId == target.PlayerId;
-                var targetRole = RoleAssign.RoleResult[target];
+                var targetRole = RoleAssign.RoleResult[target.PlayerId];
                 if (targetRole.IsDesyncRole())
                 {
                     if (isSelf)
@@ -666,16 +668,8 @@ internal class SelectRolesPatch
                         targetRoleType = targetRole.GetRoleTypes();
                     }
                 }
-                RpcSetRoleReplacer.RoleMap[(seer, target)] = (targetRoleType, targetRole);
-            }
-        }
-
-        foreach (var seer1 in Main.AllPlayerControls)
-        {
-            foreach (var target1 in Main.AllPlayerControls)
-            {
-                RpcSetRoleReplacer.RoleMap.TryGetValue((seer1, target1), out var map);
-                Logger.Info($"seer {seer1?.Data?.PlayerName}-{seer1.PlayerId}, target {target1?.Data?.PlayerName}-{target1.PlayerId} => {map.roleType}, {map.customRole}", "Role Map");
+                RpcSetRoleReplacer.RoleMap[(seer.PlayerId, target.PlayerId)] = (targetRoleType, targetRole);
+                Logger.Info($"seer {seer?.Data?.PlayerName}-{target.PlayerId}, target {target?.Data?.PlayerName}-{target.PlayerId} => {targetRoleType}, {targetRole}", "Role Map");
             }
         }
     }
@@ -685,7 +679,7 @@ internal class SelectRolesPatch
     {
         public static bool BlockSetRole = false;
         public static Dictionary<byte, CustomRpcSender> Senders = [];
-        public static Dictionary<(PlayerControl seer, PlayerControl target), (RoleTypes roleType, CustomRoles customRole)> RoleMap = [];
+        public static Dictionary<(byte seerId, byte targetId), (RoleTypes roleType, CustomRoles customRole)> RoleMap = [];
         public static void Initialize()
         {
             Senders = [];
@@ -706,9 +700,13 @@ internal class SelectRolesPatch
         }
         public static void Release()
         {
-            foreach (var ((seer, target), (roleType, _)) in RoleMap)
+            foreach (var ((seerId, targetId), (roleType, _)) in RoleMap)
             {
-                if (seer == target) continue;
+                if (seerId == targetId) continue;
+
+                var seer = Utils.GetPlayerById(seerId);
+                var target = Utils.GetPlayerById(targetId);
+                if (seer == null || target == null) continue;
 
                 if (seer.OwnedByHost())
                 {
@@ -716,11 +714,15 @@ internal class SelectRolesPatch
                     continue;
                 }
 
-                var sender = Senders[seer.PlayerId];
-                sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetRole, seer.GetClientId())
-                    .Write((ushort)roleType)
-                    .Write(true)
-                    .EndRpc();
+                try
+                {
+                    var sender = Senders[targetId];
+                    sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetRole, seer.GetClientId())
+                        .Write((ushort)roleType)
+                        .Write(true)
+                        .EndRpc();
+                }
+                catch { }
             }
             SetSelfRoles();
 
@@ -734,7 +736,7 @@ internal class SelectRolesPatch
         {
             foreach (var pc in Main.AllPlayerControls)
             {
-                var roleType = RoleMap[(pc, pc)].roleType;
+                var roleType = RoleMap[(pc.PlayerId, pc.PlayerId)].roleType;
 
                 var stream = MessageWriter.Get(SendOption.Reliable);
                 stream.StartMessage(6);

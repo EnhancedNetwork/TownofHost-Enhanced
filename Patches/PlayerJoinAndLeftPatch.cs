@@ -315,7 +315,7 @@ class OnPlayerLeftPatch
         if (Main.AssignRolesIsStarted)
         {
             Logger.Warn($"Assign roles not ended, try remove player {data.Character.PlayerId} from role assign", "OnPlayerLeft");
-            RoleAssign.RoleResult?.Remove(data.Character);
+            RoleAssign.RoleResult?.Remove(data.Character.PlayerId);
             RpcSetRoleReplacer.Senders?.Remove(data.Character.PlayerId);
         }
 

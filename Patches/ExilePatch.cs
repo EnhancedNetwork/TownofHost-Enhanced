@@ -104,12 +104,12 @@ class ExileControllerWrapUpPatch
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
             // Check Anti BlackOut
-           // if (player.GetCustomRole().IsImpostor() 
-           //     && !player.IsAlive() // if player is dead impostor
-           //     && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
-          //  {
-          //      player.ResetPlayerCam(1f);
-          //  }
+            //if (player.GetCustomRole().IsImpostor()
+            //    && !player.IsAlive() // if player is dead impostor
+            //    && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
+            //{
+            //    player.ResetPlayerCam(1f);
+            //}
 
             // Check for remove pet
             player.RpcRemovePet();
@@ -162,7 +162,7 @@ class ExileControllerWrapUpPatch
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, 0.8f, "Restore IsDead Task");
+            }, 1f, "Restore IsDead Task");
 
             _ = new LateTask(() =>
             {
@@ -181,10 +181,10 @@ class ExileControllerWrapUpPatch
                         player?.SetRealKiller(player, true);
 
                     // Reset player cam for dead desync impostor
-                   // if (player.HasDesyncRole())
+                    //if (player.HasDesyncRole())
                     //{
                     //    player?.ResetPlayerCam(1f);
-                   // }
+                    //}
 
                     MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
                 });
@@ -204,7 +204,7 @@ class ExileControllerWrapUpPatch
                     //pc.RpcSetRoleDesync(RoleTypes.GuardianAngel, pc.GetClientId());
                 }
 
-            }, 0.8f, "AfterMeetingDeathPlayers Task");
+            }, 1.1f, "AfterMeetingDeathPlayers Task");
         }
         //This should happen shortly after the Exile Controller wrap up finished for clients
         //For Certain Laggy clients 0.8f delay is still not enough. The finish time can differ.
