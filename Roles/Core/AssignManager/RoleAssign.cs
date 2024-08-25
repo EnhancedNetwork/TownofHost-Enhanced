@@ -8,7 +8,7 @@ namespace TOHE.Roles.Core.AssignManager;
 public class RoleAssign
 {
     public static Dictionary<byte, CustomRoles> SetRoles = [];
-    public static Dictionary<PlayerControl, CustomRoles> RoleResult = [];
+    public static Dictionary<byte, CustomRoles> RoleResult = [];
     public static CustomRoles[] AllRoles => [.. RoleResult.Values];
 
     enum RoleAssignType
@@ -55,7 +55,7 @@ public class RoleAssign
             case CustomGameMode.FFA:
                 foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                 {
-                    RoleResult.Add(pc, CustomRoles.Killer);
+                    RoleResult.Add(pc.PlayerId, CustomRoles.Killer);
                 }
                 return;
         }
@@ -187,12 +187,12 @@ public class RoleAssign
         if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()))
         {
             Main.EnableGM.Value = true;
-            RoleResult[PlayerControl.LocalPlayer] = CustomRoles.GM;
+            RoleResult[PlayerControl.LocalPlayer.PlayerId] = CustomRoles.GM;
             AllPlayers.Remove(PlayerControl.LocalPlayer);
         }
         if (Main.EnableGM.Value)
         {
-            RoleResult[PlayerControl.LocalPlayer] = CustomRoles.GM;
+            RoleResult[PlayerControl.LocalPlayer.PlayerId] = CustomRoles.GM;
             AllPlayers.Remove(PlayerControl.LocalPlayer);
             SetRoles.Remove(PlayerControl.LocalPlayer.PlayerId);
         }
@@ -202,7 +202,7 @@ public class RoleAssign
             PlayerControl pc = Utils.GetPlayerById(item.Key);
             if (pc == null) continue;
 
-            RoleResult[pc] = item.Value;
+            RoleResult[item.Key] = item.Value;
             AllPlayers.Remove(pc);
 
             if (item.Value.IsImpostor())
@@ -772,7 +772,7 @@ public class RoleAssign
             var assignedRole = FinalRolesList.RandomElement();
 
             // Assign random role for random player
-            RoleResult[randomPlayer] = assignedRole;
+            RoleResult[randomPlayer.PlayerId] = assignedRole;
             Logger.Info($"Player：{randomPlayer.GetRealName()} => {assignedRole}", "RoleAssign");
 
             // Remove random role and player from list

@@ -76,9 +76,9 @@ public static class PhantomRolePatch
         var phantom = __instance;
         Logger.Info($"Player: {phantom.GetRealName()} => shouldAnimate {shouldAnimate}", "CheckAppear");
 
-        foreach (var target in Main.AllAlivePlayerControls)
+        foreach (var target in Main.AllPlayerControls)
         {
-            if (phantom == target || target.AmOwner || !target.HasDesyncRole()) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner || !target.HasDesyncRole()) continue;
 
             var clientId = target.GetClientId();
 

@@ -74,13 +74,14 @@ static class ExtendedPlayerControl
         var playerRole = player.GetCustomRole();
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
 
+        var playerId = player.PlayerId;
         // When player change desync role to normal role
         if (playerRole.IsDesyncRole() && !newCustomRole.IsDesyncRole())
         {
             var newRoleType = newCustomRole.GetRoleTypes();
             foreach (var seer in Main.AllPlayerControls)
             {
-                RpcSetRoleReplacer.RoleMap[(seer, player)] = (newRoleType, newCustomRole);
+                RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (newRoleType, newCustomRole);
             }
             player.RpcSetRole(newRoleType, true);
         }
@@ -114,7 +115,7 @@ static class ExtendedPlayerControl
                 {
                     targetRoleType = RoleTypes.Scientist;
                 }
-                RpcSetRoleReplacer.RoleMap[(player, target)] = (targetRoleType, newCustomRole);
+                RpcSetRoleReplacer.RoleMap[(playerId, target.PlayerId)] = (targetRoleType, newCustomRole);
                 player.RpcSetRoleDesync(targetRoleType, target.GetClientId());
             }
         }
@@ -122,7 +123,7 @@ static class ExtendedPlayerControl
         // Or player change normal role to normal role
         else
         {
-            RpcSetRoleReplacer.RoleMap[(player, player)] = (newCustomRole.GetRoleTypes(), newCustomRole);
+            RpcSetRoleReplacer.RoleMap[(playerId, playerId)] = (newCustomRole.GetRoleTypes(), newCustomRole);
         }
     }
     public static void RpcExile(this PlayerControl player)
