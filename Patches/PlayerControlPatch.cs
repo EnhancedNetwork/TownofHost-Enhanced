@@ -1005,27 +1005,23 @@ class ReportDeadBodyPatch
 
                 _ = new LateTask(() =>
                 {
-                    // Check appear again for desync role
                     phantom.RpcSetRoleDesync(RoleTypes.Scientist, pc.GetClientId());
                 }, 0.001f, "Set Scientist in meeting", shoudLog: false);
-                // Set Scientist when his end vanish
 
                 _ = new LateTask(() =>
                 {
-                    // Check appear again for desync role
                     phantom.RpcSetRoleDesync(RoleTypes.Phantom, pc.GetClientId());
                 }, 0.2f, "Set Phantom in meeting", shoudLog: false);
 
                 _ = new LateTask(() =>
                 {
-                    // Check appear again for desync role
                     phantom.RpcCheckAppearDesync(false, pc);
                 }, 1.4f, "Check Appear in meeting", shoudLog: false);
 
                 _ = new LateTask(() =>
                 {
                     phantom.RpcSetRoleDesync(RoleTypes.Scientist, pc.GetClientId());
-                }, 2.3f, "Set Scientist in meeting", shoudLog: false);
+                }, 2.3f, "Set Scientist in meeting after reset", shoudLog: false);
             }
         }
         CheckVanishPatch.PhantomIsInvisibility.Clear();
