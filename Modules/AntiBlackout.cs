@@ -15,9 +15,7 @@ public static class AntiBlackout
     ///</summary>
     public static bool BlackOutIsActive => false; /*!Options.DisableAntiBlackoutProtects.GetBool() && CheckBlackOut();*/
 
-    //this does much less drastic things,
-    //and exist cuz even with better antiblackout protect, some places people still blackout
-    //(But it is MUCH less than before, and even if they do, after the next meeting they are back to normal 100%)
+    //this is simply just called in less places, because antiblackout with role-basis changing is OP
     public static bool LesserBlackOutActive => CheckBlackOut();
     public static int ExilePlayerId = -1;
 
