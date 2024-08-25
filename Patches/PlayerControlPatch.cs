@@ -17,6 +17,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using TOHE.Patches;
 
 namespace TOHE;
 
@@ -674,122 +675,6 @@ class ShapeshiftPatch
     }
 }
 
-/*
- *  InnerSloth is doing careless stuffs. They didnt put amModdedHost check in cmd check vanish appear
- *  We temporary need to patch the whole cmd function and wait for the next hotfix from them
- */
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckVanish))]
-class CmdCheckVanishPatch
-{
-    public static bool Prefix(PlayerControl __instance, float maxDuration)
-    {
-        if (AmongUsClient.Instance.AmHost)
-        {
-            __instance.CheckVanish();
-            return false;
-        }
-        __instance.SetRoleInvisibility(true, true, false);
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.CheckVanish, SendOption.Reliable, AmongUsClient.Instance.HostId);
-        messageWriter.Write(maxDuration);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-
-        return false;
-    }
-}
-
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckAppear))]
-class CmdCheckAppearPatch
-{
-    public static bool Prefix(PlayerControl __instance, bool shouldAnimate)
-    {
-        if (AmongUsClient.Instance.AmHost)
-        {
-            __instance.CheckAppear(shouldAnimate);
-            return false;
-        }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.CheckAppear, SendOption.Reliable, AmongUsClient.Instance.HostId);
-        messageWriter.Write(shouldAnimate);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-
-        return false;
-    }
-}
-// Called when Phantom press vanish button when visible
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckVanish))]
-class CheckVanishPatch
-{
-    public static readonly List<PlayerControl> PhantomIsInvisibility = [];
-    public static void Prefix(PlayerControl __instance)
-    {
-        Logger.Info($"Player: {__instance.GetRealName()}", "CheckVanish");
-
-        var phantom = __instance;
-        PhantomIsInvisibility.Add(phantom);
-
-        foreach (var target in Main.AllAlivePlayerControls)
-        {
-            if (phantom == target || target.AmOwner || !target.HasDesyncRole()) continue;
-
-            // Set Phantom when his start vanish
-            phantom.RpcSetRoleDesync(RoleTypes.Phantom, target.GetClientId());
-            // Check vanish again for desync role
-            phantom.RpcCheckVanishDesync(target);
-
-            _ = new LateTask(() =>
-            {
-                phantom?.RpcExileDesync(target);
-            }, 1.2f, "Set Phantom invisible", shoudLog: false);
-        }
-    }
-}
-
-// Called when Phantom press appear button when is invisible
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckAppear))]
-class CheckAppearPatch
-{
-    public static void Prefix(PlayerControl __instance, bool shouldAnimate)
-    {
-        Logger.Info($"Player: {__instance.GetRealName()} => shouldAnimate {shouldAnimate}", "CheckAppear");
-
-        var phantom = __instance;
-
-        if (!GameStates.IsMeeting)
-        {
-            CheckVanishPatch.PhantomIsInvisibility.Remove(phantom);
-        }
-
-        foreach (var target in Main.AllAlivePlayerControls)
-        {
-            if (phantom == target || target.AmOwner || !target.HasDesyncRole()) continue;
-
-            // Set Phantom when his end vanish
-            phantom.RpcSetRoleDesync(RoleTypes.Phantom, target.GetClientId());
-
-            _ = new LateTask(() =>
-            {
-                // Check appear again for desync role
-                phantom?.RpcCheckAppearDesync(true, target);
-            }, 0.5f, "Check Appear when vanish is over", shoudLog: false);
-
-            _ = new LateTask(() =>
-            {
-                phantom?.RpcSetRoleDesync(RoleTypes.Scientist, target.GetClientId());
-            }, 1.8f, "Set Scientist when vanish is over", shoudLog: false);
-        }
-    }
-}
-
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRoleInvisibility))]
-class SetRoleInvisibilityPatch
-{
-    public static void Prefix(PlayerControl __instance, bool isActive, bool shouldAnimate, bool playFullAnimation)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        Logger.Info($"Player: {__instance.GetRealName()} => Is Active {isActive}, Animate:{shouldAnimate}, Full Animation:{playFullAnimation}", "SetRoleInvisibility");
-    }
-}
-
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
 class ReportDeadBodyPatch
 {
@@ -998,36 +883,9 @@ class ReportDeadBodyPatch
                 pc.FixMixedUpOutfit();
             }
 
+            PhantomRolePatch.OnReportBody(pc);
+
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
-        }
-        foreach (var phantom in CheckVanishPatch.PhantomIsInvisibility.ToArray())
-        {
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                if (!phantom.IsAlive() || !pc.IsAlive() || phantom == pc || pc.AmOwner || !pc.HasDesyncRole()) continue;
-
-                _ = new LateTask(() =>
-                {
-                    phantom?.RpcSetRoleDesync(RoleTypes.Scientist, pc.GetClientId());
-                }, 0.01f, "Set Scientist in meeting", shoudLog: false);
-
-                _ = new LateTask(() =>
-                {
-                    phantom?.RpcSetRoleDesync(RoleTypes.Phantom, pc.GetClientId());
-                }, 1f, "Set Phantom in meeting", shoudLog: false);
-
-                _ = new LateTask(() =>
-                {
-                    phantom?.RpcStartAppearDesync(false, pc);
-                }, 1.5f, "Check Appear in meeting", shoudLog: false);
-
-                _ = new LateTask(() =>
-                {
-                    phantom?.RpcSetRoleDesync(RoleTypes.Scientist, pc.GetClientId());
-
-                    CheckVanishPatch.PhantomIsInvisibility.Clear();
-                }, 10f, "Set Scientist in meeting after reset", shoudLog: false);
-            }
         }
 
         // Set meeting time
