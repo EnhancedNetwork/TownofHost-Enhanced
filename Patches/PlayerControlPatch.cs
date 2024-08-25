@@ -764,12 +764,12 @@ class CheckAppearPatch
                 {
                     // Check appear again for desync role
                     phantom.RpcCheckAppearDesync(true, target);
-                }, 0.2f, "Check Appear when vanish is over", shoudLog: false);
+                }, 0.5f, "Check Appear when vanish is over", shoudLog: false);
 
                 _ = new LateTask(() =>
                 {
                     phantom.RpcSetRoleDesync(RoleTypes.Scientist, target.GetClientId());
-                }, 2.2f, "Set Scientist when vanish is over", shoudLog: false);
+                }, 1.8f, "Set Scientist when vanish is over", shoudLog: false);
             }
         }
     }
