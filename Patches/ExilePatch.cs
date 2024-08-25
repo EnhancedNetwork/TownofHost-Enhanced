@@ -51,7 +51,6 @@ class ExileControllerWrapUpPatch
     static void WrapUpPostfix(NetworkedPlayerInfo exiled)
     {
         if (AntiBlackout.BlackOutIsActive) exiled = AntiBlackout_LastExiled;
-        AntiBlackout.ResetPlayerMaps();
 
         // Still not springing up in airships
         if (!GameStates.AirshipIsActive)
@@ -65,6 +64,7 @@ class ExileControllerWrapUpPatch
         bool DecidedWinner = false;
         if (!AmongUsClient.Instance.AmHost) return;
         AntiBlackout.RestoreIsDead(doSend: false);
+        AntiBlackout.ResetPlayerMaps();
 
         List<Collector> collectorCL = Utils.GetRoleBasesByType<Collector>()?.ToList();
 
