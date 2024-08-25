@@ -960,6 +960,9 @@ internal static class RPC
             case CustomRoles.Statue:
                 Statue.Add(targetId);
                 break;
+            case CustomRoles.Evader:
+                Evader.Add(targetId);
+                break;
 
         }
 

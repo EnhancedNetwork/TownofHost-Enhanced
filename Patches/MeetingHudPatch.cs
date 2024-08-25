@@ -809,7 +809,7 @@ static class ExtendedMeetingHud
 
                 if (target.Is(CustomRoles.Evader))
                 {
-                    Evader.CheckExile(ref VoteNum);
+                    Evader.CheckExile(ps.VotedFor, ref VoteNum);
                 }
 
                 //Add 1 vote If key is not defined, overwrite with 1 and define
