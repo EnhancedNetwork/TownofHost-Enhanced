@@ -265,7 +265,7 @@ public static class AntiBlackout
             foreach (var seer in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
             {
                 seer.RpcSetRoleDesync(RoleTypes.GuardianAngel, seer.GetClientId());
-            } 
+            } // for some reason has to be done later
 
             foreach (var target in Main.AllPlayerControls)
             {
