@@ -244,14 +244,17 @@ class CheckForEndVotingPatch
                 }
             }
 
-            var VotingData = __instance.CustomCalculateVotes(); //Influenced vote mun isnt counted here
+            Dictionary<byte, int> VotingData = [];
 
             if (CustomRoles.Influenced.RoleExist())
             {
                 Influenced.ChangeVotingData(VotingData);
                 VotingData = __instance.CustomCalculateVotes(true);
             }
-            //Change voting data for influenced, vote num counted here
+            else
+            {
+                VotingData = __instance.CustomCalculateVotes();
+            }
 
             for (int i = 0; i < statesList.Count; i++)
             {
