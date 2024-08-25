@@ -276,8 +276,6 @@ public static class AntiBlackout
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                 }
             }
-            
-
         }, 0.5f, "AntiBlackout - Fix Movement For Ghosts"); 
     }
     private static void TempRevivePlayers()
