@@ -12,10 +12,6 @@ class ExileControllerWrapUpPatch
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
-        public static void Prefix()
-        {
-            AntiBlackout.SetIsDead();
-        }
         public static void Postfix(ExileController __instance)
         {
             try
