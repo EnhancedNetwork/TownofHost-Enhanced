@@ -17,7 +17,7 @@ public class Evader : IAddon
         SkillLimitTimes = IntegerOptionItem.Create(Id + 10, "SkillLimitTimes", new(0, 10, 1), 2, TabGroup.Addons, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader])
             .SetValueFormat(OptionFormat.Times);
-        ChanceNotExiled = IntegerOptionItem.Create(Id + 10, "Evader_ChanceNotExiled", new(0, 100, 5), 25, TabGroup.Addons, false)
+        ChanceNotExiled = IntegerOptionItem.Create(Id + 11, "Evader_ChanceNotExiled", new(0, 100, 5), 25, TabGroup.Addons, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader])
             .SetValueFormat(OptionFormat.Percent);
     }
