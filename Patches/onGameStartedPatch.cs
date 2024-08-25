@@ -48,7 +48,7 @@ internal class ChangeRoleSettings
             }
 
             Main.PlayerStates = [];
-
+            RoleAssign.RoleResult = [];
             KillTimerManager.Initializate();
             Main.AllPlayerKillCooldown.Clear();
             Main.AllPlayerSpeed.Clear();
@@ -172,6 +172,8 @@ internal class ChangeRoleSettings
 
                 if (GameStates.IsNormalGame)
                     Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);
+
+                RoleAssign.RoleResult[pc] = CustomRoles.NotAssigned;
 
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];

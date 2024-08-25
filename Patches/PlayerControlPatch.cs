@@ -737,7 +737,7 @@ class CheckVanishPatch
 
             _ = new LateTask(() =>
             {
-                phantom.RpcExileDesync(target);
+                phantom?.RpcExileDesync(target);
             }, 1.2f, "Set Phantom invisible", shoudLog: false);
         }
     }
@@ -752,7 +752,11 @@ class CheckAppearPatch
         Logger.Info($"Player: {__instance.GetRealName()} => shouldAnimate {shouldAnimate}", "CheckAppear");
 
         var phantom = __instance;
-        CheckVanishPatch.PhantomIsInvisibility.Remove(phantom);
+
+        if (!GameStates.IsMeeting)
+        {
+            CheckVanishPatch.PhantomIsInvisibility.Remove(phantom);
+        }
 
         foreach (var target in Main.AllAlivePlayerControls)
         {
@@ -764,12 +768,12 @@ class CheckAppearPatch
             _ = new LateTask(() =>
             {
                 // Check appear again for desync role
-                phantom.RpcCheckAppearDesync(true, target);
+                phantom?.RpcCheckAppearDesync(true, target);
             }, 0.5f, "Check Appear when vanish is over", shoudLog: false);
 
             _ = new LateTask(() =>
             {
-                phantom.RpcSetRoleDesync(RoleTypes.Scientist, target.GetClientId());
+                phantom?.RpcSetRoleDesync(RoleTypes.Scientist, target.GetClientId());
             }, 1.8f, "Set Scientist when vanish is over", shoudLog: false);
         }
     }
@@ -996,35 +1000,35 @@ class ReportDeadBodyPatch
 
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
-
         foreach (var phantom in CheckVanishPatch.PhantomIsInvisibility.ToArray())
         {
-            foreach (var pc in Main.AllAlivePlayerControls)
+            foreach (var pc in Main.AllPlayerControls)
             {
-                if (!phantom.IsAlive() || phantom == pc || pc.AmOwner || !pc.HasDesyncRole()) continue;
+                if (!phantom.IsAlive() || !pc.IsAlive() || phantom == pc || pc.AmOwner || !pc.HasDesyncRole()) continue;
 
                 _ = new LateTask(() =>
                 {
-                    phantom.RpcSetRoleDesync(RoleTypes.Scientist, pc.GetClientId());
-                }, 0.001f, "Set Scientist in meeting", shoudLog: false);
+                    phantom?.RpcSetRoleDesync(RoleTypes.Scientist, pc.GetClientId());
+                }, 0.01f, "Set Scientist in meeting", shoudLog: false);
 
                 _ = new LateTask(() =>
                 {
-                    phantom.RpcSetRoleDesync(RoleTypes.Phantom, pc.GetClientId());
-                }, 0.2f, "Set Phantom in meeting", shoudLog: false);
+                    phantom?.RpcSetRoleDesync(RoleTypes.Phantom, pc.GetClientId());
+                }, 1f, "Set Phantom in meeting", shoudLog: false);
 
                 _ = new LateTask(() =>
                 {
-                    phantom.RpcCheckAppearDesync(false, pc);
-                }, 1.4f, "Check Appear in meeting", shoudLog: false);
+                    phantom?.RpcStartAppearDesync(false, pc);
+                }, 1.5f, "Check Appear in meeting", shoudLog: false);
 
                 _ = new LateTask(() =>
                 {
-                    phantom.RpcSetRoleDesync(RoleTypes.Scientist, pc.GetClientId());
-                }, 2.3f, "Set Scientist in meeting after reset", shoudLog: false);
+                    phantom?.RpcSetRoleDesync(RoleTypes.Scientist, pc.GetClientId());
+
+                    CheckVanishPatch.PhantomIsInvisibility.Clear();
+                }, 10f, "Set Scientist in meeting after reset", shoudLog: false);
             }
         }
-        CheckVanishPatch.PhantomIsInvisibility.Clear();
 
         // Set meeting time
         MeetingTimeManager.OnReportDeadBody();

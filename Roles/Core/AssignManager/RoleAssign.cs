@@ -53,7 +53,6 @@ public class RoleAssign
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-                RoleResult = [];
                 foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                 {
                     RoleResult.Add(pc, CustomRoles.Killer);
@@ -61,7 +60,6 @@ public class RoleAssign
                 return;
         }
 
-        RoleResult = [];
         var rd = IRandom.Instance;
         int playerCount = Main.AllAlivePlayerControls.Length;
         int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
@@ -201,7 +199,7 @@ public class RoleAssign
         // Pre-Assigned Roles By Host Are Selected First
         foreach (var item in SetRoles)
         {
-            PlayerControl pc = AllPlayers.FirstOrDefault(x => x.PlayerId == item.Key);
+            PlayerControl pc = Utils.GetPlayerById(item.Key);
             if (pc == null) continue;
 
             RoleResult[pc] = item.Value;

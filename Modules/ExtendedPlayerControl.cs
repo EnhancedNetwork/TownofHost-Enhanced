@@ -498,13 +498,6 @@ static class ExtendedPlayerControl
         messageWriter.Write(shouldAnimate);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
-    public static void RpcCheckAppear(this PlayerControl player, bool shouldAnimate)
-    {
-        player.CheckAppear(shouldAnimate);
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckAppear, SendOption.None);
-        messageWriter.Write(shouldAnimate);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-    }
     public static void RpcStartAppearDesync(this PlayerControl player, bool shouldAnimate, PlayerControl seer)
     {
         if (AmongUsClient.Instance.ClientId == seer.GetClientId())
@@ -513,6 +506,13 @@ static class ExtendedPlayerControl
             return;
         }
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartAppear, SendOption.None, seer.GetClientId());
+        messageWriter.Write(shouldAnimate);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
+    public static void RpcCheckAppear(this PlayerControl player, bool shouldAnimate)
+    {
+        player.CheckAppear(shouldAnimate);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckAppear, SendOption.None);
         messageWriter.Write(shouldAnimate);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
