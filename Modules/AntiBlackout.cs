@@ -4,6 +4,7 @@ using System;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using static TOHE.SelectRolesPatch;
 
 namespace TOHE;
 
@@ -13,6 +14,11 @@ public static class AntiBlackout
     /// Check num alive Impostors & Crewmates & NeutralKillers
     ///</summary>
     public static bool BlackOutIsActive => false; /*!Options.DisableAntiBlackoutProtects.GetBool() && CheckBlackOut();*/
+
+    //this does much less drastic things,
+    //and exist cuz even with better antiblackout protect, some places people still blackout
+    //(But it is MUCH less than before, and even if they do, after the next meeting they are back to normal 100%)
+    public static bool LesserBlackOutActive => CheckBlackOut();
     public static int ExilePlayerId = -1;
 
     ///<summary>
@@ -74,8 +80,7 @@ public static class AntiBlackout
 
     public static void SetIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
-        TempReviveGuardianAngels();
-        SetRole();
+        TempRevivePlayers();
         logger.Info($"SetIsDead is called from {callerMethodName}");
         if (IsCached)
         {
@@ -241,42 +246,50 @@ public static class AntiBlackout
             Logger.Error($"{error}", "AntiBlackout.AfterMeetingTasks");
         }
     }
-    private static void TempReviveGuardianAngels() // FUCK IT WE BALL 🗣💯💯
+    public static void ResetPlayerMaps()
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
-        foreach (var pc in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
+        foreach (var ((seer, target), (roletype, _)) in RpcSetRoleReplacer.RoleMap)
+        {
+            if (seer.OwnedByHost()) continue;
+
+            var realtype = roletype;
+            if (seer.Data.IsDead)
+            {
+                realtype = seer.HasKillButton() && seer.CanUseSabotage() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost;
+                if (target == seer && target.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel) realtype = RoleTypes.GuardianAngel;
+            }
+            target.RpcSetRoleDesync(realtype, seer.GetClientId());
+        }
+        _ = new LateTask(() => {
+            foreach (var seer in Main.AllPlayerControls.Where(x => x.Data.IsDead)) // fix not being able to go trough walls
+            {
+                seer.Exiled();
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(seer.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
+
+        }, 0.5f, "AntiBlackout - Fix Movement For Ghosts"); 
+    }
+    private static void TempRevivePlayers()
+    {
+        if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
+
+        PlayerControl dummyImp = Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId && x.HasKillButton())
+            ?? Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId);
+
+        foreach (var pc in Main.AllPlayerControls)
         {
             foreach (var reciever in Main.AllPlayerControls)
             {
                 if (reciever.OwnedByHost()) continue;
-                pc.RpcSetRoleDesync(RoleTypes.Impostor, reciever.GetClientId());
+                RoleTypes typa = pc == dummyImp ? RoleTypes.Impostor : RoleTypes.Crewmate;
+
+                pc.RpcSetRoleDesync(typa, reciever.GetClientId());
             }
         }
-    }
-    private static void SetRole()
-    {
-        if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
-
-        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != ExilePlayerId && x.HasKillButton()).ToList();
-
-        foreach (var pc in Main.AllPlayerControls.Where(x => !x.Data.Disconnected))
-        {
-            if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
-            if (pc.IsAlive() && (pc.GetCustomRole().IsDesyncRole())) continue;
-
-
-            foreach (var dummy in list)
-            {
-                if (pc.GetCustomRole().IsImpostor() && !pc.IsSameTeammate(dummy, out _) && pc.IsAlive()) continue;
-                dummy.RpcSetRoleDesync(dummy.GetCustomRole().GetRoleTypes(), pc.GetClientId());
-            }
-
-            foreach (var dead in Main.AllPlayerControls.Where(x => !x.Data.Disconnected && x.Data.IsDead))
-            {
-                dead.RpcSetRoleDesync(RoleTypes.CrewmateGhost, pc.GetClientId());
-            }
-        }
+        
         ExilePlayerId = -1;
     }
     public static void Reset()

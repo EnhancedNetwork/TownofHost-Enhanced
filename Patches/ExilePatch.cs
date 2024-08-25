@@ -51,6 +51,7 @@ class ExileControllerWrapUpPatch
     static void WrapUpPostfix(NetworkedPlayerInfo exiled)
     {
         if (AntiBlackout.BlackOutIsActive) exiled = AntiBlackout_LastExiled;
+        AntiBlackout.ResetPlayerMaps();
 
         // Still not springing up in airships
         if (!GameStates.AirshipIsActive)
@@ -76,7 +77,7 @@ class ExileControllerWrapUpPatch
             var exiledPC = exiled.Object;
 
             // Reset player cam for exiled desync impostor
-            if (exiledPC.HasDesyncRole())
+            if (exiledPC.HasDesyncRole() || AntiBlackout.LesserBlackOutActive)
             {
                 exiledPC?.ResetPlayerCam(1f);
             }
@@ -192,7 +193,7 @@ class ExileControllerWrapUpPatch
 
 
                 //Kill off GAS again
-                foreach (var pc in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
+                /*foreach (var pc in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
                 {
                     foreach (var reciever in Main.AllPlayerControls)
                     {
@@ -202,7 +203,7 @@ class ExileControllerWrapUpPatch
                     }
                     //pc.ResetPlayerCam();
                     //pc.RpcSetRoleDesync(RoleTypes.GuardianAngel, pc.GetClientId());
-                }
+                }*/
 
             }, 0.8f, "AfterMeetingDeathPlayers Task");
         }
