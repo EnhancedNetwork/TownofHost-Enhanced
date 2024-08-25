@@ -248,9 +248,14 @@ public static class AntiBlackout
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
-        foreach (var ((seer, target), (roletype, _)) in RpcSetRoleReplacer.RoleMap)
+        foreach (var ((seerId, targetId), (roletype, _)) in RpcSetRoleReplacer.RoleMap)
         {
-            if (seer.OwnedByHost()) continue;
+            // skip host
+            if (seerId == 0) continue;
+
+            var seer = Utils.GetPlayerById(seerId);
+            var target = Utils.GetPlayerById(targetId);
+            if (seer == null || target == null) continue;
 
             var realtype = roletype;
             if (target.Data.IsDead)
@@ -270,8 +275,8 @@ public static class AntiBlackout
                 foreach (var seer in Main.AllPlayerControls) // fix not being able to go trough walls
                 {
                     if (seer.OwnedByHost()) continue;
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.Exiled, SendOption.None, seer.GetClientId());
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    
+                    target.RpcExileDesync(seer);
                 }
             }
         }, 0.5f, "AntiBlackout - Fix Movement For Ghosts"); 
