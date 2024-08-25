@@ -12,7 +12,7 @@ class ExileControllerWrapUpPatch
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
-        public static void Prefix(ExileController __instance)
+        public static void Prefix()
         {
             AntiBlackout.SetIsDead();
         }
@@ -160,7 +160,7 @@ class ExileControllerWrapUpPatch
             {
                 exiled = AntiBlackout_LastExiled;
                 AntiBlackout.SendGameData();
-                AntiBlackout.SerRealPlayerRoles();
+                AntiBlackout.SetRealPlayerRoles();
                 AntiBlackout.ExilePlayerId = -1;
 
                 if (AntiBlackout.BlackOutIsActive && // State in which the expulsion target is overwritten (need not be executed if the expulsion target is not overwritten)
