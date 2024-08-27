@@ -297,7 +297,7 @@ class ShipStatusSerializePatch
 
         // Ventilation part
         {
-            Logger.Info("doing Ventilation Serialize", "ShipStatusSerializePatch");
+            // Logger.Info("doing Ventilation Serialize", "ShipStatusSerializePatch");
             // Serialize Ventilation with our own patches to clients specifically if needed
             bool customVentilation = false;
 
@@ -315,14 +315,14 @@ class ShipStatusSerializePatch
             var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
             if (ventilationSystem != null && ventilationSystem.IsDirty)
             {
-                Logger.Info("customVentilation: " + customVentilation, "ShipStatusSerializePatch");
+                // Logger.Info("customVentilation: " + customVentilation, "ShipStatusSerializePatch");
                 if (customVentilation)
                 {
                     Utils.SetAllVentInteractions();
                 }
                 else
                 {
-                    Logger.Info("vanilla update vents", "ShipStatusSerializePatch");
+                    // Logger.Info("vanilla update vents", "ShipStatusSerializePatch");
                     var subwriter = MessageWriter.Get(SendOption.Reliable);
                     subwriter.StartMessage(5);
                     {
