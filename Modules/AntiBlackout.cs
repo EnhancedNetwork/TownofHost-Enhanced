@@ -293,6 +293,9 @@ public static class AntiBlackout
         {
             seer.RpcExile();
         }
+    }
+    public static void ResetAfterMeeting()
+    {
         SkipTasks = false;
         ExilePlayerId = -1;
     }

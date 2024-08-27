@@ -75,10 +75,10 @@ class ExileControllerWrapUpPatch
             var exiledPC = exiled.Object;
 
             // Reset player cam for exiled desync impostor
-            if (exiledPC.HasDesyncRole())
-            {
-                exiledPC?.ResetPlayerCam(1f);
-            }
+            //if (exiledPC.HasDesyncRole())
+            //{
+            //    exiledPC?.ResetPlayerCam(1f);
+            //}
 
             exiled.IsDead = true;
             exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
@@ -189,8 +189,9 @@ class ExileControllerWrapUpPatch
 
                     MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
                 });
-                Main.AfterMeetingDeathPlayers.Clear();
 
+                Main.AfterMeetingDeathPlayers.Clear();
+                AntiBlackout.ResetAfterMeeting();
             }, 1.2f, "AfterMeetingDeathPlayers Task");
         }
         //This should happen shortly after the Exile Controller wrap up finished for clients
