@@ -73,6 +73,7 @@ class CheckForEndVotingPatch
 
                     ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiled;
                     Main.LastVotedPlayerInfo = exiled;
+                    AntiBlackout.ExilePlayerId = exiled.PlayerId;
 
                     if (AntiBlackout.BlackOutIsActive)
                     {

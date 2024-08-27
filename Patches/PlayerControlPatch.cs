@@ -1736,7 +1736,9 @@ public static class PlayerControlDiePatch
 {
     public static void Postfix(PlayerControl __instance)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || __instance == null) return;
+        // Skip Tasks while Anti Blackout but not for real exiled
+        if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != __instance.PlayerId) return;
 
         try
         {
@@ -1770,7 +1772,7 @@ public static class PlayerControlDiePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
 class PlayerControlSetRolePatch
 {
-    private static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
+    private static readonly Dictionary<PlayerControl, RoleTypes> GhostRoles = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole)
     {
         canOverrideRole = true;
@@ -1797,7 +1799,7 @@ class PlayerControlSetRolePatch
             }
 
             var targetIsKiller = target.Is(Custom_Team.Impostor) || target.HasDesyncRole();
-            ghostRoles.Clear();
+            GhostRoles.Clear();
 
             foreach (var seer in Main.AllPlayerControls)
             {
@@ -1806,19 +1808,19 @@ class PlayerControlSetRolePatch
 
                 if (target.GetCustomRole().IsGhostRole() || target.IsAnySubRole(x => x.IsGhostRole()))
                 {
-                    ghostRoles[seer] = RoleTypes.GuardianAngel;
+                    GhostRoles[seer] = RoleTypes.GuardianAngel;
                 }
                 else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(Custom_Team.Impostor)))
                 {
-                    ghostRoles[seer] = RoleTypes.ImpostorGhost;
+                    GhostRoles[seer] = RoleTypes.ImpostorGhost;
                 }
                 else
                 {
-                    ghostRoles[seer] = RoleTypes.CrewmateGhost;
+                    GhostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
             // If all players see player as Guardian Angel
-            if (ghostRoles.All(kvp => kvp.Value == RoleTypes.GuardianAngel))
+            if (GhostRoles.All(kvp => kvp.Value == RoleTypes.GuardianAngel))
             {
                 roleType = RoleTypes.GuardianAngel;
                 __instance.RpcSetRoleDesync(RoleTypes.GuardianAngel, __instance.GetClientId());
@@ -1831,20 +1833,20 @@ class PlayerControlSetRolePatch
                 return false;
             }
             // If all players see player as Crewmate Ghost
-            else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
+            else if (GhostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
             {
                 roleType = RoleTypes.CrewmateGhost;
                 return true;
             }
             // If all players see player as Impostor Ghost
-            else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
+            else if (GhostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
             {
                 roleType = RoleTypes.ImpostorGhost;
                 return true;
             }
             else
             {
-                foreach ((var seer, var role) in ghostRoles)
+                foreach ((var seer, var role) in GhostRoles)
                 {
                     if (seer == null || target == null) continue;
                     Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");

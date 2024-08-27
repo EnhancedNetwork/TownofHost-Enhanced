@@ -17,6 +17,7 @@ public static class AntiBlackout
 
     //this is simply just called in less places, because antiblackout with role-basis changing is OP
     public static int ExilePlayerId = -1;
+    public static bool SkipTasks = false;
 
     ///<summary>
     /// Count alive players and check black out 
@@ -77,6 +78,7 @@ public static class AntiBlackout
 
     public static void SetIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
+        SkipTasks = true;
         RevivePlayersAndSetDummyImp();
         logger.Info($"SetIsDead is called from {callerMethodName}");
         if (IsCached)
@@ -155,35 +157,10 @@ public static class AntiBlackout
         // Execution conditions: Client is the host, IsDead is overridden, player is already disconnected
         if (!AmongUsClient.Instance.AmHost || !IsCached || !player.Disconnected) return;
         isDeadCache[player.PlayerId] = (true, true);
+        RevivePlayersAndSetDummyImp();
         player.IsDead = player.Disconnected = false;
         SendGameData();
     }
-
-    ///<summary>
-    ///Execute the code with IsDead temporarily set back to what it should be
-    ///<param name="action">Execution details</param>
-    ///</summary>
-    //public static void TempRestore(Action action)
-    //{
-    //    logger.Info("==Temp Restore==");
-    //    // Whether TempRestore was executed with IsDead overwritten
-    //    bool before_IsCached = IsCached;
-    //    try
-    //    {
-    //        if (before_IsCached) RestoreIsDead(doSend: false);
-    //        action();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        logger.Warn("An exception occurred within AntiBlackout.TempRestore");
-    //        logger.Exception(ex);
-    //    }
-    //    finally
-    //    {
-    //        if (before_IsCached) SetIsDead(doSend: false);
-    //        logger.Info("==/Temp Restore==");
-    //    }
-    //}
     public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, NetworkedPlayerInfo exiled, bool tie)
     {
         if (AmongUsClient.Instance.AmClient)
@@ -269,16 +246,44 @@ public static class AntiBlackout
             
             var seer = Utils.GetPlayerById(seerId);
             var target = Utils.GetPlayerById(targetId);
-            
+
             if (seer == null || target == null) continue;
             if (seer.IsModClient()) continue;
 
-            var realRoleType = roletype;
+            var isSelf = seerId == targetId;
+            var changedRoleType = roletype;
             if (target.Data.IsDead)
             {
-                realRoleType = target.CanUseSabotage() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost;
+                if (isSelf)
+                {
+                    var isGuardianAngel = target.GetCustomRole().IsGhostRole() || target.IsAnySubRole(x => x.IsGhostRole());
+                    if (isGuardianAngel)
+                    {
+                        changedRoleType = RoleTypes.GuardianAngel;
+                    }
+                    else if (target.Is(Custom_Team.Impostor) || target.HasDesyncRole())
+                    {
+                        changedRoleType = RoleTypes.ImpostorGhost;
+                    }
+                    else
+                    {
+                        changedRoleType = RoleTypes.CrewmateGhost;
+                    }
+                }
+                else
+                {
+                    var seerIsKiller = seer.Is(Custom_Team.Impostor) || seer.HasDesyncRole();
+                    if (!seerIsKiller && target.Is(Custom_Team.Impostor))
+                    {
+                        changedRoleType = RoleTypes.ImpostorGhost;
+                    }
+                    else
+                    {
+                        changedRoleType = RoleTypes.CrewmateGhost;
+                    }
+                }
             }
-            target.RpcSetRoleDesync(realRoleType, seer.GetClientId());
+            target.RpcSetRoleDesync(changedRoleType, seer.GetClientId());
         }
         SetDeadPlayersAsExiled();
     }
@@ -286,16 +291,11 @@ public static class AntiBlackout
     {
         foreach (var seer in Main.AllPlayerControls.Where(x => x.Data.IsDead))
         {
-            if (seer.OwnedByHost() || seer.IsModClient()) continue;
+            // RpcExile is already sets dead role types
             seer.RpcExile();
         }
-        _ = new LateTask(() =>
-        {
-            foreach (var seer in Main.AllPlayerControls.Where(x => x.GetRoleClass().ThisRoleBase == CustomRoles.GuardianAngel))
-            {
-                seer.RpcSetRoleDesync(RoleTypes.GuardianAngel, seer.GetClientId());
-            } // for some reason has to be done later
-        }, 0.5f, "AntiBlackout - Fix Movement For Ghosts");
+        SkipTasks = false;
+        ExilePlayerId = -1;
     }
     public static void Reset()
     {
@@ -305,6 +305,8 @@ public static class AntiBlackout
         IsCached = false;
         ShowExiledInfo = false;
         StoreExiledMessage = "";
+        ExilePlayerId = -1;
+        SkipTasks = false;
     }
 
     public static bool ShowExiledInfo = false;

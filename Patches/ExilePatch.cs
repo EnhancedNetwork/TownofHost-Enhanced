@@ -1,5 +1,4 @@
 ﻿using AmongUs.Data;
-using AmongUs.GameOptions;
 using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
@@ -12,10 +11,6 @@ class ExileControllerWrapUpPatch
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
-        public static void Prefix()
-        {
-            AntiBlackout.SetIsDead();
-        }
         public static void Postfix(ExileController __instance)
         {
             try
@@ -161,7 +156,6 @@ class ExileControllerWrapUpPatch
                 exiled = AntiBlackout_LastExiled;
                 AntiBlackout.SendGameData();
                 AntiBlackout.SetRealPlayerRoles();
-                AntiBlackout.ExilePlayerId = -1;
 
                 if (AntiBlackout.BlackOutIsActive && // State in which the expulsion target is overwritten (need not be executed if the expulsion target is not overwritten)
                     exiled != null && // exiled is not null
@@ -169,7 +163,7 @@ class ExileControllerWrapUpPatch
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, 1.5f, "Restore IsDead Task");
+            }, 1.1f, "Restore IsDead Task");
 
             _ = new LateTask(() =>
             {
@@ -197,7 +191,7 @@ class ExileControllerWrapUpPatch
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
 
-            }, 1.6f, "AfterMeetingDeathPlayers Task");
+            }, 1.2f, "AfterMeetingDeathPlayers Task");
         }
         //This should happen shortly after the Exile Controller wrap up finished for clients
         //For Certain Laggy clients 0.8f delay is still not enough. The finish time can differ.
