@@ -300,18 +300,22 @@ class ShipStatusSerializePatch
             Logger.Info("doing Ventilation Serialize", "ShipStatusSerializePatch");
             // Serialize Ventilation with our own patches to clients specifically if needed
             bool customVentilation = false;
-            foreach (var pc in PlayerControl.AllPlayerControls)
+
+            if (GameStates.IsInGame)
             {
-                if (pc.BlockVentInteraction())
+                foreach (var pc in PlayerControl.AllPlayerControls)
                 {
-                    customVentilation = true;
+                    if (pc.BlockVentInteraction())
+                    {
+                        customVentilation = true;
+                    }
                 }
             }
 
-            Logger.Info("customVentilation: " + customVentilation, "ShipStatusSerializePatch");
             var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
             if (ventilationSystem != null && ventilationSystem.IsDirty)
             {
+                Logger.Info("customVentilation: " + customVentilation, "ShipStatusSerializePatch");
                 if (customVentilation)
                 {
                     Utils.SetAllVentInteractions();
