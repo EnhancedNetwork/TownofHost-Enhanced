@@ -291,7 +291,6 @@ public static class AntiBlackout
     {
         foreach (var seer in Main.AllPlayerControls.Where(x => x.Data.IsDead))
         {
-            // RpcExile is already sets dead role types
             seer.RpcExile();
         }
         SkipTasks = false;
