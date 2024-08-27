@@ -104,6 +104,7 @@ static class VentSystemDeterioratePatch
         AmongUsClient.Instance.SendOrDisconnect(writer);
         writer.Recycle();
     }
+
     private static void RpcSerializeVent(this PlayerControl pc, VentilationSystem __instance)
     {
         MessageWriter writer = MessageWriter.Get(SendOption.None);
