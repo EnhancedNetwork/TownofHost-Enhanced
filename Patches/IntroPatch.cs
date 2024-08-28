@@ -628,14 +628,19 @@ class IntroCutsceneDestroyPatch
                 PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
             }
 
+            bool shouldPerformVentInteractions = false;
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
                 if (pc.BlockVentInteraction())
                 {
-                    Utils.SetAllVentInteractions();
-                    break;
+                    VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                    shouldPerformVentInteractions = true;
                 }
+            }
+
+            if (shouldPerformVentInteractions)
+            {
+                Utils.SetAllVentInteractions();
             }
         }
         Logger.Info("OnDestroy", "IntroCutscene");

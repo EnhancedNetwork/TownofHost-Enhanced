@@ -680,7 +680,7 @@ static class ExtendedPlayerControl
             _ => false
         };
     }
-    public static bool CanUseVent(this PlayerControl player) => player.CanUseImpostorVentButton() || player.Data.Role.Role == RoleTypes.Engineer;
+    public static bool CanUseVent(this PlayerControl player) => player.CanUseImpostorVentButton() || player.GetCustomRole().GetVNRole() == CustomRoles.Engineer;
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
         if (!pc.IsAlive()) return false;

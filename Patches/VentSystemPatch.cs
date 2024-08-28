@@ -3,28 +3,8 @@ using System;
 
 namespace TOHE.Patches;
 
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Serialize))]
-class ShipStatusSerializePatch
-{
-    public static void Prefix(ShipStatus __instance, /*[HarmonyArgument(0)] MessageWriter writer,*/ [HarmonyArgument(1)] bool initialState)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (initialState) return;
-        bool cancel = false;
-        foreach (var pc in PlayerControl.AllPlayerControls)
-        {
-            if (pc.BlockVentInteraction())
-                cancel = true;
-        }
-        var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
-        if (cancel && ventilationSystem != null && ventilationSystem.IsDirty)
-        {
-            Utils.SetAllVentInteractions();
-            ventilationSystem.IsDirty = false;
-        }
-
-    }
-}
+// Patches here is also activated from ShipStatus.Serialize and IntroCutScene 
+// through Utils.SetAllVentInteractions
 
 [HarmonyPatch(typeof(VentilationSystem), nameof(VentilationSystem.Deteriorate))]
 static class VentSystemDeterioratePatch
@@ -50,16 +30,11 @@ static class VentSystemDeterioratePatch
     {
         if (!pc.AmOwner && !pc.IsModClient() && !pc.Data.IsDead && !pc.CanUseVent())
         {
-            //foreach (var vent in ShipStatus.Instance.AllVents)
-            //{
-            //    if ()
-            //        return true;
-            //}
-
             return true;
         }
         return false;
     }
+
     public static void SerializeV2(VentilationSystem __instance, PlayerControl player = null)
     {
         foreach (var pc in PlayerControl.AllPlayerControls)
@@ -129,6 +104,7 @@ static class VentSystemDeterioratePatch
         AmongUsClient.Instance.SendOrDisconnect(writer);
         writer.Recycle();
     }
+
     private static void RpcSerializeVent(this PlayerControl pc, VentilationSystem __instance)
     {
         MessageWriter writer = MessageWriter.Get(SendOption.None);
