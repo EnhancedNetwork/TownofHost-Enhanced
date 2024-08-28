@@ -72,14 +72,6 @@ class ExileControllerWrapUpPatch
 
         if (CLThingy && exiled != null)
         {
-            var exiledPC = exiled.Object;
-
-            // Reset player cam for exiled desync impostor
-            //if (exiledPC.HasDesyncRole())
-            //{
-            //    exiledPC?.ResetPlayerCam(1f);
-            //}
-
             exiled.IsDead = true;
             exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
 
@@ -102,20 +94,8 @@ class ExileControllerWrapUpPatch
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
-            // Check Anti BlackOut
-            //if (player.GetCustomRole().IsImpostor()
-            //    && !player.IsAlive() // if player is dead impostor
-            //    && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
-            //{
-            //    player.ResetPlayerCam(1f);
-            //}
-
             // Check for remove pet
             player.RpcRemovePet();
-
-            // Reset Kill/Ability cooldown
-            player.ResetKillCooldown();
-            player.RpcResetAbilityCooldown();
         }
 
         Main.MeetingIsStarted = false;
@@ -180,12 +160,6 @@ class ExileControllerWrapUpPatch
 
                     if (x.Value == PlayerState.DeathReason.Suicide)
                         player?.SetRealKiller(player, true);
-
-                    // Reset player cam for dead desync impostor
-                    //if (player.HasDesyncRole())
-                    //{
-                    //    player?.ResetPlayerCam(1f);
-                    //}
 
                     MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
                 });

@@ -10,7 +10,6 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -93,6 +92,7 @@ internal class ChangeRoleSettings
             ChatManager.ResetHistory();
             ReportDeadBodyPatch.CanReport = [];
             Options.UsedButtonCount = 0;
+            ShipStatusBeginPatch.RolesIsAssigned = false;
 
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
 
@@ -331,7 +331,8 @@ internal class SelectRolesPatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        //There is a delay of 0.8 seconds because after the player exits during the assign of desync roles, either a black screen will occur or the Scientist role will be set
+        // There is a delay of 1 seconds because after the player exits during the assign of desync roles,
+        // Either a black screen will occur or the Scientist role will be set
         _ = new LateTask(() => {
 
             try
@@ -339,7 +340,7 @@ internal class SelectRolesPatch
                 // Set roles
                 SetRolesAfterSelect();
 
-                // Assign tasks again
+                // Assign tasks
                 ShipStatus.Instance.Begin();
             }
             catch (Exception ex)
@@ -347,7 +348,23 @@ internal class SelectRolesPatch
                 Utils.ErrorEnd("Set Roles After Select In LateTask");
                 Utils.ThrowException(ex);
             }
-        }, 1f, "Set Role Types After Select");
+        }, 1f, "Set Roles After Select");
+
+        // There is a delay of 1.5 seconds because after assign roles player data "Disconnected" does not allow assigning tasks due AU code side
+        _ = new LateTask(() => {
+
+            try
+            {
+                ShipStatusBeginPatch.RolesIsAssigned = true;
+                // Assign tasks
+                ShipStatus.Instance.Begin();
+            }
+            catch (Exception ex)
+            {
+                Utils.ErrorEnd("Set Tasks In LateTask");
+                Utils.ThrowException(ex);
+            }
+        }, 1.5f, "Set Tasks For All Players");
     }
     private static void SetRolesAfterSelect()
     {
@@ -741,35 +758,34 @@ internal class SelectRolesPatch
         {
             foreach (var pc in Main.AllPlayerControls)
             {
-                var roleType = RoleMap[(pc.PlayerId, pc.PlayerId)].roleType;
-
-                var stream = MessageWriter.Get(SendOption.Reliable);
-                stream.StartMessage(6);
-                stream.Write(AmongUsClient.Instance.GameId);
-                stream.WritePacked(pc.GetClientId());
+                try
                 {
-                    RpcSetDisconnect(stream, true);
+                    var roleType = RoleMap[(pc.PlayerId, pc.PlayerId)].roleType;
 
-                    //if (pc.OwnedByHost())
-                    //{
-                    //    pc.SetRole(roleType);
-                    //}
-
-                    stream.StartMessage(2);
-                    stream.WritePacked(pc.NetId);
-                    stream.Write((byte)RpcCalls.SetRole);
+                    var stream = MessageWriter.Get(SendOption.Reliable);
+                    stream.StartMessage(6);
+                    stream.Write(AmongUsClient.Instance.GameId);
+                    stream.WritePacked(pc.GetClientId());
                     {
-                        stream.Write((ushort)roleType);
-                        stream.Write(true); //canOverrideRole
+                        RpcSetDisconnect(stream, true);
+
+                        stream.StartMessage(2);
+                        stream.WritePacked(pc.NetId);
+                        stream.Write((byte)RpcCalls.SetRole);
+                        {
+                            stream.Write((ushort)roleType);
+                            stream.Write(true); //canOverrideRole
+                        }
+                        stream.EndMessage();
+                        //Logger.Info($"SetSelfRole to:{pc?.name}({pc.GetClientId()}) player:{pc?.name}({roleType})", "★RpcSetRole");
+
+                        RpcSetDisconnect(stream, false);
                     }
                     stream.EndMessage();
-                    Logger.Info($"SetSelfRole to:{pc?.name}({pc.GetClientId()}) player:{pc?.name}({roleType})", "★RpcSetRole");
-
-                    RpcSetDisconnect(stream, false);
+                    AmongUsClient.Instance.SendOrDisconnect(stream);
+                    stream.Recycle();
                 }
-                stream.EndMessage();
-                AmongUsClient.Instance.SendOrDisconnect(stream);
-                stream.Recycle();
+                catch { }
             }
         }
         private static void RpcSetDisconnect(MessageWriter stream, bool disconnected)

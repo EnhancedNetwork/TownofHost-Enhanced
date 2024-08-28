@@ -221,24 +221,8 @@ class CoBeginPatch
 {
     public static void Prefix()
     {
-        //if (RoleBasisChanger.IsChangeInProgress) return;
-
-        if (GameStates.IsNormalGame)
-        {
-            foreach (var player in Main.AllPlayerControls)
-            {
-                Main.PlayerStates[player.PlayerId].InitTask(player);
-            }
-
-            GameData.Instance.RecomputeTaskCounts();
-            TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
-        }
-
         GameStates.InGame = true;
         RPC.RpcVersionCheck();
-
-        // Do not move this code, it should be executed at the very end to prevent a visual bug
-        Utils.DoNotifyRoles(ForceLoop: true);
 
         if (AmongUsClient.Instance.AmHost && GameStates.IsHideNSeek && RandomSpawn.IsRandomSpawn())
         {
@@ -542,19 +526,26 @@ class IntroCutsceneDestroyPatch
             {
                 if (!GameStates.AirshipIsActive)
                 {
-                    Main.AllPlayerControls.Do(pc => pc.RpcResetAbilityCooldown());
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
+                        pc.RpcResetAbilityCooldown();
+                    }
                     if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
                     {
                         _ = new LateTask(() =>
                         {
-                            Main.AllPlayerControls.Do(x => x.ResetKillCooldown());
-                            Main.AllPlayerControls.Where(x => (Main.AllPlayerKillCooldown[x.PlayerId] - 2f) > 0f).Do(pc => pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f));
+                            foreach (var pc in Main.AllPlayerControls)
+                            {
+                                pc.ResetKillCooldown();
+
+                                if ((Main.AllPlayerKillCooldown[pc.PlayerId] - 2f) > 0f)
+                                {
+                                    pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f);
+                                }
+                            }
                         }, 2f, "Fix Kill Cooldown Task");
                     }
                 }
-
-                // Not entirely sure if this is really necessary
-                //_ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, false, -3)), 2f, "Set Impostor For Server");
             }
 
             if (PlayerControl.LocalPlayer.Is(CustomRoles.GM)) // Incase user has /up access

@@ -563,7 +563,7 @@ public static class Utils
             return false;
         }
 
-        if (playerData.Disconnected) return false;
+        if (States.Disconnected) return false;
         //if (playerData.Role.IsImpostor)
         //    hasTasks = false; //Tasks are determined based on CustomRole
 

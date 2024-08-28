@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.SelectRolesPatch;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -256,8 +257,9 @@ public static class AntiBlackout
             {
                 if (isSelf)
                 {
-                    var isGuardianAngel = target.GetCustomRole().IsGhostRole() || target.IsAnySubRole(x => x.IsGhostRole());
-                    if (isGuardianAngel)
+                    target.RpcExile();
+
+                    if (target.GetCustomRole().IsGhostRole() || target.IsAnySubRole(x => x.IsGhostRole()))
                     {
                         changedRoleType = RoleTypes.GuardianAngel;
                     }
@@ -283,15 +285,24 @@ public static class AntiBlackout
                     }
                 }
             }
+
             target.RpcSetRoleDesync(changedRoleType, seer.GetClientId());
         }
-        SetDeadPlayersAsExiled();
+        ResetAllCooldown();
     }
-    public static void SetDeadPlayersAsExiled()
+    private static void ResetAllCooldown()
     {
-        foreach (var seer in Main.AllPlayerControls.Where(x => x.Data.IsDead))
+        foreach (var seer in Main.AllPlayerControls)
         {
-            seer.RpcExile();
+            if (seer.IsAlive())
+            {
+                seer.SetKillCooldown();
+                seer.RpcResetAbilityCooldown();
+            }
+            else if (seer.GetCustomRole().IsGhostRole() || seer.IsAnySubRole(x => x.IsGhostRole()))
+            {
+                seer.RpcResetAbilityCooldown();
+            }
         }
     }
     public static void ResetAfterMeeting()

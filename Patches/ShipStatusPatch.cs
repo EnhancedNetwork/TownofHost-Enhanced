@@ -228,11 +228,30 @@ class StartMeetingPatch
     }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
-class BeginPatch
+class ShipStatusBeginPatch
 {
+    //Prevent code from running twice as it gets activated later in LateTask
+    public static bool RolesIsAssigned = false;
+    public static bool Prefix()
+    {
+        return RolesIsAssigned;
+    }
     public static void Postfix()
     {
         Logger.CurrentMethod();
+
+        if (RolesIsAssigned && !Main.introDestroyed)
+        {
+            foreach (var player in Main.AllPlayerControls)
+            {
+                Main.PlayerStates[player.PlayerId].InitTask(player);
+            }
+
+            GameData.Instance.RecomputeTaskCounts();
+            TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
+
+            Utils.DoNotifyRoles(ForceLoop: true);
+        }
 
         //Should the initial setup of the host's position be done here?
     }
