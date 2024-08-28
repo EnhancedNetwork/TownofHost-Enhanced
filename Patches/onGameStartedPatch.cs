@@ -658,14 +658,13 @@ internal class SelectRolesPatch
                     if (isSelf)
                     {
                         if (isModded)
-                        {
-                            if (targetRole.GetDYRole() == RoleTypes.Shapeshifter)
-                                targetRoleType = RoleTypes.Shapeshifter;
-                            else
-                                targetRoleType = RoleTypes.Crewmate;
-                        }
+                            targetRoleType = RoleTypes.Crewmate;
                         else
                             targetRoleType = RoleTypes.Impostor;
+
+                        // For Desync Shapeshifter
+                        if (targetRole.GetDYRole() == RoleTypes.Shapeshifter)
+                            targetRoleType = RoleTypes.Shapeshifter;
                     }
                     else
                     {
