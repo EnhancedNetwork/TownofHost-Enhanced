@@ -79,44 +79,49 @@ static class ExtendedPlayerControl
         if (playerRole.IsDesyncRole() && !newCustomRole.IsDesyncRole())
         {
             var newRoleType = newCustomRole.GetRoleTypes();
-            foreach (var seer in Main.AllPlayerControls)
+            foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
+                var isSelf = player.PlayerId == seer.PlayerId;
+                if (!isSelf && seer.HasDesyncRole() && !(seer.AmOwner || seer.IsModClient()))
+                {
+                    newRoleType = newCustomRole.GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
+                }
                 RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (newRoleType, newCustomRole);
+                player.RpcSetRoleDesync(newRoleType, seer.GetClientId());
             }
-            player.RpcSetRole(newRoleType, true);
         }
         // When player change normal role to desync role
         else if (!playerRole.IsDesyncRole() && newCustomRole.IsDesyncRole())
         {
-            RoleTypes targetRoleType;
+            RoleTypes newRoleType;
             var isModded = player.OwnedByHost() || player.IsModClient();
-            foreach (var target in Main.AllPlayerControls)
+            foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                var isSelf = player.PlayerId == target.PlayerId;
+                var isSelf = player.PlayerId == seer.PlayerId;
                 if (isSelf)
                 {
                     if (isModded)
-                    {
-                        if (newCustomRole.GetDYRole() == RoleTypes.Shapeshifter)
-                        {
-                            targetRoleType = RoleTypes.Shapeshifter;
-                        }
-                        else
-                        {
-                            targetRoleType = RoleTypes.Crewmate;
-                        }
-                    }
+                        newRoleType = RoleTypes.Crewmate;
                     else
+                        newRoleType = RoleTypes.Impostor;
+
+                    // For Desync Shapeshifter
+                    if (newCustomRole.GetDYRole() is RoleTypes.Shapeshifter)
                     {
-                        targetRoleType = RoleTypes.Impostor;
+                        newRoleType = RoleTypes.Shapeshifter;
                     }
                 }
                 else
                 {
-                    targetRoleType = RoleTypes.Scientist;
+                    if (!isModded && seer.HasDesyncRole())
+                    {
+                        newRoleType = newCustomRole.GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
+                    }
+                    else
+                        newRoleType = newCustomRole.GetRoleTypes();
                 }
-                RpcSetRoleReplacer.RoleMap[(playerId, target.PlayerId)] = (targetRoleType, newCustomRole);
-                player.RpcSetRoleDesync(targetRoleType, target.GetClientId());
+                RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (newRoleType, newCustomRole);
+                player.RpcSetRoleDesync(newRoleType, seer.GetClientId());
             }
         }
         // When player change desync role to desync role

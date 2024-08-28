@@ -663,7 +663,7 @@ internal class SelectRolesPatch
                             targetRoleType = RoleTypes.Impostor;
 
                         // For Desync Shapeshifter
-                        if (targetRole.GetDYRole() == RoleTypes.Shapeshifter)
+                        if (targetRole.GetDYRole() is RoleTypes.Shapeshifter)
                             targetRoleType = RoleTypes.Shapeshifter;
                     }
                     else
@@ -673,16 +673,9 @@ internal class SelectRolesPatch
                 }
                 else
                 {
-                    if (seerRole.IsDesyncRole() && !isModded)
+                    if (!isModded && seerRole.IsDesyncRole())
                     {
-                        if (targetRole is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE)
-                        {
-                            targetRoleType = RoleTypes.Noisemaker;
-                        }
-                        else
-                        {
-                            targetRoleType = RoleTypes.Scientist;
-                        }
+                        targetRoleType = targetRole.GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
                     }
                     else
                     {
