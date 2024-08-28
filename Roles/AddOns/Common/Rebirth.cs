@@ -61,13 +61,13 @@ public class Rebirth : IAddon
 
         var ViablePlayer = list.Where(x => x != pc).Shuffle(IRandom.Instance)
             .FirstOrDefault(x => x != null && !x.OwnedByHost() && !x.IsAnySubRole(x => x.IsConverted()) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Knighted) && 
-/*All converters */    !x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infectious) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal) && !x.Is(CustomRoles.Admirer) &&
-                !x.Is(CustomRoles.Lovers) && !x.Is(CustomRoles.Romantic) && !x.GetCustomRole().IsImpostor());
+/*All converters */ !x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infectious) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal) && !x.Is(CustomRoles.Admirer) &&
+                !x.Is(CustomRoles.Lovers) && !x.Is(CustomRoles.Romantic) && !x.Is(CustomRoles.Doppelganger) && !x.GetCustomRole().IsImpostor());
 
         if (ViablePlayer == null)
         {
             var tytyl = ColorString(GetRoleColor(CustomRoles.Rebirth), GetString("Rebirth").ToUpper());
-            Utils.SendMessage(GetString("RebirthFailed"), pc.PlayerId, title: tytyl);
+            SendMessage(GetString("RebirthFailed"), pc.PlayerId, title: tytyl);
             return false;
         }
         Rebirths[pc.PlayerId]--;
