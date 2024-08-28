@@ -284,22 +284,22 @@ public class Main : BasePlugin
         }
     }
 
-    public void StartCoroutine(System.Collections.IEnumerator coroutine)
+    public Coroutine StartCoroutine(System.Collections.IEnumerator coroutine)
     {
         if (coroutine == null)
         {
-            return;
+            return null;
         }
-        coroutines.StartCoroutine(coroutine.WrapToIl2Cpp());
+        return coroutines.StartCoroutine(coroutine.WrapToIl2Cpp());
     }
 
-    public void StopCoroutine(System.Collections.IEnumerator coroutine)
+    public void StopCoroutine(Coroutine coroutine)
     {
         if (coroutine == null)
         {
             return;
         }
-        coroutines.StopCoroutine(coroutine.WrapToIl2Cpp());
+        coroutines.StopCoroutine(coroutine);
     }
 
     public void StopAllCoroutines()
@@ -756,6 +756,7 @@ public enum CustomRoles
     President,
     Psychic,
     Randomizer,
+    Mage,
     Retributionist,
     Reverie,
     Sheriff,

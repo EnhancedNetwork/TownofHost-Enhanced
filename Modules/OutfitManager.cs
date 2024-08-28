@@ -4,10 +4,12 @@ public static class OutfitManager
 {
     public static void ResetPlayerOutfit(this PlayerControl player, NetworkedPlayerInfo.PlayerOutfit Outfit = null, uint newLevel = 500, bool force = false)
     {
-        Outfit ??= Main.PlayerStates[player.PlayerId].NormalOutfit;
+        Outfit ??= Main.OvverideOutfit.TryGetValue(player.PlayerId, out var fit) ? fit.outfit : Main.PlayerStates[player.PlayerId].NormalOutfit;
 
         void Setoutfit()
         {
+            if (PlayerOutfitExtension.Compare(player.CurrentOutfit, Outfit)) return;
+
             var sender = CustomRpcSender.Create(name: $"Reset PlayerOufit for 『{player.Data.PlayerName}』");
 
             player.SetName(Outfit.PlayerName);

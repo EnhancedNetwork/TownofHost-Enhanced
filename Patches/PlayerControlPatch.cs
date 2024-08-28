@@ -17,6 +17,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using Il2CppSystem.Net.NetworkInformation;
 
 namespace TOHE;
 
@@ -534,6 +535,7 @@ public static class CheckShapeshiftPatch
             __instance.RpcRejectShapeshift();
             return false;
         }
+        
 
         var shapeshifter = __instance;
         bool resetCooldown = true;
@@ -608,11 +610,10 @@ public static class CheckShapeshiftPatch
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is eaten by Pelican");
             return false;
         }
-
         if (instance == target && Main.UnShapeShifter.Contains(instance.PlayerId))
         {
-            if(!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) instance.GetRoleClass().UnShapeShiftButton(instance);
-            instance.RpcResetAbilityCooldown(); // Just incase
+            if (!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) instance.GetRoleClass().UnShapeShiftButton(instance);
+            instance.RpcResetAbilityCooldown(); // just incase
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
             return false;
         }

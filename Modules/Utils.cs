@@ -399,6 +399,8 @@ public static class Utils
     {
         return GetString("DeathReason." + Enum.GetName(typeof(PlayerState.DeathReason), status));
     }
+    public static float GetDistanceTo(this PlayerControl pc, Vector2 pos) => GetDistance(pc.GetCustomPosition(), pos);
+    public static float GetDistanceTo(this PlayerControl pc, PlayerControl target) => GetDistance(pc.GetCustomPosition(), target.GetCustomPosition());
     public static float GetDistance(Vector2 pos1, Vector2 pos2) => Vector2.Distance(pos1, pos2);
     public static Color GetRoleColor(CustomRoles role)
     {
