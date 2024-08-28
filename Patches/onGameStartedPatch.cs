@@ -675,7 +675,7 @@ internal class SelectRolesPatch
                 {
                     if (seerRole.IsDesyncRole() && !isModded)
                     {
-                        if (target.GetCustomRole() is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE)
+                        if (targetRole is CustomRoles.Noisemaker or CustomRoles.NoisemakerTOHE)
                         {
                             targetRoleType = RoleTypes.Noisemaker;
                         }
