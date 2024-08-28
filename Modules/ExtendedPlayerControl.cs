@@ -68,7 +68,7 @@ static class ExtendedPlayerControl
     /// <summary>
     /// Changes the Role Basis of player during the game
     /// </summary>
-    /// <param name="newCustomRole">The custom role to change into</param>
+    /// <param name="newCustomRole">The custom role to change and auto set role type for others</param>
     public static void RpcChangeRoleBasis(this PlayerControl player, CustomRoles newCustomRole)
     {
         var playerRole = player.GetCustomRole();
