@@ -207,8 +207,6 @@ internal class ChangeRoleSettings
             TargetArrow.Init();
             LocateArrow.Init();
             DoubleTrigger.Init();
-            Rebirth.Init();
-            Evader.Init();
 
             //FFA
             FFAManager.Init();
