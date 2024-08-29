@@ -244,14 +244,17 @@ class CheckForEndVotingPatch
                 }
             }
 
-            var VotingData = __instance.CustomCalculateVotes(); //Influenced vote mun isnt counted here
+            Dictionary<byte, int> VotingData = [];
 
             if (CustomRoles.Influenced.RoleExist())
             {
                 Influenced.ChangeVotingData(VotingData);
                 VotingData = __instance.CustomCalculateVotes(true);
             }
-            //Change voting data for influenced, vote num counted here
+            else
+            {
+                VotingData = __instance.CustomCalculateVotes();
+            }
 
             for (int i = 0; i < statesList.Count; i++)
             {
@@ -803,6 +806,11 @@ static class ExtendedMeetingHud
                     }
                 }
                 //Set influenced vote num to zero while counting votes, and count influenced vote upon finishing influenced check
+
+                if (target.Is(CustomRoles.Evader))
+                {
+                    Evader.CheckExile(ps.VotedFor, ref VoteNum);
+                }
 
                 //Add 1 vote If key is not defined, overwrite with 1 and define
                 dic[ps.VotedFor] = !dic.TryGetValue(ps.VotedFor, out int num) ? VoteNum : num + VoteNum; //Count the number of times this player has been voted in

@@ -737,6 +737,10 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.GuardianAngelTOHE)) return false;
                 break;
 
+            case CustomRoles.Rebirth:
+                if (pc.Is(CustomRoles.Doppelganger)) return false;
+                break;
+
             case CustomRoles.Youtuber:
                 if (pc.Is(CustomRoles.Madmate)
                     || pc.Is(CustomRoles.NiceMini)

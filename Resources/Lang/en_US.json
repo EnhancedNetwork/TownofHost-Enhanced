@@ -392,6 +392,7 @@
   "Rainbow": "Rainbow",
   "Tired": "Tired",
   "Statue": "Statue",
+  "Evader": "Evader",
   "DollMaster": "Dollmaster",
   "DoubleAgent": "Double Agent",
   "BracketAddons": "Add Brackets To Add-ons",
@@ -691,8 +692,9 @@
   "SilentInfo": "Vote like a Ghost!",
   "SusceptibleInfo": "Death-reason lotto!",
   "TrickyInfo": "Tricky slays, in mysterious ways.",
-  "TiredInfo": "Labor makes you rest Zzz..",
-  "StatueInfo": "You're still as a rock nearby people",
+  "TiredInfo": "Labor makes you sleepy.. Zzz..",
+  "StatueInfo": "You're still as a rock around people",
+  "EvaderInfo": "You have a chance to not be exiled!",
   "GMInfo": "Spectate the chaos!",
   "NotAssignedInfo": "No assigned role",
   "SunnyboyInfo": "Shine, shine my sunshine!",
@@ -994,6 +996,7 @@
   "TrickyInfoLong": "(Add-ons):\nAs the Tricky, your kills will have a random death reason.",
   "TiredInfoLong": "(Add-ons):\nWhenever Tired kills (or uses kill ability on) someone, alternatively whenever they finish a task, they will temporarily get lower vision & lower speed.",
   "StatueInfoLong": "(Add-ons):\nWhenever many people are near the Statue, the Statue is completely frozen or slowed down depending on the settings.",
+  "EvaderInfoLong": "(Add-ons):\nWhen the Evader gets voted out, there is a chance the Evader will not get ejected. (Chance set by host.)",
   "CyberInfoLong": "(Add-ons):\nAs the Cyber, you cannot die while in a group.\nDepending on the settings, Imposters, Neutrals, and or Crewmates will know if you die.",
   "HurriedInfoLong": "(Add-ons):\nAs the hurried, you must finish all your tasks to win with your team! If you fail with your tasks, you lose.\nHurried hurries to his goal, so it won't get madmate, charmed or so.",
   "OiiaiInfoLong": "(Add-ons):\nAs the Oiiai, when you die, you will make your killer forget their role.\nAdditionally, you may pass Oiiai on to the killer, depending on settings.",
@@ -1005,7 +1008,7 @@
   "GhastlyInfoLong": "(Crewmates [Ghost]):\nAs the Ghastly, possess an unsuspecting person, after that choose a target for them, now they'll only be able to use their kill (or kill ability) on target until you possess someone else or possess time runs out.",
   "MinionInfoLong": "(Impostor [Ghost]):\nAs the Minion, you can temporarily blind non-impostors.",
   "DollMasterInfoLong": "(Impostor):\nAs the Dollmaster, you can temporarily take control of any player by using the <color=#ff0000>Shapeshift</color> button and to make them do your Deeds!",
-  "DoubleAgentInfoLong": "(Impostor):\nAs the Double Agent, you do not have access to the kill button but. You can vote someone in a meeting to pass a bomb onto them, this can only be done one player at a time, once the meeting has finished the bomb will activate and explode in a set amount of time.\nNote when you pass the bomb onto someone in a meeting you will be able to vote afterwards.\n\nAdditionally depending on settings the Double Agent can diffuse <color=#696969>Bastion</color> and <color=#F4A460>Agitator</color> bombs when venting.\n\nThe Double Agent can change roles when they are the <color=#ff1919>Last Imposter</color>, depending on the settings the role can be a <color=#ee43c3>Admired Impostor</color>, <color=#ff1919>Trickster</color>, <color=#BA2E05>Traitor</color>, or stay as the Double Agent.",
+  "DoubleAgentInfoLong": "(Impostor):\nAs the Double Agent, you cannot access the kill button. However, you can vote for someone in a meeting to pass a bomb onto them, which can only be done one player at a time. Once the meeting has finished, the bomb will activate and explode in a set amount of time.\nNote: when you pass the bomb onto someone in a meeting, you can vote afterward.\n\nAdditionally depending on settings the Double Agent can diffuse <color=#696969>Bastion</color> and <color=#F4A460>Agitator</color> bombs when venting.\n\nThe Double Agent can change roles when they are the <color=#ff1919>Last Imposter</color>, depending on the settings the role can be a <color=#ee43c3>Admired Impostor</color>, <color=#ff1919>Trickster</color>, <color=#BA2E05>Traitor</color>, or stay as the Double Agent.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
@@ -1023,7 +1026,6 @@
   "SMUsesUsedWhenFixingReactorOrO2": "Uses it takes to fix Reactor/O2",
   "SMUsesUsedWhenFixingLightsOrComms": "Uses it takes to fix Lights/Comms",
 
-  "AbilityCD": "Ability Cooldown",
   "GrenadierSkillMaxOfUseage": "(Initial) Max number of Grenades",
   "ShowSpecificRole": "Know specific roles on Task Completion",
   "TimeMasterMaxUses": "(Initial) Max Amount of Ability Uses",
@@ -1442,6 +1444,7 @@
 
   "Cooldown": "Cooldown",
   "AbilityCooldown": "Ability Cooldown",
+  "SkillLimitTimes": "Max Number of Ability Uses",
   "CanKill": "Can Kill",
   "KillCooldown": "Kill Cooldown",
   "CanVent": "Can Vent",
@@ -1653,11 +1656,7 @@
   "BaitNotification": "Reveal <color=#00f7ff>Bait</color> at the first meeting",
   "BaitAdviceAlive": "<b>{0}</b> is the Bait. Whoever kills the Bait will commit self-report.",
   "BaitCanBeReportedUnderAllConditions": "Bait Can Be Reported even if a meeting is disabled during comms sabotage",
-  "DeceiverSkillCooldown": "Ability cooldown",
-  "DeceiverSkillLimitTimes": "Max number of uses",
   "DeceiverAbilityLost": "Deceiver loses ability if it deceives player without kill button",
-  "PursuerSkillCooldown": "Ability cooldown",
-  "PursuerSkillLimitTimes": "Max number of uses",
   "AddictSuicideTimer": "Time Until Suicide",
   "GrenadierSkillCooldown": "Grenade Cooldown",
   "GrenadierSkillDuration": "Grenade Duration",
@@ -1688,7 +1687,6 @@
   "MedicShieldDeactivationIsVisible_OFF": "<color=#ff0000>OFF</color>",
   "MedicResetCooldown": "On kill attempt, reset murderer's cooldown to",
   "MedicShieldedCanBeGuessed": "Guessing ignores <color=#00ff97>Medic</color> shield",
-  "FortuneTellerSkillLimit": "Max number of ability uses",
   "MadmateSpawnMode": "<color=#ff1919>Madmate</color> spawning mode",
   "MadmateSpawnMode.Assign": "Assign",
   "MadmateSpawnMode.FirstKill": "First Kill",
@@ -1818,13 +1816,10 @@
   "Jackal_SidekickCanKillJackal": "<color=#00b4eb>Sidekick</color> can kill <color=#00b4eb>Jackal</color>",
   "JackalCanKillSidekick": "<color=#00b4eb>Jackal</color> can kill <color=#00b4eb>Sidekick</color>",
 
-  "PacifistCooldown": "Ability Cooldown",
-  "PacifistMaxOfUseage": "Max Number of Ability Uses",
   "CoronerArrowsPointingToDeadBody": "Arrows pointing to dead bodies",
   "CoronerLeaveDeadBodyUnreportable": "Bodies the <color=#8B0000>Coroner</color> uses can't be reported",
   "CoronerInformKillerBeingTracked": "Inform the Killer that he gets tracked",
 
-  "PresidentAbilityUses": "Max Number of Ability Uses",
   "PresidentCanBeGuessedAfterRevealing": "<color=#00ffac>President</color> can be guessed after revealing",
   "HidePresidentEndCommand": "Hide <color=#00ffac>President</color>'s commands",
   "NeutralsSeePresident": "<color=#7f8c8d>Neutrals</color> can see revealed <color=#00ffac>President</color>",
@@ -2080,7 +2075,6 @@
   "MorticianGetNoInfo": "According to your inspection, <b>{0}</b> did not seem to have contact with anyone during their lifetime.",
   "MorticianGetInfo": "According to your inspection, the last person <b>{0}</b> came into contact with during their lifetime was <b>{1}</b>.",
 
-  "MediumContactLimit": "Max number of contacts (ability uses)",
   "MediumOnlyReceiveMsgFromCrew": "Receive messages only from <color=#8cffff>Crewmates</color> (including <color=#ff1919>Madmates</color> and <color=#cf6acd>Charmed</color> Players)",
   "MediumTitle": "MEDIUM",
   "MediumHelp": "<b>/ms yes</b> to agree\n<b>/ms no</b> to disagree",
@@ -2563,7 +2557,8 @@
 
   "RpcAntiBlackOutNotifyInLobby": "Because of <b>{0}</b>, an unknown error occurred. To prevent a black screen, turn off [{1}] in settings.",
   "RpcAntiBlackOutEndGame": "Because of <b>{0}</b>, an unknown error occurred, the game will end to prevent a black screen.",
-  "RpcAntiBlackOutIgnored": "Because of <b>{0}</b>, an unknown error occurred, RPC will be ignored.",
+  "RpcAntiBlackOutIgnored": "Because of <b>{0}</b>, an unknown error occurred, but the game will continue without that player due to host settings.",
+  "RpcAntiBlackOutKicked": "<b>{0}</b> was kicked due to having a blackout error on its side.",
 
   "NextPage": "Next Page",
   "PreviousPage": "Previous Page",
@@ -3730,5 +3725,7 @@
   "WardenWarn": "DANGER! RUN!",
 
   "MinionAbilityTime": "Ability Duration",
-  "Minion_Blind": "blinded"
+  "Minion_Blind": "blinded",
+
+  "Evader_ChanceNotExiled": "Chance not be exiled"
 }
