@@ -21,7 +21,7 @@ public class Diseased : IAddon
         DiseasedCDReset = BooleanOptionItem.Create(Id + 14, "DiseasedCDReset", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
     }
 
-    public static void Init()
+    public void Init()
     {
         KilledDiseased = [];
         IsEnable = false;

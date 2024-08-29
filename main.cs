@@ -155,6 +155,10 @@ public class Main : BasePlugin
     public static readonly HashSet<byte> PlayersDiedInMeeting = [];
     public static readonly Dictionary<byte, long> AllKillers = [];
     public static readonly Dictionary<byte, (NetworkedPlayerInfo.PlayerOutfit outfit, string name)> OvverideOutfit = [];
+    public static readonly Dictionary<byte, PlainShipRoom> LastKillerRoom = [];
+    public static readonly Dictionary<byte, KilledType> PlayerKilledBy = [];
+    public static Custom_Team? RememberTeamOfDeadBodyKiller;
+    public static string RememberRoleOfDeadBodyKiller = "";
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
 
@@ -703,6 +707,7 @@ public enum CustomRoles
     Ghastly,
     Hawk,
     Warden,
+    Telepathy,
 
     //Crewmate
     Addict,
@@ -920,6 +925,7 @@ public enum CustomRoles
     Reach,
     Rebound,
     Spurt,
+    Messenger,
     Recruit,
     Seer,
     Silent,

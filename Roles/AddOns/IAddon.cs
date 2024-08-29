@@ -17,6 +17,8 @@ namespace TOHE.Roles.AddOns
         public AddonTypes Type { get; }
         public void SetupCustomOption();
 
+        public void Init()
+        { }
         public void OnFixedUpdate(PlayerControl pc)
         { }
         public void OnFixedUpdateLowLoad(PlayerControl pc)

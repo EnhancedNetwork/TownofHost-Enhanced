@@ -22,7 +22,7 @@ public class DoubleShot : IAddon
         NeutralCanBeDoubleShot = BooleanOptionItem.Create(19212, "NeutralCanBeDoubleShot", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleShot]);
     }
-    public static void Init()
+    public void Init()
     {
         IsActive = [];
     }

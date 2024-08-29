@@ -24,7 +24,7 @@ public class Statue : IAddon
              .SetValueFormat(OptionFormat.Times);
     }
 
-    public static void Init()
+    public void Init()
     {
         CountNearplr = [];
         tempSpeed = [];

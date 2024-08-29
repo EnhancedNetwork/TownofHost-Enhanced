@@ -21,7 +21,7 @@ public class Rebirth : IAddon
            .SetValueFormat(OptionFormat.Times);
         OnlyVoted = BooleanOptionItem.Create(Id + 12, "RebirthCountVotes", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebirth]);
     }
-    public static void Init()
+    public void Init()
     {
         Rebirths.Clear();
         VotedCount.Clear();

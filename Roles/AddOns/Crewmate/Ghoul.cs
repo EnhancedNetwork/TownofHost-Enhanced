@@ -14,7 +14,7 @@ public class Ghoul : IAddon
         SetupAdtRoleOptions(Id, CustomRoles.Ghoul, canSetNum: true, tab: TabGroup.Addons);
     }
 
-    public static void Init()
+    public void Init()
     {
         KillGhoul = [];
         IsEnable = false;

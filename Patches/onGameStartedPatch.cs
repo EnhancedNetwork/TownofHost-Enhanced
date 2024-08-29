@@ -67,6 +67,9 @@ internal class ChangeRoleSettings
             Main.clientIdList.Clear();
 
             PlayerControlSetRolePatch.DidSetGhost.Clear();
+            Main.LastKillerRoom.Clear();
+            Main.RememberTeamOfDeadBodyKiller = null;
+            Main.PlayerKilledBy.Clear();
 
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();
@@ -198,33 +201,12 @@ internal class ChangeRoleSettings
                 RoleClass?.OnInit();
             }
 
+            CustomRoleManager.AddonClasses.Values.Where(x => x != null).Do(x => x.Init());
+
             LastImpostor.Init();
             TargetArrow.Init();
             LocateArrow.Init();
             DoubleTrigger.Init();
-            Workhorse.Init();
-            Diseased.Init();
-            Clumsy.Init();
-            Aware.Init();
-            Radar.Init();
-            Glow.Init();
-            Sleuth.Init();
-            Bait.Init();
-            Antidote.Init();
-            Fool.Init();
-            Burst.Init();
-            DoubleShot.Init();
-            Lucky.Init();
-            Bewilder.Init();
-            //ChiefOfPolice.Init();
-            Cyber.Init();
-            Oiiai.Init();
-            Tired.Init();
-            Statue.Init();
-            Ghoul.Init();
-            Rainbow.Init();
-            Rebirth.Init();
-            Evader.Init();
 
             //FFA
             FFAManager.Init();

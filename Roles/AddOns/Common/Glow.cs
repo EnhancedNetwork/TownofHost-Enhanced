@@ -31,7 +31,7 @@ public class Glow : IAddon
             .SetValueFormat(OptionFormat.Multiplier);
     }
 
-    public static void Init()
+    public void Init()
     {
         InRadius.Clear();
         IsEnable = false;

@@ -19,7 +19,7 @@ public class Burst : IAddon
             .SetValueFormat(OptionFormat.Seconds);
     }
 
-    public static void Init()
+    public void Init()
     {
         BurstBodies.Clear();
         IsEnable = false;

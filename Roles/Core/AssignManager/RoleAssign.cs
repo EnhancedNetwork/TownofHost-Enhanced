@@ -156,7 +156,7 @@ public class RoleAssign
         // DistinctBy - Removes duplicate roles if there are any
         // Shuffle - Shuffles all roles in the list into a randomized order
         // Take - Takes the first x roles of the list ... x is the maximum number of roles we could need of that team
-
+        
         Roles[RoleAssignType.Impostor] = Roles[RoleAssignType.Impostor].Shuffle(rd).Take(optImpNum).ToList();
         Roles[RoleAssignType.NeutralKilling] = Roles[RoleAssignType.NeutralKilling].Shuffle(rd).Take(optNeutralKillingNum).ToList();
         Roles[RoleAssignType.NeutralApocalypse] = Roles[RoleAssignType.NeutralApocalypse].Shuffle(rd).Take(optNeutralApocalypseNum).ToList();

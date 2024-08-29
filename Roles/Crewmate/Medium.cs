@@ -7,6 +7,7 @@ using static TOHE.Utils;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
 using InnerNet;
+using TOHE.Roles._Ghosts_.Crewmate;
 
 namespace TOHE.Roles.Crewmate;
 

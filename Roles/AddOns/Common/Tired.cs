@@ -26,7 +26,7 @@ public class Tired : IAddon
                 .SetValueFormat(OptionFormat.Seconds);
     }
 
-    public static void Init()
+    public void Init()
     {
         playerIdList = [];
     }

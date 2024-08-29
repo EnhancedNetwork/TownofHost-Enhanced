@@ -22,7 +22,7 @@ public class Aware : IAddon
         AwareknowRole = BooleanOptionItem.Create(Id + 13, "AwareKnowRole", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
     }
 
-    public static void Init()
+    public void Init()
     {
         AwareInteracted = [];
         IsEnable = false;

@@ -21,7 +21,7 @@ public class Evader : IAddon
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader])
             .SetValueFormat(OptionFormat.Percent);
     }
-    public static void Init()
+    public void Init()
     {
         SkillLimit.Clear();
     }

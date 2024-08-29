@@ -787,7 +787,6 @@ static class ExtendedPlayerControl
             DollMaster.CheckMurderAsPossessed(killer, target);
             return;
         }
-        
         killer.RpcMurderPlayer(target, true);
     }
 

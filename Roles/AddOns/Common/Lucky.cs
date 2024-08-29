@@ -18,7 +18,7 @@ public class Lucky : IAddon
             .SetValueFormat(OptionFormat.Percent);
     }
 
-    public static void Init()
+    public void Init()
     {
         LuckyAvoid = [];
     }

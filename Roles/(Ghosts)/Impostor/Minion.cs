@@ -44,7 +44,7 @@ internal class Minion : RoleBase
     }
     public override string GetLowerTextOthers(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if ((seer.GetCustomRole().IsImpostorTeam()) && Main.PlayerStates[target.PlayerId].IsBlackOut && !isForMeeting)
+        if ((_Player?.IsSameTeammate(target, out _) == true) && Main.PlayerStates[target.PlayerId].IsBlackOut && !isForMeeting)
         {
             var blinded = Translator.GetString("Minion_Blind");
             return ColorString(GetRoleColor(CustomRoles.Minion), $"<size=75%><alpha=#CC>『{blinded}』</size>");
@@ -53,8 +53,8 @@ internal class Minion : RoleBase
     }
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
-        var ImpPVC = target.GetCustomRole().IsImpostor();
-        if (!ImpPVC || killer.IsAnySubRole(x => x.IsConverted() && !killer.Is(CustomRoles.Madmate)))
+        var ImpPVC = killer.IsSameTeammate(target, out _);
+        if (!ImpPVC)
         {
             Main.PlayerStates[target.PlayerId].IsBlackOut = true;
             target.MarkDirtySettings();

@@ -119,6 +119,8 @@ class CheckMurderPatch
 
         Logger.Info($"End: CustomRoleManager.OnCheckMurder", "CheckMurder");
 
+        Main.PlayerKilledBy[target.PlayerId] = KilledType.Directly;
+
         //== Kill target ==
         __instance.RpcMurderPlayer(target);
         //============
@@ -487,6 +489,21 @@ class MurderPlayerPatch
 
         Utils.NotifyRoles(SpecifySeer: killer);
         Utils.NotifyRoles(SpecifySeer: target);
+
+        _ = new LateTask(() => {
+
+            if (!Main.PlayerKilledBy.ContainsKey(target.PlayerId))
+            {
+
+                if (Vector2.Distance(target.GetRealKiller().GetCustomPosition(), target.transform.position) > 2f)
+                    Main.PlayerKilledBy[target.PlayerId] = KilledType.Remotely;
+                else if (target.GetRealKiller() == target)
+                    Main.PlayerKilledBy[target.PlayerId] = KilledType.Suicide_;
+                else
+                    Main.PlayerKilledBy[target.PlayerId] = KilledType.Indirectly;
+            }
+
+        }, 1f, "Set Main.Playerkilled by in MurderPlayer Patch");
     }
     public static void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
@@ -930,6 +947,7 @@ class ReportDeadBodyPatch
             Main.AllKillers.Clear();
             GuessManager.GuesserGuessed.Clear();
 
+
             Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
             Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
             Logger.Info($"target.PlayerId is - {target?.PlayerId}", "AfterReportTasks");
@@ -939,6 +957,11 @@ class ReportDeadBodyPatch
                 try
                 {
                     playerStates.RoleClass?.OnReportDeadBody(player, target);
+
+                    if (!Utils.GetPlayerById(playerStates.PlayerId).IsAlive() && target?.Object?.GetRealKiller() != null)
+                    {
+                        Main.LastKillerRoom[target.PlayerId] = target.Object.GetRealKiller().GetPlainShipRoom();
+                    }
                 }
                 catch (Exception error)
                 {
@@ -946,6 +969,17 @@ class ReportDeadBodyPatch
                     Logger.Error($"Role Class Error: {error}", "RoleClass_OnReportDeadBody");
                     Logger.SendInGame($"Error: {error}");
                 }
+            }
+
+            Main.RememberTeamOfDeadBodyKiller = null;
+            Main.RememberRoleOfDeadBodyKiller = "";
+            if (target?.Object?.GetRealKiller() != null)
+            {
+                Main.RememberRoleOfDeadBodyKiller = GetString($"{target.Object.GetRealKiller().GetCustomRole()}");
+                if (!target.Object.GetRealKiller().IsAnySubRole(x => x.IsConverted() && !target.Object.Is(CustomRoles.Madmate)))
+                    Main.RememberTeamOfDeadBodyKiller = target.Object.GetRealKiller().GetCustomRole().GetCustomRoleTeam();
+                else
+                    Main.RememberTeamOfDeadBodyKiller = Custom_Team.Neutral;
             }
             Rebirth.OnReportDeadBody();
 
@@ -1857,6 +1891,8 @@ public static class PlayerControlDiePatch
                     Utils.LateExileTask.Add(SelfExile);
                 }
             }
+            if (!Main.PlayerKilledBy.ContainsKey(__instance.PlayerId))
+                Main.PlayerKilledBy[__instance.PlayerId] = KilledType.Indirectly;
         }
         catch (Exception exx)
         {
