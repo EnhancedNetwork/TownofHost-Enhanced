@@ -17,7 +17,6 @@ internal class Escapist : RoleBase
     //==================================================================\\
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("abscond");
 
-    private static OptionItem ShapeshiftDuration;
     private static OptionItem ShapeshiftCooldown;
 
     private static readonly Dictionary<byte, Vector2> EscapeLocation = [];
@@ -25,9 +24,6 @@ internal class Escapist : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Escapist);
-        ShapeshiftDuration = FloatOptionItem.Create(Id + 2, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 180f, 1f), 1, TabGroup.ImpostorRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Escapist])
-            .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 3, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 5f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Escapist])
             .SetValueFormat(OptionFormat.Seconds);
@@ -44,13 +40,11 @@ internal class Escapist : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ShapeshifterDuration = ShapeshiftDuration.GetFloat();
         AURoleOptions.ShapeshifterCooldown = EscapeLocation.ContainsKey(playerId) ? ShapeshiftCooldown.GetFloat() : 1f;
     }
 
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         if (EscapeLocation.TryGetValue(shapeshifter.PlayerId, out var position))
         {
@@ -65,7 +59,5 @@ internal class Escapist : RoleBase
             shapeshifter.SyncSettings();
             shapeshifter.Notify(Translator.GetString("EscapisMtarkedPosition"));
         }
-
-        return false;
     }
 }
