@@ -94,8 +94,11 @@ public class Oiiai : IAddon
 
                 if (changeValue != 0)
                 {
+                    killer.GetRoleClass().OnRemove(killer.PlayerId);
                     killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
                     killer.GetRoleClass().OnAdd(killer.PlayerId);
+
+                    killer.SyncSettings();
 
                     Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Neutrals with kill button assign.", "Oiiai");
                 }

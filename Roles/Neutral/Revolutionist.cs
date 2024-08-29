@@ -15,7 +15,8 @@ internal class Revolutionist : RoleBase
     private const int Id = 15200;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -73,9 +74,6 @@ internal class Revolutionist : RoleBase
 
         foreach (var ar in Main.AllPlayerControls)
             IsDraw.Add((playerId, ar.PlayerId), false);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RevolutionistCooldown.GetFloat();
 
@@ -240,7 +238,7 @@ internal class Revolutionist : RoleBase
                 else
                 {
                     float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                    float dis = Vector2.Distance(player.GetCustomPosition(), rv_target.GetCustomPosition());
+                    float dis = GetDistance(player.GetCustomPosition(), rv_target.GetCustomPosition());
                     if (dis <= range)
                     {
                         RevolutionistTimer[playerId] = (rv_target, rv_time + Time.fixedDeltaTime);

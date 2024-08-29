@@ -78,26 +78,44 @@ class Logger
 
         switch (level)
         {
-            case LogLevel.Info:
+            case LogLevel.Info when !multiLine:
                 logger.LogInfo(log_text);
                 break;
-            case LogLevel.Warning:
+            case LogLevel.Info:
+                log_text.Split("\\n").Do(logger.LogInfo);
+                break;
+            case LogLevel.Warning when !multiLine:
                 logger.LogWarning(log_text);
                 break;
-            case LogLevel.Error:
+            case LogLevel.Warning:
+                log_text.Split("\\n").Do(logger.LogWarning);
+                break;
+            case LogLevel.Error when !multiLine:
                 logger.LogError(log_text);
                 break;
-            case LogLevel.Fatal:
+            case LogLevel.Error:
+                log_text.Split("\\n").Do(logger.LogError);
+                break;
+            case LogLevel.Fatal when !multiLine:
                 logger.LogFatal(log_text);
                 break;
-            case LogLevel.Message:
+            case LogLevel.Fatal:
+                log_text.Split("\\n").Do(logger.LogFatal);
+                break;
+            case LogLevel.Message when !multiLine:
                 logger.LogMessage(log_text);
                 break;
-            case LogLevel.Debug:
+            case LogLevel.Message:
+                log_text.Split("\\n").Do(logger.LogMessage);
+                break;
+            case LogLevel.Debug when !multiLine:
                 logger.LogFatal(log_text);
                 break;
+            case LogLevel.Debug:
+                log_text.Split("\\n").Do(logger.LogFatal);
+                break;
             default:
-                logger.LogWarning("Error:Invalid LogLevel");
+                logger.LogWarning("Error: Invalid LogLevel");
                 logger.LogInfo(log_text);
                 break;
         }

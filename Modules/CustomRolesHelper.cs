@@ -38,8 +38,8 @@ public static class CustomRolesHelper
     }
 
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
-        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor) && !role.IsImpostor() || role is CustomRoles.Killer // FFA
-            ? RoleTypes.Impostor 
+        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter) && !role.IsImpostor() || role is CustomRoles.Killer // FFA
+            ? role.GetStaticRoleClass().ThisRoleBase.GetRoleTypes()
             : RoleTypes.GuardianAngel;
 
     /* Needs recode, awaiting phantom role base*/
@@ -374,9 +374,9 @@ public static class CustomRolesHelper
     public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true)
     {
         // Only add-ons
-        if (!role.IsAdditionRole()) return false;
+        if (!role.IsAdditionRole() || pc == null) return false;
 
-        if(Options.AddonCanBeSettings.TryGetValue(role, out var o) && ((!o.Imp.GetBool() && pc.GetCustomRole().IsImpostor()) || (!o.Neutral.GetBool() && pc.GetCustomRole().IsNeutral()) || (!o.Crew.GetBool() && pc.GetCustomRole().IsCrewmate()))) 
+        if (Options.AddonCanBeSettings.TryGetValue(role, out var o) && ((!o.Imp.GetBool() && pc.GetCustomRole().IsImpostor()) || (!o.Neutral.GetBool() && pc.GetCustomRole().IsNeutral()) || (!o.Crew.GetBool() && pc.GetCustomRole().IsCrewmate()))) 
             return false;
 
         // if player already has this addon
@@ -737,6 +737,10 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.GuardianAngelTOHE)) return false;
                 break;
 
+            case CustomRoles.Rebirth:
+                if (pc.Is(CustomRoles.Doppelganger)) return false;
+                break;
+
             case CustomRoles.Youtuber:
                 if (pc.Is(CustomRoles.Madmate)
                     || pc.Is(CustomRoles.NiceMini)
@@ -846,7 +850,9 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Lightning)
                     || pc.Is(CustomRoles.Hangman)
                     || pc.Is(CustomRoles.Stealer)
-                    || pc.Is(CustomRoles.Tricky))
+                    || pc.Is(CustomRoles.Tricky)
+                    || pc.Is(CustomRoles.DoubleAgent)
+                    || pc.Is(CustomRoles.YinYanger))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1152,6 +1158,7 @@ public static class CustomRolesHelper
            CustomRoles.Pelican => CountTypes.Pelican,
            CustomRoles.Minion => CountTypes.Impostor,
            CustomRoles.Bloodmoon => CountTypes.Impostor,
+           CustomRoles.Possessor => CountTypes.Impostor,
            CustomRoles.Demon => CountTypes.Demon,
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
            CustomRoles.Cultist => CountTypes.Cultist,

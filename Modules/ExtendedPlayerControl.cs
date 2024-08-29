@@ -826,6 +826,10 @@ static class ExtendedPlayerControl
                 Radar.Remove(Killed.PlayerId);
                 Radar.Add(target.PlayerId);
                 break;
+            case CustomRoles.Rebirth:
+                Rebirth.Remove(Killed.PlayerId);
+                Rebirth.Add(target.PlayerId);
+                break;
         }
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false)
@@ -869,7 +873,7 @@ static class ExtendedPlayerControl
         var rangePlayersIL = RoleBehaviour.GetTempPlayerList();
         List<PlayerControl> rangePlayers = [];
         player.Data.Role.GetPlayersInAbilityRangeSorted(rangePlayersIL, ignoreColliders);
-        foreach (var pc in rangePlayersIL.ToArray())
+        foreach (var pc in rangePlayersIL.GetFastEnumerator())
         {
             if (predicate(pc)) rangePlayers.Add(pc);
         }

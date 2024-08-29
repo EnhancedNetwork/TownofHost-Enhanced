@@ -13,6 +13,7 @@ internal class Glitch : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Glitch);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -72,9 +73,6 @@ internal class Glitch : RoleBase
         LastHack = ts;
         LastMimic = ts;
         lastRpcSend = ts;
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
 
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
@@ -226,8 +224,7 @@ internal class Glitch : RoleBase
 
     public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (player == null) return string.Empty;
-        if (!player.IsAlive()) return string.Empty;
+        if (!player.IsAlive() || isForMeeting) return string.Empty;
 
         var sb = new StringBuilder(string.Empty);
 

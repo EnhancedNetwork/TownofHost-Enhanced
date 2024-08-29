@@ -12,7 +12,7 @@ internal class Jailer : RoleBase
     private const int Id = 10600;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -63,9 +63,6 @@ internal class Jailer : RoleBase
         JailerTarget.Add(playerId, byte.MaxValue);
         JailerHasExe.Add(playerId, false);
         JailerDidVote.Add(playerId, false);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

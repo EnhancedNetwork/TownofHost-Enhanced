@@ -60,13 +60,13 @@ class EndGamePatch
 
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
-            if (Doppelganger.HasEnabled && Doppelganger.DoppelVictim.TryGetValue(id, out var playerName))
+            if (Main.OvverideOutfit.TryGetValue(id, out var RealOutfit))
             {
                 var dpc = Utils.GetPlayerById(id);
                 if (dpc != null)
                 {
-                    dpc.RpcSetName(playerName);
-                    Main.AllPlayerNames[id] = playerName;
+                    dpc.RpcSetName(RealOutfit.name);
+                    Main.AllPlayerNames[id] = RealOutfit.name;
                 }
             }
 
@@ -241,9 +241,9 @@ class SetEverythingUpPatch
                 break;
             case CustomWinner.NiceMini:
             //    __instance.WinText.color = Utils.GetRoleColor(CustomRoles.Mini);
-                __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Mini);
+                __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.NiceMini);
             //    WinnerText.text = GetString("NiceMiniDied");
-                WinnerText.color = Utils.GetRoleColor(CustomRoles.Mini);
+                WinnerText.color = Utils.GetRoleColor(CustomRoles.NiceMini);
                 break;
             case CustomWinner.Neutrals:
                 __instance.WinText.text = GetString("DefeatText");

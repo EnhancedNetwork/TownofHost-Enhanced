@@ -72,22 +72,21 @@ class ExileControllerWrapUpPatch
 
         if (CLThingy && exiled != null)
         {
+            var exiledPC = exiled.Object;
+
             // Reset player cam for exiled desync impostor
-            if (Main.ResetCamPlayerList.Contains(exiled.PlayerId))
+            if (exiledPC.HasDesyncRole())
             {
-                exiled.Object?.ResetPlayerCam(1f);
+                exiledPC?.ResetPlayerCam(1f);
             }
 
             exiled.IsDead = true;
             exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
 
-            var exiledPC = Utils.GetPlayerById(exiled.PlayerId);
-            var exiledRoleClass = exiledPC.GetRoleClass();
-           
+            var exiledRoleClass = exiled.PlayerId.GetRoleClassById();
             var emptyString = string.Empty;
 
             exiledRoleClass?.CheckExile(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
-
             CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString));
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
@@ -181,7 +180,7 @@ class ExileControllerWrapUpPatch
                         player?.SetRealKiller(player, true);
 
                     // Reset player cam for dead desync impostor
-                    if (Main.ResetCamPlayerList.Contains(x.Key))
+                    if (player.HasDesyncRole())
                     {
                         player?.ResetPlayerCam(1f);
                     }

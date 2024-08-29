@@ -132,12 +132,12 @@ internal class RiftMaker : RoleBase
 
         var currentPos = shapeshifter.GetCustomPosition();
         var totalMarked = MarkedLocation.Count;
-        if (totalMarked == 1 && Vector2.Distance(currentPos, MarkedLocation.ElementAt(0).Key) <= 5f)
+        if (totalMarked == 1 && Utils.GetDistance(currentPos, MarkedLocation.ElementAt(0).Key) <= 5f)
         {
             shapeshifter.Notify(GetString("RiftsTooClose"));
             return;
         }
-        else if (totalMarked == 2 && Vector2.Distance(currentPos, MarkedLocation.ElementAt(1).Key) <= 5f)
+        else if (totalMarked == 2 && Utils.GetDistance(currentPos, MarkedLocation.ElementAt(1).Key) <= 5f)
         {
             shapeshifter.Notify(GetString("RiftsTooClose"));
             return;

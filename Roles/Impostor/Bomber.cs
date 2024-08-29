@@ -81,7 +81,7 @@ internal class Bomber : RoleBase
             if (!target.IsAlive() || Medic.ProtectList.Contains(target.PlayerId) || (target.Is(Custom_Team.Impostor) && ImpostorsSurviveBombs.GetBool()) || target.inVent || target.IsTransformedNeutralApocalypse() || target.Is(CustomRoles.Solsticer)) continue;
 
             var pos = shapeshifter.transform.position;
-            var dis = Vector2.Distance(pos, target.transform.position);
+            var dis = Utils.GetDistance(pos, target.transform.position);
             if (dis > BomberRadius.GetFloat()) continue;
 
             target.SetDeathReason(PlayerState.DeathReason.Bombed);

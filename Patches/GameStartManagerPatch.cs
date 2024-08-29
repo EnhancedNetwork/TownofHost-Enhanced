@@ -124,7 +124,7 @@ public class GameStartManagerPatch
         private static int minPlayer;
         public static void Prefix(GameStartManager __instance)
         {
-            if (__instance == null) return;
+            if (__instance == null || LobbyBehaviour.Instance == null) return;
             minWait = Options.MinWaitAutoStart.GetFloat();
             maxWait = Options.MaxWaitAutoStart.GetFloat();
             minPlayer = Options.PlayerAutoStart.GetInt();

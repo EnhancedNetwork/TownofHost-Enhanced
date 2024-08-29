@@ -49,7 +49,7 @@ internal class SchrodingersCat : RoleBase
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return true;
+        if (killer.Is(CustomRoles.Taskinator)) return true;
         if (teammate[target.PlayerId] != byte.MaxValue) return true;
 
         teammate[target.PlayerId] = killer.PlayerId;

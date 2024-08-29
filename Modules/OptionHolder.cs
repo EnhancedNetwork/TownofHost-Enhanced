@@ -239,6 +239,7 @@ public static class Options
     public static OptionItem CEMode;
     public static OptionItem ShowImpRemainOnEject;
     public static OptionItem ShowNKRemainOnEject;
+    public static OptionItem ShowNARemainOnEject;
     public static OptionItem ShowTeamNextToRoleNameOnEject;
     public static OptionItem ConfirmEgoistOnEject;
     public static OptionItem ConfirmLoversOnEject;
@@ -475,6 +476,7 @@ public static class Options
     public static OptionItem CanGuessAddons;
     public static OptionItem ImpCanGuessImp;
     public static OptionItem CrewCanGuessCrew;
+    public static OptionItem ApocCanGuessApoc;
     public static OptionItem HideGuesserCommands;
     public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
 
@@ -619,7 +621,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 28700 last id for roles/add-ons (Next use 28800)
+        // 29700 last id for roles/add-ons (Next use 29800)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -1165,6 +1167,10 @@ public static class Options
             .SetParent(ShowImpRemainOnEject)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+        ShowNARemainOnEject = BooleanOptionItem.Create(60446, "ShowNARemainOnEject", true, TabGroup.ModSettings, false)
+            .SetParent(ShowImpRemainOnEject)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue));
         ShowTeamNextToRoleNameOnEject = BooleanOptionItem.Create(60443, "ShowTeamNextToRoleNameOnEject", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
@@ -1673,6 +1679,9 @@ public static class Options
             .SetHidden(true)
             .SetParent(GuesserMode);
         ImpCanGuessImp = BooleanOptionItem.Create(60687, "ImpCanGuessImp", true, TabGroup.ModifierSettings, false)
+            .SetHidden(true)
+            .SetParent(GuesserMode);
+        ApocCanGuessApoc = BooleanOptionItem.Create(60691, "ApocCanGuessApoc", false, TabGroup.ModifierSettings, false)
             .SetHidden(true)
             .SetParent(GuesserMode);
         HideGuesserCommands = BooleanOptionItem.Create(60688, "GuesserTryHideMsg", true, TabGroup.ModifierSettings, false)

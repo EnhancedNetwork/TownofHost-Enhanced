@@ -110,7 +110,7 @@ internal class Crewpostor : RoleBase
             TasksDone[player.PlayerId] = 0;
 
         SendRPC(player.PlayerId, TasksDone[player.PlayerId]);
-        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && (CanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
+        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && !(x.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini) && (CanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
 
         if (!list.Any())
         {
@@ -122,7 +122,7 @@ internal class Crewpostor : RoleBase
         }
         else
         {
-            list = [.. list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position))];
+            list = [.. list.OrderBy(x => Utils.GetDistance(player.transform.position, x.transform.position))];
             var target = list[0];
 
             if (!target.IsTransformedNeutralApocalypse())

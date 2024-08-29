@@ -12,6 +12,7 @@ internal class Monarch : RoleBase
     //===========================SETUP================================\\
     private const int Id = 12100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Monarch);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -35,12 +36,9 @@ internal class Monarch : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = KnightMax.GetInt();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KnightCooldown.GetFloat();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit > 0 ? KnightCooldown.GetFloat() : 300f;
     public override bool CanUseKillButton(PlayerControl player) => AbilityLimit > 0;
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
