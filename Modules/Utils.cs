@@ -46,19 +46,36 @@ public static class Utils
             {
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
             }, 3f, "Anti-Black Msg SendInGame Error During Loading");
-            
-            _ = new LateTask(() =>
+
+            if (GameStates.IsShip || !GameStates.IsLobby || GameStates.IsCoStartGame)
             {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
-                GameManager.Instance.LogicFlow.CheckEndCriteria();
-                RPC.ForceEndGame(CustomWinner.Error);
-            }, 5.5f, "Anti-Black End Game As Critical Error");
+                _ = new LateTask(() =>
+                {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
+                    GameManager.Instance.LogicFlow.CheckEndCriteria();
+                    RPC.ForceEndGame(CustomWinner.Error);
+                }, 5.5f, "Anti-Black End Game As Critical Error");
+            }
+            else if (GameStartManager.Instance != null)
+            {
+                GameStartManager.Instance.ResetStartState();
+                AmongUsClient.Instance.RemoveUnownedObjects();
+                Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
+            }
+            else
+            {
+                Logger.SendInGame("Host in a unknow antiblack bugged state.");
+                Logger.Fatal($"Host in a unknow antiblack bugged state.", "Anti-black");
+            }
         }
         else
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
             writer.Write(text);
             writer.EndMessage();
+
+            Logger.Fatal($"Error: {text} - I'm triggering critical error", "Anti-black");
+
             if (Options.EndWhenPlayerBug.GetBool())
             {
                 _ = new LateTask(() =>
@@ -75,8 +92,11 @@ public static class Utils
                 
                 _ = new LateTask(() =>
                 {
-                    AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
-                    Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
+                    if (AmongUsClient.Instance.AmConnected)
+                    {
+                        AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
+                        Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
+                    }
                 }, 8f, "Anti-Black Exit Game Due Critical Error");
             }
         }
@@ -550,8 +570,8 @@ public static class Utils
         }
 
         if (playerData.Disconnected) return false;
-        if (playerData.Role.IsImpostor)
-            hasTasks = false; //Tasks are determined based on CustomRole
+        //if (playerData.Role.IsImpostor)
+        //    hasTasks = false; //Tasks are determined based on CustomRole
 
         if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
         if (playerData.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
@@ -570,7 +590,7 @@ public static class Utils
                 break;
             default:
                 // player based on an impostor not should have tasks
-                if (States.RoleClass.ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter)
+                if (States.RoleClass.ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom)
                     hasTasks = false;
                 break;
         }
@@ -587,7 +607,6 @@ public static class Utils
                 case CustomRoles.Contagious:
                 case CustomRoles.Soulless:
                 case CustomRoles.Rascal:
-                    //Lovers don't count the task as a win
                     hasTasks &= !ForRecompute;
                     break;
                 case CustomRoles.Mundane:
@@ -1016,13 +1035,13 @@ public static class Utils
     {
         try
         {
-            StackTrace st = new(1, true);
+            StackTrace st = new(0, true);
             StackFrame[] stFrames = st.GetFrames();
 
             StackFrame firstFrame = stFrames.FirstOrDefault();
 
             var sb = new StringBuilder();
-            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName} at line {lineNumber} in {callerMemberName}\n------ Stack Trace ------");
+            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName}\n      at line {lineNumber}\n      in method \"{callerMemberName}\"\n------ Method Stack Trace ------");
 
             bool skip = true;
             foreach (StackFrame sf in stFrames)
@@ -1038,10 +1057,17 @@ public static class Utils
                 string callerMethodName = callerMethod?.Name;
                 string callerClassName = callerMethod?.DeclaringType?.FullName;
 
-                sb.Append($"\n      at {callerClassName}.{callerMethodName}");
+                var line = $"line {sf.GetFileLineNumber()} ({sf.GetFileColumnNumber()}) in {sf.GetFileName()}";
+
+                sb.Append($"\n      at {callerClassName}.{callerMethodName} ({line})");
             }
 
-            sb.Append("\n------ End of Stack Trace ------");
+            sb.Append("\n------ End of Method Stack Trace ------");
+            sb.Append("\n------ Exception Stack Trace ------");
+
+            sb.Append(ex.StackTrace?.Replace("\r\n", "\n").Replace("\\n", "\n").Replace("\n", "\n      "));
+
+            sb.Append("\n------ End of Exception Stack Trace ------");
 
             Logger.Error(sb.ToString(), firstFrame?.GetMethod()?.ToString(), multiLine: true);
         }

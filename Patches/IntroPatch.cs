@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -100,103 +101,13 @@ class SetUpRoleTextPatch
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
 class CoBeginPatch
 {
-    public static void Prefix()
+    public static void Prefix(IntroCutscene __instance)
     {
         if (RoleBasisChanger.IsChangeInProgress) return;
 
-        var logger = Logger.Handler("Info");
-
-        var allPlayerControlsArray = Main.AllPlayerControls;
-
-        logger.Info("------------Player Names------------");
-        foreach ( var pc in allPlayerControlsArray)
-        {
-            logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{pc.cosmetics.nameText.text}({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", "")})");
-            pc.cosmetics.nameText.text = pc.name;
-        }
-
-        logger.Info("------------Roles / Add-ons------------");
-        if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug || GameStates.IsLocalGame)
-        {
-            foreach (var pc in allPlayerControlsArray)
-            {
-                logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
-            }
-        }
-        else
-        {
-            StringBuilder logStringBuilder = new();
-            logStringBuilder.AppendLine("------------Roles / Add-ons------------");
-
-            foreach (var pc in allPlayerControlsArray)
-            {
-                logStringBuilder.AppendLine($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRight(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
-            }
-
-            try
-            {
-                byte[] logBytes = Encoding.UTF8.GetBytes(logStringBuilder.ToString());
-                byte[] encryptedBytes = EncryptDES(logBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000"[..8]);
-                string encryptedString = Convert.ToBase64String(encryptedBytes);
-                logger.Info(encryptedString);
-            }
-            catch (Exception ex)
-            {
-                logger.Error($"Encryption error: {ex.Message}");
-            }
-        }
-        //https://www.toolhelper.cn/SymmetricEncryption/DES
-        //mode CBC, PKCS7, 64bit, Key = IV= "TOHE" + playerid + 000/00 "to 8 bits
-
-        logger.Info("------------Player Platforms------------");
-        foreach (var pc in allPlayerControlsArray)
-        {
-            try
-            {
-                var text = pc.AmOwner ? "[*]" : "   ";
-                text += $"{pc.PlayerId,-2}:{pc.Data?.PlayerName?.PadRightV2(20)}:{pc.GetClient()?.PlatformData?.Platform.ToString()?.Replace("Standalone", ""),-11}";
-
-                if (Main.playerVersion.TryGetValue(pc.GetClientId(), out PlayerVersion pv))
-                {
-                    text += $":Mod({pv.forkId}/{pv.version}:{pv.tag}), ClientId :{pc.GetClientId()}";
-                }
-                else
-                {
-                    text += ":Vanilla, ClientId :" + pc.GetClientId() ;
-                }
-                logger.Info(text);
-            }
-            catch (Exception ex)
-            {
-                Logger.Exception(ex, "Platform");
-            }
-        }
-
-        logger.Info("------------Vanilla Settings------------");
-        var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).ToArray();
-        foreach (var text in tmp)
-        {
-            logger.Info(text);
-        }
-
-
-        logger.Info("------------Mod Settings------------");
-        var allOptionsArray = OptionItem.AllOptions.ToArray();
-        foreach (var option in allOptionsArray)
-        {
-            if (!option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null ? !option.GetString().Equals("0%") : option.Parent.GetBool()))
-            {
-                logger.Info($"{(option.Parent == null
-                    ? option.GetName(true, true).RemoveHtmlTags().PadRightV2(40)
-                    : $"┗ {option.GetName(true, true).RemoveHtmlTags()}".PadRightV2(41))}:{option.GetString().RemoveHtmlTags()}");
-            }
-        }
-
         if (GameStates.IsNormalGame)
         {
-            logger.Info("-------------Other Information-------------");
-            logger.Info($"Number players: {allPlayerControlsArray.Length}");
-            foreach (var player in allPlayerControlsArray)
+            foreach (var player in Main.AllPlayerControls)
             {
                 Main.PlayerStates[player.PlayerId].InitTask(player);
             }
@@ -204,6 +115,8 @@ class CoBeginPatch
             GameData.Instance.RecomputeTaskCounts();
             TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
         }
+
+        __instance.StartCoroutine(CoLoggerGameInfo().WrapToIl2Cpp());
 
         GameStates.InGame = true;
         RPC.RpcVersionCheck();
@@ -239,6 +152,107 @@ class CoBeginPatch
             csEncrypt.Write(data, 0, data.Length);
         }
         return msEncrypt.ToArray();
+    }
+    private static System.Collections.IEnumerator CoLoggerGameInfo()
+    {
+        var allPlayerControlsArray = Main.AllPlayerControls;
+        var sb = new StringBuilder();
+
+        sb.Append("------------Player Names------------\n");
+        foreach (var pc in allPlayerControlsArray)
+        {
+            sb.Append($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{pc.cosmetics.nameText.text}({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", "")})\n");
+            pc.cosmetics.nameText.text = pc.name;
+        }
+
+        yield return null;
+
+        sb.Append("------------Roles / Add-ons------------\n");
+        if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug || GameStates.IsLocalGame)
+        {
+            foreach (var pc in allPlayerControlsArray)
+            {
+                sb.Append($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags().Replace("\n", " + ")}\n");
+            }
+        }
+        else
+        {
+            StringBuilder logStringBuilder = new();
+            logStringBuilder.AppendLine("------------Roles / Add-ons------------");
+
+            foreach (var pc in allPlayerControlsArray)
+            {
+                logStringBuilder.AppendLine($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRight(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+            }
+
+            try
+            {
+                byte[] logBytes = Encoding.UTF8.GetBytes(logStringBuilder.ToString());
+                byte[] encryptedBytes = EncryptDES(logBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000"[..8]);
+                string encryptedString = Convert.ToBase64String(encryptedBytes);
+                sb.Append(encryptedString);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Encryption error: {ex.Message}", "Intro.Roles");
+            }
+        }
+        //https://www.toolhelper.cn/SymmetricEncryption/DES
+        //mode CBC, PKCS7, 64bit, Key = IV= "TOHE" + playerid + 000/00 "to 8 bits
+
+        yield return null;
+
+        sb.Append("------------Player Platforms------------\n");
+        foreach (var pc in allPlayerControlsArray)
+        {
+            try
+            {
+                var text = new StringBuilder();
+                sb.Append(pc.AmOwner ? "[*]" : "   ");
+                sb.Append($"{pc.PlayerId,-2}:{pc.Data?.PlayerName?.PadRightV2(20)}:{pc.GetClient()?.PlatformData?.Platform.ToString()?.Replace("Standalone", ""),-11}");
+
+                if (Main.playerVersion.TryGetValue(pc.GetClientId(), out PlayerVersion pv))
+                {
+                    sb.Append($":Mod({pv.forkId}/{pv.version}:{pv.tag}), ClientId :{pc.GetClientId()}");
+                }
+                else
+                {
+                    sb.Append($":Vanilla, ClientId :{pc.GetClientId()}");
+                }
+                sb.Append(text + "\n");
+            }
+            catch (Exception ex)
+            {
+                Logger.Exception(ex, "Intro.Platform");
+            }
+        }
+
+        yield return null;
+
+        sb.Append("------------Vanilla Settings------------\n");
+        var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).ToArray();
+        foreach (var text in tmp)
+        {
+            sb.Append(text + "\n");
+        }
+
+        yield return null;
+
+        sb.Append("------------Modded Settings------------\n");
+        foreach (OptionItem o in OptionItem.AllOptions)
+        {
+            if (!o.IsHiddenOn(Options.CurrentGameMode) && (o.Parent?.GetBool() ?? !o.GetString().Equals("0%")))
+                sb.Append($"{(o.Parent == null ? o.GetName(true, true).RemoveHtmlTags().PadRightV2(40) : $"┗ {o.GetName(true, true).RemoveHtmlTags()}".PadRightV2(41))}:{o.GetString().RemoveHtmlTags()}\n");
+        }
+
+        yield return null;
+
+        sb.Append("-------------Other Information-------------\n");
+        sb.Append($"Number players: {allPlayerControlsArray.Length}");
+
+        yield return null;
+
+        Logger.Info(sb.ToString(), "GameInfo", multiLine: true);
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]

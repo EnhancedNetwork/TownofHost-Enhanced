@@ -612,10 +612,17 @@ class GameEndCheckerForNormal
                     var winnnerLength = winners.Length;
                     if (winnnerLength == 1)
                     {
-                        var winnerRole = winners.First().Key.GetNeutralCustomRoleFromCountType();
-                        reason = GameOverReason.ImpostorByKill;
-                        ResetAndSetWinner(winnerRole.GetNeutralCustomWinnerFromRole());
-                        WinnerRoles.Add(winnerRole);
+                        try
+                        {
+                            var winnerRole = winners.First().Key.GetNeutralCustomRoleFromCountType();
+                            reason = GameOverReason.ImpostorByKill;
+                            ResetAndSetWinner(winnerRole.GetNeutralCustomWinnerFromRole());
+                            WinnerRoles.Add(winnerRole);
+                        }
+                        catch
+                        {
+                            return false;
+                        }
                     }
                     else if (winnnerLength == 0)
                     {

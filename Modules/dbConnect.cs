@@ -12,11 +12,9 @@ namespace TOHE;
 public class dbConnect
 {
     private static bool InitOnce = false;
-    private static Dictionary<string, string> userType = [];
+    private static Dictionary<string, string> UserType = [];
 
-    // API Url
-    private const string oldApiUrl = "https://api.tohre.dev";
-    private const string newApiUrl = "https://api.weareten.ca";
+    private const string ApiUrl = "https://api.weareten.ca";
 
     public static IEnumerator Init()
     {
@@ -38,7 +36,7 @@ public class dbConnect
                 yield break;
             }
 
-            if (userType.Count < 1)
+            if (UserType.Count < 1)
             {
                 HandleFailure(FailedConnectReason.Error_Getting_User_Role_Table);
                 yield break;
@@ -159,12 +157,7 @@ public class dbConnect
             yield return null;
         }
 
-        string apiUrl;
-        var discontinuationDate = new DateTime(2024, 8, 21);
-        var today = DateTime.UtcNow;
-        if (today < discontinuationDate) apiUrl = oldApiUrl; // Replace with your actual API URL
-        else apiUrl = newApiUrl;
-
+        string apiUrl = ApiUrl;
         string endpoint = $"{apiUrl}/userInfo?token={apiToken}";
 
         UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
@@ -199,7 +192,7 @@ public class dbConnect
                 tempUserType[userData["friendcode"].ToString()] = userData["type"].ToString(); // Store the data in the temporary dictionary
             }
             if (tempUserType.Count > 1)
-                userType = tempUserType; // Replace userType with the temporary dictionary
+                UserType = tempUserType; // Replace userType with the temporary dictionary
             else if (!InitOnce)
             {
                 Logger.Error($"Incoming RoleTable is null, cannot init!", "GetRoleTable.error");
@@ -236,8 +229,8 @@ public class dbConnect
     }
     public static bool IsBooster(string friendcode)
     {
-        if (!userType.ContainsKey(friendcode)) return false;
-        return userType[friendcode] == "s_bo";
+        if (!UserType.ContainsKey(friendcode)) return false;
+        return UserType[friendcode] == "s_bo";
     }
 
     private static IEnumerator GetEACList()
@@ -249,12 +242,7 @@ public class dbConnect
             yield break;
         }
 
-        string apiUrl;
-        var discontinuationDate = new DateTime(2024, 8, 21);
-        var today = DateTime.UtcNow;
-        if (today < discontinuationDate) apiUrl = oldApiUrl; // Replace with your actual API URL
-        else apiUrl = newApiUrl;
-
+        string apiUrl = ApiUrl;
         string endpoint = $"{apiUrl}/eac?token={apiToken}";
 
         UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
@@ -287,15 +275,15 @@ public class dbConnect
 
     private static bool CanAccessDev(string friendCode)
     {
-        if (!userType.ContainsKey(friendCode))
+        if (!UserType.ContainsKey(friendCode))
         {
             Logger.Error($"no user found, with friendcode {friendCode}", "CanAccessDev");
             return false;
         }
 
-        if (userType[friendCode] == "s_bo" || userType[friendCode] == "s_it" || userType[friendCode].StartsWith("t_"))
+        if (UserType[friendCode] == "s_bo" || UserType[friendCode] == "s_it" || UserType[friendCode].StartsWith("t_"))
         {
-            Logger.Error($"Error : Dev access denied to user {friendCode}, type =  {userType[friendCode]}", "CanAccessDev");
+            Logger.Error($"Error : Dev access denied to user {friendCode}, type =  {UserType[friendCode]}", "CanAccessDev");
             return false;
         }
         return true;

@@ -4,6 +4,8 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 
 namespace TOHE.Roles.Impostor;
 
@@ -131,6 +133,7 @@ internal class Chronomancer : RoleBase
     {
         if (GameStates.IsMeeting) return;
 
+        var oldChargedTime = ChargedTime;
         if (LastCD != GetCharge())
         {
             LastCD = GetCharge();
@@ -155,8 +158,29 @@ internal class Chronomancer : RoleBase
             pc.MarkDirtySettings();
         }
 
+        if (oldChargedTime != ChargedTime)
+        {
+            SendChargedTimeRPC();
+        }
+
         countnowF += Time.deltaTime;
     }
+
+    public void SendChargedTimeRPC()
+    {
+        // Cant directly write Ability Limit, create another method to send it
+        // Only send to the target to prevent logging in other's
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.None, _Player.OwnerId);
+        writer.WriteNetObject(_Player);
+        writer.Write(ChargedTime);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        ChargedTime = reader.ReadInt32();
+    }
+
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         bool ismeeting = GameStates.IsMeeting || isForMeeting;
