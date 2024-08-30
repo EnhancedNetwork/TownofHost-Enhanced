@@ -232,6 +232,10 @@ class ShipStatusBeginPatch
 {
     //Prevent code from running twice as it gets activated later in LateTask
     public static bool RolesIsAssigned = false;
+    public static bool Prefix()
+    {
+        return RolesIsAssigned;
+    }
     public static void Postfix()
     {
         Logger.CurrentMethod();
