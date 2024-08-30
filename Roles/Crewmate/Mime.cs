@@ -13,7 +13,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Mime : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 28900;
+    private const int Id = 29000;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
