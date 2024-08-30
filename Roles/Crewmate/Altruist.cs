@@ -45,30 +45,30 @@ internal class Altruist : RoleBase
 
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        if (reporter.Is(CustomRoles.Altruist) && _Player?.PlayerId == reporter.PlayerId && deadBody != null && deadBody.Object != null)
+        if (deadBody != null && deadBody.Object != null)
         {
-            var deadPlayer = deadBody.Object;
-            var deadPlayerId = deadPlayer.PlayerId;
-            var deadBodyObject = deadBody.GetDeadBody();
-            reviverPlayerId = deadPlayerId;
-
-            deadPlayer.RpcTeleport(deadBodyObject.transform.position);
-            deadPlayer.RpcRevive();
-
-            if (deadPlayer.GetCustomRole().IsGhostRole() || deadPlayer.IsAnySubRole(sub => sub.IsGhostRole()))
+            if (reporter.Is(CustomRoles.Altruist) && _Player?.PlayerId == reporter.PlayerId)
             {
-                deadPlayer.GetRoleClass().Remove(deadPlayerId);
-                deadPlayer.RpcSetCustomRole(Utils.GetRoleMap(deadPlayerId).Item2);
-                deadPlayer.GetRoleClass().Add(deadPlayerId);
-            }
+                var deadPlayer = deadBody.Object;
+                var deadPlayerId = deadPlayer.PlayerId;
+                var deadBodyObject = deadBody.GetDeadBody();
+                reviverPlayerId = deadPlayerId;
 
-            _Player.SetDeathReason(PlayerState.DeathReason.Sacrificed);
-            _Player.Data.IsDead = true;
-            _Player.RpcExileV2();
-            Main.PlayerStates[_Player.PlayerId].SetDead();
+                deadPlayer.RpcTeleport(deadBodyObject.transform.position);
+                deadPlayer.RpcRevive();
 
-            _ = new LateTask(() =>
-            {
+                if (deadPlayer.GetCustomRole().IsGhostRole() || deadPlayer.IsAnySubRole(sub => sub.IsGhostRole()))
+                {
+                    deadPlayer.GetRoleClass().Remove(deadPlayerId);
+                    deadPlayer.RpcSetCustomRole(Utils.GetRoleMap(deadPlayerId).customRole);
+                    deadPlayer.GetRoleClass().Add(deadPlayerId);
+                }
+
+                _Player.SetDeathReason(PlayerState.DeathReason.Sacrificed);
+                _Player.Data.IsDead = true;
+                _Player.RpcExileV2();
+                Main.PlayerStates[_Player.PlayerId].SetDead();
+
                 foreach (var pc in Main.AllPlayerControls)
                 {
                     if (pc.Is(Custom_Team.Impostor))
@@ -79,31 +79,34 @@ internal class Altruist : RoleBase
                     }
                 }
                 Utils.NotifyRoles();
-            }, 1f, "Notify Impostor about revive");
-            return false;
+                return false;
+            }
+            else if (reporter.PlayerId == deadBody.PlayerId)
+                return false;
         }
-        
+
         return true;
     }
 
     public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (reviverPlayerId == byte.MaxValue || isForMeeting || seer.PlayerId != target.PlayerId || !seer.Is(Custom_Team.Impostor)) return string.Empty;
-        return Utils.ColorString(Utils.HexToColor("#9b0202"), TargetArrow.GetArrows(seer));
+        Logger.Info($"{TargetArrow.GetArrows(seer)}", "Altruist");
+        return Utils.ColorString(Utils.HexToColor("9b0202"), TargetArrow.GetArrows(seer, reviverPlayerId));
     }
 
-    //public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
-    //{
-    //    if (reviverPlayerId != byte.MaxValue)
-    //    {
-    //        foreach (var pc in Main.AllPlayerControls)
-    //        {
-    //            if (pc.Is(Custom_Team.Impostor))
-    //            {
-    //                TargetArrow.Remove(pc.PlayerId, reviverPlayerId);
-    //                continue;
-    //            }
-    //        }
-    //    }
-    //}
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
+    {
+        if (reviverPlayerId != byte.MaxValue)
+        {
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.Is(Custom_Team.Impostor))
+                {
+                    TargetArrow.Remove(pc.PlayerId, reviverPlayerId);
+                    continue;
+                }
+            }
+        }
+    }
 }

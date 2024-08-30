@@ -568,7 +568,7 @@ public static class Utils
         return deathReason;
     }
 
-    public static (RoleTypes, CustomRoles) GetRoleMap(byte seerId, byte targetId = byte.MaxValue)
+    public static (RoleTypes roleType, CustomRoles customRole) GetRoleMap(byte seerId, byte targetId = byte.MaxValue)
     {
         if (targetId == byte.MaxValue) targetId = seerId;
 
@@ -1531,8 +1531,11 @@ public static class Utils
 
     public static Color HexToColor(string hex)
     {
-        _ = ColorUtility.TryParseHtmlString("#" + hex, out var color);
-        return color;
+        if (ColorUtility.TryParseHtmlString("#" + hex, out var color))
+        {
+            return color;
+        }
+        return Color.white;
     }
 
     private static string ColorToHex(Color color)
