@@ -410,13 +410,23 @@ static class ExtendedPlayerControl
             }
         }
     }
-    public static List<Vent> GetVentsFromClosest(this PlayerControl player)
+    public static List<Vent> GetVentsFromClosest(this PlayerControl player, float maxDistance = 0f)
     {
-        Vector2 playerpos = player.transform.position;
-        List<Vent> vents = [.. ShipStatus.Instance.AllVents];
+        Vector2 playerpos = player.GetTruePosition();
+        List<Vent> vents = new(ShipStatus.Instance.AllVents);
+
+        // Calculate distances and filter if maxDistance > 0
+        if (maxDistance > 0f)
+        {
+            vents = vents.Where(v => Vector2.Distance(playerpos, v.transform.position) <= maxDistance).ToList();
+        }
+
+        // Sort remaining vents by distance
         vents.Sort((v1, v2) => Vector2.Distance(playerpos, v1.transform.position).CompareTo(Vector2.Distance(playerpos, v2.transform.position)));
+
         return vents;
     }
+
 
     /// <summary>
     /// Update vent interaction if player again can use vent

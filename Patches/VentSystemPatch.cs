@@ -10,19 +10,27 @@ namespace TOHE.Patches;
 static class VentSystemDeterioratePatch
 {
     public static Dictionary<byte, int> LastClosestVent;
+    public static Dictionary<byte, int> LastClosedAtVentId;
     public static void Postfix(VentilationSystem __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.IntroDestroyed) return;
         foreach (var pc in PlayerControl.AllPlayerControls)
         {
+            LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
             if (pc.BlockVentInteraction())
             {
-                LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
-                pc.RpcCloseVent(__instance);
+                var readyVents = pc.GetVentsFromClosest(9f);
+                int readyVentId = (readyVents == null || readyVents.Count == 0) ? -1 : readyVents[0].Id;
+
+                if (LastClosedAtVentId[pc.PlayerId] != readyVentId)
+                {
+                    pc.RpcCloseVent(__instance);
+                }
             }
         }
     }
+
     /// <summary>
     /// Check blocking vents
     /// </summary>
@@ -50,11 +58,25 @@ static class VentSystemDeterioratePatch
             }
         }
     }
+
     /// <summary>
     /// Send rpc for blocking specifics vent use or all vents
     /// </summary>
-    private static void RpcCloseVent(this PlayerControl pc, VentilationSystem __instance)
+    public static void RpcCloseVent(this PlayerControl pc, VentilationSystem __instance = null)
     {
+        if (__instance == null)
+        {
+            __instance = ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
+
+            if (__instance == null) return;
+        }
+
+        List<Vent> readyVents = pc.GetVentsFromClosest();
+        
+        LastClosedAtVentId[pc.PlayerId] = !(readyVents == null || readyVents.Count < 1) ? readyVents[0].Id : -1;
+
+        if (readyVents.Count < 1) return;
+
         MessageWriter writer = MessageWriter.Get(SendOption.None);
         writer.StartMessage(6);
         writer.Write(AmongUsClient.Instance.GameId);
@@ -64,12 +86,7 @@ static class VentSystemDeterioratePatch
             writer.WritePacked(ShipStatus.Instance.NetId);
             {
                 writer.StartMessage((byte)SystemTypes.Ventilation);
-                int vents = 0;
-                foreach (var vent in ShipStatus.Instance.AllVents)
-                {
-                    if (!pc.CanUseVent())
-                        ++vents;
-                }
+                int vents = readyVents.Count;
                 List<NetworkedPlayerInfo> AllPlayers = [];
                 foreach (var playerInfo in GameData.Instance.AllPlayers)
                 {
@@ -79,23 +96,25 @@ static class VentSystemDeterioratePatch
                 int maxVents = Math.Min(vents, AllPlayers.Count);
                 int blockedVents = 0;
                 writer.WritePacked(maxVents);
-                foreach (var vent in pc.GetVentsFromClosest())
+                foreach (var vent in readyVents)
                 {
-                    if (!pc.CanUseVent())
-                    {
-                        writer.Write(AllPlayers[blockedVents].PlayerId);
-                        writer.Write((byte)vent.Id);
-                        ++blockedVents;
-                    }
+                    writer.Write(AllPlayers[blockedVents].PlayerId);
+                    writer.Write((byte)vent.Id);
+                    ++blockedVents;
                     if (blockedVents >= maxVents)
                         break;
                 }
+
+                writer.WritePacked(0); // No need to Serialize Player Inside Vents to DisableVents player
+                /*
                 writer.WritePacked(__instance.PlayersInsideVents.Count);
                 foreach (Il2CppSystem.Collections.Generic.KeyValuePair<byte, byte> keyValuePair2 in __instance.PlayersInsideVents)
                 {
                     writer.Write(keyValuePair2.Key);
                     writer.Write(keyValuePair2.Value);
                 }
+                */
+
                 writer.EndMessage();
             }
             writer.EndMessage();
@@ -105,8 +124,15 @@ static class VentSystemDeterioratePatch
         writer.Recycle();
     }
 
-    private static void RpcSerializeVent(this PlayerControl pc, VentilationSystem __instance)
+    private static void RpcSerializeVent(this PlayerControl pc, VentilationSystem __instance = null)
     {
+        if (__instance == null)
+        {
+            __instance = ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
+
+            if (__instance == null) return;
+        }
+
         MessageWriter writer = MessageWriter.Get(SendOption.None);
         writer.StartMessage(6);
         writer.Write(AmongUsClient.Instance.GameId);
