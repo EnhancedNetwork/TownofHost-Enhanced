@@ -103,7 +103,7 @@ internal class Berserker : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.IsNeutralApocalypse()) return false;
+        if (killer.IsNeutralApocalypse() && target.IsNeutralApocalypse()) return false;
         bool noScav = true;
         if (BerserkerKillMax[killer.PlayerId] < BerserkerMax.GetInt())
         {

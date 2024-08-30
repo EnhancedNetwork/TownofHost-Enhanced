@@ -701,6 +701,7 @@ public enum CustomRoles
     Medic,
     Medium,
     Merchant,
+    Mime,
     Mole,
     Monarch,
     Mortician,
