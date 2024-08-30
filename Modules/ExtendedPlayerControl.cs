@@ -12,7 +12,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using static TOHE.SelectRolesPatch;
 
 namespace TOHE;
 
@@ -75,10 +74,10 @@ static class ExtendedPlayerControl
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
 
         var playerId = player.PlayerId;
+        var newRoleType = newCustomRole.GetRoleTypes();
         // When player change desync role to normal role
         if (playerRole.IsDesyncRole() && !newCustomRole.IsDesyncRole())
         {
-            var newRoleType = newCustomRole.GetRoleTypes();
             foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 var isSelf = player.PlayerId == seer.PlayerId;
@@ -93,7 +92,6 @@ static class ExtendedPlayerControl
         // When player change normal role to desync role
         else if (!playerRole.IsDesyncRole() && newCustomRole.IsDesyncRole())
         {
-            RoleTypes newRoleType;
             var isModded = player.OwnedByHost() || player.IsModClient();
             foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
@@ -117,8 +115,6 @@ static class ExtendedPlayerControl
                     {
                         newRoleType = newCustomRole.GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
                     }
-                    else
-                        newRoleType = newCustomRole.GetRoleTypes();
                 }
                 RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (newRoleType, newCustomRole);
                 player.RpcSetRoleDesync(newRoleType, seer.GetClientId());
@@ -128,7 +124,32 @@ static class ExtendedPlayerControl
         // Or player change normal role to normal role
         else
         {
-            RpcSetRoleReplacer.RoleMap[(playerId, playerId)] = (newCustomRole.GetRoleTypes(), newCustomRole);
+            RpcSetRoleReplacer.RoleMap[(playerId, playerId)] = (newRoleType, newCustomRole);
+
+            // player change basic role
+            if (playerRole.GetRoleTypes() != newRoleType)
+            {
+                // if desync role change Impostor to Shapeshift
+                if (newCustomRole.IsDesyncRole())
+                {
+                    player.RpcSetRoleDesync(newRoleType, player.GetClientId());
+                    return;
+                }
+                foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                {
+                    // Not change for desync role and player not modded except role map
+                    var isModded = seer.AmOwner || seer.IsModClient();
+                    if (seer.HasDesyncRole() && !isModded)
+                    {
+                        var rememberRoleMapType = RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)].roleType;
+                        RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (rememberRoleMapType, newCustomRole);
+                        continue;
+                    }
+
+                    RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (newRoleType, newCustomRole);
+                    player.RpcSetRoleDesync(newRoleType, seer.GetClientId());
+                }
+            }
         }
     }
     public static void RpcExile(this PlayerControl player)
@@ -290,14 +311,16 @@ static class ExtendedPlayerControl
     /// </summary>
     public static void RpcRevive(this PlayerControl player)
     {
+        if (player == null) return;
         if (player.Data.IsDead == false)
         {
             Logger.Warn($"Invalid Revive for {player.GetRealName()} / Player was already alive? {!player.Data.IsDead}", "RpcRevive");
             return;
         }
 
-        player.RpcChangeRoleBasis(player.GetCustomRole());
+        player.RpcSetRoleDesync(RpcSetRoleReplacer.RoleMap[(player.PlayerId, player.PlayerId)].roleType, player.GetClientId());
         Main.PlayerStates[player.PlayerId].IsDead = false;
+        player.SetDeathReason(PlayerState.DeathReason.etc);
         player.SetKillCooldown();
         player.SyncGeneralOptions();
     }

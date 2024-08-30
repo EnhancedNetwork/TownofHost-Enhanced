@@ -687,114 +687,114 @@ internal class SelectRolesPatch
             }
         }
     }
+}
 
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
-    public static class RpcSetRoleReplacer
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole)), HarmonyPriority(Priority.High)]
+public static class RpcSetRoleReplacer
+{
+    public static bool BlockSetRole = false;
+    public static Dictionary<byte, CustomRpcSender> Senders = [];
+    public static Dictionary<(byte seerId, byte targetId), (RoleTypes roleType, CustomRoles customRole)> RoleMap = [];
+    public static void Initialize()
     {
-        public static bool BlockSetRole = false;
-        public static Dictionary<byte, CustomRpcSender> Senders = [];
-        public static Dictionary<(byte seerId, byte targetId), (RoleTypes roleType, CustomRoles customRole)> RoleMap = [];
-        public static void Initialize()
+        Senders = [];
+        RoleMap = [];
+        BlockSetRole = true;
+    }
+    public static bool Prefix()
+    {
+        return !BlockSetRole;
+    }
+    public static void StartReplace()
+    {
+        foreach (var pc in Main.AllPlayerControls)
         {
-            Senders = [];
-            RoleMap = [];
-            BlockSetRole = true;
+            Senders[pc.PlayerId] = new CustomRpcSender($"{pc.name}'s SetRole Sender", SendOption.Reliable, false)
+                    .StartMessage(pc.GetClientId());
         }
-        public static bool Prefix()
+    }
+    public static void Release()
+    {
+        foreach (var ((seerId, targetId), (roleType, _)) in RoleMap)
         {
-            return !BlockSetRole;
-        }
-        public static void StartReplace()
-        {
-            foreach (var pc in Main.AllPlayerControls)
+            if (seerId == targetId) continue;
+
+            var seer = Utils.GetPlayerById(seerId);
+            var target = Utils.GetPlayerById(targetId);
+            if (seer == null || target == null) continue;
+
+            if (seer.OwnedByHost())
             {
-                Senders[pc.PlayerId] = new CustomRpcSender($"{pc.name}'s SetRole Sender", SendOption.Reliable, false)
-                        .StartMessage(pc.GetClientId());
+                target.SetRole(roleType);
+                continue;
             }
-        }
-        public static void Release()
-        {
-            foreach (var ((seerId, targetId), (roleType, _)) in RoleMap)
+
+            try
             {
-                if (seerId == targetId) continue;
-
-                var seer = Utils.GetPlayerById(seerId);
-                var target = Utils.GetPlayerById(targetId);
-                if (seer == null || target == null) continue;
-
-                if (seer.OwnedByHost())
-                {
-                    target.SetRole(roleType);
-                    continue;
-                }
-
-                try
-                {
-                    var sender = Senders[targetId];
-                    sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetRole, seer.GetClientId())
-                        .Write((ushort)roleType)
-                        .Write(true)
-                        .EndRpc();
-                }
-                catch { }
+                var sender = Senders[targetId];
+                sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetRole, seer.GetClientId())
+                    .Write((ushort)roleType)
+                    .Write(true)
+                    .EndRpc();
             }
-            SetSelfRoles();
-
-            BlockSetRole = false;
-            Senders.Do(kvp => kvp.Value.SendMessage());
-            EndReplace();
+            catch { }
         }
+        SetSelfRoles();
 
-        //Self roles set seperately so that we can trick the game into intro-cutsene via disconnecting everyone temporarily for client.
-        private static void SetSelfRoles()
+        BlockSetRole = false;
+        Senders.Do(kvp => kvp.Value.SendMessage());
+        EndReplace();
+    }
+
+    //Self roles set seperately so that we can trick the game into intro-cutsene via disconnecting everyone temporarily for client.
+    private static void SetSelfRoles()
+    {
+        foreach (var pc in Main.AllPlayerControls)
         {
-            foreach (var pc in Main.AllPlayerControls)
+            try
             {
-                try
-                {
-                    var roleType = RoleMap[(pc.PlayerId, pc.PlayerId)].roleType;
+                var roleType = RoleMap[(pc.PlayerId, pc.PlayerId)].roleType;
 
-                    var stream = MessageWriter.Get(SendOption.Reliable);
-                    stream.StartMessage(6);
-                    stream.Write(AmongUsClient.Instance.GameId);
-                    stream.WritePacked(pc.GetClientId());
+                var stream = MessageWriter.Get(SendOption.Reliable);
+                stream.StartMessage(6);
+                stream.Write(AmongUsClient.Instance.GameId);
+                stream.WritePacked(pc.GetClientId());
+                {
+                    RpcSetDisconnect(stream, true);
+
+                    stream.StartMessage(2);
+                    stream.WritePacked(pc.NetId);
+                    stream.Write((byte)RpcCalls.SetRole);
                     {
-                        RpcSetDisconnect(stream, true);
-
-                        stream.StartMessage(2);
-                        stream.WritePacked(pc.NetId);
-                        stream.Write((byte)RpcCalls.SetRole);
-                        {
-                            stream.Write((ushort)roleType);
-                            stream.Write(true); //canOverrideRole
-                        }
-                        stream.EndMessage();
-                        //Logger.Info($"SetSelfRole to:{pc?.name}({pc.GetClientId()}) player:{pc?.name}({roleType})", "★RpcSetRole");
-
-                        RpcSetDisconnect(stream, false);
+                        stream.Write((ushort)roleType);
+                        stream.Write(true); //canOverrideRole
                     }
                     stream.EndMessage();
-                    AmongUsClient.Instance.SendOrDisconnect(stream);
-                    stream.Recycle();
-                }
-                catch { }
-            }
-        }
-        private static void RpcSetDisconnect(MessageWriter stream, bool disconnected)
-        {
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                pc.Data.Disconnected = disconnected;
+                    //Logger.Info($"SetSelfRole to:{pc?.name}({pc.GetClientId()}) player:{pc?.name}({roleType})", "★RpcSetRole");
 
-                stream.StartMessage(1);
-                stream.WritePacked(pc.Data.NetId);
-                pc.Data.Serialize(stream, false);
+                    RpcSetDisconnect(stream, false);
+                }
                 stream.EndMessage();
+                AmongUsClient.Instance.SendOrDisconnect(stream);
+                stream.Recycle();
             }
+            catch { }
         }
-        private static void EndReplace()
+    }
+    private static void RpcSetDisconnect(MessageWriter stream, bool disconnected)
+    {
+        foreach (var pc in Main.AllPlayerControls)
         {
-            Senders = null;
+            pc.Data.Disconnected = disconnected;
+
+            stream.StartMessage(1);
+            stream.WritePacked(pc.Data.NetId);
+            pc.Data.Serialize(stream, false);
+            stream.EndMessage();
         }
+    }
+    private static void EndReplace()
+    {
+        Senders = null;
     }
 }
