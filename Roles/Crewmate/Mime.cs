@@ -94,13 +94,18 @@ internal class Mime : RoleBase
             float tempAbility = AbilityLimit;
             killer.RpcSetCustomRole(StoredRole);
             killer.GetRoleClass()?.OnAdd(killer.PlayerId);
-            StoredRole = CustomRoles.Mime;
             killer.GetRoleClass()?.OnCheckMurderAsKiller(killer, target);
-            killer.GetRoleClass()?.OnRemove(killer.PlayerId);
-            killer.RpcSetCustomRole(StoredRole);
+            var kill = killer.GetRoleClass()?.OnCheckMurderAsKiller(killer, target);
+            StoredRole = CustomRoles.Mime;
+            _ = new LateTask(() =>
+            {
+                killer.GetRoleClass()?.OnRemove(killer.PlayerId);
+                killer.RpcSetCustomRole(StoredRole);
+            }
+            , 10f, "MimeRevertRole");
             killer.ResetKillCooldown();
             AbilityLimit = tempAbility;
-            return true;
+            return (bool)kill;
         }
         if (MirrorList[killer.PlayerId].Contains(target.PlayerId) || AbilityLimit <= 0) return false;
 
