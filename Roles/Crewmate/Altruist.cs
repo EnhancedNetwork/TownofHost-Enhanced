@@ -17,7 +17,8 @@ internal class Altruist : RoleBase
     private static OptionItem BatteryCooldown;
     private static OptionItem BatteryDuration;
 
-    private byte reviverPlayerId = byte.MaxValue;
+    private byte ReviverPlayerId = byte.MaxValue;
+    private readonly static HashSet<byte> AllReviverPlayerId = [];
 
     public override void SetupCustomOption()
     {
@@ -34,7 +35,8 @@ internal class Altruist : RoleBase
 
     public override void Init()
     {
-        reviverPlayerId = byte.MaxValue;
+        ReviverPlayerId = byte.MaxValue;
+        AllReviverPlayerId.Clear();
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -52,7 +54,9 @@ internal class Altruist : RoleBase
                 var deadPlayer = deadBody.Object;
                 var deadPlayerId = deadPlayer.PlayerId;
                 var deadBodyObject = deadBody.GetDeadBody();
-                reviverPlayerId = deadPlayerId;
+                
+                ReviverPlayerId = deadPlayerId;
+                AllReviverPlayerId.Add(deadPlayerId);
 
                 deadPlayer.RpcTeleport(deadBodyObject.transform.position);
                 deadPlayer.RpcRevive();
@@ -81,7 +85,7 @@ internal class Altruist : RoleBase
                 Utils.NotifyRoles();
                 return false;
             }
-            else if (reporter.PlayerId == deadBody.PlayerId)
+            else if (reporter.PlayerId == deadBody.PlayerId && reporter.PlayerId == ReviverPlayerId)
                 return false;
         }
 
@@ -90,20 +94,20 @@ internal class Altruist : RoleBase
 
     public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (reviverPlayerId == byte.MaxValue || isForMeeting || seer.PlayerId != target.PlayerId || !seer.Is(Custom_Team.Impostor)) return string.Empty;
+        if (ReviverPlayerId == byte.MaxValue || isForMeeting || seer.PlayerId != target.PlayerId || !seer.Is(Custom_Team.Impostor)) return string.Empty;
         Logger.Info($"{TargetArrow.GetArrows(seer)}", "Altruist");
-        return Utils.ColorString(Utils.HexToColor("9b0202"), TargetArrow.GetArrows(seer, reviverPlayerId));
+        return Utils.ColorString(Utils.HexToColor("9b0202"), TargetArrow.GetArrows(seer, ReviverPlayerId));
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        if (reviverPlayerId != byte.MaxValue)
+        if (ReviverPlayerId != byte.MaxValue)
         {
             foreach (var pc in Main.AllAlivePlayerControls)
             {
                 if (pc.Is(Custom_Team.Impostor))
                 {
-                    TargetArrow.Remove(pc.PlayerId, reviverPlayerId);
+                    TargetArrow.Remove(pc.PlayerId, ReviverPlayerId);
                     continue;
                 }
             }
