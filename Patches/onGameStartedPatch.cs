@@ -94,6 +94,7 @@ internal class ChangeRoleSettings
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
 
             VentSystemDeterioratePatch.LastClosestVent = [];
+            VentSystemDeterioratePatch.LastClosedAtVentId = [];
 
             ChatManager.ResetHistory();
             ReportDeadBodyPatch.CanReport = [];
@@ -181,7 +182,8 @@ internal class ChangeRoleSettings
 
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
-                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 0;
+                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = -2;
+                VentSystemDeterioratePatch.LastClosedAtVentId[pc.PlayerId] = -2;
 
                 pc.cosmetics.nameText.text = pc.name;
 

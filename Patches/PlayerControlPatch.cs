@@ -17,6 +17,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using TOHE.Patches;
 
 namespace TOHE;
 
@@ -1550,6 +1551,7 @@ class CoEnterVentPatch
             try
             {
                 __instance?.RpcBootFromVent(id);
+                __instance?.myPlayer.RpcCloseVent();
             }
             catch
             {
