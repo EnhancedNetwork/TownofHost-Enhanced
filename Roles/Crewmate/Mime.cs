@@ -13,7 +13,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Mime : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 29000;
+    private const int Id = 29300;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -49,9 +49,6 @@ internal class Mime : RoleBase
         MirrorList[playerId] = [];
         AbilityLimit = MirrorUses.GetInt();
         StoredRole = CustomRoles.Mime;
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
