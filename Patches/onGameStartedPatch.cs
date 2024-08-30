@@ -783,13 +783,13 @@ public static class RpcSetRoleReplacer
     }
     private static void RpcSetDisconnect(MessageWriter stream, bool disconnected)
     {
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             pc.Data.Disconnected = disconnected;
 
             stream.StartMessage(1);
             stream.WritePacked(pc.Data.NetId);
-            pc.Data.Serialize(stream, false);
+            pc.Data.Serialize(stream, true);
             stream.EndMessage();
         }
     }

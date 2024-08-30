@@ -82,7 +82,7 @@ static class TargetArrow
     /// <returns></returns>
     public static string GetArrows(PlayerControl seer, params byte[] targets)
     {
-        var arrows = "";
+        var arrows = string.Empty;
         foreach (var arrowInfo in TargetArrows.Keys.Where(ai => ai.From == seer.PlayerId && targets.Contains(ai.To)).ToArray())
         {
             arrows += TargetArrows[arrowInfo];

@@ -285,7 +285,7 @@ public static class Utils
         }
         return false;
     }
-    public static void KillFlash(this PlayerControl player)
+    public static void KillFlash(this PlayerControl player, bool playKillSound = true)
     {
         // Kill flash (blackout flash + reactor flash)
         bool ReactorCheck = IsActive(GetCriticalSabotageSystemType());
@@ -298,11 +298,12 @@ public static class Utils
         if (player.AmOwner)
         {
             FlashColor(new(1f, 0f, 0f, 0.3f));
-            if (Constants.ShouldPlaySfx()) RPC.PlaySound(player.PlayerId, Sounds.KillSound);
+            if (Constants.ShouldPlaySfx()) RPC.PlaySound(player.PlayerId, playKillSound ? Sounds.KillSound : Sounds.SabotageSound);
         }
         else if (player.IsModClient())
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KillFlash, SendOption.Reliable, player.GetClientId());
+            writer.Write(playKillSound);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         else if (!ReactorCheck) player.ReactorFlash(0f); //Reactor flash for vanilla
@@ -567,7 +568,12 @@ public static class Utils
         return deathReason;
     }
 
+    public static (RoleTypes, CustomRoles) GetRoleMap(byte seerId, byte targetId = byte.MaxValue)
+    {
+        if (targetId == byte.MaxValue) targetId = seerId;
 
+        return RpcSetRoleReplacer.RoleMap[(seerId, targetId)];
+    }
     public static bool HasTasks(NetworkedPlayerInfo playerData, bool ForRecompute = true)
     {
         if (GameStates.IsLobby) return false;
@@ -1523,7 +1529,7 @@ public static class Utils
         return gradientText;
     }
 
-    private static Color HexToColor(string hex)
+    public static Color HexToColor(string hex)
     {
         _ = ColorUtility.TryParseHtmlString("#" + hex, out var color);
         return color;
@@ -1812,7 +1818,7 @@ public static class Utils
         foreach (var seer in seerList)
         {
             // Do nothing when the seer is not present in the game
-            if (seer == null || seer.Data.Disconnected) continue;
+            if (seer == null) continue;
             
             // Only non-modded players
             if (seer.IsModClient()) continue;
@@ -2255,6 +2261,7 @@ public static class Utils
             PlayerState.DeathReason.Slice => CustomRoles.Hawk.IsEnable(),
             PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
             PlayerState.DeathReason.Starved => CustomRoles.Baker.IsEnable(),
+            PlayerState.DeathReason.Sacrificed => CustomRoles.Altruist.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };

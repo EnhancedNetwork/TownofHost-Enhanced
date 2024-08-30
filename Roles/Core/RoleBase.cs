@@ -485,6 +485,7 @@ public abstract class RoleBase
         CanVent,
         ImpostorVision,
         CanUseSabotage,
+        CanHaveAccessToVitals,
 
         // General settings
         CanKillImpostors,

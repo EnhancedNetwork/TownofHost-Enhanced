@@ -124,31 +124,14 @@ static class ExtendedPlayerControl
         // Or player change normal role to normal role
         else
         {
-            RpcSetRoleReplacer.RoleMap[(playerId, playerId)] = (newRoleType, newCustomRole);
-
-            // player change basic role
-            if (playerRole.GetRoleTypes() != newRoleType)
+            foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                // if desync role change Impostor to Shapeshift
-                if (newCustomRole.IsDesyncRole())
+                if (seer.HasDesyncRole())
                 {
-                    player.RpcSetRoleDesync(newRoleType, player.GetClientId());
-                    return;
+                    newRoleType = RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)].roleType;
                 }
-                foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
-                {
-                    // Not change for desync role and player not modded except role map
-                    var isModded = seer.AmOwner || seer.IsModClient();
-                    if (seer.HasDesyncRole() && !isModded)
-                    {
-                        var rememberRoleMapType = RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)].roleType;
-                        RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (rememberRoleMapType, newCustomRole);
-                        continue;
-                    }
-
-                    RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (newRoleType, newCustomRole);
-                    player.RpcSetRoleDesync(newRoleType, seer.GetClientId());
-                }
+                RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (newRoleType, newCustomRole);
+                player.RpcSetRoleDesync(newRoleType, seer.GetClientId());
             }
         }
     }
@@ -318,10 +301,11 @@ static class ExtendedPlayerControl
             return;
         }
 
-        player.RpcSetRoleDesync(RpcSetRoleReplacer.RoleMap[(player.PlayerId, player.PlayerId)].roleType, player.GetClientId());
         Main.PlayerStates[player.PlayerId].IsDead = false;
         player.SetDeathReason(PlayerState.DeathReason.etc);
+        player.RpcChangeRoleBasis(Utils.GetRoleMap(player.PlayerId).Item2);
         player.SetKillCooldown();
+        player.RpcResetAbilityCooldown();
         player.SyncGeneralOptions();
     }
     /// <summary>
@@ -766,6 +750,10 @@ static class ExtendedPlayerControl
         }
 
         return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.countTypes : CountTypes.None;
+    }
+    public static DeadBody GetDeadBody(this NetworkedPlayerInfo playerData)
+    {
+        return UnityEngine.Object.FindObjectsOfType<DeadBody>().FirstOrDefault(bead => bead.ParentId == playerData.PlayerId);
     }
     public static void MarkDirtySettings(this PlayerControl player)
     {
