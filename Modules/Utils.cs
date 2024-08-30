@@ -45,19 +45,36 @@ public static class Utils
             {
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
             }, 3f, "Anti-Black Msg SendInGame Error During Loading");
-            
-            _ = new LateTask(() =>
+
+            if (GameStates.IsShip || !GameStates.IsLobby || GameStates.IsCoStartGame)
             {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
-                GameManager.Instance.LogicFlow.CheckEndCriteria();
-                RPC.ForceEndGame(CustomWinner.Error);
-            }, 5.5f, "Anti-Black End Game As Critical Error");
+                _ = new LateTask(() =>
+                {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
+                    GameManager.Instance.LogicFlow.CheckEndCriteria();
+                    RPC.ForceEndGame(CustomWinner.Error);
+                }, 5.5f, "Anti-Black End Game As Critical Error");
+            }
+            else if (GameStartManager.Instance != null)
+            {
+                GameStartManager.Instance.ResetStartState();
+                AmongUsClient.Instance.RemoveUnownedObjects();
+                Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
+            }
+            else
+            {
+                Logger.SendInGame("Host in a unknow antiblack bugged state.");
+                Logger.Fatal($"Host in a unknow antiblack bugged state.", "Anti-black");
+            }
         }
         else
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
             writer.Write(text);
             writer.EndMessage();
+
+            Logger.Fatal($"Error: {text} - I'm triggering critical error", "Anti-black");
+
             if (Options.EndWhenPlayerBug.GetBool())
             {
                 _ = new LateTask(() =>
@@ -74,8 +91,11 @@ public static class Utils
                 
                 _ = new LateTask(() =>
                 {
-                    AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
-                    Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
+                    if (AmongUsClient.Instance.AmConnected)
+                    {
+                        AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
+                        Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
+                    }
                 }, 8f, "Anti-Black Exit Game Due Critical Error");
             }
         }

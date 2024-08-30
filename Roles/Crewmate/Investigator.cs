@@ -67,7 +67,6 @@ internal class Investigator : RoleBase
             writer.Write(targetId);
             writer.Write(MaxInvestigateLimit[playerId]);
             writer.Write(RoundInvestigateLimit[playerId]);
-            return;
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
