@@ -12,7 +12,7 @@ internal class SoulCollector : RoleBase
     private const int Id = 15300;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
@@ -49,9 +49,6 @@ internal class SoulCollector : RoleBase
         SoulCollectorPoints.TryAdd(playerId, 0);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), SoulCollectorPoints.TryGetValue(playerId, out var x) ? $"({x}/{SoulCollectorPointsOpt.GetInt()})" : "Invalid");
@@ -203,20 +200,25 @@ internal class SoulCollector : RoleBase
         }
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Armageddon, [.. deathList]);
     }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (!ApocCanGuessApoc.GetBool() && target.IsNeutralApocalypse() && guesser.IsNeutralApocalypse())
+        {
+            guesser.ShowInfoMessage(isUI, GetString("GuessApocRole"));
+            return true;
+        }
+        return false;
+    }
 }
 internal class Death : RoleBase
 {
     //===========================SETUP================================\\
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.SoulCollector);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
 
-    public override void Add(byte playerId)
-    {
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
-    }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
         => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());

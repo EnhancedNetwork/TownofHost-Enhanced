@@ -137,7 +137,7 @@ internal class Pitfall : RoleBase
                 continue;
             }
 
-            var dis = Vector2.Distance(trap.Location, position);
+            var dis = Utils.GetDistance(trap.Location, position);
             if (dis > TrapRadius.GetFloat()) continue;
 
             if (TrapFreezeTime.GetFloat() > 0)

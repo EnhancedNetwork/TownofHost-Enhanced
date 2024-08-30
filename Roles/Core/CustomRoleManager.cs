@@ -67,6 +67,8 @@ public static class CustomRoleManager
         return (RoleBase)Activator.CreateInstance(role.GetStaticRoleClass().GetType()); // Converts this.RoleBase back to its type and creates an unique one.
     }
 
+    public static bool HasDesyncRole(this PlayerControl player) => player != null && (player.GetRoleClass().IsDesyncRole || Main.DesyncPlayerList.Contains(player.Data.PlayerId));
+
     /// <summary>
     /// If the role protect others players
     /// </summary>

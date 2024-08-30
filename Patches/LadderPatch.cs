@@ -30,7 +30,7 @@ public class FallFromLadder
         if (player.Data.Disconnected) return;
         if (TargetLadderData.ContainsKey(player.PlayerId))
         {
-            if (Vector2.Distance(TargetLadderData[player.PlayerId], player.transform.position) < 0.5f)
+            if (Utils.GetDistance(TargetLadderData[player.PlayerId], player.transform.position) < 0.5f)
             {
                 if (player.Data.IsDead) return;
                 // To put in LateTask, put in a death decision first

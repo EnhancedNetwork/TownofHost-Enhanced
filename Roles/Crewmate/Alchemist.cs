@@ -190,7 +190,7 @@ internal class Alchemist : RoleBase
             {
                 if (target.PlayerId != player.PlayerId && !target.IsTransformedNeutralApocalypse())
                 {
-                    dis = Vector2.Distance(bloodthirstPos, target.transform.position);
+                    dis = Utils.GetDistance(bloodthirstPos, target.transform.position);
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }

@@ -10,7 +10,7 @@ internal class Pyromaniac : RoleBase
     private const int Id = 17800;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -47,9 +47,6 @@ internal class Pyromaniac : RoleBase
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());

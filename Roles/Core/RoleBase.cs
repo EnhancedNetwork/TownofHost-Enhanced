@@ -17,6 +17,8 @@ public abstract class RoleBase
     public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
     public bool HasVoted = false;
+    public virtual bool IsExperimental => false;
+    public virtual bool IsDesyncRole => false;
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;
@@ -36,6 +38,12 @@ public abstract class RoleBase
         if (CustomRoleManager.OtherCollectionsSet) // If a role is applied mid-game, filter them again jsut in-case
         {
             CustomRoleManager.Add();
+        }
+
+        // Remember desync player so that when changing role he will still be as desync
+        if (IsDesyncRole)
+        {
+            Main.DesyncPlayerList.Add(playerid);
         }
     }
     public void OnRemove(byte playerId)
@@ -97,8 +105,6 @@ public abstract class RoleBase
 
     public virtual void SetupCustomOption()
     { }
-
-    public virtual bool IsExperimental => false;
 
     /// <summary>
     /// A generic method to send a CustomRole's Gameoptions.
@@ -459,6 +465,7 @@ public abstract class RoleBase
         // Ability
         Cooldown,
         AbilityCooldown,
+        SkillLimitTimes,
 
         // Impostor-based settings
         CanKill,

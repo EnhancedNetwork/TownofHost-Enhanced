@@ -54,7 +54,7 @@ public class Radar : IAddon
 
     public void OnFixedUpdateLowLoad(PlayerControl radarPC)
     {
-        if (!IsEnable || radarPC == null || !radarPC.Is(CustomRoles.Radar) || !GameStates.IsInTask) return;
+        if (!IsEnable || !radarPC.IsAlive() || !radarPC.Is(CustomRoles.Radar) || !GameStates.IsInTask) return;
         if (Main.AllAlivePlayerControls.Length <= 1) return;
 
         if (!ClosestPlayer.ContainsKey(radarPC.PlayerId)) ClosestPlayer[radarPC.PlayerId] = byte.MaxValue;
@@ -68,7 +68,7 @@ public class Radar : IAddon
             if (pc == radarPC)
                 continue;
 
-            float distance = Vector2.Distance(radarPC.GetCustomPosition(), pc.GetCustomPosition());
+            float distance = Utils.GetDistance(radarPC.GetCustomPosition(), pc.GetCustomPosition());
 
             if (distance < closestDistance)
             {

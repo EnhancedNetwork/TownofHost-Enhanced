@@ -136,7 +136,7 @@ internal class Fireworker : RoleBase
                 {
                     foreach (var pos in FireworkerPosition[shapeshifterId].ToArray())
                     {
-                        var dis = Vector2.Distance(pos, player.transform.position);
+                        var dis = Utils.GetDistance(pos, player.transform.position);
                         if (dis > fireworkerRadius) continue;
 
                         if (player == shapeshifter)

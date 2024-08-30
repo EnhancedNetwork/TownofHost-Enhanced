@@ -79,7 +79,7 @@ internal class Mortician : RoleBase
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.PlayerId == target.PlayerId) continue;
-            var dis = Vector2.Distance(pc.transform.position, pos);
+            var dis = Utils.GetDistance(pc.transform.position, pos);
             if (dis < minDis && dis < 1.5f)
             {
                 minDis = dis;

@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -132,6 +133,10 @@ class CheckForEndVotingPatch
                         {
                             Aware.OnVoted(pc, pva);
                         }
+                        else if (voteTarget.Is(CustomRoles.Rebirth))
+                        {
+                            Rebirth.CountVotes(voteTarget.PlayerId, pva.TargetPlayerId);
+                        }
                     }
                 }
             }
@@ -239,14 +244,17 @@ class CheckForEndVotingPatch
                 }
             }
 
-            var VotingData = __instance.CustomCalculateVotes(); //Influenced vote mun isnt counted here
+            Dictionary<byte, int> VotingData = [];
 
             if (CustomRoles.Influenced.RoleExist())
             {
                 Influenced.ChangeVotingData(VotingData);
                 VotingData = __instance.CustomCalculateVotes(true);
             }
-            //Change voting data for influenced, vote num counted here
+            else
+            {
+                VotingData = __instance.CustomCalculateVotes();
+            }
 
             for (int i = 0; i < statesList.Count; i++)
             {
@@ -350,6 +358,11 @@ class CheckForEndVotingPatch
                 exileId = 0xff;
                 exiledPlayer = GetPlayerInfoById(exileId);
             }
+            else if (exiledPlayer?.Object.Is(CustomRoles.Rebirth) == true && Rebirth.SwapSkins(exiledPlayer.Object, out var NewExiled))
+            {
+                exileId = NewExiled.PlayerId;
+                exiledPlayer = NewExiled;
+            }
 
             exiledPlayer?.Object.SetRealKiller(null);
 
@@ -423,6 +436,7 @@ class CheckForEndVotingPatch
         var name = "";
         int impnum = 0;
         int neutralnum = 0;
+        int apocnum = 0;
 
         if (CustomRoles.Bard.RoleExist())
         {
@@ -440,6 +454,8 @@ class CheckForEndVotingPatch
                 impnum++;
             else if (pc_role.IsNK() && pc != exiledPlayer.Object)
                 neutralnum++;
+            else if (pc_role.IsNA() && pc != exiledPlayer.Object)
+                apocnum++;
         }
         switch (Options.CEMode.GetInt())
         {
@@ -493,6 +509,8 @@ class CheckForEndVotingPatch
                     name += string.Format(GetString("OneNeutralRemain"), neutralnum) + comma;
                 else
                     name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
+            if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
+                    name += string.Format(GetString("ApocRemain"), neutralnum) + comma;
         }
 
     EndOfSession:
@@ -789,6 +807,11 @@ static class ExtendedMeetingHud
                 }
                 //Set influenced vote num to zero while counting votes, and count influenced vote upon finishing influenced check
 
+                if (target.Is(CustomRoles.Evader))
+                {
+                    Evader.CheckExile(ps.VotedFor, ref VoteNum);
+                }
+
                 //Add 1 vote If key is not defined, overwrite with 1 and define
                 dic[ps.VotedFor] = !dic.TryGetValue(ps.VotedFor, out int num) ? VoteNum : num + VoteNum; //Count the number of times this player has been voted in
             }
@@ -1076,6 +1099,13 @@ class MeetingHudStartPatch
             PlayerControl target = GetPlayerById(pva.TargetPlayerId);
             if (target == null) continue;
 
+            // if based role is Shapeshifter and is Desync Shapeshifter
+            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && seer.HasDesyncRole())
+            {
+                // When target is impostor, set name color as white
+                target.cosmetics.SetNameColor(Color.white);
+                pva.NameText.color = Color.white;
+            }
 
             var sb = new StringBuilder();
 

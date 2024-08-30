@@ -1,7 +1,6 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
