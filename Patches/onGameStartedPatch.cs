@@ -339,9 +339,6 @@ internal class SelectRolesPatch
             {
                 // Set roles
                 SetRolesAfterSelect();
-
-                // Assign tasks
-                ShipStatus.Instance.Begin();
             }
             catch (Exception ex)
             {
@@ -350,9 +347,9 @@ internal class SelectRolesPatch
             }
         }, 1f, "Set Roles After Select");
 
-        // There is a delay of 1.5 seconds because after assign roles player data "Disconnected" does not allow assigning tasks due AU code side
-        _ = new LateTask(() => {
-
+        // There is a delay of 3 seconds because after assign roles player data "Disconnected" does not allow assigning tasks due AU code side
+        _ = new LateTask(() =>
+        {
             try
             {
                 ShipStatusBeginPatch.RolesIsAssigned = true;
@@ -364,7 +361,7 @@ internal class SelectRolesPatch
                 Utils.ErrorEnd("Set Tasks In LateTask");
                 Utils.ThrowException(ex);
             }
-        }, 1.5f, "Set Tasks For All Players");
+        }, 3f, "Set Tasks For All Players");
     }
     private static void SetRolesAfterSelect()
     {
