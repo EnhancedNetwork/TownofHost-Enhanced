@@ -135,7 +135,7 @@ class SetUpRoleTextPatch
             foreach (var pc in allPlayerControlsArray)
             {
                 if (pc == null) continue;
-                sb.Append($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{Main.AllPlayerNames[pc.PlayerId].PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags().Replace("\n", " + ")}\n");
+                sb.Append($"{(pc.AmOwner ? "[*]" : string.Empty),-3}{pc.PlayerId,-2}:{Main.AllPlayerNames[pc.PlayerId].PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags().Replace("\n", " + ")}\n");
             }
         }
         else
@@ -145,7 +145,7 @@ class SetUpRoleTextPatch
 
             foreach (var pc in allPlayerControlsArray)
             {
-                logStringBuilder.AppendLine($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRight(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+                logStringBuilder.AppendLine($"{(pc.AmOwner ? "[*]" : string.Empty),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRight(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
             }
 
             try
@@ -172,7 +172,7 @@ class SetUpRoleTextPatch
             {
                 var text = new StringBuilder();
                 sb.Append(pc.AmOwner ? "[*]" : "   ");
-                sb.Append($"{pc.PlayerId,-2}:{pc.Data?.PlayerName?.PadRightV2(20)}:{pc.GetClient()?.PlatformData?.Platform.ToString()?.Replace("Standalone", ""),-11}");
+                sb.Append($"{pc.PlayerId,-2}:{pc.Data?.PlayerName?.PadRightV2(20)}:{pc.GetClient()?.PlatformData?.Platform.ToString()?.Replace("Standalone", string.Empty),-11}");
 
                 if (Main.playerVersion.TryGetValue(pc.GetClientId(), out PlayerVersion pv))
                 {
