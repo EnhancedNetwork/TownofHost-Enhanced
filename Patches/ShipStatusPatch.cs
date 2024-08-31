@@ -5,6 +5,7 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using MS.Internal.Xml.XPath;
 
 namespace TOHE;
 
@@ -252,6 +253,20 @@ class ShipStatusBeginPatch
 
             Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
         }
+    }
+}
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.SpawnPlayer))]
+class ShipStatusSpawnPlayerPatch
+{
+    // Since SnapTo is unstable on the server side and after a meeting all players sometimes do not appear on the table
+    // So better to use RpcTeleport
+    public static bool Prefix(ShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
+    {
+        Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / (float)numPlayers));
+        Vector2 position = (initialSpawn ? __instance.InitialSpawnCenter : __instance.MeetingSpawnCenter) + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
+
+        player.RpcTeleport(position);
+        return false;
     }
 }
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
