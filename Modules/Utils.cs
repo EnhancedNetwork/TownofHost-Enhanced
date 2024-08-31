@@ -1993,7 +1993,7 @@ public static class Utils
                 foreach (var realTarget in targetList)
                 {
                     // if the target is the seer itself, do nothing
-                    if (realTarget.PlayerId == seer.PlayerId) continue;
+                    if (realTarget == null || (realTarget.PlayerId == seer.PlayerId)) continue;
 
                     var target = realTarget;
 
