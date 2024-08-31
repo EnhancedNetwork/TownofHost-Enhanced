@@ -122,7 +122,8 @@ class SetUpRoleTextPatch
         sb.Append("------------Player Names------------\n");
         foreach (var pc in allPlayerControlsArray)
         {
-            sb.Append($"{(pc.AmOwner ? "[*]" : string.Empty),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{pc.cosmetics.nameText.text} ({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", string.Empty)})\n");
+            if (pc == null) continue;
+            sb.Append($"{(pc.AmOwner ? "[*]" : string.Empty),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{pc.cosmetics.nameText.text}({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", string.Empty)})\n");
             pc.cosmetics.nameText.text = pc.name;
         }
 
@@ -133,7 +134,8 @@ class SetUpRoleTextPatch
         {
             foreach (var pc in allPlayerControlsArray)
             {
-                sb.Append($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags().Replace("\n", " + ")}\n");
+                if (pc == null) continue;
+                sb.Append($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{Main.AllPlayerNames[pc.PlayerId].PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags().Replace("\n", " + ")}\n");
             }
         }
         else
@@ -151,7 +153,7 @@ class SetUpRoleTextPatch
                 byte[] logBytes = Encoding.UTF8.GetBytes(logStringBuilder.ToString());
                 byte[] encryptedBytes = EncryptDES(logBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000"[..8]);
                 string encryptedString = Convert.ToBase64String(encryptedBytes);
-                sb.Append(encryptedString);
+                sb.Append(encryptedString + "\n");
             }
             catch (Exception ex)
             {

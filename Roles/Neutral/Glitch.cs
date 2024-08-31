@@ -260,16 +260,12 @@ internal class Glitch : RoleBase
         }
         return false;
     }
-    public static bool OnCheckFixedUpdateReport(PlayerControl __instance, byte id) 
+    public static bool OnCheckFixedUpdateReport(byte id) => hackedIdList.ContainsKey(id);
+    public static void CancelReportInFixedUpdate(PlayerControl __instance, byte id)
     {
-        if (hackedIdList.ContainsKey(id))
-        {
-            __instance.Notify(string.Format(GetString("HackedByGlitch"), "Report"));
-            Logger.Info("Dead Body Report Blocked (player is hacked by Glitch)", "FixedUpdate.ReportDeadBody");
-            ReportDeadBodyPatch.WaitReport[id].Clear();
-            return false;
-        }
-        return true;
+        __instance.Notify(string.Format(GetString("HackedByGlitch"), "Report"));
+        Logger.Info("Dead Body Report Blocked (player is hacked by Glitch)", "FixedUpdate.ReportDeadBody");
+        ReportDeadBodyPatch.WaitReport[id].Clear();
     }
     public static bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
     {

@@ -740,6 +740,7 @@ static class ExtendedMeetingHud
         Dictionary<byte, int> dic = [];
         Collector.Clear();
         Tiebreaker.Clear();
+        Evader.RememberRandom();
 
         // |Voted By| Number of Times Voted For
         foreach (var ps in __instance.playerStates)
@@ -771,7 +772,7 @@ static class ExtendedMeetingHud
 
                 //Add votes for roles
                 var pc = GetPlayerById(ps.TargetPlayerId);
-                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, pc.GetCustomRole())
+                if (pc != null && CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, pc.GetCustomRole())
                     && ps.TargetPlayerId != ps.VotedFor && ps != null)
                         VoteNum += ps.TargetPlayerId.GetRoleClassById().AddRealVotesNum(ps); // returns + 0 or given role value (+/-)
 
@@ -808,7 +809,7 @@ static class ExtendedMeetingHud
                 }
                 //Set influenced vote num to zero while counting votes, and count influenced vote upon finishing influenced check
 
-                if (target.Is(CustomRoles.Evader))
+                if (target != null && target.Is(CustomRoles.Evader))
                 {
                     Evader.CheckExile(ps.VotedFor, ref VoteNum);
                 }
