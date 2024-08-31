@@ -1135,7 +1135,7 @@ class MeetingHudStartPatch
             }
 
             if (seer.KnowDeathReason(target))
-                sb.Append($" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})");
+                sb.Append($"『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))}』");
 
             sb.Append(seerRoleClass?.GetMark(seer, target, true));
             sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));

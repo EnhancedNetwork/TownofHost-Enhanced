@@ -1185,7 +1185,7 @@ class FixedUpdateInNormalGamePatch
             {
                 if (Main.playerVersion.TryGetValue(__instance.GetClientId(), out var ver))
                 {
-                    if (Main.ForkId != ver.forkId) // フォークIDが違う場合
+                    if (Main.ForkId != ver.forkId)
                         __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.2>{ver.forkId}</size>\n{__instance?.name}</color>";
                     else if (Main.version.CompareTo(ver.version) == 0)
                         __instance.cosmetics.nameText.text = ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})" ? $"<color=#87cefa>{__instance.name}</color>" : $"<color=#ffff00><size=1.2>{ver.tag}</size>\n{__instance?.name}</color>";
@@ -1323,7 +1323,7 @@ class FixedUpdateInNormalGamePatch
                     RealName = $"<size=0%>{RealName}</size> ";
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
-                    ? $" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : string.Empty;
+                    ? $"\n<size=1.7>『{Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))}』</size>" : string.Empty;
 
                 // code from EHR (Endless Host Roles by: Gurge44)
                 var currentText = target.cosmetics.nameText.text;
@@ -1337,12 +1337,24 @@ class FixedUpdateInNormalGamePatch
                     float offset = 0.2f;
                     float colorBlind = -0.2f;
 
+                    if (NameNotifyManager.Notice.TryGetValue(seer.PlayerId, out var notify) && notify.Text.Contains('\n'))
+                    {
+                        int count = notify.Text.Count(x => x == '\n');
+                        for (int i = 0; i < count; i++)
+                        {
+                            offset += 0.1f;
+                            colorBlind -= 0.1f;
+                        }
+                    }
+
                     if (Suffix.ToString() != string.Empty)
                     {
                         // If the name is on two lines, the job title text needs to be moved up.
                         offset += 0.15f;
                         colorBlind -= 0.2f;
                     }
+
+                    if (!seer.IsAlive() && !target.IsAlive()) { offset += 0.1f; colorBlind -= 0.1f; }
 
                     RoleText.transform.SetLocalY(offset);
                     target.cosmetics.colorBlindText.transform.SetLocalY(colorBlind);
