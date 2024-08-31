@@ -5,7 +5,6 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
-using MS.Internal.Xml.XPath;
 
 namespace TOHE;
 
@@ -262,7 +261,7 @@ class ShipStatusSpawnPlayerPatch
     // So better to use RpcTeleport
     public static bool Prefix(ShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
-        Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / (float)numPlayers));
+        Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
         Vector2 position = (initialSpawn ? __instance.InitialSpawnCenter : __instance.MeetingSpawnCenter) + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
 
         player.RpcTeleport(position);
