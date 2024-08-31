@@ -158,7 +158,7 @@ class CheckMurderPatch
             Logger.Info("The target is in an unkillable state and the kill is canceled", "CheckMurder");
             return false;
         }
-        // Target Is Dead?
+        // Target Is Dead
         if (!target.IsAlive())
         {
             Logger.Info("The target is in a dead state and the kill is canceled", "CheckMurder");
@@ -168,6 +168,12 @@ class CheckMurderPatch
         if (MeetingHud.Instance != null)
         {
             Logger.Info("In the meeting, the kill was canceled", "CheckMurder");
+            return false;
+        }
+        // AntiBlackOut protect is active
+        if (AntiBlackout.SkipTasks)
+        {
+            Logger.Info("Checking while AntiBlackOut protect, the kill was canceled", "CheckMurder");
             return false;
         }
 
