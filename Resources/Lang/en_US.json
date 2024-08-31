@@ -843,7 +843,7 @@
   "AdmirerInfoLong": "(Crewmates):\nAs the Admirer, admire a player to make them crewmate aligned.\nThey'll win with crewmates and not their original team.\n\nYou can only do this once per player.",
   "TimeMasterInfoLong": "(Crewmates):\nAs the Time Master, use the vents to mark everyone's position.\nWhen using the ability again, every alive player will rewind to the marked positions.\n\nDuring the ability duration, the Time Master gains a time shield, which protects them from death.",
   "CrusaderInfoLong": "(Crewmates):\nAs the Crusader, use your kill button to crusade a player.\nIf that player gets attacked, you'll kill the attacker.",
-  "AltruistInfoLong": "(Crewmates):\nAs the Altruist, you can sacrifice yourself to revive a dead body using the «Report» button.\nNote: If a dead player has left the game, you report that body normally",
+  "AltruistInfoLong": "(Crewmates):\nAs the Altruist, you can sacrifice yourself to revive a dead body using the «Report» button.\nNote: If a dead player has left the game, you report that body normally.\nAlso revived player cannot report self dead body",
   "ReverieInfoLong": "(Crewmates):\nAs the Reverie, you can kill, but your cooldown starts high.\n\nIt increases if you kill a crewmate and reduces otherwise.\nDepending on the Host's setting, you may misfire on reaching the max kill cooldown, and your target dies with you. \n\nYou win with other crewmates.",
   "LookoutInfoLong": "(Crewmates):\nAs the Lookout, you can see the IDs of every player at all times.\nThis allows you to see through shapeshifts and camouflages.",
   "TelecommunicationInfoLong": "(Crewmates):\nAs the Telecommunication, you are notified when anyone uses cameras, vitals, door logs, or admin.",
@@ -1701,7 +1701,10 @@
   "MadmateCountMode.Imp": "<color=#ff1919>Impostors</color>",
   "MadmateCountMode.Original": "Original Team",
 
+  "Altruist_RevivedDeadBodyCannotBeReported_Option": "Revived Dead Body Cannot Be Reported",
+  "Altruist_YouTriedReportRevivedDeadBody": "You Tried Report Revived Dead Body",
   "Altruist_DeadPlayerHasBeenRevived": "A Dead Player Has Been Revived!",
+
   "SnatchesWin": "Snatches victory",
   "DemonKillCooldown": "Attack Cooldown",
   "DemonHealthMax": "Player max health",

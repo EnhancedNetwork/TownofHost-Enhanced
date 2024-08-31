@@ -13,30 +13,33 @@ internal class Altruist : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
+    private static OptionItem RevivedDeadBodyCannotBeReported;
     private static OptionItem CanHaveAccessToVitals;
     private static OptionItem BatteryCooldown;
     private static OptionItem BatteryDuration;
 
-    private byte ReviverPlayerId = byte.MaxValue;
-    private readonly static HashSet<byte> AllReviverPlayerId = [];
+    private byte RevivedPlayerId = byte.MaxValue;
+    private readonly static HashSet<byte> AllRevivedPlayerId = [];
 
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Altruist);
-        CanHaveAccessToVitals = BooleanOptionItem.Create(Id + 10, GeneralOption.CanHaveAccessToVitals, true, TabGroup.CrewmateRoles, false)
+        RevivedDeadBodyCannotBeReported = BooleanOptionItem.Create(Id + 10, "Altruist_RevivedDeadBodyCannotBeReported_Option", true, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Altruist]);
-        BatteryCooldown = IntegerOptionItem.Create(Id + 11, GeneralOption.ScientistBase_BatteryCooldown, new(1, 250, 1), 15, TabGroup.CrewmateRoles, false)
+        CanHaveAccessToVitals = BooleanOptionItem.Create(Id + 11, GeneralOption.CanHaveAccessToVitals, true, TabGroup.CrewmateRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Altruist]);
+        BatteryCooldown = IntegerOptionItem.Create(Id + 12, GeneralOption.ScientistBase_BatteryCooldown, new(1, 250, 1), 15, TabGroup.CrewmateRoles, false)
             .SetParent(CanHaveAccessToVitals)
             .SetValueFormat(OptionFormat.Seconds);
-        BatteryDuration = IntegerOptionItem.Create(Id + 12, GeneralOption.ScientistBase_BatteryDuration, new(1, 250, 1), 5, TabGroup.CrewmateRoles, false)
+        BatteryDuration = IntegerOptionItem.Create(Id + 13, GeneralOption.ScientistBase_BatteryDuration, new(1, 250, 1), 5, TabGroup.CrewmateRoles, false)
             .SetParent(CanHaveAccessToVitals)
             .SetValueFormat(OptionFormat.Seconds);
     }
 
     public override void Init()
     {
-        ReviverPlayerId = byte.MaxValue;
-        AllReviverPlayerId.Clear();
+        RevivedPlayerId = byte.MaxValue;
+        AllRevivedPlayerId.Clear();
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -54,9 +57,9 @@ internal class Altruist : RoleBase
                 var deadPlayer = deadBody.Object;
                 var deadPlayerId = deadPlayer.PlayerId;
                 var deadBodyObject = deadBody.GetDeadBody();
-                
-                ReviverPlayerId = deadPlayerId;
-                AllReviverPlayerId.Add(deadPlayerId);
+
+                RevivedPlayerId = deadPlayerId;
+                AllRevivedPlayerId.Add(deadPlayerId);
 
                 deadPlayer.RpcTeleport(deadBodyObject.transform.position);
                 deadPlayer.RpcRevive();
@@ -75,18 +78,21 @@ internal class Altruist : RoleBase
 
                 foreach (var pc in Main.AllPlayerControls)
                 {
-                    if (pc.Is(Custom_Team.Impostor))
+                    if (pc.Is(Custom_Team.Impostor) && pc.PlayerId != RevivedPlayerId)
                     {
                         TargetArrow.Add(pc.PlayerId, deadPlayerId);
                         pc.KillFlash(playKillSound: false);
-                        pc.Notify(Translator.GetString("Altruist_DeadPlayerHasBeenRevived"), time: 2f);
+                        pc.Notify(Translator.GetString("Altruist_DeadPlayerHasBeenRevived"));
                     }
                 }
                 Utils.NotifyRoles();
                 return false;
             }
-            else if (reporter.PlayerId == deadBody.PlayerId && reporter.PlayerId == ReviverPlayerId)
+            else if ((RevivedDeadBodyCannotBeReported.GetBool() || reporter.PlayerId == RevivedPlayerId) && deadBody.PlayerId == RevivedPlayerId)
+            {
+                reporter.Notify(Translator.GetString("Altruist_YouTriedReportRevivedDeadBody"));
                 return false;
+            }
         }
 
         return true;
@@ -94,20 +100,20 @@ internal class Altruist : RoleBase
 
     public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (ReviverPlayerId == byte.MaxValue || isForMeeting || seer.PlayerId != target.PlayerId || !seer.Is(Custom_Team.Impostor)) return string.Empty;
+        if (RevivedPlayerId == byte.MaxValue || isForMeeting || seer.PlayerId != target.PlayerId || !seer.Is(Custom_Team.Impostor)) return string.Empty;
         Logger.Info($"{TargetArrow.GetArrows(seer)}", "Altruist");
-        return Utils.ColorString(Utils.HexToColor("9b0202"), TargetArrow.GetArrows(seer, ReviverPlayerId));
+        return Utils.ColorString(Utils.HexToColor("9b0202"), TargetArrow.GetArrows(seer, RevivedPlayerId));
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        if (ReviverPlayerId != byte.MaxValue)
+        if (RevivedPlayerId != byte.MaxValue)
         {
             foreach (var pc in Main.AllAlivePlayerControls)
             {
                 if (pc.Is(Custom_Team.Impostor))
                 {
-                    TargetArrow.Remove(pc.PlayerId, ReviverPlayerId);
+                    TargetArrow.Remove(pc.PlayerId, RevivedPlayerId);
                     continue;
                 }
             }
