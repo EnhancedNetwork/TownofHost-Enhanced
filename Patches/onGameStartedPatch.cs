@@ -809,7 +809,7 @@ public static class RpcSetRoleReplacer
         {
             if (disconnected)
             {
-                // if player left the game remember current data
+                // if player left the game, remember current data
                 DataDisconnected[playerinfo] = playerinfo.Disconnected;
                 playerinfo.Disconnected = disconnected;
                 playerinfo.IsDead = false;
