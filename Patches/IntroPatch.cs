@@ -25,6 +25,9 @@ class CoShowIntroPatch
         {
             try
             {
+                // Sync players Data after intro
+                RpcSetRoleReplacer.RpcSetDisconnected(disconnected: false, doSync: true);
+
                 // Update name players
                 Utils.DoNotifyRoles(NoCache: true);
             }
@@ -524,29 +527,26 @@ class IntroCutsceneDestroyPatch
 
         if (AmongUsClient.Instance.AmHost)
         {
-            if (GameStates.IsNormalGame)
+            if (GameStates.IsNormalGame && !GameStates.AirshipIsActive)
             {
-                if (!GameStates.AirshipIsActive)
+                foreach (var pc in Main.AllPlayerControls)
                 {
-                    foreach (var pc in Main.AllPlayerControls)
+                    pc.RpcResetAbilityCooldown();
+                }
+                if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
+                {
+                    _ = new LateTask(() =>
                     {
-                        pc.RpcResetAbilityCooldown();
-                    }
-                    if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
-                    {
-                        _ = new LateTask(() =>
+                        foreach (var pc in Main.AllPlayerControls)
                         {
-                            foreach (var pc in Main.AllPlayerControls)
-                            {
-                                pc.ResetKillCooldown();
+                            pc.ResetKillCooldown();
 
-                                if ((Main.AllPlayerKillCooldown[pc.PlayerId] - 2f) > 0f)
-                                {
-                                    pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f);
-                                }
+                            if (Main.AllPlayerKillCooldown.TryGetValue(pc.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
+                            {
+                                pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f);
                             }
-                        }, 2f, "Fix Kill Cooldown Task");
-                    }
+                        }
+                    }, 2f, "Fix Kill Cooldown Task");
                 }
             }
 
@@ -614,13 +614,14 @@ class IntroCutsceneDestroyPatch
                 };
                 if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
             }
-
-            var amDesyncImpostor = PlayerControl.LocalPlayer.HasDesyncRole();
-            if (amDesyncImpostor)
-            {
-                PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
-            }
         }
+
+        var amDesyncImpostor = PlayerControl.LocalPlayer.HasDesyncRole();
+        if (amDesyncImpostor)
+        {
+            PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
+        }
+
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }

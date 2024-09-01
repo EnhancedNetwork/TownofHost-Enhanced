@@ -136,8 +136,8 @@ public static class AntiBlackout
         {
             MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
             writer.StartMessage(5); //0x05 GameData
+            writer.Write(AmongUsClient.Instance.GameId);
             {
-                writer.Write(AmongUsClient.Instance.GameId);
                 writer.StartMessage(1); //0x01 Data
                 {
                     writer.WritePacked(playerinfo.NetId);

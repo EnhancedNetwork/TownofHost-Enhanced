@@ -463,7 +463,7 @@ class OnPlayerLeftPatch
                 case DisconnectReasons.Hacking:
                     Logger.SendInGame(string.Format(GetString("PlayerLeftByAU-Anticheat"), data?.PlayerName));
                     break;
-                case DisconnectReasons.Error:
+                case DisconnectReasons.Error when !GameStates.IsLobby:
                     Logger.SendInGame(string.Format(GetString("PlayerLeftByError"), data?.PlayerName));
                     _ = new LateTask(() =>
                     {

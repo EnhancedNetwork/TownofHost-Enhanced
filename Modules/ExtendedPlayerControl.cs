@@ -914,7 +914,7 @@ static class ExtendedPlayerControl
         var role = pc.GetCustomRole();
         if (!role.IsImpostor())
         {
-            return role.GetDYRole() == RoleTypes.Impostor;
+            return role.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter;
         }
         return role.GetVNRole() switch
         { 
