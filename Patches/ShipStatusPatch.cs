@@ -254,30 +254,43 @@ class ShipStatusBeginPatch
         }
     }
 }
+
+/*
+    Since SnapTo is unstable on the server side and after a meeting all players sometimes do not appear on the table
+    So better to use RpcTeleport
+*/
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.SpawnPlayer))]
 class ShipStatusSpawnPlayerPatch
 {
-    // Since SnapTo is unstable on the server side and after a meeting all players sometimes do not appear on the table
-    // So better to use RpcTeleport
     public static bool Prefix(ShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
         Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
         Vector2 position = (initialSpawn ? __instance.InitialSpawnCenter : __instance.MeetingSpawnCenter) + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
 
-        player.RpcTeleport(position);
+        player.RpcTeleport(position, sendInfoInLogs: false);
         return false;
     }
 }
-[HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
-class CheckTaskCompletionPatch
+[HarmonyPatch(typeof(PolusShipStatus), nameof(PolusShipStatus.SpawnPlayer))]
+class PolusShipStatusSpawnPlayerPatch
 {
-    public static bool Prefix(ref bool __result)
+    public static bool Prefix(PolusShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
-        if (Options.DisableTaskWin.GetBool() || Options.NoGameEnd.GetBool() || TaskState.InitialTotalTasks == 0 || Options.CurrentGameMode == CustomGameMode.FFA)
+        if (initialSpawn)
         {
-            __result = false;
-            return false;
+            ShipStatusSpawnPlayerPatch.Prefix(__instance, player, numPlayers, initialSpawn);
         }
-        return true;
+        else
+        {
+            int num1 = Mathf.FloorToInt(numPlayers / 2f);
+            int num2 = player.PlayerId % 15;
+
+            Vector2 position = num2 >= num1
+                ? __instance.MeetingSpawnCenter2 + Vector2.right * (num2 - num1) * 0.6f
+                : __instance.MeetingSpawnCenter + Vector2.right * num2 * 0.6f;
+
+            player.RpcTeleport(position, sendInfoInLogs: false);
+        }
+        return false;
     }
 }

@@ -21,6 +21,19 @@ class CheckEndGameViaTasksForNormalPatch
         return false;
     }
 }
+[HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
+class CheckTaskCompletionPatch
+{
+    public static bool Prefix(ref bool __result)
+    {
+        if (Options.DisableTaskWin.GetBool() || Options.NoGameEnd.GetBool() || TaskState.InitialTotalTasks == 0 || Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            __result = false;
+            return false;
+        }
+        return true;
+    }
+}
 [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.CheckEndCriteria))]
 class GameEndCheckerForNormal
 {
