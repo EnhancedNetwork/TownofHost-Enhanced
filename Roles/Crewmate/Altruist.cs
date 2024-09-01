@@ -8,7 +8,7 @@ internal class Altruist : RoleBase
     //===========================SETUP================================\\
     private const int Id = 29800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Altruist);
-
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CanHaveAccessToVitals.GetBool() ? CustomRoles.Scientist : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
