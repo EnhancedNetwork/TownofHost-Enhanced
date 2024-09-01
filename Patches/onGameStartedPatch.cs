@@ -131,16 +131,16 @@ internal class ChangeRoleSettings
                 Logger.Error(msg, "CoStartGame");
             }
 
-            foreach (var target in Main.AllPlayerControls)
+            foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                foreach (var seer in Main.AllPlayerControls)
+                foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
                     var pair = (target.PlayerId, seer.PlayerId);
                     Main.LastNotifyNames[pair] = target.name;
                 }
             }
 
-            foreach (var pc in Main.AllPlayerControls)
+            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 var outfit = pc.Data.DefaultOutfit;
                 var colorId = pc.Data.DefaultOutfit.ColorId;
@@ -361,7 +361,7 @@ internal class SelectRolesPatch
             if (GameStates.IsHideNSeek)
             {
                 GameOptionsSender.AllSenders.Clear();
-                foreach (var pc in Main.AllPlayerControls)
+                foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
                     GameOptionsSender.AllSenders.Add(
                         new PlayerGameOptionsSender(pc)
@@ -383,7 +383,7 @@ internal class SelectRolesPatch
 
             RpcSetRoleReplacer.Release();
 
-            foreach (var pc in Main.AllPlayerControls)
+            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (Main.PlayerStates[pc.PlayerId].MainRole != CustomRoles.NotAssigned) continue; // Skip if a custom role has already been assigned
                 var role = CustomRoles.NotAssigned;
@@ -464,7 +464,7 @@ internal class SelectRolesPatch
 
             GhostRoleAssign.Add();
 
-            foreach (var pc in Main.AllPlayerControls)
+            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
                 {
@@ -482,7 +482,7 @@ internal class SelectRolesPatch
                     // Is Desync Shapeshifter
                     if (pc.AmOwner && pc.HasDesyncRole())
                     {
-                        foreach (var target in Main.AllPlayerControls)
+                        foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
                         {
                             // Set all players as killable players
                             target.Data.Role.CanBeKilled = true;
@@ -571,7 +571,7 @@ internal class SelectRolesPatch
             }
             catch { }
 
-            foreach (var pc in Main.AllPlayerControls)
+            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 pc.ResetKillCooldown();
 
             // Role types
@@ -593,7 +593,7 @@ internal class SelectRolesPatch
             }
 
             GameOptionsSender.AllSenders.Clear();
-            foreach (var pc in Main.AllPlayerControls)
+            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 GameOptionsSender.AllSenders.Add(
                     new PlayerGameOptionsSender(pc)
@@ -627,7 +627,7 @@ internal class SelectRolesPatch
         var othersRole = isHost ? RoleTypes.Crewmate : RoleTypes.Scientist;
 
         // Set Desync role for self and for others
-        foreach (var target in Main.AllPlayerControls)
+        foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             var roleType = othersRole;
 
@@ -653,11 +653,11 @@ internal class SelectRolesPatch
     }
     public static void MakeDesyncSender(Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), (RoleTypes, CustomRoles)> rolesMap)
     {
-        foreach (var seer in Main.AllPlayerControls)
+        foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             if (seer.OwnedByHost()) continue;
 
-            foreach (var target in Main.AllPlayerControls)
+            foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (target.OwnedByHost()) continue;
 
@@ -709,7 +709,7 @@ public static class RpcSetRoleReplacer
     }
     public static void StartReplace()
     {
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             if (pc.OwnedByHost()) continue;
 
@@ -738,7 +738,7 @@ public static class RpcSetRoleReplacer
             if (!player.OwnedByHost())
                 StoragedData.Add(player, roleType);
 
-            foreach (var target in Main.AllPlayerControls)
+            foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (target.HasDesyncRole()) continue;
 
@@ -805,7 +805,7 @@ public static class RpcSetRoleReplacer
     }
     public static void RpcSetDisconnected(bool disconnected, bool doSync)
     {
-        foreach (var playerinfo in GameData.Instance.AllPlayers)
+        foreach (var playerinfo in GameData.Instance.AllPlayers.GetFastEnumerator())
         {
             if (disconnected)
             {
