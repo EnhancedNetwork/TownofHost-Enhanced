@@ -611,6 +611,7 @@ internal class SelectRolesPatch
         {
             Utils.ErrorEnd("Set Roles After Select");
             Utils.ThrowException(ex);
+            Logger.Error(ex.ToString(), "SetRolesAfterSelect");
         }
     }
     public static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), (RoleTypes, CustomRoles)> rolesMap, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
