@@ -336,23 +336,6 @@ internal class SelectRolesPatch
                 Utils.ThrowException(ex);
             }
         }, 1f, "Set Role Types After Select");
-
-        // There is a delay of 3 seconds because after assign roles player data "Disconnected" does not allow assigning tasks due AU code side
-        _ = new LateTask(() =>
-        {
-            try
-            {
-                ShipStatusBeginPatch.RolesIsAssigned = true;
-
-                // Assign tasks
-                ShipStatus.Instance.Begin();
-            }
-            catch (Exception ex)
-            {
-                Utils.ErrorEnd("Set Tasks In LateTask");
-                Utils.ThrowException(ex);
-            }
-        }, 3f, "Set Tasks For All Players");
     }
     private static void SetRolesAfterSelect()
     {
@@ -690,7 +673,7 @@ public static class RpcSetRoleReplacer
     public static bool BlockSetRole = false;
     public static Dictionary<byte, CustomRpcSender> Senders = [];
     public static Dictionary<PlayerControl, RoleTypes> StoragedData = [];
-    public static Dictionary<NetworkedPlayerInfo, bool> DataDisconnected = [];
+    public static Dictionary<byte, bool> DataDisconnected = [];
     public static Dictionary<(byte seerId, byte targetId), (RoleTypes roleType, CustomRoles customRole)> RoleMap = [];
     // List of Senders that do not require additional writing because SetRoleRpc has already been written by another process such as Position Desync
     public static List<CustomRpcSender> OverriddenSenderList = [];
@@ -810,14 +793,14 @@ public static class RpcSetRoleReplacer
             if (disconnected)
             {
                 // if player left the game, remember current data
-                DataDisconnected[playerinfo] = playerinfo.Disconnected;
+                DataDisconnected[playerinfo.PlayerId] = playerinfo.Disconnected;
                 playerinfo.Disconnected = disconnected;
                 playerinfo.IsDead = false;
             }
             else
             {
-                playerinfo.Disconnected = DataDisconnected[playerinfo];
-                playerinfo.IsDead = DataDisconnected[playerinfo];
+                playerinfo.Disconnected = DataDisconnected[playerinfo.PlayerId];
+                playerinfo.IsDead = DataDisconnected[playerinfo.PlayerId];
             }
 
             if (!doSync) continue;

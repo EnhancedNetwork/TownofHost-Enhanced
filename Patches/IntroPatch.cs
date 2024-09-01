@@ -23,19 +23,21 @@ class CoShowIntroPatch
 
         _ = new LateTask(() =>
         {
-            try
-            {
-                // Sync players Data after intro
-                RpcSetRoleReplacer.RpcSetDisconnected(disconnected: false, doSync: true);
+            // Sync players Data after intro
+            RpcSetRoleReplacer.RpcSetDisconnected(disconnected: false, doSync: true);
 
-                // Update name players
-                Utils.DoNotifyRoles(NoCache: true);
-            }
-            catch (Exception ex)
-            {
-                Utils.ThrowException(ex);
-            }
-        }, 0.35f, "Do Notify Roles In Show Intro");
+            // Update name players
+            Utils.DoNotifyRoles(NoCache: true);
+
+        }, 0.6f, "Set Disconnected");
+
+        _ = new LateTask(() =>
+        {
+            ShipStatusBeginPatch.RolesIsAssigned = true;
+
+            // Assign tasks
+            ShipStatus.Instance.Begin();
+        }, 4f, "Assing Task");
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
@@ -600,6 +602,8 @@ class IntroCutsceneDestroyPatch
                     Main.GameIsLoaded = true;
                 }, 3f, "Set UnShapeShift Button");
             }
+
+            Utils.DoNotifyRoles(NoCache: true);
 
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
             {
