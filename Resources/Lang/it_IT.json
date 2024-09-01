@@ -2503,7 +2503,7 @@
   "EAC.CheatDetected.HighLevel": "Attenzione: EAC ha rilevato Alti Livelli di cheats.",
   "EAC.CheatDetected.LowLevel": "Attenzione: EAC ha rilevato Bassi Livelli di cheats. Uno dei giocatori sta hackerando.",
   "ExiledJester": "Siete tutti degli sciocchi!\n{0} il {1} che ride a crepapelle vi ha ingannati per espellerlo.\nGG!",
-  "JesterMeetingLoose": "<i>\nMa non potrà vincere fino a {0}</i> riunioni",
+  "JesterMeetingLoose": "<i>\nMa non può vincere fino alla riunione numero {0}</i>",
   "ExiledExeTarget": "{0} era il {1}.\nMa era anche il bersaglio dell' <color=#c0c0c0>Esecutore</color>!\nGG!",
   "ExiledInnocentTargetAddBelow": "\nGuardando indietro l'<color=#8f815e>Innocente</color> conta il denaro che ha nelle mani",
   "ExiledInnocentTargetInOneLine": "{0} era il {1}.\nMa guardando indietro, c'è l'<color=#8f815e>Innocente</color> che conta i soldi che ha nelle mani....\nGG!",
