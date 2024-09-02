@@ -513,7 +513,7 @@ class IntroCutsceneDestroyPatch
         Main.introDestroyed = true;
 
         // Set roleAssigned as false for override role for modded players
-        // for vanilla clients we use "Data.Disconnected"
+        // For override role for vanilla clients we use "Data.Disconnected" while assign
         foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             pc.roleAssigned = false;

@@ -1795,7 +1795,7 @@ class PlayerControlSetRolePatch
     private static readonly Dictionary<PlayerControl, RoleTypes> GhostRoles = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole)
     {
-        // Skip after first assign
+        // Skip first assign
         if (RpcSetRoleReplacer.BlockSetRole) return true;
 
         canOverrideRole = true;
