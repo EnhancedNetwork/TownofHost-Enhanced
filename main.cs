@@ -845,6 +845,7 @@ public enum CustomRoles
     Seer,
     Silent,
     Sleuth,
+    Sloth,
     Soulless,
     Statue,
     Stubborn,
