@@ -23,19 +23,15 @@ class CoShowIntroPatch
 
         _ = new LateTask(() =>
         {
-            // Sync players Data after intro
-            RpcSetRoleReplacer.RpcSetDisconnected(disconnected: false, doSync: true);
-
-            // Update name players
+            // Update name players for custom vanilla intro
             Utils.DoNotifyRoles(NoCache: true);
-
-        }, 0.6f, "Set Disconnected");
+        }, 0.35f, "Update names");
 
         _ = new LateTask(() =>
         {
             ShipStatusBeginPatch.RolesIsAssigned = true;
 
-            // Assign tasks
+            // Assign tasks after assign all roles, as it should be
             ShipStatus.Instance.Begin();
         }, 4f, "Assing Task");
     }
@@ -516,6 +512,12 @@ class IntroCutsceneDestroyPatch
 
         Main.introDestroyed = true;
 
+        // Set roleAssigned as false for override role for modded players
+        // for vanilla clients we use "Data.Disconnected"
+        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+        {
+            pc.roleAssigned = false;
+        }
 
         if (!GameStates.AirshipIsActive)
         {

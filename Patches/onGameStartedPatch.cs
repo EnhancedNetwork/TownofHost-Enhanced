@@ -624,13 +624,11 @@ internal class SelectRolesPatch
         foreach (var seer in Main.AllPlayerControls.Where(x => player.PlayerId != x.PlayerId).ToArray())
             rolesMap[(seer.PlayerId, player.PlayerId)] = (othersRole, role);
 
-        
-        if (!isHost)
-        {
-            RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
-            //Set role for host
-            player.SetRole(othersRole);
-        }
+
+        RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
+        // Set role for host
+        // canOverride should be false for the host during assign
+        player.SetRole(othersRole, false);
 
         Logger.Info($"Registered Role: {player?.Data?.PlayerName} => {role} : RoleType for self => {selfRole}, for others => {othersRole}", "AssignDesyncRoles");
     }
@@ -638,11 +636,9 @@ internal class SelectRolesPatch
     {
         foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
-            if (seer.OwnedByHost()) continue;
-
             foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                if (target.OwnedByHost()) continue;
+                if (seer.PlayerId == target.PlayerId && seer.PlayerId != PlayerControl.LocalPlayer.PlayerId) continue;
 
                 if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var roleMap))
                 {
@@ -667,12 +663,12 @@ internal class SelectRolesPatch
         //Logger.Info($"Registered Role： {player?.Data?.PlayerName} => {role}", "AssignCustomRoles");
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole)), HarmonyPriority(Priority.High)]
 public static class RpcSetRoleReplacer
 {
     public static bool BlockSetRole = false;
     public static Dictionary<byte, CustomRpcSender> Senders = [];
-    public static Dictionary<PlayerControl, RoleTypes> StoragedData = [];
+    public static Dictionary<byte, RoleTypes> StoragedData = [];
     public static Dictionary<byte, bool> DataDisconnected = [];
     public static Dictionary<(byte seerId, byte targetId), (RoleTypes roleType, CustomRoles customRole)> RoleMap = [];
     // List of Senders that do not require additional writing because SetRoleRpc has already been written by another process such as Position Desync
@@ -694,8 +690,6 @@ public static class RpcSetRoleReplacer
     {
         foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
-            if (pc.OwnedByHost()) continue;
-
             Senders[pc.PlayerId] = new CustomRpcSender($"{pc.name}'s SetRole Sender", SendOption.Reliable, false)
                     .StartMessage(pc.GetClientId());
         }
@@ -718,8 +712,7 @@ public static class RpcSetRoleReplacer
 
             var roleType = role.GetRoleTypes();
 
-            if (!player.OwnedByHost())
-                StoragedData.Add(player, roleType);
+            StoragedData.Add(playerId, roleType);
 
             foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
@@ -733,18 +726,26 @@ public static class RpcSetRoleReplacer
     }
     public static void Release()
     {
-        foreach (var sender in Senders)
+        foreach (var (targetId, sender) in Senders)
         {
-            if (OverriddenSenderList.Contains(sender.Value)) continue;
-            if (sender.Value.CurrentState != CustomRpcSender.State.InRootMessage)
+            var target = Utils.GetPlayerById(targetId);
+            if (OverriddenSenderList.Contains(sender)) continue;
+            if (sender.CurrentState != CustomRpcSender.State.InRootMessage)
                 throw new InvalidOperationException("A CustomRpcSender had Invalid State.");
 
-            foreach (var (seer, roleType) in StoragedData)
+            foreach (var (seerId, roleType) in StoragedData)
             {
+                var seer = Utils.GetPlayerById(seerId);
+                if (seer == null || target == null) continue;
+                if (targetId == seerId && targetId != PlayerControl.LocalPlayer.PlayerId) continue;
+
                 try
                 {
-                    seer.SetRole(roleType);
-                    sender.Value.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, Utils.GetPlayerById(sender.Key).GetClientId())
+                    // canOverride should be false for the host during assign
+                    seer.SetRole(roleType, false);
+
+                    // send rpc set role for others clients
+                    sender.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, target.GetClientId())
                         .Write((ushort)roleType)
                         .Write(true)
                         .EndRpc();
@@ -752,14 +753,59 @@ public static class RpcSetRoleReplacer
                 catch
                 { }
             }
-            sender.Value.EndMessage();
+            sender.EndMessage();
         }
         
         BlockSetRole = false;
         Senders.Do(kvp => kvp.Value.SendMessage());
-        EndReplace();
 
-        SetRoleForHost();
+        DummySetRole();
+
+        EndReplace();
+    }
+    public static void DummySetRole()
+    {
+        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+        {
+            if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
+            DummySetRole(pc);
+        }
+    }
+    public static void DummySetRole(PlayerControl target)
+    {
+        if (target == null) return;
+
+        RoleTypes roleType;
+        int targetClientId = target.GetClientId();
+        
+        if (RoleMap.TryGetValue((target.PlayerId, target.PlayerId), out var roleMap))
+        {
+            roleType = roleMap.roleType;
+        }
+        else
+        {
+            roleType = StoragedData[target.PlayerId];
+        }
+
+        var stream = MessageWriter.Get(SendOption.Reliable);
+        stream.StartMessage(6);
+        stream.Write(AmongUsClient.Instance.GameId);
+        stream.WritePacked(targetClientId);
+        {
+            RpcSetDisconnected(stream, true);
+
+            stream.StartMessage(2);
+            stream.WritePacked(target.NetId);
+            stream.Write((byte)RpcCalls.SetRole);
+            stream.Write((ushort)roleType);
+            stream.Write(true); //canOverrideRole
+            stream.EndMessage();
+
+            RpcSetDisconnected(stream, false);
+        }
+        stream.EndMessage();
+        AmongUsClient.Instance.SendOrDisconnect(stream);
+        stream.Recycle();
     }
     private static void EndReplace()
     {
@@ -767,26 +813,7 @@ public static class RpcSetRoleReplacer
         OverriddenSenderList = null;
         StoragedData = null;
     }
-    private static void SetRoleForHost()
-    {
-        try
-        {
-            RpcSetDisconnected(disconnected: true, doSync: true);
-            foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
-            {
-                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
-                {
-                    if (!target.OwnedByHost()) continue;
-
-                    RoleMap.TryGetValue((seer.PlayerId, target.PlayerId), out var map);
-                    target.RpcSetRoleDesync(map.roleType, seer.GetClientId());
-                }
-            }
-            RpcSetDisconnected(disconnected: false, doSync: false);
-        }
-        catch { }
-    }
-    public static void RpcSetDisconnected(bool disconnected, bool doSync)
+    public static void RpcSetDisconnected(MessageWriter stream, bool disconnected)
     {
         foreach (var playerinfo in GameData.Instance.AllPlayers.GetFastEnumerator())
         {
@@ -794,32 +821,21 @@ public static class RpcSetRoleReplacer
             {
                 // if player left the game, remember current data
                 DataDisconnected[playerinfo.PlayerId] = playerinfo.Disconnected;
-                playerinfo.Disconnected = disconnected;
+
+                playerinfo.Disconnected = true;
                 playerinfo.IsDead = false;
             }
             else
             {
-                playerinfo.Disconnected = DataDisconnected[playerinfo.PlayerId];
-                playerinfo.IsDead = DataDisconnected[playerinfo.PlayerId];
+                var data = DataDisconnected.GetValueOrDefault(playerinfo.PlayerId, true);
+                playerinfo.Disconnected = data;
+                playerinfo.IsDead = data;
             }
 
-            if (!doSync) continue;
-
-            MessageWriter writer = MessageWriter.Get(SendOption.None);
-            writer.StartMessage(5); //0x05 GameData
-            writer.Write(AmongUsClient.Instance.GameId);
-            {
-                writer.StartMessage(1); //0x01 Data
-                {
-                    writer.WritePacked(playerinfo.NetId);
-                    playerinfo.Serialize(writer, true);
-                }
-                writer.EndMessage();
-            }
-            writer.EndMessage();
-
-            AmongUsClient.Instance.SendOrDisconnect(writer);
-            writer.Recycle();
+            stream.StartMessage(1);
+            stream.WritePacked(playerinfo.NetId);
+            playerinfo.Serialize(stream, false);
+            stream.EndMessage();
         }
     }
 }

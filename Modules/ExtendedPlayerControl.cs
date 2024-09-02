@@ -47,16 +47,16 @@ static class ExtendedPlayerControl
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public static void SetRole(this PlayerControl player, RoleTypes role/*, bool canOverride = false*/)
+    public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride)
     {
-        player.StartCoroutine(player.CoSetRole(role, true));
+        player.StartCoroutine(player.CoSetRole(role, canOverride));
     }
     public static void RpcSetRoleDesync(this PlayerControl player, RoleTypes role,/* bool canOverride,*/ int clientId)
     {
         if (player == null) return;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
-            player.SetRole(role);
+            player.SetRole(role, true);
             return;
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
