@@ -946,6 +946,8 @@ public static class Options
 
         Rascal.SetupCustomOptions();
 
+        Sloth.SetupCustomOptions();
+
         Unlucky.SetupCustomOptions();
         
         Tired.SetupCustomOptions();

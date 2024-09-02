@@ -315,7 +315,8 @@ public static class CustomRolesHelper
         return role is
             CustomRoles.Flash or
             CustomRoles.Alchemist or
-            CustomRoles.Tired;
+            CustomRoles.Tired or
+            CustomRoles.Sloth;
     }
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {
@@ -988,7 +989,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Statue)
                     || pc.Is(CustomRoles.Seeker)
                     || pc.Is(CustomRoles.Doppelganger)
-                    || pc.Is(CustomRoles.DollMaster))
+                    || pc.Is(CustomRoles.DollMaster)
+                    || pc.Is(CustomRoles.Sloth))
                     return false;
                 break;
 
@@ -1077,6 +1079,18 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Tired))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Statue.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Statue.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Statue.CanBeOnImp.GetBool()))
+                    return false;
+                break;
+
+            case CustomRoles.Sloth:
+                if (pc.Is(CustomRoles.Swooper) 
+                    || pc.Is(CustomRoles.Solsticer)
+                    || pc.Is(CustomRoles.Tired)
+                    || pc.Is(CustomRoles.Statue)
+                    || pc.Is(CustomRoles.Seeker)
+                    || pc.Is(CustomRoles.Doppelganger)
+                    || pc.Is(CustomRoles.DollMaster)
+                    || pc.Is(CustomRoles.Flash))
                     return false;
                 break;
         }
