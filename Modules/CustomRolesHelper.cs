@@ -963,7 +963,8 @@ public static class CustomRolesHelper
             case CustomRoles.Fool:
                 if (pc.Is(CustomRoles.Mechanic)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
-                    || pc.Is(CustomRoles.Alchemist))
+                    || pc.Is(CustomRoles.Alchemist)
+                    || pc.Is(CustomRoles.Troller))
                     return false;
                 break;
 
@@ -1018,7 +1019,8 @@ public static class CustomRolesHelper
                   || pc.Is(CustomRoles.Bewilder)
                   || pc.Is(CustomRoles.Lighter)
                   || pc.Is(CustomRoles.Flash)
-                  || pc.Is(CustomRoles.Mare))
+                  || pc.Is(CustomRoles.Mare)
+                  || pc.Is(CustomRoles.Troller))
                     return false;
                 break;
 

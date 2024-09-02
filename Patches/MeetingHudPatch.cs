@@ -871,10 +871,16 @@ class MeetingHudStartPatch
 
         if (msgToSend.Count >= 1)
         {
-            var msgTemp = msgToSend.ToList();
+            var msgToSendNewList = msgToSend.ToList();
             _ = new LateTask(() =>
             {
-                msgTemp.Do(x => SendMessage(x.Item1, x.Item2, x.Item3));
+                foreach (var (text, sendTo, title) in msgToSendNewList)
+                {
+                    // check player left
+                    if (sendTo != byte.MaxValue && GetPlayerById(sendTo) == null) continue;
+
+                    SendMessage(text, sendTo, title);
+                }
             }, 3f, "Skill Description First Meeting");
         }
 
@@ -966,7 +972,13 @@ class MeetingHudStartPatch
         // Send message
         _ = new LateTask(() =>
         {
-            msgToSend.Do(x => SendMessage(x.Item1, x.Item2, x.Item3));
+            foreach (var (text, sendTo, title) in msgToSend)
+            {
+                // check player left
+                if (sendTo != byte.MaxValue && GetPlayerById(sendTo) == null) continue;
+
+                SendMessage(text, sendTo, title);
+            }
         }, 3f, "Skill Notice On Meeting Start");
         
         Main.PlayerStates.Do(x
