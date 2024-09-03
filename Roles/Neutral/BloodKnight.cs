@@ -13,6 +13,7 @@ internal class BloodKnight : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.BloodKnight);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -37,9 +38,6 @@ internal class BloodKnight : RoleBase
     public override void Add(byte playerId)
     {
         TimeStamp = 0;
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     private void SendRPC(byte playerId)
     {

@@ -2,14 +2,15 @@
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
-public class Lazy
+public class Lazy : IAddon
 {
     private const int Id = 19300;
+    public AddonTypes Type => AddonTypes.Helpful;
 
     private static OptionItem TasklessCrewCanBeLazy;
     private static OptionItem TaskBasedCrewCanBeLazy;
     
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Lazy, canSetNum: true);
         TasklessCrewCanBeLazy = BooleanOptionItem.Create(Id + 10, "TasklessCrewCanBeLazy", false, TabGroup.Addons, false)

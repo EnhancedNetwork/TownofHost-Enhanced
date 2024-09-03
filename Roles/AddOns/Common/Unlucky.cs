@@ -2,18 +2,16 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Unlucky
+public class Unlucky : IAddon
 {
     private const int Id = 21000;
+    public AddonTypes Type => AddonTypes.Harmful;
 
     private static OptionItem UnluckyTaskSuicideChance;
     private static OptionItem UnluckyKillSuicideChance;
     private static OptionItem UnluckyVentSuicideChance;
     private static OptionItem UnluckyReportSuicideChance;
     private static OptionItem UnluckyOpenDoorSuicideChance;
-    public static OptionItem ImpCanBeUnlucky;
-    public static OptionItem CrewCanBeUnlucky;
-    public static OptionItem NeutralCanBeUnlucky;
 
     public enum StateSuicide
     {
@@ -24,9 +22,9 @@ public static class Unlucky
         OpenDoor
     }
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Unlucky, canSetNum: true);
+        SetupAdtRoleOptions(Id, CustomRoles.Unlucky, canSetNum: true, teamSpawnOptions: true);
         UnluckyKillSuicideChance = IntegerOptionItem.Create(Id + 10, "UnluckyKillSuicideChance", new(0, 100, 1), 2, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
             .SetValueFormat(OptionFormat.Percent);
         UnluckyTaskSuicideChance = IntegerOptionItem.Create(Id + 11, "UnluckyTaskSuicideChance", new(0, 100, 1), 5, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
@@ -37,9 +35,6 @@ public static class Unlucky
             .SetValueFormat(OptionFormat.Percent);
         UnluckyOpenDoorSuicideChance = IntegerOptionItem.Create(Id + 14, "UnluckyOpenDoorSuicideChance", new(0, 100, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
             .SetValueFormat(OptionFormat.Percent);
-        ImpCanBeUnlucky = BooleanOptionItem.Create(Id + 15, "ImpCanBeUnlucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
-        CrewCanBeUnlucky = BooleanOptionItem.Create(Id + 16, "CrewCanBeUnlucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
-        NeutralCanBeUnlucky = BooleanOptionItem.Create(Id + 17, "NeutralCanBeUnlucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
     }
     public static bool SuicideRand(PlayerControl victim, StateSuicide state)
     {

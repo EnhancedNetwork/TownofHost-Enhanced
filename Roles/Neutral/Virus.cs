@@ -14,6 +14,7 @@ internal class Virus : RoleBase
     //===========================SETUP================================\\
     private const int Id = 18300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Virus);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -61,9 +62,6 @@ internal class Virus : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = InfectMax.GetInt();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void OnOthersMeetingHudStart(PlayerControl pc)

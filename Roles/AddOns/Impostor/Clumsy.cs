@@ -2,15 +2,16 @@
 
 namespace TOHE.Roles.AddOns.Impostor;
 
-public static class Clumsy
+public class Clumsy : IAddon
 {
     private const int Id = 22700;
+    public AddonTypes Type => AddonTypes.Impostor;
 
     private static OptionItem ChanceToMiss;
 
     private static Dictionary<byte, bool> HasMissed;
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Clumsy, canSetNum: true, tab: TabGroup.Addons);
         ChanceToMiss = IntegerOptionItem.Create(22703, "ChanceToMiss", new(0, 100, 5), 50, TabGroup.Addons, false)

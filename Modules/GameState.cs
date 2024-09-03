@@ -8,6 +8,7 @@ using TOHE.Roles.Neutral;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using static TOHE.Utils;
+using Hazel;
 
 namespace TOHE;
 
@@ -20,6 +21,7 @@ public class PlayerState(byte playerId)
     public CountTypes countTypes = CountTypes.OutOfGame;
     public bool IsDead { get; set; } = false;
     public bool Disconnected { get; set; } = false;
+    public CustomRoles RoleofKiller = CustomRoles.NotAssigned;
 #pragma warning disable IDE1006 // Naming Styles
     public DeathReason deathReason { get; set; } = DeathReason.etc;
 #pragma warning restore IDE1006
@@ -216,6 +218,13 @@ public class PlayerState(byte playerId)
     {
         if (SubRoles.Contains(role))
             SubRoles.Remove(role);
+
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveSubRole, SendOption.Reliable);
+        writer.Write(PlayerId);
+        writer.WritePacked((int)role);
+        writer.EndMessage();
     }
 
     public void SetDead()
@@ -282,9 +291,12 @@ public class PlayerState(byte playerId)
         Trap,
         Targeted,
         Retribution,
+        Equilibrium,
         Slice,
         BloodLet,
         WrongAnswer,
+        Starved,
+        Armageddon,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
@@ -412,6 +424,7 @@ public static class GameStates
     public static bool AirshipIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
     public static bool FungleIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
     public static bool IsLobby => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined;
+    public static bool IsCoStartGame => !InGame && !DestroyableSingleton<GameStartManager>.InstanceExists;
     public static bool IsInGame => InGame;
     public static bool IsEnded => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Ended;
     public static bool IsNotJoined => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.NotJoined;

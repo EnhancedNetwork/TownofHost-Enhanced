@@ -3,16 +3,17 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
 
-public static class Mare
+public class Mare : IAddon
 {
     private const int Id = 23000;
+    public AddonTypes Type => AddonTypes.Impostor;
     public static List<byte> playerIdList = [];
 
     public static OptionItem KillCooldownInLightsOut;
     private static OptionItem SpeedInLightsOut;
     private static bool idAccelerated = false;
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Mare, canSetNum: true, tab: TabGroup.Addons);
         SpeedInLightsOut = FloatOptionItem.Create(Id + 10, "MareAddSpeedInLightsOut", new(0.1f, 0.5f, 0.1f), 0.3f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mare])

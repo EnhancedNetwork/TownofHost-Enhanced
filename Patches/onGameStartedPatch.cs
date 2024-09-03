@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System;
+using UnityEngine;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
@@ -9,6 +10,7 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -58,10 +60,10 @@ internal class ChangeRoleSettings
             Main.LastEnteredVent.Clear();
             Main.LastEnteredVentLocation.Clear();
 
+            Main.DesyncPlayerList.Clear();
             Main.PlayersDiedInMeeting.Clear();
             GuessManager.GuesserGuessed.Clear();
             Main.AfterMeetingDeathPlayers.Clear();
-            Main.ResetCamPlayerList.Clear();
             Main.clientIdList.Clear();
 
             PlayerControlSetRolePatch.DidSetGhost.Clear();
@@ -70,12 +72,15 @@ internal class ChangeRoleSettings
             Main.ShapeshiftTarget.Clear();
             Main.AllKillers.Clear();
             Main.OverDeadPlayerList.Clear();
+            Main.UnShapeShifter.Clear();
+            Main.OvverideOutfit.Clear();
+            Main.GameIsLoaded = false;
             Utils.LateExileTask.Clear();
 
             Main.LastNotifyNames.Clear();
             Main.PlayerColors.Clear();
 
-            Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
+            Main.FirstDiedPrevious = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
@@ -218,6 +223,8 @@ internal class ChangeRoleSettings
             Statue.Init();
             Ghoul.Init();
             Rainbow.Init();
+            Rebirth.Init();
+            Evader.Init();
 
             //FFA
             FFAManager.Init();
@@ -486,13 +493,40 @@ internal class SelectRolesPatch
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
 
+
+
             GhostRoleAssign.Add();
 
             foreach (var pc in Main.AllPlayerControls)
             {
-                if (pc.GetRoleClass()?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
+                if (Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
+                {
+                    Main.UnShapeShifter.Add(pc.PlayerId);
+                    Logger.Info($"Added {pc.GetRealName()} because of {pc.GetCustomRole()}", "UnShapeShift..OnGameStartedPatch");
+                }
 
-                pc.GetRoleClass()?.OnAdd(pc.PlayerId);
+                var roleClass = pc.GetRoleClass();
+
+                roleClass?.OnAdd(pc.PlayerId);
+
+                // if based role is Shapeshifter
+                if (roleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter)
+                {
+                    // Is Desync Shapeshifter
+                    if (pc.HasDesyncRole())
+                    {
+                        foreach (var target in Main.AllPlayerControls)
+                        {
+                            // Set all players as killable players
+                            target.Data.Role.CanBeKilled = true;
+
+                            // When target is impostor, set name color as white
+                            target.cosmetics.SetNameColor(Color.white);
+                            target.Data.Role.NameColor = Color.white;
+                        }
+                    }
+                    Main.CheckShapeshift.Add(pc.PlayerId, false);
+                }
 
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())
                 {
@@ -546,12 +580,19 @@ internal class SelectRolesPatch
                         case CustomRoles.Bloodthirst:
                             Bloodthirst.Add();
                             break;
-
+                        case CustomRoles.Rebirth:
+                            Rebirth.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Evader:
+                            Evader.Add(pc.PlayerId);
+                            break;
                         default:
                             break;
                     }
                 }
             }
+
+            Spurt.Add();
 
         EndOfSelectRolePatch:
 
@@ -581,11 +622,6 @@ internal class SelectRolesPatch
                     break;
                 case CustomGameMode.FFA:
                     GameEndCheckerForNormal.SetPredicateToFFA();
-
-                    // Added players in reset cam   
-                    Main.ResetCamPlayerList.UnionWith(Main.AllPlayerControls
-                        .Where(pc => pc.GetCustomRole() is CustomRoles.Killer)
-                        .Select(pc => pc.PlayerId));
                     break;
             }
 
@@ -631,8 +667,16 @@ internal class SelectRolesPatch
             rolesMap[(seer.PlayerId, player.PlayerId)] = othersRole;
 
         RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
+
         //Set role for host
         player.SetRole(othersRole, false);
+
+        // Override RoleType for host
+        if (isHost && BaseRole == RoleTypes.Shapeshifter)
+        {
+            DestroyableSingleton<RoleManager>.Instance.SetRole(player, BaseRole);
+            DestroyableSingleton<RoleBehaviour>.Instance.CanBeKilled = true;
+        }
         player.Data.IsDead = true;
 
         Logger.Info($"Registered Role: {player?.Data?.PlayerName} => {role} : RoleType for self => {selfRole}, for others => {othersRole}", "AssignDesyncRoles");

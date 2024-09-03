@@ -188,9 +188,9 @@ internal class Alchemist : RoleBase
             float dis;
             foreach (var target in Main.AllAlivePlayerControls)
             {
-                if (target.PlayerId != player.PlayerId && !target.Is(CustomRoles.Pestilence))
+                if (target.PlayerId != player.PlayerId && !target.IsTransformedNeutralApocalypse())
                 {
-                    dis = Vector2.Distance(bloodthirstPos, target.transform.position);
+                    dis = Utils.GetDistance(bloodthirstPos, target.transform.position);
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }
@@ -509,6 +509,9 @@ internal class Alchemist : RoleBase
     }
     public override void SwitchSystemUpdate(SwitchSystem __instance, byte amount, PlayerControl player)
     {
+        if (!FixNextSabo) return;
+        FixNextSabo = false;
+
         __instance.ActualSwitches = 0;
         __instance.ExpectedSwitches = 0;
 

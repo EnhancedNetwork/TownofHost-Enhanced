@@ -2,16 +2,17 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Egoist
+public class Egoist : IAddon
 {
     private const int Id = 23500;
+    public AddonTypes Type => AddonTypes.Misc;
 
     public static OptionItem CrewCanBeEgoist;
     public static OptionItem ImpCanBeEgoist;
     public static OptionItem ImpEgoistVisibalToAllies;
     public static OptionItem EgoistCountAsConverted;
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Egoist, canSetNum: true, tab: TabGroup.Addons);
         CrewCanBeEgoist = BooleanOptionItem.Create(Id + 10, "CrewCanBeEgoist", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);

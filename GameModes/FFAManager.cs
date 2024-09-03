@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using System;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -102,14 +101,6 @@ internal static class FFAManager
 
         _ = new LateTask( ()=>
         {
-            try
-            {
-                Utils.SetChatVisibleForEveryone();
-            }
-            catch (Exception error)
-            {
-                Logger.Error($"Error: {error}", "FFA Init");
-            }
             RoundTime = FFA_GameTime.GetInt() + 8;
             var now = Utils.GetTimeStamp() + 8;
             foreach (PlayerControl pc in Main.AllAlivePlayerControls)
@@ -117,7 +108,7 @@ internal static class FFAManager
                 KBScore.TryAdd(pc.PlayerId, 0);
                 if (FFA_DisableVentingWhenKCDIsUp.GetBool()) FFALastKill.TryAdd(pc.PlayerId, now);
             }
-        }, 10f, "Set Chat Visible for Everyone");
+        }, 15f, "Set Chat Visible for Everyone");
     }
     private static void SendRPCSyncFFAPlayer(byte playerId)
     {

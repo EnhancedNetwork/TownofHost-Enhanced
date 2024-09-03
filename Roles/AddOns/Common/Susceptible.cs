@@ -2,23 +2,18 @@ using System;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public class Susceptible
+public class Susceptible : IAddon
 {
     private const int Id = 27100;
-    public static OptionItem CanBeOnCrew;
-    public static OptionItem CanBeOnImp;
-    public static OptionItem CanBeOnNeutral;
+    public AddonTypes Type => AddonTypes.Mixed;
     private static OptionItem EnabledDeathReasons;
 
     public static PlayerState.DeathReason randomReason;
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        Options.SetupAdtRoleOptions(Id, CustomRoles.Susceptible, canSetNum: true, tab: TabGroup.Addons);
+        Options.SetupAdtRoleOptions(Id, CustomRoles.Susceptible, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
         EnabledDeathReasons = BooleanOptionItem.Create(Id + 11, "OnlyEnabledDeathReasons", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
-        CanBeOnImp = BooleanOptionItem.Create(Id + 12, "ImpCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
-        CanBeOnCrew = BooleanOptionItem.Create(Id + 13, "CrewCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
-        CanBeOnNeutral = BooleanOptionItem.Create(Id + 14, "NeutralCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
     }
 
     private static void ChangeRandomDeath()
@@ -36,7 +31,6 @@ public class Susceptible
         {
             Logger.Info($"{victim.GetNameWithRole().RemoveHtmlTags()} had the death reason {randomReason}", "Susceptible");
             Main.PlayerStates[victim.PlayerId].deathReason = randomReason.DeathReasonIsEnable() ? randomReason : Main.PlayerStates[victim.PlayerId].deathReason;
-            
         }
         else
         {

@@ -577,6 +577,8 @@ public static class GuessManager
 
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsNK() && Options.NeutralKillersCanGuess.GetBool())
                     CreateGuesserButton(__instance);
+                if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsNA() && Options.NeutralApocalypseCanGuess.GetBool())
+                    CreateGuesserButton(__instance);
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsNonNK() && Options.PassiveNeutralsCanGuess.GetBool())
                     CreateGuesserButton(__instance);
                 else if (PlayerControl.LocalPlayer.GetCustomRole() is CustomRoles.Doomsayer && !Options.PassiveNeutralsCanGuess.GetBool() && !Doomsayer.CheckCantGuess)
@@ -892,6 +894,30 @@ public static class GuessManager
                         listOfRoles.Add(CustomRoles.Admired);
                 }
 
+                if (CustomRoles.PlagueBearer.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Pestilence))
+                        listOfRoles.Add(CustomRoles.Pestilence);
+                }
+
+                if (CustomRoles.SoulCollector.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Death))
+                        listOfRoles.Add(CustomRoles.Death);
+                }
+
+                if (CustomRoles.Baker.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Famine))
+                        listOfRoles.Add(CustomRoles.Famine);
+                }
+
+                if (CustomRoles.Berserker.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.War))
+                        listOfRoles.Add(CustomRoles.War);
+                }
+
                 arrayOfRoles = [.. listOfRoles];
             }
             else
@@ -924,7 +950,7 @@ public static class GuessManager
                     or CustomRoles.LastImpostor
                     or CustomRoles.Mare
                     or CustomRoles.Cyber
-                    ) continue;
+                    || (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())) continue;
 
                 CreateRole(role);
             }

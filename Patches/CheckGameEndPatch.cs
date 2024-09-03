@@ -101,6 +101,13 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
+                    case CustomWinner.Apocalypse:
+                        if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
+                            && !WinnerIds.Contains(pc.PlayerId))
+                        {
+                            WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
                     case CustomWinner.Cultist:
                         if ((pc.Is(CustomRoles.Charmed) || pc.Is(CustomRoles.Cultist)) && !WinnerIds.Contains(pc.PlayerId))
                         {
@@ -312,6 +319,10 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(Hater);
                             }
                             break;
+                        case CustomRoles.Troller when pc.IsAlive():
+                            AdditionalWinnerTeams.Add(AdditionalWinners.Troller);
+                            WinnerIds.Add(pc.PlayerId);
+                            break;
                         case CustomRoles.Romantic:
                             if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) 
                                 && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))))
@@ -337,7 +348,14 @@ class GameEndCheckerForNormal
                             break;
                     }
                 }
-
+                if (Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse()))
+                {
+                    foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse()))
+                    {
+                        if (!WinnerIds.Contains(pc.PlayerId))
+                            WinnerIds.Add(pc.PlayerId);
+                    }
+                }
                 if (WinnerTeam is CustomWinner.Youtuber)
                 {
                     var youTuber = Main.AllPlayerControls.FirstOrDefault(x => x.Is(CustomRoles.Youtuber) && WinnerIds.Contains(x.PlayerId));
@@ -594,10 +612,17 @@ class GameEndCheckerForNormal
                     var winnnerLength = winners.Length;
                     if (winnnerLength == 1)
                     {
-                        var winnerRole = winners.First().Key.GetNeutralCustomRoleFromCountType();
-                        reason = GameOverReason.ImpostorByKill;
-                        ResetAndSetWinner(winnerRole.GetNeutralCustomWinnerFromRole());
-                        WinnerRoles.Add(winnerRole);
+                        try
+                        {
+                            var winnerRole = winners.First().Key.GetNeutralCustomRoleFromCountType();
+                            reason = GameOverReason.ImpostorByKill;
+                            ResetAndSetWinner(winnerRole.GetNeutralCustomWinnerFromRole());
+                            WinnerRoles.Add(winnerRole);
+                        }
+                        catch
+                        {
+                            return false;
+                        }
                     }
                     else if (winnnerLength == 0)
                     {

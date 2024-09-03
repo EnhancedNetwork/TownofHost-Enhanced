@@ -80,7 +80,7 @@ class CanUseVentPatch
         {
             Vector3 center = playerControl.Collider.bounds.center;
             Vector3 ventPosition = __instance.transform.position;
-            actualDistance = Vector2.Distance(center, ventPosition);
+            actualDistance = Utils.GetDistance(center, ventPosition);
             canUse &= actualDistance <= __instance.UsableDistance && !PhysicsHelpers.AnythingBetween(playerControl.Collider, center, ventPosition, Constants.ShipOnlyMask, false);
         }
         __result = actualDistance;

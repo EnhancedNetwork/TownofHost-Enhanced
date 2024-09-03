@@ -12,7 +12,7 @@ internal class Jailer : RoleBase
     private const int Id = 10600;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -23,6 +23,7 @@ internal class Jailer : RoleBase
     private static OptionItem NCCanBeExe;
     private static OptionItem NECanBeExe;
     private static OptionItem NKCanBeExe;
+    private static OptionItem NACanBeExe;
     private static OptionItem CKCanBeExe;
     private static OptionItem NotifyJailedOnMeetingOpt;
 
@@ -42,6 +43,7 @@ internal class Jailer : RoleBase
         NCCanBeExe = BooleanOptionItem.Create(Id + 13, "JailerNCCanBeExe", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
         NECanBeExe = BooleanOptionItem.Create(Id + 14, "JailerNECanBeExe", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
         NKCanBeExe = BooleanOptionItem.Create(Id + 15, "JailerNKCanBeExe", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
+        NACanBeExe = BooleanOptionItem.Create(Id + 17, "JailerNACanBeExe", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
         CKCanBeExe = BooleanOptionItem.Create(Id + 16, "JailerCKCanBeExe", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
         NotifyJailedOnMeetingOpt = BooleanOptionItem.Create(Id + 18, "notifyJailedOnMeeting", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
     }
@@ -61,9 +63,6 @@ internal class Jailer : RoleBase
         JailerTarget.Add(playerId, byte.MaxValue);
         JailerHasExe.Add(playerId, false);
         JailerDidVote.Add(playerId, false);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -189,6 +188,7 @@ internal class Jailer : RoleBase
                 (role.IsNC() && NCCanBeExe.GetBool()) ||
                 (role.IsNE() && NECanBeExe.GetBool()) ||
                 (role.IsNK() && NKCanBeExe.GetBool()) ||
+                (role.IsNA() && NACanBeExe.GetBool()) ||
                 (role.IsCrewKiller() && CKCanBeExe.GetBool()) ||
                 (role.IsImpostorTeamV3()));
     }

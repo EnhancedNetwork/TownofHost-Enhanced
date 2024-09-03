@@ -13,6 +13,7 @@ internal class Glitch : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Glitch);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -72,9 +73,6 @@ internal class Glitch : RoleBase
         LastHack = ts;
         LastMimic = ts;
         lastRpcSend = ts;
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
 
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
@@ -226,8 +224,7 @@ internal class Glitch : RoleBase
 
     public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (player == null) return string.Empty;
-        if (!player.IsAlive()) return string.Empty;
+        if (!player.IsAlive() || isForMeeting) return string.Empty;
 
         var sb = new StringBuilder(string.Empty);
 
@@ -263,16 +260,12 @@ internal class Glitch : RoleBase
         }
         return false;
     }
-    public static bool OnCheckFixedUpdateReport(PlayerControl __instance, byte id) 
+    public static bool OnCheckFixedUpdateReport(byte id) => hackedIdList.ContainsKey(id);
+    public static void CancelReportInFixedUpdate(PlayerControl __instance, byte id)
     {
-        if (hackedIdList.ContainsKey(id))
-        {
-            __instance.Notify(string.Format(GetString("HackedByGlitch"), "Report"));
-            Logger.Info("Dead Body Report Blocked (player is hacked by Glitch)", "FixedUpdate.ReportDeadBody");
-            ReportDeadBodyPatch.WaitReport[id].Clear();
-            return false;
-        }
-        return true;
+        __instance.Notify(string.Format(GetString("HackedByGlitch"), "Report"));
+        Logger.Info("Dead Body Report Blocked (player is hacked by Glitch)", "FixedUpdate.ReportDeadBody");
+        ReportDeadBodyPatch.WaitReport[id].Clear();
     }
     public static bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
     {

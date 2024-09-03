@@ -12,6 +12,7 @@ internal class Cultist : RoleBase
     //===========================SETUP================================\\
     private const int Id = 14800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Cultist);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -48,9 +49,6 @@ internal class Cultist : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = CharmMax.GetInt();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? CharmCooldown.GetFloat() + (CharmMax.GetInt() - AbilityLimit) * CharmCooldownIncrese.GetFloat() : 300f;
     public override bool CanUseKillButton(PlayerControl player) => AbilityLimit >= 1;

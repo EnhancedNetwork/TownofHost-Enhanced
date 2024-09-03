@@ -160,12 +160,12 @@ internal class RiftMaker : RoleBase
 
         var currentPos = shapeshifter.GetCustomPosition();
         var totalMarked = MarkedLocation[shapeshifterId].Count;
-        if (totalMarked == 1 && Vector2.Distance(currentPos, MarkedLocation[shapeshifterId][0]) <= 5f)
+        if (totalMarked == 1 && Utils.GetDistance(currentPos, MarkedLocation[shapeshifterId][0]) <= 5f)
         {
             shapeshifter.Notify(GetString("RiftsTooClose"));
             return;
         }
-        else if (totalMarked == 2 && Vector2.Distance(currentPos, MarkedLocation[shapeshifterId][1]) <= 5f)
+        else if (totalMarked == 2 && Utils.GetDistance(currentPos, MarkedLocation[shapeshifterId][1]) <= 5f)
         {
             shapeshifter.Notify(GetString("RiftsTooClose"));
             return;
@@ -214,11 +214,11 @@ internal class RiftMaker : RoleBase
         Vector2 position = player.GetCustomPosition();
         Vector2 TPto;
 
-        if (Vector2.Distance(position, MarkedLocation[playerId][0]) <= RiftRadius.GetFloat())
+        if (Utils.GetDistance(position, MarkedLocation[playerId][0]) <= RiftRadius.GetFloat())
         {
             TPto = MarkedLocation[playerId][1];
         }
-        else if (Vector2.Distance(position, MarkedLocation[playerId][1]) <= RiftRadius.GetFloat())
+        else if (Utils.GetDistance(position, MarkedLocation[playerId][1]) <= RiftRadius.GetFloat())
         {
             TPto = MarkedLocation[playerId][0];
         }

@@ -84,7 +84,7 @@ internal class Blackmailer : RoleBase
         if (CheckBlackmaile(pc))
         {
             var playername = pc.GetRealName(isMeeting: true);
-            if (Doppelganger.DoppelVictim.TryGetValue(pc.PlayerId, out var doppelPlayerName)) playername = doppelPlayerName; 
+            if (Main.OvverideOutfit.TryGetValue(pc.PlayerId, out var realfit)) playername = realfit.name; 
             AddMsg(string.Format(string.Format(GetString("BlackmailerDead"), playername), byte.MaxValue, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
         }
     }

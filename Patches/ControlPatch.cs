@@ -1,4 +1,3 @@
-using Hazel;
 using System;
 using System.Text;
 using TOHE.Modules;
@@ -186,7 +185,11 @@ internal class ControllerManagerUpdatePatch
             {
                 HudManager.Instance.Chat.SetVisible(true);
             }
-
+            
+            if (GetKeysDown(KeyCode.E, KeyCode.F, KeyCode.LeftControl))
+            {
+                Utils.ErrorEnd("Test AntiBlackout");
+            }
             // Get Position
             if (Input.GetKeyDown(KeyCode.P) && PlayerControl.LocalPlayer != null)
             {
@@ -212,7 +215,13 @@ internal class ControllerManagerUpdatePatch
                 }
             }
 
-            // Forse start/end meeting
+            //Search Bar In Menu "Press Enter" alternative function
+            if (GetKeysDown(KeyCode.Return) && GameSettingMenuPatch.Instance != null && GameSettingMenuPatch.Instance.isActiveAndEnabled == true)
+            {
+                GameSettingMenuPatch._SearchForOptions?.Invoke();
+            }
+
+            // Force start/end meeting
             if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame)
             {
                 if (GameStates.IsHideNSeek) return;
@@ -391,17 +400,6 @@ internal class ControllerManagerUpdatePatch
                     }
                 }
             }
-
-            /*if (Input.GetKeyDown(KeyCode.L))
-              {
-                  Logger.Info($"{Utils.IsActive(SystemTypes.Reactor)}", "Check SystemType.Reactor");
-                  Logger.Info($"{Utils.IsActive(SystemTypes.LifeSupp)}", "Check SystemTypes.LifeSupp");
-                  Logger.Info($"{Utils.IsActive(SystemTypes.Laboratory)}", "Check SystemTypes.Laboratory");
-                  Logger.Info($"{Utils.IsActive(SystemTypes.HeliSabotage)}", "Check SystemTypes.HeliSabotage");
-                  Logger.Info($"{Utils.IsActive(SystemTypes.Comms)}", "Check SystemTypes.Comms");
-                  Logger.Info($"{Utils.IsActive(SystemTypes.Electrical)}", "Check SystemTypes.Electrical");
-                  Logger.Info($"{Utils.IsActive(SystemTypes.MushroomMixupSabotage)}", "Check SystemTypes.MushroomMixupSabotage");
-              }*/
 
             // Clear vent
             if (Input.GetKeyDown(KeyCode.N))

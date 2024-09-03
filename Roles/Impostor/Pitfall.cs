@@ -80,12 +80,13 @@ internal class Pitfall : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
-        AURoleOptions.ShapeshifterDuration = 1f;
     }
 
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
+        //if (!CheckUnshapeshift) return;
+        Logger.Info($"Triggered Pitfall Ability!!!", "Pitfall");
+
 
         // Remove inactive traps so there is room for new traps
         Traps = Traps.Where(a => a.IsActive).ToHashSet();
@@ -111,8 +112,6 @@ internal class Pitfall : RoleBase
         }
 
         shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-
-        return false;
     }
 
     private void OnFixedUpdateOthers(PlayerControl player)
@@ -138,7 +137,7 @@ internal class Pitfall : RoleBase
                 continue;
             }
 
-            var dis = Vector2.Distance(trap.Location, position);
+            var dis = Utils.GetDistance(trap.Location, position);
             if (dis > TrapRadius.GetFloat()) continue;
 
             if (TrapFreezeTime.GetFloat() > 0)

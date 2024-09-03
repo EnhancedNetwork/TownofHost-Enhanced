@@ -6,15 +6,14 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Oiiai
+public class Oiiai : IAddon
 {
     private const int Id = 25700;
     private readonly static List<byte> playerIdList = [];
     public static bool IsEnable = false;
+    public AddonTypes Type => AddonTypes.Mixed;
 
-    public static OptionItem CanBeOnCrew;
-    public static OptionItem CanBeOnImp;
-    public static OptionItem CanBeOnNeutral;
+
     private static OptionItem CanPassOn;
     private static OptionItem ChangeNeutralRole;
 
@@ -31,12 +30,9 @@ public static class Oiiai
         CustomRoles.Imitator,
     ]; //Just -1 to use this LOL
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        Options.SetupAdtRoleOptions(Id, CustomRoles.Oiiai, canSetNum: true, tab: TabGroup.Addons);
-        CanBeOnImp = BooleanOptionItem.Create(Id + 11, "ImpCanBeOiiai", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
-        CanBeOnCrew = BooleanOptionItem.Create(Id + 12, "CrewCanBeOiiai", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
-        CanBeOnNeutral = BooleanOptionItem.Create(Id + 13, "NeutralCanBeOiiai", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
+        Options.SetupAdtRoleOptions(Id, CustomRoles.Oiiai, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
         CanPassOn = BooleanOptionItem.Create(Id + 14, "OiiaiCanPassOn", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
         ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 1, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
     }
@@ -98,8 +94,11 @@ public static class Oiiai
 
                 if (changeValue != 0)
                 {
+                    killer.GetRoleClass().OnRemove(killer.PlayerId);
                     killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
                     killer.GetRoleClass().OnAdd(killer.PlayerId);
+
+                    killer.SyncSettings();
 
                     Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Neutrals with kill button assign.", "Oiiai");
                 }

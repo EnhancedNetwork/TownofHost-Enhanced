@@ -15,6 +15,7 @@ internal class Shroud : RoleBase
     //===========================SETUP================================\\
     private const int Id = 18000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Shroud);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -40,9 +41,6 @@ internal class Shroud : RoleBase
     public override void Add(byte playerId)
     {
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     private void SendRPC(byte shroudId, byte targetId, byte typeId)
     {
@@ -115,9 +113,9 @@ internal class Shroud : RoleBase
             float dis;
             foreach (var target in Main.AllAlivePlayerControls)
             {
-                if (target.PlayerId != shroud.PlayerId && !target.Is(CustomRoles.Shroud) && !target.Is(CustomRoles.Pestilence))
+                if (target.PlayerId != shroud.PlayerId && !target.Is(CustomRoles.Shroud) && !target.IsTransformedNeutralApocalypse())
                 {
-                    dis = Vector2.Distance(shroudPos, target.transform.position);
+                    dis = Utils.GetDistance(shroudPos, target.transform.position);
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }

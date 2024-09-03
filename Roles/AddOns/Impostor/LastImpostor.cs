@@ -1,14 +1,15 @@
 
 namespace TOHE.Roles.AddOns.Impostor;
 
-public static class LastImpostor
+public class LastImpostor : IAddon
 {
     private const int Id = 22800;
+    public AddonTypes Type => AddonTypes.Impostor;
     public static byte currentId = byte.MaxValue;
 
     private static OptionItem CooldownReduction;
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.Addons, CustomRoles.LastImpostor, 1);
         CooldownReduction = FloatOptionItem.Create(Id + 15, "OverclockedReduction", new(5f, 95f, 5f), 50f, TabGroup.Addons, false)

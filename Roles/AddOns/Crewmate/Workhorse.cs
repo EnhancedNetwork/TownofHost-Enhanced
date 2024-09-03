@@ -4,9 +4,10 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
-public static class Workhorse
+public class Workhorse : IAddon
 {
     private const int Id = 23730;
+    public AddonTypes Type => AddonTypes.Misc;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool IsEnable = false;
 
@@ -21,7 +22,7 @@ public static class Workhorse
     private static int NumLongTasks;
     private static int NumShortTasks;
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.Addons, CustomRoles.Workhorse, zeroOne: true);
         OptionAssignOnlyToCrewmate = BooleanOptionItem.Create(Id + 10, "AssignOnlyToCrewmate", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse]);
