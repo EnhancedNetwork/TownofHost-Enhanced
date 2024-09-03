@@ -3,11 +3,12 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
 
-public static class Swift
+public class Swift : IAddon
 {
     private const int Id = 23300;
-    
-    public static void SetupCustomOption()
+    public AddonTypes Type => AddonTypes.Experimental;
+
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Swift, canSetNum: true, tab: TabGroup.Addons);
     }

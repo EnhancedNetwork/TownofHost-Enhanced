@@ -33,7 +33,7 @@ public static class AntiBlackout
                 Impostors.Add(pc.PlayerId);
 
             // Only Neutral killers
-            else if (pc.IsNeutralKiller()) 
+            else if (pc.IsNeutralKiller() || pc.IsNeutralApocalypse()) 
                 NeutralKillers.Add(pc.PlayerId);
 
             // Crewmate

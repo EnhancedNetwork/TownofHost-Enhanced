@@ -109,7 +109,7 @@ internal class Hawk : RoleBase
         return target != null && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
             && AbilityLimit > 0
             && rnd.Next(100) >= KillerChanceMiss[target.PlayerId]
-            && !target.Is(CustomRoles.Pestilence)
+            && !target.IsNeutralApocalypse()
             && !target.Is(CustomRoles.Jinx)
             && !target.Is(CustomRoles.CursedWolf)
             && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18);

@@ -1,4 +1,5 @@
 using TOHE.Roles.Core;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -10,6 +11,7 @@ internal class CopyCat : RoleBase
     private const int Id = 11500;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -39,9 +41,6 @@ internal class CopyCat : RoleBase
     {
         playerIdList.Add(playerId);
         CurrentKillCooldown = KillCooldown.GetFloat();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
     {
@@ -133,6 +132,7 @@ internal class CopyCat : RoleBase
                     break;
                 case CustomRoles.Arrogance:
                 case CustomRoles.Juggernaut:
+                case CustomRoles.Berserker:
                     role = CustomRoles.Reverie;
                     break;
                 //case CustomRoles.EvilGuesser:
@@ -151,11 +151,24 @@ internal class CopyCat : RoleBase
                 case CustomRoles.Pursuer:
                     role = CustomRoles.Deceiver;
                     break;
+                case CustomRoles.Baker:
+                    switch (Baker.CurrentBread())
+                    {
+                        case 0:
+                            role = CustomRoles.Overseer;
+                            break;
+                        case 1:
+                            role = CustomRoles.Deputy;
+                            break;    
+                        case 2:
+                            role = CustomRoles.Crusader; // medic would make more sense but medic cant be used
+                            break;
+                    }
+                    break;
             }
         }
         if (role.IsCrewmate())
         {
-
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcSetCustomRole(role);

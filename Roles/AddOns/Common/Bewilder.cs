@@ -3,26 +3,21 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Bewilder
+public class Bewilder : IAddon
 {
     private const int Id = 18900;
+    public AddonTypes Type => AddonTypes.Helpful;
 
     private static OptionItem BewilderVision;
-    public static OptionItem ImpCanBeBewilder;
-    public static OptionItem CrewCanBeBewilder;
-    public static OptionItem NeutralCanBeBewilder;
     private static OptionItem KillerGetBewilderVision;
 
     public static bool IsEnable;
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Bewilder, canSetNum: true);
+        SetupAdtRoleOptions(Id, CustomRoles.Bewilder, canSetNum: true, teamSpawnOptions: true);
         BewilderVision = FloatOptionItem.Create(Id + 10, "BewilderVision", new(0f, 5f, 0.05f), 0.6f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder])
             .SetValueFormat(OptionFormat.Multiplier);
-        ImpCanBeBewilder = BooleanOptionItem.Create(Id + 11, "ImpCanBeBewilder", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
-        CrewCanBeBewilder = BooleanOptionItem.Create(Id + 12, "CrewCanBeBewilder", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
-        NeutralCanBeBewilder = BooleanOptionItem.Create(Id + 13, "NeutralCanBeBewilder", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
         KillerGetBewilderVision = BooleanOptionItem.Create(Id + 14, "KillerGetBewilderVision", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
     }
 

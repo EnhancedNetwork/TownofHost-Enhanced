@@ -69,6 +69,49 @@ static class ExtendedPlayerControl
             return null;
         }
     }
+    public static void RpcCastVote(this PlayerControl player, byte suspectIdx)
+    {
+        if (!GameStates.IsMeeting)
+        {
+            Logger.Info($"Cancelled RpcCastVote for {player?.Data.PlayerName} because there is no meeting", "ExtendedPlayerControls..RPCCastVote");
+            return;
+        }
+        if (player == null) return;
+        var playerId = player.PlayerId;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            MeetingHud.Instance.CmdCastVote(playerId, suspectIdx);
+        }
+        else
+        {
+            var writer = CustomRpcSender.Create("Cast Vote", SendOption.Reliable);
+            writer.AutoStartRpc(MeetingHud.Instance.NetId, (byte)RpcCalls.CastVote)
+                .Write(playerId)
+                .Write(suspectIdx)
+            .EndRpc();
+            writer.SendMessage();
+        }
+    }
+    public static void RpcClearVoteDelay(this MeetingHud meeting, int clientId)
+    {
+        _ = new LateTask(() =>
+        {
+            if (meeting == null)
+            {
+                Logger.Info($"Cannot be cleared because meetinghud is null", "RpcClearVoteDelay");
+                return;
+            }
+            if (AmongUsClient.Instance.ClientId == clientId)
+            {
+                meeting.ClearVote();
+                return;
+            }
+            var writer = CustomRpcSender.Create("Clear Vote", SendOption.Reliable);
+            writer.AutoStartRpc(meeting.NetId, (byte)RpcCalls.ClearVote, clientId).EndRpc();
+            writer.SendMessage();
+        }, 0.5f, "Clear Vote");
+    }
     public static int GetClientId(this PlayerControl player)
     {
         if (player == null) return -1;
@@ -593,8 +636,8 @@ static class ExtendedPlayerControl
     public static bool CanUseKillButton(this PlayerControl pc)
     {
         if (GameStates.IsLobby) return false;
-        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return false;
-        if (DollMaster.IsDoll(pc.PlayerId)) return false;
+        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId) || DollMaster.IsDoll(pc.PlayerId)) return false;
+        if (pc.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && !Options.ShieldedCanUseKillButton.GetBool() && MeetingStates.FirstMeeting) return false;
         if (pc.Is(CustomRoles.Killer) || Mastermind.PlayerIsManipulated(pc)) return true;
 
         var playerRoleClass = pc.GetRoleClass();
@@ -783,6 +826,10 @@ static class ExtendedPlayerControl
                 Radar.Remove(Killed.PlayerId);
                 Radar.Add(target.PlayerId);
                 break;
+            case CustomRoles.Rebirth:
+                Rebirth.Remove(Killed.PlayerId);
+                Rebirth.Add(target.PlayerId);
+                break;
         }
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false)
@@ -826,7 +873,7 @@ static class ExtendedPlayerControl
         var rangePlayersIL = RoleBehaviour.GetTempPlayerList();
         List<PlayerControl> rangePlayers = [];
         player.Data.Role.GetPlayersInAbilityRangeSorted(rangePlayersIL, ignoreColliders);
-        foreach (var pc in rangePlayersIL.ToArray())
+        foreach (var pc in rangePlayersIL.GetFastEnumerator())
         {
             if (predicate(pc)) rangePlayers.Add(pc);
         }
@@ -836,6 +883,8 @@ static class ExtendedPlayerControl
     public static bool IsNeutralBenign(this PlayerControl player) => player.GetCustomRole().IsNB();
     public static bool IsNeutralEvil(this PlayerControl player) => player.GetCustomRole().IsNE();
     public static bool IsNeutralChaos(this PlayerControl player) => player.GetCustomRole().IsNC();
+    public static bool IsNeutralApocalypse(this PlayerControl player) => player.GetCustomRole().IsNA();
+    public static bool IsTransformedNeutralApocalypse(this PlayerControl player) => player.GetCustomRole().IsTNA();
     public static bool IsNonNeutralKiller(this PlayerControl player) => player.GetCustomRole().IsNonNK();
     
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl target)
@@ -1194,6 +1243,12 @@ static class ExtendedPlayerControl
     public static PlayerControl GetRealKiller(this PlayerControl target)
     {
         var killerId = Main.PlayerStates[target.Data.PlayerId].GetRealKiller();
+        return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
+    }
+    public static PlayerControl GetRealKiller(this PlayerControl target, out CustomRoles killerRole)
+    {
+        var killerId = Main.PlayerStates[target.Data.PlayerId].GetRealKiller();
+        killerRole = Main.PlayerStates[target.Data.PlayerId].RoleofKiller;
         return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
     }
     public static PlayerControl GetRealKillerById(this byte targetId)

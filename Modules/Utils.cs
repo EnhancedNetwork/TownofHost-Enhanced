@@ -45,19 +45,36 @@ public static class Utils
             {
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
             }, 3f, "Anti-Black Msg SendInGame Error During Loading");
-            
-            _ = new LateTask(() =>
+
+            if (GameStates.IsShip || !GameStates.IsLobby || GameStates.IsCoStartGame)
             {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
-                GameManager.Instance.LogicFlow.CheckEndCriteria();
-                RPC.ForceEndGame(CustomWinner.Error);
-            }, 5.5f, "Anti-Black End Game As Critical Error");
+                _ = new LateTask(() =>
+                {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
+                    GameManager.Instance.LogicFlow.CheckEndCriteria();
+                    RPC.ForceEndGame(CustomWinner.Error);
+                }, 5.5f, "Anti-Black End Game As Critical Error");
+            }
+            else if (GameStartManager.Instance != null)
+            {
+                GameStartManager.Instance.ResetStartState();
+                AmongUsClient.Instance.RemoveUnownedObjects();
+                Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
+            }
+            else
+            {
+                Logger.SendInGame("Host in a unknow antiblack bugged state.");
+                Logger.Fatal($"Host in a unknow antiblack bugged state.", "Anti-black");
+            }
         }
         else
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
             writer.Write(text);
             writer.EndMessage();
+
+            Logger.Fatal($"Error: {text} - I'm triggering critical error", "Anti-black");
+
             if (Options.EndWhenPlayerBug.GetBool())
             {
                 _ = new LateTask(() =>
@@ -74,8 +91,11 @@ public static class Utils
                 
                 _ = new LateTask(() =>
                 {
-                    AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
-                    Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
+                    if (AmongUsClient.Instance.AmConnected)
+                    {
+                        AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
+                        Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
+                    }
                 }, 8f, "Anti-Black Exit Game Due Critical Error");
             }
         }
@@ -231,7 +251,7 @@ public static class Utils
         }
         return;
     }
-
+    
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
         if (!target.Data.IsDead || GameStates.IsMeeting) return;
@@ -379,11 +399,15 @@ public static class Utils
     {
         return GetString("DeathReason." + Enum.GetName(typeof(PlayerState.DeathReason), status));
     }
+    public static float GetDistance(Vector2 pos1, Vector2 pos2) => Vector2.Distance(pos1, pos2);
     public static Color GetRoleColor(CustomRoles role)
     {
-        if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
-        _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
-        return c;
+        if (Main.roleColors.TryGetValue(role, out var hexColor))
+        {
+            _ = ColorUtility.TryParseHtmlString(hexColor, out var color);
+            return color;
+        }
+        return Color.white;
     }
     public static Color GetTeamColor(PlayerControl player)
     {
@@ -545,8 +569,8 @@ public static class Utils
         }
 
         if (playerData.Disconnected) return false;
-        if (playerData.Role.IsImpostor)
-            hasTasks = false; //Tasks are determined based on CustomRole
+        //if (playerData.Role.IsImpostor)
+        //    hasTasks = false; //Tasks are determined based on CustomRole
 
         if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
         if (playerData.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
@@ -565,7 +589,7 @@ public static class Utils
                 break;
             default:
                 // player based on an impostor not should have tasks
-                if (States.RoleClass.ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter)
+                if (States.RoleClass.ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom)
                     hasTasks = false;
                 break;
         }
@@ -582,7 +606,6 @@ public static class Utils
                 case CustomRoles.Contagious:
                 case CustomRoles.Soulless:
                 case CustomRoles.Rascal:
-                    //Lovers don't count the task as a win
                     hasTasks &= !ForRecompute;
                     break;
                 case CustomRoles.Mundane:
@@ -1011,13 +1034,13 @@ public static class Utils
     {
         try
         {
-            StackTrace st = new(1, true);
+            StackTrace st = new(0, true);
             StackFrame[] stFrames = st.GetFrames();
 
             StackFrame firstFrame = stFrames.FirstOrDefault();
 
             var sb = new StringBuilder();
-            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName} at line {lineNumber} in {callerMemberName}\n------ Stack Trace ------");
+            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName}\n      at line {lineNumber}\n      in method \"{callerMemberName}\"\n------ Method Stack Trace ------");
 
             bool skip = true;
             foreach (StackFrame sf in stFrames)
@@ -1033,10 +1056,17 @@ public static class Utils
                 string callerMethodName = callerMethod?.Name;
                 string callerClassName = callerMethod?.DeclaringType?.FullName;
 
-                sb.Append($"\n      at {callerClassName}.{callerMethodName}");
+                var line = $"line {sf.GetFileLineNumber()} ({sf.GetFileColumnNumber()}) in {sf.GetFileName()}";
+
+                sb.Append($"\n      at {callerClassName}.{callerMethodName} ({line})");
             }
 
-            sb.Append("\n------ End of Stack Trace ------");
+            sb.Append("\n------ End of Method Stack Trace ------");
+            sb.Append("\n------ Exception Stack Trace ------");
+
+            sb.Append(ex.StackTrace?.Replace("\r\n", "\n").Replace("\\n", "\n").Replace("\n", "\n      "));
+
+            sb.Append("\n------ End of Exception Stack Trace ------");
 
             Logger.Error(sb.ToString(), firstFrame?.GetMethod()?.ToString(), multiLine: true);
         }
@@ -1683,6 +1713,17 @@ public static class Utils
         return null;
     }
 
+    public static bool IsMethodOverridden(this RoleBase roleInstance, string methodName)
+    {
+        Type baseType = typeof(RoleBase);
+        Type derivedType = roleInstance.GetType();
+
+        MethodInfo baseMethod = baseType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+        MethodInfo derivedMethod = derivedType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+
+        return baseMethod.DeclaringType != derivedMethod.DeclaringType;
+    }
+
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
@@ -1773,7 +1814,7 @@ public static class Utils
                 string RoleInfo = $"<size=25%>\n</size><size={GetInfoSize(seer.GetRoleInfo())}%>{Font}{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</font></size>";
                 string RoleNameUp = "<size=1350%>\n\n</size>";
 
-                if (!seer.GetCustomRole().IsDesyncRole())
+                if (!seer.HasDesyncRole())
                 {
                     SelfTeamName = string.Empty;
                     RoleNameUp = "<size=565%>\n</size>";
@@ -1811,7 +1852,7 @@ public static class Utils
             var seerRoleClass = seer.GetRoleClass();
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
+            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(Custom_Team.Impostor) && seer.HasDesyncRole())
             {
                 seer.RpcSetNamePrivate("<size=0%>", force: NoCache);
             }
@@ -1844,6 +1885,8 @@ public static class Utils
                 SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
+                SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
+
 
                 switch (Options.CurrentGameMode)
                 {
@@ -1863,6 +1906,12 @@ public static class Utils
                 string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, false)}{SelfTaskText}</size>";
                 string SelfDeathReason = seer.KnowDeathReason(seer) ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : string.Empty;
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
+
+                // Add protected player icon from ShieldPersonDiedFirst
+                if (seer.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting && !isForMeeting)
+                {
+                    SelfName = $"{ColorString(seer.GetRoleColor(), $"<color=#4fa1ff><u></color>{SeerRealName}</u>")}{SelfDeathReason}<color=#4fa1ff>✚</color>{SelfMark}";
+                }
 
                 bool IsDisplayInfo = false;
                 if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode != CustomGameMode.FFA)
@@ -1944,7 +1993,7 @@ public static class Utils
                 foreach (var realTarget in targetList)
                 {
                     // if the target is the seer itself, do nothing
-                    if (realTarget.PlayerId == seer.PlayerId) continue;
+                    if (realTarget == null || (realTarget.PlayerId == seer.PlayerId)) continue;
 
                     var target = realTarget;
 
@@ -1954,7 +2003,7 @@ public static class Utils
                     //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(Custom_Team.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
+                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(Custom_Team.Impostor) && seer.HasDesyncRole())
                     {
                         realTarget.RpcSetNamePrivate("<size=0%>", seer, force: NoCache);
                     }
@@ -2036,6 +2085,9 @@ public static class Utils
                                     if (Options.NeutralKillersCanGuess.GetBool() && seer.GetCustomRole().IsNK())
                                         TargetPlayerName = GetTragetId;
 
+                                    if (Options.NeutralApocalypseCanGuess.GetBool() && seer.GetCustomRole().IsNA())
+                                        TargetPlayerName = GetTragetId;
+
                                     if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))
                                         TargetPlayerName = GetTragetId;
                                 }
@@ -2086,6 +2138,12 @@ public static class Utils
                         string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}{TargetSuffix}";
                         //TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
 
+                        // Add protected player icon from ShieldPersonDiedFirst
+                        if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting && !isForMeeting && Options.ShowShieldedPlayerToAll.GetBool())
+                        {
+                            TargetName = $"{TargetRoleText}<color=#4fa1ff><u></color>{TargetPlayerName}</u>{TargetDeathReason}<color=#4fa1ff>✚</color>{TargetMark}{TargetSuffix}";
+                        }
+
                         realTarget.RpcSetNamePrivate(TargetName, seer, force: NoCache);
                     }
                 }
@@ -2111,7 +2169,8 @@ public static class Utils
             return rso is PlayerState.DeathReason.Overtired 
                 or PlayerState.DeathReason.etc
                 or PlayerState.DeathReason.Vote 
-                or PlayerState.DeathReason.Gambled;
+                or PlayerState.DeathReason.Gambled
+                or PlayerState.DeathReason.Armageddon;
         }
 
         return checkbanned ? !BannedReason(reason) : reason switch
@@ -2162,6 +2221,7 @@ public static class Utils
             var Breason when BannedReason(Breason) => false,
             PlayerState.DeathReason.Slice => CustomRoles.Hawk.IsEnable(),
             PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
+            PlayerState.DeathReason.Starved => CustomRoles.Baker.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };
@@ -2178,7 +2238,10 @@ public static class Utils
 
         foreach (var playerState in Main.PlayerStates.Values.ToArray())
         {
-            playerState.RoleClass?.AfterMeetingTasks();
+            if (playerState.RoleClass == null) continue;
+
+            playerState.RoleClass.AfterMeetingTasks();
+            playerState.RoleClass.HasVoted = false;
         }
 
         //Set kill timer
@@ -2213,6 +2276,7 @@ public static class Utils
             ventilationSystem.IsDirty = true;
         }
     }
+    public static string ToColoredString(this CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString($"{role}"));
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {
         var tmp = ChangeTo * 10;

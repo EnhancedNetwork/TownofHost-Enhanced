@@ -2,24 +2,22 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Trapper
+public class Trapper : IAddon
 {
     private const int Id = 18800;
+    public AddonTypes Type => AddonTypes.Helpful;
 
-    public static OptionItem ImpCanBeTrapper;
-    public static OptionItem CrewCanBeTrapper;
-    public static OptionItem NeutralCanBeTrapper;
-    private static OptionItem TrapperBlockMoveTime;
+    public static OptionItem TrapperBlockMoveTime;
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Trapper, canSetNum: true);
-        ImpCanBeTrapper = BooleanOptionItem.Create(Id + 10, "ImpCanBeTrapper", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper]);
-        CrewCanBeTrapper = BooleanOptionItem.Create(Id + 11, "CrewCanBeTrapper", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper]);
-        NeutralCanBeTrapper = BooleanOptionItem.Create(Id + 12, "NeutralCanBeTrapper", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper]);
+        SetupAdtRoleOptions(Id, CustomRoles.Trapper, canSetNum: true, teamSpawnOptions: true);
         TrapperBlockMoveTime = FloatOptionItem.Create(Id + 13, "TrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper])
             .SetValueFormat(OptionFormat.Seconds);
     }
+}
+public static class TrapperExtension
+{
     public static void TrapperKilled(this PlayerControl killer, PlayerControl target)
     {
         Logger.Info($"{target?.Data?.PlayerName} was Trapper", "Trapper");
@@ -33,7 +31,6 @@ public static class Trapper
             ReportDeadBodyPatch.CanReport[killer.PlayerId] = true;
             killer.MarkDirtySettings();
             RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
-        }, TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
+        }, Trapper.TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
     }
-
 }

@@ -86,6 +86,7 @@
 > - Improved Role Summary
 > - Dark Theme
 > - Improved Role Spawns
+> - Improve text box (TextBoxPatch.cs)
 > - Some ideas to improve performance
 ### :star: [TONEX (Formerly TOHEX)](https://github.com/XtremeWave/TownOfNewEpic_Xtreme)
 >

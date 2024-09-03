@@ -3,10 +3,11 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Aware
+public class Aware : IAddon
 {
     private const int Id = 21600;
     public static bool IsEnable = false;
+    public AddonTypes Type => AddonTypes.Mixed;
 
     public static OptionItem ImpCanBeAware;
     public static OptionItem CrewCanBeAware;
@@ -15,12 +16,9 @@ public static class Aware
 
     public static Dictionary<byte, List<string>> AwareInteracted = [];
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(21600, CustomRoles.Aware, canSetNum: true);
-        ImpCanBeAware = BooleanOptionItem.Create(Id + 10, "ImpCanBeAware", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
-        CrewCanBeAware = BooleanOptionItem.Create(Id + 11, "CrewCanBeAware", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
-        NeutralCanBeAware = BooleanOptionItem.Create(Id + 12, "NeutralCanBeAware", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
+        SetupAdtRoleOptions(21600, CustomRoles.Aware, canSetNum: true, teamSpawnOptions: true);
         AwareknowRole = BooleanOptionItem.Create(Id + 13, "AwareKnowRole", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
     }
 

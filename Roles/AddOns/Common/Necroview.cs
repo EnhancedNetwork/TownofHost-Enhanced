@@ -2,20 +2,14 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Necroview
+public class Necroview : IAddon
 {
     private const int Id = 19600;
+    public AddonTypes Type => AddonTypes.Helpful;
 
-    public static OptionItem ImpCanBeNecroview;
-    public static OptionItem CrewCanBeNecroview;
-    public static OptionItem NeutralCanBeNecroview;
-
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Necroview, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeNecroview = BooleanOptionItem.Create(Id + 10, "ImpCanBeNecroview", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necroview]);
-        CrewCanBeNecroview = BooleanOptionItem.Create(Id + 11, "CrewCanBeNecroview", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necroview]);
-        NeutralCanBeNecroview = BooleanOptionItem.Create(Id + 12, "NeutralCanBeNecroview", true, TabGroup.Addons, false) .SetParent(CustomRoleSpawnChances[CustomRoles.Necroview]);
+        SetupAdtRoleOptions(Id, CustomRoles.Necroview, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
 
     public static string NameColorOptions(PlayerControl target)

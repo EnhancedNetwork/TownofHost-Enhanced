@@ -13,7 +13,7 @@ internal class Amnesiac : RoleBase
     private const int Id = 12700;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled = playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -46,9 +46,6 @@ internal class Amnesiac : RoleBase
     {
         playerIdList.Add(playerId);
         CanUseVent[playerId] = true;
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (ShowArrows.GetBool())
@@ -165,6 +162,13 @@ internal class Amnesiac : RoleBase
                     tempRole = CustomRoles.EngineerTOHE;
                 }
                 Main.TasklessCrewmate.Add(__instance.PlayerId);
+            }
+            if (tar.GetCustomRole().IsNA())
+            {
+                __instance.RpcSetCustomRole(tar.GetCustomRole());
+                __instance.GetRoleClass().Add(__instance.PlayerId);
+                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
             }
             if (tar.GetCustomRole().IsAmneNK())
             {

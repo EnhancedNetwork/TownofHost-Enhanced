@@ -49,6 +49,8 @@ enum CustomRPC : byte // 197/255 USED
     SyncLobbyTimer,
     SyncPlayerSetting,
     ShowChat,
+    SyncShieldPersonDiedFirst,
+    RemoveSubRole,
 
     //Roles 
     SetBountyTarget,
@@ -108,6 +110,7 @@ enum CustomRPC : byte // 197/255 USED
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
     SetCoronerArrow,
+    SpurtSync,
     SetCoronerkKillerArrow,
     SetVultureArrow,
     SetRadarArrow,
@@ -208,30 +211,84 @@ internal class RPCHandlerPatch
         switch (rpcType)
         {
             case CustomRPC.AntiBlackout:
-                if (Options.EndWhenPlayerBug.GetBool())
+                Logger.Fatal($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): Error: {reader.ReadString()} - end the game according to the setting", "Anti-black");
+
+                if (GameStates.IsShip || !GameStates.IsLobby || GameStates.IsCoStartGame)
                 {
-                    Logger.Fatal($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): Error: {reader.ReadString()} - end the game according to the setting", "Anti-black");
+                    //CoStartGame is running, we are fucked.
                     ChatUpdatePatch.DoBlockChat = true;
                     Main.OverrideWelcomeMsg = string.Format(GetString("RpcAntiBlackOutNotifyInLobby"), __instance?.Data?.PlayerName, GetString("EndWhenPlayerBug"));
-                    _ = new LateTask(() =>
-                    {
-                        Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutEndGame"), __instance?.Data?.PlayerName));
-                    }, 3f, "RPC Anti-Black Msg SendInGame Error During Loading");
 
-                    _ = new LateTask(() =>
+                    if (Options.EndWhenPlayerBug.GetBool())
                     {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
-                        GameManager.Instance.LogicFlow.CheckEndCriteria();
-                        RPC.ForceEndGame(CustomWinner.Error);
-                    }, 5.5f, "RPC Anti-Black End Game As Critical Error");
+                        _ = new LateTask(() =>
+                        {
+                            Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutEndGame"), __instance?.Data?.PlayerName));
+                        }, 3f, "RPC Anti-Black Msg SendInGame Error During Loading");
+
+                        if (AmongUsClient.Instance.AmHost)
+                        {
+                            if (GameStates.IsInGame && !GameStates.IsCoStartGame)
+                            {
+                                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
+                                GameManager.Instance.LogicFlow.CheckEndCriteria();
+                                RPC.ForceEndGame(CustomWinner.Error);
+                            }
+                            else
+                            {
+                                _ = new LateTask(() =>
+                                {
+                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
+                                    GameManager.Instance.LogicFlow.CheckEndCriteria();
+                                    RPC.ForceEndGame(CustomWinner.Error);
+                                }, 5.5f, "RPC Anti-Black End Game As Critical Error");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _ = new LateTask(() =>
+                        {
+                            Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutIgnored"), __instance?.Data?.PlayerName));
+                        }, 3f, "RPC Anti-Black Msg SendInGame Out Ignored");
+
+                        if (AmongUsClient.Instance.AmHost && __instance != null)
+                        {
+                            if (GameStates.IsInGame && !GameStates.IsCoStartGame)
+                            {
+                                AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
+                                Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutKicked"), __instance?.Data?.PlayerName));
+                            }
+                            else
+                            {
+                                _ = new LateTask(() =>
+                                {
+                                    AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
+                                    Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutKicked"), __instance?.Data?.PlayerName));
+                                }, 5.5f, "RPC Anti-Black Kicked As Critical Error");
+                            }
+
+                            ChatUpdatePatch.DoBlockChat = false;
+                        }
+                    }
+                }
+                else if (GameStartManager.Instance != null) 
+                {
+                    // We imagine rpc is received when starting game in lobby, not fucked yet
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        GameStartManager.Instance.ResetStartState();
+                        if (__instance != null)
+                        {
+                            AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
+                        }
+                    }
+                    Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutKicked"), __instance?.Data?.PlayerName));
                 }
                 else
                 {
-                    Logger.Fatal($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): Error: {reader.ReadString()} - continue the game according to the settings", "Anti-black");
-                    _ = new LateTask(() =>
-                    {
-                        Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutIgnored"), __instance?.Data?.PlayerName));
-                    }, 3f, "RPC Anti-Black Msg SendInGame Out Ignored");
+                    Logger.SendInGame("[Critical Error] Your client is in a unknow state while receiving AntiBlackOut rpcs from others.");
+                    Logger.Fatal($"Client is in a unknow state while receiving AntiBlackOut rpcs from others.", "Anti-black");
                 }
                 break;
 
@@ -331,6 +388,12 @@ internal class RPCHandlerPatch
                         option.SetValue(4); // 4 => Preset 5
                     }
                 }
+                break;
+
+            case CustomRPC.RemoveSubRole:
+                byte targetId = reader.ReadByte();
+                var Subrole = (CustomRoles)reader.ReadPackedInt32();
+                Main.PlayerStates[targetId].RemoveSubRole(Subrole);
                 break;
 
             case CustomRPC.SetDeathReason:
@@ -458,9 +521,9 @@ internal class RPCHandlerPatch
                 EvilTracker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetRealKiller:
-                byte targetId = reader.ReadByte();
+                byte tarid = reader.ReadByte();
                 byte killerId = reader.ReadByte();
-                RPC.SetRealKiller(targetId, killerId);
+                RPC.SetRealKiller(tarid, killerId);
                 break;
             //case CustomRPC.SetTrackerTarget:
             //    Tracker.ReceiveRPC(reader);
@@ -566,6 +629,9 @@ internal class RPCHandlerPatch
             case CustomRPC.NemesisRevenge:
                 Nemesis.ReceiveRPC_Custom(reader, __instance);
                 break;
+            case CustomRPC.SpurtSync:
+                Spurt.RecieveRPC(reader);
+                break;
             case CustomRPC.RetributionistRevenge:
                 Retributionist.ReceiveRPC_Custom(reader, __instance);
                 break;
@@ -624,6 +690,10 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveSwapRPC(reader, __instance);
+                break;
+            case CustomRPC.SyncShieldPersonDiedFirst:
+                Main.FirstDied = reader.ReadString();
+                Main.FirstDiedPrevious = reader.ReadString();
                 break;
         }
     }
@@ -944,6 +1014,9 @@ internal static class RPC
             case CustomRoles.Statue:
                 Statue.Add(targetId);
                 break;
+            case CustomRoles.Evader:
+                Evader.Add(targetId);
+                break;
 
         }
 
@@ -1009,6 +1082,7 @@ internal static class RPC
         var state = Main.PlayerStates[targetId];
         state.RealKiller.Item1 = DateTime.Now;
         state.RealKiller.Item2 = killerId;
+        state.RoleofKiller = Main.PlayerStates.TryGetValue(killerId, out var kState) ? kState.MainRole : CustomRoles.NotAssigned;
 
         if (!AmongUsClient.Instance.AmHost) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRealKiller, SendOption.Reliable, -1);

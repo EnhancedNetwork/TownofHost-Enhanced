@@ -10,6 +10,7 @@ internal class Sheriff : RoleBase
     //===========================SETUP================================\\
     private const int Id = 11200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Sheriff);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -76,13 +77,10 @@ internal class Sheriff : RoleBase
         AbilityLimit = ShotLimitOpt.GetInt();
 
         Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()} : limit: {AbilityLimit}", "Sheriff");
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     private static void SetUpNeutralOptions(int Id)
     {
-        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && x is not CustomRoles.Pestilence && x is not CustomRoles.Glitch).ToArray())
+        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && !x.IsTNA() && x is not CustomRoles.Glitch).ToArray())
         {
             SetUpKillTargetOption(neutral, Id, true, CanKillNeutralsMode);
             Id++;
@@ -160,7 +158,7 @@ internal class Sheriff : RoleBase
         return cRole switch
         {
             CustomRoles.Trickster => false,
-            CustomRoles.Pestilence => true,
+            var r when cRole.IsTNA() => false,
             _ => cRole.GetCustomRoleTeam() switch
             {
                 Custom_Team.Impostor => true,

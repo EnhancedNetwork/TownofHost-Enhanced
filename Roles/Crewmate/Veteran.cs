@@ -72,11 +72,11 @@ internal class Veteran : RoleBase
         if (killer.PlayerId != target.PlayerId && VeteranInProtect.TryGetValue(target.PlayerId, out var time))
             if (time + VeteranSkillDuration.GetInt() >= GetTimeStamp())
             {
-                if (killer.Is(CustomRoles.Pestilence))
+                if (killer.Is(CustomRoles.Pestilence) || killer.Is(CustomRoles.War))
                 {
                     killer.RpcMurderPlayer(target);
                     target.SetRealKiller(killer);
-                    Logger.Info($"{killer.GetRealName()} kill {target.GetRealName()} because killer Pestilence", "Veteran");
+                    Logger.Info($"{killer.GetRealName()} kill {target.GetRealName()} because killer Pestilence or War", "Veteran");
                     return false;
                 }
                 else if (killer.Is(CustomRoles.Jinx))

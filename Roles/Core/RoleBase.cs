@@ -16,6 +16,9 @@ public abstract class RoleBase
 
     public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
+    public bool HasVoted = false;
+    public virtual bool IsExperimental => false;
+    public virtual bool IsDesyncRole => false;
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;
@@ -35,6 +38,12 @@ public abstract class RoleBase
         if (CustomRoleManager.OtherCollectionsSet) // If a role is applied mid-game, filter them again jsut in-case
         {
             CustomRoleManager.Add();
+        }
+
+        // Remember desync player so that when changing role he will still be as desync
+        if (IsDesyncRole)
+        {
+            Main.DesyncPlayerList.Add(playerid);
         }
     }
     public void OnRemove(byte playerId)
@@ -96,8 +105,6 @@ public abstract class RoleBase
 
     public virtual void SetupCustomOption()
     { }
-
-    public virtual bool IsExperimental => false;
 
     /// <summary>
     /// A generic method to send a CustomRole's Gameoptions.
@@ -251,6 +258,16 @@ public abstract class RoleBase
     public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     { }
 
+
+    // NOTE: when using UnShapeshift button, it will not be possible to revert to normal state because of complications.
+    // So OnCheckShapeShift and OnShapeshift are pointless when using it.
+    // Last thing, while the button may say "shift" after resetability, the game still thinks you're shapeshifted and will work instantly as intended.
+    
+    /// <summary>
+    /// A method which when implemented automatically makes the players always shapeshifted (as themselves). Inside you can put functions to happen when "Un-Shapeshift" button is pressed.
+    /// </summary>
+    public virtual void UnShapeShiftButton(PlayerControl shapeshifter) { }
+
     /// <summary>
     /// Check start meeting by press meeting button
     /// </summary>
@@ -345,20 +362,27 @@ public abstract class RoleBase
     public virtual void OnCoEndGame()
     { }
 
+
     /// <summary>
-    /// When player vote for target
+    /// If role wants to return the vote to the player during meeting. Can also work to check any abilities during meeting.
+    /// </summary>
+    public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter != null && target != null;
+
+    /// <summary>
+    /// A check for any role abilites of the player which voted, when the vote hasn't been canceled by any other means.
     /// </summary>
     public virtual void OnVote(PlayerControl votePlayer, PlayerControl voteTarget)
     { }
     /// <summary>
-    /// When the player was voted
+    /// A check for any role abilites of the player that was voted, when the vote hasn't been canceled by any other means.
     /// </summary>
     public virtual void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)
     { }
     /// <summary>
-    /// When need hide vote
+    /// Hides the playervote
     /// </summary>
-    public virtual bool HideVote(PlayerVoteArea votedPlayer) => false;
+    public virtual bool HideVote(PlayerVoteArea PVA) => false;
+
 
     /// <summary>
     /// When need add visual votes
@@ -401,12 +425,6 @@ public abstract class RoleBase
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
 
-    public virtual float SetModdedLowerText(out Color32? FaceColor)
-    {
-        FaceColor = null;
-        return 2.8f;
-    }
-
 
     // 
     // IMPORTANT note about otherIcons: 
@@ -447,6 +465,7 @@ public abstract class RoleBase
         // Ability
         Cooldown,
         AbilityCooldown,
+        SkillLimitTimes,
 
         // Impostor-based settings
         CanKill,

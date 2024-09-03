@@ -20,7 +20,6 @@ internal class Keeper : RoleBase
     //==================================================================\\
 
     private static OptionItem KeeperUsesOpt;
-    private static OptionItem HidesVote;
 
     private static readonly HashSet<byte> keeperTarget = [];
     private static readonly Dictionary<byte, int> keeperUses = [];
@@ -31,8 +30,7 @@ internal class Keeper : RoleBase
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Keeper);
         KeeperUsesOpt = IntegerOptionItem.Create(Id + 10, "MaxProtections", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Keeper])
             .SetValueFormat(OptionFormat.Times);
-        HidesVote = BooleanOptionItem.Create(Id + 11, "KeeperHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Keeper]);
-
+      
     }
     public override void Init()
     {
@@ -54,7 +52,6 @@ internal class Keeper : RoleBase
         DidVote.Remove(playerId);
         keeperUses.Remove(playerId);
     }
-    public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && keeperUses[pva.TargetPlayerId] > 0;
 
     public override string GetProgressText(byte playerId, bool comms)
     {
@@ -116,7 +113,8 @@ internal class Keeper : RoleBase
         }
     }
 
-    public static bool OnVotes(PlayerControl voter, PlayerControl target)
+
+    public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
         if (!CustomRoles.Keeper.HasEnabled()) return true;
         if (voter == null || target == null) return true;
@@ -129,7 +127,7 @@ internal class Keeper : RoleBase
         keeperUses[voter.PlayerId]++;
         keeperTarget.Add(target.PlayerId);
         Logger.Info($"{voter.GetNameWithRole()} chosen as keeper target by {target.GetNameWithRole()}", "Keeper");
-        SendRPC(type:0, keeperId: voter.PlayerId, targetId: target.PlayerId); // add keeperUses, KeeperTarget and DidVote
+        SendRPC(type: 0, keeperId: voter.PlayerId, targetId: target.PlayerId); // add keeperUses, KeeperTarget and DidVote
         Utils.SendMessage(string.Format(GetString("KeeperProtect"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Keeper), GetString("KeeperTitle")));
         return false;
     }

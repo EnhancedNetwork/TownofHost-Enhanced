@@ -15,6 +15,7 @@ internal class Romantic : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Romantic);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -68,9 +69,6 @@ internal class Romantic : RoleBase
         BetTimes.Add(playerId, 1);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OthersAfterPlayerDeathTask);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -314,6 +312,7 @@ internal class VengefulRomantic : RoleBase
 
     //===========================SETUP================================\\
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Romantic);
+    public override bool IsDesyncRole => new Romantic().IsDesyncRole;
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
     public override Custom_RoleType ThisRoleType => new Romantic().ThisRoleType;
     //==================================================================\\
@@ -329,9 +328,6 @@ internal class VengefulRomantic : RoleBase
     public override void Add(byte playerId)
     {
         VengefulTarget.Add(playerId, Romantic.VengefulTargetId);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && !hasKilledKiller;
@@ -381,11 +377,11 @@ internal class VengefulRomantic : RoleBase
 
 internal class RuthlessRomantic : RoleBase
 {
-
     //===========================SETUP================================\\
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
+    public override bool IsDesyncRole => new Romantic().IsDesyncRole;
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -396,9 +392,6 @@ internal class RuthlessRomantic : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Romantic.RuthlessKCD.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
