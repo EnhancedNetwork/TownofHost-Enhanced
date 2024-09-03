@@ -6,7 +6,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Sloth
 {
-    private const int Id = 29000;
+    private const int Id = 29700;
 
     private static OptionItem OptionSpeed;
 
