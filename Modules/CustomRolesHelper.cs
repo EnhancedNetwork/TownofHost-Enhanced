@@ -1079,6 +1079,10 @@ public static class CustomRolesHelper
                 if ((pc.GetCustomRole().IsCrewmate() && !Statue.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Statue.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Statue.CanBeOnImp.GetBool()))
                     return false;
                 break;
+            case CustomRoles.Rebirth:
+                if (pc.Is(CustomRoles.Jester)
+                    return false;
+                break;        
         }
 
         return true;
