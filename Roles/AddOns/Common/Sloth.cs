@@ -10,7 +10,7 @@ public class Sloth : IAddon
 
     private static OptionItem OptionSpeed;
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Sloth, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
         OptionSpeed = FloatOptionItem.Create(Id + 10, "SlothSpeed", new(25f, 75f, 5f), 50f, TabGroup.Addons, false)
