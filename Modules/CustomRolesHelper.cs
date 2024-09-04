@@ -1080,7 +1080,7 @@ public static class CustomRolesHelper
                     return false;
                 break;
             case CustomRoles.Rebirth:
-                if (pc.Is(CustomRoles.Jester)
+                if (pc.Is(CustomRoles.Jester))
                     return false;
                 break;        
         }
