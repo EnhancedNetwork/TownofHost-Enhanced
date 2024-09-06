@@ -950,6 +950,7 @@ public static class GuessManager
                     or CustomRoles.LastImpostor
                     or CustomRoles.Mare
                     or CustomRoles.Cyber
+                    or CustomRoles.Sloth
                     || (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())) continue;
 
                 CreateRole(role);

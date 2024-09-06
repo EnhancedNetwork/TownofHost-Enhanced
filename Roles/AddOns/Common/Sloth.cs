@@ -14,7 +14,7 @@ public class Sloth : IAddon
     {
         SetupAdtRoleOptions(Id, CustomRoles.Sloth, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
         OptionSpeed = FloatOptionItem.Create(Id + 10, "SlothSpeed", new(25f, 75f, 5f), 50f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Flash])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Sloth])
             .SetValueFormat(OptionFormat.Multiplier);
     }
     public static void SetSpeed(byte playerId, bool clearAddOn)
