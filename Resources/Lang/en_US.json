@@ -1903,7 +1903,7 @@
   "WarnExample": "Use /warn [id] [reason] in future. \nExample :-\n /warn 5 lava chatting",
   "SayCommandDisabled": "The say command is currently disabled.",
   "MessageFromModerator": "MODERATOR",
-  "DeathReason.Kill": "Kill",
+  "DeathReason.Kill": "Killed",
   "DeathReason.Vote": "Ejected",
   "DeathReason.Suicide": "Suicide",
   "DeathReason.Spell": "Spelled",
@@ -2308,6 +2308,8 @@
   "WarningTitle": "Warning!",
   "Warning.BrokenVentsInDleksSendInGame": "Warning! The vents on this map are broken",
   "Warning.BrokenVentsInDleksMessage": "<b>On the «dlekS ehT» map, the vents are broken</b>, they cannot be fixed in host-only mods, this is a vanilla bug, <b>so any roles using vent as an ability will not spawns on this map</b>",
+
+  "Warning.NoGameEndIsEnabled": "Warning: <b>{0}</b> is enabled!",
 
   "AntiBlackoutProtectionTitle": "Anti Blackout",
   "Warning.AntiBlackoutProtectionMsg": "<size=110%>Warning:</size>\n\r<b>Black screen protection has been activated,</b> due to the low number of alive <color=#ff1919>Impostors</color>, <color=#8cffff>Crewmates</color> and <color=#7f8c8d>Neutral Killers</color>\n<b>The voting screen will show as a tied vote (only affects the visual, not the results voting)</b>\n<size=70%>Modded players will see voting screen normally</size>",

@@ -64,7 +64,7 @@ internal class Altruist : RoleBase
                 deadPlayer.RpcTeleport(deadBodyObject.transform.position);
                 deadPlayer.RpcRevive();
 
-                if (deadPlayer.GetCustomRole().IsGhostRole() || deadPlayer.IsAnySubRole(sub => sub.IsGhostRole()))
+                if (deadPlayer.HasGhostRole())
                 {
                     deadPlayer.GetRoleClass().Remove(deadPlayerId);
                     deadPlayer.RpcSetCustomRole(Utils.GetRoleMap(deadPlayerId).customRole);

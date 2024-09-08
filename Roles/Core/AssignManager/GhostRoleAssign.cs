@@ -22,9 +22,12 @@ public static class GhostRoleAssign
         if (GameStates.IsHideNSeek  
             || Options.CurrentGameMode == CustomGameMode.FFA 
             || player == null 
+            || player.Data == null
             || player.Data.Disconnected 
             || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
-        if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) {
+
+        if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) 
+        {
             Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");
             player.GetRoleClass()?.OnRemove(player.PlayerId);
             player.RpcSetCustomRole(forcerole);
@@ -34,38 +37,34 @@ public static class GhostRoleAssign
             return;
         }
 
-
-
         var getplrRole = player.GetCustomRole();
         if (getplrRole is CustomRoles.GM or CustomRoles.Nemesis or CustomRoles.Retributionist or CustomRoles.NiceMini) return;
 
         var IsNeutralAllowed = !player.IsAnySubRole(x => x.IsConverted()) || Options.ConvertedCanBecomeGhost.GetBool();
         var CheckNeutral = player.GetCustomRole().IsNeutral() && Options.NeutralCanBecomeGhost.GetBool();
         var IsCrewmate = ((getplrRole.IsCrewmate() || player.Is(CustomRoles.Admired)) && IsNeutralAllowed) || CheckNeutral;
-        var IsImpostor = ((getplrRole.IsImpostor()) && (IsNeutralAllowed || player.Is(CustomRoles.Madmate))) || CheckNeutral;
+        var IsImpostor = (getplrRole.IsImpostor() && (IsNeutralAllowed || player.Is(CustomRoles.Madmate))) || CheckNeutral;
 
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole() || x == CustomRoles.Gravestone) || !Options.CustomGhostRoleCounts.Any()) return;
 
         if (IsImpostor && ImpCount >= Options.MaxImpGhost.GetInt() || IsCrewmate && CrewCount >= Options.MaxCrewGhost.GetInt()) return;
 
-            GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
-
+        GhostGetPreviousRole[player.PlayerId] = getplrRole;
 
         HauntedList.Clear();
         ImpHauntedList.Clear();
 
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
 
-
         foreach (var ghostRole in getCount.Keys.Where(x => x.GetMode() > 0))
         { 
             if (ghostRole.IsCrewmate())
             {
                 if (HauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
-                        HauntedList.Remove(ghostRole);
+                    HauntedList.Remove(ghostRole);
 
                 if (HauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
-                        continue;
+                    continue;
                     
                 if (ghostRole.GetChance()) HauntedList.Add(ghostRole); 
             }
@@ -134,8 +133,6 @@ public static class GhostRoleAssign
         if (Options.CustomGhostRoleCounts.Any())
             Options.CustomGhostRoleCounts.Keys.Do(ghostRole
                 => getCount.TryAdd(ghostRole, ghostRole.GetCount())); // Add new count Instance (Optionitem gets constantly refreshed)
-
-
 
         foreach (var role in getCount)
         {

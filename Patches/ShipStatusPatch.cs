@@ -240,7 +240,7 @@ class ShipStatusBeginPatch
     {
         Logger.CurrentMethod();
 
-        if (RolesIsAssigned && !Main.introDestroyed)
+        if (RolesIsAssigned && !Main.introDestroyed && GameStates.IsNormalGame)
         {
             foreach (var player in Main.AllPlayerControls)
             {
@@ -264,6 +264,9 @@ class ShipStatusSpawnPlayerPatch
 {
     public static bool Prefix(ShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
+        // Skip first spawn
+        if (initialSpawn) return true;
+
         Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
         Vector2 position = (initialSpawn ? __instance.InitialSpawnCenter : __instance.MeetingSpawnCenter) + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
 
@@ -276,21 +279,17 @@ class PolusShipStatusSpawnPlayerPatch
 {
     public static bool Prefix(PolusShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
-        if (initialSpawn)
-        {
-            ShipStatusSpawnPlayerPatch.Prefix(__instance, player, numPlayers, initialSpawn);
-        }
-        else
-        {
-            int num1 = Mathf.FloorToInt(numPlayers / 2f);
-            int num2 = player.PlayerId % 15;
+        // Skip first spawn
+        if (initialSpawn) return true;
 
-            Vector2 position = num2 >= num1
-                ? __instance.MeetingSpawnCenter2 + Vector2.right * (num2 - num1) * 0.6f
-                : __instance.MeetingSpawnCenter + Vector2.right * num2 * 0.6f;
+        int num1 = Mathf.FloorToInt(numPlayers / 2f);
+        int num2 = player.PlayerId % 15;
 
-            player.RpcTeleport(position, sendInfoInLogs: false);
-        }
+        Vector2 position = num2 >= num1
+            ? __instance.MeetingSpawnCenter2 + Vector2.right * (num2 - num1) * 0.6f
+            : __instance.MeetingSpawnCenter + Vector2.right * num2 * 0.6f;
+
+        player.RpcTeleport(position, sendInfoInLogs: false);
         return false;
     }
 }

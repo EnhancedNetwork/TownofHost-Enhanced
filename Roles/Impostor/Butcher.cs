@@ -72,7 +72,7 @@ internal class Butcher : RoleBase
             for (int i = 0; i <= 19; i++)
             {
                 if (GameStates.IsMeeting) break;
-                if (!target.AmOwner)
+                if (!target.IsHost())
                 {
                     target.MurderPlayer(target, ExtendedPlayerControl.ResultFlags);
                 }

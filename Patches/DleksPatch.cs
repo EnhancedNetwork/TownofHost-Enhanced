@@ -3,11 +3,21 @@
 namespace TOHE.Patches;
 
 // Thanks Galster (https://github.com/Galster-dev)
+
+/*
+ * Info for those who port this code to their mod or view the code
+ * We patch CoStartGameHost so it's not work now in normal game
+ * But work for AU code
+ * So not used, execpt vanilla Hide&Seek
+*/
+
 [HarmonyPatch(typeof(AmongUsClient._CoStartGameHost_d__32), nameof(AmongUsClient._CoStartGameHost_d__32.MoveNext))]
 public static class DleksPatch
 {
     private static bool Prefix(AmongUsClient._CoStartGameHost_d__32 __instance, ref bool __result)
     {
+        if (GameStates.IsNormalGame) return true;
+
         if (__instance.__1__state != 0)
         {
             return true;

@@ -1819,7 +1819,7 @@ public static class Options
         ConvertedCanBecomeGhost = BooleanOptionItem.Create(60840, "ConvertedCanBeGhostRole", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        ConvertedCanBecomeGhost = BooleanOptionItem.Create(60841, "NeutralCanBeGhostRole", false, TabGroup.ModSettings, false)
+        NeutralCanBecomeGhost = BooleanOptionItem.Create(60841, "NeutralCanBeGhostRole", false, TabGroup.ModSettings, false)
             .SetParent(ConvertedCanBecomeGhost)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));

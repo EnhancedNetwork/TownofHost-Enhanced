@@ -1,5 +1,6 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
+﻿using Hazel;
+using AmongUs.GameOptions;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Roles.Core;
 
 namespace TOHE.Patches;
@@ -41,7 +42,6 @@ public static class PhantomRolePatch
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         return false;
     }
-
     // Called when Phantom press vanish button when visible
     [HarmonyPatch(nameof(PlayerControl.CheckVanish)), HarmonyPrefix]
     private static void CheckVanish_Prefix(PlayerControl __instance)
@@ -62,7 +62,8 @@ public static class PhantomRolePatch
 
             _ = new LateTask(() =>
             {
-                phantom?.RpcExileDesync(target);
+                if (!Main.MeetingIsStarted)
+                    phantom?.RpcExileDesync(target);
             }, 1.2f, "Set Phantom invisible", shoudLog: false);
         }
         InvisibilityList.Add(phantom);
@@ -75,6 +76,11 @@ public static class PhantomRolePatch
 
         var phantom = __instance;
         Logger.Info($"Player: {phantom.GetRealName()} => shouldAnimate {shouldAnimate}", "CheckAppear");
+
+        if (phantom.walkingToVent || phantom.inVent)
+        {
+            phantom.MyPhysics.RpcBootFromVent(Main.LastEnteredVent[phantom.PlayerId].Id);
+        }
 
         foreach (var target in Main.AllPlayerControls)
         {
@@ -94,10 +100,13 @@ public static class PhantomRolePatch
 
             _ = new LateTask(() =>
             {
-                phantom?.RpcSetRoleDesync(RoleTypes.Scientist, clientId);
+                if (!Main.MeetingIsStarted)
+                {
+                    InvisibilityList.Remove(phantom);
+                    phantom?.RpcSetRoleDesync(RoleTypes.Scientist, clientId);
+                }
             }, 1.8f, "Set Scientist when vanish is over", shoudLog: false);
         }
-        InvisibilityList.Remove(phantom);
     }
     [HarmonyPatch(nameof(PlayerControl.SetRoleInvisibility)), HarmonyPrefix]
     private static void SetRoleInvisibility_Prefix(PlayerControl __instance, bool isActive, bool shouldAnimate, bool playFullAnimation)
@@ -107,7 +116,7 @@ public static class PhantomRolePatch
         Logger.Info($"Player: {__instance.GetRealName()} => Is Active {isActive}, Animate:{shouldAnimate}, Full Animation:{playFullAnimation}", "SetRoleInvisibility");
     }
 
-    public static void OnReportBody(PlayerControl seer)
+    public static void OnReportDeadBody(PlayerControl seer)
     {
         if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data.Role.Role is RoleTypes.Phantom || seer.AmOwner || !seer.HasDesyncRole()) return;
 
@@ -139,5 +148,32 @@ public static class PhantomRolePatch
                 InvisibilityList.Clear();
             }, 4f, "Set Scientist in meeting after reset", shoudLog: false);
         }
+    }
+}
+// Fixed vanilla bug for host (from TOH-Y)
+[HarmonyPatch(typeof(PhantomRole), nameof(PhantomRole.UseAbility))]
+public static class PhantomRoleUseAbilityPatch
+{
+    public static bool Prefix(PhantomRole __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost) return true;
+
+        if (__instance.Player.AmOwner && !__instance.Player.Data.IsDead && __instance.Player.moveable && !Minigame.Instance && !__instance.IsCoolingDown && !__instance.fading)
+        {
+            System.Func<RoleEffectAnimation, bool> roleEffectAnimation = x => x.effectType == RoleEffectAnimation.EffectType.Vanish_Charge;
+            if (!__instance.Player.currentRoleAnimations.Find(roleEffectAnimation) && !__instance.Player.walkingToVent && !__instance.Player.inMovingPlat)
+            {
+                if (__instance.isInvisible)
+                {
+                    __instance.MakePlayerVisible(true, true);
+                    return false;
+                }
+                DestroyableSingleton<HudManager>.Instance.AbilityButton.SetSecondImage(__instance.Ability);
+                DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.PhantomAbilityUndo, new Il2CppReferenceArray<Il2CppSystem.Object>(0)));
+                __instance.Player.CmdCheckVanish(GameManager.Instance.LogicOptions.GetPhantomDuration());
+                return false;
+            }
+        }
+        return false;
     }
 }

@@ -84,7 +84,7 @@ public static class NameColorManager
         if (color != "" && color != string.Empty) return true;
 
         else return seer == target
-            || (Main.GodMode.Value && seer.AmOwner)
+            || (Main.GodMode.Value && seer.IsHost())
             || (Options.CurrentGameMode == CustomGameMode.FFA)
             || (Main.VisibleTasksCount && Main.PlayerStates[seer.Data.PlayerId].IsDead && seer.Data.IsDead && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool())
             || seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)

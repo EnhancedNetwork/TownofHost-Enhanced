@@ -186,7 +186,7 @@ internal class Chronomancer : RoleBase
         bool ismeeting = GameStates.IsMeeting || isForMeeting;
         if (seer == seen && !ismeeting)
         {
-            if (!isForHud && seer.IsModClient())
+            if (!isForHud && seer.IsModded())
                 return string.Empty;
 
             return GetCharge();

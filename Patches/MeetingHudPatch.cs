@@ -757,12 +757,6 @@ static class ExtendedMeetingHud
                 var target = GetPlayerById(ps.VotedFor);
                 if (target != null)
                 {
-                    // Remove all votes for Zombie
-                    Zombie.CheckRealVotes(target, ref VoteNum);
-                    
-                    //Solsticer can not get voted out
-                    if (target.Is(CustomRoles.Solsticer)) VoteNum = 0;
-
                     // Check Tiebreaker voting
                     Tiebreaker.CheckVote(target, ps);
 
@@ -788,7 +782,7 @@ static class ExtendedMeetingHud
                 }
 
                 // Additional votes
-                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Stealer))
+                if (pc != null && pc.Is(CustomRoles.Stealer))
                 {
                     VoteNum += Stealer.AddRealVotesNum(ps);
                 }
@@ -799,6 +793,15 @@ static class ExtendedMeetingHud
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.VoidBallot)) VoteNum = 0;
 
                 if (Jailer.IsTarget(ps.VotedFor) || Jailer.IsTarget(ps.TargetPlayerId)) VoteNum = 0; //jailed can't vote and can't get voted
+
+                if (target != null)
+                {
+                    // Remove all votes for Zombie
+                    Zombie.CheckRealVotes(target, ref VoteNum);
+
+                    //Solsticer can not get voted out
+                    if (target.Is(CustomRoles.Solsticer)) VoteNum = 0;
+                }
 
                 if (!CountInfluenced)
                 {
@@ -835,10 +838,9 @@ class MeetingHudStartPatch
 
         msgToSend = [];
 
-
         // Description in first meeting
         if (Options.SendRoleDescriptionFirstMeeting.GetBool() && MeetingStates.FirstMeeting)
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.IsModClient()).ToArray())
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.IsModded()).ToArray())
             {
                 var role = pc.GetCustomRole();
                 var Des = pc.GetRoleInfo(true);
@@ -1000,7 +1002,6 @@ class MeetingHudStartPatch
         SoundManager.Instance.ChangeAmbienceVolume(0f);
         if (!GameStates.IsModHost) return;
 
-        //提前储存赌怪游戏组件的模板
         GuessManager.textTemplate = UnityEngine.Object.Instantiate(__instance.playerStates[0].NameText);
         GuessManager.textTemplate.enabled = false;
 
@@ -1008,9 +1009,14 @@ class MeetingHudStartPatch
         {
             var pc = GetPlayerById(pva.TargetPlayerId);
             if (pc == null) continue;
+            var textTemplate = pva.NameText;
+
+            // Create role text in meeting
             var RoleTextData = GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, pc.PlayerId);
-            var roleTextMeeting = UnityEngine.Object.Instantiate(pva.NameText);
-            roleTextMeeting.transform.SetParent(pva.NameText.transform);
+            var roleTextMeeting = UnityEngine.Object.Instantiate(textTemplate);
+            if (roleTextMeeting.transform.FindChild("DeathReasonTextMeeting") != null)
+                UnityEngine.Object.Destroy(roleTextMeeting.transform.FindChild("DeathReasonTextMeeting").gameObject);
+            roleTextMeeting.transform.SetParent(textTemplate.transform);
             roleTextMeeting.transform.localPosition = new Vector3(0f, -0.18f, 0f);
             roleTextMeeting.fontSize = 1.6f;
             roleTextMeeting.text = RoleTextData.Item1;
@@ -1019,6 +1025,19 @@ class MeetingHudStartPatch
             roleTextMeeting.gameObject.name = "RoleTextMeeting";
             roleTextMeeting.enableWordWrapping = false;
             roleTextMeeting.enabled = pc.AmOwner || ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, pc);
+
+            // Create death reason text in meeting
+            var deathReasonText = UnityEngine.Object.Instantiate(textTemplate);
+            if (deathReasonText.transform.FindChild("RoleTextMeeting") != null)
+                UnityEngine.Object.Destroy(deathReasonText.transform.FindChild("RoleTextMeeting").gameObject);
+            deathReasonText.transform.transform.SetParent(textTemplate.transform);
+            deathReasonText.transform.localPosition = new Vector3(0f, +0.18f, 0f);
+            deathReasonText.fontSize = 1.4f;
+            deathReasonText.text = $"『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(pc.PlayerId))}』";
+            deathReasonText.color = Color.white;
+            deathReasonText.gameObject.name = "DeathReasonTextMeeting";
+            deathReasonText.enableWordWrapping = false;
+            deathReasonText.enabled = PlayerControl.LocalPlayer.KnowDeathReason(pc);
 
             var myRole = PlayerControl.LocalPlayer.GetRoleClass();
             var enable = true;
@@ -1040,7 +1059,7 @@ class MeetingHudStartPatch
             // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
             var player = PlayerControl.LocalPlayer;
             var target = GetPlayerById(pva.TargetPlayerId);
-            
+
             if (suffixBuilder.Length > 0)
             {
                 roleTextMeeting.text = suffixBuilder.ToString();
@@ -1147,8 +1166,8 @@ class MeetingHudStartPatch
 
             }
 
-            if (seer.KnowDeathReason(target))
-                sb.Append($"『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))}』");
+            //if (seer.KnowDeathReason(target))
+            //    sb.Append($"『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))}』");
 
             sb.Append(seerRoleClass?.GetMark(seer, target, true));
             sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));

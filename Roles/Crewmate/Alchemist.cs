@@ -146,7 +146,7 @@ internal class Alchemist : RoleBase
 
     private static void SendRPC(PlayerControl pc)
     {
-        if (pc.AmOwner) return;
+        if (pc.IsHost()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAlchemistTimer, SendOption.Reliable, pc.GetClientId());
         writer.Write(FixNextSabo);
         writer.Write(PotionID);
@@ -244,7 +244,7 @@ internal class Alchemist : RoleBase
             }
             else if (remainTime <= 10)
             {
-                if (!alchemist.IsModClient())
+                if (!alchemist.IsModded())
                     alchemist.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), sendInLog: false);
             }
         }

@@ -55,7 +55,7 @@ public class RoleAssign
             case CustomGameMode.FFA:
                 foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                 {
-                    RoleResult.Add(pc.PlayerId, CustomRoles.Killer);
+                    RoleResult[pc.PlayerId] = CustomRoles.Killer;
                 }
                 return;
         }
@@ -781,9 +781,9 @@ public class RoleAssign
         }
 
         if (AllPlayers.Any())
-            Logger.Warn("Role assignment error: There are players who have not been assigned a role", "RoleAssign");
+            Logger.Warn("Role assignment warirng: There are players who have not been assigned a role", "RoleAssign");
         if (FinalRolesList.Any())
-            Logger.Warn("Team assignment error: There is an unassigned team", "RoleAssign");
+            Logger.Warn("Team assignment warirng: There is an unassigned team", "RoleAssign");
         return;
 
         RoleAssignInfo GetAssignInfo(CustomRoles role) => Roles.Values.FirstOrDefault(x => x.Any(y => y.Role == role))?.FirstOrDefault(x => x.Role == role);

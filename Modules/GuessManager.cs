@@ -677,6 +677,7 @@ public static class GuessManager
             var smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
             textTemplate.enabled = true;
             if (textTemplate.transform.FindChild("RoleTextMeeting") != null) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("RoleTextMeeting").gameObject);
+            if (textTemplate.transform.FindChild("DeathReasonTextMeeting") != null) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("DeathReasonTextMeeting").gameObject);
 
             Transform exitButtonParent = new GameObject().transform;
             exitButtonParent.SetParent(container);

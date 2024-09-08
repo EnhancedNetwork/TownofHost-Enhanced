@@ -26,7 +26,7 @@ namespace TOHE;
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
-    // == プログラム設定 / Program Config ==
+    // == Program Config ==
     public const string OriginalForkId = "OriginalTOH";
 
     public static readonly string ModName = "TOHE";
@@ -41,12 +41,12 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0902.210.00080"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.1.0 Alpha 8";
+    public const string PluginVersion = "2024.0908.210.00101"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.1.0 Alpha 10 Hotfix 1";
     public const string SupportedVersionAU = "2024.8.13";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: V2.1.0 Alpha 8
+    public static readonly bool devRelease = true; // Latest: V2.1.0 Alpha 10 Hotfix 1
     public static readonly bool canaryRelease = false; // Latest: V2.0.0 Canary 12
     public static readonly bool fullRelease = false; // Latest: V2.0.3
 
@@ -115,6 +115,7 @@ public class Main : BasePlugin
     public static ConfigEntry<string> BetaBuildURL { get; private set; }
     public static ConfigEntry<float> LastKillCooldown { get; private set; }
     public static ConfigEntry<float> LastShapeshifterCooldown { get; private set; }
+    public static ConfigEntry<float> LastGuardianAngelCooldown { get; private set; }
     public static ConfigEntry<float> PlayerSpawnTimeOutCooldown { get; private set; }
 
     public static OptionBackupData RealOptionsData;
@@ -552,6 +553,7 @@ public class Main : BasePlugin
         MessageWait = Config.Bind("Other", "MessageWait", 1);
         LastKillCooldown = Config.Bind("Other", "LastKillCooldown", (float)30);
         LastShapeshifterCooldown = Config.Bind("Other", "LastShapeshifterCooldown", (float)30);
+        LastGuardianAngelCooldown = Config.Bind("Other", "LastGuardianAngelCooldown", (float)35);
         PlayerSpawnTimeOutCooldown = Config.Bind("Other", "PlayerSpawnTimeOutCooldown", (float)3);
 
         hasArgumentException = false;

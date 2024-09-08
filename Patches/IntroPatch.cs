@@ -19,21 +19,46 @@ class CoShowIntroPatch
 {
     public static void Prefix()
     {
-        if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return;
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost || GameStates.IsHideNSeek) return;
 
         _ = new LateTask(() =>
         {
-            // Update name players for custom vanilla intro
-            Utils.DoNotifyRoles(NoCache: true);
-        }, 0.35f, "Update names");
+            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            {
+                pc.SetCustomIntro();
+            }
+        }, 0.35f, "Set Custom Intro");
 
         _ = new LateTask(() =>
         {
-            ShipStatusBeginPatch.RolesIsAssigned = true;
+            if (!(AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd))
+            {
+                StartGameHostPatch.RpcSetDisconnected(disconnected: false);
 
-            // Assign tasks after assign all roles, as it should be
-            ShipStatus.Instance.Begin();
-        }, 4f, "Assing Task");
+                if (!AmongUsClient.Instance.IsGameOver)
+                    DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            }
+        }, 0.6f, "Set Disconnected");
+
+        _ = new LateTask(() =>
+        {
+            try
+            {
+                if (!(AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd))
+                {
+                    ShipStatusBeginPatch.RolesIsAssigned = true;
+
+                    // Assign tasks after assign all roles, as it should be
+                    ShipStatus.Instance.Begin();
+
+                    Utils.SyncAllSettings();
+                }
+            }
+            catch
+            {
+                Logger.Warn($"Game ended? {AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd}", "ShipStatus.Begin");
+            }
+        }, 4f, "Assing Task For All");
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
@@ -51,6 +76,16 @@ class SetUpRoleTextPatch
             IsInIntro = false;
             Utils.DoNotifyRoles(NoCache: true);
         }
+
+        // Show role map
+        /*foreach (var seer in Main.AllPlayerControls)
+        {
+            foreach (var target in Main.AllPlayerControls)
+            {
+                RpcSetRoleReplacer.RoleMap.TryGetValue((seer.PlayerId, target.PlayerId), out var map);
+                Logger.Info($"seer {seer?.Data?.PlayerName}-{seer.PlayerId}, target {target?.Data?.PlayerName}-{target.PlayerId} => {map.roleType}, {map.customRole}", "Role Map");
+            }
+        }*/
 
         _ = new LateTask(() =>
         {
@@ -124,7 +159,7 @@ class SetUpRoleTextPatch
         foreach (var pc in allPlayerControlsArray)
         {
             if (pc == null) continue;
-            sb.Append($"{(pc.AmOwner ? "[*]" : string.Empty),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{pc.cosmetics.nameText.text}({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", string.Empty)})\n");
+            sb.Append($"{(pc.AmOwner ? "[*]" : string.Empty),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{Main.AllPlayerNames[pc.PlayerId]}({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", string.Empty)})\n");
             pc.cosmetics.nameText.text = pc.name;
         }
 
@@ -419,21 +454,22 @@ class BeginCrewmatePatch
             __instance.ImpostorText.text = "KILL EVERYONE TO WIN";
         }
 
+        // I hope no one notices this in code
         if (Input.GetKey(KeyCode.RightShift))
         {
-            __instance.TeamTitle.text = "明天就跑路啦";
+            __instance.TeamTitle.text = "Damn!!";
             __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = "嘿嘿嘿嘿嘿嘿";
-            __instance.TeamTitle.color = Color.cyan;
-            StartFadeIntro(__instance, Color.cyan, Color.yellow);
+            __instance.ImpostorText.text = "You Found The Secret Intro";
+            __instance.TeamTitle.color = new Color32(186, 3, 175, byte.MaxValue);
+            StartFadeIntro(__instance, Color.yellow, Color.cyan);
         }
         if (Input.GetKey(KeyCode.RightControl))
         {
-            __instance.TeamTitle.text = "警告";
+            __instance.TeamTitle.text = "Warning!";
             __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = "请远离无知的玩家";
-            __instance.TeamTitle.color = Color.magenta;
-            StartFadeIntro(__instance, Color.magenta, Color.magenta);
+            __instance.ImpostorText.text = "Please stay away from all impostor based players";
+            __instance.TeamTitle.color = new Color32(241, 187, 2, byte.MaxValue);
+            StartFadeIntro(__instance, new Color32(241, 187, 2, byte.MaxValue), Color.red);
         }
     }
     public static AudioClip GetIntroSound(RoleTypes roleType)
@@ -452,7 +488,7 @@ class BeginCrewmatePatch
             Color LerpingColor = Color.Lerp(start, end, time);
             if (__instance == null || milliseconds > 500)
             {
-                Logger.Info("ループを終了します", "StartFadeIntro");
+                Logger.Info("Terminates the loop", "StartFadeIntro");
                 break;
             }
             __instance.BackgroundBar.material.color = LerpingColor;
@@ -506,18 +542,69 @@ class BeginImpostorPatch
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
 class IntroCutsceneDestroyPatch
 {
+    public static void Prefix()
+    {
+        if (AmongUsClient.Instance.AmHost && !AmongUsClient.Instance.IsGameOver)
+        {
+            // Host is Desync Shapeshifter
+            if (PlayerControl.LocalPlayer.HasDesyncRole())
+            {
+                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                {
+                    // Set all players as killable players
+                    target.Data.Role.CanBeKilled = true;
+
+                    // When target is impostor, set name color as white
+                    target.cosmetics.SetNameColor(Color.white);
+                    target.Data.Role.NameColor = Color.white;
+                }
+            }
+
+            if (Main.UnShapeShifter.Any())
+            {
+                _ = new LateTask(() =>
+                {
+                    Main.UnShapeShifter.Do(x =>
+                    {
+                        var PC = Utils.GetPlayerById(x);
+                        var firstPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
+                        PC.RpcShapeshift(firstPlayer, false);
+                        PC.RpcRejectShapeshift();
+                        PC.ResetPlayerOutfit(force: true);
+                        Main.CheckShapeshift[x] = false;
+                    });
+                    Main.GameIsLoaded = true;
+                }, 3f, "Set UnShapeShift Button");
+            }
+
+            Utils.DoNotifyRoles(NoCache: true);
+
+            if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
+            {
+                var mapId = Utils.GetActiveMapId();
+                Logger.Msg($"Check map {mapId}", "Map");
+                RandomSpawn.SpawnMap map = mapId switch
+                {
+                    0 => new RandomSpawn.SkeldSpawnMap(),
+                    1 => new RandomSpawn.MiraHQSpawnMap(),
+                    2 => new RandomSpawn.PolusSpawnMap(),
+                    3 => new RandomSpawn.DleksSpawnMap(),
+                    5 => new RandomSpawn.FungleSpawnMap(),
+                    _ => null,
+                };
+                if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
+            }
+        }
+    }
     public static void Postfix()
     {
-        if (!GameStates.IsInGame/* || RoleBasisChanger.SkipTasksAfterAssignRole*/) return;
+        if (!GameStates.IsInGame) return;
 
         Main.introDestroyed = true;
 
         // Set roleAssigned as false for override role for modded players
         // For override role for vanilla clients we use "Data.Disconnected" while assign
-        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
-        {
-            pc.roleAssigned = false;
-        }
+        Main.AllPlayerControls.Do(pc => pc.roleAssigned = false);
 
         if (!GameStates.AirshipIsActive)
         {
@@ -529,28 +616,35 @@ class IntroCutsceneDestroyPatch
 
         CustomRoleManager.Add();
 
+        var amDesyncImpostor = PlayerControl.LocalPlayer.HasDesyncRole();
+        if (amDesyncImpostor)
+        {
+            PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
+        }
+
         if (AmongUsClient.Instance.AmHost)
         {
             if (GameStates.IsNormalGame && !GameStates.AirshipIsActive)
             {
-                foreach (var pc in Main.AllPlayerControls)
+                foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
                     pc.RpcResetAbilityCooldown();
-                }
-                if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
-                {
-                    _ = new LateTask(() =>
-                    {
-                        foreach (var pc in Main.AllPlayerControls)
-                        {
-                            pc.ResetKillCooldown();
 
-                            if (Main.AllPlayerKillCooldown.TryGetValue(pc.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
+                    if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
+                    {
+                        _ = new LateTask(() =>
+                        {
+                            if (pc != null)
                             {
-                                pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f);
+                                pc.ResetKillCooldown();
+
+                                if (Main.AllPlayerKillCooldown.TryGetValue(pc.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
+                                {
+                                    pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f);
+                                }
                             }
-                        }
-                    }, 2f, "Fix Kill Cooldown Task");
+                        }, 2f, $"Fix Kill Cooldown Task for playerId {pc.PlayerId}");
+                    }
                 }
             }
 
@@ -587,45 +681,6 @@ class IntroCutsceneDestroyPatch
             {
                 Logger.Error($"Error: {error}", "FFA chat visible");
             }
-
-            if (Main.UnShapeShifter.Any())
-            {
-                _ = new LateTask(() =>
-                {
-                    Main.UnShapeShifter.Do(x =>
-                    {
-                        var PC = Utils.GetPlayerById(x);
-                        var firstPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
-                        PC.RpcShapeshift(firstPlayer, false);
-                        PC.RpcRejectShapeshift();
-                        PC.ResetPlayerOutfit(force: true);
-                        Main.CheckShapeshift[x] = false;
-                    });
-                    Main.GameIsLoaded = true;
-                }, 3f, "Set UnShapeShift Button");
-            }
-
-            Utils.DoNotifyRoles(NoCache: true);
-
-            if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
-            {
-                RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
-                {
-                    0 => new RandomSpawn.SkeldSpawnMap(),
-                    1 => new RandomSpawn.MiraHQSpawnMap(),
-                    2 => new RandomSpawn.PolusSpawnMap(),
-                    3 => new RandomSpawn.DleksSpawnMap(),
-                    5 => new RandomSpawn.FungleSpawnMap(),
-                    _ => null,
-                };
-                if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
-            }
-        }
-
-        var amDesyncImpostor = PlayerControl.LocalPlayer.HasDesyncRole();
-        if (amDesyncImpostor)
-        {
-            PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
         }
 
         Logger.Info("OnDestroy", "IntroCutscene");

@@ -354,6 +354,12 @@ class MurderPlayerPatch
     {
         Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer Prefix");
 
+        if (GameStates.IsLobby)
+        {
+            Logger.Info("Murder triggered in lobby, so murder canceled", "MurderPlayer Prefix");
+            return false;
+        }    
+
         var isProtectedByClient = resultFlags.HasFlag(MurderResultFlags.DecisionByHost) && target.IsProtected();
         var isProtectedByHost = resultFlags.HasFlag(MurderResultFlags.FailedProtected);
         var isFailed = resultFlags.HasFlag(MurderResultFlags.FailedError);
@@ -456,7 +462,7 @@ class MurderPlayerPatch
             }
 
             // Sync protected player from being killed first info for modded clients
-            if (PlayerControl.LocalPlayer.OwnedByHost())
+            if (PlayerControl.LocalPlayer.IsHost())
             {
                 var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncShieldPersonDiedFirst, SendOption.None, -1);
                 writer.Write(Main.FirstDied);
@@ -510,6 +516,12 @@ class RpcMurderPlayerPatch
     {
         if (!AmongUsClient.Instance.AmHost)
             Logger.Error("Client is calling RpcMurderPlayer, are you Hacking?", "RpcMurderPlayerPatch.Prefix");
+
+        if (GameStates.IsLobby)
+        {
+            Logger.Info("Murder triggered in lobby, so murder canceled", "RpcMurderPlayer.Prefix");
+            return false;
+        }
 
         MurderResultFlags murderResultFlags = didSucceed ? MurderResultFlags.Succeeded : MurderResultFlags.FailedError;
         if (AmongUsClient.Instance.AmClient)
@@ -892,7 +904,7 @@ class ReportDeadBodyPatch
                 pc.FixMixedUpOutfit();
             }
 
-            PhantomRolePatch.OnReportBody(pc);
+            PhantomRolePatch.OnReportDeadBody(pc);
 
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
@@ -1658,7 +1670,7 @@ class PlayerControlCheckNamePatch
 
         _ = new LateTask(() =>
         {
-            if (__instance != null && !__instance.Data.Disconnected && !__instance.IsModClient())
+            if (__instance != null && !__instance.Data.Disconnected && !__instance.IsModded())
             {
                 var sender = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.OwnerId);
                 AmongUsClient.Instance.FinishRpcImmediately(sender);
@@ -1808,7 +1820,6 @@ class PlayerControlSetRolePatch
         // Ghost assign
         if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
         {
-
             try
             {
                Action<bool> SelfExile = __instance.GetRoleClass().OnSelfReducedToAtoms;
@@ -1829,7 +1840,7 @@ class PlayerControlSetRolePatch
                 var self = seer.PlayerId == target.PlayerId;
                 var seerIsKiller = seer.Is(Custom_Team.Impostor) || seer.HasDesyncRole();
 
-                if (target.GetCustomRole().IsGhostRole() || target.IsAnySubRole(x => x.IsGhostRole()))
+                if (target.HasGhostRole())
                 {
                     GhostRoles[seer] = RoleTypes.GuardianAngel;
                 }
@@ -1849,7 +1860,7 @@ class PlayerControlSetRolePatch
                 __instance.RpcSetRoleDesync(RoleTypes.GuardianAngel, __instance.GetClientId());
                 foreach (var seer in Main.AllPlayerControls)
                 {
-                    if (seer == __instance) continue;
+                    if (seer.PlayerId == __instance.PlayerId) continue;
                     __instance.RpcSetRoleDesync(RoleTypes.CrewmateGhost, seer.GetClientId());
                 }
                 GhostRoleAssign.CreateGAMessage(__instance);

@@ -295,12 +295,12 @@ public static class Utils
 
         //Start
         Main.PlayerStates[player.PlayerId].IsBlackOut = true; //Set black out for player
-        if (player.AmOwner)
+        if (player.IsHost())
         {
             FlashColor(new(1f, 0f, 0f, 0.3f));
             if (Constants.ShouldPlaySfx()) RPC.PlaySound(player.PlayerId, playKillSound ? Sounds.KillSound : Sounds.SabotageSound);
         }
-        else if (player.IsModClient())
+        else if (player.IsNonHostModdedClient())
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KillFlash, SendOption.Reliable, player.GetClientId());
             writer.Write(playKillSound);
@@ -308,6 +308,7 @@ public static class Utils
         }
         else if (!ReactorCheck) player.ReactorFlash(0f); //Reactor flash for vanilla
         player.MarkDirtySettings();
+
         _ = new LateTask(() =>
         {
             Main.PlayerStates[player.PlayerId].IsBlackOut = false; //Remove black out for player
@@ -572,7 +573,7 @@ public static class Utils
     {
         if (targetId == byte.MaxValue) targetId = seerId;
 
-        return RpcSetRoleReplacer.RoleMap[(seerId, targetId)];
+        return RpcSetRoleReplacer.RoleMap.GetValueOrDefault((seerId, targetId), (RoleTypes.CrewmateGhost, CustomRoles.NotAssigned));
     }
     public static bool HasTasks(NetworkedPlayerInfo playerData, bool ForRecompute = true)
     {
@@ -937,21 +938,13 @@ public static class Utils
                 }
                 break;
         }
-        string lr = sb.ToString();
-        try{
-            if (lr.Length > 2024 && (!GetPlayerById(PlayerId).IsModClient()))
-            {
-                lr = lr.Replace("<color=", "<");
-                lr.SplitMessage().Do(x => SendMessage("\n", PlayerId, $"<size=75%>" + x + "</size>")); //Since it will always capture a newline, there's more than enough space to put this in
-            }
-            else
-            {
-                SendMessage("\n", PlayerId,  "<size=75%>" + lr + "</size>");
-            }
+        try
+        {
+            SendMessage("\n", PlayerId, $"<size=75%>{sb}</size>");
         }
         catch (Exception err)
         {
-            Logger.Warn($"Error after try split the msg {lr} at: {err}", "Utils.ShowLastRoles..LastRoles");
+            Logger.Warn($"Error after try split the msg {sb} at: {err}", "Utils.ShowLastRoles..LastRoles");
         }
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
@@ -1388,24 +1381,30 @@ public static class Utils
     {
         List<string> result = [];
         var lines = LongMsg.Split('\n');
-        var shortenedtext = string.Empty;
+        var shortenedText = string.Empty;
 
         foreach (var line in lines)
         {
-
-            if (shortenedtext.Length + line.Length < 1200)
+            if (shortenedText.Length + line.Length < 1200)
             {
-                shortenedtext += line + "\n";
+                shortenedText += line + "\n";
                 continue;
             }
 
-            if (shortenedtext.Length >= 1200) result.AddRange(shortenedtext.Chunk(1200).Select(x => new string(x)));
-            else result.Add(shortenedtext);
-            shortenedtext = line + "\n";
+            if (shortenedText.Length >= 1200) result.AddRange(shortenedText.Chunk(1200).Select(x => new string(x)));
+            else result.Add(shortenedText);
 
+            var sentText = shortenedText;
+            shortenedText = line + "\n";
+
+            if (Regex.Matches(sentText, "<size").Count > Regex.Matches(sentText, "</size>").Count)
+            {
+                var sizeTag = Regex.Matches(sentText, @"<size=\d+\.?\d*%?>")[^1].Value;
+                shortenedText = sizeTag + shortenedText;
+            }
         }
 
-        if (shortenedtext.Length > 0) result.Add(shortenedtext);
+        if (shortenedText.Length > 0) result.Add(shortenedText);
 
         return [.. result];
     }
@@ -1416,7 +1415,7 @@ public static class Utils
     {
         // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
         bool isfirst = true;
-        if (text.Length > 1200 && !(Utils.GetPlayerById(sendTo).IsModClient()))
+        if (text.Length > 1200 && !GetPlayerById(sendTo).IsModded())
         {
             foreach(var txt in text.SplitMessage())
             {
@@ -1440,9 +1439,19 @@ public static class Utils
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool noReplay = false, bool ShouldSplit = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+        if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
+        if (title.Count(x => x == '\u2605') == 2 && !title.Contains('\n'))
+        {
+            if (title.Contains('<') && title.Contains('>') && title.Contains('#'))
+                title = $"{title[..(title.IndexOf('>') + 1)]}\u27a1{title.Replace("\u2605", "")[..(title.LastIndexOf('<') - 2)]}\u2b05";
+            else title = "\u27a1" + title.Replace("\u2605", "") + "\u2b05";
+        }
+
+        text = text.Replace("color=", string.Empty);
+
         try
         {
-            if (ShouldSplit && text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
+            if (ShouldSplit && text.Length > 1200)
             {
                 text.SplitMessage().Do(x => SendMessage(x, sendTo, title));
                 return;
@@ -1459,8 +1468,6 @@ public static class Utils
 
         // set noReplay to false when you want to send previous sys msg or do not want to add a sys msg in the history
         if (!noReplay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
-
-        if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
 
         if (!logforChatManager)
             ChatManager.AddToHostMessage(text.RemoveHtmlTagsTemplate());
@@ -1577,7 +1584,7 @@ public static class Utils
         if (Main.HostRealName != "" && player.AmOwner) name = Main.HostRealName;
         if (name == "" || !GameStates.IsLobby) return;
 
-        if (player.AmOwner && player.IsModClient())
+        if (player.IsHost())
         {
             if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
             {
@@ -1693,7 +1700,7 @@ public static class Utils
             };
         }
 
-        if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag() && (player.AmOwner || player.IsModClient()))
+        if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag() && player.IsModded())
         {
             name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
         }
@@ -1766,6 +1773,63 @@ public static class Utils
         return baseMethod.DeclaringType != derivedMethod.DeclaringType;
     }
 
+    // During intro scene to set team name and role info for non-modded clients and skip the rest.
+    // Note: When Neutral is based on the Crewmate role then it is impossible to display the info for it
+    // If not a Desync Role remove team display
+    public static void SetCustomIntro(this PlayerControl player)
+    {
+        if (!SetUpRoleTextPatch.IsInIntro || player == null || player.IsModded()) return;
+
+        //Get role info font size based on the length of the role info
+        static int GetInfoSize(string RoleInfo)
+        {
+            RoleInfo = Regex.Replace(RoleInfo, "<[^>]*>", "");
+            RoleInfo = Regex.Replace(RoleInfo, "{[^}]*}", "");
+
+            var BaseFontSize = 200;
+            int BaseFontSizeMin = 100;
+
+            BaseFontSize -= 3 * RoleInfo.Length;
+            if (BaseFontSize < BaseFontSizeMin)
+                BaseFontSize = BaseFontSizeMin;
+            return BaseFontSize;
+        }
+
+        string IconText = "<color=#ffffff>|</color>";
+        string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
+        string SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(GetTeamColor(player), $"{player.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
+        string SelfRoleName = $"<size=185%>{Font}{ColorString(player.GetRoleColor(), GetRoleName(player.GetCustomRole()))}</font></size>";
+        string SelfSubRolesName = string.Empty;
+        string RoleInfo = $"<size=25%>\n</size><size={GetInfoSize(player.GetRoleInfo())}%>{Font}{ColorString(player.GetRoleColor(), player.GetRoleInfo())}</font></size>";
+        string RoleNameUp = "<size=1350%>\n\n</size>";
+
+        if (!player.HasDesyncRole())
+        {
+            SelfTeamName = string.Empty;
+            RoleNameUp = "<size=565%>\n</size>";
+            RoleInfo = $"<size=50%>\n</size><size={GetInfoSize(player.GetRoleInfo())}%>{Font}{ColorString(player.GetRoleColor(), player.GetRoleInfo())}</font></size>";
+        }
+
+        // Format addons
+        bool isFirstSub = true;
+        foreach (var subRole in player.GetCustomSubRoles().ToArray())
+        {
+            if (isFirstSub)
+            {
+                SelfSubRolesName += $"<size=150%>\n</size=><size=125%>{Font}{ColorString(GetRoleColor(subRole), GetString($"{subRole}"))}</font></size>";
+                RoleNameUp += "\n";
+            }
+            else
+                SelfSubRolesName += $"<size=125%> {Font}{ColorString(Color.white, "+")} {ColorString(GetRoleColor(subRole), GetString($"{subRole}"))}</font></size=>";
+            isFirstSub = false;
+        }
+
+        var SelfName = $"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}";
+
+        // Privately sent name.
+        player.RpcSetNamePrivate(SelfName, player);
+    }
+
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static readonly StringBuilder SelfSuffix = new();
@@ -1824,65 +1888,7 @@ public static class Utils
             if (seer == null) continue;
             
             // Only non-modded players
-            if (seer.IsModClient()) continue;
-
-            // During intro scene to set team name and role info for non-modded clients and skip the rest.
-            // Note: When Neutral is based on the Crewmate role then it is impossible to display the info for it
-            // If not a Desync Role remove team display
-            if (SetUpRoleTextPatch.IsInIntro)
-            {
-                //Get role info font size based on the length of the role info
-                static int GetInfoSize(string RoleInfo)
-                {
-                    RoleInfo = Regex.Replace(RoleInfo, "<[^>]*>", "");
-                    RoleInfo = Regex.Replace(RoleInfo, "{[^}]*}", "");
-
-                    var BaseFontSize = 200;
-                    int BaseFontSizeMin = 100;
-
-                    BaseFontSize -= 3 * RoleInfo.Length;
-                    if (BaseFontSize < BaseFontSizeMin)
-                        BaseFontSize = BaseFontSizeMin;
-                    return BaseFontSize;
-                }
-
-                string IconText = "<color=#ffffff>|</color>";
-                string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
-                string SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(GetTeamColor(seer), $"{seer.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
-                string SelfRoleName = $"<size=185%>{Font}{ColorString(seer.GetRoleColor(), GetRoleName(seer.GetCustomRole()))}</font></size>";
-                string SelfSubRolesName = string.Empty;
-                string SeerRealName = seer.GetRealName();
-                string SelfName = ColorString(seer.GetRoleColor(), SeerRealName);
-                string RoleInfo = $"<size=25%>\n</size><size={GetInfoSize(seer.GetRoleInfo())}%>{Font}{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</font></size>";
-                string RoleNameUp = "<size=1350%>\n\n</size>";
-
-                if (!seer.HasDesyncRole())
-                {
-                    SelfTeamName = string.Empty;
-                    RoleNameUp = "<size=565%>\n</size>";
-                    RoleInfo = $"<size=50%>\n</size><size={GetInfoSize(seer.GetRoleInfo())}%>{Font}{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</font></size>";
-                }
-
-                // Format addons
-                bool isFirstSub = true;
-                foreach (var subRole in seer.GetCustomSubRoles().ToArray())
-                {
-                    if (isFirstSub)
-                    {
-                        SelfSubRolesName += $"<size=150%>\n</size=><size=125%>{Font}{ColorString(GetRoleColor(subRole), GetString($"{subRole}"))}</font></size>";
-                        RoleNameUp += "\n";
-                    }
-                    else
-                        SelfSubRolesName += $"<size=125%> {Font}{ColorString(Color.white, "+")} {ColorString(GetRoleColor(subRole), GetString($"{subRole}"))}</font></size=>";
-                    isFirstSub = false;
-                }
-
-                SelfName = $"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}";
-
-                // Privately sent name.
-                seer.RpcSetNamePrivate(SelfName, seer);
-                continue;
-            }
+            if (seer.IsModded()) continue;
             
             // Size of player roles
             string fontSize = isForMeeting ? "1.6" : "1.8";
@@ -2204,6 +2210,11 @@ public static class Utils
     {
         PlayerGameOptionsSender.SetDirtyToAll();
         GameOptionsSender.SendAllGameOptions();
+    }
+    public static void MarkAllDirtyGameData()
+    {
+        foreach (var playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
+            playerInfo.MarkDirty();
     }
     public static bool DeathReasonIsEnable(this PlayerState.DeathReason reason, bool checkbanned = false)
     {
@@ -2529,13 +2540,13 @@ public static class Utils
     {
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost || GameStates.IsMeeting) return;
 
-        if (player.AmOwner)
+        if (player.IsHost())
         {
             HudManager.Instance.Chat.SetVisible(true);
             return;
         }
 
-        if (player.IsModClient())
+        if (player.IsModded())
         {
             var modsend = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShowChat, SendOption.Reliable, player.OwnerId);
             modsend.WritePacked(player.OwnerId);

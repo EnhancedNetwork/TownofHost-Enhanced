@@ -102,7 +102,7 @@ namespace TOHE.Roles.AddOns.Common
             float Decreaseby = Mathf.Clamp(modulator / 20 * 0.5f, 0.01f, 0.3f);
 
             int charge = DetermineCharge(player);
-            if (DisplaysCharge.GetBool() && !player.IsModClient() && LastNum[player.PlayerId] != charge)
+            if (DisplaysCharge.GetBool() && !player.IsModded() && LastNum[player.PlayerId] != charge)
             {
                 LastNum[player.PlayerId] = charge;
                 long now = Utils.TimeStamp;

@@ -1,13 +1,13 @@
 using AmongUs.GameOptions;
+using System;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using static TOHE.Roles.Core.CustomRoleManager;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
-using System;
+using static TOHE.Roles.Core.CustomRoleManager;
 
 namespace TOHE;
 
@@ -18,7 +18,7 @@ public static class CustomRolesHelper
     public static readonly Custom_Team[] AllRoleTypes = EnumHelper.GetAllValues<Custom_Team>();
     public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
     {
-        // Vanilla roles
+        // Vanilla rolesf
         if (role.IsVanilla()) return role;
 
         // Role base
@@ -49,7 +49,7 @@ public static class CustomRolesHelper
         var customRole = player.GetCustomRole();
         bool ModSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
 
-        if (player.IsModClient() || (!considerVanillaShift && !player.IsModClient()))
+        if (player.IsModded() || (!considerVanillaShift && !player.IsModded()))
             return ModSideHasKillButton;
 
         bool vanillaSideHasKillButton = EAC.OriginalRoles.TryGetValue(player.PlayerId, out var OriginalRole) ?
@@ -67,10 +67,12 @@ public static class CustomRolesHelper
             return true;
 
         return role is
-            CustomRoles.EvilSpirit;
+        CustomRoles.EvilSpirit;
 
     }
-    
+    public static bool HasGhostRole(this PlayerControl player) => player.GetCustomRole().IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole());
+
+
     /*
     public static bool IsExperimental(this CustomRoles role)
     {
@@ -726,7 +728,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mortician)
                     || pc.Is(CustomRoles.Medium)
                     || pc.Is(CustomRoles.KillingMachine)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Altruist))
                     return false;
                 break;
 
@@ -797,7 +800,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Puppeteer)
                     || pc.Is(CustomRoles.Scavenger)
                     || pc.Is(CustomRoles.Lightning)
-                    || pc.Is(CustomRoles.Swift))
+                    || pc.Is(CustomRoles.Swift)
+                    || pc.Is(CustomRoles.Swooper))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;

@@ -78,12 +78,12 @@ internal class Mortician : RoleBase
         string minName = "";
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (pc.PlayerId == target.PlayerId) continue;
+            if (pc.PlayerId == target.PlayerId || playerIdList.Any(p => p == pc.PlayerId)) continue;
             var dis = Utils.GetDistance(pc.transform.position, pos);
             if (dis < minDis && dis < 1.5f)
             {
                 minDis = dis;
-                minName = pc.GetRealName();
+                minName = pc.GetRealName(clientData: true);
             }
         }
 

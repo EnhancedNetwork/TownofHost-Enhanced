@@ -140,7 +140,7 @@ internal class Berserker : RoleBase
             CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
             foreach (var player in Main.AllAlivePlayerControls)
             {
-                if (!player.IsModClient())
+                if (!player.IsModded())
                     player.KillFlash();
 
                 if (player == killer) continue;

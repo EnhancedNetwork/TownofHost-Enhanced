@@ -103,7 +103,7 @@ public static class AntiBlackout
 
         foreach (var seer in Main.AllPlayerControls)
         {
-            if (seer.OwnedByHost() || seer.IsModClient()) continue;
+            if (seer.IsModded()) continue;
             foreach (var target in Main.AllPlayerControls)
             {
                 RoleTypes targetRoleType = target.PlayerId == dummyImp.PlayerId ? RoleTypes.Impostor : RoleTypes.Crewmate;
@@ -170,8 +170,8 @@ public static class AntiBlackout
         var sender = CustomRpcSender.Create("AntiBlack RpcVotingComplete", SendOption.None);
         foreach (var pc in Main.AllPlayerControls)
         {
-            if (pc.AmOwner) continue;
-            if (pc.IsModClient()) //For mod client show real result
+            if (pc.IsHost()) continue;
+            if (pc.IsNonHostModdedClient()) //For mod client show real result
             {
                 sender.AutoStartRpc(__instance.NetId, (byte)RpcCalls.VotingComplete, pc.GetClientId());
                 {
@@ -213,7 +213,7 @@ public static class AntiBlackout
         if (CheckForEndVotingPatch.TempExileMsg != null && BlackOutIsActive)
         {
             timeNotify = 4f;
-            foreach (var pc in Main.AllPlayerControls.Where(p => p != null && !(p.AmOwner || p.IsModClient())).ToArray())
+            foreach (var pc in Main.AllPlayerControls.Where(p => !p.IsModded()).ToArray())
             {
                 pc.Notify(CheckForEndVotingPatch.TempExileMsg, time: timeNotify);
             }
@@ -247,7 +247,7 @@ public static class AntiBlackout
             var target = Utils.GetPlayerById(targetId);
 
             if (seer == null || target == null) continue;
-            if (seer.IsModClient()) continue;
+            if (seer.IsModded()) continue;
 
             var isSelf = seerId == targetId;
             var changedRoleType = roletype;
@@ -257,30 +257,15 @@ public static class AntiBlackout
                 {
                     target.RpcExile();
 
-                    if (target.GetCustomRole().IsGhostRole() || target.IsAnySubRole(x => x.IsGhostRole()))
-                    {
-                        changedRoleType = RoleTypes.GuardianAngel;
-                    }
-                    else if (target.Is(Custom_Team.Impostor) || target.HasDesyncRole())
-                    {
-                        changedRoleType = RoleTypes.ImpostorGhost;
-                    }
-                    else
-                    {
-                        changedRoleType = RoleTypes.CrewmateGhost;
-                    }
+                    if (target.HasGhostRole()) changedRoleType = RoleTypes.GuardianAngel;
+                    else if (target.Is(Custom_Team.Impostor) || target.HasDesyncRole()) changedRoleType = RoleTypes.ImpostorGhost;
+                    else changedRoleType = RoleTypes.CrewmateGhost;
                 }
                 else
                 {
                     var seerIsKiller = seer.Is(Custom_Team.Impostor) || seer.HasDesyncRole();
-                    if (!seerIsKiller && target.Is(Custom_Team.Impostor))
-                    {
-                        changedRoleType = RoleTypes.ImpostorGhost;
-                    }
-                    else
-                    {
-                        changedRoleType = RoleTypes.CrewmateGhost;
-                    }
+                    if (!seerIsKiller && target.Is(Custom_Team.Impostor)) changedRoleType = RoleTypes.ImpostorGhost;
+                    else changedRoleType = RoleTypes.CrewmateGhost;
                 }
             }
 
@@ -297,7 +282,7 @@ public static class AntiBlackout
                 seer.SetKillCooldown();
                 seer.RpcResetAbilityCooldown();
             }
-            else if (seer.GetCustomRole().IsGhostRole() || seer.IsAnySubRole(x => x.IsGhostRole()))
+            else if (seer.HasGhostRole())
             {
                 seer.RpcResetAbilityCooldown();
             }

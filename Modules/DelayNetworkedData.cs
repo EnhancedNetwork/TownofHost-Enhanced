@@ -22,7 +22,7 @@ public class InnerNetClientPatch
         Il2CppSystem.Collections.Generic.List<InnerNetObject> obj = __instance.allObjects;
         lock (obj)
         {
-            HashSet<GameObject> hashSet = new HashSet<GameObject>();
+            HashSet<GameObject> hashSet = [];
             for (int i = 0; i < __instance.allObjects.Count; i++)
             {
                 InnerNetObject innerNetObject = __instance.allObjects[i];

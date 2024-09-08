@@ -124,7 +124,7 @@ internal static class FFAManager
     }
     public static void SendRPCSyncNameNotify(PlayerControl pc)
     {
-        if (pc.AmOwner || !pc.IsModClient()) return;
+        if (!pc.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncFFANameNotify, SendOption.Reliable, pc.GetClientId());
         if (NameNotify.ContainsKey(pc.PlayerId))
             writer.Write(NameNotify[pc.PlayerId].TEXT);
