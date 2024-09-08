@@ -264,8 +264,8 @@ class ShipStatusSpawnPlayerPatch
 {
     public static bool Prefix(ShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
-        // Skip first spawn
-        if (initialSpawn) return true;
+        // Skip first spawn and modded clients
+        if (!AmongUsClient.Instance.AmHost || initialSpawn) return true;
 
         Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
         Vector2 position = (initialSpawn ? __instance.InitialSpawnCenter : __instance.MeetingSpawnCenter) + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
@@ -279,8 +279,8 @@ class PolusShipStatusSpawnPlayerPatch
 {
     public static bool Prefix(PolusShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
-        // Skip first spawn
-        if (initialSpawn) return true;
+        // Skip first spawn and modded clients
+        if (!AmongUsClient.Instance.AmHost || initialSpawn) return true;
 
         int num1 = Mathf.FloorToInt(numPlayers / 2f);
         int num2 = player.PlayerId % 15;

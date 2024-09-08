@@ -18,7 +18,7 @@ public static class CustomRolesHelper
     public static readonly Custom_Team[] AllRoleTypes = EnumHelper.GetAllValues<Custom_Team>();
     public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
     {
-        // Vanilla rolesf
+        // Vanilla roles
         if (role.IsVanilla()) return role;
 
         // Role base
