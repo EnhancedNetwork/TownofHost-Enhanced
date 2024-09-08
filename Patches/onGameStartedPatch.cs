@@ -577,16 +577,8 @@ internal class StartGameHostPatch
                     break;
             }
 
-            GameOptionsSender.AllSenders.Clear();
-            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
-            {
-                GameOptionsSender.AllSenders.Add(new PlayerGameOptionsSender(pc));
-            }
-
             EAC.LogAllRoles();
-
             Utils.CountAlivePlayers(sendLog: true, checkGameEnd: false);
-            Utils.SyncAllSettings();
 
             Logger.Msg("Ended", "AssignRoles");
         }

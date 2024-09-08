@@ -47,6 +47,12 @@ class CoShowIntroPatch
                     // Assign tasks after assign all roles, as it should be
                     ShipStatus.Instance.Begin();
 
+                    GameOptionsSender.AllSenders.Clear();
+                    foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                    {
+                        GameOptionsSender.AllSenders.Add(new PlayerGameOptionsSender(pc));
+                    }
+
                     Utils.SyncAllSettings();
                 }
             }
@@ -311,7 +317,7 @@ class BeginCrewmatePatch
             exeTeam.Add(PlayerControl.LocalPlayer);
             foreach (var execution in Executioner.Target.Values)
             {
-                PlayerControl executing = Utils.GetPlayerById(execution);
+                PlayerControl executing = execution.GetPlayer();
                 exeTeam.Add(executing);
             }
             teamToDisplay = exeTeam;
@@ -322,7 +328,7 @@ class BeginCrewmatePatch
             lawyerTeam.Add(PlayerControl.LocalPlayer);
             foreach (var help in Lawyer.Target.Values)
             {
-                PlayerControl helping = Utils.GetPlayerById(help);
+                PlayerControl helping = help.GetPlayer();
                 lawyerTeam.Add(helping);
             }
             teamToDisplay = lawyerTeam;
@@ -562,7 +568,7 @@ class IntroCutsceneDestroyPatch
                 {
                     Main.UnShapeShifter.Do(x =>
                     {
-                        var PC = Utils.GetPlayerById(x);
+                        var PC = x.GetPlayer();
                         var firstPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
                         PC.RpcShapeshift(firstPlayer, false);
                         PC.RpcRejectShapeshift();
@@ -656,7 +662,7 @@ class IntroCutsceneDestroyPatch
                 {
                     GhostRoleAssign.forceRole.Do(x =>
                     {
-                        var plr = Utils.GetPlayerById(x.Key);
+                        var plr = x.Key.GetPlayer();
                         plr.RpcExile();
                         Main.PlayerStates[x.Key].SetDead();
 
