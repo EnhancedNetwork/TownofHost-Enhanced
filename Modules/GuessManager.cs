@@ -1072,6 +1072,7 @@ public static class GuessManager
         GuesserMsg(pc, $"/bt {PlayerId} {GetString(role.ToString())}", true);
     }
 
+    // From EHR (By Gurge44 https://github.com/Gurge44/EndlessHostRoles)
     private static List<GameObject> IDPanels = [];
     public static void CreateIDLabels(MeetingHud __instance)
     {
