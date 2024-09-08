@@ -1,3 +1,4 @@
+using Hazel;
 using System;
 using UnityEngine;
 
@@ -5,23 +6,10 @@ namespace TOHE;
 
 static class TargetArrow
 {
-    class ArrowInfo(byte from, byte to)
-    {
-        public byte From = from;
-        public byte To = to;
-
-        public bool Equals(ArrowInfo obj)
-        {
-            return From == obj.From && To == obj.To;
-        }
-        public override string ToString()
-        {
-            return $"(From:{From} To:{To})";
-        }
-    }
-
     static readonly Dictionary<ArrowInfo, string> TargetArrows = [];
-    static readonly string[] Arrows = [
+
+    static readonly string[] Arrows =
+    [
         "↑",
         "↗",
         "→",
@@ -37,18 +25,48 @@ static class TargetArrow
     {
         TargetArrows.Clear();
     }
+
+    public static void SendRPC(int index, byte seer, byte target = byte.MaxValue)
+    {
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Arrow, SendOption.Reliable);
+        writer.Write(true);
+        writer.WritePacked(index);
+        writer.Write(seer);
+        writer.Write(target);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC(MessageReader reader)
+    {
+        switch (reader.ReadPackedInt32())
+        {
+            case 1:
+                Add(reader.ReadByte(), reader.ReadByte());
+                break;
+            case 2:
+                Remove(reader.ReadByte(), reader.ReadByte());
+                break;
+            case 3:
+                RemoveAllTarget(reader.ReadByte());
+                break;
+        }
+    }
+
     /// <summary>
     /// Register a new target arrow object
     /// </summary>
     /// <param name="seer"></param>
     /// <param name="target"></param>
-    /// <param name="coloredArrow"></param>
     public static void Add(byte seer, byte target)
     {
         var arrowInfo = new ArrowInfo(seer, target);
         if (!TargetArrows.Any(a => a.Key.Equals(arrowInfo)))
+        {
             TargetArrows[arrowInfo] = "・";
+            SendRPC(1, seer, target);
+            Logger.Info($"New target arrow: {seer} ({seer.GetPlayer()?.GetRealName()}) => {target} ({target.GetPlayer()?.GetRealName()})", "TargetArrow");
+        }
     }
+
     /// <summary>
     /// Delete target
     /// </summary>
@@ -58,38 +76,55 @@ static class TargetArrow
     {
         var arrowInfo = new ArrowInfo(seer, target);
         var removeList = new List<ArrowInfo>(TargetArrows.Keys.Where(k => k.Equals(arrowInfo)));
-        foreach (var a in removeList.ToArray())
+        foreach (ArrowInfo a in removeList.ToArray())
         {
             TargetArrows.Remove(a);
         }
+
+        SendRPC(2, seer, target);
+        Logger.Info($"Removed target arrow: {seer} ({seer.GetPlayer()?.GetRealName()}) => {target} ({target.GetPlayer()?.GetRealName()})", "TargetArrow");
     }
+
     /// <summary>
-    /// Delete all targets of the same type
+    /// Delete all targets for the specified seer
     /// </summary>
     /// <param name="seer"></param>
     public static void RemoveAllTarget(byte seer)
     {
         var removeList = new List<ArrowInfo>(TargetArrows.Keys.Where(k => k.From == seer));
-        foreach (var arrowInfo in removeList.ToArray())
+        foreach (ArrowInfo arrowInfo in removeList.ToArray())
         {
             TargetArrows.Remove(arrowInfo);
         }
+        SendRPC(3, seer);
+        Logger.Info($"Removed all target arrows for {seer} ({seer.GetPlayer()?.GetRealName()})", "TargetArrow");
     }
+
     /// <summary>
-    /// Get all visible target arrows
+    /// Get all visible target arrows for the specified seer to the specified target(s)
     /// </summary>
     /// <param name="seer"></param>
+    /// <param name="targets"></param>
     /// <returns></returns>
     public static string GetArrows(PlayerControl seer, params byte[] targets)
     {
-        var arrows = string.Empty;
-        foreach (var arrowInfo in TargetArrows.Keys.Where(ai => ai.From == seer.PlayerId && targets.Contains(ai.To)).ToArray())
-        {
-            arrows += TargetArrows[arrowInfo];
-        }
-        return arrows;
+        return TargetArrows.Keys.Where(ai => ai.From == seer.PlayerId && targets.Contains(ai.To)).Aggregate(string.Empty, (current, arrowInfo) => current + TargetArrows[arrowInfo]) ?? string.Empty;
     }
-    public static bool HasTargetArrows(PlayerControl seer) => TargetArrows.Keys.Any(a => a.From == seer.PlayerId);
+    public static string GetArrows(PlayerControl seer)
+    {
+        return TargetArrows.Keys.Where(ai => ai.From == seer.PlayerId).Aggregate(string.Empty, (current, arrowInfo) => current + TargetArrows[arrowInfo]) ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Get all visible target arrows for the specified seer
+    /// </summary>
+    /// <param name="seer"></param>
+    /// <returns></returns>
+    public static string GetAllArrows(PlayerControl seer)
+    {
+        return TargetArrows.Keys.Where(ai => ai.From == seer.PlayerId).Aggregate(string.Empty, (current, arrowInfo) => current + TargetArrows[arrowInfo]) ?? string.Empty;
+    }
+
     /// <summary>
     /// Check target arrow every FixedUpdate
     /// Issue NotifyRoles when there are updates
@@ -102,26 +137,27 @@ static class TargetArrow
         var seerId = seer.PlayerId;
         var seerIsDead = !seer.IsAlive();
 
-        var arrowList = new List<ArrowInfo>(TargetArrows.Keys.Where(a => a.From == seer.PlayerId));
+        var arrowList = new List<ArrowInfo>(TargetArrows.Keys.Where(a => a.From == seerId));
         if (!arrowList.Any()) return;
 
         var update = false;
         foreach (var arrowInfo in arrowList.ToArray())
         {
             var targetId = arrowInfo.To;
-            var target = Utils.GetPlayerById(targetId);
-            if (seerIsDead || !target.IsAlive() && !seer.Is(CustomRoles.Spiritualist))
+            var target = targetId.GetPlayer();
+            if (seerIsDead || (!target.IsAlive() && !seer.Is(CustomRoles.Spiritualist)))
             {
                 TargetArrows.Remove(arrowInfo);
                 update = true;
                 continue;
             }
-            //Get the target direction vector
+
+            // Take the direction vector of the target
             var dir = target.transform.position - seer.transform.position;
             int index;
             if (dir.magnitude < 2)
             {
-                //Display dots when close
+                // Display a dot when close
                 index = 8;
             }
             else
@@ -133,6 +169,7 @@ static class TargetArrow
                 var angle = Vector3.SignedAngle(Vector3.down, dir, Vector3.back) + 180 + 22.5;
                 index = ((int)(angle / 45)) % 8;
             }
+
             var arrow = Arrows[index];
             if (TargetArrows[arrowInfo] != arrow)
             {
@@ -140,9 +177,26 @@ static class TargetArrow
                 update = true;
             }
         }
-        if (update && !seer.AmOwner)
+
+        if (update && !seer.IsModded())
         {
             Utils.NotifyRoles(SpecifySeer: seer, ForceLoop: false);
+        }
+    }
+
+    class ArrowInfo(byte from, byte to)
+    {
+        public readonly byte From = from;
+        public readonly byte To = to;
+
+        public bool Equals(ArrowInfo obj)
+        {
+            return From == obj.From && To == obj.To;
+        }
+
+        public override string ToString()
+        {
+            return $"(From:{From} To:{To})";
         }
     }
 }

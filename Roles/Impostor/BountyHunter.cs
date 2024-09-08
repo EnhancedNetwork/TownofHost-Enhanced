@@ -83,9 +83,7 @@ internal class BountyHunter : RoleBase
     {
         byte bountyId = reader.ReadByte();
         byte targetId = reader.ReadByte();
-
         Targets[bountyId] = targetId;
-        if (ShowTargetArrow) TargetArrow.Add(bountyId, targetId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

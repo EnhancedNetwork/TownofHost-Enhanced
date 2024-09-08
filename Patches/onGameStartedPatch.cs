@@ -208,7 +208,6 @@ internal class ChangeRoleSettings
             Diseased.Init();
             Clumsy.Init();
             Aware.Init();
-            Radar.Init();
             Glow.Init();
             Sleuth.Init();
             Bait.Init();
@@ -227,6 +226,7 @@ internal class ChangeRoleSettings
             Rainbow.Init();
             Rebirth.Init();
             Evader.Init();
+            Radar.Init();
 
             //FFA
             FFAManager.Init();
@@ -489,9 +489,6 @@ internal class StartGameHostPatch
                     {
                         case CustomRoles.Aware:
                             Aware.Add(pc.PlayerId);
-                            break;
-                        case CustomRoles.Radar:
-                            Radar.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Glow:
                             Glow.Add(pc.PlayerId);

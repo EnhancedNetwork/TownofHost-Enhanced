@@ -569,7 +569,7 @@ public static class Utils
         return deathReason;
     }
 
-    public static (RoleTypes roleType, CustomRoles customRole) GetRoleMap(byte seerId, byte targetId = byte.MaxValue)
+    public static (RoleTypes RoleType, CustomRoles CustomRole) GetRoleMap(byte seerId, byte targetId = byte.MaxValue)
     {
         if (targetId == byte.MaxValue) targetId = seerId;
 
@@ -1716,6 +1716,7 @@ public static class Utils
     {
         return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId);
     }
+    public static PlayerControl GetPlayer(this byte id) => GetPlayerById(id);
     public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
     {
         var PlayerList = PlayerIdList?.ToList().Select(x => GetPlayerById(x)).ToList();
@@ -1928,12 +1929,10 @@ public static class Utils
                 SelfSuffix.Append(seerRoleClass?.GetLowerText(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, seer, isForMeeting: isForMeeting));
 
-                if (Radar.IsEnable)
-                    SelfSuffix.Append(Radar.GetPlayerArrow(seer, isForMeeting: isForMeeting));
-
                 SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
+                SelfSuffix.Append(Radar.GetPlayerArrow(seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
 
 

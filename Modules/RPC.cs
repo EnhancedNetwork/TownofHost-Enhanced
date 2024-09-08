@@ -15,7 +15,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 198/255 USED
+enum CustomRPC : byte // 193/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -52,6 +52,7 @@ enum CustomRPC : byte // 198/255 USED
     SyncShieldPersonDiedFirst,
     RemoveSubRole,
     SyncGeneralOptions,
+    Arrow,
 
     //Roles 
     SetBountyTarget,
@@ -99,24 +100,15 @@ enum CustomRPC : byte // 198/255 USED
     SetConcealerTimer,
     SetMedicalerProtectList,
     SyncPsychicRedList,
-    SetMorticianArrow,
-    SetAmnesaicArrows,
-    SetTracefinderArrow,
     PresidentEnd,
     PresidentReveal,
     SetBKTimer,
     SetCursedSoulCurseLimit,
     SetInvestgatorLimit,
-    SyncInvestigator, // Unused
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
-    SetCoronerArrow,
     SpurtSync,
-    SetCoronerkKillerArrow,
-    SetVultureArrow,
-    SetRadarArrow,
     SyncVultureBodyAmount,
-    //SetTrackerTarget,
     SpyRedNameSync,
     SpyRedNameRemove,
     SetChameleonTimer,
@@ -404,9 +396,6 @@ internal class RPCHandlerPatch
             case CustomRPC.EndGame:
                 RPC.EndGame(reader);
                 break;
-            case CustomRPC.SetRadarArrow:
-                Radar.ReceiveRPC(reader);
-                break;
             case CustomRPC.PlaySound:
                 byte playerID = reader.ReadByte();
                 Sounds sound = (Sounds)reader.ReadByte();
@@ -433,6 +422,12 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncRoleSkill:
                 RPC.SyncRoleSkillReader(reader);
                 break;
+            case CustomRPC.Arrow:
+                {
+                    if (reader.ReadBoolean()) TargetArrow.ReceiveRPC(reader);
+                    else LocateArrow.ReceiveRPC(reader);
+                    break;
+                }
             case CustomRPC.SetBountyTarget:
                 BountyHunter.ReceiveRPC(reader);
                 break;
@@ -624,15 +619,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncFFANameNotify:
                 FFAManager.ReceiveRPCSyncNameNotify(reader);
                 break;
-            case CustomRPC.SetMorticianArrow:
-                Mortician.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetAmnesaicArrows:
-                Amnesiac.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetTracefinderArrow:
-                Tracefinder.ReceiveRPC(reader);
-                break;
             case CustomRPC.SyncNameNotify:
                 NameNotifyManager.ReceiveRPC(reader);
                 break;
@@ -686,15 +672,6 @@ internal class RPCHandlerPatch
                 {
                     Logger.Info($"Player {target.GetNameWithRole()} used /dump", "RPC_DumpLogger");
                 }
-                break;
-            case CustomRPC.SetCoronerArrow:
-                Coroner.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetCoronerkKillerArrow:
-                Coroner.ReceiveRPCKiller(reader);
-                break;
-            case CustomRPC.SetVultureArrow:
-                Vulture.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncVultureBodyAmount:
                 Vulture.ReceiveBodyRPC(reader);
@@ -1006,9 +983,6 @@ internal static class RPC
                 break;
             case CustomRoles.Aware:
                 Aware.Add(targetId);
-                break;
-            case CustomRoles.Radar:
-                Radar.Add(targetId);
                 break;
             case CustomRoles.Glow:
                 Glow.Add(targetId);

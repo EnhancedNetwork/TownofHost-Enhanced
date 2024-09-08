@@ -149,10 +149,10 @@ class ExileControllerWrapUpPatch
             {
                 Main.AfterMeetingDeathPlayers.Do(x =>
                 {
-                    var player = Utils.GetPlayerById(x.Key);
+                    var player = x.Key.GetPlayer();
                     var state = Main.PlayerStates[x.Key];
                     
-                    Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
+                    Logger.Info($"{player?.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
 
                     state.deathReason = x.Value;
                     state.SetDead();

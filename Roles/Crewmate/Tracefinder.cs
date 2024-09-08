@@ -56,32 +56,10 @@ internal class Tracefinder : RoleBase
     {
         playerIdList.Remove(playerId);
     }
-    private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetTracefinderArrow, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(add);
-        if (add)
-        {
-            writer.Write(loc.x);
-            writer.Write(loc.y);
-            writer.Write(loc.z);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerid)
     {
         AURoleOptions.ScientistCooldown = VitalsCooldown.GetFloat();
         AURoleOptions.ScientistBatteryCharge = VitalsDuration.GetFloat();
-    }
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte playerId = reader.ReadByte();
-        bool add = reader.ReadBoolean();
-        if (add)
-            LocateArrow.Add(playerId, new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
-        else
-            LocateArrow.RemoveAllTarget(playerId);
     }
 
     public override void OnReportDeadBody(PlayerControl GODZILLA_VS, NetworkedPlayerInfo KINGKONG)
@@ -89,7 +67,6 @@ internal class Tracefinder : RoleBase
         foreach (var apc in playerIdList)
         {
             LocateArrow.RemoveAllTarget(apc);
-            SendRPC(apc, false);
         }
     }
 
@@ -114,8 +91,6 @@ internal class Tracefinder : RoleBase
                     var player = Utils.GetPlayerById(pc);
                     if (player == null || !player.IsAlive()) continue;
                     LocateArrow.Add(pc, tempPositionTarget);
-                    SendRPC(pc, true, tempPositionTarget);
-                    Utils.NotifyRoles(SpecifySeer: player);
                 }
             }
         }, delay, "Get Arrow Tracefinder");

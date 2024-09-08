@@ -55,7 +55,7 @@ public static class AdminProvider
                         totalPlayers++;
                         numDeadBodies++;
                         // If it the impostor's dead body
-                        if (Utils.GetPlayerById(deadBody.ParentId)?.Is(Custom_Team.Impostor) == true)
+                        if (deadBody.ParentId.GetPlayer()?.Is(Custom_Team.Impostor) == true)
                         {
                             numImpostors++;
                         }

@@ -120,12 +120,9 @@ internal class Solsticer : RoleBase
         {
             TargetArrow.Add(target.PlayerId, pc.PlayerId);
         }
-        if (AmongUsClient.Instance.AmHost)
-        {
-            warningActived = true;
-            SendRPC();
-            Utils.NotifyRoles(ForceLoop: true);
-        }
+        warningActived = true;
+        SendRPC();
+        Utils.NotifyRoles(ForceLoop: true);
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
@@ -210,7 +207,6 @@ internal class Solsticer : RoleBase
             writer.Write(0);
             writer.Write(0);
         }
-        writer.Write(warningActived);
         writer.Write(playerid);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -219,7 +215,6 @@ internal class Solsticer : RoleBase
         Logger.Info("syncsolsticer", "solsticer");
         int AllCount = reader.ReadInt32();
         int CompletedCount = reader.ReadInt32();
-        warningActived = reader.ReadBoolean();
         playerid = reader.ReadByte();
 
         if (AllCount != byte.MaxValue && CompletedCount != byte.MaxValue)
@@ -227,11 +222,6 @@ internal class Solsticer : RoleBase
             var taskState = Utils.GetPlayerById(playerid).GetPlayerTaskState();
             taskState.AllTasksCount = AllCount;
             taskState.CompletedTasksCount = CompletedCount;
-        }
-
-        if (warningActived)
-        {
-            ActiveWarning(Utils.GetPlayerById(playerid));
         }
     }
     public static bool OtherKnowSolsticer(PlayerControl target)

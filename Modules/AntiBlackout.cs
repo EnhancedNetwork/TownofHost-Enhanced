@@ -243,8 +243,8 @@ public static class AntiBlackout
             // skip host
             if (seerId == 0) continue;
             
-            var seer = Utils.GetPlayerById(seerId);
-            var target = Utils.GetPlayerById(targetId);
+            var seer = seerId.GetPlayer();
+            var target = targetId.GetPlayer();
 
             if (seer == null || target == null) continue;
             if (seer.IsModded()) continue;

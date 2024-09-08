@@ -41,6 +41,10 @@ internal class Altruist : RoleBase
         RevivedPlayerId = byte.MaxValue;
         AllRevivedPlayerId.Clear();
     }
+    public override void Add(byte playerId)
+    {
+        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+    }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -67,7 +71,7 @@ internal class Altruist : RoleBase
                 if (deadPlayer.HasGhostRole())
                 {
                     deadPlayer.GetRoleClass().Remove(deadPlayerId);
-                    deadPlayer.RpcSetCustomRole(Utils.GetRoleMap(deadPlayerId).customRole);
+                    deadPlayer.RpcSetCustomRole(Utils.GetRoleMap(deadPlayerId).CustomRole);
                     deadPlayer.GetRoleClass().Add(deadPlayerId);
                 }
 
@@ -97,12 +101,19 @@ internal class Altruist : RoleBase
 
         return true;
     }
-
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
+    {
+        if (inMeeting) return;
+        // if Revived Player is dead again, clear RevivedPlayerId
+        if (RevivedPlayerId == target.PlayerId)
+        {
+            RevivedPlayerId = byte.MaxValue;
+        }
+    }
     public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (RevivedPlayerId == byte.MaxValue || isForMeeting || seer.PlayerId != target.PlayerId || !seer.Is(Custom_Team.Impostor)) return string.Empty;
-        Logger.Info($"{TargetArrow.GetArrows(seer)}", "Altruist");
-        return Utils.ColorString(Utils.HexToColor("9b0202"), TargetArrow.GetArrows(seer, RevivedPlayerId));
+        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Altruist), TargetArrow.GetArrows(seer));;
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)

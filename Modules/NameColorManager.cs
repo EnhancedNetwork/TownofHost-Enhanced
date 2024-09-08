@@ -111,7 +111,7 @@ public static class NameColorManager
     {
         if (colorCode == "")
         {
-            var target = Utils.GetPlayerById(targetId);
+            var target = targetId.GetPlayer();
             if (target == null) return;
             colorCode = target.GetRoleColorCode();
         }
