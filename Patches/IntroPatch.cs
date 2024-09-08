@@ -23,20 +23,16 @@ class CoShowIntroPatch
 
         _ = new LateTask(() =>
         {
-            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
-            {
-                pc.SetCustomIntro();
-            }
-        }, 0.35f, "Set Custom Intro");
-
-        _ = new LateTask(() =>
-        {
             if (!(AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd))
             {
                 StartGameHostPatch.RpcSetDisconnected(disconnected: false);
 
-                if (!AmongUsClient.Instance.IsGameOver)
-                    DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+
+                foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                {
+                    pc.SetCustomIntro();
+                }
             }
         }, 0.6f, "Set Disconnected");
 

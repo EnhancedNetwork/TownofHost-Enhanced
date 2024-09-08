@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TMPro;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -1145,27 +1146,6 @@ class MeetingHudStartPatch
             //pva.NameText.text = target.GetRealName(isMeeting: true);
             pva.NameText.text = pva.NameText.text.ApplyNameColorData(seer, target, true);
 
-            // Guesser Mode //
-            if (Options.GuesserMode.GetBool())
-            {
-                if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Inspector))
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                if (Options.ImpostorsCanGuess.GetBool() && (seer.GetCustomRole().IsImpostor() || seer.GetCustomRole().IsMadmate()) && !seer.Is(CustomRoles.Councillor))
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                if (Options.NeutralKillersCanGuess.GetBool() && seer.GetCustomRole().IsNK())
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                if (Options.NeutralApocalypseCanGuess.GetBool() && seer.GetCustomRole().IsNA())
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
-
-            }
-
             //if (seer.KnowDeathReason(target))
             //    sb.Append($"『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))}』");
 
@@ -1184,16 +1164,16 @@ class MeetingHudStartPatch
                 pva.NameText.text = tempNemeText;
             }
 
-            foreach (var SeerSubRole in seer.GetCustomSubRoles().ToArray())
-            {
-                switch (SeerSubRole)
-                {
-                    case CustomRoles.Guesser:
-                        if (!seer.Data.IsDead && !target.Data.IsDead)
-                            pva.NameText.text = ColorString(GetRoleColor(CustomRoles.Guesser), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                        break;
-                }
-            }
+            //foreach (var SeerSubRole in seer.GetCustomSubRoles().ToArray())
+            //{
+            //    switch (SeerSubRole)
+            //    {
+            //        case CustomRoles.Guesser:
+            //            if (!seer.Data.IsDead && !target.Data.IsDead)
+            //                pva.NameText.text = ColorString(GetRoleColor(CustomRoles.Guesser), target.PlayerId.ToString()) + " " + pva.NameText.text;
+            //            break;
+            //    }
+            //}
 
             //bool isLover = false;
             foreach (var TargetSubRole in target.GetCustomSubRoles().ToArray())
@@ -1217,6 +1197,19 @@ class MeetingHudStartPatch
             pva.NameText.text += sb.ToString();
             pva.ColorBlindName.transform.localPosition -= new Vector3(1.35f, 0f, 0f);
         }
+    }
+}
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.PopulateButtons))]
+class MeetingHudPopulateButtonsPatch
+{
+    public static bool AlredyCreated = false;
+    public static void Postfix(MeetingHud __instance)
+    {
+        if (AlredyCreated) return;
+        AlredyCreated = true;
+
+        // Create all ID Label
+        GuessManager.CreateIDLabels(__instance);
     }
 }
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]

@@ -256,8 +256,9 @@ class ShipStatusBeginPatch
 }
 
 /*
-    Since SnapTo is unstable on the server side and after a meeting all players sometimes do not appear on the table
-    So better to use RpcTeleport
+    // Since SnapTo is unstable on the server side,
+    // after a meeting, sometimes not all players appear on the table,
+    // it's better to manually teleport them
 */
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.SpawnPlayer))]
 class ShipStatusSpawnPlayerPatch
@@ -265,10 +266,10 @@ class ShipStatusSpawnPlayerPatch
     public static bool Prefix(ShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
         // Skip first spawn and modded clients
-        if (!AmongUsClient.Instance.AmHost || initialSpawn) return true;
+        if (!AmongUsClient.Instance.AmHost || initialSpawn || !player.IsAlive()) return true;
 
         Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
-        Vector2 position = (initialSpawn ? __instance.InitialSpawnCenter : __instance.MeetingSpawnCenter) + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
+        Vector2 position = __instance.MeetingSpawnCenter + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
 
         player.RpcTeleport(position, sendInfoInLogs: false);
         return false;
@@ -280,7 +281,7 @@ class PolusShipStatusSpawnPlayerPatch
     public static bool Prefix(PolusShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
         // Skip first spawn and modded clients
-        if (!AmongUsClient.Instance.AmHost || initialSpawn) return true;
+        if (!AmongUsClient.Instance.AmHost || initialSpawn || !player.IsAlive()) return true;
 
         int num1 = Mathf.FloorToInt(numPlayers / 2f);
         int num2 = player.PlayerId % 15;

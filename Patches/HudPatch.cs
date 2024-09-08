@@ -264,6 +264,25 @@ class MapBehaviourShowPatch
         }
     }
 }
+[HarmonyPatch(typeof(MapTaskOverlay), nameof(MapTaskOverlay.Show))]
+static class MapTaskOverlayShowPatch
+{
+    public static void Postfix()
+    {
+        if (GameStates.IsMeeting)
+            GuessManager.DestroyIDLabels();
+    }
+}
+
+[HarmonyPatch(typeof(MapTaskOverlay), nameof(MapTaskOverlay.Hide))]
+static class MapTaskOverlayHidePatch
+{
+    public static void Postfix()
+    {
+        if (GameStates.IsMeeting && MeetingHud.Instance.state is not MeetingHud.VoteStates.Animating && !DestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening)
+            GuessManager.CreateIDLabels(MeetingHud.Instance);
+    }
+}
 [HarmonyPatch(typeof(TaskPanelBehaviour), nameof(TaskPanelBehaviour.SetTaskText))]
 class TaskPanelBehaviourPatch
 {
