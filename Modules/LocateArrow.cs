@@ -28,6 +28,7 @@ static class LocateArrow
 
     public static void SendRPC(int index, byte seer, Vector3 vector3)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Arrow, SendOption.Reliable);
         writer.Write(false);
         writer.WritePacked(index);

@@ -28,6 +28,7 @@ static class TargetArrow
 
     public static void SendRPC(int index, byte seer, byte target = byte.MaxValue)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Arrow, SendOption.Reliable);
         writer.Write(true);
         writer.WritePacked(index);
