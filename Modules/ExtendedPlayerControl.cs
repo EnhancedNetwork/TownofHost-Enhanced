@@ -82,7 +82,10 @@ static class ExtendedPlayerControl
         var customRole = player.GetRoleMap().CustomRole;
         Main.PlayerStates[player.PlayerId].IsDead = false;
         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.etc;
-        player.RpcSetCustomRole(customRole);
+
+        if (player.HasGhostRole())
+            player.RpcSetCustomRole(customRole);
+
         player.RpcChangeRoleBasis(customRole, true);
         player.ResetKillCooldown();
         player.SyncSettings();
