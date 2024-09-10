@@ -8,6 +8,7 @@ using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;

@@ -272,6 +272,17 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
+        else if (PlayerControl.LocalPlayer.IsPlayerCoven())
+        {
+            var covTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            covTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.IsPlayerCoven() && pc != PlayerControl.LocalPlayer)
+                    covTeam.Add(pc);
+            }
+            teamToDisplay = covTeam;
+        }
         else if (PlayerControl.LocalPlayer.IsNeutralApocalypse())
         {
             var apocTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
@@ -342,6 +353,13 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
                 __instance.ImpostorText.gameObject.SetActive(true);
                 __instance.ImpostorText.text = GetString("SubText.Neutral");
+                break;
+            case Custom_Team.Coven:
+                __instance.TeamTitle.text = GetString("TeamCoven");
+                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(172, 66, 242, byte.MaxValue);
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
+                __instance.ImpostorText.gameObject.SetActive(true);
+                __instance.ImpostorText.text = GetString("SubText.Coven");
                 break;
         }
         switch (role)
@@ -506,6 +524,16 @@ class BeginImpostorPatch
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
             __instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
+            return false;
+        }
+
+        if (role.IsCoven())
+        {
+            yourTeam = new();
+            yourTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
+            __instance.BeginCrewmate(yourTeam);
+            __instance.overlayHandle.color = new Color32(172, 66, 242, byte.MaxValue);
             return false;
         }
 

@@ -53,6 +53,7 @@ public class GameSettingMenuPatch
                 TabGroup.ImpostorRoles => "#f74631",
                 TabGroup.CrewmateRoles => "#8cffff",
                 TabGroup.NeutralRoles => "#7f8c8d",
+                TabGroup.CovenRoles => "#ac42f2",
                 TabGroup.Addons => "#ff9ace",
                 _ => "#ffffff",
             };
@@ -355,6 +356,7 @@ public class GameSettingMenuPatch
                     case TabGroup.ImpostorRoles:
                     case TabGroup.CrewmateRoles:
                     case TabGroup.NeutralRoles:
+                    case TabGroup.CovenRoles:
                     case TabGroup.Addons:
                         __instance.MenuDescriptionText.text = GetString("TabMenuDescription_Roles&AddOns");
                         break;
