@@ -19,8 +19,8 @@ internal class PotionMaster : CovenManager
 
     private static OptionItem KillCooldown;
     private static OptionItem RitualMaxCount;
-    private static OptionItem CanVent;
-    private static OptionItem HasImpostorVision;
+    //private static OptionItem CanVent;
+    //private static OptionItem HasImpostorVision;
 
     private static readonly Dictionary<byte, List<byte>> RitualTarget = [];
 
@@ -31,8 +31,8 @@ internal class PotionMaster : CovenManager
             .SetValueFormat(OptionFormat.Seconds);
         RitualMaxCount = IntegerOptionItem.Create(Id + 11, "RitualMaxCount", new(1, 15, 1), 5, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster])
             .SetValueFormat(OptionFormat.Times);
-        CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
+        //CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
+        //HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
     }
     public override void Init()
     {
@@ -64,11 +64,11 @@ internal class PotionMaster : CovenManager
           RitualTarget[playerId].Add(reader.ReadByte());
         
     }
-    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-    public override bool CanUseSabotage(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
+    //public override bool CanUseSabotage(PlayerControl pc) => true;
 
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

@@ -507,6 +507,10 @@ public static class Options
     // Coven
     public static OptionItem CovenRolesMinPlayer;
     public static OptionItem CovenRolesMaxPlayer;
+    public static OptionItem CovenHasImpVis;
+    public static OptionItem CovenImpVisMode;
+    public static OptionItem CovenCanVent;
+    public static OptionItem CovenVentMode;
 
     // Add-on
     public static OptionItem NameDisplayAddons;
@@ -718,6 +722,19 @@ public static class Options
         CovenRolesMaxPlayer = IntegerOptionItem.Create(60026, "CovenRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Players);
+        CovenHasImpVis = BooleanOptionItem.Create(60027, "CovenHasImpVis", true, TabGroup.CovenRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+        CovenImpVisMode = StringOptionItem.Create(60028, "CovenImpVisMode", EnumHelper.GetAllNames<CovenManager.VisOptionList>(), 0, TabGroup.CovenRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(CovenHasImpVis);
+        CovenManager.RunSetUpImpVisOptions(160032);
+        CovenCanVent = BooleanOptionItem.Create(60029, "CovenCanVent", true, TabGroup.CovenRoles, false)
+            .SetGameMode(CustomGameMode.Standard);
+        CovenVentMode = StringOptionItem.Create(60030, "CovenVentMode", EnumHelper.GetAllNames<CovenManager.VentOptionList>(), 0, TabGroup.CovenRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(CovenCanVent);
+        CovenManager.RunSetUpVentOptions(260032);
 
         NameDisplayAddons = BooleanOptionItem.Create(60019, "NameDisplayAddons", true, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard)

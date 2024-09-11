@@ -23,9 +23,9 @@ internal class Poisoner : CovenManager
     //==================================================================\\
 
     private static OptionItem OptionKillDelay;
-    private static OptionItem CanVent;
+    //private static OptionItem CanVent;
     public static OptionItem KillCooldown;
-    private static OptionItem HasImpostorVision;
+    //private static OptionItem HasImpostorVision;
 
     private static readonly Dictionary<byte, PoisonedInfo> PoisonedPlayers = [];
 
@@ -38,8 +38,8 @@ internal class Poisoner : CovenManager
             .SetValueFormat(OptionFormat.Seconds);
         OptionKillDelay = FloatOptionItem.Create(Id + 11, "PoisonerKillDelay", new(1f, 60f, 1f), 10f, TabGroup.CovenRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
+        //CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
+        //HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
     }
 
     public override void Init()
@@ -53,10 +53,10 @@ internal class Poisoner : CovenManager
     {
         playerIdList.Add(playerId);
     }
-    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    //public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

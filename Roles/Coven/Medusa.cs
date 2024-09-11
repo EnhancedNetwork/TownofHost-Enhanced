@@ -17,8 +17,8 @@ internal class Medusa : CovenManager
 
     private static OptionItem KillCooldown;
     private static OptionItem KillCooldownAfterStoneGazing;
-    private static OptionItem CanVent;
-    private static OptionItem HasImpostorVision;
+    //private static OptionItem CanVent;
+    //private static OptionItem HasImpostorVision;
 
     public override void SetupCustomOption()
     {
@@ -27,8 +27,8 @@ internal class Medusa : CovenManager
             .SetValueFormat(OptionFormat.Seconds);
         KillCooldownAfterStoneGazing = FloatOptionItem.Create(Id + 15, "KillCooldownAfterStoneGazing", new(0f, 180f, 2.5f), 40f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Medusa])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Medusa]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Medusa]);
+        //CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Medusa]);
+        //HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Medusa]);
     }
     public override void Init()
     {
@@ -39,9 +39,9 @@ internal class Medusa : CovenManager
         playerIdList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    //public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
 
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target, PlayerControl killer)
