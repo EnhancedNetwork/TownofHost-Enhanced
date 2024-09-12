@@ -116,6 +116,7 @@ enum CustomRPC : byte // 197/255 USED
     SetVultureArrow,
     SetRadarArrow,
     SyncVultureBodyAmount,
+    BloodRitual,
     //SetTrackerTarget,
     SpyRedNameSync,
     SpyRedNameRemove,
@@ -638,6 +639,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetChameleonTimer:
                 Chameleon.ReceiveRPC_Custom(reader);
+                break;
+            case CustomRPC.BloodRitual:
+                Ritualist.ReceiveRPC_Custom(reader, __instance);
                 break;
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);

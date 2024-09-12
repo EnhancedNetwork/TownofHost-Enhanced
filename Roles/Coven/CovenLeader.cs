@@ -4,8 +4,6 @@ using InnerNet;
 using System.Diagnostics.Metrics;
 using System.Text;
 using TOHE.Roles.Core;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
