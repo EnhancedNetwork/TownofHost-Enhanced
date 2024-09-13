@@ -955,7 +955,7 @@ class ReportDeadBodyPatch
             if (Aware.IsEnable) Aware.OnReportDeadBody();
 
             Sleuth.OnReportDeadBody(player, target);
-
+            Evader.ReportDeadBody();
         }
         catch (Exception error)
         {
@@ -1008,7 +1008,7 @@ class FixedUpdateInNormalGamePatch
 {
     private static readonly StringBuilder Mark = new(20);
     private static readonly StringBuilder Suffix = new(120);
-    private static readonly Dictionary<int, int> BufferTime = [];
+    private static readonly Dictionary<byte, int> BufferTime = [];
     private static int LevelKickBufferTime = 20;
 
     public static async void Postfix(PlayerControl __instance)
@@ -1020,8 +1020,10 @@ class FixedUpdateInNormalGamePatch
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
         {
-            if(Glitch.HasEnabled && !Glitch.OnCheckFixedUpdateReport(__instance, id))
-            { }
+            if (Glitch.HasEnabled && Glitch.OnCheckFixedUpdateReport(id))
+            {
+                Glitch.CancelReportInFixedUpdate(__instance, id);
+            }
             else
             {
                 var info = ReportDeadBodyPatch.WaitReport[id][0];
@@ -1056,7 +1058,7 @@ class FixedUpdateInNormalGamePatch
         {
             if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
             {
-                BufferTime.TryAdd(player.PlayerId, 30);
+                BufferTime[player.PlayerId] = 30;
                 timerLowLoad = 30;
             }
 
@@ -1178,7 +1180,7 @@ class FixedUpdateInNormalGamePatch
                     min.OnFixedUpdates(player);
             }
 
-            if (!GameStates.IsLobby && player.Is(CustomRoles.Spurt) && !Mathf.Approximately(Main.AllPlayerSpeed[player.PlayerId], Spurt.StartingSpeed[player.PlayerId]) && !GameStates.IsInTask && !GameStates.IsMeeting) // fix ludicrous bug
+            if (!GameStates.IsLobby && !GameStates.IsInTask && !GameStates.IsMeeting && player.Is(CustomRoles.Spurt) && !Mathf.Approximately(Main.AllPlayerSpeed[player.PlayerId], Spurt.StartingSpeed[player.PlayerId])) // fix ludicrous bug
             {
                 Main.AllPlayerSpeed[player.PlayerId] = Spurt.StartingSpeed[player.PlayerId];
                 player.MarkDirtySettings();
