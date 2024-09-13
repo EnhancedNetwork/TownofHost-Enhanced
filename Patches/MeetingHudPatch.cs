@@ -690,6 +690,7 @@ class CastVotePatch
             SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), voter.PlayerId);
             CovenLeader.retrainPlayer.Clear();
             CustomRoles.CovenLeader.GetStaticRoleClass().AbilityLimit--;
+            CustomRoles.CovenLeader.GetStaticRoleClass().SendSkillRPC();
             __instance.RpcClearVoteDelay(voter.GetClientId());
         }
         else if (target != voter && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
@@ -1150,6 +1151,9 @@ class MeetingHudStartPatch
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
                 if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))
+                    if (!seer.Data.IsDead && !target.Data.IsDead)
+                        pva.NameText.text = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
+                if (Options.CovenCanGuess.GetBool() && (seer.GetCustomRole().IsCoven() || seer.Is(CustomRoles.Enchanted)))
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
 

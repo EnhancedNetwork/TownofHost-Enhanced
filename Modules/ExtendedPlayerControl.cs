@@ -948,6 +948,12 @@ static class ExtendedPlayerControl
                 logger.Info($"Imps Can See Each Others Roles");
             return true;
         }
+        else if (seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven))
+        {
+            if (isVanilla)
+                logger.Info($"Coven Can See Each Others Roles");
+            return true;
+        }
         else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor))
         {
             if (isVanilla)
@@ -1073,6 +1079,10 @@ static class ExtendedPlayerControl
             // Ego-Imp know other Ego-Imp
             else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool())
                 return true;
+        }
+        if (seer.Is(Custom_Team.Coven))
+        {
+            if (target.Is(CustomRoles.Enchanted) || target.Is(Custom_Team.Coven)) return true;
         }
         else if (Admirer.HasEnabled && Admirer.CheckKnowRoleTarget(seer, target)) return true;
         else if (Cultist.HasEnabled && Cultist.KnowRole(seer, target)) return true;

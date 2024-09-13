@@ -320,7 +320,8 @@ public static class CustomRolesHelper
             CustomRoles.Infected or
             CustomRoles.Contagious or
             CustomRoles.Soulless or
-            CustomRoles.Madmate;
+            CustomRoles.Madmate or 
+            CustomRoles.Enchanted;
 
     public static bool IsNotKnightable(this CustomRoles role)
     {
@@ -363,7 +364,8 @@ public static class CustomRolesHelper
             or CustomRoles.Infected
             or CustomRoles.Contagious
             or CustomRoles.Rascal
-            or CustomRoles.Soulless;
+            or CustomRoles.Soulless
+            or CustomRoles.Enchanted;
     }
 
     public static bool IsImpOnlyAddon(this CustomRoles role)
@@ -1228,8 +1230,6 @@ public static class CustomRolesHelper
             CustomRoles.Solsticer => CustomWinner.Solsticer,
             CustomRoles.Collector => CustomWinner.Collector,
             CustomRoles.BloodKnight => CustomWinner.BloodKnight,
-            CustomRoles.Poisoner => CustomWinner.Poisoner,
-            CustomRoles.HexMaster => CustomWinner.HexMaster,
             CustomRoles.Cultist => CustomWinner.Cultist,
             CustomRoles.Wraith => CustomWinner.Wraith,
             CustomRoles.Bandit => CustomWinner.Bandit,
@@ -1237,20 +1237,16 @@ public static class CustomRolesHelper
             CustomRoles.SerialKiller => CustomWinner.SerialKiller,
             CustomRoles.Quizmaster => CustomWinner.Quizmaster,
             CustomRoles.Werewolf => CustomWinner.Werewolf,
-            CustomRoles.Necromancer => CustomWinner.Necromancer,
             CustomRoles.Huntsman => CustomWinner.Huntsman,
             CustomRoles.Juggernaut => CustomWinner.Juggernaut,
             CustomRoles.Infectious => CustomWinner.Infectious,
             CustomRoles.Virus => CustomWinner.Virus,
             CustomRoles.Specter => CustomWinner.Specter,
-            CustomRoles.Jinx => CustomWinner.Jinx,
             CustomRoles.CursedSoul => CustomWinner.CursedSoul,
-            CustomRoles.PotionMaster => CustomWinner.PotionMaster,
             CustomRoles.Pickpocket => CustomWinner.Pickpocket,
             CustomRoles.Traitor => CustomWinner.Traitor,
             CustomRoles.Vulture => CustomWinner.Vulture,
             CustomRoles.Apocalypse => CustomWinner.Apocalypse,
-            CustomRoles.Medusa => CustomWinner.Medusa,
             CustomRoles.Spiritcaller => CustomWinner.Spiritcaller,
             CustomRoles.Glitch => CustomWinner.Glitch,
             CustomRoles.PunchingBag => CustomWinner.PunchingBag,

@@ -352,6 +352,17 @@ public class Main : BasePlugin
                         break;
                 }
             }
+            foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
+            {
+                switch (role.GetCustomRoleTeam())
+                {
+                    case Custom_Team.Coven:
+                        roleColors.TryAdd(role, "#ac42f2");
+                        break;
+                    default:
+                        break;
+                }
+            }
             if (!Directory.Exists(LANGUAGE_FOLDER_NAME)) Directory.CreateDirectory(LANGUAGE_FOLDER_NAME);
             CreateTemplateRoleColorFile();
             if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat"))
@@ -848,6 +859,7 @@ public enum CustomRoles
     Wraith,
 
     //Coven
+    Coven,
     Conjurer,
     CovenLeader,
     Dreamweaver,
@@ -1021,6 +1033,7 @@ public enum CustomWinner
     Doppelganger = CustomRoles.Doppelganger,
     Solsticer = CustomRoles.Solsticer,
     Apocalypse = CustomRoles.Apocalypse,
+    Coven = CustomRoles.Coven,
 }
 public enum AdditionalWinners
 {

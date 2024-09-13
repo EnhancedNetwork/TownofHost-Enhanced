@@ -44,15 +44,6 @@ internal class CovenLeader : CovenManager
         AbilityLimit = MaxRetrains.GetInt();
     }
 
-    private void SendRPC(byte playerId, byte targetId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
-        writer.Write(playerId);
-        writer.Write(AbilityLimit);
-        writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();

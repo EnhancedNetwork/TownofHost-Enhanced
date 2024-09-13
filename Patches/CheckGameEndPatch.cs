@@ -101,6 +101,13 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
+                    case CustomWinner.Coven:
+                        if (((pc.Is(Custom_Team.Coven) || pc.Is(CustomRoles.Enchanted)) && (countType == CountTypes.Coven || pc.Is(CustomRoles.Soulless)))
+                             && !WinnerIds.Contains(pc.PlayerId))
+                        {
+                            WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
                     case CustomWinner.Apocalypse:
                         if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
                             && !WinnerIds.Contains(pc.PlayerId))
@@ -356,6 +363,14 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                     }
                 }
+                if (Main.AllAlivePlayerControls.All(p => p.IsPlayerCoven()))
+                {
+                    foreach (var pc in Main.AllPlayerControls.Where(x => x.IsPlayerCoven()))
+                    {
+                        if (!WinnerIds.Contains(pc.PlayerId))
+                            WinnerIds.Add(pc.PlayerId);
+                    }
+                }
                 if (WinnerTeam is CustomWinner.Youtuber)
                 {
                     var youTuber = Main.AllPlayerControls.FirstOrDefault(x => x.Is(CustomRoles.Youtuber) && WinnerIds.Contains(x.PlayerId));
@@ -538,7 +553,7 @@ class GameEndCheckerForNormal
             if (Sunnyboy.HasEnabled && Sunnyboy.CheckGameEnd()) return false;
             var neutralRoleCounts = new Dictionary<CountTypes, int>();
             var allAlivePlayerList = Main.AllAlivePlayerControls.ToArray();
-            int dual = 0, impCount = 0, crewCount = 0;
+            int dual = 0, impCount = 0, crewCount = 0, covenCount = 0;
 
             foreach (var pc in allAlivePlayerList)
             {
@@ -559,6 +574,10 @@ class GameEndCheckerForNormal
                         crewCount++;
                         crewCount += dual;
                         break;
+                    case CountTypes.Coven:
+                        covenCount++;
+                        covenCount += dual;
+                        break;
                     default:
                         if (neutralRoleCounts.ContainsKey(countType))
                             neutralRoleCounts[countType]++;
@@ -571,7 +590,7 @@ class GameEndCheckerForNormal
 
             int totalNKAlive = neutralRoleCounts.Sum(kvp => kvp.Value);
 
-            if (crewCount == 0 && impCount == 0 && totalNKAlive == 0) // Everyone is dead
+            if (crewCount == 0 && impCount == 0 && totalNKAlive == 0 && covenCount == 0) // Everyone is dead
             {
                 reason = GameOverReason.ImpostorByKill;
                 ResetAndSetWinner(CustomWinner.None);
@@ -585,7 +604,8 @@ class GameEndCheckerForNormal
                 return true;
             }
 
-            else if (totalNKAlive == 0) // total number of nks alive 0
+
+            else if (totalNKAlive == 0 && covenCount == 0) // total number of nks alive 0
             {
                 if (crewCount <= impCount) // Crew less than or equal to Imps, Imp wins
                 {
@@ -605,7 +625,15 @@ class GameEndCheckerForNormal
             else
             {
                 if (impCount >= 1) return false; // Both Imp and NK are alive, the game must continue
+                if (covenCount >= 1) return false; // Both Coven and NK are alive, the game must continue
                 if (crewCount > totalNKAlive) return false; // Imps are dead, but Crew still outnumbers NK (the game must continue)
+                if (crewCount > totalNKAlive) return false; // Imps are dead, but Crew still outnumbers Coven (the game must continue)
+                if (crewCount <= covenCount && totalNKAlive == 0) // Imps dead, NK dead, Coven <= NK, Coven wins
+                {
+                    reason = GameOverReason.ImpostorByKill;
+                    ResetAndSetWinner(CustomWinner.Coven);
+                    return true;
+                }
                 else // Imps dead, Crew <= NK, Checking if All nk alive are in 1 team 
                 {
                     var winners = neutralRoleCounts.Where(kvp => kvp.Value == totalNKAlive).ToArray();

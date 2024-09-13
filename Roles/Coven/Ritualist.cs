@@ -1,4 +1,18 @@
-﻿
+﻿using Hazel;
+using TOHE.Roles.Core;
+using TOHE.Roles.Double;
+using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Modules;
+using InnerNet;
+using static TOHE.Options;
+using static TOHE.Translator;
+using static TOHE.Utils;
+using System.Text.RegularExpressions;
+using System;
+using TOHE.Modules.ChatManager;
+using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
+
 namespace TOHE.Roles.Coven;
 
 internal class Ritualist : CovenManager
@@ -11,86 +25,112 @@ internal class Ritualist : CovenManager
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenPower;
     //==================================================================\\
 
-    public static OptionItem MaxRitsPerRound;
+    private static OptionItem MaxRitsPerRound;
+    public static OptionItem TryHideMsg;
 
+    private static readonly Dictionary<byte, int> RitualLimit = [];
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.Ritualist, 1, zeroOne: false);
         MaxRitsPerRound = IntegerOptionItem.Create(Id + 10, "RitualistMaxRitsPerRound", new(1, 15, 1), 2, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ritualist])
             .SetValueFormat(OptionFormat.Times);
+        TryHideMsg = BooleanOptionItem.Create(Id + 11, "RitualistTryHideMsg", true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ritualist])
+            .SetColor(Color.green);
     }
-
+    public override void Init()
+    {
+        RitualLimit.Clear();
+    }
     public override void Add(byte PlayerId)
     {
-        AbilityLimit = MaxRitsPerRound.GetInt();
+        RitualLimit.Add(PlayerId, MaxRitsPerRound.GetInt());
     }
-
+    public override void Remove(byte playerId)
+    {
+        RitualLimit.Remove(playerId);
+    }
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
         int PlayerId = reader.ReadByte();
         RitualistMsgCheck(pc, $"/rt {PlayerId}", true);
     }
     public override bool CanUseKillButton(PlayerControl pc) => HasNecronomicon(pc);
-    public override string GetProgressText(byte playerId, bool comms)
-        => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.CovenLeader).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     public override void OnReportDeadBody(PlayerControl hatsune, NetworkedPlayerInfo miku)
     {
-        AbilityLimit = MaxRitsPerRound.GetInt();
+        foreach (var pid in RitualLimit.Keys)
+        {
+            RitualLimit[pid] = MaxRitsPerRound.GetInt();
+        }
     }
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
+        => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Ritualist), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
     public static bool RitualistMsgCheck(PlayerControl pc, string msg, bool isUI = false)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsInGame || pc == null) return false;
+        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.Ritualist)) return false;
-        msg = msg.Trim().ToLower();
-        if (msg.Length < 3 || msg[..4] != "/rt") return false;
+        int operate = 0; // 1:ID 2:猜测
+        msg = msg.ToLower().TrimStart().TrimEnd();
+        if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id||編號|玩家編號")) operate = 1;
+        else if (CheckCommond(ref msg, "rt|rit|ritual|bloodritual", false)) operate = 2;
+        else return false;
 
-
-        if (msg == "/rt")
+        if (!pc.IsAlive())
         {
-            string text = GetString("PlayerIdList");
-            foreach (var npc in Main.AllAlivePlayerControls)
-                text += "\n" + npc.PlayerId.ToString() + " → " + npc.GetRealName();
-            SendMessage(text, pc.PlayerId);
+            pc.ShowInfoMessage(isUI, GetString("GuessDead"));
             return true;
         }
 
-
-        if (AbilityLimit <= 0)
+        if (operate == 1)
         {
-            pc.ShowInfoMessage(isUI, GetString("RitualistRitualMax"));
+            SendMessage(GuessManager.GetFormatString(), pc.PlayerId);
             return true;
         }
 
-        if (!MsgToPlayerAndRole(msg, out byte targetId, out CustomRoles role, out string error))
+        else if (operate == 2)
         {
-            pc.ShowInfoMessage(isUI, error);
+            if (TryHideMsg.GetBool())
+            {
+                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                //else GuessManager.TryHideMsg();
+                GuessManager.TryHideMsg();
+                ChatManager.SendPreviousMessagesToAll();
+            }
+            if (RitualLimit[pc.PlayerId] <= 0)
+            {
+                pc.ShowInfoMessage(isUI, GetString("RitualistRitualMax"));
+                return true;
+            }
+
+            if (!MsgToPlayerAndRole(msg, out byte targetId, out CustomRoles role, out string error))
+            {
+                pc.ShowInfoMessage(isUI, error);
+                return true;
+            }
+            var target = GetPlayerById(targetId);
+
+            if (!target.Is(role))
+            {
+                pc.ShowInfoMessage(isUI, GetString("RitualistRitualFail"));
+                RitualLimit[pc.PlayerId] = 0;
+                return true;
+            }
+            if (!CanBeConverted(target))
+            {
+                pc.ShowInfoMessage(isUI, GetString("RitualistRitualImpossible"));
+                return true;
+            }
+
+            Logger.Info($"{pc.GetNameWithRole()} enchant {target.GetNameWithRole()}", "Ritualist");
+
+            RitualLimit[pc.PlayerId]--;
+
+            target.RpcSetCustomRole(CustomRoles.Enchanted);
+            SendMessage(string.Format(GetString("RitualistConvertNotif"), CustomRoles.Ritualist.ToColoredString()), target.PlayerId);
+            SendMessage(string.Format(GetString("RitualistRitualSuccess"), target.GetRealName()), pc.PlayerId);
             return true;
         }
-        var target = Utils.GetPlayerById(targetId);
-
-        if (!target.Is(role))
-        {
-            pc.ShowInfoMessage(isUI, GetString("RitualistRitualFail"));
-            AbilityLimit = 0;
-            return true;
-        }
-        if (target.IsTransformedNeutralApocalypse() || (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini) && Mini.Age < 18) || target.Is(CustomRoles.Solsticer) || !target.IsAlive() || target.Is(CustomRoles.Loyal) || !(target.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool())
-        {
-            pc.ShowInfoMessage(isUI, GetString("RitualistRitualImpossible"));
-            return true;
-        }
-
-        Logger.Info($"{pc.GetNameWithRole()} enchant {target.GetNameWithRole()}", "Ritualist");
-
-        string Name = target.GetRealName();
-
-        AbilityLimit--;
-
-        target.RpcSetCustomRole(CustomRoles.Enchanted);
-        SendMessage(string.Format(GetString("RitualistConvertNotif"), CustomRoles.Ritualist.ToColoredString()), target.PlayerId);
-        SendMessage(string.Format(GetString("RitualistRitualSuccess"), target.GetRealName()), pc.PlayerId);
-        return true;
+        return false;
     }
     private static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)
     {
@@ -132,5 +172,31 @@ internal class Ritualist : CovenManager
 
         error = string.Empty;
         return true;
+    }
+    public static bool CheckCommond(ref string msg, string command, bool exact = true)
+    {
+        var comList = command.Split('|');
+        foreach (var comm in comList)
+        {
+            if (exact)
+            {
+                if (msg == "/" + comm) return true;
+            }
+            else
+            {
+                if (msg.StartsWith("/" + comm))
+                {
+                    msg = msg.Replace("/" + comm, string.Empty);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    private static bool CanBeConverted(PlayerControl pc)
+    {
+        return pc != null && (!pc.IsPlayerCoven() && !pc.Is(CustomRoles.Enchanted) && !pc.IsTransformedNeutralApocalypse()) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
+            && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 }

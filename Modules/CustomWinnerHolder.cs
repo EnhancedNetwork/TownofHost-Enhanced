@@ -72,7 +72,10 @@ public static class CustomWinnerHolder
                     ResetAndSetWinner(CustomWinner.Infectious); 
                     return true;
                 case CustomRoles.Contagious:
-                    ResetAndSetWinner(CustomWinner.Virus); 
+                    ResetAndSetWinner(CustomWinner.Virus);
+                    return true;
+                case CustomRoles.Enchanted:
+                    ResetAndSetWinner(CustomWinner.Coven);
                     return true;
             }
         }
