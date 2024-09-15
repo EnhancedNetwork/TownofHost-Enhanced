@@ -123,8 +123,8 @@ internal class ChangeRoleSettings
             RPC.SyncAllPlayerNames();
 
             GhostRoleAssign.Init();
-
             Camouflage.Init();
+            CustomRoleManager.Initialize();
 
             var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             if (invalidColor.Any())
@@ -181,7 +181,9 @@ internal class ChangeRoleSettings
 
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
+                
                 VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 0;
+                CustomRoleManager.BlockedVentsList[pc.PlayerId] = [];
 
                 pc.cosmetics.nameText.text = pc.name;
 
@@ -235,7 +237,6 @@ internal class ChangeRoleSettings
             FFAManager.Init();
 
             FallFromLadder.Reset();
-            CustomRoleManager.Initialize();
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
             NameNotifyManager.Reset();

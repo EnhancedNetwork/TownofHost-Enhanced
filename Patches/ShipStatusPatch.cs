@@ -272,27 +272,26 @@ class ShipStatusSerializePatch
 
         // Original methods
         short num = 0;
-        while ((int)num < SystemTypeHelpers.AllTypes.Length)
+        while (num < SystemTypeHelpers.AllTypes.Length)
         {
-            SystemTypes systemTypes = SystemTypeHelpers.AllTypes[(int)num];
+            SystemTypes systemTypes = SystemTypeHelpers.AllTypes[num];
 
             if (systemTypes is SystemTypes.Ventilation)
             {
                 // Skip Ventilation here
                 // Further new systems should skip original methods here and add new patches below.
-                num += 1;
+                num++;
                 continue;
             }
 
-            ISystemType systemType;
-            if (__instance.Systems.TryGetValue(systemTypes, out systemType) && systemType.IsDirty) // initialState used here in vanilla code. Removed it.
+            if (__instance.Systems.TryGetValue(systemTypes, out ISystemType systemType) && systemType.IsDirty) // initialState used here in vanilla code. Removed it.
             {
                 __result = true;
                 writer.StartMessage((byte)systemTypes);
                 systemType.Serialize(writer, initialState);
                 writer.EndMessage();
             }
-            num += 1;
+            num++;
         }
 
         // Ventilation part

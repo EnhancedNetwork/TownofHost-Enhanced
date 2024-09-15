@@ -14,7 +14,7 @@ static class VentSystemDeterioratePatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.IntroDestroyed) return;
-        foreach (var pc in PlayerControl.AllPlayerControls)
+        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             if (pc.BlockVentInteraction())
             {
@@ -28,7 +28,7 @@ static class VentSystemDeterioratePatch
     /// </summary>
     public static bool BlockVentInteraction(this PlayerControl pc)
     {
-        if (!pc.AmOwner && !pc.IsModClient() && !pc.Data.IsDead && !pc.CanUseVent())
+        if (!pc.AmOwner && pc.IsAlive() && (!pc.CanUseVents() || pc.HasAnyBlockedVent()))
         {
             return true;
         }
@@ -37,9 +37,10 @@ static class VentSystemDeterioratePatch
 
     public static void SerializeV2(VentilationSystem __instance, PlayerControl player = null)
     {
-        foreach (var pc in PlayerControl.AllPlayerControls)
+        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             if (pc.AmOwner || (player != null && pc != player)) continue;
+            
             if (pc.BlockVentInteraction())
             {
                 pc.RpcCloseVent(__instance);
@@ -67,13 +68,11 @@ static class VentSystemDeterioratePatch
                 int vents = 0;
                 foreach (var vent in ShipStatus.Instance.AllVents)
                 {
-                    // For blocking specific vents need patch this in RoleBase or CustomRoleManager
-                    // For now we just use CanUseVent for block all vents
-                    if (!pc.CanUseVent())
+                    if (pc.CantUseVent(vent.Id))
                         ++vents;
                 }
                 List<NetworkedPlayerInfo> AllPlayers = [];
-                foreach (var playerInfo in GameData.Instance.AllPlayers)
+                foreach (var playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
                 {
                     if (playerInfo != null && !playerInfo.Disconnected)
                         AllPlayers.Add(playerInfo);
@@ -83,9 +82,7 @@ static class VentSystemDeterioratePatch
                 writer.WritePacked(maxVents);
                 foreach (var vent in pc.GetVentsFromClosest())
                 {
-                    // For blocking specific vents need patch this in RoleBase or CustomRoleManager
-                    // For now we just use CanUseVent for block all vents
-                    if (!pc.CanUseVent())
+                    if (pc.CantUseVent(vent.Id))
                     {
                         writer.Write(AllPlayers[blockedVents].PlayerId);
                         writer.Write((byte)vent.Id);
@@ -130,5 +127,23 @@ static class VentSystemDeterioratePatch
         writer.EndMessage();
         AmongUsClient.Instance.SendOrDisconnect(writer);
         writer.Recycle();
+    }
+}
+[HarmonyPatch(typeof(VentilationSystem), nameof(VentilationSystem.IsVentCurrentlyBeingCleaned))]
+static class VentSystemIsVentCurrentlyBeingCleanedPatch
+{
+    // Patch block use vent for host becouse host always skips RpcSerializeVent
+    public static bool Prefix([HarmonyArgument(0)] int id, ref bool __result)
+    {
+        if (!AmongUsClient.Instance.AmHost) return true;
+
+        if (PlayerControl.LocalPlayer.CantUseVent(id))
+        {
+            __result = true;
+            return false;
+        }
+
+        // Run original code if host not have bloked vent
+        return true;
     }
 }
