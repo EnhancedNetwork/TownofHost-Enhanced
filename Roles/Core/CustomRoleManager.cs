@@ -496,8 +496,6 @@ public static class CustomRoleManager
         LowerOthers = AllEnabledRoles.Select(lower => (Func<PlayerControl, PlayerControl, bool, bool, string>)lower.GetLowerTextOthers).FilterDuplicates();
         SuffixOthers = AllEnabledRoles.Select(suffix => (Func<PlayerControl, PlayerControl, bool, string>)suffix.GetSuffixOthers).FilterDuplicates();
         OtherCollectionsSet = true;
-
-        BlockedVentsList[PlayerControl.LocalPlayer.PlayerId].Add(1);
     }
 
     // ADDONS ////////////////////////////
