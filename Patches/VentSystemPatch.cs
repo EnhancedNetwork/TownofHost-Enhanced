@@ -83,6 +83,8 @@ static class VentSystemDeterioratePatch
                 writer.WritePacked(maxVents);
                 foreach (var vent in pc.GetVentsFromClosest())
                 {
+                    // For blocking specific vents need patch this in RoleBase or CustomRoleManager
+                    // For now we just use CanUseVent for block all vents
                     if (!pc.CanUseVent())
                     {
                         writer.Write(AllPlayers[blockedVents].PlayerId);
@@ -93,10 +95,10 @@ static class VentSystemDeterioratePatch
                         break;
                 }
                 writer.WritePacked(__instance.PlayersInsideVents.Count);
-                foreach (Il2CppSystem.Collections.Generic.KeyValuePair<byte, byte> keyValuePair2 in __instance.PlayersInsideVents)
+                foreach (var (playerId, ventId) in __instance.PlayersInsideVents)
                 {
-                    writer.Write(keyValuePair2.Key);
-                    writer.Write(keyValuePair2.Value);
+                    writer.Write(playerId);
+                    writer.Write(ventId);
                 }
                 writer.EndMessage();
             }
