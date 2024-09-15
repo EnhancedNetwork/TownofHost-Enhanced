@@ -67,6 +67,8 @@ static class VentSystemDeterioratePatch
                 int vents = 0;
                 foreach (var vent in ShipStatus.Instance.AllVents)
                 {
+                    // For blocking specific vents need patch this in RoleBase or CustomRoleManager
+                    // For now we just use CanUseVent for block all vents
                     if (!pc.CanUseVent())
                         ++vents;
                 }
