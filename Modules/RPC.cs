@@ -99,7 +99,6 @@ enum CustomRPC : byte // 193/255 USED
     SetMarkedPlayer,
     SetConcealerTimer,
     SetMedicalerProtectList,
-    SyncPsychicRedList,
     PresidentEnd,
     PresidentReveal,
     SetBKTimer,
@@ -563,9 +562,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetMedicalerProtectList:
                 Medic.ReceiveRPCForProtectList(reader);
-                break;
-            case CustomRPC.SyncPsychicRedList:
-                Psychic.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncGeneralOptions:
                 byte paciefID = reader.ReadByte();

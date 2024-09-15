@@ -38,9 +38,13 @@ public static class CustomRolesHelper
     }
 
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
-        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter) && !role.IsImpostor() || role is CustomRoles.Killer // FFA
+    {
+        if (role is CustomRoles.Killer) return RoleTypes.Impostor; // FFA
+
+        return (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter) && !role.IsImpostor()
             ? role.GetStaticRoleClass().ThisRoleBase.GetRoleTypes()
             : RoleTypes.GuardianAngel;
+    }
 
     /* Needs recode, awaiting phantom role base*/
     public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
@@ -613,7 +617,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Spy)
                     || pc.Is(CustomRoles.Necromancer)
                     || pc.Is(CustomRoles.Demon)
-                    || pc.Is(CustomRoles.Shaman))
+                    || pc.Is(CustomRoles.Shaman)
+                    || pc.Is(CustomRoles.Opportunist) && Opportunist.OppoImmuneToAttacksWhenTasksDone.GetBool())
                     return false;
                 break;
 

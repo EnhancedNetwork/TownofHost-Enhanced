@@ -54,7 +54,7 @@ internal class Pursuer : RoleBase
     public bool CanSeel(byte playerId) => AbilityLimit > 0;
     public override bool OnCheckMurderAsKiller(PlayerControl pc, PlayerControl target)
     {
-        if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return true;
+        if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return false;
         if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.SerialKiller)) return false;
         if (!(CanBeClient(target) && CanSeel(pc.PlayerId))) return false;
 

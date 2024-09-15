@@ -667,7 +667,7 @@ class SetAnswersQuestion : QuizQuestionBase
             }
             else
             {
-                string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
+                string thatAnswer = PossibleAnswers.RandomElement();
                 if (thatAnswer == "None") prefix = "Quizmaster.";
                 Answers.Add(prefix + thatAnswer);
                 PossibleAnswers.Remove(thatAnswer);

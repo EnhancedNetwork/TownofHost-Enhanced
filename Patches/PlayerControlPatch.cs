@@ -30,6 +30,12 @@ class CheckProtectPatch
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
         var angel = __instance;
 
+        if (AntiBlackout.SkipTasks)
+        {
+            Logger.Info("Checking while AntiBlackOut protect, guard protect was canceled", "CheckProtect");
+            return false;
+        }
+
         if (target.Data.IsDead) // bad protect
             return false;
 
@@ -618,6 +624,11 @@ public static class CheckShapeshiftPatch
             logger.Info("Cancel shapeshifting in meeting");
             return false;
         }
+        if (AntiBlackout.SkipTasks)
+        {
+            Logger.Info("Checking while AntiBlackOut protect, shapeshift was canceled", "CheckShapeshift");
+            return false;
+        }
         if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
         {
             instance.RpcGuardAndKill(instance);
@@ -929,6 +940,7 @@ class FixedUpdateInNormalGamePatch
     private static readonly StringBuilder Suffix = new(120);
     private static readonly Dictionary<byte, int> BufferTime = [];
     private static int LevelKickBufferTime = 20;
+    private static bool ChatOpen;
 
     public static async void Postfix(PlayerControl __instance)
     {
@@ -949,6 +961,21 @@ class FixedUpdateInNormalGamePatch
                 ReportDeadBodyPatch.WaitReport[id].Clear();
                 Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}: The report will be processed now that it is available for reporting", "ReportDeadbody");
                 __instance.ReportDeadBody(info);
+            }
+        }
+
+        if (GameStates.IsMeeting)
+        {
+            switch (ChatOpen)
+            {
+                case false when DestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening:
+                    ChatOpen = true;
+                    break;
+                case true when DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing:
+                    ChatOpen = false;
+                    if (GameStates.IsVoting)
+                        GuessManager.CreateIDLabels(MeetingHud.Instance);
+                    break;
             }
         }
 

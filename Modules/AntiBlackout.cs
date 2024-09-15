@@ -271,7 +271,6 @@ public static class AntiBlackout
 
             target.RpcSetRoleDesync(changedRoleType, seer.GetClientId());
         }
-        ResetAllCooldown();
     }
     private static void ResetAllCooldown()
     {
@@ -292,6 +291,7 @@ public static class AntiBlackout
     {
         SkipTasks = false;
         ExilePlayerId = -1;
+        ResetAllCooldown();
     }
     public static void Reset()
     {

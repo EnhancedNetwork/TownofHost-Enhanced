@@ -26,14 +26,15 @@ static class TargetArrow
         TargetArrows.Clear();
     }
 
-    public static void SendRPC(int index, byte seer, byte target = byte.MaxValue)
+    public static void SendRPC(int index, byte seerId, byte targetId = byte.MaxValue)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Arrow, SendOption.Reliable);
+        var seer = Utils.GetPlayerById(seerId);
+        if (!AmongUsClient.Instance.AmHost || seer == null) return;
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Arrow, SendOption.Reliable, seer.GetClientId());
         writer.Write(true);
         writer.WritePacked(index);
-        writer.Write(seer);
-        writer.Write(target);
+        writer.Write(seerId);
+        writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)

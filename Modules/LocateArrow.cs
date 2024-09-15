@@ -26,10 +26,11 @@ static class LocateArrow
         LocateArrows.Clear();
     }
 
-    public static void SendRPC(int index, byte seer, Vector3 vector3)
+    public static void SendRPC(int index, byte seerId, Vector3 vector3)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Arrow, SendOption.Reliable);
+        var seer = Utils.GetPlayerById(seerId);
+        if (!AmongUsClient.Instance.AmHost || seer == null) return;
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Arrow, SendOption.Reliable, seer.GetClientId());
         writer.Write(false);
         writer.WritePacked(index);
         writer.Write(seer);

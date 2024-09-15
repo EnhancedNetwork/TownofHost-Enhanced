@@ -1,8 +1,10 @@
 ﻿using AmongUs.GameOptions;
+using UnityEngine;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
-using UnityEngine;
+using TOHE.Roles.Double;
 using static TOHE.Options;
+
 namespace TOHE.Roles.Impostor;
 
 internal class Hangman : RoleBase
@@ -33,6 +35,9 @@ internal class Hangman : RoleBase
     }
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+            return true;
+
         if (target.IsTransformedNeutralApocalypse())
             return true;
 

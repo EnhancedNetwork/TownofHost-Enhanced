@@ -5,6 +5,7 @@ using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Double;
+
 internal class Mini : RoleBase
 {
     //===========================SETUP================================\\
