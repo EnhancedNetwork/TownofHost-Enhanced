@@ -1218,7 +1218,7 @@ class FixedUpdateInNormalGamePatch
                         if (Rainbow.isEnabled)
                             Rainbow.OnFixedUpdate();
 
-                        if (!lowLoad && Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
+                        if (Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
                             && !player.IsMushroomMixupActive() && Main.GameIsLoaded)
                         {
                             foreach (var UnShapeshifterId in Main.UnShapeShifter)
@@ -1235,6 +1235,7 @@ class FixedUpdateInNormalGamePatch
                                 UnShapeshifter.RpcShapeshift(randomPlayer, false);
                                 UnShapeshifter.RpcRejectShapeshift();
                                 UnShapeshifter.ResetPlayerOutfit();
+                                Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
                                 Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
                             }
                         }

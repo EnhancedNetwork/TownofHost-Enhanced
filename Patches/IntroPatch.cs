@@ -631,7 +631,7 @@ class IntroCutsceneDestroyPatch
             }
 
             bool shouldPerformVentInteractions = false;
-            foreach (var pc in PlayerControl.AllPlayerControls)
+            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (pc.BlockVentInteraction())
                 {

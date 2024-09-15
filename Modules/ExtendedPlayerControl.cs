@@ -681,7 +681,7 @@ static class ExtendedPlayerControl
         };
     }
     public static bool CanUseVents(this PlayerControl player) => player.CanUseImpostorVentButton() || player.GetCustomRole().GetVNRole() == CustomRoles.Engineer;
-    public static bool CantUseVent(this PlayerControl player, int ventId) => CustomRoleManager.BlockedVentsList.TryGetValue(player.PlayerId, out var blockedVents) && blockedVents.Contains(ventId);
+    public static bool CantUseVent(this PlayerControl player, int ventId) => !player.CanUseVents() || CustomRoleManager.BlockedVentsList.TryGetValue(player.PlayerId, out var blockedVents) && blockedVents.Contains(ventId);
     public static bool HasAnyBlockedVent(this PlayerControl player) => CustomRoleManager.BlockedVentsList.TryGetValue(player.PlayerId, out var blockedVents) && blockedVents.Any();
 
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
