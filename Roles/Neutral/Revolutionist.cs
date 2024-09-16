@@ -71,6 +71,7 @@ internal class Revolutionist : RoleBase
         PlayerIds.Add(playerId);
         
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
+        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
 
         foreach (var ar in Main.AllPlayerControls)
             IsDraw.Add((playerId, ar.PlayerId), false);
@@ -195,8 +196,16 @@ internal class Revolutionist : RoleBase
             RevolutionistTimer.TryAdd(killer.PlayerId, (target, 0f));
             NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
             SetCurrentDrawTargetRPC(killer.PlayerId, target.PlayerId);
+            killer.RpcSetVentInteraction();
         }
         return false;
+    }
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
+    {
+        if (!_Player.IsAlive() || target.PlayerId == _Player.PlayerId || inMeeting || Main.MeetingIsStarted) return;
+
+        _Player.RpcSetVentInteraction();
+        _ = new LateTask(() => { NotifyRoles(SpecifySeer: _Player, ForceLoop: false); }, 1f, $"Update name for Revolutionist {_Player?.PlayerId}", shoudLog: false);
     }
     private static void OnFixUpdateOthers(PlayerControl player) // jesus christ
     {

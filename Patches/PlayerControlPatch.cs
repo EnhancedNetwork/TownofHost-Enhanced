@@ -1608,6 +1608,8 @@ class CoExitVentPatch
         if (!AmongUsClient.Instance.AmHost) return;
 
         player.GetRoleClass()?.OnExitVent(player, id);
+
+        _ = new LateTask(() => { player?.RpcSetVentInteraction(); }, 0.8f, $"Set vent interaction after exit vent {player?.PlayerId}", shoudLog: false);
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]
