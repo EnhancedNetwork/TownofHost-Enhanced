@@ -77,7 +77,7 @@ internal class Jester : RoleBase
             RememberBlockedVents.Add(vent.Id);
             CustomRoleManager.BlockedVentsList[player.PlayerId].Add(vent.Id);
         }
-        _ = new LateTask(player.RpcSetVentInteraction, 1f, "Check");
+        player.RpcSetVentInteraction();
     }
     public override void OnExitVent(PlayerControl pc, int ventId)
     {
