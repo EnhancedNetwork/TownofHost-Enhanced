@@ -2215,6 +2215,10 @@ public static class Utils
         foreach (var playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
             playerInfo.MarkDirty();
     }
+    public static void SetAllVentInteractions()
+    {
+        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>());
+    }
     public static bool DeathReasonIsEnable(this PlayerState.DeathReason reason, bool checkbanned = false)
     {
         static bool BannedReason(PlayerState.DeathReason rso)

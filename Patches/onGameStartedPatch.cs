@@ -3,6 +3,7 @@ using Hazel;
 using System;
 using InnerNet;
 using UnityEngine;
+using TOHE.Patches;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
@@ -85,11 +86,13 @@ internal class ChangeRoleSettings
             Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
             Main.MeetingIsStarted = false;
-            Main.introDestroyed = false;
+            Main.IntroDestroyed = false;
             GameEndCheckerForNormal.ShouldNotCheck = false;
             GameEndCheckerForNormal.ForEndGame = false;
             GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
+
+            VentSystemDeterioratePatch.LastClosestVent = [];
 
             ChatManager.ResetHistory();
             ReportDeadBodyPatch.CanReport = [];
@@ -120,8 +123,8 @@ internal class ChangeRoleSettings
             RPC.SyncAllPlayerNames();
 
             GhostRoleAssign.Init();
-
             Camouflage.Init();
+            CustomRoleManager.Initialize();
 
             var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             if (invalidColor.Any())
@@ -180,6 +183,10 @@ internal class ChangeRoleSettings
 
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
+                
+                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 0;
+                CustomRoleManager.BlockedVentsList[pc.PlayerId] = [];
+
                 pc.cosmetics.nameText.text = pc.name;
 
                 Camouflage.PlayerSkins[pc.PlayerId] = new NetworkedPlayerInfo.PlayerOutfit().Set(currentName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
@@ -232,7 +239,6 @@ internal class ChangeRoleSettings
             FFAManager.Init();
 
             FallFromLadder.Reset();
-            CustomRoleManager.Initialize();
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
             NameNotifyManager.Reset();

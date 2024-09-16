@@ -172,7 +172,7 @@ public class Main : BasePlugin
     public static bool VisibleTasksCount = false;
     public static bool AssignRolesIsStarted = false;
     public static string HostRealName = "";
-    public static bool introDestroyed = false;
+    public static bool IntroDestroyed = false;
     public static int DiscussionTime;
     public static int VotingTime;
     public static float DefaultCrewmateVision;
@@ -927,6 +927,7 @@ public enum CustomRoles
     Seer,
     Silent,
     Sleuth,
+    Sloth,
     Soulless,
     Statue,
     Stubborn,

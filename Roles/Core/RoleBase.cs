@@ -483,6 +483,7 @@ public abstract class RoleBase
         CanKill,
         KillCooldown,
         CanVent,
+        CantMoveOnVents,
         ImpostorVision,
         CanUseSabotage,
         CanHaveAccessToVitals,

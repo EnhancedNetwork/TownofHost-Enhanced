@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
@@ -604,7 +605,7 @@ class IntroCutsceneDestroyPatch
     {
         if (!GameStates.IsInGame) return;
 
-        Main.introDestroyed = true;
+        Main.IntroDestroyed = true;
 
         // Set roleAssigned as false for override role for modded players
         // For override role for vanilla clients we use "Data.Disconnected" while assign
@@ -687,6 +688,27 @@ class IntroCutsceneDestroyPatch
             }
         }
 
+        var amDesyncImpostor = PlayerControl.LocalPlayer.HasDesyncRole();
+        if (amDesyncImpostor)
+        {
+            PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
+        }
+
+        bool shouldPerformVentInteractions = false;
+        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+        {
+            if (pc.BlockVentInteraction())
+            {
+                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                shouldPerformVentInteractions = true;
+            }
+        }
+
+        if (shouldPerformVentInteractions)
+        {
+            Utils.SetAllVentInteractions();
+        }
+    }
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }
