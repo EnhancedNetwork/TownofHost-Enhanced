@@ -64,10 +64,6 @@ internal class Jester : RoleBase
     public override bool HideVote(PlayerVoteArea votedPlayer) => HideJesterVote.GetBool();
     public override bool OnCheckStartMeeting(PlayerControl reporter) => CanUseMeetingButton.GetBool();
 
-    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
-    {
-        ResetBlockedVent();
-    }
     public override void OnCoEnterVent(PlayerPhysics physics, int ventId)
     {
         if (!CantMoveInVents.GetBool()) return;
@@ -81,6 +77,10 @@ internal class Jester : RoleBase
         }
     }
     public override void OnExitVent(PlayerControl pc, int ventId)
+    {
+        ResetBlockedVent();
+    }
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         ResetBlockedVent();
     }
