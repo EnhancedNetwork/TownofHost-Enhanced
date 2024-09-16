@@ -70,6 +70,8 @@ internal class Jester : RoleBase
     }
     public override void OnCoEnterVent(PlayerPhysics physics, int ventId)
     {
+        if (!CantMoveInVents.GetBool()) return;
+
         foreach (var vent in ShipStatus.Instance.AllVents)
         {
             if (vent.Id == ventId) continue;
@@ -84,7 +86,7 @@ internal class Jester : RoleBase
     }
     private void ResetBlockedVent()
     {
-        if (_Player == null) return;
+        if (!CantMoveInVents.GetBool() || _Player == null) return;
 
         foreach (var ventId in RememberBlockedVents)
         {
