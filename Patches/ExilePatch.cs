@@ -1,5 +1,6 @@
 ﻿using AmongUs.Data;
 using System;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 
@@ -106,6 +107,20 @@ class ExileControllerWrapUpPatch
         Utils.AfterMeetingTasks();
         Utils.SyncAllSettings();
         Utils.NotifyRoles(NoCache: true);
+
+        bool shouldPerformVentInteractions = false;
+        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+        {
+            if (pc.BlockVentInteraction())
+            {
+                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                shouldPerformVentInteractions = true;
+            }
+        }
+        if (shouldPerformVentInteractions)
+        {
+            Utils.SetAllVentInteractions();
+        }
 
         if (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA)
         {

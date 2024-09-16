@@ -163,22 +163,22 @@ public abstract class RoleBase
     public virtual bool OnCheckProtect(PlayerControl angel, PlayerControl target) => angel != null && target != null;
 
     /// <summary>
-    /// A method for activating actions where the role starts playing an animation when entering a vent
-    /// </summary>
-    public virtual void OnEnterVent(PlayerControl pc, Vent vent)
-    { }
-    /// <summary>
     /// When role need force boot from vent
     /// </summary>
     public virtual bool CheckBootFromVent(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// A method for activating actions where the others roles starts playing an animation when entering a vent
     /// </summary>
     public virtual bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// A method for activating actions where the role starts playing an animation when entering a vent
     /// </summary>
     public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
+    { }
+    /// <summary>
+    /// A method for activating actions when role is already in vent
+    /// </summary>
+    public virtual void OnEnterVent(PlayerControl pc, Vent vent)
     { }
     /// <summary>
     /// A generic method to activate actions once (CustomRole)player exists vent.

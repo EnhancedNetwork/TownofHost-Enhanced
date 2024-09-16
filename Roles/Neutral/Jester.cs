@@ -68,13 +68,16 @@ internal class Jester : RoleBase
     {
         if (!CantMoveInVents.GetBool()) return;
 
+        var player = physics.myPlayer;
         foreach (var vent in ShipStatus.Instance.AllVents)
         {
-            if (vent.Id == ventId) continue;
+            // Skip current vent or ventid 5 in Dleks to prevent stuck
+            if (vent.Id == ventId || (GameStates.DleksIsActive && ventId is 5 && vent.Id is 6)) continue;
 
             RememberBlockedVents.Add(vent.Id);
-            CustomRoleManager.BlockedVentsList[physics.myPlayer.PlayerId].Add(vent.Id);
+            CustomRoleManager.BlockedVentsList[player.PlayerId].Add(vent.Id);
         }
+        _ = new LateTask(player.RpcSetVentInteraction, 1f, "Check");
     }
     public override void OnExitVent(PlayerControl pc, int ventId)
     {
