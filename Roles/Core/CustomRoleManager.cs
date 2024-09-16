@@ -118,6 +118,9 @@ public static class CustomRoleManager
                     case CustomRoles.Flash:
                         Flash.SetSpeed(player.PlayerId, false);
                         break;
+                    case CustomRoles.Sloth:
+                        Sloth.SetSpeed(player.PlayerId, false);
+                        break;
                     case CustomRoles.Torch:
                         Torch.ApplyGameOptions(opt);
                         break;
