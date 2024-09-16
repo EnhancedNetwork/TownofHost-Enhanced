@@ -2,6 +2,7 @@
 using UnityEngine;
 using Hazel;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
 using static TOHE.Utils;
@@ -57,6 +58,8 @@ internal class Arsonist : RoleBase
 
         foreach (var ar in Main.AllPlayerControls)
             IsDoused.Add((playerId, ar.PlayerId), false);
+
+        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
     }
 
     private static void SendCurrentDousingTargetRPC(byte arsonistId, byte targetId)
@@ -67,7 +70,7 @@ internal class Arsonist : RoleBase
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDousingTarget, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDousingTarget, SendOption.Reliable);
             writer.Write(arsonistId);
             writer.Write(targetId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -84,7 +87,7 @@ internal class Arsonist : RoleBase
 
     private static void SendSetDousedPlayerRPC(PlayerControl player, PlayerControl target, bool isDoused)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDousedPlayer, SendOption.Reliable, -1);//RPCによる同期
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDousedPlayer, SendOption.Reliable);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isDoused);
@@ -117,10 +120,17 @@ internal class Arsonist : RoleBase
             ArsonistTimer.Add(killer.PlayerId, (target, 0f));
             NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             SendCurrentDousingTargetRPC(killer.PlayerId, target.PlayerId);
+            killer.RpcSetVentInteraction();
         }
         return false;
     }
-    
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
+    {
+        if (!_Player.IsAlive() || target.PlayerId == _Player.PlayerId || inMeeting || Main.MeetingIsStarted) return;
+        
+        _Player.RpcSetVentInteraction();
+        _ = new LateTask(() => { NotifyRoles(SpecifySeer: _Player, ForceLoop: false); }, 1f, $"Update name for Arsonist {_Player?.PlayerId}", shoudLog: false);
+    }
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (ArsonistTimer.TryGetValue(player.PlayerId, out var arsonistTimerData))

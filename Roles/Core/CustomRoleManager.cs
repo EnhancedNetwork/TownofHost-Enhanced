@@ -482,12 +482,15 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+    public static readonly Dictionary<byte, HashSet<int>> BlockedVentsList = [];
+
     public static void Initialize()
     {
         OtherCollectionsSet = false;
         OnFixedUpdateOthers.Clear();
         OnFixedUpdateLowLoadOthers.Clear();
         CheckDeadBodyOthers.Clear();
+        BlockedVentsList.Clear();
     }
 
     public static void Add()
