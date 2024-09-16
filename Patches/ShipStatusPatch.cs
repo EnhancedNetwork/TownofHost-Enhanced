@@ -1,11 +1,11 @@
 using Hazel;
 using System;
 using UnityEngine;
-using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.Neutral;
-using TOHE.Roles.Core;
-using static TOHE.Translator;
 using TOHE.Patches;
+using TOHE.Roles.Core;
+using TOHE.Roles.Neutral;
+using TOHE.Roles.AddOns.Common;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -247,7 +247,7 @@ class ShipStatusBeginPatch
     {
         Logger.CurrentMethod();
 
-        if (RolesIsAssigned && !Main.introDestroyed && GameStates.IsNormalGame)
+        if (RolesIsAssigned && !Main.IntroDestroyed && GameStates.IsNormalGame)
         {
             foreach (var player in Main.AllPlayerControls)
             {

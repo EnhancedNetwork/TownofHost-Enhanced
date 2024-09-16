@@ -551,9 +551,11 @@ class IntroCutsceneDestroyPatch
     {
         if (AmongUsClient.Instance.AmHost && !AmongUsClient.Instance.IsGameOver)
         {
-            // Host is Desync Shapeshifter
+            // Host is desync role
             if (PlayerControl.LocalPlayer.HasDesyncRole())
             {
+                PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
+
                 foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
                     // Set all players as killable players
@@ -621,12 +623,6 @@ class IntroCutsceneDestroyPatch
 
         CustomRoleManager.Add();
 
-        var amDesyncImpostor = PlayerControl.LocalPlayer.HasDesyncRole();
-        if (amDesyncImpostor)
-        {
-            PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
-        }
-
         if (AmongUsClient.Instance.AmHost)
         {
             if (GameStates.IsNormalGame && !GameStates.AirshipIsActive)
@@ -686,29 +682,23 @@ class IntroCutsceneDestroyPatch
             {
                 Logger.Error($"Error: {error}", "FFA chat visible");
             }
-        }
 
-        var amDesyncImpostor = PlayerControl.LocalPlayer.HasDesyncRole();
-        if (amDesyncImpostor)
-        {
-            PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
-        }
-
-        bool shouldPerformVentInteractions = false;
-        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
-        {
-            if (pc.BlockVentInteraction())
+            bool shouldPerformVentInteractions = false;
+            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
-                shouldPerformVentInteractions = true;
+                if (pc.BlockVentInteraction())
+                {
+                    VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                    shouldPerformVentInteractions = true;
+                }
+            }
+
+            if (shouldPerformVentInteractions)
+            {
+                Utils.SetAllVentInteractions();
             }
         }
 
-        if (shouldPerformVentInteractions)
-        {
-            Utils.SetAllVentInteractions();
-        }
-    }
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }
