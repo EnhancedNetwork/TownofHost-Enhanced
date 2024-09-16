@@ -740,7 +740,8 @@ public static class CustomRolesHelper
             case CustomRoles.Rebirth:
                 if (pc.Is(CustomRoles.Doppelganger) 
                     || pc.Is(CustomRoles.Jester)
-                    || pc.Is(CustomRoles.Zombie)) return false;
+                    || pc.Is(CustomRoles.Zombie) 
+                    || pc.Is(CustomRoles.Solsticer)) return false;
                 break;
 
             case CustomRoles.Youtuber:
