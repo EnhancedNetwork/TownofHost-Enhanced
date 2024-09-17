@@ -37,6 +37,10 @@ public class Necroview : IAddon
             return Main.roleColors[CustomRoles.Bait];
         }
 
+        if (customRole.IsCoven() || customRole.Equals(CustomRoles.Enchanted))
+        {
+            return Main.roleColors[CustomRoles.Coven];
+        }
         return Main.roleColors[CustomRoles.Knight];
     }
 }

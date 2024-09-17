@@ -1080,10 +1080,10 @@ static class ExtendedPlayerControl
             else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool())
                 return true;
         }
-        if (seer.Is(Custom_Team.Coven))
-        {
-            if (target.Is(CustomRoles.Enchanted) || target.Is(Custom_Team.Coven)) return true;
-        }
+        //if (seer.Is(Custom_Team.Coven))
+        //{
+        //    if (target.Is(CustomRoles.Enchanted) || target.Is(Custom_Team.Coven)) return true;
+        //}
         else if (Admirer.HasEnabled && Admirer.CheckKnowRoleTarget(seer, target)) return true;
         else if (Cultist.HasEnabled && Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.HasEnabled && Infectious.KnowRole(seer, target)) return true;

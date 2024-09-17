@@ -43,7 +43,7 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
 
         // Coven
-        if ((seer.Is(Custom_Team.Coven) || seer.Is(CustomRoles.Enchanted)) && (target.Is(Custom_Team.Coven) || target.Is(CustomRoles.Enchanted))) color = Main.roleColors[CustomRoles.Coven];
+        //if ((seer.Is(Custom_Team.Coven) || seer.Is(CustomRoles.Enchanted)) && (target.Is(Custom_Team.Coven) || target.Is(CustomRoles.Enchanted))) color = Main.roleColors[CustomRoles.Coven];
 
         // Cultist
         if (Cultist.NameRoleColor(seer, target)) color = Main.roleColors[CustomRoles.Cultist];

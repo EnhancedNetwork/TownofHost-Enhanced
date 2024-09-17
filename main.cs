@@ -348,14 +348,6 @@ public class Main : BasePlugin
                     case Custom_Team.Impostor:
                         roleColors.TryAdd(role, "#ff1919");
                         break;
-                    default:
-                        break;
-                }
-            }
-            foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
-            {
-                switch (role.GetCustomRoleTeam())
-                {
                     case Custom_Team.Coven:
                         roleColors.TryAdd(role, "#ac42f2");
                         break;

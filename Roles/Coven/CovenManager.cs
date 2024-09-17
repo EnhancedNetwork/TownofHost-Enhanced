@@ -67,11 +67,11 @@ public abstract class CovenManager : RoleBase
         }
         return string.Empty;
     }
-    private void SendRPC(byte playerId)
+    private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player); 
-        writer.Write(necroHolder.PlayerId);
+        writer.WriteNetObject(GetPlayerById(playerId)); 
+        writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
@@ -103,17 +103,20 @@ public abstract class CovenManager : RoleBase
             return option.GetBool();
         }
     }
-    //public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => target.IsPlayerCoven() && seer.IsPlayerCoven();
-    //public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => target.IsPlayerCoven() && seer.IsPlayerCoven();
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public static void GiveNecronomicon()
     {
+        
         var pcList = Main.AllAlivePlayerControls.Where(pc => pc.IsPlayerCoven() && pc.IsAlive()).ToList();
         if (pcList.Any())
         {
             PlayerControl rp = pcList.RandomElement();
             necroHolder = rp;
             necroHolder.Notify(GetString("NecronomiconNotification"));
+            SendRPC(necroHolder.PlayerId);
         }
+        
     }
     public override void OnCoEndGame()
     {
