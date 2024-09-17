@@ -1455,7 +1455,7 @@
   "CanKill": "Can Kill",
   "KillCooldown": "Kill Cooldown",
   "CanVent": "Can Vent",
-  "CantMoveOnVents": "Can't Move On Vents (<color=#ff1919>May work unstable in some maps</color>)",
+  "CantMoveOnVents": "Can't Move On Vents (Unstable in <color=#66a186>Dleks</color> map)",
   "ImpostorVision": "Has <color=#ff1919>Impostor</color> Vision",
   "CanUseSabotage": "Can Sabotage",
   "CanHaveAccessToVitals": "Can Have Access To Vitals",
