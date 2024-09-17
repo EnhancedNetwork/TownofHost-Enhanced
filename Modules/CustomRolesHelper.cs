@@ -342,7 +342,8 @@ public static class CustomRolesHelper
             CustomRoles.Spurt or
             CustomRoles.Statue or
             CustomRoles.Alchemist or
-            CustomRoles.Tired;
+            CustomRoles.Tired or
+            CustomRoles.Sloth;
     }
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {
@@ -749,7 +750,8 @@ public static class CustomRolesHelper
             case CustomRoles.Rebirth:
                 if (pc.Is(CustomRoles.Doppelganger) 
                     || pc.Is(CustomRoles.Jester)
-                    || pc.Is(CustomRoles.Zombie)) return false;
+                    || pc.Is(CustomRoles.Zombie) 
+                    || pc.Is(CustomRoles.Solsticer)) return false;
                 break;
 
             case CustomRoles.Youtuber:
@@ -967,7 +969,11 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Statue)
                     || pc.Is(CustomRoles.Seeker)
                     || pc.Is(CustomRoles.Doppelganger)
-                    || pc.Is(CustomRoles.DollMaster))
+                    || pc.Is(CustomRoles.DollMaster)
+                    || pc.Is(CustomRoles.Sloth)
+                    || pc.Is(CustomRoles.Zombie)
+                    || pc.Is(CustomRoles.Wraith)
+                    || pc.Is(CustomRoles.Spurt))
                     return false;
                 break;
 
@@ -1029,14 +1035,31 @@ public static class CustomRolesHelper
                   || pc.Is(CustomRoles.Bewilder)
                   || pc.Is(CustomRoles.Lighter)
                   || pc.Is(CustomRoles.Flash)
-                  || pc.Is(CustomRoles.Mare))
+                  || pc.Is(CustomRoles.Mare)
+                  || pc.Is(CustomRoles.Sloth))
                     return false;
                 break;
 
             case CustomRoles.Statue:
                 if (pc.Is(CustomRoles.Alchemist)
                     || pc.Is(CustomRoles.Flash)
-                    || pc.Is(CustomRoles.Tired))
+                    || pc.Is(CustomRoles.Tired)
+                    || pc.Is(CustomRoles.Sloth))
+                    return false;
+                break;
+
+            case CustomRoles.Sloth:
+                if (pc.Is(CustomRoles.Swooper) 
+                    || pc.Is(CustomRoles.Solsticer)
+                    || pc.Is(CustomRoles.Tired)
+                    || pc.Is(CustomRoles.Statue)
+                    || pc.Is(CustomRoles.Seeker)
+                    || pc.Is(CustomRoles.Doppelganger)
+                    || pc.Is(CustomRoles.DollMaster)
+                    || pc.Is(CustomRoles.Flash)
+                    || pc.Is(CustomRoles.Zombie)
+                    || pc.Is(CustomRoles.Wraith)
+                    || pc.Is(CustomRoles.Spurt))
                     return false;
                 break;
         }

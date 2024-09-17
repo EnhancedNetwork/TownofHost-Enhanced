@@ -1223,7 +1223,7 @@ class FixedUpdateInNormalGamePatch
                         if (Rainbow.isEnabled)
                             Rainbow.OnFixedUpdate();
 
-                        if (!lowLoad && Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
+                        if (Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
                             && !player.IsMushroomMixupActive() && Main.GameIsLoaded)
                         {
                             foreach (var UnShapeshifterId in Main.UnShapeShifter)
@@ -1240,6 +1240,7 @@ class FixedUpdateInNormalGamePatch
                                 UnShapeshifter.RpcShapeshift(randomPlayer, false);
                                 UnShapeshifter.RpcRejectShapeshift();
                                 UnShapeshifter.ResetPlayerOutfit();
+                                Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
                                 Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
                             }
                         }
@@ -1551,8 +1552,7 @@ class CoEnterVentPatch
         var playerRoleClass = __instance.myPlayer.GetRoleClass();
 
         // Prevent vanilla players from enter vents if their current role does not allow it
-        if ((__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer && !__instance.myPlayer.CanUseImpostorVentButton())
-            || (playerRoleClass != null && playerRoleClass.CheckBootFromVent(__instance, id))
+        if (!__instance.myPlayer.CanUseVents() || (playerRoleClass != null && playerRoleClass.CheckBootFromVent(__instance, id))
         )
         {
             try
@@ -1563,6 +1563,8 @@ class CoEnterVentPatch
             {
                 _ = new LateTask(() => __instance?.RpcBootFromVent(id), 0.5f, "Prevent Enter Vents");
             }
+            // Returning false causes errors in the logs
+            // I don’t yet know how to patch the IEnumerator function in Harmony, but need to send false in a certain place
             return false;
         }
 
@@ -1611,6 +1613,8 @@ class CoExitVentPatch
         if (!AmongUsClient.Instance.AmHost) return;
 
         player.GetRoleClass()?.OnExitVent(player, id);
+
+        _ = new LateTask(() => { player?.RpcSetVentInteraction(); }, 0.8f, $"Set vent interaction after exit vent {player?.PlayerId}", shoudLog: false);
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]

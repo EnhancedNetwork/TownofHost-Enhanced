@@ -118,6 +118,9 @@ public static class CustomRoleManager
                     case CustomRoles.Flash:
                         Flash.SetSpeed(player.PlayerId, false);
                         break;
+                    case CustomRoles.Sloth:
+                        Sloth.SetSpeed(player.PlayerId, false);
+                        break;
                     case CustomRoles.Torch:
                         Torch.ApplyGameOptions(opt);
                         break;
@@ -479,12 +482,15 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+    public static readonly Dictionary<byte, HashSet<int>> BlockedVentsList = [];
+
     public static void Initialize()
     {
         OtherCollectionsSet = false;
         OnFixedUpdateOthers.Clear();
         OnFixedUpdateLowLoadOthers.Clear();
         CheckDeadBodyOthers.Clear();
+        BlockedVentsList.Clear();
     }
 
     public static void Add()

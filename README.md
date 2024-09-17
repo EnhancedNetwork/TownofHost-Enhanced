@@ -104,6 +104,7 @@
 ### :star: [MoreGamemodes](https://github.com/Rabek009/MoreGamemodes)
 >
 > - Changer Role Basis (RoleBasisChanger.cs)
+> - Disable use vent for vanilla players (VentSystemPatch.cs)
 ### :star: [Reactor](https://github.com/NuclearPowered/Reactor)
 >
 > - Reference: Disable the 5s timeout on custom servers

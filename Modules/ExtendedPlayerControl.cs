@@ -4,6 +4,7 @@ using InnerNet;
 using System;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
@@ -410,6 +411,22 @@ static class ExtendedPlayerControl
             }
         }
     }
+    public static List<Vent> GetVentsFromClosest(this PlayerControl player)
+    {
+        Vector2 playerpos = player.transform.position;
+        List<Vent> vents = [.. ShipStatus.Instance.AllVents];
+        vents.Sort((v1, v2) => Vector2.Distance(playerpos, v1.transform.position).CompareTo(Vector2.Distance(playerpos, v2.transform.position)));
+        return vents;
+    }
+
+    /// <summary>
+    /// Update vent interaction if player again can use vent
+    /// Or vice versa if he cannot use it
+    /// </summary>
+    public static void RpcSetVentInteraction(this PlayerControl player)
+    {
+        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>(), player);
+    }
     public static void RpcSetSpecificScanner(this PlayerControl target, PlayerControl seer, bool IsActive)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -664,13 +681,17 @@ static class ExtendedPlayerControl
             _ => false
         };
     }
+    public static bool CanUseVents(this PlayerControl player) => player != null && (player.CanUseImpostorVentButton() || player.GetCustomRole().GetVNRole() == CustomRoles.Engineer);
+    public static bool CantUseVent(this PlayerControl player, int ventId) => player == null || !player.CanUseVents() || CustomRoleManager.BlockedVentsList.TryGetValue(player.PlayerId, out var blockedVents) && blockedVents.Contains(ventId);
+    public static bool HasAnyBlockedVent(this PlayerControl player) => player != null && CustomRoleManager.BlockedVentsList.TryGetValue(player.PlayerId, out var blockedVents) && blockedVents.Any();
+
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
         if (!pc.IsAlive()) return false;
         if (GameStates.IsHideNSeek) return true;
+        if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
         if (DollMaster.IsDoll(pc.PlayerId) || Circumvent.CantUseVent(pc)) return false;
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
-        if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
         if (Amnesiac.PreviousAmnesiacCanVent(pc)) return true; //this is done because amnesiac has imp basis and if amnesiac remembers a role with different basis then player will not vent as `CanUseImpostorVentButton` is false
 
         var playerRoleClass = pc.GetRoleClass();

@@ -130,6 +130,11 @@ public class PlayerState(byte playerId)
                     Flash.SetSpeed(pc.PlayerId, true);
                     sync = true;
                 }
+                if (pc.Is(CustomRoles.Sloth))
+                {
+                    Sloth.SetSpeed(pc.PlayerId, true);
+                    sync = true;
+                }
                 SubRoles.Remove(subRole);
 
                 if (sync) MarkEveryoneDirtySettings();

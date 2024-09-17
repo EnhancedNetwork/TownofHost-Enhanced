@@ -5,6 +5,7 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using TOHE.Patches;
 
 namespace TOHE;
 
@@ -29,12 +30,13 @@ class ShipFixedUpdatePatch
         }
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(MessageReader))]
 public static class MessageReaderUpdateSystemPatch
 {
     public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        if (systemType is 
+        if (systemType is
             SystemTypes.Ventilation
             or SystemTypes.Security
             or SystemTypes.Decontamination
@@ -68,6 +70,7 @@ public static class MessageReaderUpdateSystemPatch
         UpdateSystemPatch.Postfix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(byte))]
 class UpdateSystemPatch
 {
@@ -102,7 +105,7 @@ class UpdateSystemPatch
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
             && (systemType is SystemTypes.Doors))
         {
-            if (Unlucky.SuicideRand(player, Unlucky.StateSuicide.OpenDoor)) 
+            if (Unlucky.SuicideRand(player, Unlucky.StateSuicide.OpenDoor))
                 return false;
         }
 
@@ -149,6 +152,7 @@ class UpdateSystemPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CloseDoorsOfType))]
 class ShipStatusCloseDoorsPatch
 {
@@ -167,6 +171,7 @@ class ShipStatusCloseDoorsPatch
         return allow;
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
 class StartPatch
 {
@@ -209,6 +214,7 @@ class StartPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartMeeting))]
 class StartMeetingPatch
 {
@@ -227,6 +233,7 @@ class StartMeetingPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
 class BeginPatch
 {
@@ -237,6 +244,7 @@ class BeginPatch
         //Should the initial setup of the host's position be done here?
     }
 }
+
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
 class CheckTaskCompletionPatch
 {
@@ -248,5 +256,93 @@ class CheckTaskCompletionPatch
             return false;
         }
         return true;
+    }
+}
+
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Serialize))]
+class ShipStatusSerializePatch
+{
+    // Patch the global way of Serializing ShipStatus
+    // If we are patching any other systemTypes, just add below like Ventilation.
+    public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] MessageWriter writer, [HarmonyArgument(1)] bool initialState, ref bool __result)
+    {
+        __result = false;
+        if (!AmongUsClient.Instance.AmHost) return true;
+        if (initialState) return true;
+
+        // Original methods
+        short num = 0;
+        while (num < SystemTypeHelpers.AllTypes.Length)
+        {
+            SystemTypes systemTypes = SystemTypeHelpers.AllTypes[num];
+
+            if (systemTypes is SystemTypes.Ventilation)
+            {
+                // Skip Ventilation here
+                // Further new systems should skip original methods here and add new patches below.
+                num++;
+                continue;
+            }
+
+            if (__instance.Systems.TryGetValue(systemTypes, out ISystemType systemType) && systemType.IsDirty) // initialState used here in vanilla code. Removed it.
+            {
+                __result = true;
+                writer.StartMessage((byte)systemTypes);
+                systemType.Serialize(writer, initialState);
+                writer.EndMessage();
+            }
+            num++;
+        }
+
+        // Ventilation part
+        {
+            // Logger.Info("doing Ventilation Serialize", "ShipStatusSerializePatch");
+            // Serialize Ventilation with our own patches to clients specifically if needed
+            bool customVentilation = false;
+
+            if (GameStates.IsInGame)
+            {
+                foreach (var pc in PlayerControl.AllPlayerControls)
+                {
+                    if (pc.BlockVentInteraction())
+                    {
+                        customVentilation = true;
+                    }
+                }
+            }
+
+            var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
+            if (ventilationSystem != null && ventilationSystem.IsDirty)
+            {
+                // Logger.Info("customVentilation: " + customVentilation, "ShipStatusSerializePatch");
+                if (customVentilation)
+                {
+                    Utils.SetAllVentInteractions();
+                }
+                else
+                {
+                    // Logger.Info("vanilla update vents", "ShipStatusSerializePatch");
+                    var subwriter = MessageWriter.Get(SendOption.Reliable);
+                    subwriter.StartMessage(5);
+                    {
+                        subwriter.Write(AmongUsClient.Instance.GameId);
+                        subwriter.StartMessage(1);
+                        {
+                            subwriter.WritePacked(__instance.NetId);
+                            subwriter.StartMessage((byte)SystemTypes.Ventilation);
+                            ventilationSystem.Serialize(subwriter, false);
+                            subwriter.EndMessage();
+                        }
+                        subwriter.EndMessage();
+                    }
+                    subwriter.EndMessage();
+                    AmongUsClient.Instance.SendOrDisconnect(subwriter);
+                    subwriter.Recycle();
+                }
+                ventilationSystem.IsDirty = false;
+            }
+        }
+
+        return false;
     }
 }
