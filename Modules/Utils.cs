@@ -132,7 +132,7 @@ public static class Utils
             return false;
         }
 
-        var mapName = (MapNames)GetActiveMapId();
+        var mapName = GetActiveMapName();
         /*
             The Skeld    = 0
             MIRA HQ      = 1
