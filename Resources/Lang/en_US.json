@@ -1455,7 +1455,7 @@
   "CanKill": "Can Kill",
   "KillCooldown": "Kill Cooldown",
   "CanVent": "Can Vent",
-  "CantMoveOnVents": "Can't Move On Vents (<color=#ff1919>May work unstable in some maps</color>)",
+  "CantMoveOnVents": "Can't Move On Vents (Unstable in <color=#66a186>Dleks</color> map)",
   "ImpostorVision": "Has <color=#ff1919>Impostor</color> Vision",
   "CanUseSabotage": "Can Sabotage",
   "CanHaveAccessToVitals": "Can Have Access To Vitals",
@@ -2298,7 +2298,7 @@
   "Poll.MissingPlayers": "You can't start a poll with yourself dummy ;3",
 
   "Poll.Begin": "You may vote using /pv {answer}, ps: a number also works.",
-  "Poll.TimeInfo": "The results will be final in 2 minuttes",
+  "Poll.TimeInfo": "The results will be final in 2 minutes",
   "Poll.OnlyInLobby": "<#ab4f75>Sorry, this command may only be used in lobby</color>",
 
   "Poll.Inactive": "There isn't any active poll currently.",
