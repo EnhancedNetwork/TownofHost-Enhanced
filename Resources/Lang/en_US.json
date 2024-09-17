@@ -2298,7 +2298,7 @@
   "Poll.MissingPlayers": "You can't start a poll with yourself dummy ;3",
 
   "Poll.Begin": "You may vote using /pv {answer}, ps: a number also works.",
-  "Poll.TimeInfo": "The results will be final in 2 minuttes",
+  "Poll.TimeInfo": "The results will be final in 2 minutes",
   "Poll.OnlyInLobby": "<#ab4f75>Sorry, this command may only be used in lobby</color>",
 
   "Poll.Inactive": "There isn't any active poll currently.",
