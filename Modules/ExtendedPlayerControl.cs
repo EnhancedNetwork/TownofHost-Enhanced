@@ -571,7 +571,7 @@ static class ExtendedPlayerControl
         List<Vent> vents = new(ShipStatus.Instance.AllVents);
         vents.Sort((v1, v2) => Vector2.Distance(playerpos, v1.transform.position).CompareTo(Vector2.Distance(playerpos, v2.transform.position)));
 
-        // If player is inside a vent, we sort the nearby vents that the player can snapto and lift them to the top of the list
+        // If player is inside a vent, we get the nearby vents that the player can snapto and insert them to the top of the list
         // Idk how to directly get the vent a player is in, so just assume the closet vent from the player is the vent that player is in
         // Not sure about whether inVent flags works 100% correct here. Maybe player is being kicked from a vent and inVent flags can return true there
         if (player.inVent && vents[0] != null)
