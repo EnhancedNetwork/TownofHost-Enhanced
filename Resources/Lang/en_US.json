@@ -2106,6 +2106,7 @@
   "EnableSpurtCharge": "Display The Charge",
   "SpurtSuffix": "\n« <color=#c9e8f5>Spurt</color>: {0}% »",
 
+  "TargetIsAlreadyDead": "Target Is Already Dead",
   "ByBard": "by <color=#ff1919>Bard</color>",
   "ByBardGetFailed": "Oops, I seem to be out of inspiration.",
   "GangsterSuccessfullyRecruited": "You successfully recruited a player",

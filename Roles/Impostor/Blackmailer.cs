@@ -55,7 +55,7 @@ internal class Blackmailer : RoleBase
     {
         if (!target.IsAlive())
         {
-            blackmailer.Notify(Utils.ColorString(Utils.GetRoleColor(blackmailer.GetCustomRole()), GetString("NotAssassin")));
+            blackmailer.Notify(Utils.ColorString(Utils.GetRoleColor(blackmailer.GetCustomRole()), GetString("TargetIsAlreadyDead")));
             return;
         }
 
