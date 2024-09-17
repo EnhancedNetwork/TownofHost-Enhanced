@@ -568,7 +568,7 @@ static class ExtendedPlayerControl
     public static List<Vent> GetVentsFromClosest(this PlayerControl player)
     {
         Vector2 playerpos = player.transform.position;
-        List<Vent> vents = new List<Vent>(ShipStatus.Instance.AllVents);
+        List<Vent> vents = new(ShipStatus.Instance.AllVents);
         vents.Sort((v1, v2) => Vector2.Distance(playerpos, v1.transform.position).CompareTo(Vector2.Distance(playerpos, v2.transform.position)));
 
         // If player is inside a vent, we sort the nearby vents that the player can snapto and lift them to the top of the list
