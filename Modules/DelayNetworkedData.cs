@@ -12,7 +12,7 @@ public class InnerNetClientPatch
     [HarmonyPrefix]
     public static bool SendInitialDataPrefix(InnerNetClient __instance, int clientId)
     {
-        if (!Constants.IsVersionModded() || __instance.NetworkMode != NetworkModes.OnlineGame) return true;
+        if (!Constants.IsVersionModded() || GameStates.IsInGame || __instance.NetworkMode != NetworkModes.OnlineGame) return true;
         // We make sure other stuffs like playercontrol and Lobby behavior is spawned properly
         // Then we spawn networked data for new clients
         MessageWriter messageWriter = MessageWriter.Get(SendOption.Reliable);
@@ -141,7 +141,7 @@ public class InnerNetClientPatch
     public static void FixedUpdatePostfix(InnerNetClient __instance)
     {
         // Send a networked data pre 2 fixed update should be a good practice?
-        if (!Constants.IsVersionModded() || __instance.NetworkMode != NetworkModes.OnlineGame) return;
+        if (!Constants.IsVersionModded() || GameStates.IsInGame || __instance.NetworkMode != NetworkModes.OnlineGame) return;
         if (!__instance.AmHost || __instance.Streams == null) return;
 
         if (timer == 0)

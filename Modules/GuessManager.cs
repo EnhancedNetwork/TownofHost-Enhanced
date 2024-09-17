@@ -1045,7 +1045,6 @@ public static class GuessManager
                 return;
             }
 
-            MeetingHudPopulateButtonsPatch.AlredyCreated = false;
             DestroyIDLabels();
             UnityEngine.Object.Destroy(textTemplate.gameObject);
         }

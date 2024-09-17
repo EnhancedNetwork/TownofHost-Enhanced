@@ -1198,19 +1198,6 @@ class MeetingHudStartPatch
         }
     }
 }
-[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.PopulateButtons))]
-class MeetingHudPopulateButtonsPatch
-{
-    public static bool AlredyCreated = false;
-    public static void Postfix(MeetingHud __instance)
-    {
-        if (AlredyCreated) return;
-        AlredyCreated = true;
-
-        // Create all ID Label
-        GuessManager.CreateIDLabels(__instance);
-    }
-}
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
 class MeetingHudUpdatePatch
 {

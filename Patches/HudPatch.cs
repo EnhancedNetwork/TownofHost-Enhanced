@@ -279,7 +279,7 @@ static class MapTaskOverlayHidePatch
 {
     public static void Postfix()
     {
-        if (GameStates.IsMeeting && MeetingHud.Instance.state is not MeetingHud.VoteStates.Animating && !DestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening)
+        if (GameStates.IsMeeting && !DestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening)
             GuessManager.CreateIDLabels(MeetingHud.Instance);
     }
 }
