@@ -558,16 +558,35 @@ static class ExtendedPlayerControl
             }
         }
     }
+
     public static Vent GetClosestVent(this PlayerControl player)
     {
         var pos = player.GetCustomPosition();
         return ShipStatus.Instance.AllVents.Where(x => x != null).MinBy(x => Vector2.Distance(pos, x.transform.position));
     }
+    
     public static List<Vent> GetVentsFromClosest(this PlayerControl player)
     {
         Vector2 playerpos = player.transform.position;
-        List<Vent> vents = [.. ShipStatus.Instance.AllVents];
+        List<Vent> vents = new List<Vent>(ShipStatus.Instance.AllVents);
         vents.Sort((v1, v2) => Vector2.Distance(playerpos, v1.transform.position).CompareTo(Vector2.Distance(playerpos, v2.transform.position)));
+
+        // If player is inside a vent, we sort the nearby vents that the player can snapto and lift them to the top of the list
+        // Idk how to directly get the vent a player is in, so just assume the closet vent from the player is the vent that player is in
+        // Not sure about whether inVent flags works 100% correct here. Maybe player is being kicked from a vent and inVent flags can return true there
+        if (player.inVent && vents[0] != null)
+        {
+            var nextvents = vents[0].NearbyVents.ToList();
+            nextvents.RemoveAll(v => v == null);
+
+            foreach (var vent in nextvents)
+            {
+                vents.Remove(vent);
+            }
+
+            vents.InsertRange(0, nextvents.FindAll(v => v != null));
+        }
+
         return vents;
     }
 
