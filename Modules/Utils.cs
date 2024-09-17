@@ -149,7 +149,7 @@ public static class Utils
             case SystemTypes.Electrical:
                 {
                     if (mapId == 5) return false; // if The Fungle return false
-                    var SwitchSystem = ShipStatus.Instance.Systems[type].Cast<SwitchSystem>();
+                    var SwitchSystem = ShipStatus.Instance.Systems[type].TryCast<SwitchSystem>();
                     return SwitchSystem != null && SwitchSystem.IsActive;
                 }
             case SystemTypes.Reactor:
@@ -157,38 +157,38 @@ public static class Utils
                     if (mapId == 2) return false; // if Polus return false
                     else
                     {
-                        var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
+                        var ReactorSystemType = ShipStatus.Instance.Systems[type].TryCast<ReactorSystemType>();
                         return ReactorSystemType != null && ReactorSystemType.IsActive;
                     }
                 }
             case SystemTypes.Laboratory:
                 {
                     if (mapId != 2) return false; // Only Polus
-                    var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
+                    var ReactorSystemType = ShipStatus.Instance.Systems[type].TryCast<ReactorSystemType>();
                     return ReactorSystemType != null && ReactorSystemType.IsActive;
                 }
             case SystemTypes.LifeSupp:
                 {
                     if (mapId is 2 or 4 or 5) return false; // Only Skeld & Dleks & Mira HQ
-                    var LifeSuppSystemType = ShipStatus.Instance.Systems[type].Cast<LifeSuppSystemType>();
+                    var LifeSuppSystemType = ShipStatus.Instance.Systems[type].TryCast<LifeSuppSystemType>();
                     return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
                 }
             case SystemTypes.HeliSabotage:
                 {
                     if (mapId != 4) return false; // Only Airhip
-                    var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
+                    var HeliSabotageSystem = ShipStatus.Instance.Systems[type].TryCast<HeliSabotageSystem>();
                     return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
                 }
             case SystemTypes.Comms:
                 {
                     if (mapId is 1 or 5) // Only Mira HQ & The Fungle
                     {
-                        var HqHudSystemType = ShipStatus.Instance.Systems[type].Cast<HqHudSystemType>();
+                        var HqHudSystemType = ShipStatus.Instance.Systems[type].TryCast<HqHudSystemType>();
                         return HqHudSystemType != null && HqHudSystemType.IsActive;
                     }
                     else
                     {
-                        var HudOverrideSystemType = ShipStatus.Instance.Systems[type].Cast<HudOverrideSystemType>();
+                        var HudOverrideSystemType = ShipStatus.Instance.Systems[type].TryCast<HudOverrideSystemType>();
                         return HudOverrideSystemType != null && HudOverrideSystemType.IsActive;
                     }
                 }
