@@ -589,7 +589,7 @@ class IntroCutsceneDestroyPatch
             if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
             {
                 var mapId = Utils.GetActiveMapId();
-                Logger.Msg($"Check map {mapId}", "Map");
+                Logger.Msg($"Check map {mapId} - all vents count: {ShipStatus.Instance.AllVents.Count}", "Map");
                 RandomSpawn.SpawnMap map = mapId switch
                 {
                     0 => new RandomSpawn.SkeldSpawnMap(),

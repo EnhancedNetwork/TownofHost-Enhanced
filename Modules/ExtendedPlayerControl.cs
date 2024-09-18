@@ -1164,6 +1164,10 @@ static class ExtendedPlayerControl
                 Rebirth.Remove(Killed.PlayerId);
                 Rebirth.Add(target.PlayerId);
                 break;
+            case CustomRoles.Prohibited:
+                Prohibited.Remove(Killed.PlayerId);
+                Prohibited.Add(target.PlayerId);
+                break;
         }
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false)
