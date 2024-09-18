@@ -168,6 +168,6 @@ internal class Altruist : RoleBase
         hud?.AbilityButton?.OverrideText(Translator.GetString("AltruistAbilityButton"));
 
         if (IsRevivingMode)
-            hud?.ReportButton?.OverrideText(Translator.GetString("AltruistReportButton"));
+            hud?.ReportButton?.OverrideText(Translator.GetString("AltruistReviveMode"));
     }
 }
