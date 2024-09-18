@@ -15,7 +15,7 @@ public class Prohibited : IAddon
     private static OptionItem CountBlockedVentsInAirship;
     private static OptionItem CountBlockedVentsInFungle;
 
-    private static readonly Dictionary<byte, int> RememberBlokcedVents = [];
+    private static readonly Dictionary<byte, HashSet<int>> RememberBlokcedVents = [];
 
     public void SetupCustomOption()
     {
@@ -52,19 +52,17 @@ public class Prohibited : IAddon
         for (int i = 0; i < coutBlokedVents; i++)
         {
             var vent = allVents.RandomElement();
-            RememberBlokcedVents[playerId] = vent.Id;
+            RememberBlokcedVents[playerId].Add(vent.Id);
             CustomRoleManager.BlockedVentsList[playerId].Add(vent.Id);
             allVents.Remove(vent);
         }
     }
     public static void Remove(byte playerId)
     {
-        if (!RememberBlokcedVents.ContainsKey(playerId)) return;
+        if (!RememberBlokcedVents.TryGetValue(playerId, out var ventListId)) return;
 
-        foreach (var (pcId, ventId) in RememberBlokcedVents)
+        foreach(var ventId in ventListId)
         {
-            if (pcId != playerId) continue;
-
             CustomRoleManager.BlockedVentsList[playerId].Remove(ventId);
         }
         RememberBlokcedVents.Remove(playerId);
