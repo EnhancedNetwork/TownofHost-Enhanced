@@ -1,5 +1,5 @@
 {
-  "LanguageID": "2",
+  "LanguageID": "2 ",
   "HostText": "Anfitrião",
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
@@ -1191,7 +1191,7 @@
   "KickLowLevelPlayer": "Expulsar jogadores cujo nível seja inferior a",
   "TempBanLowLevelPlayer": "Ban Temporário para Jogadores de Nível Baixo",
   "ApplyWhiteList": "Ativar Whitelist (lista de permitidos)",
-  "AllowOnlyWhiteList": "Permitir que apenas jogadores na whitelist entrem",
+  "AllowOnlyWhiteList": "Permitir que apenas jogadores na whitelist entrem na sala",
   "AutoKickStart": "Expulsar jogadores que falem começa",
   "AutoKickStartTimes": "Número de avisos antes de expulsar",
   "AutoKickStartAsBan": "Bloquear o jogador após ele ser expulso",
