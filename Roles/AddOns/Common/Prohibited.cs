@@ -49,11 +49,6 @@ public class Prohibited : IAddon
         var allVents = ShipStatus.Instance.AllVents.ToList();
         var allVentsCount = allVents.Count;
 
-        if (coutBlokedVents > allVentsCount)
-        {
-            coutBlokedVents = allVentsCount;
-        }
-
         for (int i = 0; i < coutBlokedVents; i++)
         {
             var vent = allVents.RandomElement();
