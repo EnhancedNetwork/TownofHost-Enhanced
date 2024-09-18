@@ -62,6 +62,7 @@ internal class ChangeRoleSettings
             Main.LastEnteredVent.Clear();
             Main.LastEnteredVentLocation.Clear();
 
+            Main.MurderedThisRound.Clear();
             Main.DesyncPlayerList.Clear();
             Main.PlayersDiedInMeeting.Clear();
             GuessManager.GuesserGuessed.Clear();

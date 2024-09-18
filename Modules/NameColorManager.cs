@@ -2,6 +2,7 @@ using Hazel;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
@@ -30,6 +31,12 @@ public static class NameColorManager
     }
     private static bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target, bool isMeeting, out string color)
     {
+        if (Altruist.HasEnabled && seer.IsMurderedThisRound())
+        {
+            color = "";
+            return false;
+        }
+
         if (seer != target)
         target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
 
@@ -86,8 +93,8 @@ public static class NameColorManager
         else return seer == target
             || (Main.GodMode.Value && seer.IsHost())
             || (Options.CurrentGameMode == CustomGameMode.FFA)
-            || (Main.VisibleTasksCount && Main.PlayerStates[seer.Data.PlayerId].IsDead && seer.Data.IsDead && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool())
             || seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)
+            || (Main.VisibleTasksCount && Main.PlayerStates[seer.Data.PlayerId].IsDead && seer.Data.IsDead && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool())
             || target.GetRoleClass().OthersKnowTargetRoleColor(seer, target)
             || Mimic.CanSeeDeadRoles(seer, target)
             || (seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor))

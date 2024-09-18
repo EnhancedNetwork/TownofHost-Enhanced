@@ -39,9 +39,9 @@ public class Radar : IAddon
             TargetArrow.Add(seer.PlayerId, closest.PlayerId);
         }
     }
-    public static string GetPlayerArrow(PlayerControl seer, bool isForMeeting = false)
+    public static string GetPlayerArrow(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (isForMeeting || !seer.Is(CustomRoles.Radar)) return string.Empty;
+        if (isForMeeting || !seer.Is(CustomRoles.Radar) || seer.PlayerId != target.PlayerId) return string.Empty;
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Radar), TargetArrow.GetArrows(seer));
     }
 }

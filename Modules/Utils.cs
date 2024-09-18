@@ -23,6 +23,7 @@ using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using TOHE.Patches;
+using static UnityEngine.GraphicsBuffer;
 
 
 namespace TOHE;
@@ -1932,7 +1933,7 @@ public static class Utils
                 SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
-                SelfSuffix.Append(Radar.GetPlayerArrow(seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(Radar.GetPlayerArrow(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
 
 
@@ -2081,7 +2082,7 @@ public static class Utils
 
                         // ====== Seer know target role ======
 
-                        bool KnowRoleTarget = ExtendedPlayerControl.KnowRoleTarget(seer, target, true);
+                        bool KnowRoleTarget = ExtendedPlayerControl.KnowRoleTarget(seer, target);
                         
                         string TargetRoleText = KnowRoleTarget
                                 ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";

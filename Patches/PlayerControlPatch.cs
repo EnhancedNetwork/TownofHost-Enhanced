@@ -449,6 +449,8 @@ class MurderPlayerPatch
             target.SetDeathReason(PlayerState.DeathReason.Kill);
         }
 
+        Main.MurderedThisRound.Add(target.PlayerId);
+
         // Check Youtuber first died
         if (Main.FirstDied == "" && target.Is(CustomRoles.Youtuber) && !killer.Is(CustomRoles.KillingMachine))
         {
@@ -857,6 +859,7 @@ class ReportDeadBodyPatch
             Main.LastVotedPlayerInfo = null;
             Main.AllKillers.Clear();
             GuessManager.GuesserGuessed.Clear();
+            Main.MurderedThisRound.Clear();
 
             Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
             Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
@@ -1316,7 +1319,7 @@ class FixedUpdateInNormalGamePatch
                 Suffix.Append(seerRoleClass?.GetSuffix(seer, target, false));
                 Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, false));
 
-                Suffix.Append(Radar.GetPlayerArrow(seer, isForMeeting: false));
+                Suffix.Append(Radar.GetPlayerArrow(seer, target, isForMeeting: false));
 
                 if (seerRole.IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
                 {
