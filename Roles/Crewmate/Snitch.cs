@@ -167,12 +167,6 @@ internal class Snitch : RoleBase
         switch (RpcTypeId)
         {
             case 0:
-                foreach (var target in Main.AllAlivePlayerControls)
-                {
-                    if (!IsSnitchTarget(target)) continue;
-
-                    TargetArrow.Add(target.PlayerId, snitchId);
-                }
                 IsExposed[snitchId] = true;
                 break;
             case 1:
@@ -183,7 +177,6 @@ internal class Snitch : RoleBase
                         if (!IsSnitchTarget(target)) continue;
                         
                         var targetId = target.PlayerId;
-                        TargetArrow.Add(snitchId, targetId);
 
                         if (!TargetList.Contains(targetId))
                         {

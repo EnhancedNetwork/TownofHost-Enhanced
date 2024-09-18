@@ -146,12 +146,23 @@ public static class OptionsMenuBehaviourStartPatch
 #endif
     }
 }
-
+[HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Open))]
+public static class OptionsMenuBehaviourOpenPatch
+{
+    public static void Postfix()
+    {
+        if (GameStates.IsMeeting && !DestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening)
+            GuessManager.DestroyIDLabels();
+    }
+}
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
 public static class OptionsMenuBehaviourClosePatch
 {
     public static void Postfix()
     {
         ClientOptionItem.CustomBackground?.gameObject.SetActive(false);
+
+        if (GameStates.IsMeeting && !DestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening)
+            GuessManager.CreateIDLabels(MeetingHud.Instance);
     }
 }

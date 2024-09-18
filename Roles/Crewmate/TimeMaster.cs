@@ -105,7 +105,7 @@ internal class TimeMaster : RoleBase
             TimeMasterInProtect.Remove(pc.PlayerId);
             TimeMasterInProtect.Add(pc.PlayerId, GetTimeStamp());
 
-            if (!pc.IsModClient())
+            if (!pc.IsModded())
             {
                 pc.RpcGuardAndKill(pc);
             }

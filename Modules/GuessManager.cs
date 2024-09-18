@@ -677,6 +677,7 @@ public static class GuessManager
             var smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
             textTemplate.enabled = true;
             if (textTemplate.transform.FindChild("RoleTextMeeting") != null) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("RoleTextMeeting").gameObject);
+            if (textTemplate.transform.FindChild("DeathReasonTextMeeting") != null) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("DeathReasonTextMeeting").gameObject);
 
             Transform exitButtonParent = new GameObject().transform;
             exitButtonParent.SetParent(container);
@@ -1044,6 +1045,7 @@ public static class GuessManager
                 return;
             }
 
+            DestroyIDLabels();
             UnityEngine.Object.Destroy(textTemplate.gameObject);
         }
     }
@@ -1068,5 +1070,43 @@ public static class GuessManager
         Logger.Msg($"{GetString(role.ToString())}", "Role String");
 
         GuesserMsg(pc, $"/bt {PlayerId} {GetString(role.ToString())}", true);
+    }
+
+    // From EHR (By Gurge44 https://github.com/Gurge44/EndlessHostRoles)
+    private static List<GameObject> IDPanels = [];
+    public static void CreateIDLabels(MeetingHud __instance)
+    {
+        DestroyIDLabels();
+        if (__instance == null) return;
+        const int max = 2;
+        foreach (var pva in __instance.playerStates)
+        {
+            if (pva == null) continue;
+            var levelDisplay = pva.transform.FindChild("PlayerLevel").gameObject;
+            var panel = UnityEngine.Object.Instantiate(levelDisplay);
+            panel.gameObject.name = "PlayerIDLabel";
+            var panelTransform = panel.transform;
+            panelTransform.transform.SetParent(levelDisplay.transform);
+            panelTransform.localPosition = new(0f, -0.90f, levelDisplay.transform.localPosition.z);
+            var background = panel.GetComponent<SpriteRenderer>();
+            background.color = Palette.Purple;
+            background.sortingOrder = max - 1;
+            var levelLabel = panelTransform.FindChild("LevelLabel").GetComponents<TextMeshPro>()[0];
+            levelLabel.DestroyTranslator();
+            levelLabel.text = "ID";
+            levelLabel.sortingOrder = max;
+            levelLabel.gameObject.name = "IDLabel";
+            var levelNumber = panelTransform.FindChild("LevelNumber").GetComponent<TextMeshPro>();
+            levelNumber.text = pva.TargetPlayerId.ToString();
+            levelNumber.sortingOrder = max;
+            levelNumber.gameObject.name = "IDNumber";
+            IDPanels.Add(panel);
+        }
+    }
+
+    public static void DestroyIDLabels()
+    {
+        IDPanels.ForEach(UnityEngine.Object.Destroy);
+        IDPanels = [];
     }
 }

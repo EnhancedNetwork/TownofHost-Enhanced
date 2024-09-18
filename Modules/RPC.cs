@@ -15,7 +15,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 197/255 USED
+enum CustomRPC : byte // 193/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -51,6 +51,8 @@ enum CustomRPC : byte // 197/255 USED
     ShowChat,
     SyncShieldPersonDiedFirst,
     RemoveSubRole,
+    SyncGeneralOptions,
+    Arrow,
 
     //Roles 
     SetBountyTarget,
@@ -97,25 +99,15 @@ enum CustomRPC : byte // 197/255 USED
     SetMarkedPlayer,
     SetConcealerTimer,
     SetMedicalerProtectList,
-    SyncPsychicRedList,
-    SetMorticianArrow,
-    SetAmnesaicArrows,
-    SetTracefinderArrow,
     PresidentEnd,
     PresidentReveal,
     SetBKTimer,
     SetCursedSoulCurseLimit,
     SetInvestgatorLimit,
-    SyncInvestigator, // Unused
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
-    SetCoronerArrow,
     SpurtSync,
-    SetCoronerkKillerArrow,
-    SetVultureArrow,
-    SetRadarArrow,
     SyncVultureBodyAmount,
-    //SetTrackerTarget,
     SpyRedNameSync,
     SpyRedNameRemove,
     SetChameleonTimer,
@@ -133,6 +125,7 @@ public enum Sounds
     TaskComplete,
     TaskUpdateSound,
     ImpTransform,
+    SabotageSound,
 
     Test,
 }
@@ -157,7 +150,7 @@ internal class RPCHandlerPatch
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
         if (EAC.PlayerControlReceiveRpc(__instance, callId, reader)) return false;
-        Logger.Info($"{__instance?.Data?.PlayerId}({(__instance.OwnedByHost() ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
+        Logger.Info($"{__instance?.Data?.PlayerId}({(__instance.IsHost() ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
         switch (rpcType)
         {
             case RpcCalls.SetName: //SetNameRPC
@@ -187,7 +180,7 @@ internal class RPCHandlerPatch
                 Logger.Info($"{__instance.GetNameWithRole()} => {p?.GetNameWithRole() ?? "null"}", "StartMeeting");
                 break;
         }
-        if (!__instance.OwnedByHost() &&
+        if (!__instance.IsHost() &&
             ((Enum.IsDefined(typeof(CustomRPC), callId) && !TrustedRpc(callId)) // Is Custom RPC
             || (!Enum.IsDefined(typeof(CustomRPC), callId) && !Enum.IsDefined(typeof(RpcCalls), callId)))) //Is not Custom RPC and not Vanilla RPC
         {
@@ -402,9 +395,6 @@ internal class RPCHandlerPatch
             case CustomRPC.EndGame:
                 RPC.EndGame(reader);
                 break;
-            case CustomRPC.SetRadarArrow:
-                Radar.ReceiveRPC(reader);
-                break;
             case CustomRPC.PlaySound:
                 byte playerID = reader.ReadByte();
                 Sounds sound = (Sounds)reader.ReadByte();
@@ -431,6 +421,12 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncRoleSkill:
                 RPC.SyncRoleSkillReader(reader);
                 break;
+            case CustomRPC.Arrow:
+                {
+                    if (reader.ReadBoolean()) TargetArrow.ReceiveRPC(reader);
+                    else LocateArrow.ReceiveRPC(reader);
+                    break;
+                }
             case CustomRPC.SetBountyTarget:
                 BountyHunter.ReceiveRPC(reader);
                 break;
@@ -567,8 +563,28 @@ internal class RPCHandlerPatch
             case CustomRPC.SetMedicalerProtectList:
                 Medic.ReceiveRPCForProtectList(reader);
                 break;
-            case CustomRPC.SyncPsychicRedList:
-                Psychic.ReceiveRPC(reader);
+            case CustomRPC.SyncGeneralOptions:
+                byte paciefID = reader.ReadByte();
+                //playerstate:
+                {
+                    CustomRoles rola = (CustomRoles)reader.ReadPackedInt32();
+                    bool isdead = reader.ReadBoolean();
+                    bool IsDC = reader.ReadBoolean();
+                    PlayerState.DeathReason drip = (PlayerState.DeathReason)reader.ReadPackedInt32();
+                    if (Main.PlayerStates.ContainsKey(paciefID))
+                    {
+                        var state = Main.PlayerStates[paciefID];
+                        state.MainRole = rola;
+                        state.IsDead = isdead;
+                        state.Disconnected = IsDC;
+                        state.deathReason = drip;
+                    }
+                }
+                float Killcd = reader.ReadSingle();
+                float speed = reader.ReadSingle();
+
+                Main.AllPlayerKillCooldown[paciefID] = Killcd;
+                Main.AllPlayerSpeed[paciefID] = speed;
                 break;
             case CustomRPC.SyncPlayerSetting:
                 byte playerid = reader.ReadByte();
@@ -598,15 +614,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncFFANameNotify:
                 FFAManager.ReceiveRPCSyncNameNotify(reader);
-                break;
-            case CustomRPC.SetMorticianArrow:
-                Mortician.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetAmnesaicArrows:
-                Amnesiac.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetTracefinderArrow:
-                Tracefinder.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncNameNotify:
                 NameNotifyManager.ReceiveRPC(reader);
@@ -652,7 +659,8 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.KillFlash:
                 Utils.FlashColor(new(1f, 0f, 0f, 0.3f));
-                if (Constants.ShouldPlaySfx()) RPC.PlaySound(PlayerControl.LocalPlayer.PlayerId, Sounds.KillSound);
+                var playKillSound = reader.ReadBoolean();
+                if (Constants.ShouldPlaySfx()) RPC.PlaySound(PlayerControl.LocalPlayer.PlayerId, playKillSound ? Sounds.KillSound : Sounds.SabotageSound);
                 break;
             case CustomRPC.DumpLog:
                 var target = Utils.GetPlayerById(reader.ReadByte());
@@ -660,15 +668,6 @@ internal class RPCHandlerPatch
                 {
                     Logger.Info($"Player {target.GetNameWithRole()} used /dump", "RPC_DumpLogger");
                 }
-                break;
-            case CustomRPC.SetCoronerArrow:
-                Coroner.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetCoronerkKillerArrow:
-                Coroner.ReceiveRPCKiller(reader);
-                break;
-            case CustomRPC.SetVultureArrow:
-                Vulture.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncVultureBodyAmount:
                 Vulture.ReceiveBodyRPC(reader);
@@ -734,7 +733,7 @@ internal class PlayerPhysicsRPCHandlerPatch
             Logger.Warn("Received Physics RPC without a player", "PlayerPhysics_ReceiveRPC");
             return false;
         }
-        Logger.Info($"{player.PlayerId}({(__instance.OwnedByHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
+        Logger.Info($"{player.PlayerId}({(__instance.IsHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
 
         return true;
     }
@@ -850,12 +849,6 @@ internal static class RPC
         writer.Write(title);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ExileAsync(PlayerControl player)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-        player.Exiled();
-    }
     public static void RpcSetFriendCode(string fc)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetFriendCode, SendOption.None);
@@ -961,6 +954,9 @@ internal static class RPC
                 case Sounds.ImpTransform:
                     SoundManager.Instance.PlaySound(DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx, false, 0.8f);
                     break;
+                case Sounds.SabotageSound:
+                    SoundManager.Instance.PlaySound(ShipStatus.Instance.SabotageSound, false, 0.8f);
+                    break;
             }
         }
     }
@@ -983,9 +979,6 @@ internal static class RPC
                 break;
             case CustomRoles.Aware:
                 Aware.Add(targetId);
-                break;
-            case CustomRoles.Radar:
-                Radar.Add(targetId);
                 break;
             case CustomRoles.Glow:
                 Glow.Add(targetId);

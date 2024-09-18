@@ -10,7 +10,6 @@ using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
-using static TOHE.SelectRolesPatch;
 
 namespace TOHE;
 
@@ -70,8 +69,12 @@ class OnGameJoinedPatch
                         Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
                     AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+
                     if (AURoleOptions.ShapeshifterCooldown == 0f)
                         AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+
+                    if (AURoleOptions.GuardianAngelCooldown == 0f)
+                        AURoleOptions.GuardianAngelCooldown = Main.LastGuardianAngelCooldown.Value;
 
                     // if custom game mode is HideNSeekTOHE in normal game, set standart
                     if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
@@ -315,9 +318,8 @@ class OnPlayerLeftPatch
         if (Main.AssignRolesIsStarted)
         {
             Logger.Warn($"Assign roles not ended, try remove player {data.Character.PlayerId} from role assign", "OnPlayerLeft");
-            RoleAssign.RoleResult?.Remove(data.Character);
-            RpcSetRoleReplacer.senders?.Remove(data.Character.PlayerId);
-            RpcSetRoleReplacer.StoragedData?.Remove(data.Character);
+            RoleAssign.RoleResult?.Remove(data.Character.PlayerId);
+            RpcSetRoleReplacer.Senders?.Remove(data.Character.PlayerId);
         }
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
@@ -465,7 +467,7 @@ class OnPlayerLeftPatch
                 case DisconnectReasons.Hacking:
                     Logger.SendInGame(string.Format(GetString("PlayerLeftByAU-Anticheat"), data?.PlayerName));
                     break;
-                case DisconnectReasons.Error:
+                case DisconnectReasons.Error when !GameStates.IsLobby:
                     Logger.SendInGame(string.Format(GetString("PlayerLeftByError"), data?.PlayerName));
                     _ = new LateTask(() =>
                     {
@@ -580,7 +582,7 @@ class InnerNetClientSpawnPatch
                     if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null && GameStates.IsVanillaServer)
                     {
                         // Only for vanilla
-                        if (!client.Character.OwnedByHost() && !client.Character.IsModClient())
+                        if (!client.Character.IsModded())
                         {
                             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(LobbyBehaviour.Instance.NetId, (byte)RpcCalls.LobbyTimeExpiring, SendOption.None, client.Id);
                             writer.WritePacked((int)GameStartManagerPatch.timer);
@@ -588,7 +590,7 @@ class InnerNetClientSpawnPatch
                             AmongUsClient.Instance.FinishRpcImmediately(writer);
                         }
                         // Non-host modded client
-                        else if (!client.Character.OwnedByHost() && client.Character.IsModClient())
+                        else if (client.Character.IsNonHostModdedClient())
                         {
                             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncLobbyTimer, SendOption.Reliable, client.Id);
                             writer.WritePacked((int)GameStartManagerPatch.timer);

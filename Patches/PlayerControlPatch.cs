@@ -17,6 +17,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using TOHE.Patches;
 
 namespace TOHE;
 
@@ -28,6 +29,15 @@ class CheckProtectPatch
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
         var angel = __instance;
+
+        if (AntiBlackout.SkipTasks)
+        {
+            Logger.Info("Checking while AntiBlackOut protect, guard protect was canceled", "CheckProtect");
+            return false;
+        }
+
+        if (target.Data.IsDead) // bad protect
+            return false;
 
         if (!angel.GetRoleClass().OnCheckProtect(angel, target))
             return false;
@@ -154,7 +164,7 @@ class CheckMurderPatch
             Logger.Info("The target is in an unkillable state and the kill is canceled", "CheckMurder");
             return false;
         }
-        // Target Is Dead?
+        // Target Is Dead
         if (!target.IsAlive())
         {
             Logger.Info("The target is in a dead state and the kill is canceled", "CheckMurder");
@@ -164,6 +174,12 @@ class CheckMurderPatch
         if (MeetingHud.Instance != null)
         {
             Logger.Info("In the meeting, the kill was canceled", "CheckMurder");
+            return false;
+        }
+        // AntiBlackOut protect is active
+        if (AntiBlackout.SkipTasks)
+        {
+            Logger.Info("Checking while AntiBlackOut protect, the kill was canceled", "CheckMurder");
             return false;
         }
 
@@ -344,6 +360,12 @@ class MurderPlayerPatch
     {
         Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer Prefix");
 
+        if (GameStates.IsLobby)
+        {
+            Logger.Info("Murder triggered in lobby, so murder canceled", "MurderPlayer Prefix");
+            return false;
+        }    
+
         var isProtectedByClient = resultFlags.HasFlag(MurderResultFlags.DecisionByHost) && target.IsProtected();
         var isProtectedByHost = resultFlags.HasFlag(MurderResultFlags.FailedProtected);
         var isFailed = resultFlags.HasFlag(MurderResultFlags.FailedError);
@@ -427,6 +449,8 @@ class MurderPlayerPatch
             target.SetDeathReason(PlayerState.DeathReason.Kill);
         }
 
+        Main.MurderedThisRound.Add(target.PlayerId);
+
         // Check Youtuber first died
         if (Main.FirstDied == "" && target.Is(CustomRoles.Youtuber) && !killer.Is(CustomRoles.KillingMachine))
         {
@@ -446,7 +470,7 @@ class MurderPlayerPatch
             }
 
             // Sync protected player from being killed first info for modded clients
-            if (PlayerControl.LocalPlayer.OwnedByHost())
+            if (PlayerControl.LocalPlayer.IsHost())
             {
                 var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncShieldPersonDiedFirst, SendOption.None, -1);
                 writer.Write(Main.FirstDied);
@@ -500,6 +524,12 @@ class RpcMurderPlayerPatch
     {
         if (!AmongUsClient.Instance.AmHost)
             Logger.Error("Client is calling RpcMurderPlayer, are you Hacking?", "RpcMurderPlayerPatch.Prefix");
+
+        if (GameStates.IsLobby)
+        {
+            Logger.Info("Murder triggered in lobby, so murder canceled", "RpcMurderPlayer.Prefix");
+            return false;
+        }
 
         MurderResultFlags murderResultFlags = didSucceed ? MurderResultFlags.Succeeded : MurderResultFlags.FailedError;
         if (AmongUsClient.Instance.AmClient)
@@ -596,6 +626,11 @@ public static class CheckShapeshiftPatch
             logger.Info("Cancel shapeshifting in meeting");
             return false;
         }
+        if (AntiBlackout.SkipTasks)
+        {
+            Logger.Info("Checking while AntiBlackOut protect, shapeshift was canceled", "CheckShapeshift");
+            return false;
+        }
         if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
         {
             instance.RpcGuardAndKill(instance);
@@ -671,111 +706,6 @@ class ShapeshiftPatch
                 time, "UnShiftNotify");
             }
         }
-    }
-}
-
-/*
- *  InnerSloth is doing careless stuffs. They didnt put amModdedHost check in cmd check vanish appear
- *  We temporary need to patch the whole cmd function and wait for the next hotfix from them
- */
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckVanish))]
-class CmdCheckVanishPatch
-{
-    public static bool Prefix(PlayerControl __instance, float maxDuration)
-    {
-        if (AmongUsClient.Instance.AmHost)
-        {
-            __instance.CheckVanish();
-            return false;
-        }
-        __instance.SetRoleInvisibility(true, true, false);
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.CheckVanish, SendOption.Reliable, AmongUsClient.Instance.HostId);
-        messageWriter.Write(maxDuration);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-
-        return false;
-    }
-}
-
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckAppear))]
-class CmdCheckAppearPatch
-{
-    public static bool Prefix(PlayerControl __instance, bool shouldAnimate)
-    {
-        if (AmongUsClient.Instance.AmHost)
-        {
-            __instance.CheckAppear(shouldAnimate);
-            return false;
-        }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.CheckAppear, SendOption.Reliable, AmongUsClient.Instance.HostId);
-        messageWriter.Write(shouldAnimate);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-
-        return false;
-    }
-}
-/*
- *  I have no idea how the check vanish is approved by host & server and how to reject it
- *  Suggest leaving phantom stuffs after 2.1.0
- *  
- *  Called when Phantom press vanish button when visible
- */
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckVanish))]
-class CheckVanishPatch
-{
-    public static bool Prefix(PlayerControl __instance)
-    {
-        return true;
-    }
-}
-
-// Called when Phantom press appear button when is invisible
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckAppear))]
-class CheckAppearPatch
-{
-    public static bool Prefix(PlayerControl __instance, bool shouldAnimate)
-    {
-        return true;
-    }
-}
-
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRoleInvisibility))]
-class SetRoleInvisibilityPatch
-{
-    public static readonly Dictionary<byte, Vent> PhantomIsInvisibility = [];
-    public static void Prefix(PlayerControl __instance, bool isActive, bool shouldAnimate, bool playFullAnimation)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        Logger.Info($"Player: {__instance.GetRealName()} => Is Active {isActive}, Animate:{shouldAnimate}, Full Animation:{playFullAnimation}", "SetRoleInvisibility");
-
-        if (GameStates.IsMeeting) return;
-
-        var phantom = __instance;
-        var randomVent = ShipStatus.Instance.AllVents.RandomElement();
-
-        foreach (var target in Main.AllAlivePlayerControls)
-        {
-            if (phantom == target || target.AmOwner || !target.HasDesyncRole()) continue;
-
-            if (isActive)
-            {
-                var randomVentId = randomVent.Id;
-                var ventPosition = randomVent.transform.position;
-
-                phantom.RpcDesyncTeleport(ventPosition, target);
-                phantom.MyPhysics.RpcEnterVentDesync(randomVentId, target);
-            }
-            else if (!isActive && shouldAnimate)
-            {
-                _ = PhantomIsInvisibility.TryGetValue(phantom.PlayerId, out var vent);
-                phantom.MyPhysics.RpcExitVentDesync(vent.Id, target);
-                phantom.RpcDesyncTeleport(phantom.GetCustomPosition(), target);
-            }
-        }
-
-        if (isActive) PhantomIsInvisibility.Add(phantom.PlayerId, randomVent);
-        else PhantomIsInvisibility.Remove(phantom.PlayerId);
     }
 }
 
@@ -929,6 +859,7 @@ class ReportDeadBodyPatch
             Main.LastVotedPlayerInfo = null;
             Main.AllKillers.Clear();
             GuessManager.GuesserGuessed.Clear();
+            Main.MurderedThisRound.Clear();
 
             Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
             Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
@@ -987,6 +918,8 @@ class ReportDeadBodyPatch
                 pc.FixMixedUpOutfit();
             }
 
+            PhantomRolePatch.OnReportDeadBody(pc);
+
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
@@ -1010,6 +943,7 @@ class FixedUpdateInNormalGamePatch
     private static readonly StringBuilder Suffix = new(120);
     private static readonly Dictionary<byte, int> BufferTime = [];
     private static int LevelKickBufferTime = 20;
+    private static bool ChatOpen;
 
     public static async void Postfix(PlayerControl __instance)
     {
@@ -1030,6 +964,21 @@ class FixedUpdateInNormalGamePatch
                 ReportDeadBodyPatch.WaitReport[id].Clear();
                 Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}: The report will be processed now that it is available for reporting", "ReportDeadbody");
                 __instance.ReportDeadBody(info);
+            }
+        }
+
+        if (GameStates.IsMeeting)
+        {
+            switch (ChatOpen)
+            {
+                case false when DestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening:
+                    ChatOpen = true;
+                    break;
+                case true when DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing:
+                    ChatOpen = false;
+                    if (GameStates.IsVoting)
+                        GuessManager.CreateIDLabels(MeetingHud.Instance);
+                    break;
             }
         }
 
@@ -1281,7 +1230,7 @@ class FixedUpdateInNormalGamePatch
             {
                 if (Main.playerVersion.TryGetValue(__instance.GetClientId(), out var ver))
                 {
-                    if (Main.ForkId != ver.forkId) // フォークIDが違う場合
+                    if (Main.ForkId != ver.forkId)
                         __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.2>{ver.forkId}</size>\n{__instance?.name}</color>";
                     else if (Main.version.CompareTo(ver.version) == 0)
                         __instance.cosmetics.nameText.text = ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})" ? $"<color=#87cefa>{__instance.name}</color>" : $"<color=#ffff00><size=1.2>{ver.tag}</size>\n{__instance?.name}</color>";
@@ -1367,12 +1316,10 @@ class FixedUpdateInNormalGamePatch
 
                 Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, false, false));
 
-
-                if (Radar.IsEnable) Suffix.Append(Radar.GetPlayerArrow(seer, target, isForMeeting: false));
-
                 Suffix.Append(seerRoleClass?.GetSuffix(seer, target, false));
                 Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, false));
 
+                Suffix.Append(Radar.GetPlayerArrow(seer, target, isForMeeting: false));
 
                 if (seerRole.IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
                 {
@@ -1415,11 +1362,11 @@ class FixedUpdateInNormalGamePatch
                 }
 
                 // Camouflage
-                if ((Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated)
+                if ((Camouflage.IsActive && Utils.IsActive(SystemTypes.Comms)) || Camouflager.AbilityActivated)
                     RealName = $"<size=0%>{RealName}</size> ";
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
-                    ? $" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : string.Empty;
+                    ? $"\n<size=1.7>『{Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))}』</size>" : string.Empty;
 
                 // code from EHR (Endless Host Roles by: Gurge44)
                 var currentText = target.cosmetics.nameText.text;
@@ -1433,12 +1380,24 @@ class FixedUpdateInNormalGamePatch
                     float offset = 0.2f;
                     float colorBlind = -0.2f;
 
+                    if (NameNotifyManager.Notice.TryGetValue(seer.PlayerId, out var notify) && notify.Text.Contains('\n'))
+                    {
+                        int count = notify.Text.Count(x => x == '\n');
+                        for (int i = 0; i < count; i++)
+                        {
+                            offset += 0.1f;
+                            colorBlind -= 0.1f;
+                        }
+                    }
+
                     if (Suffix.ToString() != string.Empty)
                     {
                         // If the name is on two lines, the job title text needs to be moved up.
                         offset += 0.15f;
                         colorBlind -= 0.2f;
                     }
+
+                    if (!seer.IsAlive() && !target.IsAlive()) { offset += 0.1f; colorBlind -= 0.1f; }
 
                     RoleText.transform.SetLocalY(offset);
                     target.cosmetics.colorBlindText.transform.SetLocalY(colorBlind);
@@ -1743,7 +1702,7 @@ class PlayerControlCheckNamePatch
 
         _ = new LateTask(() =>
         {
-            if (__instance != null && !__instance.Data.Disconnected && !__instance.IsModClient())
+            if (__instance != null && !__instance.Data.Disconnected && !__instance.IsModded())
             {
                 var sender = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.OwnerId);
                 AmongUsClient.Instance.FinishRpcImmediately(sender);
@@ -1755,7 +1714,7 @@ class PlayerControlCheckNamePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckName))]
 class CmdCheckNameVersionCheckPatch
 {
-    public static void Postfix(PlayerControl __instance)
+    public static void Postfix()
     {
         RPC.RpcVersionCheck();
     }
@@ -1841,7 +1800,9 @@ public static class PlayerControlDiePatch
 {
     public static void Postfix(PlayerControl __instance)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || __instance == null) return;
+        // Skip Tasks while Anti Blackout but not for real exiled
+        if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != __instance.PlayerId) return;
 
         try
         {
@@ -1875,11 +1836,13 @@ public static class PlayerControlDiePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
 class PlayerControlSetRolePatch
 {
-    public static readonly Dictionary<byte, bool> DidSetGhost = [];
-    private static readonly Dictionary<PlayerControl, RoleTypes> ghostRoles = [];
+    private static readonly Dictionary<PlayerControl, RoleTypes> GhostRoles = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole)
     {
-        // canOverrideRole = true; /* set this to true no matter the case */
+        // Skip first assign
+        if (RpcSetRoleReplacer.BlockSetRole) return true;
+
+        canOverrideRole = true;
         if (GameStates.IsHideNSeek || __instance == null) return true;
         if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
 
@@ -1889,9 +1852,6 @@ class PlayerControlSetRolePatch
         // Ghost assign
         if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
         {
-            if (DidSetGhost.TryGetValue(target.PlayerId, out var isGhost) && isGhost) // Prevent double assignment if player gets killed as a ghost
-                return false;
-
             try
             {
                Action<bool> SelfExile = __instance.GetRoleClass().OnSelfReducedToAtoms;
@@ -1905,51 +1865,58 @@ class PlayerControlSetRolePatch
             }
 
             var targetIsKiller = target.Is(Custom_Team.Impostor) || target.HasDesyncRole();
-            ghostRoles.Clear();
+            GhostRoles.Clear();
 
             foreach (var seer in Main.AllPlayerControls)
             {
                 var self = seer.PlayerId == target.PlayerId;
                 var seerIsKiller = seer.Is(Custom_Team.Impostor) || seer.HasDesyncRole();
 
-                if (target.GetCustomRole().IsGhostRole() || target.IsAnySubRole(x => x.IsGhostRole()))
+                if (target.HasGhostRole())
                 {
-                    ghostRoles[seer] = RoleTypes.GuardianAngel;
+                    GhostRoles[seer] = RoleTypes.GuardianAngel;
                 }
                 else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(Custom_Team.Impostor)))
                 {
-                    ghostRoles[seer] = RoleTypes.ImpostorGhost;
+                    GhostRoles[seer] = RoleTypes.ImpostorGhost;
                 }
                 else
                 {
-                    ghostRoles[seer] = RoleTypes.CrewmateGhost;
+                    GhostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
             // If all players see player as Guardian Angel
-            if (ghostRoles.All(kvp => kvp.Value == RoleTypes.GuardianAngel))
+            if (GhostRoles.All(kvp => kvp.Value == RoleTypes.GuardianAngel))
             {
                 roleType = RoleTypes.GuardianAngel;
-                return true;
+                __instance.RpcSetRoleDesync(RoleTypes.GuardianAngel, __instance.GetClientId());
+                foreach (var seer in Main.AllPlayerControls)
+                {
+                    if (seer.PlayerId == __instance.PlayerId) continue;
+                    __instance.RpcSetRoleDesync(RoleTypes.CrewmateGhost, seer.GetClientId());
+                }
+                GhostRoleAssign.CreateGAMessage(__instance);
+                return false;
             }
             // If all players see player as Crewmate Ghost
-            else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
+            else if (GhostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
             {
                 roleType = RoleTypes.CrewmateGhost;
                 return true;
             }
             // If all players see player as Impostor Ghost
-            else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
+            else if (GhostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
             {
                 roleType = RoleTypes.ImpostorGhost;
                 return true;
             }
             else
             {
-                foreach ((var seer, var role) in ghostRoles)
+                foreach ((var seer, var role) in GhostRoles)
                 {
                     if (seer == null || target == null) continue;
                     Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
-                    target.RpcSetRoleDesync(role, false, seer.GetClientId());
+                    target.RpcSetRoleDesync(role, seer.GetClientId());
                 }
                 return false;
             }
@@ -1957,72 +1924,15 @@ class PlayerControlSetRolePatch
 
         return true;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole, bool __runOriginal)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes roleType, bool __runOriginal)
     {
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
 
         try
         {
-            if (roleType == RoleTypes.GuardianAngel && !DidSetGhost.ContainsKey(__instance.PlayerId))
-            {
-                Utils.NotifyRoles(SpecifyTarget: __instance);
-                _ = new LateTask(() => {
-
-                    __instance.RpcResetAbilityCooldown();
-
-                    if (Options.SendRoleDescriptionFirstMeeting.GetBool())
-                    {
-                        var host = PlayerControl.LocalPlayer;
-                        var name = host.Data.PlayerName;
-                        var lp = __instance;
-                        var sb = new StringBuilder();
-                        var conf = new StringBuilder();
-                        var role = __instance.GetCustomRole();
-                        var rlHex = Utils.GetRoleColorCode(role);
-                        sb.Append(Utils.GetRoleTitle(role) + lp.GetRoleInfo(true));
-                        if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                            Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref conf);
-                        var cleared = conf.ToString();
-                        conf.Clear().Append($"<size={ChatCommands.Csize}>" + $"<color={rlHex}>{GetString(role.ToString())} {GetString("Settings:")}</color>\n" + cleared + "</size>");
-
-                        var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
-                        writer.StartMessage(__instance.GetClientId());
-                        writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
-                            .Write(host.Data.NetId)
-                            .Write(Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")))
-                            .EndRpc();
-                        writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
-                            .Write(sb.ToString())
-                            .EndRpc();
-                        writer.EndMessage();
-                        writer.SendMessage();
-
-                        var writer2 = CustomRpcSender.Create("SendGhostRoleConfig", SendOption.None);
-                        writer2.StartMessage(__instance.GetClientId());
-                        writer2.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
-                            .Write(conf.ToString())
-                            .EndRpc();
-                        writer2.StartRpc(host.NetId, (byte)RpcCalls.SetName)
-                            .Write(host.Data.NetId)
-                            .Write(name)
-                            .EndRpc();
-                        writer2.EndMessage();
-                        writer2.SendMessage();
-
-                        // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
-
-                    }
-
-                }, 0.1f, $"SetGuardianAngel for playerId: {__instance.PlayerId}");
-            }
-
             if (__runOriginal)
             {
                 Logger.Info($" {__instance.GetRealName()} => {roleType}", "PlayerControl.RpcSetRole");
-
-                if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel)
-                    if (!DidSetGhost.ContainsKey(__instance.PlayerId))
-                        DidSetGhost.Add(__instance.PlayerId, true);
             }
         }
         catch (Exception e)
@@ -2035,7 +1945,7 @@ class PlayerControlSetRolePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoSetRole))]
 class PlayerControlLocalSetRolePatch
 {
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role, [HarmonyArgument(1)] bool canOverrideRole)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
     {
         if (!AmongUsClient.Instance.AmHost && GameStates.IsNormalGame && !GameStates.IsModHost)
         {

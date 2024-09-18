@@ -1,7 +1,6 @@
 ﻿using Hazel;
 using TOHE.Modules;
 using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Options;
 
 
@@ -173,8 +172,6 @@ internal class Lightning : RoleBase
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (isForMeeting) return string.Empty;
-        target ??= seer;
         return (!seer.IsAlive() && seer != target && IsGhost(target)) || IsGhost(target) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■") : string.Empty;
     }
 

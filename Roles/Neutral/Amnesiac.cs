@@ -1,4 +1,3 @@
-using Hazel;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
@@ -89,29 +88,6 @@ internal class Amnesiac : RoleBase
     }
     public override Sprite ReportButtonSprite => CustomButton.Get("Amnesiac");
 
-    private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAmnesaicArrows, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(add);
-        if (add)
-        {
-            writer.Write(loc.x);
-            writer.Write(loc.y);
-            writer.Write(loc.z);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte playerId = reader.ReadByte();
-        bool add = reader.ReadBoolean();
-        if (add)
-            LocateArrow.Add(playerId, new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
-        else
-            LocateArrow.RemoveAllTarget(playerId);
-    }
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (inMeeting || Main.MeetingIsStarted) return;
@@ -121,7 +97,6 @@ internal class Amnesiac : RoleBase
             if (!player.IsAlive()) continue;
 
             LocateArrow.Add(pc, target.transform.position);
-            SendRPC(pc, true, target.transform.position);
         }
     }
 
@@ -142,7 +117,6 @@ internal class Amnesiac : RoleBase
         foreach (var apc in playerIdList.ToArray())
         {
             LocateArrow.RemoveAllTarget(apc);
-            SendRPC(apc, false);
         }
         if (__instance.Is(CustomRoles.Amnesiac))
         {

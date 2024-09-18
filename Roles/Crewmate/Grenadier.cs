@@ -99,7 +99,7 @@ internal class Grenadier : RoleBase
             {
                 MadGrenadierBlinding.Remove(pc.PlayerId);
                 MadGrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
-                Main.AllPlayerControls.Where(x => x.IsModClient())
+                Main.AllPlayerControls.Where(x => x.IsModded())
                     .Where(x => !x.GetCustomRole().IsImpostorTeam() && !x.Is(CustomRoles.Madmate))
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
@@ -107,7 +107,7 @@ internal class Grenadier : RoleBase
             {
                 GrenadierBlinding.Remove(pc.PlayerId);
                 GrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
-                Main.AllPlayerControls.Where(x => x.IsModClient())
+                Main.AllPlayerControls.Where(x => x.IsModded())
                     .Where(x => x.GetCustomRole().IsImpostor() || (x.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()))
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }

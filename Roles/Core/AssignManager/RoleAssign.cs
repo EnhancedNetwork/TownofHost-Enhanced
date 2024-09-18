@@ -8,7 +8,7 @@ namespace TOHE.Roles.Core.AssignManager;
 public class RoleAssign
 {
     public static Dictionary<byte, CustomRoles> SetRoles = [];
-    public static Dictionary<PlayerControl, CustomRoles> RoleResult;
+    public static Dictionary<byte, CustomRoles> RoleResult = [];
     public static CustomRoles[] AllRoles => [.. RoleResult.Values];
 
     enum RoleAssignType
@@ -53,15 +53,13 @@ public class RoleAssign
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-                RoleResult = [];
                 foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                 {
-                    RoleResult.Add(pc, CustomRoles.Killer);
+                    RoleResult[pc.PlayerId] = CustomRoles.Killer;
                 }
                 return;
         }
 
-        RoleResult = [];
         var rd = IRandom.Instance;
         int playerCount = Main.AllAlivePlayerControls.Length;
         int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
@@ -183,28 +181,28 @@ public class RoleAssign
         Logger.Info(string.Join(", ", Roles[RoleAssignType.Crewmate].Select(x => x.Role.ToString())), "Selected-Crew-Roles");
         Logger.Msg("======================================================", "SelectedRoles");
 
-        var AllPlayers = Main.AllAlivePlayerControls.ToList();
+        var AllPlayers = Main.AllPlayerControls.ToList();
 
         // Players on the EAC banned list will be assigned as GM when opening rooms
         if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()))
         {
             Main.EnableGM.Value = true;
-            RoleResult[PlayerControl.LocalPlayer] = CustomRoles.GM;
+            RoleResult[PlayerControl.LocalPlayer.PlayerId] = CustomRoles.GM;
             AllPlayers.Remove(PlayerControl.LocalPlayer);
         }
         if (Main.EnableGM.Value)
         {
-            RoleResult[PlayerControl.LocalPlayer] = CustomRoles.GM;
+            RoleResult[PlayerControl.LocalPlayer.PlayerId] = CustomRoles.GM;
             AllPlayers.Remove(PlayerControl.LocalPlayer);
             SetRoles.Remove(PlayerControl.LocalPlayer.PlayerId);
         }
         // Pre-Assigned Roles By Host Are Selected First
         foreach (var item in SetRoles)
         {
-            PlayerControl pc = AllPlayers.FirstOrDefault(x => x.PlayerId == item.Key);
+            PlayerControl pc = Utils.GetPlayerById(item.Key);
             if (pc == null) continue;
 
-            RoleResult[pc] = item.Value;
+            RoleResult[item.Key] = item.Value;
             AllPlayers.Remove(pc);
 
             if (item.Value.IsImpostor())
@@ -774,7 +772,7 @@ public class RoleAssign
             var assignedRole = FinalRolesList.RandomElement();
 
             // Assign random role for random player
-            RoleResult[randomPlayer] = assignedRole;
+            RoleResult[randomPlayer.PlayerId] = assignedRole;
             Logger.Info($"Player：{randomPlayer.GetRealName()} => {assignedRole}", "RoleAssign");
 
             // Remove random role and player from list
@@ -783,9 +781,9 @@ public class RoleAssign
         }
 
         if (AllPlayers.Any())
-            Logger.Warn("Role assignment error: There are players who have not been assigned a role", "RoleAssign");
+            Logger.Warn("Role assignment warirng: There are players who have not been assigned a role", "RoleAssign");
         if (FinalRolesList.Any())
-            Logger.Warn("Team assignment error: There is an unassigned team", "RoleAssign");
+            Logger.Warn("Team assignment warirng: There is an unassigned team", "RoleAssign");
         return;
 
         RoleAssignInfo GetAssignInfo(CustomRoles role) => Roles.Values.FirstOrDefault(x => x.Any(y => y.Role == role))?.FirstOrDefault(x => x.Role == role);

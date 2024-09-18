@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace TOHE.Roles.AddOns.Common;
+﻿namespace TOHE.Roles.AddOns.Common;
 
 public class Statue : IAddon
 {

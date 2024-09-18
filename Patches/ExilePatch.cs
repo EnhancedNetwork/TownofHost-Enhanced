@@ -1,5 +1,6 @@
 ﻿using AmongUs.Data;
 using System;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 
@@ -72,14 +73,6 @@ class ExileControllerWrapUpPatch
 
         if (CLThingy && exiled != null)
         {
-            var exiledPC = exiled.Object;
-
-            // Reset player cam for exiled desync impostor
-            if (exiledPC.HasDesyncRole())
-            {
-                exiledPC?.ResetPlayerCam(1f);
-            }
-
             exiled.IsDead = true;
             exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
 
@@ -102,20 +95,8 @@ class ExileControllerWrapUpPatch
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
-            // Check Anti BlackOut
-            if (player.GetCustomRole().IsImpostor() 
-                && !player.IsAlive() // if player is dead impostor
-                && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
-            {
-                player.ResetPlayerCam(1f);
-            }
-
             // Check for remove pet
             player.RpcRemovePet();
-
-            // Reset Kill/Ability cooldown
-            player.ResetKillCooldown();
-            player.RpcResetAbilityCooldown();
         }
 
         Main.MeetingIsStarted = false;
@@ -126,6 +107,20 @@ class ExileControllerWrapUpPatch
         Utils.AfterMeetingTasks();
         Utils.SyncAllSettings();
         Utils.NotifyRoles(NoCache: true);
+
+        bool shouldPerformVentInteractions = false;
+        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+        {
+            if (pc.BlockVentInteraction())
+            {
+                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                shouldPerformVentInteractions = true;
+            }
+        }
+        if (shouldPerformVentInteractions)
+        {
+            Utils.SetAllVentInteractions();
+        }
 
         if (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
@@ -155,22 +150,24 @@ class ExileControllerWrapUpPatch
             {
                 exiled = AntiBlackout_LastExiled;
                 AntiBlackout.SendGameData();
+                AntiBlackout.SetRealPlayerRoles();
+
                 if (AntiBlackout.BlackOutIsActive && // State in which the expulsion target is overwritten (need not be executed if the expulsion target is not overwritten)
                     exiled != null && // exiled is not null
                     exiled.Object != null) //exiled.Object is not null
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, 0.8f, "Restore IsDead Task");
+            }, 1.1f, "Restore IsDead Task");
 
             _ = new LateTask(() =>
             {
                 Main.AfterMeetingDeathPlayers.Do(x =>
                 {
-                    var player = Utils.GetPlayerById(x.Key);
+                    var player = x.Key.GetPlayer();
                     var state = Main.PlayerStates[x.Key];
                     
-                    Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
+                    Logger.Info($"{player?.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
 
                     state.deathReason = x.Value;
                     state.SetDead();
@@ -179,17 +176,12 @@ class ExileControllerWrapUpPatch
                     if (x.Value == PlayerState.DeathReason.Suicide)
                         player?.SetRealKiller(player, true);
 
-                    // Reset player cam for dead desync impostor
-                    if (player.HasDesyncRole())
-                    {
-                        player?.ResetPlayerCam(1f);
-                    }
-
                     MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
                 });
-                Main.AfterMeetingDeathPlayers.Clear();
 
-            }, 0.8f, "AfterMeetingDeathPlayers Task");
+                Main.AfterMeetingDeathPlayers.Clear();
+                AntiBlackout.ResetAfterMeeting();
+            }, 1.2f, "AfterMeetingDeathPlayers Task");
         }
         //This should happen shortly after the Exile Controller wrap up finished for clients
         //For Certain Laggy clients 0.8f delay is still not enough. The finish time can differ.

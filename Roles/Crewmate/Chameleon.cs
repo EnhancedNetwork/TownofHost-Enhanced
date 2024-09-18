@@ -147,7 +147,7 @@ internal class Chameleon : RoleBase
         if (InvisCooldown.TryGetValue(playerId, out var oldTime) && (oldTime + (long)ChameleonCooldown.GetFloat() - nowTime) < 0)
         {
             InvisCooldown.Remove(playerId);
-            if (!player.IsModClient()) player.Notify(GetString("ChameleonCanVent"));
+            if (!player.IsModded()) player.Notify(GetString("ChameleonCanVent"));
             needSync = true;
         }
 
@@ -175,7 +175,7 @@ internal class Chameleon : RoleBase
             }
             else if (remainTime <= 10)
             {
-                if (!chameleon.IsModClient())
+                if (!chameleon.IsModded())
                     chameleon.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime), sendInLog: false);
             }
         }

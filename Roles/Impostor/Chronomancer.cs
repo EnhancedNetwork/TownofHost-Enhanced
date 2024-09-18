@@ -131,7 +131,7 @@ internal class Chronomancer : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl pc)
     {
-        if (GameStates.IsMeeting) return;
+        if (GameStates.IsMeeting || !Main.IntroDestroyed) return;
 
         var oldChargedTime = ChargedTime;
         if (LastCD != GetCharge())
@@ -186,11 +186,11 @@ internal class Chronomancer : RoleBase
         bool ismeeting = GameStates.IsMeeting || isForMeeting;
         if (seer == seen && !ismeeting)
         {
-            if (!isForHud && seer.IsModClient())
+            if (!isForHud && seer.IsModded())
                 return string.Empty;
 
             return GetCharge();
         }
-        return "";
+        return string.Empty;
     }
 }

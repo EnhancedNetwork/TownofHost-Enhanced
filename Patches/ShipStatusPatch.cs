@@ -1,11 +1,11 @@
 using Hazel;
 using System;
 using UnityEngine;
-using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.Neutral;
-using TOHE.Roles.Core;
-using static TOHE.Translator;
 using TOHE.Patches;
+using TOHE.Roles.Core;
+using TOHE.Roles.Neutral;
+using TOHE.Roles.AddOns.Common;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -235,27 +235,70 @@ class StartMeetingPatch
 }
 
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
-class BeginPatch
+class ShipStatusBeginPatch
 {
+    //Prevent code from running twice as it gets activated later in LateTask
+    public static bool RolesIsAssigned = false;
+    public static bool Prefix()
+    {
+        return RolesIsAssigned;
+    }
     public static void Postfix()
     {
         Logger.CurrentMethod();
 
-        //Should the initial setup of the host's position be done here?
+        if (RolesIsAssigned && !Main.IntroDestroyed && GameStates.IsNormalGame)
+        {
+            foreach (var player in Main.AllPlayerControls)
+            {
+                Main.PlayerStates[player.PlayerId].InitTask(player);
+            }
+
+            GameData.Instance.RecomputeTaskCounts();
+            TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
+
+            Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
+        }
     }
 }
 
-[HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
-class CheckTaskCompletionPatch
+/*
+    // Since SnapTo is unstable on the server side,
+    // after a meeting, sometimes not all players appear on the table,
+    // it's better to manually teleport them
+*/
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.SpawnPlayer))]
+class ShipStatusSpawnPlayerPatch
 {
-    public static bool Prefix(ref bool __result)
+    public static bool Prefix(ShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
-        if (Options.DisableTaskWin.GetBool() || Options.NoGameEnd.GetBool() || TaskState.InitialTotalTasks == 0 || Options.CurrentGameMode == CustomGameMode.FFA)
-        {
-            __result = false;
-            return false;
-        }
-        return true;
+        // Skip first spawn and modded clients
+        if (!AmongUsClient.Instance.AmHost || initialSpawn || !player.IsAlive()) return true;
+
+        Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
+        Vector2 position = __instance.MeetingSpawnCenter + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
+
+        player.RpcTeleport(position, sendInfoInLogs: false);
+        return false;
+    }
+}
+[HarmonyPatch(typeof(PolusShipStatus), nameof(PolusShipStatus.SpawnPlayer))]
+class PolusShipStatusSpawnPlayerPatch
+{
+    public static bool Prefix(PolusShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
+    {
+        // Skip first spawn and modded clients
+        if (!AmongUsClient.Instance.AmHost || initialSpawn || !player.IsAlive()) return true;
+
+        int num1 = Mathf.FloorToInt(numPlayers / 2f);
+        int num2 = player.PlayerId % 15;
+
+        Vector2 position = num2 >= num1
+            ? __instance.MeetingSpawnCenter2 + Vector2.right * (num2 - num1) * 0.6f
+            : __instance.MeetingSpawnCenter + Vector2.right * num2 * 0.6f;
+
+        player.RpcTeleport(position, sendInfoInLogs: false);
+        return false;
     }
 }
 

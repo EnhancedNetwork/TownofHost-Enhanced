@@ -291,6 +291,7 @@ internal class PlagueDoctor : RoleBase
                 if (player.Is(CustomRoles.PlagueDoctor)) continue;
                 player.SetDeathReason(PlayerState.DeathReason.Infected);
                 player.RpcMurderPlayer(player);
+                player.SetRealKiller(_Player);
             }
         }
     }

@@ -125,7 +125,7 @@ internal class DoubleAgent : RoleBase
 
     public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
-        if (voter.IsModClient() || !CanBombInMeeting) return true;
+        if (voter.IsModded() || !CanBombInMeeting) return true;
 
         if (!BombIsActive)
         {
@@ -144,7 +144,7 @@ internal class DoubleAgent : RoleBase
     // Clear active bombed players on meeting call if ClearBombedOnMeetingCall is enabled.
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        if (_Player != null && (_Player.AmOwner || _Player.IsModClient()))
+        if (_Player != null && _Player.IsModded())
         {
             HasVoted = true;
         }
@@ -192,10 +192,10 @@ internal class DoubleAgent : RoleBase
     {
         if (BombIsActive)
         {
-            if (!pc.IsModClient())
+            if (!pc.IsModded())
             {
                 string Duration = ColorString(pc.GetRoleColor(), string.Format(GetString("DoubleAgent_BombExplodesIn"), (int)CurrentBombedTime));
-                if ((!NameNotifyManager.Notice.TryGetValue(pc.PlayerId, out var a) || a.Item1 != Duration) && Duration != string.Empty) pc.Notify(Duration, 1.1f);
+                if ((!NameNotifyManager.Notice.TryGetValue(pc.PlayerId, out var a) || a.Text != Duration) && Duration != string.Empty) pc.Notify(Duration, 1.1f);
             }
 
             if (CurrentBombedPlayers.Any(playerId => !GetPlayerById(playerId).IsAlive())) // If playerId is a null Player clear bomb.
@@ -205,11 +205,11 @@ internal class DoubleAgent : RoleBase
         // If enabled and if DoubleAgent is last Impostor become set role.
         if (ChangeRoleToOnLast.GetValue() != 0 && StartedWithMoreThanOneImp && GameStates.IsInTask && !GameStates.IsMeeting && !GameStates.IsExilling)
         {
-            if (pc.Is(CustomRoles.DoubleAgent) && Main.AliveImpostorCount < 2)
+            if (pc.Is(CustomRoles.DoubleAgent) && pc.IsAlive() && Main.AliveImpostorCount < 2)
             {
                 var Role = CRoleChangeRoles[ChangeRoleToOnLast.GetValue()];
                 if (ChangeRoleToOnLast.GetValue() == 1) // Random
-                    Role = CRoleChangeRoles[UnityEngine.Random.RandomRangeInt(2, CRoleChangeRoles.Length)];
+                    Role = CRoleChangeRoles[IRandom.Instance.Next(2, CRoleChangeRoles.Length)];
 
                 // If role is not on Impostor team remove all Impostor addons if any.
                 if (!Role.IsImpostorTeam())
@@ -273,7 +273,7 @@ internal class DoubleAgent : RoleBase
     // Set timer for Double Agent Modded Clients.
     public override string GetLowerText(PlayerControl player, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
-        if (player == null || player != seen || player.IsModClient() && !isForHud) return string.Empty;
+        if (player == null || player != seen || player.IsModded() && !isForHud) return string.Empty;
         if (CurrentBombedTime > 0 && CurrentBombedTime < BombExplosionTimer.GetFloat() + 1) return ColorString(player.GetRoleColor(), string.Format(GetString("DoubleAgent_BombExplodesIn"), (int)CurrentBombedTime));
         return string.Empty;
     }

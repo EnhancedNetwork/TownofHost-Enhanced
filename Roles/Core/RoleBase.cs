@@ -19,6 +19,8 @@ public abstract class RoleBase
     public bool HasVoted = false;
     public virtual bool IsExperimental => false;
     public virtual bool IsDesyncRole => false;
+    public virtual bool IsSideKick => false;
+
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;
@@ -84,6 +86,16 @@ public abstract class RoleBase
     /// </summary>
     public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
 
+
+    //this is a draft, it is not usable yet, Imma fix it in another PR
+
+    /// <summary>
+    /// A generic method to set if someone (desync imps) should see each-other on the reveal screen. (they will also not be able to kill eachother)
+    /// </summary>
+    public virtual void SetDesyncImpostorBuddies(ref Dictionary<PlayerControl, List<PlayerControl>> DesyncImpostorBuddy, PlayerControl caller)
+    {
+
+    }
     /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.
     /// </summary>
@@ -151,22 +163,22 @@ public abstract class RoleBase
     public virtual bool OnCheckProtect(PlayerControl angel, PlayerControl target) => angel != null && target != null;
 
     /// <summary>
-    /// A method for activating actions where the role starts playing an animation when entering a vent
-    /// </summary>
-    public virtual void OnEnterVent(PlayerControl pc, Vent vent)
-    { }
-    /// <summary>
     /// When role need force boot from vent
     /// </summary>
     public virtual bool CheckBootFromVent(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// A method for activating actions where the others roles starts playing an animation when entering a vent
     /// </summary>
     public virtual bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// A method for activating actions where the role starts playing an animation when entering a vent
     /// </summary>
     public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
+    { }
+    /// <summary>
+    /// A method for activating actions when role is already in vent
+    /// </summary>
+    public virtual void OnEnterVent(PlayerControl pc, Vent vent)
     { }
     /// <summary>
     /// A generic method to activate actions once (CustomRole)player exists vent.
@@ -474,6 +486,7 @@ public abstract class RoleBase
         CantMoveOnVents,
         ImpostorVision,
         CanUseSabotage,
+        CanHaveAccessToVitals,
 
         // General settings
         CanKillImpostors,

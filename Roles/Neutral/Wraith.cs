@@ -48,7 +48,7 @@ internal class Wraith : RoleBase
     }
     private void SendRPC(PlayerControl pc)
     {
-        if (pc.AmOwner) return;
+        if (pc.IsHost()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
         writer.WriteNetObject(_Player);//SetWraithTimer
         writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
@@ -107,7 +107,7 @@ internal class Wraith : RoleBase
         if (lastTime.TryGetValue(player.PlayerId, out var time) && time + (long)WraithCooldown.GetFloat() < now)
         {
             lastTime.Remove(player.PlayerId);
-            if (!player.IsModClient()) player.Notify(GetString("WraithCanVent"));
+            if (!player.IsModded()) player.Notify(GetString("WraithCanVent"));
             SendRPC(player);
         }
 
@@ -132,7 +132,7 @@ internal class Wraith : RoleBase
                 }
                 else if (remainTime <= 10)
                 {
-                    if (!pc.IsModClient()) pc.Notify(string.Format(GetString("WraithInvisStateCountdown"), remainTime + 1));
+                    if (!pc.IsModded()) pc.Notify(string.Format(GetString("WraithInvisStateCountdown"), remainTime + 1));
                 }
                 newList.Add(it.Key, it.Value);
             }

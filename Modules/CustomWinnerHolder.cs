@@ -51,7 +51,7 @@ public static class CustomWinnerHolder
     }
     public static bool CheckForConvertedWinner(byte playerId)
     {
-        foreach (var role in Utils.GetPlayerById(playerId).GetCustomSubRoles().ToArray())
+        foreach (var role in playerId.GetPlayer()?.GetCustomSubRoles().ToArray())
         {
             if (!(role == CustomRoles.Madmate || role == CustomRoles.Admired || role.IsConverted())) continue;
             switch (role)

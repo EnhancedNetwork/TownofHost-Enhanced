@@ -156,6 +156,7 @@ internal class Retributionist : RoleBase
         else if (pc.RpcCheckAndMurder(target, true) == false)
         {
             pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
+            Logger.Info($"Guess Immune target {target.PlayerId} have role {target.GetCustomRole()}", "Retributionist");
             return true;
         }
 

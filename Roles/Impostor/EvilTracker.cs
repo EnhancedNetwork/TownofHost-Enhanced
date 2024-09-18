@@ -81,7 +81,8 @@ internal class EvilTracker : RoleBase
             if (targetId != playerId && target.Is(Custom_Team.Impostor))
             {
                 ImpostorsId[playerId].Add(targetId);
-                TargetArrow.Add(playerId, targetId);
+                if (AmongUsClient.Instance.AmHost)
+                    TargetArrow.Add(playerId, targetId);
             }
         }
     }
@@ -153,7 +154,8 @@ internal class EvilTracker : RoleBase
             if (CurrentTargetMode != TargetMode.Always)
                 CanSetTarget[trackerId] = false; // Target cannot be re-set
             
-            TargetArrow.Add(trackerId, targetId);
+            if (AmongUsClient.Instance.AmHost)
+                TargetArrow.Add(trackerId, targetId);
         }
 
         if (!AmongUsClient.Instance.AmHost) return;

@@ -1,7 +1,6 @@
 using AmongUs.Data;
 using TOHE.Modules;
 using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
@@ -165,10 +164,10 @@ public static class Camouflage
         if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.HasEnabled))) return;
         if (target == null) return;
 
-        var id = target.PlayerId;
+        var targetId = target.PlayerId;
 
         // if player dead, and Camouflage active, return
-        if (IsCamouflage && Main.PlayerStates[id].IsDead)
+        if (IsCamouflage && Main.PlayerStates[targetId].IsDead)
         {
             return;
         }
@@ -183,13 +182,13 @@ public static class Camouflage
         if (!IsCamouflage || ForceRevert)
         {
             // if player are a shapeshifter, change to the id of your current Outfit
-            if (Main.CheckShapeshift.TryGetValue(id, out var shapeshifting) && shapeshifting && !RevertToDefault)
+            if (Main.CheckShapeshift.TryGetValue(targetId, out var shapeshifting) && shapeshifting && !RevertToDefault)
             {
-                id = Main.ShapeshiftTarget[id];
+                targetId = Main.ShapeshiftTarget[targetId];
             }
 
 
-            bool Hasovveride = Main.OvverideOutfit.TryGetValue(id, out var RealOutfit);
+            bool Hasovveride = Main.OvverideOutfit.TryGetValue(targetId, out var RealOutfit);
 
             // if game not end and Something clone skins
             if (!GameEnd && Hasovveride)
@@ -202,11 +201,11 @@ public static class Camouflage
                 // if game end, set normal name
                 if (GameEnd && Hasovveride)
                 {
-                    Utils.GetPlayerById(id)?.RpcSetName(RealOutfit.name);
+                    targetId.GetPlayer()?.RpcSetName(RealOutfit.name);
                 }
 
                 // Set Outfit
-                newOutfit = PlayerSkins[id];
+                newOutfit = PlayerSkins[targetId];
             }
         }
 

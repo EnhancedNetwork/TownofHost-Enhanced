@@ -124,7 +124,7 @@ internal static class FFAManager
     }
     public static void SendRPCSyncNameNotify(PlayerControl pc)
     {
-        if (pc.AmOwner || !pc.IsModClient()) return;
+        if (!pc.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncFFANameNotify, SendOption.Reliable, pc.GetClientId());
         if (NameNotify.ContainsKey(pc.PlayerId))
             writer.Write(NameNotify[pc.PlayerId].TEXT);
@@ -218,11 +218,13 @@ internal static class FFAManager
             bool mark = false;
             var nowKCD = Main.AllPlayerKillCooldown[killer.PlayerId];
             byte EffectType;
-            if (!GameStates.AirshipIsActive) EffectType = (byte)HashRandom.Next(0, 10);
-            else EffectType = (byte)HashRandom.Next(4, 10);
+            var random = IRandom.Instance;
+
+            if (!GameStates.AirshipIsActive) EffectType = (byte)random.Next(0, 10);
+            else EffectType = (byte)random.Next(4, 10);
             if (EffectType <= 7) // Buff
             {
-                byte EffectID = (byte)HashRandom.Next(0, 3);
+                byte EffectID = (byte)random.Next(0, 3);
                 if (GameStates.AirshipIsActive) EffectID = 2;
                 switch (EffectID)
                 {
@@ -260,7 +262,7 @@ internal static class FFAManager
             }
             else if (EffectType == 8) // De-Buff
             {
-                byte EffectID = (byte)HashRandom.Next(0, 3);
+                byte EffectID = (byte)random.Next(0, 3);
                 if (GameStates.AirshipIsActive) EffectID = 1;
                 switch (EffectID)
                 {

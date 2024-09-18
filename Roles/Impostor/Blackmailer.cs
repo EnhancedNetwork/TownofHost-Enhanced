@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
-using TOHE.Roles.Neutral;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
 
@@ -56,7 +55,7 @@ internal class Blackmailer : RoleBase
     {
         if (!target.IsAlive())
         {
-            blackmailer.Notify(Utils.ColorString(Utils.GetRoleColor(blackmailer.GetCustomRole()), GetString("NotAssassin")));
+            blackmailer.Notify(Utils.ColorString(Utils.GetRoleColor(blackmailer.GetCustomRole()), GetString("TargetIsAlreadyDead")));
             return;
         }
 

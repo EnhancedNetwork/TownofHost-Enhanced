@@ -39,7 +39,8 @@ public class PlayerState(byte playerId)
         countTypes = role.GetCountTypes();
         RoleClass = role.CreateRoleClass();
 
-        var pc = GetPlayerById(PlayerId);
+        var pc = PlayerId.GetPlayer();
+        if (pc == null) return;
 
         if (role == CustomRoles.Opportunist)
         {
@@ -302,6 +303,7 @@ public class PlayerState(byte playerId)
         WrongAnswer,
         Starved,
         Armageddon,
+        Sacrificed,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,

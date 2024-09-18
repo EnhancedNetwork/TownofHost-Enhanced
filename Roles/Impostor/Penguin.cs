@@ -247,7 +247,7 @@ internal class Penguin : RoleBase
             else if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 var position = penguin.transform.position;
-                if (!penguin.OwnedByHost())
+                if (!penguin.IsHost())
                 {
                     AbductVictim.RpcTeleport(position, sendInfoInLogs: false);
                 }
@@ -256,8 +256,7 @@ internal class Penguin : RoleBase
                     _ = new LateTask(() =>
                     {
                         AbductVictim?.RpcTeleport(position, sendInfoInLogs: false);
-                    }
-                    , 0.25f, "");
+                    }, 0.25f, "Penguin Teleport ", shoudLog: false);
                 }
             }
         }

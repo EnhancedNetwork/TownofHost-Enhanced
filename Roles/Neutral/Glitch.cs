@@ -207,12 +207,12 @@ internal class Glitch : RoleBase
         catch { MimicCDTimer = 0; }
         if (MimicCDTimer > 180 || MimicCDTimer < 0) MimicCDTimer = 0;
 
-        if (!player.IsModClient())
+        if (!player.IsModded())
         {
             var Pname = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Glitch), player.GetRealName(isMeeting: true));
-            if (!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Item1 != Pname) player.Notify(Pname, 1.1f);
+            if (!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Text != Pname) player.Notify(Pname, 1.1f);
         }
-        if (!player.AmOwner) // For mooded non host players, sync kcd per second
+        if (player.IsNonHostModdedClient()) // For mooded non host players, sync kcd per second
         {
             if (lastRpcSend < Utils.GetTimeStamp())
             {
