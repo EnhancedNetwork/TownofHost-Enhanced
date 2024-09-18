@@ -45,7 +45,7 @@ public static class AntiBlackout
             else Crewmates.Add(pc.PlayerId);
         }
 
-         var numAliveImpostors = Impostors.Count;
+        var numAliveImpostors = Impostors.Count;
         var numAliveCrewmates = Crewmates.Count;
         var numAliveNeutralKillers = NeutralKillers.Count;
 
@@ -134,7 +134,7 @@ public static class AntiBlackout
         logger.Info($"SendGameData is called from {callerMethodName}");
         foreach (var playerinfo in GameData.Instance.AllPlayers)
         {
-            MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+            MessageWriter writer = MessageWriter.Get();
             writer.StartMessage(5); //0x05 GameData
             writer.Write(AmongUsClient.Instance.GameId);
             {
