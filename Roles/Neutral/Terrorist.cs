@@ -66,7 +66,7 @@ internal class Terrorist : RoleBase
             {
                 if (pc.Is(CustomRoles.Terrorist))
                 {
-                    if (Main.PlayerStates[pc.PlayerId].deathReason == PlayerState.DeathReason.Vote)
+                    if (Main.PlayerStates[pc.PlayerId].deathReason == PlayerState.DeathReason.Vote || Main.PlayerStates[pc.PlayerId].deathReason == PlayerState.DeathReason.Armageddon)
                     {
                         pc.SetDeathReason(PlayerState.DeathReason.etc);
                     }
