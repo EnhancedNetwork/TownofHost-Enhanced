@@ -1236,6 +1236,13 @@ class FixedUpdateInNormalGamePatch
                         __instance.cosmetics.nameText.text = ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})" ? $"<color=#87cefa>{__instance.name}</color>" : $"<color=#ffff00><size=1.2>{ver.tag}</size>\n{__instance?.name}</color>";
                     else __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.2>v{ver.version}</size>\n{__instance?.name}</color>";
                 }
+                if (Main.BAUPlayers.TryGetValue(__instance.Data, out var puid)) // Set name color for BAU users
+                {
+                    if (puid == __instance.Data.Puid)
+                    {
+                        __instance.cosmetics.nameText.text = $"<color=#0dff00>{__instance.name}</color>";
+                    }
+                }
                 else __instance.cosmetics.nameText.text = __instance?.Data?.PlayerName;
             }
             if (GameStates.IsInGame)
