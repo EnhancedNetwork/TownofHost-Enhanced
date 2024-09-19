@@ -14,12 +14,14 @@ public class Prohibited : IAddon
     private static OptionItem CountBlockedVentsInDleks;
     private static OptionItem CountBlockedVentsInAirship;
     private static OptionItem CountBlockedVentsInFungle;
+    private static OptionItem OverrideBlockedVentsAfterMeeting;
 
     private static readonly Dictionary<byte, HashSet<int>> RememberBlokcedVents = [];
 
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Prohibited, canSetNum: true, teamSpawnOptions: true);
+        OverrideBlockedVentsAfterMeeting = BooleanOptionItem.Create(Id + 16, "Prohibited_OverrideBlockedVentsAfterMeeting", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
         CountBlockedVentsInSkeld = IntegerOptionItem.Create(Id + 10, "Prohibited_CountBlockedVentsInSkeld", new(0, 14, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
         CountBlockedVentsInMira = IntegerOptionItem.Create(Id + 11, "Prohibited_CountBlockedVentsInMira", new(0, 11, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
         CountBlockedVentsInPolus = IntegerOptionItem.Create(Id + 12, "Prohibited_CountBlockedVentsInPolus", new(0, 12, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
@@ -34,20 +36,7 @@ public class Prohibited : IAddon
     }
     public static void Add(byte playerId)
     {
-        var coutBlokedVents = GetCountBlokedVents();
-
-        if (coutBlokedVents <= 0) return;
-        var allVents = ShipStatus.Instance.AllVents.ToList();
-
-        RememberBlokcedVents[playerId] = [];
-
-        for (int i = 0; i < coutBlokedVents; i++)
-        {
-            var vent = allVents.RandomElement();
-            RememberBlokcedVents[playerId].Add(vent.Id);
-            CustomRoleManager.BlockedVentsList[playerId].Add(vent.Id);
-            allVents.Remove(vent);
-        }
+        SetBlockedVents(playerId);
     }
     public static void Remove(byte playerId)
     {
@@ -71,5 +60,27 @@ public class Prohibited : IAddon
             MapNames.Fungle => CountBlockedVentsInFungle.GetInt(),
             _ => 0
         };
+    }
+    public static void SetBlockedVents(byte playerId)
+    {
+        var coutBlokedVents = GetCountBlokedVents();
+
+        if (coutBlokedVents <= 0) return;
+        var allVents = ShipStatus.Instance.AllVents.ToList();
+
+        RememberBlokcedVents[playerId] = [];
+
+        for (int i = 0; i < coutBlokedVents; i++)
+        {
+            var vent = allVents.RandomElement();
+            RememberBlokcedVents[playerId].Add(vent.Id);
+            CustomRoleManager.BlockedVentsList[playerId].Add(vent.Id);
+            allVents.Remove(vent);
+        }
+    }
+    public static void AfterMeetingTasks(byte playerId)
+    {
+        if (OverrideBlockedVentsAfterMeeting.GetBool())
+            SetBlockedVents(playerId);
     }
 }

@@ -1579,6 +1579,7 @@
   "PyroDouseCooldown": "Douse cooldown",
   "PyroBurnCooldown": "Kill cooldown after killing a doused player",
 
+  "Prohibited_OverrideBlockedVentsAfterMeeting": "Override Blocked Vents After Meeting",
   "Prohibited_CountBlockedVentsInSkeld": "Count Blocked Vents In <color=#66a186>The Skeld</color>",
   "Prohibited_CountBlockedVentsInMira": "Count Blocked Vents In <color=#e84b56>MIRA HQ</color>",
   "Prohibited_CountBlockedVentsInPolus": "Count Blocked Vents In <color=#a167c0>Polus</color>",

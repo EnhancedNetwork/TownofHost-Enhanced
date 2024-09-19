@@ -2307,6 +2307,11 @@ public static class Utils
         foreach (var player in Main.AllAlivePlayerControls)
         {
             player.SetKillTimer();
+
+            if (player.Is(CustomRoles.Prohibited))
+            {
+                Prohibited.AfterMeetingTasks(player.PlayerId);
+            }
         }
 
         if (LateExileTask.Any())
