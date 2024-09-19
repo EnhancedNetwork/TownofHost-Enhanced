@@ -1172,10 +1172,9 @@ static class ExtendedPlayerControl
                 break;
         }
     }
-    public static void TaskAfterRemoveAddons(this PlayerControl target, CustomRoles Addon, bool syncSettings = false)
+    public static void TaskAfterRemoveAddons(this PlayerControl target, CustomRoles Addon)
     {
-        var sync = syncSettings;
-
+        var sync = false;
         switch (Addon)
         {
             case CustomRoles.Tired:
