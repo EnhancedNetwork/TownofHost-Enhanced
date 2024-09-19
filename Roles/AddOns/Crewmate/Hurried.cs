@@ -17,7 +17,12 @@ public class Hurried : IAddon
         CanBeOnTaskBasedCrew = BooleanOptionItem.Create(Id + 12, "TaskBasedCrewCanBeHurried", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Hurried]);
         CanBeConverted = BooleanOptionItem.Create(Id + 13, "HurriedCanBeConverted", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Hurried]);
     }
-
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static bool CheckWinState(PlayerControl pc)
     {
         if (pc == null) return false;

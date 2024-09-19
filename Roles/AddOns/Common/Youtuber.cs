@@ -16,6 +16,12 @@ public class Youtuber : IAddon
         KillerWinsWithYouTuber = BooleanOptionItem.Create(Id + 10, "Youtuber_KillerWinsWithYouTuber", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Youtuber]);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static void OnMurderPlayer(PlayerControl killer, PlayerControl target)
     {
         target.SetDeathReason(PlayerState.DeathReason.Kill);

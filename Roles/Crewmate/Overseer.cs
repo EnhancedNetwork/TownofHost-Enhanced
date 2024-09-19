@@ -176,6 +176,7 @@ internal class Overseer : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = OverseerCooldown.GetFloat();
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        Aware.OnCheckMurder(CustomRoles.Overseer, target);
         killer.SetKillCooldown(OverseerRevealTime.GetFloat());
         if (!IsRevealed[(killer.PlayerId, target.PlayerId)] && !OverseerTimer.ContainsKey(killer.PlayerId))
         {

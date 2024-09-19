@@ -11,4 +11,10 @@ public class Nimble : IAddon
     {
         SetupAdtRoleOptions(Id, CustomRoles.Nimble, canSetNum: true, tab: TabGroup.Addons);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 }

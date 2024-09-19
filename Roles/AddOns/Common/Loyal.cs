@@ -17,4 +17,10 @@ public class Loyal : IAddon
         CrewCanBeLoyal = BooleanOptionItem.Create(Id + 11, "CrewCanBeLoyal", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Loyal]);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 }

@@ -13,11 +13,14 @@ public class Radar : IAddon
     {
         SetupAdtRoleOptions(Id, CustomRoles.Radar, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
-
-    public static void Init()
-    {
+    public void Init()
+    { 
         ClosestPlayer.Clear();
     }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public void OnFixedUpdateLowLoad(PlayerControl seer)
     {
         if (!seer.Is(CustomRoles.Radar) || seer.inVent || !seer.IsAlive() || !GameStates.IsInTask) return;

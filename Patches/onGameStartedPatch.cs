@@ -201,41 +201,22 @@ internal class ChangeRoleSettings
                 Main.RefixCooldownDelay = 0;
             }
 
-            // Initialize all custom roles
+            // Initialize all roles
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>().Where(role => role < CustomRoles.NotAssigned).ToArray())
             {
                 var RoleClass = CustomRoleManager.GetStaticRoleClass(role);
                 RoleClass?.OnInit();
             }
 
-            LastImpostor.Init();
+            // Initialize all add-ons
+            foreach (var addOn in CustomRoleManager.AddonClasses.Values.ToArray())
+            {
+                addOn?.Init();
+            }
+
             TargetArrow.Init();
             LocateArrow.Init();
             DoubleTrigger.Init();
-            Workhorse.Init();
-            Diseased.Init();
-            Clumsy.Init();
-            Aware.Init();
-            Glow.Init();
-            Sleuth.Init();
-            Bait.Init();
-            Antidote.Init();
-            Fool.Init();
-            Burst.Init();
-            DoubleShot.Init();
-            Lucky.Init();
-            Bewilder.Init();
-            //ChiefOfPolice.Init();
-            Cyber.Init();
-            Oiiai.Init();
-            Tired.Init();
-            Statue.Init();
-            Ghoul.Init();
-            Rainbow.Init();
-            Rebirth.Init();
-            Evader.Init();
-            Radar.Init();
-            Prohibited.Init();
 
             //FFA
             FFAManager.Init();
@@ -491,70 +472,9 @@ internal class StartGameHostPatch
                 // if based role is Shapeshifter
                 if (roleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
 
-                foreach (var subRole in pc.GetCustomSubRoles().ToArray())
+                foreach (var subRole in CustomRoleManager.AddonClasses.Values.ToArray())
                 {
-                    switch (subRole)
-                    {
-                        case CustomRoles.Aware:
-                            Aware.Add(pc.PlayerId);
-                            break;
-                        case CustomRoles.Glow:
-                            Glow.Add(pc.PlayerId);
-                            break;
-                        case CustomRoles.Oiiai:
-                            Oiiai.Add(pc.PlayerId);
-                            break;
-                        case CustomRoles.Tired:
-                            Tired.Add(pc.PlayerId);
-                            break;
-                        case CustomRoles.Rainbow:
-                            Rainbow.Add();
-                            break;
-                        case CustomRoles.Statue:
-                            Statue.Add(pc.PlayerId);
-                            break;
-                        case CustomRoles.Ghoul:
-                            Ghoul.Add();
-                            break;
-                        case CustomRoles.Diseased:
-                            Diseased.Add();
-                            break;
-                        case CustomRoles.Antidote:
-                            Antidote.Add();
-                            break;
-                        case CustomRoles.Burst:
-                            Burst.Add();
-                            break;
-                        case CustomRoles.Bewilder:
-                            Bewilder.Add();
-                            break;
-                        case CustomRoles.Lucky:
-                            Lucky.Add(pc.PlayerId);
-                            break;
-                        case CustomRoles.Clumsy:
-                            Clumsy.Add(pc.PlayerId);
-                            break;
-                        case CustomRoles.Fool:
-                            Fool.Add();
-                            break;
-                        case CustomRoles.Bloodthirst:
-                            Bloodthirst.Add();
-                            break;
-                        case CustomRoles.Rebirth:
-                            Rebirth.Add(pc.PlayerId);
-                            break;
-                        case CustomRoles.Evader:
-                            Evader.Add(pc.PlayerId);
-                            break;
-                        case CustomRoles.Spurt:
-                            Spurt.Add();
-                            break;
-                        case CustomRoles.Prohibited:
-                            Prohibited.Add(pc.PlayerId);
-                            break;
-                        default:
-                            break;
-                    }
+                    subRole?.Add(pc.PlayerId);
                 }
             }
 

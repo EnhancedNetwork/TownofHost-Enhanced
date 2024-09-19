@@ -7,7 +7,7 @@ public class Mare : IAddon
 {
     private const int Id = 23000;
     public AddonTypes Type => AddonTypes.Impostor;
-    public static List<byte> playerIdList = [];
+    public static readonly HashSet<byte> playerIdList = [];
 
     public static OptionItem KillCooldownInLightsOut;
     private static OptionItem SpeedInLightsOut;
@@ -21,14 +21,17 @@ public class Mare : IAddon
         KillCooldownInLightsOut = FloatOptionItem.Create(Id + 11, "MareKillCooldownInLightsOut", new(0f, 180f, 2.5f), 7.5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mare])
             .SetValueFormat(OptionFormat.Seconds);
     }
-
-    public static void Init()
+    public void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
     }
-    public static void Add(byte mare)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
-        playerIdList.Add(mare);
+        playerIdList.Add(playerId);
+    }
+    public void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
     }
     public static bool IsEnable => playerIdList.Any();
     

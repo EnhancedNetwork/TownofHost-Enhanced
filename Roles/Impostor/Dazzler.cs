@@ -88,7 +88,7 @@ internal class Dazzler : RoleBase
     {
         if (!PlayersDazzled[shapeshifter.PlayerId].Contains(target.PlayerId) && PlayersDazzled[shapeshifter.PlayerId].Count < DazzleLimit.GetInt())
         {
-            Tired.Remove(shapeshifter.PlayerId);
+            Tired.RemoveMidGame(shapeshifter.PlayerId);
             target.Notify(ColorString(GetRoleColor(CustomRoles.Dazzler), GetString("DazzlerDazzled")));
             PlayersDazzled[shapeshifter.PlayerId].Add(target.PlayerId);
             MarkEveryoneDirtySettings();

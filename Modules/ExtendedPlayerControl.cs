@@ -1129,86 +1129,17 @@ static class ExtendedPlayerControl
             CustomRoles.Contagious;
     }
 
-    public static void AddInSwitchAddons(PlayerControl Killed, PlayerControl target, CustomRoles Addon = CustomRoles.NotAssigned, CustomRoles? IsAddon = CustomRoles.NotAssigned)
+    public static void AddInSwitchAddons(this PlayerControl Killed, PlayerControl target, CustomRoles Addon = CustomRoles.NotAssigned, CustomRoles? IsAddon = CustomRoles.NotAssigned)
     {
         if (Addon == CustomRoles.NotAssigned)
         {
             Addon = IsAddon ?? CustomRoles.NotAssigned;
         }
-        switch (Addon)
+        if (CustomRoleManager.AddonClasses.TryGetValue(Addon, out var IAddon))
         {
-            case CustomRoles.Tired:
-                Tired.Remove(Killed.PlayerId);
-                Tired.Add(target.PlayerId);
-                break;
-            case CustomRoles.Bewilder:
-                Bewilder.Add();
-                break;
-            case CustomRoles.Lucky:
-                Lucky.Remove(Killed.PlayerId);
-                Lucky.Add(target.PlayerId);
-                break;
-            case CustomRoles.Clumsy:
-                Clumsy.Remove(Killed.PlayerId);
-                Clumsy.Add(target.PlayerId);
-                break;
-            case CustomRoles.Statue:
-                Statue.Remove(Killed.PlayerId);
-                Statue.Add(target.PlayerId);
-                break;
-            case CustomRoles.Glow:
-                Glow.Remove(Killed.PlayerId);
-                Glow.Add(target.PlayerId);
-                break;
-            case CustomRoles.Rebirth:
-                Rebirth.Remove(Killed.PlayerId);
-                Rebirth.Add(target.PlayerId);
-                break;
-            case CustomRoles.Prohibited:
-                Prohibited.Remove(Killed.PlayerId);
-                Killed?.RpcSetVentInteraction();
-                Prohibited.Add(target.PlayerId);
-                target?.RpcSetVentInteraction();
-                break;
+            IAddon?.Remove(Killed.PlayerId);
+            IAddon?.Add(target.PlayerId, false);
         }
-    }
-    public static void TaskAfterRemoveAddons(this PlayerControl target, CustomRoles Addon)
-    {
-        var sync = false;
-        switch (Addon)
-        {
-            case CustomRoles.Tired:
-                Tired.Remove(target.PlayerId);
-                break;
-            case CustomRoles.Flash:
-                Flash.SetSpeed(target.PlayerId, true);
-                sync = true;
-                break;
-            case CustomRoles.Sloth:
-                Sloth.SetSpeed(target.PlayerId, true);
-                sync = true;
-                break;
-            case CustomRoles.Lucky:
-                Lucky.Remove(target.PlayerId);
-                break;
-            case CustomRoles.Clumsy:
-                Clumsy.Remove(target.PlayerId);
-                break;
-            case CustomRoles.Statue:
-                Statue.Remove(target.PlayerId);
-                break;
-            case CustomRoles.Glow:
-                Glow.Remove(target.PlayerId);
-                break;
-            case CustomRoles.Rebirth:
-                Rebirth.Remove(target.PlayerId);
-                break;
-            case CustomRoles.Prohibited:
-                Prohibited.Remove(target.PlayerId);
-                target?.RpcSetVentInteraction();
-                break;
-        }
-        if (sync) Utils.MarkEveryoneDirtySettings();
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false)
     {

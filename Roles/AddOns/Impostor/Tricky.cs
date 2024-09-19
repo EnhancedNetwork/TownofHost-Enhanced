@@ -13,10 +13,14 @@ public class Tricky : IAddon
         SetupAdtRoleOptions(Id, CustomRoles.Tricky, canSetNum: true, tab: TabGroup.Addons);
         EnabledDeathReasons = BooleanOptionItem.Create(Id + 11, "OnlyEnabledDeathReasons", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tricky]);
     }
-    //public static void Init()
-    //{
-    //    randomReason = [];
-    //}
+    public void Init()
+    {
+        //randomReason = [];
+    }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     private static PlayerState.DeathReason ChangeRandomDeath()
     {
         PlayerState.DeathReason[] deathReasons = EnumHelper.GetAllValues<PlayerState.DeathReason>().Where(IsReasonEnabled).ToArray();

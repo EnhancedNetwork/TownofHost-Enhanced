@@ -30,22 +30,25 @@ public class Glow : IAddon
             .SetValueFormat(OptionFormat.Multiplier);
     }
 
-    public static void Init()
+    public void Init()
     {
-        InRadius.Clear();
         IsEnable = false;
+        InRadius.Clear();
         MarkedOnce.Clear();
     }
-    public static void Add(byte playerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
         MarkedOnce[playerId] = false;
         InRadius[playerId] = [];
         IsEnable = true;
     }
-    public static void Remove(byte playerId)
+    public void Remove(byte playerId)
     {
         MarkedOnce.Remove(playerId);
         InRadius.Remove(playerId);
+
+        if (!MarkedOnce.Any())
+            IsEnable = false;
     }
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {

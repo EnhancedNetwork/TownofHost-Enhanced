@@ -11,8 +11,10 @@ public class Rainbow : IAddon
     private static OptionItem RainbowColorChangeCoolDown;
     private static OptionItem ChangeInCamouflage;
 
-    public static bool isEnabled = false;
-    public static long LastColorChange;
+    private static readonly HashSet<byte> playerList = [];
+    public static bool IsEnabled = false;
+    private static long LastColorChange;
+
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Rainbow, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
@@ -21,14 +23,23 @@ public class Rainbow : IAddon
         ChangeInCamouflage = BooleanOptionItem.Create(Id + 14, "RainbowInCamouflage", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
     }
-    public static void Init()
+    public void Init()
     {
+        IsEnabled = false;
+        playerList.Clear();
         LastColorChange = Utils.GetTimeStamp();
-        isEnabled = false;
     }
-    public static void Add()
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
-        isEnabled = true;
+        playerList.Add(playerId);
+        IsEnabled = true;
+    }
+    public void Remove(byte playerId)
+    {
+        playerList.Remove(playerId);
+
+        if (!playerList.Any())
+            IsEnabled = false;
     }
     public static void OnFixedUpdate()
     {

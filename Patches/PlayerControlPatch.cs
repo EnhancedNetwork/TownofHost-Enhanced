@@ -1164,7 +1164,7 @@ class FixedUpdateInNormalGamePatch
                         if (CustomRoles.Lovers.IsEnable())
                             LoversSuicide();
 
-                        if (Rainbow.isEnabled)
+                        if (Rainbow.IsEnabled)
                             Rainbow.OnFixedUpdate();
 
                         if (Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)

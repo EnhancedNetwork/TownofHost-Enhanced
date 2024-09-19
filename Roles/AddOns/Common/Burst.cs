@@ -11,7 +11,9 @@ public class Burst : IAddon
 
     private static OptionItem BurstKillDelay;
 
-    private static readonly List<byte> BurstBodies = [];
+    private static readonly HashSet<byte> BurstBodies = [];
+    private static readonly HashSet<byte> playerList = [];
+
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Burst, canSetNum: true, teamSpawnOptions: true);
@@ -19,14 +21,23 @@ public class Burst : IAddon
             .SetValueFormat(OptionFormat.Seconds);
     }
 
-    public static void Init()
+    public void Init()
     {
-        BurstBodies.Clear();
         IsEnable = false;
+        BurstBodies.Clear();
+        playerList.Clear();
     }
-    public static void Add()
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
+        playerList.Add(playerId);
         IsEnable = true;
+    }
+    public void Remove(byte playerId)
+    {
+        playerList.Remove(playerId);
+
+        if (!playerList.Any())
+            IsEnable = false;
     }
 
     public static void AfterMeetingTasks()

@@ -10,8 +10,8 @@ public class Statue : IAddon
     private static OptionItem PeopleAmount;
 
     private static bool Active;
-    private static HashSet<byte> CountNearplr;
-    private static Dictionary<byte, float> tempSpeed;
+    private static readonly HashSet<byte> CountNearplr = [];
+    private static readonly Dictionary<byte, float> TempSpeed = [];
 
     public void SetupCustomOption()
     {
@@ -22,42 +22,42 @@ public class Statue : IAddon
              .SetValueFormat(OptionFormat.Times);
     }
 
-    public static void Init()
+    public void Init()
     {
-        CountNearplr = [];
-        tempSpeed = [];
-        Active = true;
         IsEnable = false;
+        CountNearplr.Clear();
+        TempSpeed.Clear();
+        Active = true;
     }
 
-    public static void Add(byte playerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
-        tempSpeed.Add(playerId, Main.AllPlayerSpeed[playerId]);
+        var speed = Main.AllPlayerSpeed[playerId];
+        TempSpeed[playerId] = speed;
         IsEnable = true;
     }
-
-    public static void Remove(byte playerId)
+    public void Remove(byte playerId)
     {
-        if (Main.AllPlayerSpeed[playerId] == SlowDown.GetFloat())
-        {
-            Main.AllPlayerSpeed[playerId] = Main.AllPlayerSpeed[playerId] - SlowDown.GetFloat() + tempSpeed[playerId];
-            Utils.GetPlayerById(playerId)?.MarkDirtySettings();
-        }
-        tempSpeed.Remove(playerId);
+        Main.AllPlayerSpeed[playerId] = Main.AllPlayerSpeed[playerId] - SlowDown.GetFloat() + TempSpeed[playerId];
+        TempSpeed.Remove(playerId);
+        playerId.GetPlayer()?.MarkDirtySettings();
+
+        if (!TempSpeed.Any())
+            IsEnable = false;
     }
 
     public static void AfterMeetingTasks()
     {
-        foreach (var Statue in tempSpeed.Keys)
+        foreach (var Statue in TempSpeed.Keys.ToArray())
         {
             var pc = Utils.GetPlayerById(Statue);
             if (pc == null) continue;
-            float tmpFloat = tempSpeed[Statue];
+            float tmpFloat = TempSpeed[Statue];
             Main.AllPlayerSpeed[Statue] = Main.AllPlayerSpeed[Statue] - Main.AllPlayerSpeed[Statue] + tmpFloat;
             pc.MarkDirtySettings();
         }
         Active = false;
-        CountNearplr = [];
+        CountNearplr.Clear();
         _ = new LateTask(() => 
         {
             Active = true;
@@ -97,7 +97,7 @@ public class Statue : IAddon
             }
             else if (Main.AllPlayerSpeed[victim.PlayerId] == SlowDown.GetFloat())
             {
-                float tmpFloat = tempSpeed[victim.PlayerId];
+                float tmpFloat = TempSpeed[victim.PlayerId];
                 Main.AllPlayerSpeed[victim.PlayerId] = Main.AllPlayerSpeed[victim.PlayerId] - SlowDown.GetFloat() + tmpFloat;
                 victim.MarkDirtySettings();
             }

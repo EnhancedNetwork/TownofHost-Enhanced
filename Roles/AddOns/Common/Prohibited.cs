@@ -30,19 +30,19 @@ public class Prohibited : IAddon
         CountBlockedVentsInFungle = IntegerOptionItem.Create(Id + 15, "Prohibited_CountBlockedVentsInFungle", new(0, 10, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
     }
 
-    public static void Init()
+    public void Init()
     {
         RememberBlokcedVents.Clear();
     }
-    public static void Add(byte playerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
         SetBlockedVents(playerId);
     }
-    public static void Remove(byte playerId)
+    public void Remove(byte playerId)
     {
         if (!RememberBlokcedVents.TryGetValue(playerId, out var ventListId)) return;
 
-        foreach(var ventId in ventListId)
+        foreach (var ventId in ventListId)
         {
             CustomRoleManager.BlockedVentsList[playerId].Remove(ventId);
         }

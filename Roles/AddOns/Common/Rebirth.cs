@@ -21,17 +21,17 @@ public class Rebirth : IAddon
            .SetValueFormat(OptionFormat.Times);
         OnlyVoted = BooleanOptionItem.Create(Id + 12, "RebirthCountVotes", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebirth]);
     }
-    public static void Init()
+    public void Init()
     {
         Rebirths.Clear();
         VotedCount.Clear();
     }
-    public static void Add(byte Playerid)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
-        Rebirths[Playerid] = RebirthUses.GetInt();
-        VotedCount[Playerid] = [];
+        Rebirths[playerId] = RebirthUses.GetInt();
+        VotedCount[playerId] = [];
     }
-    public static void Remove(byte Playerid) 
+    public void Remove(byte Playerid) 
     {
         Rebirths.Remove(Playerid);
     }

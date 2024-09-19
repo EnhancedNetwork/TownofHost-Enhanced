@@ -36,6 +36,12 @@ public class Unlucky : IAddon
         UnluckyOpenDoorSuicideChance = IntegerOptionItem.Create(Id + 14, "UnluckyOpenDoorSuicideChance", new(0, 100, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
             .SetValueFormat(OptionFormat.Percent);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static bool SuicideRand(PlayerControl victim, StateSuicide state)
     {
         var shouldBeSuicide = IRandom.Instance.Next(1, 100) <= state switch

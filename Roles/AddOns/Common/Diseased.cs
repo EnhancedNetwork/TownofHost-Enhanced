@@ -11,7 +11,8 @@ public class Diseased : IAddon
     private static OptionItem DiseasedCDOpt;
     private static OptionItem DiseasedCDReset;
 
-    private static Dictionary<byte, int> KilledDiseased;
+    private static readonly HashSet<byte> playerList = [];
+    private static readonly Dictionary<byte, int> KilledDiseased = [];
 
     public void SetupCustomOption()
     {
@@ -21,14 +22,23 @@ public class Diseased : IAddon
         DiseasedCDReset = BooleanOptionItem.Create(Id + 14, "DiseasedCDReset", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
     }
 
-    public static void Init()
+    public void Init()
     {
-        KilledDiseased = [];
         IsEnable = false;
+        playerList.Clear();
+        KilledDiseased.Clear();
     }
-    public static void Add()
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
+        playerList.Add(playerId);
         IsEnable = true;
+    }
+    public void Remove(byte playerId)
+    {
+        playerList.Remove(playerId);
+
+        if (!playerList.Any())
+            IsEnable = false;
     }
 
     public static void IncreaseKCD(PlayerControl player)
@@ -51,7 +61,7 @@ public class Diseased : IAddon
                 if (kdpc == null) continue;
                 kdpc.ResetKillCooldown();
             }
-            KilledDiseased = [];
+            KilledDiseased.Clear();
         }
     }
 

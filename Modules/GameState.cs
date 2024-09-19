@@ -5,7 +5,6 @@ using UnityEngine;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using static TOHE.Utils;
 using Hazel;
@@ -205,18 +204,25 @@ public class PlayerState(byte playerId)
                 break;
         }
     }
-    public void RemoveSubRole(CustomRoles role)
+    public void RemoveSubRole(CustomRoles addOn)
     {
-        if (SubRoles.Contains(role))
-            SubRoles.Remove(role);
+        if (SubRoles.Contains(addOn))
+            SubRoles.Remove(addOn);
 
-        PlayerId.GetPlayer()?.TaskAfterRemoveAddons(role);
+        if (CustomRoleManager.AddonClasses.TryGetValue(addOn, out var IAddon))
+        {
+            var target = PlayerId.GetPlayer();
+            if (target != null)
+            {
+                IAddon?.Remove(target.PlayerId);
+            }
+        }
 
         if (!AmongUsClient.Instance.AmHost) return;
 
         MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveSubRole, SendOption.Reliable);
         writer.Write(PlayerId);
-        writer.WritePacked((int)role);
+        writer.WritePacked((int)addOn);
         writer.EndMessage();
     }
 

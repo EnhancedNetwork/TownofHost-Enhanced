@@ -6,23 +6,28 @@ public class Ghoul : IAddon
 {
     private const int Id = 21900;
     public AddonTypes Type => AddonTypes.Mixed;
-    public static HashSet<byte> KillGhoul = [];
+
     public static bool IsEnable;
-    
+    public static readonly HashSet<byte> KillGhoul = [];
+
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Ghoul, canSetNum: true, tab: TabGroup.Addons);
     }
 
-    public static void Init()
+    public void Init()
     {
-        KillGhoul = [];
+        KillGhoul.Clear();
         IsEnable = false;
     }
-
-    public static void Add()
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
         IsEnable = true;
+    }
+    public void Remove(byte playerId)
+    {
+        if (!Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul)))
+            IsEnable = false;
     }
 
     public static void ApplyGameOptions(PlayerControl player) 

@@ -891,24 +891,10 @@ class MeetingHudStartPatch
         // Madmate spawn mode: Self vote
         if (Madmate.MadmateSpawnMode.GetInt() == 2 && CustomRoles.Madmate.GetCount() > 0)
             AddMsg(string.Format(GetString("Message.MadmateSelfVoteModeNotify"), GetString("MadmateSpawnMode.SelfVote")));
-        
+
         //Bait Notify
-        if (MeetingStates.FirstMeeting && CustomRoles.Bait.RoleExist() && Bait.BaitNotification.GetBool())
-        {
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Bait)).ToArray())
-            {
-                Bait.BaitAlive.Add(pc.PlayerId);
-            }
-            List<string> baitAliveList = [];
-            foreach (var whId in Bait.BaitAlive.ToArray())
-            {
-                PlayerControl whpc = GetPlayerById(whId);
-                if (whpc == null) continue;
-                baitAliveList.Add(whpc.GetRealName());
-            }
-            string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
-            AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, ColorString(GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
-        }
+        Bait.SendNotify();
+
         // Apocalypse Notify, thanks tommy
         var transformRoles = new CustomRoles[] { CustomRoles.Pestilence, CustomRoles.War, CustomRoles.Famine, CustomRoles.Death };
         foreach (var role in transformRoles)

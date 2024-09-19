@@ -106,7 +106,6 @@ enum CustomRPC : byte // 193/255 USED
     SetInvestgatorLimit,
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
-    SpurtSync,
     SyncVultureBodyAmount,
     SpyRedNameSync,
     SpyRedNameRemove,
@@ -636,9 +635,6 @@ internal class RPCHandlerPatch
             case CustomRPC.NemesisRevenge:
                 Nemesis.ReceiveRPC_Custom(reader, __instance);
                 break;
-            case CustomRPC.SpurtSync:
-                Spurt.RecieveRPC(reader);
-                break;
             case CustomRPC.RetributionistRevenge:
                 Retributionist.ReceiveRPC_Custom(reader, __instance);
                 break;
@@ -970,47 +966,18 @@ internal static class RPC
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
             Main.PlayerStates[targetId].SetSubRole(role);
-        }
+            
+            if (CustomRoleManager.AddonClasses.TryGetValue(role, out var IAddon))
+            {
+                IAddon?.Add(targetId);
+            }
 
-        switch (role)
-        {
-            case CustomRoles.LastImpostor:
-                LastImpostor.Add(targetId);
-                break;
-            case CustomRoles.Aware:
-                Aware.Add(targetId);
-                break;
-            case CustomRoles.Glow:
-                Glow.Add(targetId);
-                break;
-            case CustomRoles.Workhorse:
-                Workhorse.Add(targetId);
-                break;
-            case CustomRoles.Diseased:
-                Diseased.Add();
-                break;
-            case CustomRoles.Antidote:
-                Antidote.Add();
-                break;
-            case CustomRoles.Burst:
-                Burst.Add();
-                break;
-            case CustomRoles.Fool:
-                Fool.Add();
-                break;
-            case CustomRoles.Ghoul:
-                Ghoul.Add();
-                break;
-            case CustomRoles.Rainbow:
-                Rainbow.Add();
-                break;
-            case CustomRoles.Statue:
-                Statue.Add(targetId);
-                break;
-            case CustomRoles.Evader:
-                Evader.Add(targetId);
-                break;
-
+            switch (role)
+            {
+                case CustomRoles.LastImpostor:
+                    LastImpostor.AddMidGame(targetId);
+                    break;
+            }
         }
 
         if (!AmongUsClient.Instance.IsGameOver)

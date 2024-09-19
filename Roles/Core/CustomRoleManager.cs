@@ -116,10 +116,10 @@ public static class CustomRoleManager
                         Watcher.RevealVotes(opt);
                         break;
                     case CustomRoles.Flash:
-                        Flash.SetSpeed(player.PlayerId, false);
+                        Flash.SetSpeed(player.PlayerId);
                         break;
                     case CustomRoles.Sloth:
-                        Sloth.SetSpeed(player.PlayerId, false);
+                        Sloth.SetSpeed(player.PlayerId);
                         break;
                     case CustomRoles.Torch:
                         Torch.ApplyGameOptions(opt);
