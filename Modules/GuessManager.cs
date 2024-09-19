@@ -1083,14 +1083,14 @@ public static class GuessManager
         {
             if (pva == null) continue;
             var levelDisplay = pva.transform.FindChild("PlayerLevel").gameObject;
-            var panel = UnityEngine.Object.Instantiate(levelDisplay);
+            var panel = UnityEngine.Object.Instantiate(levelDisplay, pva.transform, true);
             panel.gameObject.name = "PlayerIDLabel";
             var panelTransform = panel.transform;
-            panelTransform.transform.SetParent(levelDisplay.transform);
-            panelTransform.localPosition = new(0f, -0.90f, levelDisplay.transform.localPosition.z);
             var background = panel.GetComponent<SpriteRenderer>();
             background.color = Palette.Purple;
             background.sortingOrder = max - 1;
+            panelTransform.SetAsFirstSibling();
+            panelTransform.localPosition = new(-1.21f, -0.15f, 0f);
             var levelLabel = panelTransform.FindChild("LevelLabel").GetComponents<TextMeshPro>()[0];
             levelLabel.DestroyTranslator();
             levelLabel.text = "ID";
