@@ -68,7 +68,8 @@ internal class Conjurer : CovenManager
     {
         Logger.Info($"Conjurer ShapeShift", "Conjurer");
         if (shapeshifter.PlayerId == target.PlayerId) return false;
-        state[shapeshifter.PlayerId] = HasNecronomicon(shapeshifter) ? ConjState.NecroMark : ConjState.NormalMark;
+        if (state[shapeshifter.PlayerId] != ConjState.NecroBomb && state[shapeshifter.PlayerId] != ConjState.NormalBomb)
+            state[shapeshifter.PlayerId] = HasNecronomicon(shapeshifter) ? ConjState.NecroMark : ConjState.NormalMark;
         switch (state[shapeshifter.PlayerId])
         {
             case ConjState.NormalMark:
