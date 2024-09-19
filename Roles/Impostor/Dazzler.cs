@@ -24,7 +24,7 @@ internal class Dazzler : RoleBase
     private static OptionItem ResetDazzledVisionOnDeath;
     private static OptionItem ShowShapeshiftAnimationsOpt;
 
-    private static Dictionary<byte, List<byte>> PlayersDazzled = [];
+    private static Dictionary<byte, HashSet<byte>> PlayersDazzled = [];
 
     public override void SetupCustomOption()
     {

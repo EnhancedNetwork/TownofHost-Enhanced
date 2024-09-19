@@ -5,7 +5,7 @@ namespace TOHE.Roles.Core.AssignManager;
 
 public static class AddonAssign
 {
-    public static List<CustomRoles> AddonRolesList = [];
+    private static readonly HashSet<CustomRoles> AddonRolesList = [];
 
     private static bool NotAssignAddOnInGameStarted(CustomRoles role)
     {
@@ -33,7 +33,7 @@ public static class AddonAssign
     {
         if (Options.CurrentGameMode == CustomGameMode.FFA) return;
 
-        AddonRolesList = [];
+        AddonRolesList.Clear();
         foreach (var cr in CustomRolesHelper.AllRoles)
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());

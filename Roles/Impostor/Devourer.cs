@@ -27,7 +27,7 @@ internal class Devourer : RoleBase
     private static OptionItem ShowShapeshiftAnimationsOpt;
 
     private static readonly Dictionary<byte, float> NowCooldown = [];
-    private static readonly Dictionary<byte, List<byte>> PlayerSkinsCosumed = [];
+    private static readonly Dictionary<byte, HashSet<byte>> PlayerSkinsCosumed = [];
 
     public override void SetupCustomOption()
     {

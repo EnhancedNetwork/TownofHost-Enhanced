@@ -50,7 +50,7 @@ public class Bait : IAddon
             {
                 BaitAlive.Add(pc.PlayerId);
             }
-            List<string> baitAliveList = [];
+            HashSet<string> baitAliveList = [];
             foreach (var whId in BaitAlive.ToArray())
             {
                 PlayerControl whpc = whId.GetPlayer();

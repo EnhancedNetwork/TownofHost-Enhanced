@@ -15,14 +15,14 @@ internal class DoubleAgent : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 29000;
-    private static readonly List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
     private static readonly List<GameObject> createdButtonsList = [];
-    private static readonly List<byte> CurrentBombedPlayers = [];
+    private static readonly HashSet<byte> CurrentBombedPlayers = [];
     private static float CurrentBombedTime = float.MaxValue;
     public static bool BombIsActive = false;
     public static bool CanBombInMeeting = true;

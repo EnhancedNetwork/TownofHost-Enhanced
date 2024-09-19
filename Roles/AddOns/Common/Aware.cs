@@ -14,7 +14,7 @@ public class Aware : IAddon
     public static OptionItem NeutralCanBeAware;
     private static OptionItem AwareknowRole;
 
-    public static readonly Dictionary<byte, List<string>> AwareInteracted = [];
+    public static readonly Dictionary<byte, HashSet<string>> AwareInteracted = [];
 
     public void SetupCustomOption()
     {

@@ -25,10 +25,10 @@ internal class Baker : RoleBase
     private static OptionItem BTOS2Baker;
     private static byte BreadID = 0;
 
-    private static readonly Dictionary<byte, List<byte>> BreadList = [];
-    private static readonly Dictionary<byte, List<byte>> RevealList = [];
-    private static readonly Dictionary<byte, List<byte>> BarrierList = [];
-    public static readonly Dictionary<byte, List<byte>> FamineList = [];
+    private static readonly Dictionary<byte, HashSet<byte>> BreadList = [];
+    private static readonly Dictionary<byte, HashSet<byte>> RevealList = [];
+    private static readonly Dictionary<byte, HashSet<byte>> BarrierList = [];
+    public static readonly Dictionary<byte, HashSet<byte>> FamineList = [];
     private static bool CanUseAbility;
     public static bool StarvedNonBreaded;
 
@@ -269,7 +269,7 @@ internal class Baker : RoleBase
         if (!CustomRoles.Famine.RoleExist()) return;
         if (exileIds.Contains(playerIdList.First())) return;
         if (StarvedNonBreaded) return;
-        var deathList = new List<byte>();
+        var deathList = new HashSet<byte>();
         PlayerControl baker = GetPlayerById(playerIdList.First());
         foreach (var pc in Main.AllAlivePlayerControls)
         {

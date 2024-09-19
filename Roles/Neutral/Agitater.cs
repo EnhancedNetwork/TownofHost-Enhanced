@@ -10,7 +10,7 @@ internal class Agitater : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 15800;
-    private static readonly List<byte> playerIdList = [];
+    private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
