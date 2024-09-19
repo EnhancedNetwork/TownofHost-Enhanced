@@ -472,9 +472,12 @@ internal class StartGameHostPatch
                 // if based role is Shapeshifter
                 if (roleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
 
-                foreach (var subRole in CustomRoleManager.AddonClasses.Values.ToArray())
+                foreach (var (subRole, IAddon) in CustomRoleManager.AddonClasses)
                 {
-                    subRole?.Add(pc.PlayerId);
+                    if (pc.Is(subRole))
+                    {
+                        IAddon?.Add(pc.PlayerId);
+                    }
                 }
             }
 
