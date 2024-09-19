@@ -68,6 +68,24 @@ public static class CollectionExtensions
         }
         return list;
     }
+    /// <summary>
+    /// Shuffles all elements in a collection randomly
+    /// </summary>
+    /// <typeparam name="T">The type of the collection</typeparam>
+    /// <param name="collection">The collection to be shuffled</param>
+    /// <returns>The shuffled collection</returns>
+    public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> collection)
+    {
+        var list = collection.ToList();
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = IRandom.Instance.Next(n + 1);
+            (list[n], list[k]) = (list[k], list[n]);
+        }
+        return list;
+    }
 
     /// <summary>
     /// Filters a IEnumerable(<typeparamref name="TDelegate"/>) of any duplicates

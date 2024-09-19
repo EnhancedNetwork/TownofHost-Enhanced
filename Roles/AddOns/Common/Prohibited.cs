@@ -67,6 +67,7 @@ public class Prohibited : IAddon
 
         if (coutBlokedVents <= 0) return;
         var allVents = ShipStatus.Instance.AllVents.ToList();
+        allVents = allVents.Shuffle().ToList();
 
         RememberBlokcedVents[playerId] = [];
 
